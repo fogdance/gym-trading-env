@@ -1,0 +1,7 @@
+# src/gym_trading_env/config/default_config.yaml
+
+initial_balance: 1000.0
+trading_fees: 0.001
+reward_function: basic_reward_function
+window_size: 20
+risk_free_rate: 0.0
