@@ -55,7 +55,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.ERROR)
 
         # Data and features
         self.df = df.reset_index(drop=True)
@@ -68,14 +68,15 @@ class CustomTradingEnv(gym.Env):
         # Observation space: Dict with named keys using float for Gymnasium compatibility
         tech_indicator_size = self.features.shape[1] * self.window_size
         self.observation_space = spaces.Dict({
-            'balance': spaces.Box(low=0.0, high=np.inf, shape=(), dtype=np.float32),
-            'equity': spaces.Box(low=0.0, high=np.inf, shape=(), dtype=np.float32),
-            'used_margin': spaces.Box(low=0.0, high=np.inf, shape=(), dtype=np.float32),
-            'free_margin': spaces.Box(low=0.0, high=np.inf, shape=(), dtype=np.float32),
-            'long_position': spaces.Box(low=0.0, high=float(self.max_long_position), shape=(), dtype=np.float32),
-            'short_position': spaces.Box(low=0.0, high=float(self.max_short_position), shape=(), dtype=np.float32),
+            'balance': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+            'equity': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+            'used_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+            'free_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+            'long_position': spaces.Box(low=0.0, high=float(self.max_long_position), shape=(1,), dtype=np.float32),
+            'short_position': spaces.Box(low=0.0, high=float(self.max_short_position), shape=(1,), dtype=np.float32),
             'technical_indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(tech_indicator_size,), dtype=np.float32)
         })
+
 
         # Initialize state
         self.balance = self.initial_balance  # Balance remains constant unless deposited/withdrawn
@@ -106,7 +107,7 @@ class CustomTradingEnv(gym.Env):
         self.short_position = Decimal('0.0')
         self.used_margin = Decimal('0.0')
         self.position_manager = PositionManager()
-        self.current_step = 0
+        self.current_step = self.window_size
         self.terminated = False
 
         # Reset previous balance and price
@@ -151,7 +152,12 @@ class CustomTradingEnv(gym.Env):
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
             self.terminated = True
-            self.logger.info("Episode terminated.")
+            self.logger.info(f"Episode terminated. current_step: {self.current_step}, len(self.df): {len(self.df)}")
+
+        if self.current_step + 1 >= len(self.features):
+            # End immediately so that the next step will not be accessed again
+            self.terminated = True
+            self.logger.info(f"Episode terminated. current_step: {self.current_step}, len(self.features): {len(self.features)}")
 
         # Update step
         self.current_step += 1
@@ -206,13 +212,13 @@ class CustomTradingEnv(gym.Env):
 
         # Observation dictionary
         obs = {
-            'balance': float(decimal_to_float(self.balance, precision=2)),
-            'equity': float(decimal_to_float(equity, precision=2)),
-            'used_margin': float(decimal_to_float(self.used_margin, precision=2)),
-            'free_margin': float(decimal_to_float(free_margin, precision=2)),
-            'long_position': float(self.long_position),
-            'short_position': float(self.short_position),
-            'technical_indicators': self.features.iloc[self.current_step - self.window_size:self.current_step].values.flatten().astype(np.float32)
+            'balance': np.array([float(decimal_to_float(self.balance, precision=2))], dtype=np.float32),
+            'equity': np.array([float(decimal_to_float(equity, precision=2))], dtype=np.float32),
+            'used_margin': np.array([float(decimal_to_float(self.used_margin, precision=2))], dtype=np.float32),
+            'free_margin': np.array([float(decimal_to_float(free_margin, precision=2))], dtype=np.float32),
+            'long_position': np.array([float(self.long_position)], dtype=np.float32),
+            'short_position': np.array([float(self.short_position)], dtype=np.float32),
+            'technical_indicators': np.array(self.features.iloc[self.current_step - self.window_size:self.current_step].values.flatten(), dtype=np.float32)
         }
         return obs
 
@@ -370,7 +376,7 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"Closed SHORT position: {closed_positions}")
         self.logger.debug(f"P&L: {total_cost}, New balance: {self.balance}, Short position: {self.short_position}, Used margin: {self.used_margin}")
 
-    def render(self, mode='human'):
+    def render(self, mode=None):
         """
         Renders the current state of the environment.
         """

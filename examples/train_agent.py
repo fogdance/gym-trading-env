@@ -9,12 +9,19 @@ from stable_baselines3.common.env_checker import check_env
 
 def main():
     # Load data
-    df = load_data('data/binance_BTCUSDT_1d.csv')
+    df = load_data('USDJPY')
     
     # Define configuration
     config = {
-        'initial_balance': 1000.0,
-        'trading_fees': 0.001,
+        'currency_pair': 'USDJPY',
+        'initial_balance': 10000.0,
+        'trading_fees': 0.001,  # 0.1% trading fee
+        'spread': 0.0002,        # 2 pips spread
+        'leverage': 100,         # 1:100 leverage
+        'lot_size': 100000,      # Standard lot size for EUR/USD
+        'trade_lot': 0.01,       # Default trade size: 0.01 lot
+        'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
+        'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
         'reward_function': 'basic_reward_function',
         'window_size': 20,
         'risk_free_rate': 0.0
@@ -27,7 +34,7 @@ def main():
     check_env(env, warn=True)
     
     # Initialize PPO model
-    model = PPO('MlpPolicy', env, verbose=1)
+    model = PPO('MultiInputPolicy', env, verbose=1)
     
     # Train the model
     model.learn(total_timesteps=10000)

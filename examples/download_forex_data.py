@@ -2,13 +2,18 @@
 
 from gym_trading_env.utils.data_downloader import ForexDataDownloader
 import pandas as pd
+import os
 
 def main():
+    os.mkdir('data') if not os.path.exists('data') else None
+
     api_key = 'YOUR_ALPHA_VANTAGE_API_KEY'  # Replace with your actual API key
-    proxy = {
-        'http': 'http://your_proxy:port',
-        'https': 'https://your_proxy:port',
-    }  # Replace with your actual proxy settings or set to None
+    proxy = None
+
+    # proxy = {
+    #     'http': 'http://your_proxy:port',
+    #     'https': 'https://your_proxy:port',
+    # }  # Replace with your actual proxy settings or set to None
 
     downloader = ForexDataDownloader(api_key=api_key, proxy=proxy)
 
