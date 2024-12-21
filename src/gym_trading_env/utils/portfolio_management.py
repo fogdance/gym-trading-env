@@ -1,39 +1,28 @@
 # src/gym_trading_env/utils/portfolio_management.py
 
+from decimal import Decimal
+
 class Portfolio:
-    """
-    A class to manage the portfolio, including assets and fiat balance.
-    """
-    
-    def __init__(self, asset: float = 0.0, fiat: float = 0.0):
+    def __init__(self, asset: Decimal = Decimal('0.0'), fiat: Decimal = Decimal('0.0')):
         self.asset = asset
         self.fiat = fiat
-    
-    def valorisation(self, price: float) -> float:
+
+    def update(self, asset: Decimal, fiat: Decimal):
+        self.asset = asset
+        self.fiat = fiat
+
+    def valorisation(self, price: Decimal) -> Decimal:
         """
         Calculates the total portfolio value.
-        
+
         Args:
-            price (float): Current price of the asset.
-        
+            price (Decimal): Current price of the asset.
+
         Returns:
-            float: Total portfolio value.
+            Decimal: Total portfolio value.
         """
-        return self.asset * price + self.fiat
-    
-    def update(self, asset: float = None, fiat: float = None):
-        """
-        Updates the portfolio's assets and fiat balance.
-        
-        Args:
-            asset (float, optional): New asset value.
-            fiat (float, optional): New fiat balance.
-        """
-        if asset is not None:
-            self.asset = asset
-        if fiat is not None:
-            self.fiat = fiat
-    
+        return self.fiat + (self.asset * price)
+
     def get_distribution(self, price: float) -> dict:
         """
         Gets the distribution of assets and fiat in the portfolio.
