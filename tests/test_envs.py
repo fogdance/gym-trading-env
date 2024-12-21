@@ -64,7 +64,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Calculate expected values
         current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
-        ask_price = current_price + (spread / 2)
+        ask_price = current_price + (spread)
         trading_fees = Decimal(str(self.env.trading_fees))
         trade_lot = self.env.trade_lot
 
@@ -129,9 +129,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         trade_lot = self.env.trade_lot
 
         # Ask price for LONG_OPEN
-        ask_price = open_price + (spread / 2)
+        ask_price = open_price + (spread)
         # Bid price for LONG_CLOSE
-        bid_price = close_price - (spread / 2)
+        bid_price = close_price - (spread)
 
         # Cost during LONG_OPEN
         cost = trade_lot * self.env.lot_size * ask_price
@@ -188,7 +188,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Calculate expected values
         current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
-        bid_price = current_price - (spread / 2)
+        bid_price = current_price - (spread)
         trading_fees = Decimal(str(self.env.trading_fees))
         trade_lot = self.env.trade_lot
 
@@ -253,9 +253,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         trade_lot = self.env.trade_lot
 
         # Bid price for SHORT_OPEN
-        bid_price = open_price - (spread / 2)
+        bid_price = open_price - (spread)
         # Ask price for SHORT_CLOSE
-        ask_price = close_price + (spread / 2)
+        ask_price = close_price + (spread)
 
         # Revenue during SHORT_OPEN
         revenue = trade_lot * self.env.lot_size * bid_price

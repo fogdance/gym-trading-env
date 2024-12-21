@@ -137,13 +137,13 @@ class CustomTradingEnv(gym.Env):
         if action == Action.HOLD:
             pass  # Do nothing
         elif action == Action.LONG_OPEN:
-            self._long_open(self.current_price + (self.spread / 2))
+            self._long_open(self.current_price + (self.spread))
         elif action == Action.LONG_CLOSE:
-            self._long_close(self.current_price - (self.spread / 2))
+            self._long_close(self.current_price - (self.spread))
         elif action == Action.SHORT_OPEN:
-            self._short_open(self.current_price - (self.spread / 2))
+            self._short_open(self.current_price - (self.spread))
         elif action == Action.SHORT_CLOSE:
-            self._short_close(self.current_price + (self.spread / 2))
+            self._short_close(self.current_price + (self.spread))
 
         # Calculate reward
         reward = self.reward_function(self)  # Already a float
@@ -224,9 +224,9 @@ class CustomTradingEnv(gym.Env):
             # Liquidate all positions
             self.logger.info("Equity below used margin. Liquidating all positions.")
             while self.long_position > Decimal('0.0'):
-                self._long_close(self.df.loc[self.current_step, 'Close'] - (self.spread / 2))
+                self._long_close(self.df.loc[self.current_step, 'Close'] - (self.spread))
             while self.short_position > Decimal('0.0'):
-                self._short_close(self.df.loc[self.current_step, 'Close'] + (self.spread / 2))
+                self._short_close(self.df.loc[self.current_step, 'Close'] + (self.spread))
             self.terminated = True
             self.logger.info("Margin requirement not met. Episode terminated.")
 
