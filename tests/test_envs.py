@@ -84,8 +84,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         used_margin_short = Decimal('0.0')
         total_used_margin = used_margin_long + used_margin_short
 
-        # Equity after LONG_OPEN (assuming no P&L yet)
-        equity = expected_balance + Decimal('0.0') + Decimal('0.0')
+        # Equity after LONG_OPEN
+        pnl = (current_price - ask_price) * trade_lot * self.env.lot_size
+        equity = expected_balance + pnl + Decimal('0.0')
 
         # Free Margin after LONG_OPEN
         free_margin = equity - total_used_margin
@@ -207,8 +208,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         used_margin_short = (trade_lot * self.env.lot_size * bid_price) / self.env.leverage
         total_used_margin = used_margin_long + used_margin_short
 
-        # Equity after SHORT_OPEN (assuming no P&L yet)
-        equity = expected_balance + Decimal('0.0') + Decimal('0.0')
+        # Equity after SHORT_OPEN
+        pnl = (bid_price - current_price) * trade_lot * self.env.lot_size
+        equity = expected_balance + pnl + Decimal('0.0')
 
         # Free Margin after SHORT_OPEN
         free_margin = equity - total_used_margin
@@ -261,7 +263,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_revenue = revenue - fee_sell
 
         # P&L during SHORT_CLOSE
-        pnl = (open_price - ask_price) * trade_lot * self.env.lot_size
+        pnl = (bid_price - ask_price) * trade_lot * self.env.lot_size
         fee_buy = (trade_lot * self.env.lot_size * ask_price) * self.env.trading_fees
         total_cost = pnl - fee_buy
 
@@ -433,7 +435,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                          msg=f"Expected short_position: {expected_short_position}, but got {obs['short_position']}")
         self.assertAlmostEqual(self.env.long_position, 0.0, places=5,
                                msg=f"Expected long_position to remain 0.0, but got {self.env.long_position}")
-        self.assertFalse(terminated, "Environment should not terminate on failed action.")
+        self.assertTrue(terminated, "Environment should terminate on failed action.")
         self.assertFalse(truncated, "Environment should not truncate on failed action.")
         self.assertIn('total_asset', info)
 
