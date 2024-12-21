@@ -34,7 +34,7 @@ def main():
     check_env(env, warn=True)
     
     # Initialize PPO model
-    model = PPO('MultiInputPolicy', env, verbose=1)
+    model = PPO('MlpPolicy', env, verbose=1)
     
     # Train the model
     model.learn(total_timesteps=10000)

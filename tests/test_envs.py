@@ -24,6 +24,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         df = pd.DataFrame(data, index=dates)
         # Define a sample configuration
         config = {
+            'use_dict_obs': True,
             'currency_pair': 'EURUSD',
             'initial_balance': 10000.0,
             'trading_fees': 0.001,  # 0.1% trading fee

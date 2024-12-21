@@ -3,8 +3,8 @@
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 import logging
 from enum import Enum
-from gymnasium import spaces
 import gymnasium as gym
+from gymnasium import spaces
 import numpy as np
 import pandas as pd
 from collections import deque
@@ -48,6 +48,9 @@ class CustomTradingEnv(gym.Env):
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
 
+        # Whether to use a dict observation space or flatten everything into a 1D array
+        self.use_dict_obs = config.get('use_dict_obs', False)
+
         # Set up logging
         self.logger = logging.getLogger(__name__)
         handler = logging.StreamHandler()
@@ -65,18 +68,31 @@ class CustomTradingEnv(gym.Env):
         # Action space: dynamically based on Action Enum
         self.action_space = spaces.Discrete(len(Action))
 
-        # Observation space: Dict with named keys using float for Gymnasium compatibility
-        tech_indicator_size = self.features.shape[1] * self.window_size
-        self.observation_space = spaces.Dict({
-            'balance': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
-            'equity': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
-            'used_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
-            'free_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
-            'long_position': spaces.Box(low=0.0, high=float(self.max_long_position), shape=(1,), dtype=np.float32),
-            'short_position': spaces.Box(low=0.0, high=float(self.max_short_position), shape=(1,), dtype=np.float32),
-            'technical_indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(tech_indicator_size,), dtype=np.float32)
-        })
+        # Prepare shapes
+        self.tech_indicator_size = self.features.shape[1] * self.window_size
 
+        # If using Dict obs or 1D obs
+        if self.use_dict_obs:
+            # Dict observation space
+            self.observation_space = spaces.Dict({
+                'balance': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+                'equity': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+                'used_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+                'free_margin': spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float32),
+                'long_position': spaces.Box(low=0.0, high=float(self.max_long_position), shape=(1,), dtype=np.float32),
+                'short_position': spaces.Box(low=0.0, high=float(self.max_short_position), shape=(1,), dtype=np.float32),
+                'technical_indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(self.tech_indicator_size,), dtype=np.float32)
+            })
+        else:
+            # Flattened 1D observation space
+            # We have 6 scalar features + self.tech_indicator_size
+            # The 6 scalars are:
+            #   [balance, equity, used_margin, free_margin, long_position, short_position]
+            # Then we append the technical indicators
+            obs_size = 6 + self.tech_indicator_size
+            self.observation_space = spaces.Box(
+                low=-np.inf, high=np.inf, shape=(obs_size,), dtype=np.float32
+            )
 
         # Initialize state
         self.balance = self.initial_balance  # Balance remains constant unless deposited/withdrawn
@@ -152,12 +168,12 @@ class CustomTradingEnv(gym.Env):
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
             self.terminated = True
-            self.logger.info(f"Episode terminated. current_step: {self.current_step}, len(self.df): {len(self.df)}")
+            self.logger.info(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df)}")
 
         if self.current_step + 1 >= len(self.features):
             # End immediately so that the next step will not be accessed again
             self.terminated = True
-            self.logger.info(f"Episode terminated. current_step: {self.current_step}, len(self.features): {len(self.features)}")
+            self.logger.info(f"Episode terminated. current_step: {self.current_step}, features_len: {len(self.features)}")
 
         # Update step
         self.current_step += 1
@@ -198,29 +214,6 @@ class CustomTradingEnv(gym.Env):
         )
         equity = self.balance + unrealized_pnl_long + unrealized_pnl_short
         return equity
-
-
-    def _get_obs(self):
-        """
-        Constructs the observation dictionary.
-        """
-        # Calculate Equity
-        equity = self._calculate_equity()
-
-        # Calculate Free Margin
-        free_margin = equity - self.used_margin
-
-        # Observation dictionary
-        obs = {
-            'balance': np.array([float(decimal_to_float(self.balance, precision=2))], dtype=np.float32),
-            'equity': np.array([float(decimal_to_float(equity, precision=2))], dtype=np.float32),
-            'used_margin': np.array([float(decimal_to_float(self.used_margin, precision=2))], dtype=np.float32),
-            'free_margin': np.array([float(decimal_to_float(free_margin, precision=2))], dtype=np.float32),
-            'long_position': np.array([float(self.long_position)], dtype=np.float32),
-            'short_position': np.array([float(self.short_position)], dtype=np.float32),
-            'technical_indicators': np.array(self.features.iloc[self.current_step - self.window_size:self.current_step].values.flatten(), dtype=np.float32)
-        }
-        return obs
 
     def _check_margin(self, equity: Decimal):
         """
@@ -375,6 +368,53 @@ class CustomTradingEnv(gym.Env):
 
         self.logger.debug(f"Closed SHORT position: {closed_positions}")
         self.logger.debug(f"P&L: {total_cost}, New balance: {self.balance}, Short position: {self.short_position}, Used margin: {self.used_margin}")
+
+
+    def _get_obs(self):
+        """
+        Constructs the observation, either as a Dict or a flattened 1D array.
+        """
+        equity = self._calculate_equity()
+        free_margin = equity - self.used_margin
+
+        balance_val = float(decimal_to_float(self.balance, precision=2))
+        equity_val = float(decimal_to_float(equity, precision=2))
+        used_margin_val = float(decimal_to_float(self.used_margin, precision=2))
+        free_margin_val = float(decimal_to_float(free_margin, precision=2))
+        long_pos_val = float(self.long_position)
+        short_pos_val = float(self.short_position)
+
+        tech_data = self.features.iloc[self.current_step - self.window_size : self.current_step].values.flatten()
+        tech_data = tech_data.astype(np.float32)
+
+        if self.use_dict_obs:
+            # Return as Dict
+            obs = {
+                'balance': np.array([balance_val], dtype=np.float32),
+                'equity': np.array([equity_val], dtype=np.float32),
+                'used_margin': np.array([used_margin_val], dtype=np.float32),
+                'free_margin': np.array([free_margin_val], dtype=np.float32),
+                'long_position': np.array([long_pos_val], dtype=np.float32),
+                'short_position': np.array([short_pos_val], dtype=np.float32),
+                'technical_indicators': tech_data
+            }
+            return obs
+        else:
+            # Return as flattened 1D array
+            # We'll stack:
+            # [balance, equity, used_margin, free_margin, long_position, short_position]
+            # + technical_indicators
+            scalar_part = np.array([
+                balance_val,
+                equity_val,
+                used_margin_val,
+                free_margin_val,
+                long_pos_val,
+                short_pos_val
+            ], dtype=np.float32)
+
+            obs = np.concatenate([scalar_part, tech_data], axis=0)
+            return obs
 
     def render(self, mode=None):
         """
