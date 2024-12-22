@@ -4,6 +4,7 @@ import unittest
 import pandas as pd
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.conversion import decimal_to_float
+from gym_trading_env.rewards.reward_functions import basic_reward_function  # 确保导入奖励函数
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 
 # Set global decimal precision for testing
@@ -56,7 +57,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
     def test_step_long_open(self):
         """
-        Test LONG_OPEN action in the environment.
+        Test LONG_OPEN action in the environment and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.LONG_OPEN.value
@@ -65,32 +66,39 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Calculate expected values
         current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
-        ask_price = current_price + (spread)
+        ask_price = current_price + spread
         trading_fees = Decimal(str(self.env.trading_fees))
-        trade_lot = self.env.trade_lot
+        trade_lot = Decimal(str(self.env.trade_lot))
 
         # Cost = trade_lot * lot_size * ask_price
-        cost = trade_lot * self.env.lot_size * ask_price
+        cost = trade_lot * Decimal(str(self.env.lot_size)) * ask_price
         fee = cost * trading_fees
         total_cost = cost + fee
 
         # Expected balance after LONG_OPEN
-        expected_balance = self.env.initial_balance - total_cost
+        expected_balance = Decimal(str(self.env.initial_balance)) - total_cost
 
         # Expected long_position after LONG_OPEN
         expected_long_position = trade_lot
 
         # Used Margin after LONG_OPEN
-        used_margin_long = (trade_lot * self.env.lot_size * ask_price) / self.env.leverage
+        used_margin_long = (trade_lot * Decimal(str(self.env.lot_size)) * ask_price) / Decimal(str(self.env.leverage))
         used_margin_short = Decimal('0.0')
         total_used_margin = used_margin_long + used_margin_short
 
         # Equity after LONG_OPEN
-        pnl = (current_price - ask_price) * trade_lot * self.env.lot_size
-        equity = expected_balance + pnl + Decimal('0.0')
+        pnl = (current_price - ask_price) * trade_lot * Decimal(str(self.env.lot_size))
+        equity = expected_balance + pnl
 
         # Free Margin after LONG_OPEN
         free_margin = equity - total_used_margin
+
+        # Expected reward: change in equity = equity - previous_equity
+        # previous_equity was initial_balance before step
+        expected_reward = equity - Decimal(str(self.env.initial_balance))
+
+        # Convert to float with precision
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
 
         # Assertions
         self.assertAlmostEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)), places=2,
@@ -105,47 +113,52 @@ class TestCustomTradingEnv(unittest.TestCase):
                                msg=f"Expected long_position after LONG_OPEN: {expected_long_position}, but got {obs['long_position']}")
         self.assertAlmostEqual(obs['short_position'], 0.0, places=5,
                                msg=f"Expected short_position to remain 0.0, but got {obs['short_position']}")
+        self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward: {expected_reward}, but got {reward}")
         self.assertFalse(terminated)
         self.assertFalse(truncated)
         self.assertIn('total_asset', info)
 
     def test_step_long_close(self):
         """
-        Test LONG_CLOSE action in the environment.
+        Test LONG_CLOSE action in the environment and assert the reward.
         """
         obs, info = self.env.reset()
         # First, execute LONG_OPEN
         action_open = Action.LONG_OPEN.value
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
+        obs, reward_open, terminated, truncated, info = self.env.step(action_open)
+
+        # Capture previous equity after LONG_OPEN
+        previous_equity = self.env._calculate_equity()
 
         # Now, execute LONG_CLOSE
         action_close = Action.LONG_CLOSE.value
-        obs, reward, terminated, truncated, info = self.env.step(action_close)
+        obs, reward_close, terminated, truncated, info = self.env.step(action_close)
 
         # Retrieve prices
         open_price = Decimal(str(self.env.df.loc[self.env.current_step - 2, 'Close']))
         close_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
         trading_fees = Decimal(str(self.env.trading_fees))
-        trade_lot = self.env.trade_lot
+        trade_lot = Decimal(str(self.env.trade_lot))
 
         # Ask price for LONG_OPEN
-        ask_price = open_price + (spread)
+        ask_price = open_price + spread
         # Bid price for LONG_CLOSE
-        bid_price = close_price - (spread)
+        bid_price = close_price - spread
 
         # Cost during LONG_OPEN
-        cost = trade_lot * self.env.lot_size * ask_price
+        cost = trade_lot * Decimal(str(self.env.lot_size)) * ask_price
         fee_buy = cost * trading_fees
         total_cost = cost + fee_buy
 
         # P&L during LONG_CLOSE
-        pnl = (bid_price - ask_price) * trade_lot * self.env.lot_size
-        fee_sell = (trade_lot * self.env.lot_size * bid_price) * trading_fees
+        pnl = (bid_price - ask_price) * trade_lot * Decimal(str(self.env.lot_size))
+        fee_sell = (trade_lot * Decimal(str(self.env.lot_size)) * bid_price) * trading_fees
         total_revenue = pnl - fee_sell
 
         # Expected balance after LONG_CLOSE
-        expected_balance = self.env.initial_balance - total_cost + total_revenue
+        expected_balance = Decimal(str(self.env.initial_balance)) - total_cost + total_revenue
 
         # Expected long_position after LONG_CLOSE
         expected_long_position = Decimal('0.0')
@@ -161,7 +174,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Free Margin after LONG_CLOSE
         free_margin = equity - total_used_margin
 
-        # Assertions
+        # Expected reward: change in equity = equity - previous_equity
+        expected_reward = equity - previous_equity
+
+        # Convert to float with precision
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+        # Assertions for LONG_CLOSE
         self.assertAlmostEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)), places=2,
                                msg=f"Expected balance after LONG_CLOSE: {expected_balance}, but got {obs['balance']}")
         self.assertAlmostEqual(obs['equity'], float(decimal_to_float(equity, precision=2)), places=2,
@@ -174,13 +193,15 @@ class TestCustomTradingEnv(unittest.TestCase):
                                msg=f"Expected long_position after LONG_CLOSE: 0.0, but got {obs['long_position']}")
         self.assertAlmostEqual(obs['short_position'], 0.0, places=5,
                                msg=f"Expected short_position to remain 0.0, but got {obs['short_position']}")
+        self.assertAlmostEqual(reward_close, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward after LONG_CLOSE: {expected_reward}, but got {reward_close}")
         self.assertFalse(terminated)
         self.assertFalse(truncated)
         self.assertIn('total_asset', info)
 
     def test_step_short_open(self):
         """
-        Test SHORT_OPEN action in the environment.
+        Test SHORT_OPEN action in the environment and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.SHORT_OPEN.value
@@ -189,32 +210,39 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Calculate expected values
         current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
-        bid_price = current_price - (spread)
+        bid_price = current_price - spread
         trading_fees = Decimal(str(self.env.trading_fees))
-        trade_lot = self.env.trade_lot
+        trade_lot = Decimal(str(self.env.trade_lot))
 
         # Revenue = trade_lot * lot_size * bid_price
-        revenue = trade_lot * self.env.lot_size * bid_price
+        revenue = trade_lot * Decimal(str(self.env.lot_size)) * bid_price
         fee = revenue * trading_fees
         total_revenue = revenue - fee
 
         # Expected balance after SHORT_OPEN
-        expected_balance = self.env.initial_balance + total_revenue
+        expected_balance = Decimal(str(self.env.initial_balance)) + total_revenue
 
         # Expected short_position after SHORT_OPEN
         expected_short_position = trade_lot
 
         # Used Margin after SHORT_OPEN
         used_margin_long = Decimal('0.0')
-        used_margin_short = (trade_lot * self.env.lot_size * bid_price) / self.env.leverage
+        used_margin_short = (trade_lot * Decimal(str(self.env.lot_size)) * bid_price) / Decimal(str(self.env.leverage))
         total_used_margin = used_margin_long + used_margin_short
 
-        # Equity after SHORT_OPEN
-        pnl = (bid_price - current_price) * trade_lot * self.env.lot_size
-        equity = expected_balance + pnl + Decimal('0.0')
+        # P&L after SHORT_OPEN
+        pnl = (bid_price - current_price) * trade_lot * Decimal(str(self.env.lot_size))
+        equity = expected_balance + pnl
 
         # Free Margin after SHORT_OPEN
         free_margin = equity - total_used_margin
+
+        # Expected reward: change in equity = equity - previous_equity
+        # previous_equity was initial_balance before step
+        expected_reward = equity - Decimal(str(self.env.initial_balance))
+
+        # Convert to float with precision
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
 
         # Assertions
         self.assertAlmostEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)), places=2,
@@ -229,47 +257,52 @@ class TestCustomTradingEnv(unittest.TestCase):
                                msg=f"Expected short_position after SHORT_OPEN: {expected_short_position}, but got {obs['short_position']}")
         self.assertAlmostEqual(obs['long_position'], 0.0, places=5,
                                msg=f"Expected long_position to remain 0.0, but got {obs['long_position']}")
+        self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward: {expected_reward}, but got {reward}")
         self.assertFalse(terminated)
         self.assertFalse(truncated)
         self.assertIn('total_asset', info)
 
     def test_step_short_close(self):
         """
-        Test SHORT_CLOSE action in the environment.
+        Test SHORT_CLOSE action in the environment and assert the reward.
         """
         obs, info = self.env.reset()
         # First, execute SHORT_OPEN
         action_open = Action.SHORT_OPEN.value
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
+        obs, reward_open, terminated, truncated, info = self.env.step(action_open)
+
+        # Capture previous equity after SHORT_OPEN
+        previous_equity = self.env._calculate_equity()
 
         # Now, execute SHORT_CLOSE
         action_close = Action.SHORT_CLOSE.value
-        obs, reward, terminated, truncated, info = self.env.step(action_close)
+        obs, reward_close, terminated, truncated, info = self.env.step(action_close)
 
         # Retrieve prices
         open_price = Decimal(str(self.env.df.loc[self.env.current_step - 2, 'Close']))
         close_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
         spread = Decimal(str(self.env.spread))
         trading_fees = Decimal(str(self.env.trading_fees))
-        trade_lot = self.env.trade_lot
+        trade_lot = Decimal(str(self.env.trade_lot))
 
         # Bid price for SHORT_OPEN
-        bid_price = open_price - (spread)
+        bid_price = open_price - spread
         # Ask price for SHORT_CLOSE
-        ask_price = close_price + (spread)
+        ask_price = close_price + spread
 
         # Revenue during SHORT_OPEN
-        revenue = trade_lot * self.env.lot_size * bid_price
+        revenue = trade_lot * Decimal(str(self.env.lot_size)) * bid_price
         fee_sell = revenue * trading_fees
         total_revenue = revenue - fee_sell
 
         # P&L during SHORT_CLOSE
-        pnl = (bid_price - ask_price) * trade_lot * self.env.lot_size
-        fee_buy = (trade_lot * self.env.lot_size * ask_price) * self.env.trading_fees
+        pnl = (bid_price - ask_price) * trade_lot * Decimal(str(self.env.lot_size))
+        fee_buy = (trade_lot * Decimal(str(self.env.lot_size)) * ask_price) * trading_fees
         total_cost = pnl - fee_buy
 
         # Expected balance after SHORT_CLOSE
-        expected_balance = self.env.initial_balance + total_revenue + total_cost
+        expected_balance = Decimal(str(self.env.initial_balance)) + total_revenue + total_cost
 
         # Expected short_position after SHORT_CLOSE
         expected_short_position = Decimal('0.0')
@@ -285,7 +318,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Free Margin after SHORT_CLOSE
         free_margin = equity - total_used_margin
 
-        # Assertions
+        # Expected reward: change in equity = equity - previous_equity
+        expected_reward = equity - previous_equity
+
+        # Convert to float with precision
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+        # Assertions for SHORT_CLOSE
         self.assertAlmostEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)), places=2,
                                msg=f"Expected balance after SHORT_CLOSE: {expected_balance}, but got {obs['balance']}")
         self.assertAlmostEqual(obs['equity'], float(decimal_to_float(equity, precision=2)), places=2,
@@ -298,88 +337,250 @@ class TestCustomTradingEnv(unittest.TestCase):
                                msg=f"Expected short_position after SHORT_CLOSE: {expected_short_position}, but got {obs['short_position']}")
         self.assertAlmostEqual(obs['long_position'], 0.0, places=5,
                                msg=f"Expected long_position to remain 0.0, but got {obs['long_position']}")
+        self.assertAlmostEqual(reward_close, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward after SHORT_CLOSE: {expected_reward}, but got {reward_close}")
         self.assertFalse(terminated)
         self.assertFalse(truncated)
         self.assertIn('total_asset', info)
 
     def test_continuous_long_open(self):
         """
-        Test continuous LONG_OPEN actions up to the maximum long position limit.
+        Test continuous LONG_OPEN actions up to the maximum long position limit and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.LONG_OPEN.value
         for step in range(1, 4):  # Attempt to open 0.04, exceeding the 0.02 lot limit
-            obs, reward, terminated, truncated, info = self.env.step(action)
-            
-            # Assert at each step that long_position does not exceed max_long_position
             with self.subTest(step=step):
+                previous_equity = self.env._calculate_equity()
+                obs, reward, terminated, truncated, info = self.env.step(action)
+
+                # Calculate expected values
+                current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
+                spread = Decimal(str(self.env.spread))
+                ask_price = current_price + spread
+                trading_fees = Decimal(str(self.env.trading_fees))
+                trade_lot = Decimal(str(self.env.trade_lot))
+
+                # Cost = trade_lot * lot_size * ask_price
+                cost = trade_lot * Decimal(str(self.env.lot_size)) * ask_price
+                fee = cost * trading_fees
+                total_cost = cost + fee
+
+                # Expected balance after LONG_OPEN
+                expected_balance = Decimal(str(self.env.balance)) - total_cost
+
+                # Expected long_position after LONG_OPEN
+                expected_long_position = min(Decimal(str(self.env.long_position)) + trade_lot, Decimal(str(self.env.max_long_position)))
+
+                # Used Margin after LONG_OPEN
+                used_margin_long = (trade_lot * Decimal(str(self.env.lot_size)) * ask_price) / Decimal(str(self.env.leverage))
+                total_used_margin = used_margin_long
+
+                # Equity after LONG_OPEN
+                pnl = (current_price - ask_price) * trade_lot * Decimal(str(self.env.lot_size))
+                equity = expected_balance + pnl
+
+                # Free Margin after LONG_OPEN
+                free_margin = equity - total_used_margin
+
+                # Expected reward: change in equity = equity - previous_equity
+                expected_reward = equity - previous_equity
+
+                # Convert to float with precision
+                expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+                # Assertions
                 self.assertLessEqual(self.env.long_position, self.env.max_long_position,
                                      msg=f"Long position exceeded max_long_position at step {step}: {self.env.long_position} > {self.env.max_long_position}")
+                self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                                       msg=f"Expected reward at step {step}: {expected_reward}, but got {reward}")
                 # Additionally, assert that short_position remains unchanged
-                self.assertAlmostEqual(self.env.short_position, 0.0, places=5,
-                                       msg=f"Expected short_position to remain 0.0 at step {step}, but got {self.env.short_position}")
-        
+                self.assertAlmostEqual(obs['short_position'], 0.0, places=5,
+                                       msg=f"Expected short_position to remain 0.0 at step {step}, but got {obs['short_position']}")
+
         # After loop, assert that environment did not terminate unexpectedly
         self.assertFalse(terminated, "Environment should not terminate when max_long_position is reached.")
         self.assertFalse(truncated, "Environment should not truncate when max_long_position is reached.")
 
     def test_continuous_short_open(self):
         """
-        Test continuous SHORT_OPEN actions up to the maximum short position limit.
+        Test continuous SHORT_OPEN actions up to the maximum short position limit and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.SHORT_OPEN.value
         for step in range(1, 4):  # Attempt to open 0.04, exceeding the 0.02 lot limit
-            obs, reward, terminated, truncated, info = self.env.step(action)
-            
-            # Assert at each step that short_position does not exceed max_short_position
             with self.subTest(step=step):
+                previous_equity = self.env._calculate_equity()
+                obs, reward, terminated, truncated, info = self.env.step(action)
+
+                # Calculate expected values
+                current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
+                spread = Decimal(str(self.env.spread))
+                bid_price = current_price - spread
+                trading_fees = Decimal(str(self.env.trading_fees))
+                trade_lot = Decimal(str(self.env.trade_lot))
+
+                # Revenue = trade_lot * lot_size * bid_price
+                revenue = trade_lot * Decimal(str(self.env.lot_size)) * bid_price
+                fee = revenue * trading_fees
+                total_revenue = revenue - fee
+
+                # Expected balance after SHORT_OPEN
+                expected_balance = Decimal(str(self.env.balance)) + total_revenue
+
+                # Expected short_position after SHORT_OPEN
+                expected_short_position = min(Decimal(str(self.env.short_position)) + trade_lot, Decimal(str(self.env.max_short_position)))
+
+                # Used Margin after SHORT_OPEN
+                used_margin_short = (trade_lot * Decimal(str(self.env.lot_size)) * bid_price) / Decimal(str(self.env.leverage))
+                total_used_margin = used_margin_short
+
+                # P&L after SHORT_OPEN
+                pnl = (bid_price - current_price) * trade_lot * Decimal(str(self.env.lot_size))
+                equity = expected_balance + pnl
+
+                # Free Margin after SHORT_OPEN
+                free_margin = equity - total_used_margin
+
+                # Expected reward: change in equity = equity - previous_equity
+                expected_reward = equity - previous_equity
+
+                # Convert to float with precision
+                expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+                # Assertions
                 self.assertLessEqual(self.env.short_position, self.env.max_short_position,
                                      msg=f"Short position exceeded max_short_position at step {step}: {self.env.short_position} > {self.env.max_short_position}")
+                self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                                       msg=f"Expected reward at step {step}: {expected_reward}, but got {reward}")
                 # Additionally, assert that long_position remains unchanged
-                self.assertAlmostEqual(self.env.long_position, 0.0, places=5,
-                                       msg=f"Expected long_position to remain 0.0 at step {step}, but got {self.env.long_position}")
-        
+                self.assertAlmostEqual(obs['long_position'], 0.0, places=5,
+                                       msg=f"Expected long_position to remain 0.0 at step {step}, but got {obs['long_position']}")
+
         # After loop, assert that environment did not terminate unexpectedly
         self.assertFalse(terminated, "Environment should not terminate when max_short_position is reached.")
         self.assertFalse(truncated, "Environment should not truncate when max_short_position is reached.")
 
     def test_position_limit_long(self):
         """
-        Test that the environment does not allow exceeding the maximum long position limit.
+        Test that the environment does not allow exceeding the maximum long position limit and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.LONG_OPEN.value
         for step in range(1, 4):  # Attempt to open 0.04, exceeding the 0.02 lot limit
-            obs, reward, terminated, truncated, info = self.env.step(action)
-            # Assert at each step that long_position does not exceed max_long_position
             with self.subTest(step=step):
+                previous_equity = self.env._calculate_equity()
+                obs, reward, terminated, truncated, info = self.env.step(action)
+
+                # Calculate expected values
+                current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
+                spread = Decimal(str(self.env.spread))
+                ask_price = current_price + spread
+                trading_fees = Decimal(str(self.env.trading_fees))
+                trade_lot = Decimal(str(self.env.trade_lot))
+
+                # Cost = trade_lot * lot_size * ask_price
+                cost = trade_lot * Decimal(str(self.env.lot_size)) * ask_price
+                fee = cost * trading_fees
+                total_cost = cost + fee
+
+                # Determine actual trade_lot (may be limited by max_long_position)
+                actual_trade_lot = min(trade_lot, Decimal(str(self.env.max_long_position)) - Decimal(str(self.env.long_position)))
+
+                # Expected balance after LONG_OPEN
+                expected_balance = Decimal(str(self.env.balance)) - (actual_trade_lot * Decimal(str(self.env.lot_size)) * ask_price + actual_trade_lot * Decimal(str(self.env.lot_size)) * ask_price * trading_fees)
+
+                # Expected long_position after LONG_OPEN
+                expected_long_position = Decimal(str(self.env.long_position)) + actual_trade_lot
+
+                # Used Margin after LONG_OPEN
+                used_margin_long = (actual_trade_lot * Decimal(str(self.env.lot_size)) * ask_price) / Decimal(str(self.env.leverage))
+                total_used_margin = used_margin_long
+
+                # Equity after LONG_OPEN
+                pnl = (current_price - ask_price) * actual_trade_lot * Decimal(str(self.env.lot_size))
+                equity = expected_balance + pnl
+
+                # Free Margin after LONG_OPEN
+                free_margin = equity - total_used_margin
+
+                # Expected reward: change in equity = equity - previous_equity
+                expected_reward = equity - previous_equity
+
+                # Convert to float with precision
+                expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+                # Assertions
                 self.assertLessEqual(self.env.long_position, self.env.max_long_position,
                                      msg=f"Long position exceeded max_long_position at step {step}: {self.env.long_position} > {self.env.max_long_position}")
+                self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                                       msg=f"Expected reward at step {step}: {expected_reward}, but got {reward}")
                 # Additionally, assert that short_position remains unchanged
-                self.assertAlmostEqual(self.env.short_position, 0.0, places=5,
-                                       msg=f"Expected short_position to remain 0.0 at step {step}, but got {self.env.short_position}")
-        
+                self.assertAlmostEqual(obs['short_position'], 0.0, places=5,
+                                       msg=f"Expected short_position to remain 0.0 at step {step}, but got {obs['short_position']}")
+
         # After loop, assert that environment did not terminate unexpectedly
         self.assertFalse(terminated, "Environment should not terminate when max_long_position is reached.")
         self.assertFalse(truncated, "Environment should not truncate when max_long_position is reached.")
 
     def test_position_limit_short(self):
         """
-        Test that the environment does not allow exceeding the maximum short position limit.
+        Test that the environment does not allow exceeding the maximum short position limit and assert the reward.
         """
         obs, info = self.env.reset()
         action = Action.SHORT_OPEN.value
         for step in range(1, 4):  # Attempt to open 0.04, exceeding the 0.02 lot limit
-            obs, reward, terminated, truncated, info = self.env.step(action)
-            # Assert at each step that short_position does not exceed max_short_position
             with self.subTest(step=step):
+                previous_equity = self.env._calculate_equity()
+                obs, reward, terminated, truncated, info = self.env.step(action)
+
+                # Calculate expected values
+                current_price = Decimal(str(self.env.df.loc[self.env.current_step - 1, 'Close']))
+                spread = Decimal(str(self.env.spread))
+                bid_price = current_price - spread
+                trading_fees = Decimal(str(self.env.trading_fees))
+                trade_lot = Decimal(str(self.env.trade_lot))
+
+                # Revenue = trade_lot * lot_size * bid_price
+                revenue = trade_lot * Decimal(str(self.env.lot_size)) * bid_price
+                fee = revenue * trading_fees
+                total_revenue = revenue - fee
+
+                # Determine actual trade_lot (may be limited by max_short_position)
+                actual_trade_lot = min(trade_lot, Decimal(str(self.env.max_short_position)) - Decimal(str(self.env.short_position)))
+
+                # Expected balance after SHORT_OPEN
+                expected_balance = Decimal(str(self.env.balance)) + (actual_trade_lot * Decimal(str(self.env.lot_size)) * bid_price - actual_trade_lot * Decimal(str(self.env.lot_size)) * bid_price * trading_fees)
+
+                # Expected short_position after SHORT_OPEN
+                expected_short_position = Decimal(str(self.env.short_position)) + actual_trade_lot
+
+                # Used Margin after SHORT_OPEN
+                used_margin_short = (actual_trade_lot * Decimal(str(self.env.lot_size)) * bid_price) / Decimal(str(self.env.leverage))
+                total_used_margin = used_margin_short
+
+                # P&L after SHORT_OPEN
+                pnl = (bid_price - current_price) * actual_trade_lot * Decimal(str(self.env.lot_size))
+                equity = expected_balance + pnl
+
+                # Free Margin after SHORT_OPEN
+                free_margin = equity - total_used_margin
+
+                # Expected reward: change in equity = equity - previous_equity
+                expected_reward = equity - previous_equity
+
+                # Convert to float with precision
+                expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
+                # Assertions
                 self.assertLessEqual(self.env.short_position, self.env.max_short_position,
                                      msg=f"Short position exceeded max_short_position at step {step}: {self.env.short_position} > {self.env.max_short_position}")
+                self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                                       msg=f"Expected reward at step {step}: {expected_reward}, but got {reward}")
                 # Additionally, assert that long_position remains unchanged
-                self.assertAlmostEqual(self.env.long_position, 0.0, places=5,
-                                       msg=f"Expected long_position to remain 0.0 at step {step}, but got {self.env.long_position}")
-        
+                self.assertAlmostEqual(obs['long_position'], 0.0, places=5,
+                                       msg=f"Expected long_position to remain 0.0 at step {step}, but got {obs['long_position']}")
+
         # After loop, assert that environment did not terminate unexpectedly
         self.assertFalse(terminated, "Environment should not terminate when max_short_position is reached.")
         self.assertFalse(truncated, "Environment should not truncate when max_short_position is reached.")
@@ -394,7 +595,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
     def test_insufficient_balance_long_open(self):
         """
-        Test LONG_OPEN action when balance is insufficient.
+        Test LONG_OPEN action when balance is insufficient and assert the reward.
         """
         obs, info = self.env.reset()
         # Set balance low to prevent buy
@@ -406,19 +607,25 @@ class TestCustomTradingEnv(unittest.TestCase):
         expected_balance = Decimal('0.0')
         expected_long_position = Decimal('0.0')
 
+        # Expected reward: change in equity = 0 - initial_balance = -initial_balance
+        expected_reward = Decimal('0.0') - Decimal(str(self.env.initial_balance))
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
         self.assertEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)),
                          msg=f"Expected balance: {expected_balance}, but got {obs['balance']}")
         self.assertEqual(obs['long_position'], float(expected_long_position),
                          msg=f"Expected long_position: {expected_long_position}, but got {obs['long_position']}")
         self.assertAlmostEqual(obs['short_position'], 0.0, places=5,
                                msg=f"Expected short_position to remain 0.0, but got {obs['short_position']}")
+        self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward: {expected_reward}, but got {reward}")
         self.assertFalse(terminated, "Environment should not terminate on failed action.")
         self.assertFalse(truncated, "Environment should not truncate on failed action.")
         self.assertIn('total_asset', info)
 
     def test_insufficient_balance_short_open(self):
         """
-        Test SHORT_OPEN action when balance is insufficient.
+        Test SHORT_OPEN action when balance is insufficient and assert the reward.
         """
         obs, info = self.env.reset()
         # Set balance low to prevent sell
@@ -430,12 +637,18 @@ class TestCustomTradingEnv(unittest.TestCase):
         expected_balance = Decimal('-1.0')
         expected_short_position = Decimal('0.0')
 
+        # Expected reward: change in equity = -1.0 - initial_balance
+        expected_reward = Decimal('-1.0') - Decimal(str(self.env.initial_balance))
+        expected_reward_float = float(decimal_to_float(expected_reward, precision=2))
+
         self.assertEqual(obs['balance'], float(decimal_to_float(expected_balance, precision=2)),
                          msg=f"Expected balance: {expected_balance}, but got {obs['balance']}")
         self.assertEqual(obs['short_position'], float(expected_short_position),
                          msg=f"Expected short_position: {expected_short_position}, but got {obs['short_position']}")
         self.assertAlmostEqual(self.env.long_position, 0.0, places=5,
                                msg=f"Expected long_position to remain 0.0, but got {self.env.long_position}")
+        self.assertAlmostEqual(reward, float(decimal_to_float(expected_reward, precision=2)), places=2,
+                               msg=f"Expected reward: {expected_reward}, but got {reward}")
         self.assertTrue(terminated, "Environment should terminate on failed action.")
         self.assertFalse(truncated, "Environment should not truncate on failed action.")
         self.assertIn('total_asset', info)

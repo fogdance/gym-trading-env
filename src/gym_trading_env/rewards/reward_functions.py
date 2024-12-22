@@ -3,11 +3,6 @@
 from decimal import Decimal
 from gym_trading_env.utils.conversion import decimal_to_float
 
-# src/gym_trading_env/rewards/reward_functions.py
-
-from decimal import Decimal
-from gym_trading_env.utils.conversion import decimal_to_float
-
 def basic_reward_function(env):
     """
     Basic reward function that calculates the change in total assets.
