@@ -9,11 +9,11 @@ from stable_baselines3.common.env_checker import check_env
 
 def main():
     # Load data
-    df = load_data('USDJPY')
-    
+    df = load_data('EURUSD', interval = '60m')
+
     # Define configuration
     config = {
-        'currency_pair': 'USDJPY',
+        'currency_pair': 'EURUSD',
         'initial_balance': 10000.0,
         'trading_fees': 0.001,  # 0.1% trading fee
         'spread': 0.0002,        # 2 pips spread
@@ -34,7 +34,7 @@ def main():
     check_env(env, warn=True)
     
     # Initialize PPO model
-    model = PPO('MlpPolicy', env, verbose=1)
+    model = PPO('MlpPolicy', env, verbose=0)
     
     # Train the model
     model.learn(total_timesteps=10000)

@@ -1,21 +1,18 @@
 # src/gym_trading_env/utils/data_downloader.py
 
-import requests
+import yfinance as yf
 import pandas as pd
-from decimal import Decimal
 from typing import Optional
 import logging
 
 class ForexDataDownloader:
-    def __init__(self, api_key: str, proxy: Optional[dict] = None):
+    def __init__(self, proxy: Optional[dict] = None):
         """
-        Initializes the ForexDataDownloader with the given API key and proxy settings.
+        Initializes the ForexDataDownloader with the given proxy settings.
 
         Args:
-            api_key (str): API key for the data provider.
             proxy (dict, optional): Dictionary of proxies to use for HTTP requests. Defaults to None.
         """
-        self.api_key = api_key
         self.proxy = proxy
         self.logger = logging.getLogger(__name__)
         handler = logging.StreamHandler()
@@ -25,86 +22,48 @@ class ForexDataDownloader:
             self.logger.addHandler(handler)
         self.logger.setLevel(logging.INFO)
 
-    def download_forex_data(self, symbol: str, interval: str = 'Daily', outputsize: str = 'full') -> pd.DataFrame:
+    def download_forex_data(self, symbol: str, interval: str = '1d', start_date: str = '2023-01-01', end_date: str = '2023-12-31') -> pd.DataFrame:
         """
-        Downloads forex K-line data for the specified symbol and interval.
+        Downloads forex data for the specified symbol and interval.
 
         Args:
-            symbol (str): Forex pair symbol (e.g., 'USDJPY').
-            interval (str, optional): Time interval between data points. Options include 'Intraday', 'Daily', etc. Defaults to 'Daily'.
-            outputsize (str, optional): The amount of data to retrieve. 'compact' returns the latest 100 data points; 'full' returns the full-length time series. Defaults to 'full'.
+            symbol (str): Forex pair symbol (e.g., 'EURUSD=X').
+            interval (str, optional): Time interval between data points. Options include '1m', '5m', '1d', etc. Defaults to '1d'.
+            start_date (str, optional): Start date for the data download. Defaults to '2023-01-01'.
+            end_date (str, optional): End date for the data download. Defaults to '2023-12-31'.
 
         Returns:
-            pd.DataFrame: DataFrame containing the K-line data.
+            pd.DataFrame: DataFrame containing the forex data.
         """
-        self.logger.info(f"Downloading forex data for {symbol} with interval {interval} and outputsize {outputsize}.")
-
-        if interval.lower() == 'daily':
-            function = 'FX_DAILY'
-            datatype = 'json'
-            url = 'https://www.alphavantage.co/query'
-            params = {
-                'function': function,
-                'from_symbol': symbol[:3],
-                'to_symbol': symbol[3:],
-                'outputsize': outputsize,
-                'apikey': self.api_key,
-                'datatype': datatype
-            }
-        elif interval.lower() == 'intraday':
-            function = 'FX_INTRADAY'
-            datatype = 'json'
-            url = 'https://www.alphavantage.co/query'
-            params = {
-                'function': function,
-                'from_symbol': symbol[:3],
-                'to_symbol': symbol[3:],
-                'interval': '60min',  # Modify as needed
-                'outputsize': outputsize,
-                'apikey': self.api_key,
-                'datatype': datatype
-            }
-        else:
-            raise ValueError("Unsupported interval. Choose 'Daily' or 'Intraday'.")
+        symbol = symbol + "=X"
+        
+        self.logger.info(f"Downloading forex data for {symbol} with interval {interval} from {start_date} to {end_date}.")
 
         try:
-            response = requests.get(url, params=params, proxies=self.proxy, timeout=30)
-            response.raise_for_status()
-            data = response.json()
+            # Download data using yfinance
+            data = yf.download(symbol, start=start_date, end=end_date, interval=interval, proxy=self.proxy)
+            if data.empty:
+                self.logger.error(f"No data returned for {symbol} during {start_date} ~ {end_date}.")
+                raise ValueError(f"No data returned for {symbol} during {start_date} ~ {end_date}.")
+            
 
-            if 'Error Message' in data:
-                self.logger.error(f"Error fetching data: {data['Error Message']}")
-                raise ValueError(data['Error Message'])
-            if 'Note' in data:
-                self.logger.error(f"API call frequency exceeded: {data['Note']}")
-                raise ValueError(data['Note'])
+            if isinstance(data.columns, pd.MultiIndex):
+                data.columns = data.columns.droplevel(1)
 
-            time_series_key = ''
-            if function == 'FX_DAILY':
-                time_series_key = 'Time Series FX (Daily)'
-            elif function == 'FX_INTRADAY':
-                time_series_key = 'Time Series FX (60min)'  # Modify based on interval
+            data.reset_index(inplace=True)
 
-            if time_series_key not in data:
-                self.logger.error("Unexpected data format received from API.")
-                raise ValueError("Unexpected data format received from API.")
+            if 'Datetime' in data.columns:
+                data["Date"] = pd.to_datetime(data["Datetime"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+            elif 'Date' in data.columns:
+                data["Date"] = pd.to_datetime(data["Date"]).dt.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                raise ValueError("No valid date column found in DataFrame.")
 
-            df = pd.DataFrame.from_dict(data[time_series_key], orient='index')
-            df = df.rename(columns={
-                '1. open': 'Open',
-                '2. high': 'High',
-                '3. low': 'Low',
-                '4. close': 'Close'
-            })
-            df.index = pd.to_datetime(df.index)
-            df = df.sort_index()
-            df = df.astype(float)
-            self.logger.info(f"Successfully downloaded {len(df)} data points for {symbol}.")
-            return df
+            needed_cols = ["Date", "Open", "High", "Low", "Close", "Volume"]
+            data = data[needed_cols]
 
-        except requests.exceptions.RequestException as e:
-            self.logger.error(f"Request failed: {e}")
+            return data
+
+        except Exception as e:
+            self.logger.error(f"Error occurred while downloading data: {e}")
             raise e
-        except ValueError as ve:
-            self.logger.error(f"Value error: {ve}")
-            raise ve

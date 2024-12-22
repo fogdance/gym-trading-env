@@ -30,7 +30,8 @@ class TradingRLTrainer:
 
     def __init__(
         self,
-        data_path: str,
+        symbol: str,
+        interval: str,
         config: Dict,
         train_ratio: float = 0.8,
         train_timesteps: int = 50000,
@@ -41,7 +42,6 @@ class TradingRLTrainer:
         """
         Initialize the TradingRLTrainer.
 
-        :param data_path: Path to the raw data file, e.g. 'data/USDJPY_Daily.csv'.
         :param config: Configuration dictionary for CustomTradingEnv (e.g., window_size, fees, etc.).
         :param train_ratio: The ratio of data to be used for training (remainder for testing).
         :param train_timesteps: Number of total timesteps for training each model.
@@ -49,7 +49,8 @@ class TradingRLTrainer:
         :param results_dir: Directory path where models and results will be saved.
         :param seed: Random seed for reproducibility (if the algorithms support it).
         """
-        self.data_path = data_path
+        self.symbol = symbol
+        self.interval = interval
         self.config = config
         self.train_ratio = train_ratio
         self.train_timesteps = train_timesteps
@@ -87,7 +88,7 @@ class TradingRLTrainer:
 
         :return: (train_df, test_df) dataframes.
         """
-        df = load_data("USDJPY")  # Replace with direct read if needed: pd.read_csv(self.data_path)
+        df = load_data(self.symbol, self.interval)
         df = df.sort_values(by="Date").reset_index(drop=True)
 
         if len(df) == 0:
@@ -156,7 +157,7 @@ class TradingRLTrainer:
             model = algo_cls(
                 policy="MultiInputPolicy",
                 env=train_env,
-                verbose=1,
+                verbose=0,
                 seed=self.seed,
             )
 
@@ -173,7 +174,8 @@ class TradingRLTrainer:
                 model,
                 test_env,
                 n_eval_episodes=self.n_eval_episodes,
-                deterministic=True
+                deterministic=True,
+                render=True,
             )
 
             print(
@@ -192,7 +194,7 @@ def main():
 
     config = {
         'use_dict_obs': True,
-        "currency_pair": "USDJPY",
+        "currency_pair": "EURUSD",
         "initial_balance": 10000.0,
         "trading_fees": 0.001,
         "spread": 0.0002,
@@ -207,7 +209,8 @@ def main():
     }
 
     trainer = TradingRLTrainer(
-        data_path="data/USDJPY_Daily.csv",
+        symbol="EURUSD",
+        interval="60m",
         config=config,
         train_ratio=0.8,
         train_timesteps=50000,
