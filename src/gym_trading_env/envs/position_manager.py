@@ -6,55 +6,59 @@ from gym_trading_env.envs.position import Position
 
 class PositionManager:
     def __init__(self):
-        self.long_positions = deque()   # long position queue
-        self.short_positions = deque()  # short position queue
-
+        self.long_positions = []
+        self.short_positions = []
+        self.realized_pnl = Decimal('0.0')
+    
     def add_long_position(self, position: Position):
         self.long_positions.append(position)
-
+    
     def add_short_position(self, position: Position):
         self.short_positions.append(position)
-
-    def close_long_position(self, size: Decimal):
-        """
-        Close the long position according to the FIFO principle,
-        """
-        closed_positions = []
-        total_pnl = Decimal('0.0')
-        remaining_size = size
-
-        while self.long_positions and remaining_size > Decimal('0.0'):
-            position = self.long_positions.popleft()
-            if position.size <= remaining_size:
-                closed_size = position.size
-                remaining_size -= closed_size
-            else:
-                closed_size = remaining_size
-                position.size -= closed_size
-                self.long_positions.appendleft(position)
-                remaining_size = Decimal('0.0')
-            closed_positions.append(Position(closed_size, position.entry_price))
+    
+    def close_long_position(self, size: Decimal, closing_price: Decimal):
+        size = Decimal(size)
+        if size > self.total_long_position():
+            raise ValueError("Attempting to close more than existing long positions")
         
-        return closed_positions, total_pnl
-
-    def close_short_position(self, size: Decimal):
-        """
-        Close the short position according to the FIFO principle,
-        """
-        closed_positions = []
-        total_pnl = Decimal('0.0')
-        remaining_size = size
-
-        while self.short_positions and remaining_size > Decimal('0.0'):
-            position = self.short_positions.popleft()
-            if position.size <= remaining_size:
-                closed_size = position.size
-                remaining_size -= closed_size
+        pnl = Decimal('0.0')
+        while size > Decimal('0.0') and self.long_positions:
+            pos = self.long_positions[0]
+            if pos.size <= size:
+                pnl += (closing_price - pos.entry_price) * pos.size
+                size -= pos.size
+                self.long_positions.pop(0)
             else:
-                closed_size = remaining_size
-                position.size -= closed_size
-                self.short_positions.appendleft(position)
-                remaining_size = Decimal('0.0')
-            closed_positions.append(Position(closed_size, position.entry_price))
+                pnl += (closing_price - pos.entry_price) * size
+                pos.size -= size
+                size = Decimal('0.0')
         
-        return closed_positions, total_pnl
+        self.realized_pnl += pnl
+        return pnl
+    
+    def close_short_position(self, size: Decimal, closing_price: Decimal):
+        size = Decimal(size)
+        if size > self.total_short_position():
+            raise ValueError("Attempting to close more than existing short positions")
+        
+        pnl = Decimal('0.0')
+        while size > Decimal('0.0') and self.short_positions:
+            pos = self.short_positions[0]
+            if pos.size <= size:
+                pnl += (pos.entry_price - closing_price) * pos.size
+                size -= pos.size
+                self.short_positions.pop(0)
+            else:
+                pnl += (pos.entry_price - closing_price) * size
+                pos.size -= size
+                size = Decimal('0.0')
+        
+        self.realized_pnl += pnl
+        return pnl
+    
+    def total_long_position(self):
+        return sum(pos.size for pos in self.long_positions)
+    
+    def total_short_position(self):
+        return sum(pos.size for pos in self.short_positions)
+
