@@ -19,4 +19,7 @@ pip install -e .
 
 python -m unittest discover tests
 
+python -m unittest tests.test_position_manager.TestPositionManager
+
+
 python examples/example_usage.py

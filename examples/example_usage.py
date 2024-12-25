@@ -7,7 +7,7 @@ from gym_trading_env.rewards.reward_functions import reward_functions
 
 def main():
     # Load data
-    df = load_data('USDJPY')
+    df = load_data('USDJPY', interval = '1d')
     
     # Define configuration
     config = {

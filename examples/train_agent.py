@@ -9,11 +9,11 @@ from stable_baselines3.common.env_checker import check_env
 
 def main():
     # Load data
-    df = load_data('EURUSD', interval = '60m')
+    df = load_data('USDJPY', interval = '1d')
 
     # Define configuration
     config = {
-        'currency_pair': 'EURUSD',
+        'currency_pair': 'USDJPY',
         'initial_balance': 10000.0,
         'trading_fees': 0.001,  # 0.1% trading fee
         'spread': 0.0002,        # 2 pips spread

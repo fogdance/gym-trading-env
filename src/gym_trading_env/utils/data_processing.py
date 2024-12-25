@@ -5,7 +5,7 @@ import pandas as pd
 from gym_trading_env.utils.data_downloader import ForexDataDownloader
 import logging
 
-def load_data(symbol: str, interval: str = 'Daily', proxy: dict = None) -> pd.DataFrame:
+def load_data(symbol: str, interval: str, proxy: dict = None) -> pd.DataFrame:
     """
     Loads forex K-line data from a CSV file or downloads it if not present.
 

@@ -23,6 +23,7 @@ class UserAccounts:
             return self.position_manager.total_short_position()
     
     def update_unrealized_pnl(self, pnl_change):
+        assert isinstance(pnl_change, Decimal), "pnl_change must be a Decimal."
         self.unrealized_pnl += pnl_change
     
     def realize_pnl(self, pnl):
@@ -30,9 +31,13 @@ class UserAccounts:
         self.balance.deposit(pnl)
     
     def allocate_margin(self, amount):
+        if amount > (self.balance.get_balance() + self.realized_pnl):
+            raise ValueError("Insufficient funds to allocate margin.")        
         self.balance.withdraw(amount)
         self.margin.deposit(amount)
     
     def release_margin(self, amount):
+        if amount > self.margin.get_balance():
+            raise ValueError("Cannot release more margin than allocated.")
         self.margin.withdraw(amount)
         self.balance.deposit(amount)

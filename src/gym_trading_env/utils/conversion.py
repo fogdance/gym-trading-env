@@ -18,3 +18,7 @@ def decimal_to_float(value, precision=2):
         return float(value.quantize(Decimal(quantize_str), rounding=ROUND_HALF_UP))
     else:
         raise TypeError("Value must be a Decimal.")
+    
+def float_to_decimal(value):
+    return Decimal(str(value))
+
