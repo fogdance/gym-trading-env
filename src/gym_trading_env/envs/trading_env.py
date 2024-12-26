@@ -41,7 +41,7 @@ class CustomTradingEnv(gym.Env):
             config = {}
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
-        self.broker_accounts = BrokerAccounts()
+        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
         self.trading_fees = Decimal(str(config.get('trading_fees', 0.001)))  # 0.1% trading fee
         self.spread = Decimal(str(config.get('spread', 0.0002)))  # Spread in pips
         self.leverage = Decimal(str(config.get('leverage', 100)))  # 1:100 leverage
@@ -124,7 +124,7 @@ class CustomTradingEnv(gym.Env):
         # Reset user accounts
         self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
         # Reset broker accounts
-        self.broker_accounts = BrokerAccounts()
+        self.broker_accounts = BrokerAccounts()  # Re-initialize broker accounts with both balance and fees
         # Reset step
         self.current_step = self.window_size
         self.terminated = False
@@ -224,6 +224,7 @@ class CustomTradingEnv(gym.Env):
             'realized_pnl': self.user_accounts.realized_pnl,
             'unrealized_pnl': self.user_accounts.unrealized_pnl,
             'fees_collected': self.broker_accounts.fees.get_balance(),
+            'broker_balance': self.broker_accounts.balance.get_balance(),  # Added broker balance
             'balance': self.user_accounts.balance.get_balance(),
             'equity': self._calculate_equity(),
             'used_margin': self.user_accounts.margin.get_balance(),
@@ -325,10 +326,14 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient balance to execute LONG_OPEN.")
             return
 
-        # Allocate margin
-        self.user_accounts.allocate_margin(required_margin)
+        # Deduct the required margin from user balance and allocate to margin account
+        try:
+            self.user_accounts.allocate_margin(required_margin)
+        except ValueError as e:
+            self.logger.warning(f"Failed to allocate margin: {e}")
+            return
 
-        # Collect fees to broker account
+        # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
 
         # Create and add new position with initial_margin
@@ -362,11 +367,22 @@ class CustomTradingEnv(gym.Env):
         # Calculate fees based on closed size
         fee = (closed_size * self.lot_size * bid_price) * self.trading_fees
 
-        # Deduct fees from broker
+        # Deduct fees from user balance
+        try:
+            self.user_accounts.balance.withdraw(fee)
+        except ValueError:
+            self.logger.warning("Insufficient balance to pay fees on LONG_CLOSE.")
+            self.terminated = True
+            return
+
+        # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
 
         # Realize P&L (add to realized P&L account)
-        self.user_accounts.realize_pnl(pnl - fee)
+        self.user_accounts.realize_pnl(pnl)
+
+        # Adjust broker's balance based on user's P&L to maintain funds conservation
+        self.broker_accounts.adjust_balance(-pnl)
 
         # Release initial margin back to user balance
         try:
@@ -377,7 +393,7 @@ class CustomTradingEnv(gym.Env):
             return
 
         self.logger.debug(f"Closed LONG position at price {bid_price}")
-        self.logger.debug(f"P&L: {pnl - fee}, New balance: {self.user_accounts.balance.get_balance()}, "
+        self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
@@ -418,10 +434,14 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient balance to execute SHORT_OPEN.")
             return
 
-        # Allocate margin
-        self.user_accounts.allocate_margin(required_margin)
+        # Deduct the required margin from user balance and allocate to margin account
+        try:
+            self.user_accounts.allocate_margin(required_margin)
+        except ValueError as e:
+            self.logger.warning(f"Failed to allocate margin: {e}")
+            return
 
-        # Collect fees to broker account
+        # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
 
         # Create and add new position with initial_margin
@@ -455,11 +475,22 @@ class CustomTradingEnv(gym.Env):
         # Calculate fees based on closed size
         fee = (closed_size * self.lot_size * ask_price) * self.trading_fees
 
-        # Deduct fees from broker
+        # Deduct fees from user balance
+        try:
+            self.user_accounts.balance.withdraw(fee)
+        except ValueError:
+            self.logger.warning("Insufficient balance to pay fees on SHORT_CLOSE.")
+            self.terminated = True
+            return
+
+        # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
 
         # Realize P&L (add to realized P&L account)
-        self.user_accounts.realize_pnl(pnl - fee)
+        self.user_accounts.realize_pnl(pnl)
+
+        # Adjust broker's balance based on user's P&L to maintain funds conservation
+        self.broker_accounts.adjust_balance(-pnl)
 
         # Release initial margin back to user balance
         try:
@@ -470,7 +501,7 @@ class CustomTradingEnv(gym.Env):
             return
 
         self.logger.debug(f"Closed SHORT position at price {ask_price}")
-        self.logger.debug(f"P&L: {pnl - fee}, New balance: {self.user_accounts.balance.get_balance()}, "
+        self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
@@ -500,6 +531,7 @@ class CustomTradingEnv(gym.Env):
             realized_pnl = float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))
             unrealized_pnl = float(decimal_to_float(self.user_accounts.unrealized_pnl, precision=2))
             fees_collected = float(decimal_to_float(self.broker_accounts.fees.get_balance(), precision=2))
+            broker_balance = float(decimal_to_float(self.broker_accounts.balance.get_balance(), precision=2))
 
             print(f'Step: {self.current_step}')
             print(f'Currency Pair: {self.currency_pair}')
@@ -512,6 +544,7 @@ class CustomTradingEnv(gym.Env):
             print(f'Realized P&L: {realized_pnl:.2f}')
             print(f'Unrealized P&L: {unrealized_pnl:.2f}')
             print(f'Fees Collected: {fees_collected:.2f}')
+            print(f'Broker Balance: {broker_balance:.2f}')
             print(f'Total Asset: {total_asset:.2f}')
             print(f'Long Positions: {list(self.position_manager.long_positions)}')
             print(f'Short Positions: {list(self.position_manager.short_positions)}')
@@ -521,4 +554,4 @@ class CustomTradingEnv(gym.Env):
         Performs any necessary cleanup.
         """
         self.logger.info("Environment closed.")
-        pass  
+        pass
