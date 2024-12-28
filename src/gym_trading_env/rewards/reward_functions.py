@@ -3,34 +3,6 @@
 from decimal import Decimal
 from gym_trading_env.utils.conversion import decimal_to_float
 
-def basic_reward_function(env):
-    """
-    Basic reward function that calculates the change in total equity.
-    
-    Args:
-        env (CustomTradingEnv): The trading environment instance.
-    
-    Returns:
-        float: The reward calculated as the change in total equity.
-    """
-    # Calculate current equity
-    current_equity = env._calculate_equity()
-
-    # Calculate reward as the change in equity since the last step
-    reward = current_equity - env.previous_equity
-
-    # Log the relevant information for debugging
-    env.logger.debug(f"Previous Equity: {env.previous_equity}")
-    env.logger.debug(f"Current Equity: {current_equity}")
-    env.logger.debug(f"Reward: {reward}")
-
-    # Update previous equity for the next step
-    env.previous_equity = current_equity
-
-    # Convert to float with precision
-    return decimal_to_float(reward, precision=2)
-
-
 
 def total_pnl_reward_function(env):
     """
@@ -61,6 +33,5 @@ def total_pnl_reward_function(env):
 
 # Mapping of reward function names to actual functions
 reward_functions = {
-    'basic_reward_function': basic_reward_function,
     'total_pnl_reward_function': total_pnl_reward_function,
 }

@@ -5,6 +5,7 @@ import pandas as pd
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 import numpy as np
+from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 
 # Set global decimal precision for testing
 getcontext().prec = 28
@@ -97,6 +98,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         initial_balance = Decimal(str(info['balance']))
         total_funds_before = self.calculate_total_funds()
 
+        # Record previous_total_pnl before the step
+        previous_total_pnl = self.env.previous_total_pnl
+
         action = Action.LONG_OPEN.value
         obs, reward, terminated, truncated, info = self.env.step(action)
 
@@ -122,11 +126,20 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # P&L after LONG_OPEN (unrealized)
         pnl = (current_price - ask_price) * trade_lot * lot_size
-        equity = expected_balance + pnl
+        total_pnl = pnl  # realized_pnl is 0.0
 
-        # Expected reward: change in equity = equity - previous_equity
-        previous_equity = initial_balance
-        expected_reward = equity - previous_equity
+        equity = expected_balance + total_pnl
+
+        # Expected reward: change in total P&L = total_pnl - previous_total_pnl
+        expected_reward = total_pnl - previous_total_pnl
+
+        # Verify reward
+        self.assertAlmostEqual(
+            reward,
+            float(decimal_to_float(expected_reward, precision=2)),
+            places=2,
+            msg=f"Expected reward: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward}"
+        )
 
         # Verify info contains updated account details
         self.assertEqual(Decimal(str(info['balance'])), expected_balance,
@@ -147,8 +160,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                          f"Expected unrealized P&L after LONG_OPEN: {pnl}, but got {info['unrealized_pnl']}")
         self.assertEqual(Decimal(str(info['fees_collected'])), fee,
                          f"Expected fees_collected after LONG_OPEN: {fee}, but got {info['fees_collected']}")
-        # self.assertAlmostEqual(float(reward), float(expected_reward), places=6,
-        #                        msg=f"Expected reward: {float(expected_reward)}, but got {reward}")
+
         self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
         self.assertIn('total_asset', info)
@@ -171,8 +183,14 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # First, execute LONG_OPEN
         action_open = Action.LONG_OPEN.value
+        # Record previous_total_pnl before opening
+        previous_total_pnl_open = self.env.previous_total_pnl
         obs, reward_open, terminated, truncated, info = self.env.step(action_open)
-        total_funds_after_open = self.calculate_total_funds()
+        # total_pnl after open
+        total_pnl_open = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+
+        # Record previous_total_pnl before closing
+        previous_total_pnl_close = self.env.previous_total_pnl
 
         # Execute LONG_CLOSE
         action_close = Action.LONG_CLOSE.value
@@ -196,10 +214,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         # P&L calculation
         pnl = (bid_price - ask_price) * trade_lot * lot_size
         fee_sell = (trade_lot * lot_size * bid_price) * trading_fees
-        realized_pnl = pnl  # **Corrected: Only pnl is realized**
+        realized_pnl = pnl  # Only pnl is realized
 
         # Expected balance after LONG_CLOSE
-        # Balance after open: initial_balance - fee_open - margin_open
         initial_balance = Decimal('10000.0')
         fee_open = (trade_lot * lot_size * ask_price) * trading_fees
         required_margin_open = (trade_lot * lot_size * ask_price) / leverage
@@ -215,11 +232,18 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = Decimal('0.0')
 
         # Equity after LONG_CLOSE
-        equity = expected_balance + pnl  # Since realized_pnl = pnl
+        equity = expected_balance + realized_pnl  # realized_pnl = pnl
 
-        # Expected reward: change in equity = equity - previous_equity
-        previous_equity = balance_after_open
-        expected_reward = equity - previous_equity
+        # Expected reward: change in total P&L = realized_pnl - previous_total_pnl_close
+        expected_reward = realized_pnl - previous_total_pnl_close
+
+        # Verify reward
+        self.assertAlmostEqual(
+            reward_close,
+            float(decimal_to_float(expected_reward, precision=2)),
+            places=2,
+            msg=f"Expected reward: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward_close}"
+        )
 
         # Verify realized P&L
         self.assertEqual(Decimal(str(info['realized_pnl'])), realized_pnl,
@@ -241,25 +265,16 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Additional Assertions
         self.assertEqual(Decimal(str(info['equity'])), equity,
                         f"Expected equity after LONG_CLOSE: {equity}, but got {info['equity']}")
-
         self.assertEqual(Decimal(str(info['used_margin'])), total_used_margin,
                         f"Expected used_margin after LONG_CLOSE: {total_used_margin}, but got {info['used_margin']}")
-
         self.assertEqual(Decimal(str(info['free_margin'])), equity - total_used_margin,
                         f"Expected free_margin after LONG_CLOSE: {equity - total_used_margin}, but got {info['free_margin']}")
-
         self.assertEqual(Decimal(str(info['long_position'])), expected_long_position,
                         f"Expected long_position after LONG_CLOSE: {expected_long_position}, but got {info['long_position']}")
-
         self.assertEqual(Decimal(str(info['short_position'])), Decimal('0.0'),
                         "Expected short_position to remain 0.0 after LONG_CLOSE.")
-
-        self.assertEqual(Decimal(str(info['realized_pnl'])), realized_pnl,
-                        "Realized P&L should match the calculated pnl.")
-
         self.assertEqual(Decimal(str(info['unrealized_pnl'])), Decimal('0.0'),
                         "Unrealized P&L should be 0.0 after closing the position.")
-
         self.assertEqual(Decimal(str(info['fees_collected'])), fee_open + fee_sell,
                         f"Expected fees_collected after LONG_CLOSE: {fee_open + fee_sell}, but got {info['fees_collected']}")
 
@@ -267,13 +282,15 @@ class TestCustomTradingEnv(unittest.TestCase):
         self.assertFalse(truncated, "Environment should not truncate after LONG_CLOSE.")
         self.assertIn('total_asset', info)
 
-
     def test_step_short_open(self):
         """
         Test SHORT_OPEN action in the environment and assert the reward and info.
         """
         obs, info = self.env.reset()
         total_funds_before = self.calculate_total_funds()
+
+        # Record previous_total_pnl before the step
+        previous_total_pnl = self.env.previous_total_pnl
 
         action = Action.SHORT_OPEN.value
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -299,11 +316,20 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # P&L after SHORT_OPEN (unrealized)
         pnl = (bid_price - current_price) * trade_lot * lot_size
-        equity = expected_balance + pnl
+        total_pnl = pnl  # realized_pnl is 0.0
 
-        # Expected reward: change in equity = equity - previous_equity
-        previous_equity = Decimal('10000.0')
-        expected_reward = equity - previous_equity
+        equity = expected_balance + total_pnl
+
+        # Expected reward: change in total P&L = total_pnl - previous_total_pnl
+        expected_reward = total_pnl - previous_total_pnl
+
+        # Verify reward
+        self.assertAlmostEqual(
+            reward,
+            float(decimal_to_float(expected_reward, precision=2)),
+            places=2,
+            msg=f"Expected reward: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward}"
+        )
 
         # Verify info contains updated account details
         self.assertEqual(Decimal(str(info['balance'])), expected_balance,
@@ -324,8 +350,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                          f"Expected unrealized P&L after SHORT_OPEN: {pnl}, but got {info['unrealized_pnl']}")
         self.assertEqual(Decimal(str(info['fees_collected'])), fee,
                          f"Expected fees_collected after SHORT_OPEN: {fee}, but got {info['fees_collected']}")
-        # self.assertAlmostEqual(float(reward), float(expected_reward), places=6,
-        #                        msg=f"Expected reward: {float(expected_reward)}, but got {reward}")
+
         self.assertFalse(terminated, "Environment should not terminate after SHORT_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate after SHORT_OPEN.")
         self.assertIn('total_asset', info)
@@ -348,8 +373,14 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # First, execute SHORT_OPEN
         action_open = Action.SHORT_OPEN.value
+        # Record previous_total_pnl before opening
+        previous_total_pnl_open = self.env.previous_total_pnl
         obs, reward_open, terminated, truncated, info = self.env.step(action_open)
-        total_funds_after_open = self.calculate_total_funds()
+        # total_pnl after open
+        total_pnl_open = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+
+        # Record previous_total_pnl before closing
+        previous_total_pnl_close = self.env.previous_total_pnl
 
         # Execute SHORT_CLOSE
         action_close = Action.SHORT_CLOSE.value
@@ -367,20 +398,18 @@ class TestCustomTradingEnv(unittest.TestCase):
         leverage = Decimal(str(self.env.leverage))
 
         # Prices at which SHORT_OPEN and SHORT_CLOSE occurred
-        bid_price_open = open_price - spread  # Price at SHORT_OPEN
-        ask_price_close = close_price + spread  # Price at SHORT_CLOSE
+        bid_price_open = open_price - spread
+        ask_price_close = close_price + spread
 
         # P&L calculation for SHORT_CLOSE
         pnl = (bid_price_open - ask_price_close) * trade_lot * lot_size
         fee_buy = (trade_lot * lot_size * ask_price_close) * trading_fees
-        realized_pnl = pnl  # **Only pnl is realized**
+        realized_pnl = pnl  # Only pnl is realized
 
         # Expected balance after SHORT_CLOSE
-        # Balance after open: initial_balance + revenue_short_open - fee_open - margin_open
         initial_balance = Decimal('10000.0')
         fee_open = (trade_lot * lot_size * bid_price_open) * trading_fees
         required_margin_open = (trade_lot * lot_size * bid_price_open) / leverage
-        revenue_short_open = (trade_lot * lot_size * bid_price_open)
         balance_after_open = initial_balance - fee_open - required_margin_open
 
         # After closing, fee_buy is deducted and pnl is added
@@ -393,11 +422,18 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = Decimal('0.0')
 
         # Equity after SHORT_CLOSE
-        equity = expected_balance + pnl  # Since realized_pnl = pnl
+        equity = expected_balance + realized_pnl  # realized_pnl = pnl
 
-        # Expected reward: change in equity = equity - previous_equity
-        previous_equity = balance_after_open
-        expected_reward = equity - previous_equity
+        # Expected reward: change in total P&L = realized_pnl - previous_total_pnl_close
+        expected_reward = realized_pnl - previous_total_pnl_close
+
+        # Verify reward
+        self.assertAlmostEqual(
+            reward_close,
+            float(decimal_to_float(expected_reward, precision=2)),
+            places=2,
+            msg=f"Expected reward: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward_close}"
+        )
 
         # Verify realized P&L
         self.assertEqual(Decimal(str(info['realized_pnl'])), realized_pnl,
@@ -419,32 +455,22 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Additional Assertions
         self.assertEqual(Decimal(str(info['equity'])), equity,
                         f"Expected equity after SHORT_CLOSE: {equity}, but got {info['equity']}")
-
         self.assertEqual(Decimal(str(info['used_margin'])), total_used_margin,
                         f"Expected used_margin after SHORT_CLOSE: {total_used_margin}, but got {info['used_margin']}")
-
         self.assertEqual(Decimal(str(info['free_margin'])), equity - total_used_margin,
                         f"Expected free_margin after SHORT_CLOSE: {equity - total_used_margin}, but got {info['free_margin']}")
-
         self.assertEqual(Decimal(str(info['short_position'])), expected_short_position,
                         f"Expected short_position after SHORT_CLOSE: {expected_short_position}, but got {info['short_position']}")
-
         self.assertEqual(Decimal(str(info['long_position'])), Decimal('0.0'),
-                        f"Expected long_position to remain 0.0, but got {info['long_position']}")
-
-        self.assertEqual(Decimal(str(info['realized_pnl'])), realized_pnl,
-                        "Realized P&L should match the calculated pnl.")
-
+                        "Expected long_position to remain 0.0 after SHORT_CLOSE.")
         self.assertEqual(Decimal(str(info['unrealized_pnl'])), Decimal('0.0'),
                         "Unrealized P&L should be 0.0 after closing the position.")
-
         self.assertEqual(Decimal(str(info['fees_collected'])), fee_open + fee_buy,
                         f"Expected fees_collected after SHORT_CLOSE: {fee_open + fee_buy}, but got {info['fees_collected']}")
 
         self.assertFalse(terminated, "Environment should not terminate after SHORT_CLOSE.")
         self.assertFalse(truncated, "Environment should not truncate after SHORT_CLOSE.")
         self.assertIn('total_asset', info)
-
 
     def test_fee_deduction(self):
         """
@@ -455,8 +481,18 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # Execute multiple LONG_OPEN actions
         action_open = Action.LONG_OPEN.value
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
+        # Record previous_total_pnl before the steps
+        previous_total_pnl_step1 = self.env.previous_total_pnl
+        obs, reward1, terminated, truncated, info = self.env.step(action_open)
+        # Calculate expected reward for first step
+        current_total_pnl_step1 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+        expected_reward1 = current_total_pnl_step1 - previous_total_pnl_step1
+
+        previous_total_pnl_step2 = self.env.previous_total_pnl
+        obs, reward2, terminated, truncated, info = self.env.step(action_open)
+        # Calculate expected reward for second step
+        current_total_pnl_step2 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+        expected_reward2 = current_total_pnl_step2 - previous_total_pnl_step2
 
         # Calculate expected total fees
         step1 = self.env.current_step - 2
@@ -490,6 +526,20 @@ class TestCustomTradingEnv(unittest.TestCase):
             msg=f"Total funds mismatch after multiple LONG_OPEN. Expected: {total_funds_before}, Got: {total_funds_after}"
         )
 
+        # Verify rewards
+        self.assertAlmostEqual(
+            reward1,
+            float(decimal_to_float(expected_reward1, precision=2)),
+            places=2,
+            msg=f"Expected reward1: {float(decimal_to_float(expected_reward1, precision=2))}, but got {reward1}"
+        )
+        self.assertAlmostEqual(
+            reward2,
+            float(decimal_to_float(expected_reward2, precision=2)),
+            places=2,
+            msg=f"Expected reward2: {float(decimal_to_float(expected_reward2, precision=2))}, but got {reward2}"
+        )
+
     def test_continuous_long_open(self):
         """
         Test continuous LONG_OPEN actions up to the maximum long position limit and assert the reward and info.
@@ -500,6 +550,7 @@ class TestCustomTradingEnv(unittest.TestCase):
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
                 previous_balance = Decimal(str(info['balance']))
+                previous_total_pnl = self.env.previous_total_pnl
 
                 total_funds_before_step = self.calculate_total_funds()
 
@@ -522,6 +573,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                     # Expect no change due to position limit
                     self.assertEqual(Decimal(str(info['long_position'])), Decimal(str(self.env.max_long_position)),
                                      msg="Long position should not exceed the maximum limit.")
+
                     continue
 
                 # Calculate cost and fee for actual_trade_lot
@@ -533,15 +585,31 @@ class TestCustomTradingEnv(unittest.TestCase):
                 # Expected balance is previous balance minus fee and required_margin
                 expected_balance = previous_balance - fee - required_margin
 
-                expected_long_position = trade_lot * step
-                total_used_margin = required_margin
-
                 # P&L after LONG_OPEN (unrealized)
                 pnl = (current_price - ask_price) * actual_trade_lot * lot_size
-                equity = expected_balance + pnl
+                total_pnl = pnl  # realized_pnl is 0.0
 
-                # Expected reward: change in equity = equity - previous_equity
-                expected_reward = equity - previous_equity
+                # Equity after LONG_OPEN
+                equity = expected_balance + total_pnl
+
+                # Expected reward: change in total P&L = total_pnl - previous_total_pnl
+                expected_reward = total_pnl - previous_total_pnl
+
+                # Expected long_position after LONG_OPEN
+                expected_long_position = trade_lot * step
+                if expected_long_position > Decimal(str(self.env.max_long_position)):
+                    expected_long_position = Decimal(str(self.env.max_long_position))
+
+                # Used Margin remains the same since we add required_margin for each new position
+                total_used_margin = required_margin
+
+                # Verify reward
+                self.assertAlmostEqual(
+                    reward,
+                    float(decimal_to_float(expected_reward, precision=2)),
+                    places=2,
+                    msg=f"Expected reward at step {step}: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward}"
+                )
 
                 # Verify info contains updated account details
                 self.assertEqual(Decimal(str(info['balance'])), expected_balance,
@@ -562,8 +630,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                                  f"Expected unrealized P&L after LONG_OPEN step {step}: {pnl}, but got {info['unrealized_pnl']}")
                 self.assertEqual(Decimal(str(info['fees_collected'])), fee,
                                  f"Expected fees_collected after LONG_OPEN step {step}: {fee}, but got {info['fees_collected']}")
-                # self.assertAlmostEqual(float(reward), float(expected_reward), places=6,
-                #                        msg=f"Expected reward at step {step}: {float(expected_reward)}, but got {reward}")
+
                 self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
                 self.assertIn('total_asset', info)
@@ -577,7 +644,6 @@ class TestCustomTradingEnv(unittest.TestCase):
                     msg=f"Total funds mismatch after LONG_OPEN step {step}. Expected: {total_funds_before_step}, Got: {total_funds_after_step}"
                 )
 
-
     def test_position_limit_long(self):
         """
         Test that the environment does not allow exceeding the maximum long position limit and assert the reward and info.
@@ -587,8 +653,10 @@ class TestCustomTradingEnv(unittest.TestCase):
         for step in range(1, 4):  # Attempt to open 0.03 lots, exceeding the 0.02 lot limit
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
+                previous_balance = Decimal(str(info['balance']))
+                previous_total_pnl = self.env.previous_total_pnl
+
                 total_funds_before_step = self.calculate_total_funds()
-                previous_balance = Decimal(str(info['balance']))  # Balance before this step
 
                 obs, reward, terminated, truncated, info = self.env.step(action)
 
@@ -602,7 +670,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                 lot_size = Decimal(str(self.env.lot_size))
                 leverage = Decimal(str(self.env.leverage))
 
-                # Determine actual trade_lot (may be limited by max_long_position)
+                # Determine actual_trade_lot (may be limited by max_long_position)
                 max_allowed_trade_lot = Decimal(str(self.env.max_long_position)) - Decimal(str(info['long_position']))
                 actual_trade_lot = min(trade_lot, max_allowed_trade_lot)
                 if actual_trade_lot <= Decimal('0.0'):
@@ -620,15 +688,31 @@ class TestCustomTradingEnv(unittest.TestCase):
                 # Expected balance is previous balance minus fee and required_margin
                 expected_balance = previous_balance - fee - required_margin
 
-                expected_long_position = trade_lot * step
-                total_used_margin = required_margin
-
                 # P&L after LONG_OPEN (unrealized)
                 pnl = (current_price - ask_price) * actual_trade_lot * lot_size
-                equity = expected_balance + pnl
+                total_pnl = pnl  # realized_pnl is 0.0
 
-                # Expected reward: change in equity = equity - previous_equity
-                expected_reward = equity - previous_equity
+                # Equity after LONG_OPEN
+                equity = expected_balance + total_pnl
+
+                # Expected reward: change in total P&L = total_pnl - previous_total_pnl
+                expected_reward = total_pnl - previous_total_pnl
+
+                # Expected long_position after LONG_OPEN
+                expected_long_position = trade_lot * step
+                if expected_long_position > Decimal(str(self.env.max_long_position)):
+                    expected_long_position = Decimal(str(self.env.max_long_position))
+
+                # Used Margin remains the same since we add required_margin for each new position
+                total_used_margin = required_margin
+
+                # Verify reward
+                self.assertAlmostEqual(
+                    reward,
+                    float(decimal_to_float(expected_reward, precision=2)),
+                    places=2,
+                    msg=f"Expected reward at step {step}: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward}"
+                )
 
                 # Verify info contains updated account details
                 self.assertEqual(Decimal(str(info['balance'])), expected_balance,
@@ -649,8 +733,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                                  f"Expected unrealized P&L after LONG_OPEN step {step}: {pnl}, but got {info['unrealized_pnl']}")
                 self.assertEqual(Decimal(str(info['fees_collected'])), fee,
                                  f"Expected fees_collected after LONG_OPEN step {step}: {fee}, but got {info['fees_collected']}")
-                # self.assertAlmostEqual(float(reward), float(expected_reward), places=6,
-                #                        msg=f"Expected reward at step {step}: {float(expected_reward)}, but got {reward}")
+
                 self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
                 self.assertIn('total_asset', info)
@@ -673,8 +756,10 @@ class TestCustomTradingEnv(unittest.TestCase):
         for step in range(1, 4):  # Attempt to open 0.03 lots, exceeding the 0.02 lot limit
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
+                previous_balance = Decimal(str(info['balance']))
+                previous_total_pnl = self.env.previous_total_pnl
+
                 total_funds_before_step = self.calculate_total_funds()
-                previous_balance = Decimal(str(info['balance']))  # Balance before this step
 
                 obs, reward, terminated, truncated, info = self.env.step(action)
 
@@ -694,7 +779,8 @@ class TestCustomTradingEnv(unittest.TestCase):
                 if actual_trade_lot <= Decimal('0.0'):
                     # Expect no change due to position limit
                     self.assertEqual(Decimal(str(info['short_position'])), Decimal(str(self.env.max_short_position)),
-                                    msg="Short position should not exceed the maximum limit.")
+                                     msg="Short position should not exceed the maximum limit.")
+
                     continue
 
                 # Calculate revenue and fee for actual_trade_lot
@@ -703,40 +789,55 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 required_margin = (actual_trade_lot * lot_size * bid_price) / leverage
 
-                # Correct Expected balance: previous_balance + revenue - fee - required_margin
+                # Correct Expected balance: previous_balance - fee - required_margin
                 expected_balance = previous_balance - fee - required_margin
-
-                expected_short_position = trade_lot * step
-                total_used_margin = required_margin
 
                 # P&L after SHORT_OPEN (unrealized)
                 pnl = (bid_price - current_price) * actual_trade_lot * lot_size
-                equity = expected_balance + pnl
+                total_pnl = pnl  # realized_pnl is 0.0
 
-                # Expected reward: change in equity = equity - previous_equity
-                expected_reward = equity - previous_equity
+                # Equity after SHORT_OPEN
+                equity = expected_balance + total_pnl
+
+                # Expected reward: change in total P&L = total_pnl - previous_total_pnl
+                expected_reward = total_pnl - previous_total_pnl
+
+                # Expected short_position after SHORT_OPEN
+                expected_short_position = trade_lot * step
+                if expected_short_position > Decimal(str(self.env.max_short_position)):
+                    expected_short_position = Decimal(str(self.env.max_short_position))
+
+                # Used Margin remains the same since we add required_margin for each new position
+                total_used_margin = required_margin
+
+                # Verify reward
+                self.assertAlmostEqual(
+                    reward,
+                    float(decimal_to_float(expected_reward, precision=2)),
+                    places=2,
+                    msg=f"Expected reward at step {step}: {float(decimal_to_float(expected_reward, precision=2))}, but got {reward}"
+                )
 
                 # Verify info contains updated account details
                 self.assertEqual(Decimal(str(info['balance'])), expected_balance,
-                                f"Expected balance after SHORT_OPEN step {step}: {expected_balance}, but got {info['balance']}")
+                                 f"Expected balance after SHORT_OPEN step {step}: {expected_balance}, but got {info['balance']}")
                 self.assertEqual(Decimal(str(info['equity'])), equity,
-                                f"Expected equity after SHORT_OPEN step {step}: {equity}, but got {info['equity']}")
+                                 f"Expected equity after SHORT_OPEN step {step}: {equity}, but got {info['equity']}")
                 self.assertEqual(Decimal(str(info['used_margin'])), total_used_margin,
-                                f"Expected used_margin after SHORT_OPEN step {step}: {total_used_margin}, but got {info['used_margin']}")
+                                 f"Expected used_margin after SHORT_OPEN step {step}: {total_used_margin}, but got {info['used_margin']}")
                 self.assertEqual(Decimal(str(info['free_margin'])), equity - total_used_margin,
-                                f"Expected free_margin after SHORT_OPEN step {step}: {equity - total_used_margin}, but got {info['free_margin']}")
+                                 f"Expected free_margin after SHORT_OPEN step {step}: {equity - total_used_margin}, but got {info['free_margin']}")
                 self.assertEqual(Decimal(str(info['short_position'])), expected_short_position,
-                                f"Expected short_position after SHORT_OPEN step {step}: {expected_short_position}, but got {info['short_position']}")
+                                 f"Expected short_position after SHORT_OPEN step {step}: {expected_short_position}, but got {info['short_position']}")
                 self.assertEqual(Decimal(str(info['long_position'])), Decimal('0.0'),
-                                f"Expected long_position to remain 0.0, but got {info['long_position']}")
+                                 "Expected long_position to remain 0.0, but got {info['long_position']}")
                 self.assertEqual(Decimal(str(info['realized_pnl'])), Decimal('0.0'),
-                                "Realized P&L should remain 0.0 after SHORT_OPEN.")
+                                 "Realized P&L should remain 0.0 after SHORT_OPEN.")
                 self.assertEqual(Decimal(str(info['unrealized_pnl'])), pnl,
-                                f"Expected unrealized P&L after SHORT_OPEN step {step}: {pnl}, but got {info['unrealized_pnl']}")
+                                 f"Expected unrealized P&L after SHORT_OPEN step {step}: {pnl}, but got {info['unrealized_pnl']}")
                 self.assertEqual(Decimal(str(info['fees_collected'])), fee,
-                                f"Expected fees_collected after SHORT_OPEN step {step}: {fee}, but got {info['fees_collected']}")
-                # self.assertAlmostEqual(float(reward), float(expected_reward), places=6,
-                #                        msg=f"Expected reward at step {step}: {float(expected_reward)}, but got {reward}")
+                                 f"Expected fees_collected after SHORT_OPEN step {step}: {fee}, but got {info['fees_collected']}")
+
                 self.assertFalse(terminated, "Environment should not terminate after SHORT_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after SHORT_OPEN.")
                 self.assertIn('total_asset', info)
@@ -750,7 +851,6 @@ class TestCustomTradingEnv(unittest.TestCase):
                     msg=f"Total funds mismatch after SHORT_OPEN step {step}. Expected: {total_funds_before_step}, Got: {total_funds_after_step}"
                 )
 
-
     def test_fee_deduction(self):
         """
         Test that trading fees are correctly deducted and recorded in the info dictionary.
@@ -760,8 +860,18 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # Execute multiple LONG_OPEN actions
         action_open = Action.LONG_OPEN.value
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
-        obs, reward, terminated, truncated, info = self.env.step(action_open)
+        # Record previous_total_pnl before the steps
+        previous_total_pnl_step1 = self.env.previous_total_pnl
+        obs, reward1, terminated, truncated, info = self.env.step(action_open)
+        # Calculate expected reward for first step
+        current_total_pnl_step1 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+        expected_reward1 = current_total_pnl_step1 - previous_total_pnl_step1
+
+        previous_total_pnl_step2 = self.env.previous_total_pnl
+        obs, reward2, terminated, truncated, info = self.env.step(action_open)
+        # Calculate expected reward for second step
+        current_total_pnl_step2 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
+        expected_reward2 = current_total_pnl_step2 - previous_total_pnl_step2
 
         # Calculate expected total fees
         step1 = self.env.current_step - 2
@@ -793,6 +903,20 @@ class TestCustomTradingEnv(unittest.TestCase):
             float(total_funds_before),
             places=6,
             msg=f"Total funds mismatch after multiple LONG_OPEN. Expected: {total_funds_before}, Got: {total_funds_after}"
+        )
+
+        # Verify rewards
+        self.assertAlmostEqual(
+            reward1,
+            float(decimal_to_float(expected_reward1, precision=2)),
+            places=2,
+            msg=f"Expected reward1: {float(decimal_to_float(expected_reward1, precision=2))}, but got {reward1}"
+        )
+        self.assertAlmostEqual(
+            reward2,
+            float(decimal_to_float(expected_reward2, precision=2)),
+            places=2,
+            msg=f"Expected reward2: {float(decimal_to_float(expected_reward2, precision=2))}, but got {reward2}"
         )
 
     def test_insufficient_balance_long_open(self):

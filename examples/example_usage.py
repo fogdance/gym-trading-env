@@ -20,7 +20,7 @@ def main():
         'trade_lot': 0.01,       # Default trade size: 0.01 lot
         'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
         'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
-        'reward_function': 'basic_reward_function',
+        'reward_function': 'total_pnl_reward_function',
         'window_size': 20,
         'risk_free_rate': 0.0
     }

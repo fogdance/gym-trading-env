@@ -203,7 +203,7 @@ def main():
         "trade_lot": 0.01,
         "max_long_position": 0.02,
         "max_short_position": 0.02,
-        "reward_function": "basic_reward_function",
+        "reward_function": "total_pnl_reward_function",
         "window_size": 20,
         "risk_free_rate": 0.0,
     }

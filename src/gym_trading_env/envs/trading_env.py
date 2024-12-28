@@ -16,7 +16,7 @@ from gym_trading_env.envs.position import Position
 from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
-from gym_trading_env.rewards.reward_functions import basic_reward_function, total_pnl_reward_function, reward_functions
+from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 
 # Set global decimal precision
@@ -49,8 +49,8 @@ class CustomTradingEnv(gym.Env):
         self.trade_lot = Decimal(str(config.get('trade_lot', 0.01)))  # Default trade size: 0.01 lot
         self.max_long_position = Decimal(str(config.get('max_long_position', 0.1)))  # Max long position: 0.1 lot
         self.max_short_position = Decimal(str(config.get('max_short_position', 0.1)))  # Max short position: 0.1 lot
-        reward_function_name = config.get('reward_function', 'basic_reward_function')
-        self.reward_function = reward_functions.get(reward_function_name, reward_functions['basic_reward_function'])
+        reward_function_name = config.get('reward_function', 'total_pnl_reward_function')
+        self.reward_function = reward_functions.get(reward_function_name)
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
 
@@ -172,9 +172,6 @@ class CustomTradingEnv(gym.Env):
         elif action_enum == Action.SHORT_CLOSE:
             self._short_close(self.current_price + self.spread)
 
-        # Calculate reward
-        reward = self.reward_function(self)  # Already a float
-
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
             self.terminated = True
@@ -191,11 +188,11 @@ class CustomTradingEnv(gym.Env):
         # Calculate new equity
         equity = self._calculate_equity()
 
-        # Update free margin
-        free_margin = equity - self.user_accounts.margin.get_balance()
-
         # Update unrealized P&L
         self._update_unrealized_pnl()
+
+        # Calculate reward
+        reward = self.reward_function(self)  # Already a float
 
         # Check margin requirements
         self._check_margin(equity)

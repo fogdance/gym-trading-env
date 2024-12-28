@@ -2,6 +2,6 @@
 
 initial_balance: 1000.0
 trading_fees: 0.001
-reward_function: basic_reward_function
+reward_function: total_pnl_reward_function
 window_size: 20
 risk_free_rate: 0.0
