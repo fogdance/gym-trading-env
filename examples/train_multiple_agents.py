@@ -12,6 +12,7 @@ from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_checker import check_env
+from stable_baselines3.common.vec_env import SubprocVecEnv
 
 # Replace these imports with your actual modules
 from gym_trading_env.envs.trading_env import CustomTradingEnv
@@ -112,27 +113,30 @@ class TradingRLTrainer:
         env = CustomTradingEnv(df=df, config=self.config)
         return env
 
-    def _make_vec_env(self, df: pd.DataFrame) -> DummyVecEnv:
+    def _make_vec_env(self, df: pd.DataFrame, n_envs: int = 4) -> SubprocVecEnv:
         """
-        Creates a vectorized DummyVecEnv for off-policy algorithms.
+        Creates a vectorized SubprocVecEnv for better parallelism.
 
         :param df: The sliced dataframe (train or test).
-        :return: A DummyVecEnv wrapping the CustomTradingEnv.
+        :param n_envs: Number of parallel environments.
+        :return: A SubprocVecEnv wrapping multiple CustomTradingEnv instances.
         """
         def env_fn():
             return CustomTradingEnv(df=df, config=self.config)
 
-        vec_env = DummyVecEnv([env_fn])
+        vec_env = SubprocVecEnv([env_fn for _ in range(n_envs)])
         return vec_env
 
     def train_and_evaluate(
         self,
         model_classes: List[Type[BaseAlgorithm]],
+        n_envs: int = 4,  # New parameter for number of environments
     ) -> List[Tuple[str, float, float]]:
         """
         Trains and evaluates each model class on the provided data.
 
         :param model_classes: A list of Stable-Baselines3 algorithm classes.
+        :param n_envs: Number of parallel environments.
         :return: A list of tuples: (model_name, mean_reward, std_reward).
         """
         results = []
@@ -142,15 +146,14 @@ class TradingRLTrainer:
             print(f"Starting training for: {algo_name}")
 
             # Decide whether to use vectorized environment
-            # Off-policy algorithms typically use a vec env for better data collection
             off_policy_algos = {DQN, DDPG, TD3, SAC}
             if algo_cls in off_policy_algos:
-                train_env = self._make_vec_env(self.train_df)
-                test_env = self._make_vec_env(self.test_df)
+                train_env = self._make_vec_env(self.train_df, n_envs=n_envs)
+                test_env = self._make_vec_env(self.test_df, n_envs=1)
             else:
-                # on-policy env can be used directly, or also in vec form if you prefer
-                train_env = self._make_env(self.train_df)
-                test_env = self._make_env(self.test_df)
+                # on-policy env can use multiple environments as well
+                train_env = self._make_vec_env(self.train_df, n_envs=n_envs)
+                test_env = self._make_vec_env(self.test_df, n_envs=1)
 
             # Instantiate the model
             model = algo_cls(
@@ -174,13 +177,17 @@ class TradingRLTrainer:
                 test_env,
                 n_eval_episodes=self.n_eval_episodes,
                 deterministic=True,
-                render=False,
+                render=False,  # Disable rendering
             )
 
             print(
                 f"{algo_name} -> Mean reward: {mean_reward:.2f}, Std: {std_reward:.2f}"
             )
             results.append((algo_name, mean_reward, std_reward))
+
+            # Cleanup environments
+            train_env.close()
+            test_env.close()
 
         return results
 
@@ -218,10 +225,12 @@ def main():
         seed=42
     )
 
+    n_envs = 4
+
     # You can adjust or reduce the list below to the algorithms you actually need.
     model_classes = [A2C, DQN, PPO]  # omit DDPG, TD3, SAC if action space is Discrete
 
-    results = trainer.train_and_evaluate(model_classes)
+    results = trainer.train_and_evaluate(model_classes, n_envs=n_envs)
 
     # Print a final comparison
     print("\n==== Comparison of Algorithm Performance ====")
