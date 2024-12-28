@@ -4,6 +4,7 @@ import gymnasium as gym
 from gym_trading_env.envs.trading_env import CustomTradingEnv
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.rewards.reward_functions import reward_functions
+from stable_baselines3.common.env_checker import check_env
 
 def main():
     # Load data
@@ -22,11 +23,17 @@ def main():
         'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
         'reward_function': 'total_pnl_reward_function',
         'window_size': 20,
-        'risk_free_rate': 0.0
+        'risk_free_rate': 0.0,
+        'image_height': 300,
+        'image_width': 400,
     }
     
     # Initialize environment with configuration
     env = CustomTradingEnv(df=df, config=config)
+
+    # Check environment compatibility
+    check_env(env, warn=True)
+    
     obs, info = env.reset()
     
     done = False

@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from collections import deque
 from typing import Tuple
+import os
 
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
 from gym_trading_env.rendering.renderer import Renderer
@@ -18,6 +19,7 @@ from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
+from gym_trading_env.utils.plotting import draw_candlestick_with_indicators  # Import plotting utility
 
 # Set global decimal precision
 getcontext().prec = 28
@@ -50,9 +52,10 @@ class CustomTradingEnv(gym.Env):
         self.max_long_position = Decimal(str(config.get('max_long_position', 0.1)))  # Max long position: 0.1 lot
         self.max_short_position = Decimal(str(config.get('max_short_position', 0.1)))  # Max short position: 0.1 lot
         reward_function_name = config.get('reward_function', 'total_pnl_reward_function')
-        self.reward_function = reward_functions.get(reward_function_name)
+        self.reward_function = reward_functions.get(reward_function_name, total_pnl_reward_function)
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
+        self.dump_png = False
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -61,7 +64,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
         # Data and features
         self.df = df.copy()
@@ -79,8 +82,8 @@ class CustomTradingEnv(gym.Env):
         self.action_space = spaces.Discrete(len(Action))
 
         # Define image dimensions
-        self.image_height = config.get('image_height', 480)
-        self.image_width = config.get('image_width', 640)
+        self.image_height = config.get('image_height', 300)
+        self.image_width = config.get('image_width', 400)
         self.channels = 3  # RGB
 
         # Update observation space to image
@@ -245,7 +248,7 @@ class CustomTradingEnv(gym.Env):
         """
         Updates the user's unrealized P&L based on current prices.
         """
-        # Calculate unrealized P&L for long positions with Decimal start
+        # Calculate unrealized P&L for long positions
         unrealized_pnl_long = sum(
             (
                 (self.current_price - pos.entry_price) * pos.size * self.lot_size
@@ -254,7 +257,7 @@ class CustomTradingEnv(gym.Env):
             Decimal('0.0')  # Specify Decimal start value
         )
         
-        # Calculate unrealized P&L for short positions with Decimal start
+        # Calculate unrealized P&L for short positions
         unrealized_pnl_short = sum(
             (
                 (pos.entry_price - self.current_price) * pos.size * self.lot_size
@@ -293,12 +296,12 @@ class CustomTradingEnv(gym.Env):
         Args:
             ask_price (Decimal): The ask price at which the long position is opened.
         """
-        max_additional_long = Decimal(str(self.max_long_position)) - self.user_accounts.long_position
+        max_additional_long = self.max_long_position - self.user_accounts.long_position
         if max_additional_long <= Decimal('0.0'):
             self.logger.warning("Reached maximum long position limit.")
             return
 
-        position_size = min(Decimal(str(self.trade_lot)), max_additional_long)
+        position_size = min(self.trade_lot, max_additional_long)
 
         # Calculate required margin
         required_margin = (position_size * self.lot_size * ask_price) / self.leverage
@@ -401,12 +404,12 @@ class CustomTradingEnv(gym.Env):
         Args:
             bid_price (Decimal): The bid price at which the short position is opened.
         """
-        max_additional_short = Decimal(str(self.max_short_position)) - self.user_accounts.short_position
+        max_additional_short = self.max_short_position - self.user_accounts.short_position
         if max_additional_short <= Decimal('0.0'):
             self.logger.warning("Reached maximum short position limit.")
             return
 
-        position_size = min(Decimal(str(self.trade_lot)), max_additional_short)
+        position_size = min(self.trade_lot, max_additional_short)
 
         # Calculate required margin
         required_margin = (position_size * self.lot_size * bid_price) / self.leverage
@@ -504,12 +507,29 @@ class CustomTradingEnv(gym.Env):
 
     def _get_obs(self):
         """
-        Constructs the observation as an image.
+        Constructs the observation as an image with K-line and technical indicators.
 
         Returns:
             np.ndarray: The observation image.
         """
-        return np.random.randint(0, 256, size=(self.image_height, self.image_width, self.channels), dtype=np.uint8)
+        # Slice the dataframe for the current window
+        window_start = max(0, self.current_step - self.window_size)
+        window_end = self.current_step
+        df_window = self.features.iloc[window_start:window_end]
+
+        output_filepath = None
+        if self.dump_png:
+            output_filepath = os.path.join('output', f'USDJPY_candlestick{self.current_step}.png')
+
+        # Draw the candlestick chart with indicators and return as numpy array
+        img = draw_candlestick_with_indicators(
+            df=df_window,
+            width=self.image_width,
+            height=self.image_height,
+            filename=output_filepath  # Do not save to file, return image array
+        )
+
+        return img
 
     def render(self, mode=None):
         """

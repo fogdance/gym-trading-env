@@ -89,7 +89,6 @@ class TradingRLTrainer:
         :return: (train_df, test_df) dataframes.
         """
         df = load_data(self.symbol, self.interval)
-        df = df.sort_values(by="Date").reset_index(drop=True)
 
         if len(df) == 0:
             raise ValueError("Loaded dataset is empty.")
@@ -98,8 +97,8 @@ class TradingRLTrainer:
         if split_index <= 0 or split_index >= len(df):
             raise ValueError("Invalid train_ratio leads to empty train or test set.")
 
-        train_df = df.iloc[:split_index].reset_index(drop=True)
-        test_df = df.iloc[split_index:].reset_index(drop=True)
+        train_df = df.iloc[:split_index]
+        test_df = df.iloc[split_index:]
 
         return train_df, test_df
 
@@ -155,7 +154,7 @@ class TradingRLTrainer:
 
             # Instantiate the model
             model = algo_cls(
-                policy="MultiInputPolicy",
+                policy="CnnPolicy",
                 env=train_env,
                 verbose=0,
                 seed=self.seed,
@@ -175,7 +174,7 @@ class TradingRLTrainer:
                 test_env,
                 n_eval_episodes=self.n_eval_episodes,
                 deterministic=True,
-                render=True,
+                render=False,
             )
 
             print(
@@ -191,10 +190,10 @@ def main():
     Main entry point for training and evaluating multiple RL algorithms in a forex environment.
     Adjust config and model classes as needed for your specific use case.
     """
-
+    symbol = "USDJPY"
+    interval = "1d"
     config = {
-        'use_dict_obs': True,
-        "currency_pair": "EURUSD",
+        "currency_pair": symbol,
         "initial_balance": 10000.0,
         "trading_fees": 0.001,
         "spread": 0.0002,
@@ -209,8 +208,8 @@ def main():
     }
 
     trainer = TradingRLTrainer(
-        symbol="EURUSD",
-        interval="60m",
+        symbol=symbol,
+        interval=interval,
         config=config,
         train_ratio=0.8,
         train_timesteps=50000,
