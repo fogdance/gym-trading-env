@@ -1,8 +1,4 @@
-Sure! Here’s the updated version of the README.md with checkboxes for the **Current Features** section, which will make it more visually intuitive:
-
----
-
-# Gym Trading Env
+# Gym Forex Trading Env
 
 A custom trading environment for OpenAI Gymnasium, designed for reinforcement learning (RL) research and applications in Forex trading.
 
@@ -23,8 +19,7 @@ This environment is designed specifically for Forex (foreign exchange) trading a
 
 ### Future Features:
 
-- [ ] **API Service**: Providing external API services for strategy integration (Coming Soon).
-- [ ] **MT5 EA Integration**: Develop custom Expert Advisors (EAs) for MetaTrader 5 to communicate with the environment (Coming Soon).
+- [ ] **TODO**
 
 ## Installation
 
@@ -32,6 +27,7 @@ This environment is designed specifically for Forex (foreign exchange) trading a
 
 - Python 3.11 (Recommended)
 - Conda environment (for managing dependencies)
+- WandB (Weights and Biases) for tracking experiments and visualizing training performance.
 
 ### Steps to Install:
 
@@ -82,12 +78,12 @@ You can also run an example usage script to understand how to interact with the 
 python examples/example_usage.py
 ```
 
-## Key Features
+### Visualizing with TensorBoard:
 
-- **Forex-specific parameters** like spreads, lot sizes, transaction fees, and leverage are fully modeled.
-- **Account-based asset management** allows for realistic simulation of trades.
-- **Customizable rewards** for various trading strategies, useful for RL training.
-- **Visualizations** using TensorBoard and WandB for performance tracking.
+```bash
+tensorboard --logdir=tensorboard_logs
+```
+---
 
 ## License
 

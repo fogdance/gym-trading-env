@@ -12,7 +12,6 @@ from typing import Tuple
 import os
 
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
-from gym_trading_env.rendering.renderer import Renderer
 from gym_trading_env.envs.position import Position
 from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.broker_accounts import BrokerAccounts
@@ -92,9 +91,6 @@ class CustomTradingEnv(gym.Env):
             shape=(self.image_height, self.image_width, self.channels), 
             dtype=np.uint8
         )
-
-        # Initialize renderer
-        self.renderer = Renderer(image_height=self.image_height, image_width=self.image_width, channels=self.channels)
 
         # Initialize state
         self.position_manager = PositionManager()
@@ -522,7 +518,6 @@ class CustomTradingEnv(gym.Env):
         if self.dump_png:
             output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
-        print(f'{self.currency_pair}_candlestick_{self.current_step}.png')
         # Draw the candlestick chart with indicators and return as numpy array
         img = draw_candlestick_with_indicators(
             df=df_window,
