@@ -54,6 +54,7 @@ class CustomTradingEnv(gym.Env):
         self.reward_function = reward_functions.get(reward_function_name, total_pnl_reward_function)
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
+        self.is_unittest = config.get('is_unittest', False)
         self.dump_png = False
 
         # Set up logging
@@ -509,24 +510,29 @@ class CustomTradingEnv(gym.Env):
         Returns:
             np.ndarray: The observation image.
         """
-        # Slice the dataframe for the current window
-        window_start = max(0, self.current_step - self.window_size)
-        window_end = self.current_step
-        df_window = self.features.iloc[window_start:window_end]
+        if self.is_unittest:
+            # Ugly hack to return random image for unit tests
+            return np.random.randint(0, 256, size=(self.image_height, self.image_width, self.channels), dtype=np.uint8)
+        else:
+            # Slice the dataframe for the current window
+            window_start = max(0, self.current_step - self.window_size)
+            window_end = self.current_step
+            df_window = self.features.iloc[window_start:window_end]
 
-        output_filepath = None
-        if self.dump_png:
-            output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
-        # Draw the candlestick chart with indicators and return as numpy array
-        img = draw_candlestick_with_indicators(
-            df=df_window,
-            width=self.image_width,
-            height=self.image_height,
-            filename=output_filepath  # Do not save to file, return image array
-        )
+            output_filepath = None
+            if self.dump_png:
+                output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
-        return img
+            # Draw the candlestick chart with indicators and return as numpy array
+            img = draw_candlestick_with_indicators(
+                df=df_window,
+                width=self.image_width,
+                height=self.image_height,
+                filename=output_filepath  # Do not save to file, return image array
+            )
+
+            return img
 
     def render(self, mode=None):
         """

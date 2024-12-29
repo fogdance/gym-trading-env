@@ -69,7 +69,7 @@ python examples/download_forex_data.py
 ### Train a Model:
 Once the data is ready, you can start training models using the provided script:
 ```bash
-python train_multiple_agents.py
+python examples/train_multiple_agents.py
 ```
 
 ### Example Usage:

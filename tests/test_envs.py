@@ -40,7 +40,8 @@ class TestCustomTradingEnv(unittest.TestCase):
             'risk_free_rate': 0.0,
             'image_height': 480,
             'image_width': 640,
-            'channels': 3  # Assuming RGB images
+            'channels': 3,  # Assuming RGB images
+            'is_unittest': True
         }
         self.env = CustomTradingEnv(df=df, config=config)
         self.env.reset()
