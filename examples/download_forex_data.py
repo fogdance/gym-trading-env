@@ -9,10 +9,10 @@ def main():
 
     proxy = None
 
-    proxy = {
-        'http': 'http://127.0.0.1:10809',
-        'https': 'http://127.0.0.1:10809',
-    }  # Replace with your actual proxy settings or set to None
+    # proxy = {
+    #     'http': 'http://127.0.0.1:10809',
+    #     'https': 'http://127.0.0.1:10809',
+    # }  # Replace with your actual proxy settings or set to None
 
     downloader = ForexDataDownloader(proxy=proxy)
 

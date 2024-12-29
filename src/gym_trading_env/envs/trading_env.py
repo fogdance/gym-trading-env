@@ -19,7 +19,7 @@ from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
-from gym_trading_env.utils.plotting import draw_candlestick_with_indicators  # Import plotting utility
+from gym_trading_env.rendering.plotting import draw_candlestick_with_indicators  # Import plotting utility
 
 # Set global decimal precision
 getcontext().prec = 28
@@ -162,7 +162,8 @@ class CustomTradingEnv(gym.Env):
             action_enum = Action(action)
         except ValueError:
             self.logger.error(f"Invalid action: {action}. Action must be one of {list(Action)}.")
-            raise
+            self.terminated = True
+            return self._get_obs(), 0.0, self.terminated, False, {}
 
         if action_enum == Action.HOLD:
             pass  # Do nothing
@@ -519,8 +520,9 @@ class CustomTradingEnv(gym.Env):
 
         output_filepath = None
         if self.dump_png:
-            output_filepath = os.path.join('output', f'USDJPY_candlestick{self.current_step}.png')
+            output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
+        print(f'{self.currency_pair}_candlestick_{self.current_step}.png')
         # Draw the candlestick chart with indicators and return as numpy array
         img = draw_candlestick_with_indicators(
             df=df_window,

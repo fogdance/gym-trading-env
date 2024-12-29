@@ -1,3 +1,7 @@
+# src/gym_trading_env/rendering/plotting.py
+
+import matplotlib
+matplotlib.use('Agg')
 import mplfinance as mpf
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -111,7 +115,6 @@ def draw_candlestick_with_indicators(
     if filename:
         # Save the figure with specified dpi without bbox_inches='tight'
         fig.savefig(filename, dpi=dpi)
-        plt.close(fig)
         logger.info(f"Plot saved to {filename} with size {width}x{height} pixels.")
 
     # Ensure the canvas is fully rendered

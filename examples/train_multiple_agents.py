@@ -2,21 +2,27 @@
 
 import os
 from typing import List, Tuple, Dict, Type
+import uuid
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
 import gymnasium as gym
-
+import wandb
+from wandb.integration.sb3 import WandbCallback
 from stable_baselines3 import A2C, DDPG, DQN, PPO, SAC, TD3
 from stable_baselines3.common.base_class import BaseAlgorithm
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.monitor import Monitor
+from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
 
 # Replace these imports with your actual modules
 from gym_trading_env.envs.trading_env import CustomTradingEnv
 from gym_trading_env.utils.data_processing import load_data
+from gym_trading_env.rendering.info_logging_callback import InfoLoggingCallback
 
 
 class TradingRLTrainer:
@@ -38,16 +44,20 @@ class TradingRLTrainer:
         train_timesteps: int = 50000,
         n_eval_episodes: int = 5,
         results_dir: str = "results",
+        tensorboard_log_dir: str = "tensorboard_logs",
         seed: int = 42,
     ):
         """
         Initialize the TradingRLTrainer.
 
-        :param config: Configuration dictionary for CustomTradingEnv (e.g., window_size, fees, etc.).
+        :param symbol: The trading symbol (e.g., "EURUSD").
+        :param interval: The time interval for the data (e.g., "5m").
+        :param config: Configuration dictionary for CustomTradingEnv.
         :param train_ratio: The ratio of data to be used for training (remainder for testing).
         :param train_timesteps: Number of total timesteps for training each model.
         :param n_eval_episodes: Number of episodes to run in evaluation.
         :param results_dir: Directory path where models and results will be saved.
+        :param tensorboard_log_dir: Directory path for TensorBoard logs.
         :param seed: Random seed for reproducibility (if the algorithms support it).
         """
         self.symbol = symbol
@@ -57,6 +67,7 @@ class TradingRLTrainer:
         self.train_timesteps = train_timesteps
         self.n_eval_episodes = n_eval_episodes
         self.results_dir = results_dir
+        self.tensorboard_log_dir = tensorboard_log_dir  # Store TensorBoard log path
         self.seed = seed
 
         # Load and split the dataset
@@ -80,8 +91,9 @@ class TradingRLTrainer:
         check_env(self.train_env, warn=True)
         check_env(self.test_env, warn=True)
 
-        # Ensure the result directory exists
+        # Ensure the results and TensorBoard directories exist
         os.makedirs(self.results_dir, exist_ok=True)
+        os.makedirs(self.tensorboard_log_dir, exist_ok=True)
 
     def _load_and_split_data(self) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
@@ -111,20 +123,25 @@ class TradingRLTrainer:
         :return: CustomTradingEnv instance.
         """
         env = CustomTradingEnv(df=df, config=self.config)
+        check_env(env, warn=True)
+        env = Monitor(env)
         return env
 
-    def _make_vec_env(self, df: pd.DataFrame, n_envs: int = 4) -> SubprocVecEnv:
+    def _make_vec_env(self, df: pd.DataFrame, n_envs: int = 4) -> DummyVecEnv:
         """
-        Creates a vectorized SubprocVecEnv for better parallelism.
+        Creates a vectorized DummyVecEnv for better parallelism.
 
         :param df: The sliced dataframe (train or test).
         :param n_envs: Number of parallel environments.
-        :return: A SubprocVecEnv wrapping multiple CustomTradingEnv instances.
+        :return: A DummyVecEnv wrapping multiple CustomTradingEnv instances.
         """
         def env_fn():
-            return CustomTradingEnv(df=df, config=self.config)
+            env = CustomTradingEnv(df=df, config=self.config)
+            check_env(env, warn=True)
+            env = Monitor(env)
+            return env
 
-        vec_env = SubprocVecEnv([env_fn for _ in range(n_envs)])
+        vec_env = DummyVecEnv([env_fn for _ in range(n_envs)])
         return vec_env
 
     def train_and_evaluate(
@@ -145,29 +162,83 @@ class TradingRLTrainer:
             algo_name = algo_cls.__name__
             print(f"Starting training for: {algo_name}")
 
-            # Decide whether to use vectorized environment
+            # Determine whether to use a vectorized environment
             off_policy_algos = {DQN, DDPG, TD3, SAC}
             if algo_cls in off_policy_algos:
                 train_env = self._make_vec_env(self.train_df, n_envs=n_envs)
                 test_env = self._make_vec_env(self.test_df, n_envs=1)
             else:
-                # on-policy env can use multiple environments as well
+                # On-policy algorithms can also use multiple environments
                 train_env = self._make_vec_env(self.train_df, n_envs=n_envs)
                 test_env = self._make_vec_env(self.test_df, n_envs=1)
 
-            # Instantiate the model
+            # Generate a unique session ID for each training session
+            sess_id = str(uuid.uuid4())[:8]
+
+            checkpoint_callback = CheckpointCallback(
+                save_freq=1000,
+                save_path='checkpoints/',
+                name_prefix=self.symbol + "_" + sess_id
+            )
+
+            # Patch the tensorboard log directory for this session
+            wandb.tensorboard.patch(root_logdir=self.tensorboard_log_dir)
+
+            tensorboard_log_dir = os.path.join(self.tensorboard_log_dir, f"{algo_name}_{sess_id}")
+            # Instantiate the model and add the tensorboard_log parameter
             model = algo_cls(
                 policy="CnnPolicy",
                 env=train_env,
-                verbose=0,
-                seed=self.seed,
+                verbose=1,
+                tensorboard_log=tensorboard_log_dir,  # Use the specific TensorBoard log directory
+                seed=self.seed
             )
 
+            print(f"Model is using device: {model.device}")
+            print(f"TensorBoard logs will be saved to: {tensorboard_log_dir}")
+
+            # Initialize wandb for this training session
+            run = wandb.init(
+                project="forex-train",
+                id=sess_id,
+                sync_tensorboard=True,  # Sync TensorBoard logs to WandB
+                monitor_gym=True,
+                save_code=True,
+                config = {
+                    "algorithm": algo_name,
+                    "env": "CustomTradingEnv",
+                    "total_timesteps": self.train_timesteps,
+                },
+                reinit=True  # Allow multiple runs in the same script
+            )
+
+            # Configure WandbCallback
+            wandb_callback = WandbCallback(
+                gradient_save_freq=100,
+                verbose=2
+            )
+
+            checkpoint_callback = CheckpointCallback(
+                save_freq=1000,
+                save_path='checkpoints/',
+                name_prefix=self.symbol
+            )
+
+            info_logging_callback = InfoLoggingCallback(verbose=1, log_dir=tensorboard_log_dir)  # 初始化自定义回调
+
+            # Combine all callbacks
+            callback_list = CallbackList([checkpoint_callback, wandb_callback, info_logging_callback])
+
             # Train the model
-            model.learn(total_timesteps=self.train_timesteps, progress_bar=True, log_interval=None)
+            model.learn(
+                total_timesteps=self.train_timesteps,
+                progress_bar=True,
+                callback=callback_list,
+                # log_interval=10,  # Set logging interval
+            )
 
             # Save the model
-            model_path = os.path.join(self.results_dir, f"{algo_name}_model.zip")
+            model_path = os.path.join(self.results_dir, f"{algo_name}_{sess_id}_model.zip")
             model.save(model_path)
             print(f"Model saved to: {model_path}")
 
@@ -180,25 +251,26 @@ class TradingRLTrainer:
                 render=False,  # Disable rendering
             )
 
-            print(
-                f"{algo_name} -> Mean reward: {mean_reward:.2f}, Std: {std_reward:.2f}"
-            )
+            print(f"{algo_name} -> Mean reward: {mean_reward:.2f}, Std: {std_reward:.2f}")
             results.append((algo_name, mean_reward, std_reward))
 
             # Cleanup environments
             train_env.close()
             test_env.close()
 
+            # Finish the wandb run
+            run.finish()
+
         return results
 
 
 def main():
     """
-    Main entry point for training and evaluating multiple RL algorithms in a forex environment.
+    Main entry point for training and evaluating multiple RL algorithms in a Forex environment.
     Adjust config and model classes as needed for your specific use case.
     """
-    symbol = "USDJPY"
-    interval = "1d"
+    symbol = "EURUSD"
+    interval = "5m"
     config = {
         "currency_pair": symbol,
         "initial_balance": 10000.0,
@@ -218,17 +290,18 @@ def main():
         symbol=symbol,
         interval=interval,
         config=config,
-        train_ratio=0.8,
-        train_timesteps=50000,
-        n_eval_episodes=5,
-        results_dir="results",
+        train_ratio=0.999,
+        train_timesteps=2048, # default n_steps 2048
+        n_eval_episodes=1,
+        results_dir="models",  # Specify model directory
+        tensorboard_log_dir="tensorboard_logs",  # Specify TensorBoard log directory
         seed=42
     )
 
-    n_envs = 4
+    n_envs = 2
 
-    # You can adjust or reduce the list below to the algorithms you actually need.
-    model_classes = [A2C, DQN, PPO]  # omit DDPG, TD3, SAC if action space is Discrete
+    # Adjust or reduce the list below to the algorithms you actually need.
+    model_classes = [PPO]  # You can add more algorithms like A2C, DDPG, etc.
 
     results = trainer.train_and_evaluate(model_classes, n_envs=n_envs)
 

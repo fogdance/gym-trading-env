@@ -176,3 +176,7 @@ data/
 *.csv
 output
 *.png
+wandb/
+tensorboard_logs/
+models/
+checkpoints/

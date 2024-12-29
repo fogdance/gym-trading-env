@@ -4,7 +4,7 @@ import os
 import pandas as pd
 import logging
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
-from gym_trading_env.utils.plotting import draw_candlestick_with_indicators, draw_basic_candlestick
+from gym_trading_env.rendering.plotting import draw_candlestick_with_indicators, draw_basic_candlestick
 from gym_trading_env.utils.data_processing import load_data
 
 
