@@ -1,25 +1,94 @@
+Sure! Here’s the updated version of the README.md with checkboxes for the **Current Features** section, which will make it more visually intuitive:
+
+---
+
 # Gym Trading Env
 
-A custom trading environment for OpenAI Gymnasium, designed for reinforcement learning research and applications in trading.
+A custom trading environment for OpenAI Gymnasium, designed for reinforcement learning (RL) research and applications in Forex trading.
 
-## Features
+## Core Concepts
 
-- **Modular Design**: Separate modules for environment, data processing, feature engineering, portfolio management, and rendering.
-- **Multiple Data Support**: Easily switch between different datasets to enhance model generalization.
-- **Technical Indicators**: Built-in technical indicators like SMA, EMA, RSI, and MACD.
-- **Customizable Rewards**: Define your own reward functions to suit different trading strategies.
-- **Real-time Rendering**: Visualize trading performance with integrated rendering tools.
+This environment is designed specifically for Forex (foreign exchange) trading and aims to facilitate RL research in the context of financial markets. It offers a modular and extensible framework, where users can experiment with different trading strategies and models.
+
+### Current Features:
+
+- [x] **Complete Forex Trading Environment**: Supports Forex-specific parameters like spread, standard lot size, transaction fees, leverage, and default lot size.
+- [x] **Account-based Asset Management**: Uses an accounting system to manage assets and track trades.
+- [x] **Unit Testing**: Comprehensive unit tests for the Forex environment to ensure robustness and reliability.
+- [x] **WandB & TensorBoard Integration**: Visualization tools like WandB and TensorBoard for tracking trading performance and model training.
+- [x] **Customizable Reward Functions**: Design your own reward functions to align with various trading strategies.
+- [x] **Multiple Data Support**: Easily switch between datasets to test model performance across different market conditions.
+- [ ] **API Services**: External API services for strategy deployment and integration.
+- [ ] **MT5 Integration**: Support for custom Expert Advisors (EAs) in MetaTrader 5 for strategy execution and API communication.
+
+### Future Features:
+
+- [ ] **API Service**: Providing external API services for strategy integration (Coming Soon).
+- [ ] **MT5 EA Integration**: Develop custom Expert Advisors (EAs) for MetaTrader 5 to communicate with the environment (Coming Soon).
 
 ## Installation
 
+### Prerequisites:
+
+- Python 3.11 (Recommended)
+- Conda environment (for managing dependencies)
+
+### Steps to Install:
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/fogdance/gym_trading_env.git
+    cd gym_trading_env
+    ```
+
+2. Set up the Conda environment (Python 3.11):
+    ```bash
+    conda create -n gym_trading_env python=3.11
+    conda activate gym_trading_env
+    ```
+
+3. Install dependencies:
+    ```bash
+    pip install -e .
+    ```
+
+4. Run unit tests to verify installation:
+    ```bash
+    python -m unittest discover tests
+    ```
+
+5. Optionally, run a specific test:
+    ```bash
+    python -m unittest tests.test_position_manager.TestPositionManager
+    ```
+
+## How to Use
+
+### Download Forex Data:
+To download Forex data, run the following script:
 ```bash
-git clone https://github.com/fogdance/gym_trading_env.git
-cd gym_trading_env
-pip install -e .
+python examples/download_forex_data.py
+```
 
-python -m unittest discover tests
+### Train a Model:
+Once the data is ready, you can start training models using the provided script:
+```bash
+python train_multiple_agents.py
+```
 
-python -m unittest tests.test_position_manager.TestPositionManager
-
-
+### Example Usage:
+You can also run an example usage script to understand how to interact with the environment:
+```bash
 python examples/example_usage.py
+```
+
+## Key Features
+
+- **Forex-specific parameters** like spreads, lot sizes, transaction fees, and leverage are fully modeled.
+- **Account-based asset management** allows for realistic simulation of trades.
+- **Customizable rewards** for various trading strategies, useful for RL training.
+- **Visualizations** using TensorBoard and WandB for performance tracking.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
