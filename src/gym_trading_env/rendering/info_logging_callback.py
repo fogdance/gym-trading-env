@@ -28,9 +28,6 @@ class InfoLoggingCallback(BaseCallback):
                 # Convert Decimal to float
                 info_float = {k: float(v) if isinstance(v, Decimal) else v for k, v in info.items()}
 
-                # Log to WandB
-                wandb.log(info_float, step=self.num_timesteps)
-
                 for key, value in info_float.items():
                     # Log to TensorBoard (optionally filter by important keys)
                     if key in self.important_keys:
