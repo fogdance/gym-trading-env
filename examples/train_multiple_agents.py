@@ -17,12 +17,12 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.monitor import Monitor
-from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList
+from stable_baselines3.common.callbacks import CheckpointCallback, CallbackList, EvalCallback
 
 # Replace these imports with your actual modules
 from gym_trading_env.envs.trading_env import CustomTradingEnv
 from gym_trading_env.utils.data_processing import load_data
-from gym_trading_env.rendering.info_logging_callback import InfoLoggingCallback
+from gym_trading_env.envs.callbacks import InfoLoggingCallback, EarlyStoppingCallback
 
 
 class TradingRLTrainer:
@@ -127,13 +127,13 @@ class TradingRLTrainer:
         env = Monitor(env)
         return env
 
-    def _make_vec_env(self, df: pd.DataFrame, n_envs: int = 4) -> DummyVecEnv:
+    def _make_vec_env(self, df: pd.DataFrame, n_envs: int = 4) -> SubprocVecEnv:
         """
-        Creates a vectorized DummyVecEnv for better parallelism.
+        Creates a vectorized SubprocVecEnv for better parallelism.
 
         :param df: The sliced dataframe (train or test).
         :param n_envs: Number of parallel environments.
-        :return: A DummyVecEnv wrapping multiple CustomTradingEnv instances.
+        :return: A SubprocVecEnv wrapping multiple CustomTradingEnv instances.
         """
         def env_fn():
             env = CustomTradingEnv(df=df, config=self.config)
@@ -141,7 +141,7 @@ class TradingRLTrainer:
             env = Monitor(env)
             return env
 
-        vec_env = DummyVecEnv([env_fn for _ in range(n_envs)])
+        vec_env = SubprocVecEnv([env_fn for _ in range(n_envs)])
         return vec_env
 
     def train_and_evaluate(
@@ -174,12 +174,6 @@ class TradingRLTrainer:
 
             # Generate a unique session ID for each training session
             sess_id = str(uuid.uuid4())[:8]
-
-            checkpoint_callback = CheckpointCallback(
-                save_freq=1000,
-                save_path='checkpoints/',
-                name_prefix=self.symbol + "_" + sess_id
-            )
 
             # Patch the tensorboard log directory for this session
             wandb.tensorboard.patch(root_logdir=self.tensorboard_log_dir)
@@ -221,13 +215,22 @@ class TradingRLTrainer:
             checkpoint_callback = CheckpointCallback(
                 save_freq=1000,
                 save_path='checkpoints/',
-                name_prefix=self.symbol
+                name_prefix=self.symbol + "_" + sess_id
             )
 
-            info_logging_callback = InfoLoggingCallback(verbose=1, log_dir=tensorboard_log_dir)  # 初始化自定义回调
+            early_stopping_callback = EarlyStoppingCallback(
+                eval_env=test_env,
+                eval_freq=100000,                # evaluate every {eval_freq} steps
+                n_eval_episodes=self.n_eval_episodes,  # number of episodes to evaluate
+                early_stopping_patience=5,     # stop training if performance hasn't improved in 10 evals
+                verbose=1
+            )
+
+
+            info_logging_callback = InfoLoggingCallback(verbose=1, log_dir=tensorboard_log_dir) 
 
             # Combine all callbacks
-            callback_list = CallbackList([checkpoint_callback, wandb_callback, info_logging_callback])
+            callback_list = CallbackList([checkpoint_callback, wandb_callback, info_logging_callback, early_stopping_callback])
 
             # Train the model
             model.learn(
@@ -290,15 +293,15 @@ def main():
         symbol=symbol,
         interval=interval,
         config=config,
-        train_ratio=0.999,
-        train_timesteps=2048, # default n_steps 2048
-        n_eval_episodes=1,
+        train_ratio=0.99,
+        train_timesteps=300_000, # default n_steps 2048
+        n_eval_episodes=2,
         results_dir="models",  # Specify model directory
         tensorboard_log_dir="tensorboard_logs",  # Specify TensorBoard log directory
         seed=42
     )
 
-    n_envs = 2
+    n_envs = 10
 
     # Adjust or reduce the list below to the algorithms you actually need.
     model_classes = [PPO]  # You can add more algorithms like A2C, DDPG, etc.

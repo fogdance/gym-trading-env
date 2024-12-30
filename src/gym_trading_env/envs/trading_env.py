@@ -524,6 +524,8 @@ class CustomTradingEnv(gym.Env):
             if self.dump_png:
                 output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
+            # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
+            # print(f'{timestamp_at_window_end} {self.currency_pair}_candlestick_{self.current_step}.png')
             # Draw the candlestick chart with indicators and return as numpy array
             img = draw_candlestick_with_indicators(
                 df=df_window,
