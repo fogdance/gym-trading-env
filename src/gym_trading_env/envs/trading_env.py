@@ -19,6 +19,8 @@ from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from gym_trading_env.rendering.plotting import draw_candlestick_with_indicators  # Import plotting utility
+from gym_trading_env.envs.trade_record import TradeRecord
+from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 
 # Set global decimal precision
 getcontext().prec = 28
@@ -55,7 +57,8 @@ class CustomTradingEnv(gym.Env):
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
         self.is_unittest = config.get('is_unittest', False)
-        self.dump_png = False
+        self.debug_enabled = True
+        self.trade_record_manager = TradeRecordManager()
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -107,6 +110,15 @@ class CustomTradingEnv(gym.Env):
 
         self.reset()
 
+    def record_trade(self, trade_record: TradeRecord):
+        """
+        Record a trade in the trade record manager.
+
+        Args:
+            trade_record (TradeRecord): The trade record to record.
+        """
+        self.trade_record_manager.record_trade(trade_record)
+
     def reset(self, seed=None, options=None):
         """
         Resets the environment to an initial state and returns an initial observation.
@@ -119,6 +131,7 @@ class CustomTradingEnv(gym.Env):
             Tuple: (observation, info)
         """
         super().reset(seed=seed)
+        self.trade_record_manager = TradeRecordManager()
         # Reset positions
         self.position_manager = PositionManager()
         # Reset user accounts
@@ -146,9 +159,12 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
+        current_kline = self.df.iloc[self.current_step]
+        timestamp = current_kline.name
+
         # Get current price
         try:
-            self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
+            self.current_price = Decimal(str(current_kline['Close']))
         except IndexError:
             self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df)}.")
             self.terminated = True
@@ -165,13 +181,13 @@ class CustomTradingEnv(gym.Env):
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            self._long_open(self.current_price + self.spread)
+            self._long_open(timestamp, self.current_price + self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            self._long_close(self.current_price - self.spread)
+            self._long_close(timestamp, self.current_price - self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            self._short_open(self.current_price - self.spread)
+            self._short_open(timestamp, self.current_price - self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            self._short_close(self.current_price + self.spread)
+            self._short_close(timestamp, self.current_price + self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -203,6 +219,9 @@ class CustomTradingEnv(gym.Env):
 
         # Update info
         info = self._get_info(equity)
+
+        if self.terminated and self.debug_enabled:
+            self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
         # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
@@ -287,7 +306,7 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             self.logger.info("Margin requirement not met. Episode terminated.")
 
-    def _long_open(self, ask_price: Decimal):
+    def _long_open(self, timestamp, ask_price: Decimal):
         """
         Executes a LONG_OPEN action.
 
@@ -338,12 +357,26 @@ class CustomTradingEnv(gym.Env):
         new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin)
         self.position_manager.add_long_position(new_position)
 
+        # Record trade
+        trade_record = TradeRecord(
+            timestamp=timestamp,
+            operation_type=Action.LONG_OPEN.name,
+            position_size=position_size,
+            price=ask_price,
+            required_margin=required_margin,
+            fee=fee,
+            balance=self.user_accounts.balance.get_balance(),
+            leverage=self.leverage,
+            free_margin=free_margin
+        )
+        self.record_trade(trade_record)
+
         self.logger.debug(f"Opened LONG position: {new_position}")
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _long_close(self, bid_price: Decimal):
+    def _long_close(self, timestamp, bid_price: Decimal):
         """
         Executes a LONG_CLOSE action.
 
@@ -389,13 +422,29 @@ class CustomTradingEnv(gym.Env):
             self.logger.error(f"Error releasing margin: {e}")
             self.terminated = True
             return
+        
+        trade_record = TradeRecord(
+            timestamp=timestamp,
+            operation_type=Action.LONG_CLOSE.name,
+            position_size=closed_size,
+            price=bid_price,
+            required_margin=0,
+            fee=fee,
+            balance=self.user_accounts.balance.get_balance(),
+            leverage=self.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
+            pnl=pnl,
+            closed_size=closed_size,
+            released_margin=released_margin
+        )
+        self.record_trade(trade_record)
 
         self.logger.debug(f"Closed LONG position at price {bid_price}")
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _short_open(self, bid_price: Decimal):
+    def _short_open(self, timestamp, bid_price: Decimal):
         """
         Executes a SHORT_OPEN action.
 
@@ -446,12 +495,27 @@ class CustomTradingEnv(gym.Env):
         new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin)
         self.position_manager.add_short_position(new_position)
 
+        
+        # Record trade
+        trade_record = TradeRecord(
+            timestamp=timestamp,
+            operation_type=Action.SHORT_OPEN.name,
+            position_size=position_size,
+            price=bid_price,
+            required_margin=required_margin,
+            fee=fee,
+            balance=self.user_accounts.balance.get_balance(),
+            leverage=self.leverage,
+            free_margin=free_margin
+        )
+        self.record_trade(trade_record)
+
         self.logger.debug(f"Opened SHORT position: {new_position}")
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _short_close(self, ask_price: Decimal):
+    def _short_close(self, timestamp, ask_price: Decimal):
         """
         Executes a SHORT_CLOSE action.
 
@@ -498,6 +562,22 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return
 
+        trade_record = TradeRecord(
+            timestamp=timestamp,
+            operation_type=Action.SHORT_CLOSE.name,
+            position_size=closed_size,
+            price=ask_price,
+            required_margin=0,
+            fee=fee,
+            balance=self.user_accounts.balance.get_balance(),
+            leverage=self.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
+            pnl=pnl,
+            closed_size=closed_size,
+            released_margin=released_margin
+        )
+        self.record_trade(trade_record)
+
         self.logger.debug(f"Closed SHORT position at price {ask_price}")
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
@@ -521,7 +601,8 @@ class CustomTradingEnv(gym.Env):
 
 
             output_filepath = None
-            if self.dump_png:
+            if self.debug_enabled:
+                os.makedirs('output', exist_ok=True)
                 output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
             # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
