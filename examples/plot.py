@@ -17,6 +17,13 @@ def main():
     # Load sample data
     df = pd.read_csv('data/EURUSD_test5m.csv', parse_dates=['Date'])
 
+    window_size = 40
+    current_step = 20
+
+    window_start = max(0, current_step - window_size)
+    window_end = current_step
+    df = df.iloc[window_start:window_end]
+
     # Create an instance of TradeRecordManager
     trade_record_manager = TradeRecordManager()
 
@@ -83,7 +90,7 @@ def main():
     trade_record_manager.record_trade(trade_record)
 
     # Create a plotter for Bollinger Bands
-    plotter = BollingerBandPlotter(df, trade_record_manager, balance=11100, window=20, fig_width=700, fig_height=500, dpi=100)
+    plotter = BollingerBandPlotter(df, trade_record_manager, balance=1000, window=window_size, fig_width=128, fig_height=128, dpi=100)
     
     # Create output directory if not exists
     os.makedirs('output', exist_ok=True)

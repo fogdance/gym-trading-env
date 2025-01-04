@@ -10,6 +10,8 @@ import numpy as np
 from decimal import Decimal
 import talib
 from matplotlib.patches import Rectangle
+from PIL import Image
+import io
 
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
@@ -17,11 +19,12 @@ from gym_trading_env.envs.action import Action
 from gym_trading_env.rendering.health_bar import HealthBar
 
 class BollingerBandPlotter:
-    def __init__(self, df, trade_record_manager, balance, window=20, fig_width=1000, fig_height=600, dpi=100):
+    def __init__(self, df, trade_record_manager, balance, window=20, channels=1, fig_width=1000, fig_height=600, dpi=100):
         plt.rcParams['toolbar'] = 'none'  # Disable toolbar
         self.window = window
         self.balance = balance
         self.df = df
+        self.channels = channels
         self.trade_record_manager = trade_record_manager
         self.show_volume = False
 
@@ -152,12 +155,12 @@ class BollingerBandPlotter:
     def plot_trade_and_line(self, ax, entry_date, entry_price, exit_date, exit_price, trade_type, linestyle):
         # Define marker properties based on the trade type and action (entry or exit)
         if trade_type == 'Long':
-            entry_marker = {'marker': 'o', 'color': 'green', 'markersize': 75}
-            exit_marker = {'marker': 'o', 'color': 'green', 'markersize': 75}
+            entry_marker = {'marker': 'o', 'color': 'green', 'markersize': 25}
+            exit_marker = {'marker': 'o', 'color': 'green', 'markersize': 25}
             profit_condition = exit_price > entry_price
         else:
-            entry_marker = {'marker': '^', 'color': 'red', 'markersize': 75}
-            exit_marker = {'marker': '^', 'color': 'red', 'markersize': 75}
+            entry_marker = {'marker': '^', 'color': 'red', 'markersize': 25}
+            exit_marker = {'marker': '^', 'color': 'red', 'markersize': 25}
             profit_condition = exit_price < entry_price
 
         # Determine the line color based on profit or loss
@@ -294,25 +297,56 @@ class BollingerBandPlotter:
             self.plot_progress_bar(ax_progress, self.balance)
 
             plt.tight_layout()
-            if show:
-                plt.show()
-
-            if filename:
-                # Save the figure with specified dpi without bbox_inches='tight'
-                fig.savefig(filename, dpi=self.dpi)
 
             # Ensure the canvas is fully rendered
             fig.canvas.draw()
 
-            # Convert the figure to a numpy array with the exact pixel dimensions
-            buf = fig.canvas.get_renderer().buffer_rgba()
-            img = np.asarray(buf, dtype=np.uint8)
-            img = img[:, :, :3]  # Remove the alpha channel to get RGB
-            img = img.reshape(int(self.fig_height), int(self.fig_width), 3)  # Ensure correct shape
+            img = self.to_binary(fig, filename)
+
             plt.close(fig)
-            
+
             return img
+            
         except Exception as e:
             print(f"Error: {e}")
-            white_image = np.ones((self.fig_height, self.fig_width, 3), dtype=np.uint8) * 255
+            white_image = np.ones((self.fig_height, self.fig_width, self.channels), dtype=np.uint8) * 255  # White image
             return white_image
+        
+
+    
+    def to_binary(self, fig, filename=None):
+        if self.channels == 1:
+            return self._to_gray(fig, filename)
+        
+        if filename:
+            # Save the figure with specified dpi without bbox_inches='tight'
+            fig.savefig(filename, dpi=self.dpi)
+
+        # Convert the figure to a numpy array with the exact pixel dimensions
+        buf = fig.canvas.get_renderer().buffer_rgba()
+        img = np.asarray(buf, dtype=np.uint8)
+        img = img[:, :, :3]  # Remove the alpha channel to get RGB
+        img = img.reshape(int(self.fig_height), int(self.fig_width), self.channels)
+        return img
+    
+    def _to_gray(self, fig, filename=None):
+        buf = io.BytesIO()
+        fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
+
+        buf.seek(0)
+        pil_image = Image.open(buf)
+        
+        # Convert the image to grayscale
+        gray_pil_image = pil_image.convert('L')
+        
+        # Resize the image to the desired dimensions
+        gray_pil_image = gray_pil_image.resize((self.fig_width, self.fig_height))
+        
+        if filename:
+            gray_pil_image.save(filename, format='PNG')
+        
+        # Convert the image to binary data
+        img_array = np.array(gray_pil_image)
+        img_array = img_array.reshape(int(self.fig_height), int(self.fig_width), self.channels)
+
+        return img_array    

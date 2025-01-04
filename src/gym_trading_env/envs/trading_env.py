@@ -51,7 +51,7 @@ class CustomTradingEnv(gym.Env):
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
         self.is_unittest = config.get('is_unittest', False)
-        self.debug_enabled = True
+        self.debug_enabled = False
         self.trade_record_manager = TradeRecordManager()
 
         # Set up logging
@@ -77,9 +77,9 @@ class CustomTradingEnv(gym.Env):
         self.action_space = spaces.Discrete(len(Action))
 
         # Define image dimensions
-        self.image_height = config.get('image_height', 300)
-        self.image_width = config.get('image_width', 400)
-        self.channels = 3  # RGB
+        self.image_height = config.get('image_height', 256)
+        self.image_width = config.get('image_width', 256)
+        self.channels = config.get('image_channels', 1)
 
         # Update observation space to image
         self.observation_space = spaces.Box(
@@ -597,6 +597,7 @@ class CustomTradingEnv(gym.Env):
             # Draw the candlestick chart with indicators and return as numpy array
             plotter = BollingerBandPlotter(
                 df=df_window,
+                channels=self.channels,
                 trade_record_manager=self.trade_record_manager,
                 balance=self.user_accounts.balance.get_balance(),
                 fig_width=self.image_width,

@@ -26,6 +26,7 @@ def main():
         'risk_free_rate': 0.0,
         'image_height': 500,
         'image_width': 700,
+        'image_channels': 1,
     }
     
     # Initialize environment with configuration

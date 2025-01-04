@@ -6,6 +6,7 @@ from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 import numpy as np
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
+from stable_baselines3.common.env_checker import check_env
 
 # Set global decimal precision for testing
 getcontext().prec = 28
@@ -40,10 +41,12 @@ class TestCustomTradingEnv(unittest.TestCase):
             'risk_free_rate': 0.0,
             'image_height': 480,
             'image_width': 640,
-            'channels': 3,  # Assuming RGB images
+            'image_channels': 3,  # Assuming RGB images
             'is_unittest': True
         }
+
         self.env = CustomTradingEnv(df=df, config=config)
+        check_env(self.env, warn=True)
         self.env.reset()
         self.initial_total_funds = self.calculate_total_funds()
 
