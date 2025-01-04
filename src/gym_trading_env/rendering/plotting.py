@@ -2,6 +2,8 @@
 
 import pandas as pd
 import mplfinance as mpf
+import matplotlib
+matplotlib.use('Agg')  # Use the Anti-Grain Geometry backend
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np

@@ -28,7 +28,7 @@ getcontext().rounding = ROUND_HALF_UP
 
 
 class CustomTradingEnv(gym.Env):
-    metadata = {'render.modes': ['human']}
+    metadata = {'render_modes': ['human']}
 
     def __init__(self, df: pd.DataFrame, config: dict = None):
         super(CustomTradingEnv, self).__init__()
