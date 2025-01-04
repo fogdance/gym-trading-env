@@ -2,7 +2,6 @@
 
 from decimal import Decimal, getcontext, ROUND_HALF_UP
 import logging
-from enum import Enum
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
@@ -18,20 +17,15 @@ from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
-from gym_trading_env.rendering.plotting import draw_candlestick_with_indicators  # Import plotting utility
+from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
+from gym_trading_env.envs.action import Action
 
 # Set global decimal precision
 getcontext().prec = 28
 getcontext().rounding = ROUND_HALF_UP
 
-class Action(Enum):
-    HOLD = 0
-    LONG_OPEN = 1
-    LONG_CLOSE = 2
-    SHORT_OPEN = 3
-    SHORT_CLOSE = 4
 
 class CustomTradingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -69,7 +63,7 @@ class CustomTradingEnv(gym.Env):
             self.logger.addHandler(handler)
         self.logger.setLevel(logging.ERROR)
 
-        # Data and features
+        # Data
         self.df = df.copy()
         # Ensure 'Date' is datetime and set as index
         if 'Date' in self.df.columns:
@@ -78,8 +72,6 @@ class CustomTradingEnv(gym.Env):
         elif not isinstance(self.df.index, pd.DatetimeIndex):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
 
-        self.feature_engineer = FeatureEngineer(window_size=self.window_size)
-        self.features = self.feature_engineer.compute_features(self.df)
 
         # Action space: dynamically based on Action Enum
         self.action_space = spaces.Discrete(len(Action))
@@ -193,11 +185,6 @@ class CustomTradingEnv(gym.Env):
         if self.current_step >= len(self.df) - 1:
             self.terminated = True
             self.logger.info(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df)}")
-
-        if self.current_step + 1 >= len(self.features):
-            # End immediately so that the next step will not be accessed again
-            self.terminated = True
-            self.logger.info(f"Episode terminated. current_step: {self.current_step}, features_len: {len(self.features)}")
 
         # Update step
         self.current_step += 1
@@ -597,7 +584,7 @@ class CustomTradingEnv(gym.Env):
             # Slice the dataframe for the current window
             window_start = max(0, self.current_step - self.window_size)
             window_end = self.current_step
-            df_window = self.features.iloc[window_start:window_end]
+            df_window = self.df.iloc[window_start:window_end]
 
 
             output_filepath = None
@@ -608,14 +595,15 @@ class CustomTradingEnv(gym.Env):
             # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
             # print(f'{timestamp_at_window_end} {self.currency_pair}_candlestick_{self.current_step}.png')
             # Draw the candlestick chart with indicators and return as numpy array
-            img = draw_candlestick_with_indicators(
+            plotter = BollingerBandPlotter(
                 df=df_window,
-                width=self.image_width,
-                height=self.image_height,
-                filename=output_filepath  # Do not save to file, return image array
+                trade_record_manager=self.trade_record_manager,
+                balance=self.user_accounts.balance.get_balance(),
+                fig_width=self.image_width,
+                fig_height=self.image_height,
             )
 
-            return img
+            return plotter.plot(filename=output_filepath)
 
     def render(self, mode=None):
         """

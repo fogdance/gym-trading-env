@@ -8,11 +8,11 @@ from stable_baselines3.common.env_checker import check_env
 
 def main():
     # Load data
-    df = load_data('USDJPY', interval = '1d')
+    df = load_data('EURUSD', interval = '5m')
     
     # Define configuration
     config = {
-        'currency_pair': 'USDJPY',
+        'currency_pair': 'EURUSD',
         'initial_balance': 10000.0,
         'trading_fees': 0.001,  # 0.1% trading fee
         'spread': 0.0002,        # 2 pips spread
@@ -22,10 +22,10 @@ def main():
         'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
         'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
         'reward_function': 'total_pnl_reward_function',
-        'window_size': 20,
+        'window_size': 60,
         'risk_free_rate': 0.0,
-        'image_height': 300,
-        'image_width': 400,
+        'image_height': 500,
+        'image_width': 700,
     }
     
     # Initialize environment with configuration
