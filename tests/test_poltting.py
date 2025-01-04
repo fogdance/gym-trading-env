@@ -78,7 +78,7 @@ class TestProcessTradeRecord(unittest.TestCase):
         self.addRecords()
 
         # Create BollingerBandPlotter object
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
 
         # Get results
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
@@ -132,7 +132,7 @@ class TestProcessTradeRecord(unittest.TestCase):
 
         self.addRecords()
 
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
 
         # Ensure trades outside the time range are filtered out
@@ -199,7 +199,7 @@ class TestProcessTradeRecord(unittest.TestCase):
         ))
         self.addRecords()
 
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
 
         # Ensure trades outside the time range are filtered out
@@ -231,7 +231,7 @@ class TestProcessTradeRecord(unittest.TestCase):
             free_margin=Decimal('1000.0')
         ))
 
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
 
         # Ensure trades outside the time range are filtered out
@@ -262,7 +262,7 @@ class TestProcessTradeRecord(unittest.TestCase):
             free_margin=Decimal('1000.0')
         ))
 
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
 
         # Ensure there is no corresponding closing trade for the opening trade
@@ -284,7 +284,7 @@ class TestProcessTradeRecord(unittest.TestCase):
             free_margin=Decimal('1000.0')
         ))
 
-        plotter = BollingerBandPlotter(self.df, self.trade_record_manager)
+        plotter = BollingerBandPlotter(self.df, self.trade_record_manager, 1000)
         long_open_records, long_close_records, short_open_records, short_close_records = plotter.process_trade_record()
 
         self.assertEqual(len(long_open_records), 0)
