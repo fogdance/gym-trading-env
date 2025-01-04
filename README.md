@@ -45,7 +45,7 @@ This environment is designed specifically for Forex (foreign exchange) trading a
 
 3. Install dependencies:
     ```bash
-    pip install -e .
+    poetry install
     ```
 
 4. Run unit tests to verify installation:
