@@ -82,11 +82,12 @@ class CustomTradingEnv(gym.Env):
         self.channels = config.get('image_channels', 1)
 
         # Update observation space to image
-        self.observation_space = spaces.Box(
-            low=0, high=255, 
-            shape=(self.image_height, self.image_width, self.channels), 
-            dtype=np.uint8
-        )
+        self.observation_space = spaces.Dict({
+            'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
+            'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
+            'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
+            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 5), dtype=np.float32),
+        })
 
         # Initialize state
         self.position_manager = PositionManager()
@@ -101,6 +102,41 @@ class CustomTradingEnv(gym.Env):
         self.previous_equity = Decimal(self.initial_balance)
 
         self.reset()
+
+    def position_to_features(self, position: Position, is_long: bool) -> np.ndarray:
+        entry_price = position.entry_price
+        position_size = position.size
+        current_price = self.current_price
+
+        if is_long:
+            current_unrealized_pnl = (current_price - entry_price) * position_size * self.lot_size
+            position_type = Action.LONG_OPEN.value
+        else:
+            current_unrealized_pnl = (entry_price - current_price) * position_size * self.lot_size
+            position_type = Action.SHORT_OPEN.value
+
+        features = [
+            float(entry_price),
+            float(position_size),
+            float(position_type),
+            float(current_price),
+            float(current_unrealized_pnl),
+        ]
+        return np.array(features, dtype=np.float32)
+    
+    def get_current_positions(self):
+        positions = []
+        for pos in self.position_manager.long_positions:
+            positions.append(self.position_to_features(pos, is_long=True))
+
+        for pos in self.position_manager.short_positions:
+            positions.append(self.position_to_features(pos, is_long=False))
+
+        positions = positions[:4]
+
+        while len(positions) < 4:
+            positions.append(np.zeros(5, dtype=np.float32))
+        return np.array(positions, dtype=np.float32)
 
     def record_trade(self, trade_record: TradeRecord):
         """
@@ -572,7 +608,7 @@ class CustomTradingEnv(gym.Env):
         """
         if self.is_unittest:
             # Ugly hack to return random image for unit tests
-            return np.random.randint(0, 256, size=(self.image_height, self.image_width, self.channels), dtype=np.uint8)
+            image = np.random.randint(0, 256, size=(self.image_height, self.image_width, self.channels), dtype=np.uint8)
         else:
             # Slice the dataframe for the current window
             window_start = max(0, self.current_step - self.window_size)
@@ -597,7 +633,19 @@ class CustomTradingEnv(gym.Env):
                 fig_height=self.image_height,
             )
 
-            return plotter.plot(filename=output_filepath)
+            image = plotter.plot(filename=output_filepath)
+        
+        positions = self.get_current_positions()
+
+        obs =  {
+            'image': image,
+            'realized_pnl': np.array([float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))], dtype=np.float32),
+            'balance': np.array([float(decimal_to_float(self.user_accounts.balance.get_balance()))], dtype=np.float32),
+            'positions': positions,  
+        }
+
+        return obs
+
 
     def render(self, mode=None):
         """
