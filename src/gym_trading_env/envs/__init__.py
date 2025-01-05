@@ -20,8 +20,9 @@ config = {
     'reward_function': 'total_pnl_reward_function',
     'window_size': 60,
     'risk_free_rate': 0.0,
-    'image_height': 256,
-    'image_width': 256,
+    'image_height': 96,
+    'image_width': 192,
+    'image_channels': 1,
 }
 
 # Factory function to create the environment with the necessary arguments
