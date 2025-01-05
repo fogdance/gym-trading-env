@@ -293,9 +293,15 @@ class BollingerBandPlotter:
 
             # Small plot (first row)
             ax_small = fig.add_subplot(gs[0, 0])
-            macd, macdsignal, macdhist = talib.MACD(self.df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
-            ax_small.plot(self.df.index, macd, label='MACD', color='b', linewidth=1.5)
-            ax_small.plot(self.df.index, macdsignal, label='Signal', color='r', linewidth=1.5)
+            # Calculate RSI (Relative Strength Index)
+            rsi = talib.RSI(self.df['Close'], timeperiod=14)
+
+            # Plot RSI
+            ax_small.plot(self.df.index, rsi, label='RSI', color='b', linewidth=1)
+
+            # Add horizontal lines for overbought and oversold levels (usually 70 and 30)
+            ax_small.axhline(70, color='r', linewidth=1, linestyle='--')  # Overbought line
+            ax_small.axhline(30, color='g', linewidth=1, linestyle='dashdot')  # Oversold line
 
             # Separator line 1 (second row)
             ax_sep1 = fig.add_subplot(gs[1, 0])
