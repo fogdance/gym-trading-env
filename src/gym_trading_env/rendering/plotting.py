@@ -12,6 +12,7 @@ import talib
 from matplotlib.patches import Rectangle
 from PIL import Image
 import io
+from matplotlib.gridspec import GridSpec, GridSpecFromSubplotSpec
 
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
@@ -155,12 +156,12 @@ class BollingerBandPlotter:
     def plot_trade_and_line(self, ax, entry_date, entry_price, exit_date, exit_price, trade_type, linestyle):
         # Define marker properties based on the trade type and action (entry or exit)
         if trade_type == 'Long':
-            entry_marker = {'marker': 'o', 'color': 'green', 'markersize': 25}
-            exit_marker = {'marker': 'o', 'color': 'green', 'markersize': 25}
+            entry_marker = {'marker': 'o', 'color': 'green', 'markersize': 15}
+            exit_marker = {'marker': 'o', 'color': 'green', 'markersize': 15}
             profit_condition = exit_price > entry_price
         else:
-            entry_marker = {'marker': '^', 'color': 'red', 'markersize': 25}
-            exit_marker = {'marker': '^', 'color': 'red', 'markersize': 25}
+            entry_marker = {'marker': '^', 'color': 'red', 'markersize': 15}
+            exit_marker = {'marker': '^', 'color': 'red', 'markersize': 15}
             profit_condition = exit_price < entry_price
 
         # Determine the line color based on profit or loss
@@ -207,22 +208,27 @@ class BollingerBandPlotter:
 
         return [addplot_entry, addplot_exit, addplot_line] if addplot_exit else [addplot_entry, addplot_line]
 
-    def plot_candlestick_chart(self, ax, df, show_bollinger=True, show_entry_exit=True, small=False):
-        """Plot the candlestick chart (large or small)"""
+    def plot_candlestick_chart(self, ax, df, show_bollinger=True, show_entry_exit=True, show_macd=False):
+        """Plot the candlestick chart"""
         apds = []
         if show_bollinger:
             upper, middle, lower = talib.BBANDS(df['Close'], timeperiod=self.window, nbdevup=2, nbdevdn=2, matype=0)
+            apds = [
+                mpf.make_addplot(upper, ax=ax, linestyle='--', width=1.5),  # Upper band
+                mpf.make_addplot(lower, ax=ax, linestyle='--', width=1.5),  # Lower band
+                mpf.make_addplot(middle, ax=ax, color='blue', width=1.5)  # Middle band
+            ]
 
-            if small:  # For small chart, only show the middle band
-                apds = [
-                    mpf.make_addplot(middle, ax=ax, color='blue', width=1.5)  # Only show middle band
-                ]
-            else:  # For large chart, show the full Bollinger Bands
-                apds = [
-                    mpf.make_addplot(upper, ax=ax, linestyle='--', width=1.5),  # Upper band
-                    mpf.make_addplot(lower, ax=ax, linestyle='--', width=1.5),  # Lower band
-                    mpf.make_addplot(middle, ax=ax, color='blue', width=1.5)  # Middle band
-                ]
+        apds_macd = []    
+        if show_macd:
+            macd, macdsignal, macdhist = talib.MACD(df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+            
+            # Plot MACD line and Signal line
+            apds_macd = ([
+                mpf.make_addplot(macd, ax=ax, color='orange', width=1.5, panel=1),  # MACD line
+                mpf.make_addplot(macdsignal, ax=ax, color='blue', width=1.5, panel=1),  # Signal line
+            ])
+            
 
         # Plot entry and exit markers
         addplots = []
@@ -236,7 +242,7 @@ class BollingerBandPlotter:
             adds2 = self.plot_trades(ax, short_open_records, short_close_records, 'Short')
             addplots = adds1 + adds2
 
-        all_addplots = apds + addplots
+        all_addplots = apds + addplots + apds_macd
 
         # Plot the candlestick chart on the given ax
         mpf.plot(df, type='candle', ax=ax, style='default', addplot=all_addplots, volume=self.show_volume)
@@ -249,7 +255,7 @@ class BollingerBandPlotter:
         ax.set_xticks([])  # Hide x-axis ticks
         ax.set_yticks([])  # Hide y-axis ticks
 
-    def plot_progress_bar(self, ax, balance, unit=1000):
+    def plot_progress_bar(self, ax_progress, ax_progress_text, unit=1000):
         """
         Draw a progress bar to represent the balance and display the latest time label
         
@@ -259,44 +265,81 @@ class BollingerBandPlotter:
         - unit: Progress bar unit, default is 1000
         """
         
-        # Get the latest time label
-        latest_time = self.df.index[-1].strftime('%H:%M')
-        
         # Create a HealthBar instance
-        health_bar = HealthBar(initial_health=balance, 
+        health_bar = HealthBar(initial_health=self.balance, 
                             unit_health=unit,
                            color_A='red', 
                            color_B='orange', 
                            color_N='cyan', 
                            line_width=10)
         
-        # Draw the progress bar and time label
-        health_bar.draw_on_ax(ax, latest_time=latest_time)
+        health_bar.draw_on_ax(ax_progress)
 
-    def plot(self, filename=None, show=False):
+        multiplier = health_bar.get_multiplier()
+        ax_progress_text.text(0, 0, f'x{multiplier}', 
+                       ha='center', va='bottom', fontsize=8, color='black')
+
+    def plot(self, filename=None):
         """Plot the candlestick chart and Bollinger Bands"""
         try:
             # Calculate the figure size in inches based on pixels and DPI
             fig_width_inch = self.fig_width / self.dpi
             fig_height_inch = self.fig_height / self.dpi
-            
-            # Create the figure and set subplot size ratios
-            fig = plt.figure(figsize=(fig_width_inch, fig_height_inch), dpi=self.dpi)  # Use the provided width and height (pixels to inches)
-            gs = fig.add_gridspec(3, 1, height_ratios=[30, 65, 5])  # Set the ratio for 3 subplots
-            
-            # Plot the small chart at the top
-            ax_small = fig.add_subplot(gs[0])
-            self.plot_candlestick_chart(ax_small, self.df, show_bollinger=True, show_entry_exit=True, small=True)  # Small chart
 
-            # Plot the large chart in the middle
-            ax_large = fig.add_subplot(gs[1])
-            self.plot_candlestick_chart(ax_large, self.df, show_bollinger=True, show_entry_exit=True, small=False)  # Large chart
+            fig = plt.figure(figsize=(fig_width_inch, fig_height_inch), dpi=self.dpi)
 
-            # Plot the progress bar at the bottom
-            ax_progress = fig.add_subplot(gs[2])
-            self.plot_progress_bar(ax_progress, self.balance)
+            # Use GridSpec to define a total of 5 rows (3 subplots + 2 separators)
+            gs = GridSpec(nrows=5, ncols=1, figure=fig, height_ratios=[0.2, 0.02, 0.6, 0.02, 0.2], hspace=0, wspace=0)
 
-            plt.tight_layout()
+            # Small plot (first row)
+            ax_small = fig.add_subplot(gs[0, 0])
+            macd, macdsignal, macdhist = talib.MACD(self.df['Close'], fastperiod=12, slowperiod=26, signalperiod=9)
+            ax_small.plot(self.df.index, macd, label='MACD', color='b', linewidth=1.5)
+            ax_small.plot(self.df.index, macdsignal, label='Signal', color='r', linewidth=1.5)
+
+            # Separator line 1 (second row)
+            ax_sep1 = fig.add_subplot(gs[1, 0])
+            ax_sep1.axis('off')  # Hide the axes
+            ax_sep1.hlines(0.5, 0, 1, colors='black', linewidth=1)  # Draw a horizontal line
+
+            # Large plot (third row)
+            ax_large = fig.add_subplot(gs[2, 0])
+            # Plot the large chart
+            self.plot_candlestick_chart(ax_large, self.df, show_bollinger=True, show_entry_exit=True, show_macd=False)
+
+            # Separator line 2 (fourth row)
+            ax_sep2 = fig.add_subplot(gs[3, 0])
+            ax_sep2.axis('off')  # Hide the axes
+            ax_sep2.hlines(0.5, 0, 1, colors='black', linewidth=1)  # Draw a horizontal line
+
+            # Bottom subplot (fifth row)
+            # The bottom subplot (fifth row) is divided into 3 columns using GridSpecFromSubplotSpec, with a width ratio of 6:2:2
+            gs_bottom = GridSpecFromSubplotSpec(nrows=1, ncols=3, 
+                                                subplot_spec=gs[4, 0], 
+                                                width_ratios=[6, 2, 2], 
+                                                wspace=0, hspace=0)
+
+            # Progress bar (first column)
+            ax_progress = fig.add_subplot(gs_bottom[0, 0])
+            ax_progress_text = fig.add_subplot(gs_bottom[0, 1])
+
+            self.plot_progress_bar(ax_progress, ax_progress_text)
+
+            # Latest time label (third column)
+            ax_time = fig.add_subplot(gs_bottom[0, 2])
+            latest_time = self.df.index[-1].strftime('%H:%M')  # Use the latest time from the actual data
+            ax_time.text(0.5, 0.5, latest_time, ha='center', va='center', fontsize=8, color='black')
+            ax_time.axis('off')  # Hide the axes
+
+            # Hide the axes, ticks, and borders of the main subplots
+            for ax in [ax_small, ax_large, ax_progress, ax_progress_text, ax_time]:
+                ax.set_xticks([])
+                ax.set_yticks([])
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+
+            # Adjust the overall margins of the figure to ensure subplots are tightly arranged
+            fig.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
 
             # Ensure the canvas is fully rendered
             fig.canvas.draw()
@@ -306,6 +349,7 @@ class BollingerBandPlotter:
             plt.close(fig)
 
             return img
+
             
         except Exception as e:
             print(f"Error: {e}")

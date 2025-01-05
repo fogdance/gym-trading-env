@@ -198,11 +198,11 @@ class TradingRLTrainer:
                 sync_tensorboard=True,  # Sync TensorBoard logs to WandB
                 monitor_gym=True,
                 save_code=True,
-                config = {
+                config={**{
                     "algorithm": algo_name,
                     "env": "CustomTradingEnv",
                     "total_timesteps": self.train_timesteps,
-                },
+                }, **self.config},  # Merge both configs
                 reinit=True  # Allow multiple runs in the same script
             )
 
@@ -275,18 +275,21 @@ def main():
     symbol = "EURUSD"
     interval = "5m"
     config = {
-        "currency_pair": symbol,
-        "initial_balance": 10000.0,
-        "trading_fees": 0.001,
-        "spread": 0.0002,
-        "leverage": 100,
-        "lot_size": 100000,
-        "trade_lot": 0.01,
-        "max_long_position": 0.02,
-        "max_short_position": 0.02,
-        "reward_function": "total_pnl_reward_function",
-        "window_size": 20,
-        "risk_free_rate": 0.0,
+        'currency_pair': 'EURUSD',
+        'initial_balance': 1000.0,
+        'trading_fees': 0.001,  # 0.1% trading fee
+        'spread': 0.0002,        # 2 pips spread
+        'leverage': 100,         # 1:100 leverage
+        'lot_size': 100000,      # Standard lot size for EUR/USD
+        'trade_lot': 0.01,       # Default trade size: 0.01 lot
+        'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
+        'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
+        'reward_function': 'total_pnl_reward_function',
+        'window_size': 60,
+        'risk_free_rate': 0.0,
+        'image_height': 96,
+        'image_width': 192,
+        'image_channels': 3,
     }
 
     trainer = TradingRLTrainer(

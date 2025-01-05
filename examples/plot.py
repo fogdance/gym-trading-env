@@ -18,7 +18,7 @@ def main():
     df = pd.read_csv('data/EURUSD_test5m.csv', parse_dates=['Date'])
 
     window_size = 40
-    current_step = 20
+    current_step = 40
 
     window_start = max(0, current_step - window_size)
     window_end = current_step
@@ -90,13 +90,13 @@ def main():
     trade_record_manager.record_trade(trade_record)
 
     # Create a plotter for Bollinger Bands
-    plotter = BollingerBandPlotter(df, trade_record_manager, balance=1000, window=window_size, fig_width=128, fig_height=128, dpi=100)
+    plotter = BollingerBandPlotter(df, trade_record_manager, channels=3, balance=1000, window=window_size, fig_width=192, fig_height=96, dpi=100)
     
     # Create output directory if not exists
     os.makedirs('output', exist_ok=True)
 
     # Plot the Bollinger Bands and save to file
-    plotter.plot(filename='output/bollinger_bands.png', show=True)
+    plotter.plot(filename='output/bollinger_bands.png')
 
 # Call the main function
 if __name__ == '__main__':

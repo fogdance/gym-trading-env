@@ -52,21 +52,17 @@ class HealthBar:
                             facecolor=color, zorder=zorder)
         ax.add_patch(segment)
     
-    def draw_label(self, ax, x_position, y_position, multiplier):
-        """
-        Draw the unit label.
-        """
-        label = ax.text(x_position, y_position + self.line_width + 2, f'x{multiplier}', 
-                       ha='center', va='bottom', fontsize=10, color='black')
+    def get_multiplier(self):
+        multiplier = self.health // self.unit_health
+        return multiplier
 
-    def draw_on_ax(self, ax, latest_time, max_health=None):
+    def draw_on_ax(self, ax, max_health=None):
         """
         Draw the progress bar and time label on the specified Axes.
         
         Parameters:
         - ax: Matplotlib Axes object
         - current_health: Current health
-        - latest_time: Latest time label
         - max_health: Maximum health, used to determine the total length of the progress bar. 
                        If not provided, the initial_health will be used.
         """
@@ -94,16 +90,9 @@ class HealthBar:
         if extra_health >0:
             extra_width = (extra_health / self.unit_health) * bar_length
             self.draw_segment(ax, x_start, extra_width, self.color_B, y_position, zorder=2)
-
-        # Draw label
-        multiplier = self.health // self.unit_health
-        self.draw_label(ax, x_start + bar_length /2, y_position, multiplier)
-        
-        # Draw time label
-        ax.text(x_start + bar_length, y_position + self.line_width + 2, latest_time, 
-                ha='right', va='bottom', fontsize=10, color='black')
         
         # Set axis limits and hide axes
         ax.set_xlim(0, x_start + bar_length + 50)  # Leave space for time label
         ax.set_ylim(0, y_position + self.line_width + 20)
         ax.axis('off')  # Turn off axis display
+        
