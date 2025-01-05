@@ -151,12 +151,9 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        current_kline = self.df.iloc[self.current_step]
-        timestamp = current_kline.name
-
         # Get current price
         try:
-            self.current_price = Decimal(str(current_kline['Close']))
+            self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
         except IndexError:
             self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df)}.")
             self.terminated = True
@@ -173,13 +170,13 @@ class CustomTradingEnv(gym.Env):
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            self._long_open(timestamp, self.current_price + self.spread)
+            self._long_open(self.current_price + self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            self._long_close(timestamp, self.current_price - self.spread)
+            self._long_close(self.current_price - self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            self._short_open(timestamp, self.current_price - self.spread)
+            self._short_open(self.current_price - self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            self._short_close(timestamp, self.current_price + self.spread)
+            self._short_close(self.current_price + self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -293,7 +290,7 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             self.logger.info("Margin requirement not met. Episode terminated.")
 
-    def _long_open(self, timestamp, ask_price: Decimal):
+    def _long_open(self, ask_price: Decimal):
         """
         Executes a LONG_OPEN action.
 
@@ -346,7 +343,7 @@ class CustomTradingEnv(gym.Env):
 
         # Record trade
         trade_record = TradeRecord(
-            timestamp=timestamp,
+            timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.LONG_OPEN.name,
             position_size=position_size,
             price=ask_price,
@@ -363,7 +360,7 @@ class CustomTradingEnv(gym.Env):
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _long_close(self, timestamp, bid_price: Decimal):
+    def _long_close(self, bid_price: Decimal):
         """
         Executes a LONG_CLOSE action.
 
@@ -411,7 +408,7 @@ class CustomTradingEnv(gym.Env):
             return
         
         trade_record = TradeRecord(
-            timestamp=timestamp,
+            timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.LONG_CLOSE.name,
             position_size=closed_size,
             price=bid_price,
@@ -431,7 +428,7 @@ class CustomTradingEnv(gym.Env):
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _short_open(self, timestamp, bid_price: Decimal):
+    def _short_open(self, bid_price: Decimal):
         """
         Executes a SHORT_OPEN action.
 
@@ -485,7 +482,7 @@ class CustomTradingEnv(gym.Env):
         
         # Record trade
         trade_record = TradeRecord(
-            timestamp=timestamp,
+            timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.SHORT_OPEN.name,
             position_size=position_size,
             price=bid_price,
@@ -502,7 +499,7 @@ class CustomTradingEnv(gym.Env):
                           f"Short position: {self.user_accounts.short_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
 
-    def _short_close(self, timestamp, ask_price: Decimal):
+    def _short_close(self, ask_price: Decimal):
         """
         Executes a SHORT_CLOSE action.
 
@@ -550,7 +547,7 @@ class CustomTradingEnv(gym.Env):
             return
 
         trade_record = TradeRecord(
-            timestamp=timestamp,
+            timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.SHORT_CLOSE.name,
             position_size=closed_size,
             price=ask_price,
