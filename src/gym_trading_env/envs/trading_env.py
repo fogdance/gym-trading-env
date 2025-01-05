@@ -136,7 +136,7 @@ class CustomTradingEnv(gym.Env):
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
-        return self._get_obs(), self._get_info(self.initial_balance)
+        return self._get_obs(), self._get_info()
 
     def step(self, action):
         """
@@ -202,7 +202,7 @@ class CustomTradingEnv(gym.Env):
         obs = self._get_obs()
 
         # Update info
-        info = self._get_info(equity)
+        info = self._get_info()
 
         if self.terminated and self.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
@@ -210,18 +210,14 @@ class CustomTradingEnv(gym.Env):
         # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
 
-    def _get_info(self, equity: Decimal):
+    def _get_info(self):
         """
         Retrieve information about the current state.
-
-        Args:
-            equity (Decimal): Current equity.
 
         Returns:
             dict: Information dictionary containing various account details.
         """
         info = {
-            'total_asset': equity,
             'realized_pnl': self.user_accounts.realized_pnl,
             'unrealized_pnl': self.user_accounts.unrealized_pnl,
             'fees_collected': self.broker_accounts.fees.get_balance(),

@@ -55,7 +55,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         Calculate the total funds across all user and broker accounts.
         """
         # Total funds include user balance(contain realized P&L), used margin, and broker fees
-        user_info = self.env._get_info(self.env._calculate_equity())
+        user_info = self.env._get_info()
         total_funds = (
             Decimal(str(user_info['balance'])) +
             Decimal(str(user_info['used_margin'])) +
@@ -167,7 +167,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
-        self.assertIn('total_asset', info)
 
         # Verify total funds consistency
         total_funds_after = self.calculate_total_funds()
@@ -284,7 +283,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         self.assertFalse(terminated, "Environment should not terminate after LONG_CLOSE.")
         self.assertFalse(truncated, "Environment should not truncate after LONG_CLOSE.")
-        self.assertIn('total_asset', info)
 
     def test_step_short_open(self):
         """
@@ -357,7 +355,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         self.assertFalse(terminated, "Environment should not terminate after SHORT_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate after SHORT_OPEN.")
-        self.assertIn('total_asset', info)
 
         # Verify total funds consistency
         total_funds_after = self.calculate_total_funds()
@@ -474,7 +471,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         self.assertFalse(terminated, "Environment should not terminate after SHORT_CLOSE.")
         self.assertFalse(truncated, "Environment should not truncate after SHORT_CLOSE.")
-        self.assertIn('total_asset', info)
 
     def test_fee_deduction(self):
         """
@@ -637,7 +633,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
-                self.assertIn('total_asset', info)
 
                 # Verify total funds consistency
                 total_funds_after_step = self.calculate_total_funds()
@@ -740,7 +735,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 self.assertFalse(terminated, "Environment should not terminate after LONG_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after LONG_OPEN.")
-                self.assertIn('total_asset', info)
 
                 # Verify total funds consistency
                 total_funds_after_step = self.calculate_total_funds()
@@ -844,7 +838,6 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 self.assertFalse(terminated, "Environment should not terminate after SHORT_OPEN.")
                 self.assertFalse(truncated, "Environment should not truncate after SHORT_OPEN.")
-                self.assertIn('total_asset', info)
 
                 # Verify total funds consistency
                 total_funds_after_step = self.calculate_total_funds()
@@ -976,7 +969,6 @@ class TestCustomTradingEnv(unittest.TestCase):
         #                        msg=f"Expected reward: {float(expected_reward)}, but got {reward}")
         self.assertFalse(terminated, "Environment should not terminate on failed LONG_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate on failed LONG_OPEN.")
-        self.assertIn('total_asset', info)
 
         # Verify total funds consistency
         total_funds_after = self.calculate_total_funds()
@@ -1027,7 +1019,6 @@ class TestCustomTradingEnv(unittest.TestCase):
         #                        msg=f"Expected reward: {float(expected_reward)}, but got {reward}")
         self.assertTrue(terminated, "Environment should terminate on failed SHORT_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate on failed SHORT_OPEN.")
-        self.assertIn('total_asset', info)
 
         # Verify total funds consistency
         total_funds_after = self.calculate_total_funds()
