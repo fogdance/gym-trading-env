@@ -31,7 +31,13 @@ def total_pnl_reward_function(env):
     # Convert to float with precision
     return float(decimal_to_float(reward, precision=2))
 
+def current_balance_reward_function(env):
+
+    # Convert to float with precision
+    return float(decimal_to_float(env.user_accounts.balance.get_balance(), precision=2))
+
 # Mapping of reward function names to actual functions
 reward_functions = {
+    'current_balance_reward_function': current_balance_reward_function,
     'total_pnl_reward_function': total_pnl_reward_function,
 }
