@@ -2,14 +2,12 @@
 
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-import math
 
 
 class HealthBar:
     def __init__(self, initial_health=1000, unit_health=1000, 
                  color_A='red', color_B='orange', 
-                 color_N='cyan', 
-                 line_width=10):
+                 color_N='cyan', line_width=10):
         """
         Initialize the health bar object.
         
@@ -45,7 +43,7 @@ class HealthBar:
         Draw a segment of the health bar.
         """
         width = x_end - x_start
-        if width <=0:
+        if width <= 0:
             return
         segment = Rectangle((x_start, y_position), width, self.line_width, 
                             linewidth=0, edgecolor=None, 
@@ -62,7 +60,6 @@ class HealthBar:
         
         Parameters:
         - ax: Matplotlib Axes object
-        - current_health: Current health
         - max_health: Maximum health, used to determine the total length of the progress bar. 
                        If not provided, the initial_health will be used.
         """
@@ -75,24 +72,23 @@ class HealthBar:
         y_position = 5  # Fixed y position
         x_end = x_start + bar_length
 
-        # Draw empty health bar background
+        # Calculate the current health bar length
+        health_percentage = self.health / max_health
+        current_bar_length = bar_length * health_percentage
+
+        # Draw empty health bar background (white)
         self.draw_segment(ax, x_start, x_end, 'white', y_position, zorder=0)
+
         # Draw black border
         border = Rectangle((x_start, y_position), bar_length, self.line_width, 
                            linewidth=2, edgecolor='black', 
                            facecolor='none', zorder=4)
         ax.add_patch(border)
-        
-        if self.health >= self.unit_health:
-            self.draw_segment(ax, x_start, x_end, self.color_A, y_position, zorder=1)
-        
-        total_units, extra_health = self.calculate_units()
-        if extra_health >0:
-            extra_width = (extra_health / self.unit_health) * bar_length
-            self.draw_segment(ax, x_start, extra_width, self.color_B, y_position, zorder=2)
-        
+
+
+        self.draw_segment(ax, x_start, x_start + current_bar_length, self.color_A, y_position, zorder=1)
+
         # Set axis limits and hide axes
         ax.set_xlim(0, x_start + bar_length + 50)  # Leave space for time label
         ax.set_ylim(0, y_position + self.line_width + 20)
         ax.axis('off')  # Turn off axis display
-        

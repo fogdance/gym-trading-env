@@ -273,7 +273,7 @@ class BollingerBandPlotter:
                            color_N='cyan', 
                            line_width=10)
         
-        health_bar.draw_on_ax(ax_progress)
+        health_bar.draw_on_ax(ax_progress, max_health=unit*3)
 
         multiplier = health_bar.get_multiplier()
         ax_progress_text.text(0, 0, f'x{multiplier}', 
