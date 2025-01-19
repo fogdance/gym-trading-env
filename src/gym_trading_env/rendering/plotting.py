@@ -289,39 +289,23 @@ class BollingerBandPlotter:
             fig = plt.figure(figsize=(fig_width_inch, fig_height_inch), dpi=self.dpi)
 
             # Use GridSpec to define a total of 5 rows (3 subplots + 2 separators)
-            gs = GridSpec(nrows=5, ncols=1, figure=fig, height_ratios=[0.2, 0.02, 0.6, 0.02, 0.2], hspace=0, wspace=0)
+            gs = GridSpec(nrows=3, ncols=1, figure=fig, height_ratios=[0.82, 0.02, 0.2], hspace=0, wspace=0)
 
-            # Small plot (first row)
-            ax_small = fig.add_subplot(gs[0, 0])
-            # Calculate RSI (Relative Strength Index)
-            rsi = talib.RSI(self.df['Close'], timeperiod=14)
-
-            # Plot RSI
-            ax_small.plot(self.df.index, rsi, label='RSI', color='b', linewidth=1)
-
-            # Add horizontal lines for overbought and oversold levels (usually 70 and 30)
-            ax_small.axhline(70, color='r', linewidth=1, linestyle='--')  # Overbought line
-            ax_small.axhline(30, color='g', linewidth=1, linestyle='dashdot')  # Oversold line
-
-            # Separator line 1 (second row)
-            ax_sep1 = fig.add_subplot(gs[1, 0])
-            ax_sep1.axis('off')  # Hide the axes
-            ax_sep1.hlines(0.5, 0, 1, colors='black', linewidth=1)  # Draw a horizontal line
 
             # Large plot (third row)
-            ax_large = fig.add_subplot(gs[2, 0])
+            ax_large = fig.add_subplot(gs[0, 0])
             # Plot the large chart
             self.plot_candlestick_chart(ax_large, self.df, show_bollinger=True, show_entry_exit=True, show_macd=False)
 
             # Separator line 2 (fourth row)
-            ax_sep2 = fig.add_subplot(gs[3, 0])
+            ax_sep2 = fig.add_subplot(gs[1, 0])
             ax_sep2.axis('off')  # Hide the axes
             ax_sep2.hlines(0.5, 0, 1, colors='black', linewidth=1)  # Draw a horizontal line
 
             # Bottom subplot (fifth row)
             # The bottom subplot (fifth row) is divided into 3 columns using GridSpecFromSubplotSpec, with a width ratio of 6:2:2
             gs_bottom = GridSpecFromSubplotSpec(nrows=1, ncols=3, 
-                                                subplot_spec=gs[4, 0], 
+                                                subplot_spec=gs[2, 0], 
                                                 width_ratios=[6, 2, 2], 
                                                 wspace=0, hspace=0)
 
@@ -338,7 +322,7 @@ class BollingerBandPlotter:
             ax_time.axis('off')  # Hide the axes
 
             # Hide the axes, ticks, and borders of the main subplots
-            for ax in [ax_small, ax_large, ax_progress, ax_progress_text, ax_time]:
+            for ax in [ax_large, ax_progress, ax_progress_text, ax_time]:
                 ax.set_xticks([])
                 ax.set_yticks([])
                 for spine in ax.spines.values():
