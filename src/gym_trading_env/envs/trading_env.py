@@ -103,9 +103,9 @@ class CustomTradingEnv(gym.Env):
         # Update observation space to image
         self.observation_space = spaces.Dict({
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
-            'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
-            'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
-            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 5), dtype=np.float32),
+            # 'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
+            # 'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
+            # 'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 5), dtype=np.float32),
         })
 
         # Initialize state
@@ -741,9 +741,9 @@ class CustomTradingEnv(gym.Env):
 
         obs =  {
             'image': image,
-            'realized_pnl': np.array([float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))], dtype=np.float32),
-            'balance': np.array([float(decimal_to_float(self.user_accounts.balance.get_balance()))], dtype=np.float32),
-            'positions': positions,  
+            # 'realized_pnl': np.array([float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))], dtype=np.float32),
+            # 'balance': np.array([float(decimal_to_float(self.user_accounts.balance.get_balance()))], dtype=np.float32),
+            # 'positions': positions,
         }
 
         return obs
