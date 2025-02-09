@@ -51,6 +51,9 @@ class CustomTradingEnv(gym.Env):
         # Penalty for violation
         self.violation_penalty = float(config.get('violation_penalty', 50.0))
 
+        self.forced_termination = False
+        self.just_closed_trade = None
+
         # Track last trade step
         self.last_trade_step = None
         self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
@@ -267,8 +270,7 @@ class CustomTradingEnv(gym.Env):
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
-        # Calculate reward
-        reward = self.reward_function(self)  # Already a float
+        reward = 0
 
         # Check margin requirements
         self._check_margin(equity)
@@ -285,6 +287,11 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             reward -= self.violation_penalty            
 
+        if self.terminated:
+            self.forced_termination = True
+
+        # Calculate reward
+        reward += self.reward_function(self)
 
         # Construct observation
         obs = self._get_obs()
@@ -523,6 +530,8 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient balance to pay fees on LONG_CLOSE.")
             self.terminated = True
             return
+        
+        self.just_closed_trade = pnl
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
@@ -662,6 +671,8 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient balance to pay fees on SHORT_CLOSE.")
             self.terminated = True
             return
+
+        self.just_closed_trade = pnl
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
