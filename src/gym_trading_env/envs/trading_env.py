@@ -41,6 +41,7 @@ class CustomTradingEnv(gym.Env):
         self.is_unittest = config.get('is_unittest', False)
         self.debug_enabled = False
     
+
         # Overdue positions
         self.max_holding_bars = config.get('max_holding_bars', 10) 
         # Disallow hedging
@@ -95,6 +96,23 @@ class CustomTradingEnv(gym.Env):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
 
 
+        self.max_episode_steps = config.get('max_episode_steps', 1000)  # e.g. limit episode length
+        self.randomize_start = config.get('randomize_start', True)     # random start index
+        self.episode_length = config.get('episode_length', None)       # if not None, fix length of each episode
+
+        # Initialize step counters
+        self.episode_step_count = 0
+        self.start_idx = 0
+        self.end_idx = len(self.df)  # default to entire dataset
+
+        # We'll store self.np_random for picking random start
+        # if you're using gym>=0.26, you can do self.np_random = np.random.default_rng(seed)
+        self.np_random = np.random.RandomState(seed=42)
+
+        # Check basic feasibility right away
+        self._check_data_sufficiency()
+
+
         # Action space: dynamically based on Action Enum
         self.action_space = spaces.Discrete(len(Action))
 
@@ -124,6 +142,30 @@ class CustomTradingEnv(gym.Env):
         self.previous_equity = Decimal(self.initial_balance)
 
         self.reset()
+
+    def _check_data_sufficiency(self):
+        """
+        Checks if the DataFrame is large enough given window_size and episode_length.
+        If not sufficient, raise ValueError or adapt the config as fallback.
+        """
+        df_len = len(self.df)
+        if df_len < self.window_size:
+            raise ValueError(f"Data has only {df_len} rows, smaller than window_size={self.window_size}. Not feasible.")
+        
+        if self.episode_length is not None:
+            # If we do random start, the maximum start index is (df_len - window_size - episode_length)
+            max_start = df_len - self.window_size - self.episode_length
+            if max_start < 0:
+                self.logger.warning(
+                    f"Data length={df_len} is insufficient to support window_size={self.window_size} "
+                    f"and episode_length={self.episode_length} in randomize_start. "
+                    f"Falling back to episode_length={df_len - self.window_size}."
+                )
+                # fallback: reduce episode_length
+                self.episode_length = df_len - self.window_size
+                if self.episode_length < 1:
+                    raise ValueError("Even after fallback, there's no feasible episode_length. Please provide more data.")
+
 
     def position_to_features(self, position: Position, is_long: bool) -> np.ndarray:
         entry_price = position.entry_price
@@ -188,9 +230,39 @@ class CustomTradingEnv(gym.Env):
         self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
         # Reset broker accounts
         self.broker_accounts = BrokerAccounts()  # Re-initialize broker accounts with both balance and fees
-        # Reset step
-        self.current_step = self.window_size
         self.terminated = False
+        self.forced_termination = False
+        self.episode_step_count = 0
+        df_len = len(self.df)
+
+        # 1) Decide start_idx
+        if self.randomize_start and self.episode_length is not None:
+            # max possible start
+            max_start = df_len - self.window_size - self.episode_length
+            max_start = max(max_start, 0)  # ensure not negative
+            self.start_idx = self.np_random.randint(low=0, high=max_start+1)
+        else:
+            # simple scenario: start at 0
+            self.start_idx = 0
+
+        # 2) Decide end_idx
+        if self.episode_length is not None:
+            self.end_idx = min(self.start_idx + self.episode_length, df_len)
+        else:
+            # use entire data
+            self.end_idx = df_len
+
+        # 3) current_step starts after window_size to ensure we have enough hist data
+        self.current_step = self.start_idx + self.window_size
+        if self.current_step >= self.end_idx:
+            # if that happens, it means there's no valid range
+            self.logger.warning(
+                f"current_step={self.current_step} >= end_idx={self.end_idx}. "
+                f"Data might be too short. Forcing ended episode."
+            )
+            self.terminated = True
+
+
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
@@ -289,6 +361,22 @@ class CustomTradingEnv(gym.Env):
 
         if self.terminated:
             self.forced_termination = True
+        else:
+            self.episode_step_count += 1
+
+            # check if we run out of data
+            if self.current_step >= self.end_idx:
+                self.logger.debug(
+                    f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done."
+                )
+                self.terminated = True
+
+            # or if we exceed max_episode_steps
+            if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
+                self.logger.debug(
+                    f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
+                )
+                self.terminated = True
 
         # Calculate reward
         reward += self.reward_function(self)
