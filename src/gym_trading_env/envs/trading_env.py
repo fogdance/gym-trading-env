@@ -38,10 +38,24 @@ class CustomTradingEnv(gym.Env):
         # Configuration management
         if config is None:
             config = {}
+        self.is_unittest = config.get('is_unittest', False)
+        self.debug_enabled = False
+    
+        # Overdue positions
+        self.max_holding_bars = config.get('max_holding_bars', 10) 
+        # Disallow hedging
+        self.allow_hedging = config.get('allow_hedging', True)
+        # Max inactivity
+        self.max_no_trade_bars = config.get('max_no_trade_bars', 10)
+        
+        # Penalty for violation
+        self.violation_penalty = float(config.get('violation_penalty', 50.0))
 
-
+        # Track last trade step
+        self.last_trade_step = None
         self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
         self.max_drawdown_ratio = Decimal(str(config.get('max_drawdown_ratio', 0.5)))
+
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
@@ -56,8 +70,7 @@ class CustomTradingEnv(gym.Env):
         self.reward_function = reward_functions.get(reward_function_name, total_pnl_reward_function)
         self.window_size = config.get('window_size', 20)
         self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
-        self.is_unittest = config.get('is_unittest', False)
-        self.debug_enabled = False
+ 
         self.trade_record_manager = TradeRecordManager()
 
         # Set up logging
@@ -178,6 +191,7 @@ class CustomTradingEnv(gym.Env):
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
+        self.last_trade_step = None
         return self._get_obs(), self._get_info()
 
     def _check_drawdown(self, equity: Decimal) -> bool:
@@ -207,6 +221,7 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
+
         # Get current price
         try:
             self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
@@ -222,6 +237,10 @@ class CustomTradingEnv(gym.Env):
             self.logger.error(f"Invalid action: {action}. Action must be one of {list(Action)}.")
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
+
+        # If the action is a real trade (not HOLD), update last_trade_step
+        if action_enum != Action.HOLD:
+            self.last_trade_step = self.current_step
 
         if action_enum == Action.HOLD:
             pass  # Do nothing
@@ -256,14 +275,15 @@ class CustomTradingEnv(gym.Env):
 
         # Then check drawdown
         is_drawdown_crash = self._check_drawdown(equity)
-
         if is_drawdown_crash:
             self.terminated = True
-
-        # if terminated due to margin or drawdown:
-        if self.terminated:
-            # Deduct the out_of_boundary_penalty
             reward -= self.out_of_boundary_penalty
+
+        # violation checks
+        is_violation = self._check_violations()
+        if is_violation:
+            self.terminated = True
+            reward -= self.violation_penalty            
 
 
         # Construct observation
@@ -277,6 +297,56 @@ class CustomTradingEnv(gym.Env):
 
         # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
+    
+    def _check_violations(self) -> bool:
+        """
+        Returns True if any violation is detected:
+        1) Overdue positions
+        2) Hedging not allowed
+        3) Inactivity
+        """
+        if self._check_overdue_positions():
+            self.logger.warning("[VIOLATION] Overdue position.")
+            return True
+        
+        if not self.allow_hedging:
+            if self.position_manager.total_long_position() > Decimal('0.0') and self.position_manager.total_short_position > Decimal('0.0'):
+                self.logger.warning("[VIOLATION] Hedging not allowed, but both long and short exist.")
+                return True
+        
+        if self._check_inactivity():
+            self.logger.warning("[VIOLATION] Agent is inactive for too many bars.")
+            return True
+        
+        return False
+
+    def _check_overdue_positions(self) -> bool:
+        # skip if max_holding_bars <= 0
+        if self.max_holding_bars <= 0:
+            return False
+        
+        for pos in self.position_manager.long_positions:
+            if pos.open_step is not None:
+                if (self.current_step - pos.open_step) > self.max_holding_bars:
+                    return True
+        
+        for pos in self.position_manager.short_positions:
+            if pos.open_step is not None:
+                if (self.current_step - pos.open_step) > self.max_holding_bars:
+                    return True
+        
+        return False
+
+    def _check_inactivity(self) -> bool:
+        if self.max_no_trade_bars <= 0:
+            return False
+        if self.last_trade_step is None:
+            return False
+        
+        if (self.current_step - self.last_trade_step) > self.max_no_trade_bars:
+            return True
+        
+        return False
 
     def _get_info(self):
         """
@@ -402,7 +472,7 @@ class CustomTradingEnv(gym.Env):
         self.broker_accounts.collect_fee(fee)
 
         # Create and add new position with initial_margin
-        new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin)
+        new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin, open_step=self.current_step)
         self.position_manager.add_long_position(new_position)
 
         # Record trade
@@ -540,7 +610,7 @@ class CustomTradingEnv(gym.Env):
         self.broker_accounts.collect_fee(fee)
 
         # Create and add new position with initial_margin
-        new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin)
+        new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin, open_step=self.current_step)
         self.position_manager.add_short_position(new_position)
 
         

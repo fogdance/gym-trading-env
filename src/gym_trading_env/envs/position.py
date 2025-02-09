@@ -3,7 +3,7 @@
 from decimal import Decimal
 
 class Position:
-    def __init__(self, size: Decimal, entry_price: Decimal, initial_margin: Decimal):
+    def __init__(self, size: Decimal, entry_price: Decimal, initial_margin: Decimal, open_step: int = 0):
         """
         Initializes a Position instance.
 
@@ -22,6 +22,7 @@ class Position:
         self.size = size
         self.entry_price = entry_price
         self.initial_margin = initial_margin
+        self.open_step = open_step
 
     def __repr__(self):
         """
@@ -31,4 +32,4 @@ class Position:
             str: String representation.
         """
         return (f"Position(size={self.size}, entry_price={self.entry_price}, "
-                f"initial_margin={self.initial_margin})")
+                f"initial_margin={self.initial_margin}, open_step={self.open_step})")

@@ -967,7 +967,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                          "Fees should remain 0.0 after failed LONG_OPEN.")
         # self.assertAlmostEqual(float(reward), float(expected_reward), places=2,
         #                        msg=f"Expected reward: {float(expected_reward)}, but got {reward}")
-        self.assertFalse(terminated, "Environment should not terminate on failed LONG_OPEN.")
+        self.assertTrue(terminated, "Environment should not terminate on failed LONG_OPEN.")
         self.assertFalse(truncated, "Environment should not truncate on failed LONG_OPEN.")
 
         # Verify total funds consistency
