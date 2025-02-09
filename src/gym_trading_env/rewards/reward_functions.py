@@ -129,4 +129,5 @@ def _episode_end_bonus(env):
 reward_functions = {
     'current_balance_reward_function': current_balance_reward_function,
     'total_pnl_reward_function': total_pnl_reward_function,
+    'fast_car_racing_likely_reward_function': fast_car_racing_likely_reward_function,
 }
