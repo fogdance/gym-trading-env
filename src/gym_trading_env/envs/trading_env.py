@@ -38,6 +38,10 @@ class CustomTradingEnv(gym.Env):
         # Configuration management
         if config is None:
             config = {}
+
+
+        self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
+        self.max_drawdown_ratio = Decimal(str(config.get('max_drawdown_ratio', 0.5)))
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
@@ -176,6 +180,20 @@ class CustomTradingEnv(gym.Env):
         self.previous_equity = Decimal(self.initial_balance)
         return self._get_obs(), self._get_info()
 
+    def _check_drawdown(self, equity: Decimal) -> bool:
+        """
+        Checks if equity < initial_balance*(1 - max_drawdown_ratio).
+        Returns True if the boundary is crossed, else False.
+        """
+        drawdown_threshold = self.initial_balance * (Decimal('1.0') - self.max_drawdown_ratio)
+        if equity < drawdown_threshold:
+            self.logger.info(
+                f"[CRASH] Max drawdown triggered! equity={equity:.2f} < threshold={drawdown_threshold:.2f}"
+            )
+            return True
+        return False
+
+
     def step(self, action):
         """
         Executes one time step within the environment.
@@ -235,6 +253,18 @@ class CustomTradingEnv(gym.Env):
 
         # Check margin requirements
         self._check_margin(equity)
+
+        # Then check drawdown
+        is_drawdown_crash = self._check_drawdown(equity)
+
+        if is_drawdown_crash:
+            self.terminated = True
+
+        # if terminated due to margin or drawdown:
+        if self.terminated:
+            # Deduct the out_of_boundary_penalty
+            reward -= self.out_of_boundary_penalty
+
 
         # Construct observation
         obs = self._get_obs()
