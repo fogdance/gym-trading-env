@@ -70,9 +70,9 @@ class TestCustomTradingEnv(unittest.TestCase):
         """
         obs, info = self.env.reset()
         # Verify that the observation is an image with the correct shape
-        self.assertIsInstance(obs, np.ndarray, "Observation should be a numpy array (image).")
-        self.assertEqual(obs.shape, (self.env.image_height, self.env.image_width, self.env.channels),
-                         f"Observation shape should be {(self.env.image_height, self.env.image_width, self.env.channels)}, but got {obs.shape}.")
+        self.assertIsInstance(obs['image'], np.ndarray, "Observation should be a numpy array (image).")
+        self.assertEqual(obs['image'].shape, (self.env.image_height, self.env.image_width, self.env.channels),
+                         f"Observation shape should be {(self.env.image_height, self.env.image_width, self.env.channels)}, but got {obs['image'].shape}.")
 
         # Verify initial account details
         self.assertEqual(Decimal(str(info['balance'])), Decimal('10000.0'))
