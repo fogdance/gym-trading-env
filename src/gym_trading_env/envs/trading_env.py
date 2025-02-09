@@ -359,24 +359,26 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             reward -= self.violation_penalty            
 
+
+        self.episode_step_count += 1
+
+        # check if we run out of data
+        if self.current_step >= self.end_idx:
+            self.logger.debug(
+                f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done."
+            )
+            self.terminated = True
+
+        # or if we exceed max_episode_steps
+        if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
+            self.logger.debug(
+                f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
+            )
+            self.terminated = True
+
         if self.terminated:
             self.forced_termination = True
-        else:
-            self.episode_step_count += 1
-
-            # check if we run out of data
-            if self.current_step >= self.end_idx:
-                self.logger.debug(
-                    f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done."
-                )
-                self.terminated = True
-
-            # or if we exceed max_episode_steps
-            if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
-                self.logger.debug(
-                    f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
-                )
-                self.terminated = True
+            self.position_manager.close_all_position(self.current_price, self.lot_size)
 
         # Calculate reward
         reward += self.reward_function(self)
