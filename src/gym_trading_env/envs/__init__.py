@@ -28,7 +28,7 @@ config = {
 # Factory function to create the environment with the necessary arguments
 def make_custom_trading_env(df: pd.DataFrame, config: dict = None):
     def _env_creator():
-        return CustomTradingEnv(df, config)
+        return CustomTradingEnv(df, config=config)
     
     return _env_creator
 

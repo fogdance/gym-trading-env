@@ -30,8 +30,10 @@ getcontext().rounding = ROUND_HALF_UP
 class CustomTradingEnv(gym.Env):
     metadata = {'render_modes': ['human']}
 
-    def __init__(self, df: pd.DataFrame, config: dict = None):
+    def __init__(self, df: pd.DataFrame, render_mode: str = 'human', config: dict = None):
         super(CustomTradingEnv, self).__init__()
+
+        self.render_mode = render_mode
 
         # Configuration management
         if config is None:
@@ -647,17 +649,8 @@ class CustomTradingEnv(gym.Env):
         return obs
 
 
-    def render(self, mode=None):
-        """
-        Renders the current state of the environment.
-
-        Args:
-            mode (str): The mode to render with.
-
-        Returns:
-            None or np.ndarray: Returns an image array if mode is 'rgb_array'.
-        """
-        if mode == 'human':
+    def render(self):
+        if self.render_mode == 'human':
             equity = self._calculate_equity()
             free_margin = equity - self.user_accounts.margin.get_balance()
             total_asset = float(decimal_to_float(equity, precision=2))
