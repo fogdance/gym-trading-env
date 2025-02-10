@@ -84,7 +84,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.ERROR)
+        self.logger.setLevel(logging.DEBUG)
 
         # Data
         self.df = df.copy()
@@ -359,8 +359,12 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             reward -= self.violation_penalty            
 
-
         self.episode_step_count += 1
+        
+        if self.terminated:
+            self.forced_termination = True
+            self.position_manager.close_all_position(self.current_price, self.lot_size)
+            self._update_unrealized_pnl()
 
         # check if we run out of data
         if self.current_step >= self.end_idx:
@@ -375,10 +379,6 @@ class CustomTradingEnv(gym.Env):
                 f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
             )
             self.terminated = True
-
-        if self.terminated:
-            self.forced_termination = True
-            self.position_manager.close_all_position(self.current_price, self.lot_size)
 
         # Calculate reward
         reward += self.reward_function(self)

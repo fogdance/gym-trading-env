@@ -111,3 +111,39 @@ class PositionManager:
             Decimal: Total short position size.
         """
         return sum(pos.size for pos in self.short_positions)
+
+    def close_all_position(self, closing_price: Decimal, lot_size: Decimal) -> Tuple[Decimal, Decimal, Decimal]:
+        """
+        Closes all long and short positions by repeatedly calling close_long_position / close_short_position
+        until their respective deques are empty.
+
+        Args:
+            closing_price (Decimal): The price used to close every position (applied to both long and short).
+            lot_size (Decimal): The standard lot size for each position.
+
+        Returns:
+            Tuple[Decimal, Decimal, Decimal]:
+                (total_pnl, total_released_margin, total_closed_size)
+                - total_pnl: Sum of realized PnL for all closed positions (both long and short)
+                - total_released_margin: Sum of all margins released
+                - total_closed_size: Combined lot size closed (long + short)
+        """
+        total_pnl = Decimal('0.0')
+        total_released_margin = Decimal('0.0')
+        total_closed_size = Decimal('0.0')
+
+        # Close all long positions by repeatedly calling close_long_position
+        while self.long_positions:
+            pnl, released_margin, closed_size = self.close_long_position(closing_price, lot_size)
+            total_pnl += pnl
+            total_released_margin += released_margin
+            total_closed_size += closed_size
+
+        # Close all short positions by repeatedly calling close_short_position
+        while self.short_positions:
+            pnl, released_margin, closed_size = self.close_short_position(closing_price, lot_size)
+            total_pnl += pnl
+            total_released_margin += released_margin
+            total_closed_size += closed_size
+
+        return (total_pnl, total_released_margin, total_closed_size)

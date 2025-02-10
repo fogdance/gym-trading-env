@@ -17,8 +17,15 @@ def custom_serializer(obj):
 class TradeRecordManager:
     def __init__(self):
         self.trade_history = []
+        self.total_trades = 0
+        self.winning_trades = 0
 
-    def record_trade(self, trade_data):
+    def record_trade(self, trade_data: TradeRecord):
+        if trade_data.pnl is not None:
+            self.total_trades += 1
+            if trade_data.pnl >= Decimal('0.0'):
+                self.winning_trades += 1
+
         self.trade_history.append(trade_data)
 
     def dump_to_json(self, file_path):
@@ -27,3 +34,8 @@ class TradeRecordManager:
         with open(file_path, 'w') as json_file:
             json_file.write(trade_history_json)
 
+    def get_total_trades(self):
+        return self.total_trades
+
+    def get_winning_trades_count(self):
+        return self.winning_trades

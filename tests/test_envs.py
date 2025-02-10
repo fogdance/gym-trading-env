@@ -42,7 +42,8 @@ class TestCustomTradingEnv(unittest.TestCase):
             'image_height': 480,
             'image_width': 640,
             'image_channels': 3,  # Assuming RGB images
-            'is_unittest': True
+            'is_unittest': True,
+            'out_of_boundary_penalty': 100
         }
 
         self.env = CustomTradingEnv(df=df, config=config)
@@ -1075,6 +1076,78 @@ class TestCustomTradingEnv(unittest.TestCase):
             total_funds_before,
             f"Total funds mismatch after multiple LONG_OPEN. Expected: {total_funds_before}, Got: {total_funds_after}"
         )
+
+    def test_margin_call_stopout(self):
+        """
+        Test if the environment immediately terminates (and applies heavy penalty)
+        when equity falls below the required margin (margin call).
+        """
+        obs, info = self.env.reset()
+
+        # 1) Manually set a scenario that triggers margin call
+        #    e.g. reduce user balance so that next step's float loss triggers equity < used_margin
+        # Suppose we open a large position to consume margin, then artificially lower price for a big float loss
+        action_open = Action.LONG_OPEN.value
+
+        # open a large position multiple times (exceed normal margin)
+        # or you can hack user_accounts.balance to a small value
+        # but let's do it by repeated LONG_OPEN or passing a custom method
+        # For simplicity, let's forcibly set balance to something small right away:
+        self.env.user_accounts.balance.balance = Decimal('50')  # extremely low
+
+        # 2) Step: LONG_OPEN -> margin call or next step price meltdown
+        obs, reward, terminated, truncated, info = self.env.step(action_open)
+
+        # 3) Check environment forced termination
+        #    Typically your environment would do: if equity < margin => self.terminated = True and reward -= 100
+        margin_call_triggered = terminated
+
+        self.assertTrue(margin_call_triggered, "Environment should terminate on margin call stopout.")
+        # Check the reward includes big negative penalty
+        penalty = -100.0
+        # Because we have existing PnL-based reward, total reward might be (delta_pnl + penalty)
+        # you can check if reward <= penalty, or within a tolerance
+        self.assertLessEqual(reward, penalty, "Reward should be at least -100 or less on margin call.")
+
+        # Also check that positions have been forcibly closed
+        self.assertEqual(Decimal('0.0'), Decimal(str(info['long_position'])),
+                        "All long positions should be closed after margin call.")
+        # Unrealized PnL should be 0, realized PnL is final
+        self.assertEqual(Decimal('0.0'), Decimal(str(info['unrealized_pnl'])),
+                        "No open position => unrealized PnL must be zero after forced liquidation.")
+        
+    def test_max_drawdown_stopout(self):
+        """
+        Test if environment terminates with a large negative penalty when drawdown
+        from the highest equity exceeds max_drawdown_ratio.
+        """
+        # 1) Set environment's max_drawdown_ratio = 0.3
+        self.env.max_drawdown_ratio = Decimal('0.3')
+
+        # 2) Next, force a big negative PnL so that equity < 7000 => 30% drawdown from 10000
+        # Could do this by big LONG_OPEN then drastically lowering price
+        self.env.user_accounts.balance.balance = Decimal('10000.0')
+        # big open
+        action_open = Action.LONG_OPEN.value
+        obs, reward_open, terminated, truncated, info = self.env.step(action_open)
+        self.assertFalse(terminated, "Should not terminate yet.")
+
+        # artificially drop price to create large float loss
+        # e.g. self.env.df.iloc[self.env.current_step]['Close'] = something
+        # or directly manipulate user_accounts.unrealized_pnl
+        self.env.user_accounts.unrealized_pnl = Decimal('-4000')  # 40% drawdown
+
+        # 3) Next step => triggers _check_drawdown
+        obs, reward_drawdown, terminated, truncated, info = self.env.step(Action.HOLD.value)
+
+        self.assertTrue(terminated, "Should terminate due to max drawdown stopout.")
+        # reward should reflect big negative penalty
+        self.assertLessEqual(reward_drawdown, -99.8,
+                            "Expected at least -100 penalty on drawdown stopout .")
+        # position forcibly closed
+        self.assertEqual(Decimal('0.0'), Decimal(str(info['long_position'])),
+                        "Long position should be closed after drawdown stopout.")
+
 
     def tearDown(self):
         """

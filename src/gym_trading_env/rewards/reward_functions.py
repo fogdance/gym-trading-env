@@ -50,11 +50,19 @@ def fast_car_racing_likely_reward_function(env):
     current_pnl = env.user_accounts.realized_pnl + env.user_accounts.unrealized_pnl
     delta_pnl = current_pnl - env.previous_total_pnl
 
-    # we scale the delta PnL to keep reward magnitude in a reasonable range
-    pnl_scale = 0.0001  # or a value you find suitable
-    scaled_delta_pnl = delta_pnl * Decimal(str(pnl_scale))
+    # Get the current equity (total balance in the account)
+    equity = env._calculate_equity()
 
-    step_reward = float(scaled_delta_pnl)
+    # Scale the PnL based on the equity (this way, it's a relative reward)
+    if equity > 0:
+        scaled_reward = (delta_pnl / equity) * 100  # For example, reward as percentage of equity
+    else:
+        scaled_reward = 0  # Avoid division by zero
+
+    # Update previous total PnL for the next step
+    env.previous_total_pnl = current_pnl
+
+    step_reward = float(scaled_reward)
 
     # ----------------------------
     #  Part B: Instant close reward
@@ -98,7 +106,7 @@ def fast_car_racing_likely_reward_function(env):
 
     # Debug info
     env.logger.debug(f"Prev PnL: {env.previous_total_pnl}, Current PnL: {current_pnl}, Delta: {delta_pnl},"
-                     f" Step Reward(Scaled): {float(scaled_delta_pnl)}, Close Reward: {close_reward}, Final Bonus: {final_bonus}")
+                     f" Step Reward(Scaled): {float(scaled_reward)}, Close Reward: {close_reward}, Final Bonus: {final_bonus}")
 
     # Update env.previous_total_pnl
     env.previous_total_pnl = current_pnl
