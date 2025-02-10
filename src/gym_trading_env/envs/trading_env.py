@@ -43,11 +43,11 @@ class CustomTradingEnv(gym.Env):
     
 
         # Overdue positions
-        self.max_holding_bars = config.get('max_holding_bars', 10) 
+        self.max_holding_bars = config.get('max_holding_bars', 0) 
         # Disallow hedging
-        self.allow_hedging = config.get('allow_hedging', True)
+        self.allow_hedging = config.get('allow_hedging', False)
         # Max inactivity
-        self.max_no_trade_bars = config.get('max_no_trade_bars', 10)
+        self.max_no_trade_bars = config.get('max_no_trade_bars', 30)
         
         # Penalty for violation
         self.violation_penalty = float(config.get('violation_penalty', 50.0))
@@ -58,7 +58,7 @@ class CustomTradingEnv(gym.Env):
         # Track last trade step
         self.last_trade_step = None
         self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
-        self.max_drawdown_ratio = Decimal(str(config.get('max_drawdown_ratio', 0.5)))
+        self.max_drawdown_ratio = Decimal(str(config.get('max_drawdown_ratio', 0.3)))
 
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
@@ -126,7 +126,7 @@ class CustomTradingEnv(gym.Env):
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
             # 'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
             # 'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
-            # 'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 5), dtype=np.float32),
+            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 3), dtype=np.float32),
         })
 
         # Initialize state
@@ -180,10 +180,8 @@ class CustomTradingEnv(gym.Env):
             position_type = Action.SHORT_OPEN.value
 
         features = [
-            float(entry_price),
             float(position_size),
             float(position_type),
-            float(current_price),
             float(current_unrealized_pnl),
         ]
         return np.array(features, dtype=np.float32)
@@ -199,7 +197,7 @@ class CustomTradingEnv(gym.Env):
         positions = positions[:4]
 
         while len(positions) < 4:
-            positions.append(np.zeros(5, dtype=np.float32))
+            positions.append(np.zeros(3, dtype=np.float32))
         return np.array(positions, dtype=np.float32)
 
     def record_trade(self, trade_record: TradeRecord):
@@ -360,7 +358,7 @@ class CustomTradingEnv(gym.Env):
             reward -= self.violation_penalty            
 
         self.episode_step_count += 1
-        
+
         if self.terminated:
             self.forced_termination = True
             self.position_manager.close_all_position(self.current_price, self.lot_size)
@@ -844,7 +842,7 @@ class CustomTradingEnv(gym.Env):
             'image': image,
             # 'realized_pnl': np.array([float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))], dtype=np.float32),
             # 'balance': np.array([float(decimal_to_float(self.user_accounts.balance.get_balance()))], dtype=np.float32),
-            # 'positions': positions,
+            'positions': positions,
         }
 
         return obs
