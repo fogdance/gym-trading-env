@@ -20,7 +20,7 @@ from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
-from gym_trading_env.envs.action import Action
+from gym_trading_env.envs.action import Action, ForexCode
 
 # Set global decimal precision
 getcontext().prec = 28
@@ -315,16 +315,17 @@ class CustomTradingEnv(gym.Env):
         if action_enum != Action.HOLD:
             self.last_trade_step = self.current_step
 
+        result = ForexCode.SUCCESS
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            self._long_open(self.current_price + self.spread)
+            result = self._long_open(self.current_price + self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            self._long_close(self.current_price - self.spread)
+            result = self._long_close(self.current_price - self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            self._short_open(self.current_price - self.spread)
+            result = self._short_open(self.current_price - self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            self._short_close(self.current_price + self.spread)
+            result = self._short_close(self.current_price + self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -340,10 +341,10 @@ class CustomTradingEnv(gym.Env):
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
-        reward = 0
-
         # Check margin requirements
         self._check_margin(equity)
+
+        reward = 0
 
         # Then check drawdown
         is_drawdown_crash = self._check_drawdown(equity)
@@ -353,7 +354,7 @@ class CustomTradingEnv(gym.Env):
 
         # violation checks
         is_violation = self._check_violations()
-        if is_violation:
+        if is_violation or result == ForexCode.ERROR_HIT_MAX_POSITION or result == ForexCode.ERROR_NO_POSITION_TO_CLOSE:
             self.terminated = True
             reward -= self.violation_penalty            
 
@@ -529,7 +530,7 @@ class CustomTradingEnv(gym.Env):
         max_additional_long = self.max_long_position - self.user_accounts.long_position
         if max_additional_long <= Decimal('0.0'):
             self.logger.warning("Reached maximum long position limit.")
-            return
+            return ForexCode.ERROR_HIT_MAX_POSITION
 
         position_size = min(self.trade_lot, max_additional_long)
 
@@ -547,21 +548,21 @@ class CustomTradingEnv(gym.Env):
         free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
         if total_deduction > free_margin:
             self.logger.warning("Insufficient free margin to execute LONG_OPEN.")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Deduct only the fee from user balance
         try:
             self.user_accounts.balance.withdraw(fee)
         except ValueError:
             self.logger.warning("Insufficient balance to execute LONG_OPEN.")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Deduct the required margin from user balance and allocate to margin account
         try:
             self.user_accounts.allocate_margin(required_margin)
         except ValueError as e:
             self.logger.warning(f"Failed to allocate margin: {e}")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
@@ -588,6 +589,7 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
+        return ForexCode.SUCCESS
 
     def _long_close(self, bid_price: Decimal):
         """
@@ -598,7 +600,7 @@ class CustomTradingEnv(gym.Env):
         """
         if self.user_accounts.long_position <= Decimal('0.0'):
             self.logger.warning("No long position to close.")
-            return
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         # Close the earliest long position
         try:
@@ -606,7 +608,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError as e:
             self.logger.error(f"Error closing long position: {e}")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         # Calculate fees based on closed size
         fee = (closed_size * self.lot_size * bid_price) * self.trading_fees
@@ -617,7 +619,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError:
             self.logger.warning("Insufficient balance to pay fees on LONG_CLOSE.")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
         
         self.just_closed_trade = pnl
 
@@ -636,7 +638,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError as e:
             self.logger.error(f"Error releasing margin: {e}")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
         
         trade_record = TradeRecord(
             timestamp=self.df.iloc[self.current_step].name,
@@ -658,6 +660,8 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
+        
+        return ForexCode.SUCCESS
 
     def _short_open(self, bid_price: Decimal):
         """
@@ -669,7 +673,7 @@ class CustomTradingEnv(gym.Env):
         max_additional_short = self.max_short_position - self.user_accounts.short_position
         if max_additional_short <= Decimal('0.0'):
             self.logger.warning("Reached maximum short position limit.")
-            return
+            return ForexCode.ERROR_HIT_MAX_POSITION
 
         position_size = min(self.trade_lot, max_additional_short)
 
@@ -687,21 +691,21 @@ class CustomTradingEnv(gym.Env):
         free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
         if total_deduction > free_margin:
             self.logger.warning("Insufficient free margin to execute SHORT_OPEN.")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Deduct only the fee from user balance
         try:
             self.user_accounts.balance.withdraw(fee)
         except ValueError:
             self.logger.warning("Insufficient balance to execute SHORT_OPEN.")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Deduct the required margin from user balance and allocate to margin account
         try:
             self.user_accounts.allocate_margin(required_margin)
         except ValueError as e:
             self.logger.warning(f"Failed to allocate margin: {e}")
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
@@ -729,6 +733,7 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
+        return ForexCode.SUCCESS
 
     def _short_close(self, ask_price: Decimal):
         """
@@ -739,7 +744,7 @@ class CustomTradingEnv(gym.Env):
         """
         if self.user_accounts.short_position <= Decimal('0.0'):
             self.logger.warning("No short position to close.")
-            return
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         # Close the earliest short position
         try:
@@ -747,7 +752,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError as e:
             self.logger.error(f"Error closing short position: {e}")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         # Calculate fees based on closed size
         fee = (closed_size * self.lot_size * ask_price) * self.trading_fees
@@ -758,7 +763,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError:
             self.logger.warning("Insufficient balance to pay fees on SHORT_CLOSE.")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         self.just_closed_trade = pnl
 
@@ -777,7 +782,7 @@ class CustomTradingEnv(gym.Env):
         except ValueError as e:
             self.logger.error(f"Error releasing margin: {e}")
             self.terminated = True
-            return
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         trade_record = TradeRecord(
             timestamp=self.df.iloc[self.current_step].name,
@@ -799,6 +804,8 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
                           f"Used margin: {self.user_accounts.margin.get_balance()}")
+        
+        return ForexCode.SUCCESS
 
     def _get_obs(self):
         """
