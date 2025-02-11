@@ -84,7 +84,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
         # Data
         self.df = df.copy()
@@ -406,7 +406,7 @@ class CustomTradingEnv(gym.Env):
             return True
         
         if not self.allow_hedging:
-            if self.position_manager.total_long_position() > Decimal('0.0') and self.position_manager.total_short_position > Decimal('0.0'):
+            if self.position_manager.total_long_position() > Decimal('0.0') and self.position_manager.total_short_position() > Decimal('0.0'):
                 self.logger.warning("[VIOLATION] Hedging not allowed, but both long and short exist.")
                 return True
         
