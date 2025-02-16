@@ -50,7 +50,7 @@ class CustomTradingEnv(gym.Env):
         self.max_no_trade_bars = config.get('max_no_trade_bars', 30)
         
         # Penalty for violation
-        self.violation_penalty = float(config.get('violation_penalty', 50.0))
+        self.violation_penalty = float(config.get('violation_penalty', 100.0))
 
         self.forced_termination = False
         self.just_closed_trade = None
@@ -378,6 +378,12 @@ class CustomTradingEnv(gym.Env):
                 f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
             )
             self.terminated = True
+
+        if self.position_manager.no_position():
+            if action_enum == Action.HOLD:
+                reward -= 0.1
+            elif action_enum == Action.LONG_OPEN or action_enum == Action.SHORT_OPEN:
+                reward += 0.1
 
         # Calculate reward
         reward += self.reward_function(self)

@@ -111,6 +111,9 @@ class PositionManager:
             Decimal: Total short position size.
         """
         return sum(pos.size for pos in self.short_positions)
+    
+    def no_position(self):
+        return (self.total_long_position() + self.total_short_position()) == Decimal('0.0')
 
     def close_all_position(self, closing_price: Decimal, lot_size: Decimal) -> Tuple[Decimal, Decimal, Decimal]:
         """
