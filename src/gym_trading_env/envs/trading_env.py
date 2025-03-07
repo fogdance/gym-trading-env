@@ -846,8 +846,8 @@ class CustomTradingEnv(gym.Env):
             df_window = self.df.iloc[window_start:window_end]
 
             self.game.step(df_window)
-            image = self.game.render(decimal_to_float((self.position_manager.total_long_position() + self.position_manager.total_short_position()), precision=2),
-                            decimal_to_float(self.user_accounts.unrealized_pnl, precision=2), 
+            image = self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
+                            decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
                             render_mode='rgb_array')
         
 
@@ -860,8 +860,8 @@ class CustomTradingEnv(gym.Env):
 
     def render(self):
         if self.render_mode == 'human':
-            self.game.render(decimal_to_float((self.position_manager.total_long_position() + self.position_manager.total_short_position()), precision=2),
-                            decimal_to_float(self.user_accounts.unrealized_pnl, precision=2), 
+            self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
+                            decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
                             render_mode='human')
 
 

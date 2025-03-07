@@ -5,7 +5,7 @@ SCREEN_HEIGHT = 600
 
 CAR_WIDTH = 40
 CAR_HEIGHT = 60
-LANE_OFFSET = 150  # 左右道路偏移距离（仓位大小视觉化）
+LANE_OFFSET = 1000  # 左右道路偏移距离（仓位大小视觉化）
 
 class Car:
     def __init__(self, draw_rect):
@@ -25,7 +25,7 @@ class Car:
         left, top, width, height = self.draw_rect
         center_x = left + width // 2
 
-        car_x = center_x + (self.position * LANE_OFFSET)
+        car_x = center_x - (self.position * LANE_OFFSET)
         car_y = top
 
         # 创建赛车矩形

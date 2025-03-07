@@ -57,6 +57,8 @@ class Game:
         self.track.step(df)
 
     def render(self, position, profit, render_mode='human'):
+        self.car.update(positon=position, profit=profit)
+
         if render_mode == 'human':
             self.screen.fill((0, 0, 0))
         
