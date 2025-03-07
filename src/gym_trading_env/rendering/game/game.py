@@ -2,7 +2,7 @@ import pygame
 from track import Track
 from car import Car
 from controller import Controller
-from utils import load_csv_data
+
 
 # 屏幕尺寸
 SCREEN_WIDTH = 800
@@ -16,13 +16,13 @@ TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
 BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
 
 class Game:
-    def __init__(self, csv_path):
+    def __init__(self, df_1m):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Forex Racer')
         self.clock = pygame.time.Clock()
 
-        self.df_1m = load_csv_data(csv_path)
+        self.df_1m = df_1m
         self.track = Track(self.df_1m, (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
         self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
         self.controller = Controller()

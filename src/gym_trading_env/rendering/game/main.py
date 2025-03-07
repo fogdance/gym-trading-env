@@ -1,9 +1,9 @@
 # main.py
-import pygame
 from game import Game
+from utils import load_csv_data
 
 def main():
-    game = Game(csv_path='./data/EURUSD_5m.csv')
+    game = Game(load_csv_data('./data/EURUSD_5m.csv'))
     game_mode = 'human'  # 可扩展为agent模式
 
     if game_mode == 'human':
