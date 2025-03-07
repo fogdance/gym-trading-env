@@ -34,6 +34,7 @@ class TrackSegment:
 
     def calc_lane_ratios(self):
         """根据OHLC数据动态计算车道宽度的比例"""
+        # 计算左右车道的宽度比例
         if self.close >= self.open:  # 上涨
             left = self.high - self.open  # 上涨部分宽度
             right = self.open - self.low  # 下跌部分宽度
@@ -41,12 +42,27 @@ class TrackSegment:
             left = self.open - self.low   # 下跌部分宽度
             right = self.high - self.open  # 上涨部分宽度
 
-        # 计算两侧车道宽度比例
         total = left + right
-        left_ratio = left / total if total != 0 else 0.5
-        right_ratio = right / total if total != 0 else 0.5
+        
+        # 确保总宽度不为零，避免出现负值
+        if total == 0:
+            left_ratio = 0.5
+            right_ratio = 0.5
+        else:
+            left_ratio = left / total
+            right_ratio = right / total
+
+        # 设置最小车道宽度比例（避免某一侧车道为零）
+        min_width = 0.1
+        if left_ratio < min_width:
+            left_ratio = min_width
+            right_ratio = 1 - left_ratio
+        if right_ratio < min_width:
+            right_ratio = min_width
+            left_ratio = 1 - right_ratio
 
         return left_ratio, right_ratio
+
 
 
 class Track:
@@ -89,9 +105,8 @@ class Track:
         angle = segment.angle
         height = TRACK_SEGMENT_HEIGHT
 
-        # 根据角度计算中心线的水平偏移（关键改进）
-        center_offset_x = math.tan(angle) * (height / 2)
-        adjusted_center_x = center_x + center_offset_x
+        offset_x = math.tan(angle) * height / 2
+        adjusted_center_x = center_x + offset_x
 
         # 左右车道动态计算
         left_ratio, right_ratio = segment.calc_lane_ratios()
@@ -120,6 +135,7 @@ class Track:
         self.draw_fence(surface, points, car_position, car_profit)
 
         return bottom_y - height, adjusted_center_x
+
 
 
     def draw_fence(self, surface, points, car_position, car_profit):
