@@ -101,7 +101,7 @@ class PositionManager:
         Returns:
             Decimal: Total long position size.
         """
-        return sum(pos.size for pos in self.long_positions)
+        return sum((pos.size for pos in self.long_positions), Decimal('0'))
     
     def total_short_position(self) -> Decimal:
         """
@@ -110,7 +110,7 @@ class PositionManager:
         Returns:
             Decimal: Total short position size.
         """
-        return sum(pos.size for pos in self.short_positions)
+        return sum((pos.size for pos in self.short_positions), Decimal('0'))
     
     def no_position(self):
         return (self.total_long_position() + self.total_short_position()) == Decimal('0.0')

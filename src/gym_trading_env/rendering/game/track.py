@@ -65,26 +65,22 @@ class TrackSegment:
 
 
 class Track:
-    def __init__(self, df, draw_rect):
-        self.df = df.reset_index(drop=True)
-        self.current_index = VISIBLE_TRACK_SEGMENTS
-        self.segments = self.generate_segments()
+    def __init__(self, draw_rect):
+        self.segments = None
         self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
 
-    def generate_segments(self):
+    def step(self, df):
+        # 最新的k线
+        df = df.iloc[-VISIBLE_TRACK_SEGMENTS:]
+        self.segments = self.generate_segments(df)
+
+    def generate_segments(self, df):
         segments = []
-        for _, row in self.df.iterrows():
+        for _, row in df.iterrows():
             segment = TrackSegment(
                 row['Open'], row['High'], row['Low'], row['Close'], 'historical')
             segments.append(segment)
         return segments
-
-    def current_segment(self):
-        return self.segments[self.current_index]
-
-    def move_next(self):
-        if self.current_index < len(self.segments) - 1:
-            self.current_index += 1
 
     def draw(self, surface, car_position, car_profit):
         # 更新：使用传递的绘制区域参数
@@ -98,10 +94,7 @@ class Track:
         current_y = height
         current_center_x = center_x
 
-        for offset in range(VISIBLE_TRACK_SEGMENTS-1, -1, -1):
-            idx = self.current_index - offset
-            if idx < 0:
-                continue
+        for idx in range(0, VISIBLE_TRACK_SEGMENTS, 1):
             segment = self.segments[idx]
             
             # 在临时表面上绘制，使用相对坐标
@@ -166,27 +159,33 @@ class Track:
         return bottom_y - height, adjusted_center_x
 
     def draw_fence(self, surface, points, car_position, car_profit):
-        base_fence_offset = 20
+        # 基础参数
+        base_fence_offset = BASE_FENCE_DISTANCE
         loss_scale = LOSS_SCALE
-
-        if car_position < 0:  # 多仓，左侧
-            offset = base_fence_offset - abs(car_profit) * loss_scale if car_profit < 0 else base_fence_offset * 2
-            offset = max(5, offset)
+        min_distance = MIN_FENCE_DISTANCE
+        fence_color = (200, 0, 0)
+        
+        # 如果没有持仓，不绘制防护栏
+        if car_position == 0:
+            return
+        
+        # 计算防护栏偏移量
+        if car_profit > 0:  # 亏损状态
+            # 亏损越大，防护栏越靠近道路
+            offset = base_fence_offset - abs(car_profit) * loss_scale
+            offset = max(min_distance, offset)
+        else:  # 盈利状态
+            # 盈利时，防护栏远离道路
+            offset = base_fence_offset * 2
+        
+        # 根据仓位方向确定防护栏位置
+        if car_position > 0:  # 多仓，左侧
             fence_start = (points[0][0] - offset, points[0][1])
             fence_end = (points[3][0] - offset, points[3][1])
-        elif car_position > 0:  # 空仓，右侧
-            offset = base_fence_offset - abs(car_profit) * loss_scale
-            offset = max(5, offset)
-            fence_offset = offset
-            fence_start = (points[1][0] + fence_offset, points[1][1])
-            fence_end = (points[2][0] + fence_offset, points[2][1])
-        else:  # 空仓
-            return
-
+        else:  # 空仓，右侧
+            fence_start = (points[1][0] + offset, points[1][1])
+            fence_end = (points[2][0] + offset, points[2][1])
+        
         # 绘制防护栏
-        fence_color = (200,0,0)
-        if car_position < 0:
-            pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
-        elif car_position > 0:
-            pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
+        pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
 

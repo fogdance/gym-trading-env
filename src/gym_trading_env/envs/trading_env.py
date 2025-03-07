@@ -18,6 +18,7 @@ from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
+from gym_trading_env.rendering.game.game import Game  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
@@ -28,9 +29,9 @@ getcontext().rounding = ROUND_HALF_UP
 
 
 class CustomTradingEnv(gym.Env):
-    metadata = {'render_modes': ['human']}
+    metadata = {'render_modes': ['human', 'rgb_array']}
 
-    def __init__(self, df: pd.DataFrame, render_mode: str = 'human', config: dict = None):
+    def __init__(self, df: pd.DataFrame, render_mode: str = 'rgb_array', config: dict = None):
         super(CustomTradingEnv, self).__init__()
 
         self.render_mode = render_mode
@@ -121,12 +122,14 @@ class CustomTradingEnv(gym.Env):
         self.image_width = config.get('image_width', 256)
         self.channels = config.get('image_channels', 1)
 
+        self.game = Game((self.image_width, self.image_height))
+
         # Update observation space to image
         self.observation_space = spaces.Dict({
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
             # 'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
             # 'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
-            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 3), dtype=np.float32),
+            # 'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 3), dtype=np.float32),
         })
 
         # Initialize state
@@ -326,6 +329,10 @@ class CustomTradingEnv(gym.Env):
             result = self._short_open(self.current_price - self.spread)
         elif action_enum == Action.SHORT_CLOSE:
             result = self._short_close(self.current_price + self.spread)
+        elif action_enum == Action.POSITION_UP:
+            result = self._position_up(self.current_price + self.spread, self.current_price - self.spread)
+        elif action_enum == Action.POSITION_DOWN:
+            result = self._position_down(self.current_price + self.spread, self.current_price - self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -813,6 +820,26 @@ class CustomTradingEnv(gym.Env):
         
         return ForexCode.SUCCESS
 
+    def _position_up(self, ask_price: Decimal, bid_price: Decimal):
+        if len(self.position_manager.long_positions) > 0:
+            return self._long_open(ask_price=ask_price)
+
+        if len(self.position_manager.short_positions) > 0:
+            return self._short_open(bid_price=bid_price)
+        
+        return ForexCode.SUCCESS
+        
+    def _position_down(self, ask_price: Decimal, bid_price: Decimal):
+        if len(self.position_manager.long_positions) > 0:
+            return self._long_close(bid_price=bid_price)
+
+        if len(self.position_manager.short_positions) > 0:
+            return self._short_close(ask_price=ask_price)
+        
+        return ForexCode.SUCCESS
+
+
+
     def _get_obs(self):
         """
         Constructs the observation as an image with K-line and technical indicators.
@@ -829,33 +856,14 @@ class CustomTradingEnv(gym.Env):
             window_end = self.current_step
             df_window = self.df.iloc[window_start:window_end]
 
-
-            output_filepath = None
-            if self.debug_enabled:
-                os.makedirs('output', exist_ok=True)
-                output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
-
-            # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
-            # print(f'{timestamp_at_window_end} {self.currency_pair}_candlestick_{self.current_step}.png')
-            # Draw the candlestick chart with indicators and return as numpy array
-            plotter = BollingerBandPlotter(
-                df=df_window,
-                channels=self.channels,
-                trade_record_manager=self.trade_record_manager,
-                balance=self.user_accounts.balance.get_balance(),
-                fig_width=self.image_width,
-                fig_height=self.image_height,
-            )
-
-            image = plotter.plot(filename=output_filepath)
+            self.game.step(df_window)
+            image = self.game.render(decimal_to_float((self.position_manager.total_long_position() + self.position_manager.total_short_position()), precision=2),
+                            decimal_to_float(self.user_accounts.unrealized_pnl, precision=2), 
+                            render_mode='rgb_array')
         
-        positions = self.get_current_positions()
 
         obs =  {
-            'image': image,
-            # 'realized_pnl': np.array([float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))], dtype=np.float32),
-            # 'balance': np.array([float(decimal_to_float(self.user_accounts.balance.get_balance()))], dtype=np.float32),
-            'positions': positions,
+            'image': image
         }
 
         return obs
@@ -863,29 +871,10 @@ class CustomTradingEnv(gym.Env):
 
     def render(self):
         if self.render_mode == 'human':
-            equity = self._calculate_equity()
-            free_margin = equity - self.user_accounts.margin.get_balance()
-            total_asset = float(decimal_to_float(equity, precision=2))
-            realized_pnl = float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))
-            unrealized_pnl = float(decimal_to_float(self.user_accounts.unrealized_pnl, precision=2))
-            fees_collected = float(decimal_to_float(self.broker_accounts.fees.get_balance(), precision=2))
-            broker_balance = float(decimal_to_float(self.broker_accounts.balance.get_balance(), precision=2))
+            self.game.render(decimal_to_float((self.position_manager.total_long_position() + self.position_manager.total_short_position()), precision=2),
+                            decimal_to_float(self.user_accounts.unrealized_pnl, precision=2), 
+                            render_mode='human')
 
-            print(f'Step: {self.current_step}')
-            print(f'Currency Pair: {self.currency_pair}')
-            print(f'Balance: {self.user_accounts.balance.get_balance():.2f}')
-            print(f'Equity: {equity:.2f}')
-            print(f'Used Margin: {self.user_accounts.margin.get_balance():.2f}')
-            print(f'Free Margin: {free_margin:.2f}')
-            print(f'Long Position: {self.user_accounts.long_position:.4f} lots')
-            print(f'Short Position: {self.user_accounts.short_position:.4f} lots')
-            print(f'Realized P&L: {realized_pnl:.2f}')
-            print(f'Unrealized P&L: {unrealized_pnl:.2f}')
-            print(f'Fees Collected: {fees_collected:.2f}')
-            print(f'Broker Balance: {broker_balance:.2f}')
-            print(f'Total Asset: {total_asset:.2f}')
-            print(f'Long Positions: {list(self.position_manager.long_positions)}')
-            print(f'Short Positions: {list(self.position_manager.short_positions)}')
 
     def close(self):
         """

@@ -14,36 +14,10 @@ class Car:
         self.color = (180,180,180)  # 初始为灰色
         self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
 
-    def update(self, action, segment):
-        # 根据action更新赛车位置
-        if action == 'left':
-            self.position = max(self.position - 0.1, -1)
-        elif action == 'right':
-            self.position = min(1, self.position + 0.1)
-        elif action == 'close':
-            self.position = 0
+    def update(self, positon, profit):
+        self.position = positon
+        self.profit = profit
 
-        # 根据新的位置计算盈亏
-        self.calculate_profit(segment=segment)
-
-    def calculate_profit(self, segment):
-        # 盈亏逻辑明确
-        if self.position == 0:
-            self.profit = 0
-        else:
-            direction = -1 if self.position < 0 else 1
-            if (segment.angle * direction) > 0:
-                self.profit = abs(segment.angle) * abs(self.position)  # 盈利状态
-            else:
-                self.profit = -abs(segment.angle * self.position)
-
-        # 根据盈亏情况更新颜色
-        if self.position == 0:
-            self.color = (180, 180, 180)  # 空仓为灰色
-        elif self.profit > 0:
-            self.color = (0, 200, 0)  # 浮盈绿色
-        else:
-            self.color = (200, 0, 0)  # 浮亏红色
 
     def draw(self, surface):
         """绘制赛车矩形到屏幕"""
