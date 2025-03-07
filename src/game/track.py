@@ -2,144 +2,152 @@ import pygame
 import pandas as pd
 import math
 
-# Track配置参数(生产中可调整到配置文件)
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 TRACK_SEGMENT_HEIGHT = 60  # 每段道路的高度
 VISIBLE_TRACK_SEGMENTS = 10  # 屏幕显示道路段数
 ANGLE_SCALE = 1000  # 倾斜敏感度放大
-WIDTH_SCALE = 500  # 宽度敏感度放大
-BASE_ROAD_WIDTH = 200  # 道路基础宽度
-MIN_ROAD_WIDTH = 60  # 最小宽度
+BASE_ROAD_WIDTH = 300
+MIN_ROAD_WIDTH = 100
+
+# 防护栏参数
+BASE_FENCE_DISTANCE = 20  # 护栏距离道路边界基础距离
+LOSS_SCALE = 200           # 浮亏系数，越大越敏感
+MIN_FENCE_DISTANCE = 5
 
 class TrackSegment:
     """表示单个道路片段"""
-    def __init__(self, angle: float, width: float, segment_type: str):
-        self.angle = angle
-        self.width = width
-        self.type = segment_type  # 'historical' 或 'realtime'
+    def __init__(self, open_p, high_p, low_p, close_p, segment_type='historical'):
+        self.open = open_p
+        self.high = high_p
+        self.low = low_p
+        self.close = close_p
+        self.type = segment_type
+        
+        self.angle = self.calc_angle()
+        self.left_ratio, self.right_ratio = self.calc_lane_ratios()
+
+    def calc_angle(self):
+        """计算当前K线的倾斜角度"""
+        price_change_pct = (self.close - self.open) / self.open
+        return math.atan(price_change_pct * ANGLE_SCALE)
+
+    def calc_lane_ratios(self):
+        """根据OHLC数据动态计算车道宽度的比例"""
+        if self.close >= self.open:  # 上涨
+            left = self.high - self.open  # 上涨部分宽度
+            right = self.open - self.low  # 下跌部分宽度
+        else:  # 下跌
+            left = self.open - self.low   # 下跌部分宽度
+            right = self.high - self.open  # 上涨部分宽度
+
+        # 计算两侧车道宽度比例
+        total = left + right
+        left_ratio = left / total if total != 0 else 0.5
+        right_ratio = right / total if total != 0 else 0.5
+
+        return left_ratio, right_ratio
+
 
 class Track:
-    """道路类，负责数据到道路的映射与渲染"""
-    def __init__(self, df_5m: pd.DataFrame):
-        self.df = df_5m.reset_index(drop=True)
-        self.segments = self._generate_segments()
-        self.current_index = VISIBLE_TRACK_SEGMENTS  # 从这里开始显示
-        self.realtime_segment = None
+    def __init__(self, df):
+        self.df = df.reset_index(drop=True)
+        self.current_index = VISIBLE_TRACK_SEGMENTS
+        self.segments = self.generate_segments()
 
-    def _generate_segments(self):
-        """生成所有历史道路片段"""
+    def generate_segments(self):
         segments = []
         for _, row in self.df.iterrows():
-            angle = self.calc_angle(row['Open'], row['Close'])
-            width = self.calc_width(row['High'], row['Low'], row['Open'])
-            segments.append(TrackSegment(angle, width, 'historical'))
+            segment = TrackSegment(
+                row['Open'], row['High'], row['Low'], row['Close'], 'historical')
+            segments.append(segment)
         return segments
 
     def current_segment(self):
         return self.segments[self.current_index]
 
-    @staticmethod
-    def calc_angle(open_price, close_price):
-        """价格变动转为角度"""
-        price_change_pct = (close_price - open_price) / open_price
-        return math.atan(price_change_pct * ANGLE_SCALE)
-
-    @staticmethod
-    def calc_width(high_price, low_price, open_price):
-        """根据价格波动计算道路宽度"""
-        volatility = (high_price - low_price) / open_price
-        width = BASE_ROAD_WIDTH - volatility * WIDTH_SCALE
-        return max(width, MIN_ROAD_WIDTH)
-
-    def update_realtime_segment(self, realtime_bar):
-        """实时道路更新(未完成5分钟数据)"""
-        angle = self.calc_angle(realtime_bar['Open'], realtime_bar['Close'])
-        width = self.calc_width(realtime_bar['High'], realtime_bar['Low'], realtime_bar['Open'])
-        self.realtime_segment = TrackSegment(angle, width, 'realtime')
-
     def move_next(self):
-        """每5分钟调用一次，推动道路向前"""
         if self.current_index < len(self.segments) - 1:
             self.current_index += 1
-            self.realtime_segment = None
 
-    def draw(self, surface):
-        """完整绘制方法（中心线动态跟踪）"""
-        surface.fill((0, 0, 0))  # 清屏
-        initial_center_x, bottom_y = SCREEN_WIDTH // 2, SCREEN_HEIGHT
-
+    def draw(self, surface, car_position, car_profit):
+        surface.fill((0, 0, 0))
+        center_x, bottom_y = SCREEN_WIDTH // 2, SCREEN_HEIGHT
         current_y = bottom_y
-        current_center_x = initial_center_x
+        current_center_x = center_x
 
-        # 绘制历史道路
-        for offset in range(VISIBLE_TRACK_SEGMENTS - 1, -1, -1):
+        for offset in range(VISIBLE_TRACK_SEGMENTS-1, -1, -1):
             idx = self.current_index - offset
             if idx < 0:
                 continue
             segment = self.segments[idx]
             current_y, current_center_x = self._draw_segment(
-                surface, segment, current_center_x, current_y)
+                surface, segment, current_center_x, current_y, car_position=car_position, car_profit=car_profit)
 
-        # 实时道路（如果有）
-        if self.realtime_segment:
-            self._draw_segment(surface, self.realtime_segment, current_center_x, current_y)
-
-
-    def _draw_segment(self, surface, segment, center_x, bottom_y):
+    def _draw_segment(self, surface, segment, center_x, bottom_y, car_position, car_profit):
         """绘制单个道路片段（改进版）"""
         angle = segment.angle
-        width = segment.width
         height = TRACK_SEGMENT_HEIGHT
 
         # 根据角度计算中心线的水平偏移（关键改进）
         center_offset_x = math.tan(angle) * (height / 2)
         adjusted_center_x = center_x + center_offset_x
 
-        # 动态左右车道宽度
-        if angle > 0:  # 上涨（左倾斜），左车道稍宽
-            left_width = width * 0.6
-            right_width = width * 0.4
-        elif angle < 0:  # 下跌（右倾斜），右车道稍宽
-            left_width = width * 0.4
-            right_width = width * 0.6
-        else:  # 平稳行情
-            left_width = right_width = width / 2
-
-        # 四个顶点计算（明确）
-        top_x = adjusted_center_x + math.tan(angle) * height / 2
-        bottom_x = adjusted_center_x - math.tan(angle) * height / 2
+        # 左右车道动态计算
+        left_ratio, right_ratio = segment.calc_lane_ratios()
+        left_width = BASE_ROAD_WIDTH * left_ratio
+        right_width = BASE_ROAD_WIDTH - left_width
 
         points = [
-            (bottom_x - left_width, bottom_y),            # 左下
-            (bottom_x + right_width, bottom_y),           # 右下
-            (top_x + right_width, bottom_y - height),     # 右上
-            (top_x - left_width, bottom_y - height)       # 左上
+            (center_x - left_width, bottom_y),
+            (center_x + right_width, bottom_y),
+            (adjusted_center_x + right_width, bottom_y - height),
+            (adjusted_center_x - left_width, bottom_y - height)
         ]
 
-        # 道路颜色
-        road_color = (80, 80, 80) if segment.type == 'historical' else (120, 120, 120)
-
-        # 绘制道路区域
+        # 绘制道路主体
+        road_color = (80, 80, 80)
         pygame.draw.polygon(surface, road_color, points)
 
-        # 绘制道路中心线（动态对齐）
-        pygame.draw.line(surface, (255, 255, 255), 
-                        (bottom_x, bottom_y), 
-                        (top_x, bottom_y - height), 2)
+        # 绘制中心线
+        pygame.draw.line(surface, (255, 255, 255), (center_x, bottom_y), (adjusted_center_x, bottom_y - height), 2)
 
-        # 边界线
-        pygame.draw.lines(surface, (150, 150, 150), False, points[:2], 2)  # 下边界
-        pygame.draw.lines(surface, (150, 150, 150), False, points[2:], 2)  # 上边界
+        # 绘制左右边界线
+        pygame.draw.line(surface, (200, 200, 200), points[0], points[3], 2)
+        pygame.draw.line(surface, (200, 200, 200), points[1], points[2], 2)
 
-        # 护栏线（止损线）清晰绘制
-        pygame.draw.line(surface, (200, 0, 0),
-                        (bottom_x - left_width - 5, bottom_y),
-                        (top_x - left_width - 5, bottom_y - height), 3)
+        # 动态计算防护栏位置（关键实现）
+        self.draw_fence(surface, points, car_position, car_profit)
 
-        pygame.draw.line(surface, (200, 0, 0),
-                        (bottom_x + right_width + 5, bottom_y),
-                        (top_x + right_width + 5, bottom_y - height), 3)
+        return bottom_y - height, adjusted_center_x
 
-        return bottom_y - height, top_x  # 返回新的顶部中心X坐标
+
+    def draw_fence(self, surface, points, car_position, car_profit):
+        """防护栏根据赛车位置与盈亏动态绘制"""
+        left_start, left_end = points[0], points[3]
+        right_start, right_end = points[1], points[2]
+
+        base_fence_offset = 20
+        loss_scale = LOSS_SCALE = 100  # 生产中调整此参数
+
+        if car_position < 0:  # 多仓，左侧
+            offset = base_fence_offset - abs(car_profit) * loss_scale if car_profit < 0 else base_fence_offset * 2
+            offset = max(5, offset)
+            fence_start = (points[0][0] - offset, points[0][1])
+            fence_end = (points[3][0] - offset, points[3][1])
+        elif car_position > 0:  # 空仓，右侧
+            offset = base_fence_offset - abs(car_profit) * loss_scale
+            offset = max(5, offset)
+            fence_offset = offset
+            fence_start = (points[1][0] + fence_offset, points[1][1])
+            fence_end = (points[2][0] + fence_offset, points[2][1])
+        else:  # 空仓
+            return
+
+        # 绘制防护栏
+        fence_color = (200,0,0)
+        if car_position < 0:
+            pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
+        elif car_position > 0:
+            pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
 

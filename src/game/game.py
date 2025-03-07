@@ -37,6 +37,6 @@ class Game:
 
     def render(self):
         self.screen.fill((0, 0, 0))
-        self.track.draw(self.screen)
+        self.track.draw(self.screen, car_position=self.car.position, car_profit=self.car.profit)
         self.car.draw(self.screen)
         # 仪表盘绘制（盈亏、仓位）留空待实现
