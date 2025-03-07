@@ -2,8 +2,7 @@ import pygame
 import pandas as pd
 import math
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+
 TRACK_SEGMENT_HEIGHT = 60  # 每段道路的高度
 VISIBLE_TRACK_SEGMENTS = 10  # 屏幕显示道路段数
 ANGLE_SCALE = 1000  # 倾斜敏感度放大
@@ -66,10 +65,11 @@ class TrackSegment:
 
 
 class Track:
-    def __init__(self, df):
+    def __init__(self, df, draw_rect):
         self.df = df.reset_index(drop=True)
         self.current_index = VISIBLE_TRACK_SEGMENTS
         self.segments = self.generate_segments()
+        self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
 
     def generate_segments(self):
         segments = []
@@ -87,9 +87,11 @@ class Track:
             self.current_index += 1
 
     def draw(self, surface, car_position, car_profit):
-        surface.fill((0, 0, 0))
-        center_x, bottom_y = SCREEN_WIDTH // 2, SCREEN_HEIGHT
-        current_y = bottom_y
+        # 更新：使用传递的绘制区域参数
+        left, top, width, height = self.draw_rect
+        surface.fill((0, 0, 0), (left, top, width, height))  # 清空该区域
+        center_x = left + width // 2
+        current_y = top + height
         current_center_x = center_x
 
         for offset in range(VISIBLE_TRACK_SEGMENTS-1, -1, -1):
@@ -139,12 +141,8 @@ class Track:
 
 
     def draw_fence(self, surface, points, car_position, car_profit):
-        """防护栏根据赛车位置与盈亏动态绘制"""
-        left_start, left_end = points[0], points[3]
-        right_start, right_end = points[1], points[2]
-
         base_fence_offset = 20
-        loss_scale = LOSS_SCALE = 100  # 生产中调整此参数
+        loss_scale = LOSS_SCALE
 
         if car_position < 0:  # 多仓，左侧
             offset = base_fence_offset - abs(car_profit) * loss_scale if car_profit < 0 else base_fence_offset * 2

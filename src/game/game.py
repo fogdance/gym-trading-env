@@ -4,16 +4,27 @@ from car import Car
 from controller import Controller
 from utils import load_csv_data
 
+# 屏幕尺寸
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+
+# 配置比例（左侧:右侧 = 1:1，右上:右下 = 9:1）
+LEFT_WIDTH = SCREEN_WIDTH // 2
+RIGHT_WIDTH = SCREEN_WIDTH // 2
+
+TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
+BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
+
 class Game:
     def __init__(self, csv_path):
         pygame.init()
-        self.screen = pygame.display.set_mode((800, 600))
+        self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Forex Racer')
         self.clock = pygame.time.Clock()
 
-        data = load_csv_data(csv_path)
-        self.track = Track(data)
-        self.car = Car()
+        self.df_1m = load_csv_data(csv_path)
+        self.track = Track(self.df_1m, (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
+        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
         self.controller = Controller()
 
     def run_human_mode(self):
@@ -35,8 +46,30 @@ class Game:
             pygame.display.flip()
             self.clock.tick(60)
 
+        pygame.quit()
+
     def render(self):
         self.screen.fill((0, 0, 0))
+    
+        # 左侧区域（显示K线图）
+        pygame.draw.rect(self.screen, (255, 255, 255), (0, 0, LEFT_WIDTH, SCREEN_HEIGHT))  # 左侧区域背景
+        self.render_kline(self.screen)  # 在左侧区域绘制K线
+
+        # 右侧区域（分为上下）
+        pygame.draw.rect(self.screen, (50, 50, 50), (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))  # 右上区域背景
+        pygame.draw.rect(self.screen, (80, 80, 80), (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT))  # 右下区域背景
+
+
         self.track.draw(self.screen, car_position=self.car.position, car_profit=self.car.profit)
         self.car.draw(self.screen)
-        # 仪表盘绘制（盈亏、仓位）留空待实现
+
+    def render_kline(self, surface):
+        """在左侧区域绘制K线图"""
+        x_offset = 10
+        y_offset = 500  # 初始Y位置
+        line_color = (0, 255, 0)
+
+        for index, row in self.df_1m.iterrows():
+            close_price = row['Close']
+            pygame.draw.line(surface, line_color, (x_offset, y_offset), (x_offset + 5, y_offset - close_price * 100), 2)
+            x_offset += 10
