@@ -52,7 +52,7 @@ class Car:
         center_x = left + width // 2
 
         car_x = center_x + (self.position * LANE_OFFSET)
-        car_y = height - CAR_HEIGHT - 30  # 通过区域计算位置
+        car_y = top
 
         # 创建赛车矩形
         car_rect = pygame.Rect(car_x - CAR_WIDTH // 2, car_y, CAR_WIDTH, CAR_HEIGHT)
