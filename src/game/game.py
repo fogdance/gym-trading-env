@@ -8,9 +8,9 @@ from utils import load_csv_data
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
-# 配置比例（左侧:右侧 = 1:1，右上:右下 = 9:1）
-LEFT_WIDTH = SCREEN_WIDTH // 2
-RIGHT_WIDTH = SCREEN_WIDTH // 2
+# 配置比例（左侧:右侧 = 4:6）
+LEFT_WIDTH = SCREEN_WIDTH * 4 // 10  # 320像素
+RIGHT_WIDTH = SCREEN_WIDTH * 6 // 10  # 480像素
 
 TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
 BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
