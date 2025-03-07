@@ -352,18 +352,7 @@ class CustomTradingEnv(gym.Env):
         self._check_margin(equity)
 
         reward = 0
-
-        # Then check drawdown
-        is_drawdown_crash = self._check_drawdown(equity)
-        if is_drawdown_crash:
-            self.terminated = True
-            reward -= self.out_of_boundary_penalty
-
-        # violation checks
-        is_violation = self._check_violations()
-        if is_violation or result == ForexCode.ERROR_HIT_MAX_POSITION or result == ForexCode.ERROR_NO_POSITION_TO_CLOSE:
-            self.terminated = True
-            reward -= self.violation_penalty            
+    
 
         self.episode_step_count += 1
 
