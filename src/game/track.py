@@ -89,9 +89,13 @@ class Track:
     def draw(self, surface, car_position, car_profit):
         # 更新：使用传递的绘制区域参数
         left, top, width, height = self.draw_rect
-        surface.fill((0, 0, 0), (left, top, width, height))  # 清空该区域
-        center_x = left + width // 2
-        current_y = top + height
+        
+        # 创建临时表面
+        temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
+        temp_surface.fill((0, 0, 0, 0))  # 透明背景
+        
+        center_x = width // 2
+        current_y = height
         current_center_x = center_x
 
         for offset in range(VISIBLE_TRACK_SEGMENTS-1, -1, -1):
@@ -99,22 +103,47 @@ class Track:
             if idx < 0:
                 continue
             segment = self.segments[idx]
-            current_y, current_center_x = self._draw_segment(
-                surface, segment, current_center_x, current_y, car_position=car_position, car_profit=car_profit)
+            
+            # 在临时表面上绘制，使用相对坐标
+            current_y, current_center_x = self._draw_segment_safe(
+                temp_surface, segment, current_center_x, current_y, 
+                car_position=car_position, car_profit=car_profit, 
+                surface_width=width)
+        
+        # 将临时表面绘制到主表面
+        surface.blit(temp_surface, (left, top))
 
-    def _draw_segment(self, surface, segment, center_x, bottom_y, car_position, car_profit):
-        """绘制单个道路片段（改进版）"""
+    def _draw_segment_safe(self, surface, segment, center_x, bottom_y, car_position, car_profit, surface_width):
+        """安全绘制单个道路片段，防止越界"""
         angle = segment.angle
         height = TRACK_SEGMENT_HEIGHT
+
+        # 限制最大倾斜角度
+        MAX_ANGLE = math.radians(30)
+        angle = max(-MAX_ANGLE, min(angle, MAX_ANGLE))
 
         offset_x = math.tan(angle) * height / 2
         adjusted_center_x = center_x + offset_x
 
         # 左右车道动态计算
         left_ratio, right_ratio = segment.calc_lane_ratios()
-        left_width = BASE_ROAD_WIDTH * left_ratio
-        right_width = BASE_ROAD_WIDTH - left_width
-
+        
+        # 基础道路宽度，考虑边界
+        base_width = min(BASE_ROAD_WIDTH, surface_width * 0.8)
+        
+        left_width = base_width * left_ratio
+        right_width = base_width * right_ratio
+        
+        # 确保道路不会超出边界
+        max_left = center_x
+        max_right = surface_width - center_x
+        
+        if left_width > max_left or right_width > max_right:
+            scale = min(max_left / left_width, max_right / right_width)
+            left_width *= scale
+            right_width *= scale
+        
+        # 计算道路点
         points = [
             (center_x - left_width, bottom_y),
             (center_x + right_width, bottom_y),
@@ -126,10 +155,8 @@ class Track:
         road_color = (80, 80, 80)
         pygame.draw.polygon(surface, road_color, points)
 
-        # 绘制中心线
+        # 绘制中心线和边界线
         pygame.draw.line(surface, (255, 255, 255), (center_x, bottom_y), (adjusted_center_x, bottom_y - height), 2)
-
-        # 绘制左右边界线
         pygame.draw.line(surface, (200, 200, 200), points[0], points[3], 2)
         pygame.draw.line(surface, (200, 200, 200), points[1], points[2], 2)
 
@@ -137,8 +164,6 @@ class Track:
         self.draw_fence(surface, points, car_position, car_profit)
 
         return bottom_y - height, adjusted_center_x
-
-
 
     def draw_fence(self, surface, points, car_position, car_profit):
         base_fence_offset = 20
