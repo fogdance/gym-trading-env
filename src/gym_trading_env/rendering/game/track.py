@@ -5,12 +5,13 @@ import math
 
 TRACK_SEGMENT_HEIGHT = 60  # 每段道路的高度
 ANGLE_SCALE = 1000  # 倾斜敏感度放大
-BASE_ROAD_WIDTH = 100
+BASE_ROAD_WIDTH = 120
+BASE_ROAD_RANGE = 5
 
 # 防护栏参数
 BASE_FENCE_DISTANCE = 20  # 护栏距离道路边界基础距离
 LOSS_SCALE = 200           # 浮亏系数，越大越敏感
-MIN_FENCE_DISTANCE = 5
+MIN_FENCE_DISTANCE = 2.5
 
 class TrackSegment:
     """表示单个道路片段"""
@@ -23,7 +24,6 @@ class TrackSegment:
         self.type = segment_type
         
         self.angle = self.calc_angle()
-        self.left_ratio, self.right_ratio = self.calc_lane_ratios()
 
     def calc_angle(self):
         """计算当前K线的倾斜角度"""
@@ -59,7 +59,8 @@ class TrackSegment:
             right_ratio = min_width
             left_ratio = 1 - right_ratio
 
-        return left_ratio, right_ratio
+
+        return left_ratio, right_ratio, abs(self.high - self.low)
 
 
 
@@ -69,16 +70,20 @@ class Track:
         self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
         self.df = None
         self.track_segment_height = TRACK_SEGMENT_HEIGHT
+        self.avg_road_width = 0
 
     def step(self, df):
         self.df = df
 
     def generate_segments(self, df):
         segments = []
+        avg_road_width = 0
         for idx, row in df.iterrows():
             segment = TrackSegment(
                 idx, row['Open'], row['High'], row['Low'], row['Close'], 'historical')
             segments.append(segment)
+            avg_road_width = avg_road_width + abs(row['High'] - row['Low'])
+        self.avg_road_width = avg_road_width / len(df)
         return segments
 
     def draw(self, surface, car_position, car_profit):
@@ -120,10 +125,10 @@ class Track:
         adjusted_center_x = center_x + offset_x
 
         # 左右车道动态计算
-        left_ratio, right_ratio = segment.calc_lane_ratios()
+        left_ratio, right_ratio, road_width = segment.calc_lane_ratios()
         
         # 基础道路宽度，考虑边界
-        base_width = min(BASE_ROAD_WIDTH, surface_width * 0.8)
+        base_width = min(BASE_ROAD_WIDTH*4, BASE_ROAD_WIDTH * (road_width / self.avg_road_width))
         
         left_width = base_width * left_ratio
         right_width = base_width * right_ratio
