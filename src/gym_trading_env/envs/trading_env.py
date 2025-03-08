@@ -87,7 +87,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.DEBUG)
+        self.logger.setLevel(logging.ERROR)
 
         # Data
         self.df = df.copy()
@@ -835,7 +835,7 @@ class CustomTradingEnv(gym.Env):
 
         print(f'Step: {self.current_step} Balance: {self.user_accounts.balance.get_balance():.2f} Equity: {equity:.2f} Margin: {self.user_accounts.margin.get_balance():.2f} Free Margin: {free_margin:.2f}')
         
-        self._text_render()
+        # self._text_render()
 
         if self.render_mode == 'human':
             self._render('human')

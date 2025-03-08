@@ -161,8 +161,8 @@ class Track:
 
     
         # 如果是最后一个segment，绘制日期时间
-        if last:
-            self.draw_date(surface, segment.date, adjusted_center_x, bottom_y - height, surface_width)
+        # if last:
+        #     self.draw_date(surface, segment.date, adjusted_center_x, bottom_y - height, surface_width)
 
         return bottom_y - height, adjusted_center_x
 
