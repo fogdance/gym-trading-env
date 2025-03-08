@@ -42,7 +42,7 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
-        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size)
+        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, trade_lot)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
         self.bottom_panel = BottomPanel(
