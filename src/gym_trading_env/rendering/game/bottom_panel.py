@@ -32,7 +32,7 @@ class BottomPanel:
              current_day_lost: float, current_drawback: float) -> None:
         """绘制所有指标"""
         # 背景
-        pygame.draw.rect(screen, (80, 80, 80), self.rect)
+        pygame.draw.rect(screen, (0, 0, 0), self.rect)
 
         # 1. 仓位 (position)
         pos_width = position / self.avg_position * self.profit_width

@@ -76,16 +76,10 @@ class Game:
         if render_mode == 'human':
             self.screen.fill((0, 0, 0))
             
-            # 左侧区域（K线图）
-            pygame.draw.rect(self.screen, (255, 255, 255), 
-                           (0, 0, LEFT_WIDTH, SCREEN_HEIGHT))
-            
             # 右侧上区域（赛道）
             pygame.draw.rect(self.screen, (50, 50, 50), 
                            (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
-            # 右下区域背景
-            pygame.draw.rect(self.screen, (80, 80, 80), 
-                             (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT))
+
 
             # 绘制底部面板
             self.bottom_panel.draw(self.screen, position, profit, 
