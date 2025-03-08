@@ -1,14 +1,14 @@
 import pygame
 
 
-CAR_WIDTH = 40
+CAR_WIDTH = 15
 LANE_OFFSET = 1000  # 左右道路偏移距离（仓位大小视觉化）
 
 class Car:
     def __init__(self, draw_rect, df_size):
-        self.position = 0      # 持仓方向: 0=空仓，负=多仓，正=空仓
+        self.position = 0      # 持仓方向: 0=无仓，负=空仓，正=多仓
         self.profit = 0.0     # 当前浮盈浮亏
-        self.color = (180,180,180)  # 初始为灰色
+        self.color = (255, 0, 0)  # 初始为红色
         self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
         left, top, width, height = self.draw_rect
 

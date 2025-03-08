@@ -43,14 +43,14 @@ def register_input():
 
 def main():
     # Load data
-    df = load_data('EURUSD', interval = '5m')
+    df = load_data('XAUUSD', interval = '5m')
     
     # Define configuration
     config = {
-        'currency_pair': 'EURUSD',
+        'currency_pair': 'XAUUSD',
         'initial_balance': 1000.0,
         'trading_fees': 0.001,  # 0.1% trading fee
-        'spread': 0.0002,        # 2 pips spread
+        'spread': 0.07,        # 2 pips spread
         'leverage': 100,         # 1:100 leverage
         'lot_size': 100000,      # Standard lot size for EUR/USD
         'trade_lot': 0.01,       # Default trade size: 0.01 lot

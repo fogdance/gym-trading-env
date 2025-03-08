@@ -14,7 +14,8 @@ MIN_FENCE_DISTANCE = 5
 
 class TrackSegment:
     """表示单个道路片段"""
-    def __init__(self, open_p, high_p, low_p, close_p, segment_type='historical'):
+    def __init__(self, date, open_p, high_p, low_p, close_p, segment_type='historical'):
+        self.date = date
         self.open = open_p
         self.high = high_p
         self.low = low_p
@@ -74,9 +75,9 @@ class Track:
 
     def generate_segments(self, df):
         segments = []
-        for _, row in df.iterrows():
+        for idx, row in df.iterrows():
             segment = TrackSegment(
-                row['Open'], row['High'], row['Low'], row['Close'], 'historical')
+                idx, row['Open'], row['High'], row['Low'], row['Close'], 'historical')
             segments.append(segment)
         return segments
 
@@ -96,17 +97,17 @@ class Track:
         current_center_x = center_x
 
         for segment in self.segments:
-            
+            last = segment is self.segments[-1]
             # 在临时表面上绘制，使用相对坐标
             current_y, current_center_x = self._draw_segment_safe(
                 temp_surface, segment, current_center_x, current_y, 
                 car_position=car_position, car_profit=car_profit, 
-                surface_width=width)
+                surface_width=width, last=last)
         
         # 将临时表面绘制到主表面
         surface.blit(temp_surface, (left, top))
 
-    def _draw_segment_safe(self, surface, segment, center_x, bottom_y, car_position, car_profit, surface_width):
+    def _draw_segment_safe(self, surface, segment, center_x, bottom_y, car_position, car_profit, surface_width, last=False):
         """安全绘制单个道路片段，防止越界"""
         angle = segment.angle
         height = self.track_segment_height
@@ -155,8 +156,29 @@ class Track:
 
         # 动态计算防护栏位置（关键实现）
         self.draw_fence(surface, points, car_position, car_profit)
+    
+        # 如果是最后一个segment，绘制日期时间
+        if last:
+            self.draw_date(surface, segment.date, adjusted_center_x, bottom_y - height, surface_width)
 
         return bottom_y - height, adjusted_center_x
+
+    def draw_date(self, surface, date, x, y, surface_width):
+        """在道路的右侧绘制日期"""
+        # 设置字体
+        font = pygame.font.SysFont('Arial', 24)
+        
+        # 渲染日期字符串
+        date_str = date.strftime('%Y-%m-%d %H:%M:%S')  # 格式化日期为字符串
+        text = font.render(date_str, True, (255, 255, 255))  # 白色字体
+        
+        # 计算文本位置
+        text_width, text_height = text.get_size()
+        text_x = surface_width - text_width - 10  # 右侧距离
+        text_y = y + text_height // 2  # 垂直居中
+
+        # 绘制文本
+        surface.blit(text, (text_x, text_y))    
 
     def draw_fence(self, surface, points, car_position, car_profit):
         # 基础参数
