@@ -15,13 +15,13 @@ config = {
     'leverage': 100,         # 1:100 leverage
     'lot_size': 100000,      # Standard lot size for EUR/USD
     'trade_lot': 0.01,       # Default trade size: 0.01 lot
-    'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
-    'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
+    'max_long_position': 0.05,     # Maximum long position size: 0.02 lot
+    'max_short_position': 0.05,    # Maximum short position size: 0.02 lot
     'reward_function': 'fast_car_racing_likely_reward_function',
     'window_size': 60,
     'risk_free_rate': 0.0,
     'image_height': 96,
-    'image_width': 192,
+    'image_width': 96,
     'image_channels': 1,
 }
 

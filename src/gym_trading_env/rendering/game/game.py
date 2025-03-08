@@ -12,23 +12,23 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 # 配置比例（左侧:右侧 = 4:6）
-LEFT_WIDTH = SCREEN_WIDTH * 4 // 10  # 320像素
-RIGHT_WIDTH = SCREEN_WIDTH * 6 // 10  # 480像素
+LEFT_WIDTH = SCREEN_WIDTH * 0 // 10  # 320像素
+RIGHT_WIDTH = SCREEN_WIDTH * 10 // 10  # 480像素
 
 TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
 BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
 
 class Game:
-    def __init__(self, size):
+    def __init__(self, train_size, df_size):
         self.df = None
         pygame.init()
-        self.train_size = size
+        self.train_size = train_size
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         pygame.display.set_caption('Forex Racer')
         self.clock = pygame.time.Clock()
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
-        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
+        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
 
@@ -64,7 +64,6 @@ class Game:
         
             # 左侧区域（显示K线图）
             pygame.draw.rect(self.screen, (255, 255, 255), (0, 0, LEFT_WIDTH, SCREEN_HEIGHT))  # 左侧区域背景
-            self.render_kline(self.screen)  # 在左侧区域绘制K线
 
             # 右侧区域（分为上下）
             pygame.draw.rect(self.screen, (50, 50, 50), (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))  # 右上区域背景
@@ -89,13 +88,3 @@ class Game:
 
             return grayscale_img.numpy().transpose(1, 2, 0)
         
-    def render_kline(self, surface):
-        """在左侧区域绘制K线图"""
-        x_offset = 10
-        y_offset = 500  # 初始Y位置
-        line_color = (0, 255, 0)
-
-        for index, row in self.df.iterrows():
-            close_price = row['Close']
-            pygame.draw.line(surface, line_color, (x_offset, y_offset), (x_offset + 5, y_offset - close_price * 100), 2)
-            x_offset += 10

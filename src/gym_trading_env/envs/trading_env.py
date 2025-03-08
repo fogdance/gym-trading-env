@@ -122,7 +122,7 @@ class CustomTradingEnv(gym.Env):
         self.image_width = config.get('image_width', 256)
         self.channels = config.get('image_channels', 1)
 
-        self.game = Game((self.image_width, self.image_height))
+        self.game = Game((self.image_width, self.image_height), self.window_size)
 
         # Update observation space to image
         self.observation_space = spaces.Dict({

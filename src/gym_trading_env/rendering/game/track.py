@@ -4,10 +4,8 @@ import math
 
 
 TRACK_SEGMENT_HEIGHT = 60  # 每段道路的高度
-VISIBLE_TRACK_SEGMENTS = 10  # 屏幕显示道路段数
 ANGLE_SCALE = 1000  # 倾斜敏感度放大
-BASE_ROAD_WIDTH = 300
-MIN_ROAD_WIDTH = 100
+BASE_ROAD_WIDTH = 100
 
 # 防护栏参数
 BASE_FENCE_DISTANCE = 20  # 护栏距离道路边界基础距离
@@ -68,11 +66,11 @@ class Track:
     def __init__(self, draw_rect):
         self.segments = None
         self.draw_rect = draw_rect  # 绘制区域（x, y, width, height）
+        self.df = None
+        self.track_segment_height = TRACK_SEGMENT_HEIGHT
 
     def step(self, df):
-        # 最新的k线
-        df = df.iloc[-VISIBLE_TRACK_SEGMENTS:]
-        self.segments = self.generate_segments(df)
+        self.df = df
 
     def generate_segments(self, df):
         segments = []
@@ -85,6 +83,9 @@ class Track:
     def draw(self, surface, car_position, car_profit):
         # 更新：使用传递的绘制区域参数
         left, top, width, height = self.draw_rect
+
+        self.segments = self.generate_segments(self.df)
+        self.track_segment_height = (height - top) / len(self.df)
         
         # 创建临时表面
         temp_surface = pygame.Surface((width, height), pygame.SRCALPHA)
@@ -94,8 +95,7 @@ class Track:
         current_y = height
         current_center_x = center_x
 
-        for idx in range(0, VISIBLE_TRACK_SEGMENTS, 1):
-            segment = self.segments[idx]
+        for segment in self.segments:
             
             # 在临时表面上绘制，使用相对坐标
             current_y, current_center_x = self._draw_segment_safe(
@@ -109,11 +109,11 @@ class Track:
     def _draw_segment_safe(self, surface, segment, center_x, bottom_y, car_position, car_profit, surface_width):
         """安全绘制单个道路片段，防止越界"""
         angle = segment.angle
-        height = TRACK_SEGMENT_HEIGHT
+        height = self.track_segment_height
 
         # 限制最大倾斜角度
-        MAX_ANGLE = math.radians(30)
-        angle = max(-MAX_ANGLE, min(angle, MAX_ANGLE))
+        # MAX_ANGLE = math.radians(30)
+        # angle = max(-MAX_ANGLE, min(angle, MAX_ANGLE))
 
         offset_x = math.tan(angle) * height / 2
         adjusted_center_x = center_x + offset_x
