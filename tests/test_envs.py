@@ -59,7 +59,6 @@ class TestCustomTradingEnv(unittest.TestCase):
         user_info = self.env._get_info()
         total_funds = (
             Decimal(str(user_info['balance'])) +
-            Decimal(str(user_info['used_margin'])) +
             Decimal(str(user_info['broker_balance'])) +
             Decimal(str(user_info['fees_collected']))
         )
@@ -123,8 +122,8 @@ class TestCustomTradingEnv(unittest.TestCase):
         fee = (trade_lot * lot_size * ask_price) * trading_fees
         required_margin = (trade_lot * lot_size * ask_price) / leverage
 
-        # Expected balance is initial_balance minus fee and used_margin
-        expected_balance = initial_balance - fee - required_margin
+        # Expected balance is initial_balance minus fee
+        expected_balance = initial_balance - fee
 
         expected_long_position = Decimal(str(trade_lot))
         total_used_margin = required_margin
@@ -224,10 +223,10 @@ class TestCustomTradingEnv(unittest.TestCase):
         initial_balance = Decimal('10000.0')
         fee_open = (trade_lot * lot_size * ask_price) * trading_fees
         required_margin_open = (trade_lot * lot_size * ask_price) / leverage
-        balance_after_open = initial_balance - fee_open - required_margin_open
+        balance_after_open = initial_balance - fee_open
 
         # After closing, fee_sell is deducted and pnl is added
-        expected_balance = balance_after_open + pnl - fee_sell + required_margin_open
+        expected_balance = balance_after_open + pnl - fee_sell
 
         # Expected long_position after LONG_CLOSE
         expected_long_position = Decimal('0.0')
@@ -236,7 +235,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = Decimal('0.0')
 
         # Equity after LONG_CLOSE
-        equity = expected_balance + realized_pnl  # realized_pnl = pnl
+        equity = expected_balance
 
         # Expected reward: change in total P&L = realized_pnl - previous_total_pnl_close
         expected_reward = realized_pnl - previous_total_pnl_close
@@ -312,7 +311,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         fee = (trade_lot * lot_size * bid_price) * trading_fees
         required_margin = (trade_lot * lot_size * bid_price) / leverage
 
-        expected_balance = Decimal('10000.0') - fee - required_margin
+        expected_balance = Decimal('10000.0') - fee
 
         expected_short_position = Decimal(str(trade_lot))
         total_used_margin = required_margin
@@ -412,10 +411,10 @@ class TestCustomTradingEnv(unittest.TestCase):
         initial_balance = Decimal('10000.0')
         fee_open = (trade_lot * lot_size * bid_price_open) * trading_fees
         required_margin_open = (trade_lot * lot_size * bid_price_open) / leverage
-        balance_after_open = initial_balance - fee_open - required_margin_open
+        balance_after_open = initial_balance - fee_open
 
         # After closing, fee_buy is deducted and pnl is added
-        expected_balance = balance_after_open + pnl - fee_buy + required_margin_open
+        expected_balance = balance_after_open + pnl - fee_buy
 
         # Expected short_position after SHORT_CLOSE
         expected_short_position = Decimal('0.0')
@@ -424,7 +423,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = Decimal('0.0')
 
         # Equity after SHORT_CLOSE
-        equity = expected_balance + realized_pnl  # realized_pnl = pnl
+        equity = expected_balance
 
         # Expected reward: change in total P&L = realized_pnl - previous_total_pnl_close
         expected_reward = realized_pnl - previous_total_pnl_close
@@ -583,8 +582,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 required_margin = (actual_trade_lot * lot_size * ask_price) / leverage
 
-                # Expected balance is previous balance minus fee and required_margin
-                expected_balance = previous_balance - fee - required_margin
+                # Expected balance is previous balance minus fee
+                expected_balance = previous_balance - fee
 
                 # P&L after LONG_OPEN (unrealized)
                 pnl = (current_price - ask_price) * actual_trade_lot * lot_size
@@ -685,8 +684,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 required_margin = (actual_trade_lot * lot_size * ask_price) / leverage
 
-                # Expected balance is previous balance minus fee and required_margin
-                expected_balance = previous_balance - fee - required_margin
+                # Expected balance is previous balance minus fee
+                expected_balance = previous_balance - fee
 
                 # P&L after LONG_OPEN (unrealized)
                 pnl = (current_price - ask_price) * actual_trade_lot * lot_size
@@ -788,8 +787,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 required_margin = (actual_trade_lot * lot_size * bid_price) / leverage
 
-                # Correct Expected balance: previous_balance - fee - required_margin
-                expected_balance = previous_balance - fee - required_margin
+                # Correct Expected balance: previous_balance - fee
+                expected_balance = previous_balance - fee
 
                 # P&L after SHORT_OPEN (unrealized)
                 pnl = (bid_price - current_price) * actual_trade_lot * lot_size
