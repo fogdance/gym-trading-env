@@ -37,8 +37,8 @@ class TrackSegment:
             left = self.high - self.open  # 上涨部分宽度
             right = self.open - self.low  # 下跌部分宽度
         else:  # 下跌
-            left = self.open - self.low   # 下跌部分宽度
-            right = self.high - self.open  # 上涨部分宽度
+            right = self.open - self.low   # 下跌部分宽度
+            left = self.high - self.open  # 上涨部分宽度
 
         total = left + right
         
