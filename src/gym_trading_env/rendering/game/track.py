@@ -159,8 +159,6 @@ class Track:
         pygame.draw.line(surface, (200, 200, 200), points[0], points[3], 2)
         pygame.draw.line(surface, (200, 200, 200), points[1], points[2], 2)
 
-        # 动态计算防护栏位置（关键实现）
-        self.draw_fence(surface, points, car_position, car_profit)
     
         # 如果是最后一个segment，绘制日期时间
         if last:
@@ -185,34 +183,4 @@ class Track:
         # 绘制文本
         surface.blit(text, (text_x, text_y))    
 
-    def draw_fence(self, surface, points, car_position, car_profit):
-        # 基础参数
-        base_fence_offset = BASE_FENCE_DISTANCE
-        loss_scale = LOSS_SCALE
-        min_distance = MIN_FENCE_DISTANCE
-        fence_color = (200, 0, 0)
-        
-        # 如果没有持仓，不绘制防护栏
-        if car_position == 0:
-            return
-        
-        # 计算防护栏偏移量
-        if car_profit > 0:  # 亏损状态
-            # 亏损越大，防护栏越靠近道路
-            offset = base_fence_offset - abs(car_profit) * loss_scale
-            offset = max(min_distance, offset)
-        else:  # 盈利状态
-            # 盈利时，防护栏远离道路
-            offset = base_fence_offset * 2
-        
-        # 根据仓位方向确定防护栏位置
-        if car_position > 0:  # 多仓，左侧
-            fence_start = (points[0][0] - offset, points[0][1])
-            fence_end = (points[3][0] - offset, points[3][1])
-        else:  # 空仓，右侧
-            fence_start = (points[1][0] + offset, points[1][1])
-            fence_end = (points[2][0] + offset, points[2][1])
-        
-        # 绘制防护栏
-        pygame.draw.line(surface, fence_color, fence_start, fence_end, 3)
 
