@@ -408,14 +408,7 @@ class CustomTradingEnv(gym.Env):
         return info
 
     def _calculate_equity(self) -> Decimal:
-        """
-        Calculates the current equity.
-
-        Returns:
-            Decimal: The current equity.
-        """
-        equity = self.user_accounts.balance.get_balance() + self.user_accounts.realized_pnl + self.user_accounts.unrealized_pnl
-        return equity
+        return self.user_accounts.equity()
 
     def _update_unrealized_pnl(self):
         """

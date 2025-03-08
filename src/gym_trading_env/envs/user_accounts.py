@@ -41,3 +41,13 @@ class UserAccounts:
             raise ValueError("Cannot release more margin than allocated.")
         self.margin.withdraw(amount)
         self.balance.deposit(amount)
+
+    def equity(self):
+        """
+        Calculates the current equity.
+
+        Returns:
+            Decimal: The current equity.
+        """
+        equity = self.balance.get_balance() + self.realized_pnl + self.unrealized_pnl
+        return equity
