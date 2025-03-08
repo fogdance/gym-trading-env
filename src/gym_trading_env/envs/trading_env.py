@@ -60,7 +60,7 @@ class CustomTradingEnv(gym.Env):
         self.last_trade_step = None
         self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
         self.max_drawdown_ratio = float(config.get('max_drawdown_ratio', 0.1))
-        self.dayily_lost_ratio = float(config.get('dayily_lost_ratio', 0.05))
+        self.daily_lost_ratio = float(config.get('dayily_lost_ratio', 0.05))
 
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
@@ -123,7 +123,7 @@ class CustomTradingEnv(gym.Env):
         self.image_width = config.get('image_width', 256)
         self.channels = config.get('image_channels', 1)
 
-        self.game = Game((self.image_width, self.image_height), self.window_size, self.dayily_lost_ratio, self.max_drawdown_ratio)
+        self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio)
 
         # Update observation space to image
         self.observation_space = spaces.Dict({
@@ -224,6 +224,8 @@ class CustomTradingEnv(gym.Env):
         Returns:
             Tuple: (observation, info)
         """
+        self.logger.info("REST env")
+
         super().reset(seed=seed)
         self.trade_record_manager = TradeRecordManager()
         # Reset positions
@@ -337,13 +339,27 @@ class CustomTradingEnv(gym.Env):
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
+        self.user_accounts.update_metrics(self.df.index[self.current_step])
+
+
         # Check margin requirements
         self._check_margin(equity)
-
-        reward = 0
     
 
         self.episode_step_count += 1
+
+        reward = 0
+
+        # 检查风险限制（使用百分比形式）
+        daily_lost_pct = decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0'))  # 转换为小数
+        drawdown_pct = decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0'))    # 转换为小数
+        if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
+            self.terminated = True
+            self.forced_termination = True
+            reward -= self.violation_penalty
+            self.logger.info(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
+                           f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
+
 
         if self.terminated:
             self.forced_termination = True
@@ -781,7 +797,8 @@ class CustomTradingEnv(gym.Env):
             self.game.step(df_window)
             image = self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
                             decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
-                            0.0,0.0,
+                            decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
+                            decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
                             render_mode='rgb_array')
         
 
@@ -796,7 +813,8 @@ class CustomTradingEnv(gym.Env):
         if self.render_mode == 'human':
             self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
                             decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
-                            0.0,0.0,
+                            decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
+                            decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
                             render_mode='human')
 
 
