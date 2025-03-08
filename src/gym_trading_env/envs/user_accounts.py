@@ -43,18 +43,16 @@ class UserAccounts:
     def allocate_margin(self, amount):
         if amount > (self.balance.get_balance() + self.realized_pnl):
             raise ValueError("Insufficient funds to allocate margin.")        
-        self.balance.withdraw(amount)
         self.margin.deposit(amount)
     
     def release_margin(self, amount):
         if amount > self.margin.get_balance():
             raise ValueError("Cannot release more margin than allocated.")
         self.margin.withdraw(amount)
-        self.balance.deposit(amount)
 
     def equity(self):
         """计算当前权益"""
-        return self.balance.get_balance() + self.realized_pnl + self.unrealized_pnl
+        return self.balance.get_balance() + self.unrealized_pnl
 
     def update_metrics(self, current_timestamp):
         """更新单日亏损和账户回撤，包括绝对值和百分比"""

@@ -313,17 +313,17 @@ class CustomTradingEnv(gym.Env):
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            result = self._long_open(self.current_price + self.spread)
+            result = self._long_open(self.current_price, self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            result = self._long_close(self.current_price - self.spread)
+            result = self._long_close(self.current_price, self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            result = self._short_open(self.current_price - self.spread)
+            result = self._short_open(self.current_price, self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            result = self._short_close(self.current_price + self.spread)
+            result = self._short_close(self.current_price, self.spread)
         elif action_enum == Action.POSITION_UP:
-            result = self._position_up(self.current_price + self.spread, self.current_price - self.spread)
+            result = self._position_up(self.current_price, self.spread)
         elif action_enum == Action.POSITION_DOWN:
-            result = self._position_down(self.current_price + self.spread, self.current_price - self.spread)
+            result = self._position_down(self.current_price, self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -471,13 +471,15 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             self.logger.info("Margin requirement not met. Episode terminated.")
 
-    def _long_open(self, ask_price: Decimal):
+    def _long_open(self, price: Decimal, spread: Decimal):
         """
         Executes a LONG_OPEN action.
 
         Args:
             ask_price (Decimal): The ask price at which the long position is opened.
         """
+        ask_price = price + spread
+
         max_additional_long = self.max_long_position - self.user_accounts.long_position
         if max_additional_long <= Decimal('0.0'):
             self.logger.warning("Reached maximum long position limit.")
@@ -539,16 +541,19 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"Opened LONG position: {new_position}")
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}")
+                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
+                          f"Fee: {fee}")
         return ForexCode.SUCCESS
 
-    def _long_close(self, bid_price: Decimal):
+    def _long_close(self, price: Decimal, spread: Decimal):
         """
         Executes a LONG_CLOSE action.
 
         Args:
             bid_price (Decimal): The bid price at which the long position is closed.
         """
+        bid_price = price - spread
+
         if self.user_accounts.long_position <= Decimal('0.0'):
             self.logger.warning("No long position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
@@ -610,17 +615,21 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"Closed LONG position at price {bid_price}")
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Long position: {self.user_accounts.long_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}")
+                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
+                          f"Fee: {fee}")
         
         return ForexCode.SUCCESS
 
-    def _short_open(self, bid_price: Decimal):
+    def _short_open(self, price: Decimal, spread: Decimal):
         """
         Executes a SHORT_OPEN action.
 
         Args:
             bid_price (Decimal): The bid price at which the short position is opened.
         """
+
+        bid_price = price - spread
+
         max_additional_short = self.max_short_position - self.user_accounts.short_position
         if max_additional_short <= Decimal('0.0'):
             self.logger.warning("Reached maximum short position limit.")
@@ -683,16 +692,19 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"Opened SHORT position: {new_position}")
         self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}")
+                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
+                          f"Fee: {fee}")
         return ForexCode.SUCCESS
 
-    def _short_close(self, ask_price: Decimal):
+    def _short_close(self, price: Decimal, spread: Decimal):
         """
         Executes a SHORT_CLOSE action.
 
         Args:
             ask_price (Decimal): The ask price at which the short position is closed.
         """
+        ask_price = price + spread
+
         if self.user_accounts.short_position <= Decimal('0.0'):
             self.logger.warning("No short position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
@@ -754,25 +766,26 @@ class CustomTradingEnv(gym.Env):
         self.logger.debug(f"Closed SHORT position at price {ask_price}")
         self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
                           f"Short position: {self.user_accounts.short_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}")
+                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
+                          f"Fee: {fee}")
         
         return ForexCode.SUCCESS
 
-    def _position_up(self, ask_price: Decimal, bid_price: Decimal):
+    def _position_up(self, price: Decimal, spread: Decimal):
         if len(self.position_manager.long_positions) > 0:
-            return self._long_open(ask_price=ask_price)
+            return self._long_open(price=price, spread=spread)
 
         if len(self.position_manager.short_positions) > 0:
-            return self._short_open(bid_price=bid_price)
+            return self._short_open(price=price, spread=spread)
         
         return ForexCode.SUCCESS
         
-    def _position_down(self, ask_price: Decimal, bid_price: Decimal):
+    def _position_down(self, price: Decimal, spread: Decimal):
         if len(self.position_manager.long_positions) > 0:
-            return self._long_close(bid_price=bid_price)
+            return self._long_close(price=price, spread=spread)
 
         if len(self.position_manager.short_positions) > 0:
-            return self._short_close(ask_price=ask_price)
+            return self._short_close(price=price, spread=spread)
         
         return ForexCode.SUCCESS
 
@@ -810,6 +823,11 @@ class CustomTradingEnv(gym.Env):
 
 
     def render(self):
+        equity = self._calculate_equity()
+        free_margin = equity - self.user_accounts.margin.get_balance()
+
+        print(f'Step: {self.current_step} Balance: {self.user_accounts.balance.get_balance():.2f} Equity: {equity:.2f} Margin: {self.user_accounts.margin.get_balance():.2f} Free Margin: {free_margin:.2f}')
+        
         if self.render_mode == 'human':
             self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
                             decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 

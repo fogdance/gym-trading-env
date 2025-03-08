@@ -28,6 +28,9 @@ def register_input():
             elif event.key == pygame.K_DOWN:
                 action = Action.POSITION_DOWN
                 break
+            elif event.key == pygame.K_SPACE:
+                action = Action.HOLD
+                break
             elif event.key == pygame.K_RETURN:
                 done = True
                 break
