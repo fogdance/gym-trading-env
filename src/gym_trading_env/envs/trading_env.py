@@ -385,55 +385,6 @@ class CustomTradingEnv(gym.Env):
         # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
     
-    def _check_violations(self) -> bool:
-        """
-        Returns True if any violation is detected:
-        1) Overdue positions
-        2) Hedging not allowed
-        3) Inactivity
-        """
-        if self._check_overdue_positions():
-            self.logger.warning("[VIOLATION] Overdue position.")
-            return True
-        
-        if not self.allow_hedging:
-            if self.position_manager.total_long_position() > Decimal('0.0') and self.position_manager.total_short_position() > Decimal('0.0'):
-                self.logger.warning("[VIOLATION] Hedging not allowed, but both long and short exist.")
-                return True
-        
-        if self._check_inactivity():
-            self.logger.warning("[VIOLATION] Agent is inactive for too many bars.")
-            return True
-        
-        return False
-
-    def _check_overdue_positions(self) -> bool:
-        # skip if max_holding_bars <= 0
-        if self.max_holding_bars <= 0:
-            return False
-        
-        for pos in self.position_manager.long_positions:
-            if pos.open_step is not None:
-                if (self.current_step - pos.open_step) > self.max_holding_bars:
-                    return True
-        
-        for pos in self.position_manager.short_positions:
-            if pos.open_step is not None:
-                if (self.current_step - pos.open_step) > self.max_holding_bars:
-                    return True
-        
-        return False
-
-    def _check_inactivity(self) -> bool:
-        if self.max_no_trade_bars <= 0:
-            return False
-        if self.last_trade_step is None:
-            return False
-        
-        if (self.current_step - self.last_trade_step) > self.max_no_trade_bars:
-            return True
-        
-        return False
 
     def _get_info(self):
         """
