@@ -29,7 +29,8 @@ class TestCustomTradingEnv(unittest.TestCase):
         config = {
             'currency_pair': 'USDJPY',
             'initial_balance': 10000.0,
-            'trading_fees': 0.001,  # 0.1% trading fee
+            'trading_fee_per_lot': 3,
+            'is_round_turn': True,
             'spread': 0.0002,        # 2 pips spread
             'leverage': 100,         # 1:100 leverage
             'lot_size': 100000,      # Standard lot size for EUR/USD
@@ -94,6 +95,7 @@ class TestCustomTradingEnv(unittest.TestCase):
             f"Expected total funds after reset: {expected_total_funds}, but got: {total_funds}"
         )
 
+
     def test_step_long_open(self):
         """
         Test LONG_OPEN action in the environment and assert the reward and info.
@@ -113,13 +115,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
         spread = Decimal(str(self.env.spread))
         ask_price = current_price + spread
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
         leverage = Decimal(str(self.env.leverage))
 
         # Calculate expected values
-        fee = (trade_lot * lot_size * ask_price) * trading_fees
+        fee = trade_lot * trading_fee_per_lot
         required_margin = (trade_lot * lot_size * ask_price) / leverage
 
         # Expected balance is initial_balance minus fee
@@ -205,7 +207,8 @@ class TestCustomTradingEnv(unittest.TestCase):
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
         spread = Decimal(str(self.env.spread))
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
         leverage = Decimal(str(self.env.leverage))
@@ -216,12 +219,14 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # P&L calculation
         pnl = (bid_price - ask_price) * trade_lot * lot_size
-        fee_sell = (trade_lot * lot_size * bid_price) * trading_fees
+        fee_sell = Decimal('0')
+        if is_round_turn:
+            fee_sell = trade_lot * trading_fee_per_lot
         realized_pnl = pnl  # Only pnl is realized
 
-        # Expected balance after LONG_CLOSE
+
         initial_balance = Decimal('10000.0')
-        fee_open = (trade_lot * lot_size * ask_price) * trading_fees
+        fee_open = trade_lot * trading_fee_per_lot
         required_margin_open = (trade_lot * lot_size * ask_price) / leverage
         balance_after_open = initial_balance - fee_open
 
@@ -302,13 +307,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
         spread = Decimal(str(self.env.spread))
         bid_price = current_price - spread
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
         leverage = Decimal(str(self.env.leverage))
 
         # Calculate expected values
-        fee = (trade_lot * lot_size * bid_price) * trading_fees
+        fee = trade_lot * trading_fee_per_lot
         required_margin = (trade_lot * lot_size * bid_price) / leverage
 
         expected_balance = Decimal('10000.0') - fee
@@ -393,7 +398,8 @@ class TestCustomTradingEnv(unittest.TestCase):
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
         spread = Decimal(str(self.env.spread))
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
         leverage = Decimal(str(self.env.leverage))
@@ -404,12 +410,14 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # P&L calculation for SHORT_CLOSE
         pnl = (bid_price_open - ask_price_close) * trade_lot * lot_size
-        fee_buy = (trade_lot * lot_size * ask_price_close) * trading_fees
+        fee_buy = Decimal('0')
+        if is_round_turn:
+            fee_buy = trade_lot * trading_fee_per_lot
         realized_pnl = pnl  # Only pnl is realized
 
         # Expected balance after SHORT_CLOSE
         initial_balance = Decimal('10000.0')
-        fee_open = (trade_lot * lot_size * bid_price_open) * trading_fees
+        fee_open = trade_lot * trading_fee_per_lot
         required_margin_open = (trade_lot * lot_size * bid_price_open) / leverage
         balance_after_open = initial_balance - fee_open
 
@@ -502,13 +510,14 @@ class TestCustomTradingEnv(unittest.TestCase):
         spread = Decimal(str(self.env.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
 
         # Fee per LONG_OPEN
-        fee1 = (trade_lot * lot_size * ask1_price) * trading_fees
-        fee2 = (trade_lot * lot_size * ask2_price) * trading_fees
+        fee1 = trade_lot * trading_fee_per_lot
+        fee2 = trade_lot * trading_fee_per_lot
         total_fees = fee1 + fee2
 
         # Verify broker's fees account
@@ -561,7 +570,8 @@ class TestCustomTradingEnv(unittest.TestCase):
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
                 spread = Decimal(str(self.env.spread))
                 ask_price = current_price + spread
-                trading_fees = Decimal(str(self.env.trading_fees))
+                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+                is_round_turn = self.env.is_round_turn
                 trade_lot = Decimal(str(self.env.trade_lot))
                 lot_size = Decimal(str(self.env.lot_size))
                 leverage = Decimal(str(self.env.leverage))
@@ -577,8 +587,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                     continue
 
                 # Calculate cost and fee for actual_trade_lot
-                cost = actual_trade_lot * lot_size * ask_price
-                fee = cost * trading_fees
+                fee = actual_trade_lot * trading_fee_per_lot
 
                 required_margin = (actual_trade_lot * lot_size * ask_price) / leverage
 
@@ -664,7 +673,8 @@ class TestCustomTradingEnv(unittest.TestCase):
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
                 spread = Decimal(str(self.env.spread))
                 ask_price = current_price + spread
-                trading_fees = Decimal(str(self.env.trading_fees))
+                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+                is_round_turn = self.env.is_round_turn
                 trade_lot = Decimal(str(self.env.trade_lot))
                 lot_size = Decimal(str(self.env.lot_size))
                 leverage = Decimal(str(self.env.leverage))
@@ -679,8 +689,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                     continue
 
                 # Calculate cost and fee for actual_trade_lot
-                cost = actual_trade_lot * lot_size * ask_price
-                fee = cost * trading_fees
+                fee = actual_trade_lot * trading_fee_per_lot
 
                 required_margin = (actual_trade_lot * lot_size * ask_price) / leverage
 
@@ -766,7 +775,8 @@ class TestCustomTradingEnv(unittest.TestCase):
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
                 spread = Decimal(str(self.env.spread))
                 bid_price = current_price - spread
-                trading_fees = Decimal(str(self.env.trading_fees))
+                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+                is_round_turn = self.env.is_round_turn
                 trade_lot = Decimal(str(self.env.trade_lot))
                 lot_size = Decimal(str(self.env.lot_size))
                 leverage = Decimal(str(self.env.leverage))
@@ -782,8 +792,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                     continue
 
                 # Calculate revenue and fee for actual_trade_lot
-                revenue = actual_trade_lot * lot_size * bid_price
-                fee = revenue * trading_fees
+                fee = actual_trade_lot * trading_fee_per_lot
 
                 required_margin = (actual_trade_lot * lot_size * bid_price) / leverage
 
@@ -878,13 +887,14 @@ class TestCustomTradingEnv(unittest.TestCase):
         spread = Decimal(str(self.env.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
 
         # Fee per LONG_OPEN
-        fee1 = (trade_lot * lot_size * ask1_price) * trading_fees
-        fee2 = (trade_lot * lot_size * ask2_price) * trading_fees
+        fee1 = trade_lot * trading_fee_per_lot
+        fee2 = trade_lot * trading_fee_per_lot
         total_fees = fee1 + fee2
 
         # Verify broker's fees account
@@ -926,12 +936,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Calculate required_fee and required_margin for LONG_OPEN at current step
         current_step = self.env.current_step
         current_price = self.env.df.iloc[current_step]['Close'] + Decimal(str(self.env.spread))
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
         leverage = Decimal(str(self.env.leverage))
 
-        fee = (trade_lot * lot_size * current_price) * trading_fees
+        fee = trade_lot * trading_fee_per_lot
         required_margin = (trade_lot * lot_size * current_price) / leverage
 
         # Set balance to fee + required_margin - 0.01 to make it insufficient
@@ -1051,15 +1062,14 @@ class TestCustomTradingEnv(unittest.TestCase):
         spread = Decimal(str(self.env.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fees = Decimal(str(self.env.trading_fees))
+        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
+        is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))
         lot_size = Decimal(str(self.env.lot_size))
 
         # Fee per LONG_OPEN
-        cost1 = trade_lot * lot_size * ask1_price
-        fee1 = cost1 * trading_fees
-        cost2 = trade_lot * lot_size * ask2_price
-        fee2 = cost2 * trading_fees
+        fee1 = trade_lot * trading_fee_per_lot
+        fee2 = trade_lot * trading_fee_per_lot
         total_fees = fee1 + fee2
 
         # Verify broker's fees account

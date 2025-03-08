@@ -15,7 +15,8 @@ def main():
     config = {
         'currency_pair': 'USDJPY',
         'initial_balance': 10000.0,
-        'trading_fees': 0.001,  # 0.1% trading fee
+        'trading_fee_per_lot': 3,
+        'is_round_turn': True,
         'spread': 0.0002,        # 2 pips spread
         'leverage': 100,         # 1:100 leverage
         'lot_size': 100000,      # Standard lot size for EUR/USD

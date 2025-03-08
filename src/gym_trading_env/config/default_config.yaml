@@ -1,7 +1,8 @@
 # src/gym_trading_env/config/default_config.yaml
 
 initial_balance: 1000.0
-trading_fees: 0.001
+trading_fee_per_lot: 3,
+is_round_turn: True,
 reward_function: total_pnl_reward_function
 window_size: 20
 risk_free_rate: 0.0

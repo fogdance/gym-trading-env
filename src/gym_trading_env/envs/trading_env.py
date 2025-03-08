@@ -65,7 +65,8 @@ class CustomTradingEnv(gym.Env):
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
-        self.trading_fees = Decimal(str(config.get('trading_fees', 0.001)))  # 0.1% trading fee
+        self.trading_fee_per_lot = Decimal(str(config.get('trading_fee_per_lot', 5)))
+        self.is_round_turn = config.get('is_round_turn', False)  # False 表示单边收费，True 表示往返收费
         self.spread = Decimal(str(config.get('spread', 0.0002)))  # Spread in pips
         self.leverage = Decimal(str(config.get('leverage', 100)))  # 1:100 leverage
         self.lot_size = Decimal(str(config.get('lot_size', 100000)))  # Standard lot size
@@ -474,6 +475,7 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             self.logger.info("Margin requirement not met. Episode terminated.")
 
+
     def _long_open(self, price: Decimal, spread: Decimal):
         """
         Executes a LONG_OPEN action.
@@ -493,9 +495,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate required margin
         required_margin = (position_size * self.lot_size * ask_price) / self.leverage
 
-        # Calculate trading fee based on notional value
-        notional_value = position_size * self.lot_size * ask_price
-        fee = notional_value * self.trading_fees
+        fee = self.trading_fee_per_lot * position_size
 
         # Total deduction from balance: required_margin + fee
         total_deduction = required_margin + fee
@@ -569,8 +569,9 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        # Calculate fees based on closed size
-        fee = (closed_size * self.lot_size * bid_price) * self.trading_fees
+        fee = Decimal('0')
+        if self.is_round_turn:
+            fee = self.trading_fee_per_lot * self.trade_lot
 
         # Deduct fees from user balance
         try:
@@ -643,9 +644,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate required margin
         required_margin = (position_size * self.lot_size * bid_price) / self.leverage
 
-        # Calculate trading fee based on notional value
-        notional_value = position_size * self.lot_size * bid_price
-        fee = notional_value * self.trading_fees
+        fee = self.trading_fee_per_lot * position_size
 
         # Total deduction from balance: required_margin + fee
         total_deduction = required_margin + fee
@@ -720,8 +719,9 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        # Calculate fees based on closed size
-        fee = (closed_size * self.lot_size * ask_price) * self.trading_fees
+        fee = Decimal('0')
+        if self.is_round_turn:
+            fee = self.trading_fee_per_lot * self.trade_lot
 
         # Deduct fees from user balance
         try:

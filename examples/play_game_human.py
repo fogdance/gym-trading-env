@@ -52,7 +52,8 @@ def main():
     config = {
         'currency_pair': 'XAUUSD',
         'initial_balance': 1000.0,
-        'trading_fees': 0.001,  # 0.1% trading fee
+        'trading_fee_per_lot': 6,
+        'is_round_turn': False,
         'spread': 0.07,        # 2 pips spread
         'leverage': 100,         # 1:100 leverage
         'lot_size': 100,      # Standard lot size for EUR/USD
