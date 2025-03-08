@@ -8,7 +8,8 @@ from torchvision.transforms import Grayscale
 class BottomPanel:
     """右下区域的可视化面板，负责绘制仓位、盈亏、日亏损和回撤"""
     
-    def __init__(self, rect: Tuple[int, int, int, int], day_lost: float, drawback: float):
+    def __init__(self, rect: Tuple[int, int, int, int], day_lost: float, drawback: float,
+                    trade_lot: float, max_long_position: float, max_short_position: float):
         """
         初始化底部面板
         
@@ -21,9 +22,11 @@ class BottomPanel:
         self.day_lost = day_lost
         self.drawback = drawback
         self.center_x = self.rect.x + self.rect.width // 2
+        self.profit_width = self.rect.width * 0.2
         self.max_width = self.rect.width * 0.2
         self.bar_height = self.rect.height * 0.2
         self.spacing = self.rect.height * 0.05
+        self.avg_position = (max_long_position + max_short_position) / 2
 
     def draw(self, screen: pygame.Surface, position: float, profit: float, 
              current_day_lost: float, current_drawback: float) -> None:
@@ -32,7 +35,7 @@ class BottomPanel:
         pygame.draw.rect(screen, (80, 80, 80), self.rect)
 
         # 1. 仓位 (position)
-        pos_width = position * self.max_width
+        pos_width = position / self.avg_position * self.profit_width
         if position > 0:  # 做多 - 向左
             pos_rect = pygame.Rect(self.center_x - pos_width, self.rect.y + self.spacing,
                                  pos_width, self.bar_height)
@@ -43,7 +46,7 @@ class BottomPanel:
             pygame.draw.rect(screen, (255, 0, 0), pos_rect)
 
         # 2. 盈亏 (profit)
-        profit_width = profit * self.max_width
+        profit_width = profit * self.profit_width
         if profit > 0:  # 盈利 - 向左
             profit_rect = pygame.Rect(self.center_x - profit_width,
                                     self.rect.y + self.bar_height + 2 * self.spacing,

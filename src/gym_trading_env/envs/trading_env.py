@@ -123,7 +123,10 @@ class CustomTradingEnv(gym.Env):
         self.image_width = config.get('image_width', 256)
         self.channels = config.get('image_channels', 1)
 
-        self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio)
+        self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio,
+                         decimal_to_float(self.trade_lot, 2), 
+                         decimal_to_float(self.max_long_position, 2), 
+                         decimal_to_float(self.max_short_position, 2))
 
         # Update observation space to image
         self.observation_space = spaces.Dict({
@@ -808,11 +811,7 @@ class CustomTradingEnv(gym.Env):
             df_window = self.df.iloc[window_start:window_end]
 
             self.game.step(df_window)
-            image = self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
-                            decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
-                            decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
-                            decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
-                            render_mode='rgb_array')
+            image = self._render('rgb_array')
         
 
         obs =  {
@@ -822,19 +821,49 @@ class CustomTradingEnv(gym.Env):
         return obs
 
 
+    def _render(self, render_mode):
+        return self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
+                                    0 if self.user_accounts.margin.get_balance() == Decimal('0') else decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.margin.get_balance(), precision=4), 
+                                    decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
+                                    decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
+                                    render_mode=render_mode)
+
     def render(self):
         equity = self._calculate_equity()
         free_margin = equity - self.user_accounts.margin.get_balance()
 
         print(f'Step: {self.current_step} Balance: {self.user_accounts.balance.get_balance():.2f} Equity: {equity:.2f} Margin: {self.user_accounts.margin.get_balance():.2f} Free Margin: {free_margin:.2f}')
         
-        if self.render_mode == 'human':
-            self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
-                            decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
-                            decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
-                            decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
-                            render_mode='human')
+        self._text_render()
 
+        if self.render_mode == 'human':
+            self._render('human')
+
+
+    def _text_render(self):
+        equity = self._calculate_equity()
+        free_margin = equity - self.user_accounts.margin.get_balance()
+        total_asset = float(decimal_to_float(equity, precision=2))
+        realized_pnl = float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))
+        unrealized_pnl = float(decimal_to_float(self.user_accounts.unrealized_pnl, precision=2))
+        fees_collected = float(decimal_to_float(self.broker_accounts.fees.get_balance(), precision=2))
+        broker_balance = float(decimal_to_float(self.broker_accounts.balance.get_balance(), precision=2))
+
+        print(f'Step: {self.current_step}')
+        print(f'Currency Pair: {self.currency_pair}')
+        print(f'Balance: {self.user_accounts.balance.get_balance():.2f}')
+        print(f'Equity: {equity:.2f}')
+        print(f'Used Margin: {self.user_accounts.margin.get_balance():.2f}')
+        print(f'Free Margin: {free_margin:.2f}')
+        print(f'Long Position: {self.user_accounts.long_position:.4f} lots')
+        print(f'Short Position: {self.user_accounts.short_position:.4f} lots')
+        print(f'Realized P&L: {realized_pnl:.2f}')
+        print(f'Unrealized P&L: {unrealized_pnl:.2f}')
+        print(f'Fees Collected: {fees_collected:.2f}')
+        print(f'Broker Balance: {broker_balance:.2f}')
+        print(f'Total Asset: {total_asset:.2f}')
+        print(f'Long Positions: {list(self.position_manager.long_positions)}')
+        print(f'Short Positions: {list(self.position_manager.short_positions)}')
 
     def close(self):
         """

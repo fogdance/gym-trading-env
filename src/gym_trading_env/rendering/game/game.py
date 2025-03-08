@@ -23,7 +23,8 @@ class Game:
     """外汇赛车游戏主类"""
     
     def __init__(self, train_size: Tuple[int, int], df_size: int, 
-                 day_lost: float, drawback: float):
+                 day_lost: float, drawback: float, 
+                 trade_lot: float, max_long_position: float, max_short_position: float):
         """
         初始化游戏
         
@@ -46,7 +47,8 @@ class Game:
         self.gs = Grayscale(num_output_channels=1)
         self.bottom_panel = BottomPanel(
             (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT),
-            day_lost, drawback
+            day_lost, drawback,
+            trade_lot, max_long_position, max_short_position
         )
 
     def step(self, df) -> None:
