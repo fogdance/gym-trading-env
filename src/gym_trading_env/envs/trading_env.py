@@ -127,7 +127,8 @@ class CustomTradingEnv(gym.Env):
         self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio,
                          decimal_to_float(self.trade_lot, 2), 
                          decimal_to_float(self.max_long_position, 2), 
-                         decimal_to_float(self.max_short_position, 2))
+                         decimal_to_float(self.max_short_position, 2),
+                         self.render_mode)
 
         # Update observation space to image
         self.observation_space = spaces.Dict({
