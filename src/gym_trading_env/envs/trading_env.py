@@ -59,7 +59,8 @@ class CustomTradingEnv(gym.Env):
         # Track last trade step
         self.last_trade_step = None
         self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
-        self.max_drawdown_ratio = Decimal(str(config.get('max_drawdown_ratio', 0.3)))
+        self.max_drawdown_ratio = float(config.get('max_drawdown_ratio', 0.1))
+        self.dayily_lost_ratio = float(config.get('dayily_lost_ratio', 0.05))
 
         self.currency_pair = config.get('currency_pair', 'EURUSD')
         self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
@@ -85,7 +86,7 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        self.logger.setLevel(logging.ERROR)
+        self.logger.setLevel(logging.DEBUG)
 
         # Data
         self.df = df.copy()
@@ -122,7 +123,7 @@ class CustomTradingEnv(gym.Env):
         self.image_width = config.get('image_width', 256)
         self.channels = config.get('image_channels', 1)
 
-        self.game = Game((self.image_width, self.image_height), self.window_size)
+        self.game = Game((self.image_width, self.image_height), self.window_size, self.dayily_lost_ratio, self.max_drawdown_ratio)
 
         # Update observation space to image
         self.observation_space = spaces.Dict({
@@ -270,18 +271,6 @@ class CustomTradingEnv(gym.Env):
         self.last_trade_step = None
         return self._get_obs(), self._get_info()
 
-    def _check_drawdown(self, equity: Decimal) -> bool:
-        """
-        Checks if equity < initial_balance*(1 - max_drawdown_ratio).
-        Returns True if the boundary is crossed, else False.
-        """
-        drawdown_threshold = self.initial_balance * (Decimal('1.0') - self.max_drawdown_ratio)
-        if equity < drawdown_threshold:
-            self.logger.info(
-                f"[CRASH] Max drawdown triggered! equity={equity:.2f} < threshold={drawdown_threshold:.2f}"
-            )
-            return True
-        return False
 
 
     def step(self, action):
@@ -848,6 +837,7 @@ class CustomTradingEnv(gym.Env):
             self.game.step(df_window)
             image = self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
                             decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
+                            0.0,0.0,
                             render_mode='rgb_array')
         
 
@@ -862,6 +852,7 @@ class CustomTradingEnv(gym.Env):
         if self.render_mode == 'human':
             self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
                             decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.balance.get_balance(), precision=2), 
+                            0.0,0.0,
                             render_mode='human')
 
 

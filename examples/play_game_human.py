@@ -52,7 +52,7 @@ def main():
         'trading_fees': 0.001,  # 0.1% trading fee
         'spread': 0.07,        # 2 pips spread
         'leverage': 100,         # 1:100 leverage
-        'lot_size': 100000,      # Standard lot size for EUR/USD
+        'lot_size': 100,      # Standard lot size for EUR/USD
         'trade_lot': 0.01,       # Default trade size: 0.01 lot
         'max_long_position': 0.05,     # Maximum long position size: 0.02 lot
         'max_short_position': 0.05,    # Maximum short position size: 0.02 lot

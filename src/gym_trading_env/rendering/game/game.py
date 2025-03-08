@@ -5,7 +5,8 @@ from .track import Track
 from .car import Car
 from .controller import Controller
 from torchvision.transforms import Grayscale
-
+from .bottom_panel import BottomPanel
+from typing import Optional, Tuple
 
 # 屏幕尺寸
 SCREEN_WIDTH = 800
@@ -19,7 +20,19 @@ TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
 BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
 
 class Game:
-    def __init__(self, train_size, df_size):
+    """外汇赛车游戏主类"""
+    
+    def __init__(self, train_size: Tuple[int, int], df_size: int, 
+                 day_lost: float, drawback: float):
+        """
+        初始化游戏
+        
+        Args:
+            train_size: 训练模式下屏幕缩放大小
+            df_size: 数据帧大小
+            day_lost: 最大日亏损限制
+            drawback: 最大回撤限制
+        """
         self.df = None
         pygame.init()
         self.train_size = train_size
@@ -31,45 +44,51 @@ class Game:
         self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
+        self.bottom_panel = BottomPanel(
+            (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT),
+            day_lost, drawback
+        )
 
-    def run_human_mode(self):
-        running = True
-        while running:
-            action = None
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame.KEYDOWN:
-                    if event.key in [pygame.K_LEFT, pygame.K_RIGHT, pygame.K_SPACE]:
-                        action = self.controller.get_human_action()
-
-            if action is not None:
-                self.car.update(action, self.track.current_segment())
-                self.track.move_next()
-
-            self.render()
-            pygame.display.flip()
-            self.clock.tick(60)
-
-
-    def step(self, df):
+    def step(self, df) -> None:
+        """更新游戏状态"""
         self.df = df
         self.track.step(df)
 
-    def render(self, position, profit, render_mode='human'):
-        self.car.update(positon=position, profit=profit)
+    def render(self, position: float, profit: float, current_day_lost: float, 
+              current_drawback: float, render_mode: str = 'human') -> Optional[np.ndarray]:
+        """
+        渲染游戏画面
+        
+        Args:
+            position: 当前仓位
+            profit: 当前盈亏
+            current_day_lost: 当前日亏损
+            current_drawback: 当前回撤
+            render_mode: 'human' 或其他（用于训练）
+        
+        Returns:
+            如果render_mode不是'human'，返回灰度图像数组
+        """
+        self.car.update(position, profit)
 
         if render_mode == 'human':
             self.screen.fill((0, 0, 0))
-        
-            # 左侧区域（显示K线图）
-            pygame.draw.rect(self.screen, (255, 255, 255), (0, 0, LEFT_WIDTH, SCREEN_HEIGHT))  # 左侧区域背景
+            
+            # 左侧区域（K线图）
+            pygame.draw.rect(self.screen, (255, 255, 255), 
+                           (0, 0, LEFT_WIDTH, SCREEN_HEIGHT))
+            
+            # 右侧上区域（赛道）
+            pygame.draw.rect(self.screen, (50, 50, 50), 
+                           (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
+            # 右下区域背景
+            pygame.draw.rect(self.screen, (80, 80, 80), 
+                             (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT))
 
-            # 右侧区域（分为上下）
-            pygame.draw.rect(self.screen, (50, 50, 50), (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))  # 右上区域背景
-            pygame.draw.rect(self.screen, (80, 80, 80), (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT))  # 右下区域背景
-
-
+            # 绘制底部面板
+            self.bottom_panel.draw(self.screen, position, profit, 
+                                 current_day_lost, current_drawback)
+            
             self.track.draw(self.screen, car_position=position, car_profit=profit)
             self.car.draw(self.screen)
             pygame.display.flip()
@@ -87,4 +106,4 @@ class Game:
             grayscale_img = self.gs(x_tensor)  # (1, 96, 96)
 
             return grayscale_img.numpy().transpose(1, 2, 0)
-        
+
