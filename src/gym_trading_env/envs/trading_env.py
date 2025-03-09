@@ -106,8 +106,17 @@ class CustomTradingEnv(gym.Env):
         self._check_data_sufficiency()
 
 
-        # Action space: dynamically based on Action Enum
-        self.action_space = spaces.Discrete(len(Action))
+       # 1) 只取我们需要的 0~4 这五个动作
+        self.valid_actions = [
+            Action.HOLD,
+            Action.LONG_OPEN,
+            Action.LONG_CLOSE,
+            Action.SHORT_OPEN,
+            Action.SHORT_CLOSE
+        ]
+        
+        # 2) 设定 action_space 大小为 5（因为我们只用到这 5 个）
+        self.action_space = spaces.Discrete(len(self.valid_actions))
 
         # Define image dimensions
         self.image_height = config.get('image_height', 256)
