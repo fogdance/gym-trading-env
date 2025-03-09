@@ -43,22 +43,12 @@ class CustomTradingEnv(gym.Env):
         self.debug_enabled = False
     
 
-        # Overdue positions
-        self.max_holding_bars = config.get('max_holding_bars', 0) 
-        # Disallow hedging
-        self.allow_hedging = config.get('allow_hedging', False)
-        # Max inactivity
-        self.max_no_trade_bars = config.get('max_no_trade_bars', 30)
-        
-        # Penalty for violation
-        self.violation_penalty = float(config.get('violation_penalty', 100.0))
 
         self.forced_termination = False
         self.just_closed_trade = None
 
         # Track last trade step
         self.last_trade_step = None
-        self.out_of_boundary_penalty = float(config.get('out_of_boundary_penalty', 100.0))
         self.max_drawdown_ratio = float(config.get('max_drawdown_ratio', 0.1))
         self.daily_lost_ratio = float(config.get('dayily_lost_ratio', 0.05))
 
@@ -99,9 +89,9 @@ class CustomTradingEnv(gym.Env):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
 
 
-        self.max_episode_steps = config.get('max_episode_steps', 1000)  # e.g. limit episode length
+        self.max_episode_steps = config.get('max_episode_steps', 2000)  # e.g. limit episode length
         self.randomize_start = config.get('randomize_start', True)     # random start index
-        self.episode_length = config.get('episode_length', None)       # if not None, fix length of each episode
+        self.episode_length = config.get('episode_length', 1000)       # if not None, fix length of each episode
 
         # Initialize step counters
         self.episode_step_count = 0
@@ -361,7 +351,6 @@ class CustomTradingEnv(gym.Env):
         if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
             self.terminated = True
             self.forced_termination = True
-            reward -= self.violation_penalty
             self.logger.info(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
                            f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
 
