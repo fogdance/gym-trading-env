@@ -7,6 +7,7 @@ from .controller import Controller
 from torchvision.transforms import Grayscale
 from .bottom_panel import BottomPanel
 from typing import Optional, Tuple
+from PIL import Image  # 添加 PIL 库用于保存图像
 
 # 屏幕尺寸
 SCREEN_WIDTH = 800
@@ -55,7 +56,8 @@ class Game:
             self.screen = None  # 非 human 模式下无需显示窗口
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
-        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, day_lost_limit, drawback_limit, trade_lot)
+        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, day_lost_limit, 
+                       drawback_limit, trade_lot, max_long_position, max_short_position)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
         self.bottom_panel = BottomPanel(
@@ -121,6 +123,9 @@ class Game:
         )
         x_tensor = torch.from_numpy(x).permute(2, 0, 1)  # (3, H, W)
         grayscale_img = self.gs(x_tensor)  # (1, H, W)
+        grayscale_np = grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
+        grayscale_pil = Image.fromarray((grayscale_np.squeeze() * 255).astype(np.uint8), mode='L')
+        grayscale_pil.save('data/1.png')
         return grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
 
     def __del__(self):
