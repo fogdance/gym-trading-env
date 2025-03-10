@@ -22,7 +22,7 @@ class Car:
         self.color = (255, 0, 0)
         self.draw_rect = draw_rect
         left, top, width, height = draw_rect
-        self.car_height = (height - top) / df_size * 2
+        self.car_height = (height - top) / df_size * 4
 
     def update(self, position, profit):
         self.position = position
