@@ -82,8 +82,8 @@ class Game:
         self.bottom_panel.draw(surface, position, profit, 
                               current_day_lost, current_drawback)
         
-        self.track.draw(surface, car_position=position, car_profit=profit)
-        self.car.draw(surface)
+        self.track.draw(surface)
+        self.car.draw(surface, self.track)
 
     def render(self, position: float, profit: float, current_day_lost: float, 
               current_drawback: float, render_mode: str = None) -> np.ndarray:
