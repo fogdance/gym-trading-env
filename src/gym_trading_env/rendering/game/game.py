@@ -13,11 +13,11 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 # 配置比例（左侧:右侧 = 4:6）
-LEFT_WIDTH = SCREEN_WIDTH * 0 // 10  # 320像素
-RIGHT_WIDTH = SCREEN_WIDTH * 10 // 10  # 480像素
+LEFT_WIDTH = SCREEN_WIDTH * 0 // 10  # 0像素
+RIGHT_WIDTH = SCREEN_WIDTH * 10 // 10  # 800像素
 
-TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10
-BOTTOM_HEIGHT = SCREEN_HEIGHT // 10
+TOP_HEIGHT = SCREEN_HEIGHT * 9 // 10  # 540像素
+BOTTOM_HEIGHT = SCREEN_HEIGHT // 10   # 60像素
 
 class Game:
     """外汇赛车游戏主类"""
@@ -40,15 +40,19 @@ class Game:
         self.df = None
         self.train_size = train_size
         
-        # 根据渲染模式决定是否初始化 Pygame 显示
+        # 初始化 Pygame
         pygame.init()
+        
+        # 创建离屏表面用于统一绘制
+        self.offscreen_surface = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        
+        # human 模式下初始化显示窗口
         if render_mode == 'human':
             self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
             pygame.display.set_caption('Forex Racer')
             self.clock = pygame.time.Clock()
         else:
-            # 非 human 模式下不创建可见窗口，使用临时 Surface
-            self.screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+            self.screen = None  # 非 human 模式下无需显示窗口
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
         self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, trade_lot)
@@ -82,7 +86,7 @@ class Game:
         self.car.draw(surface)
 
     def render(self, position: float, profit: float, current_day_lost: float, 
-              current_drawback: float, render_mode: str = None) -> Optional[np.ndarray]:
+              current_drawback: float, render_mode: str = None) -> np.ndarray:
         """
         渲染游戏画面
         
@@ -94,30 +98,30 @@ class Game:
             render_mode: 'human' 或其他（用于训练），优先使用实例变量
         
         Returns:
-            如果render_mode不是'human'，返回灰度图像数组
+            灰度图像数组 (H, W, 1)
         """
         # 使用传入的 render_mode 或默认使用实例变量
         render_mode = render_mode if render_mode is not None else self.render_mode
         self.car.update(position, profit)
 
-        if render_mode == 'human':
-            # human 模式：绘制到屏幕并显示
-            self._render_common(self.screen, position, profit, 
-                              current_day_lost, current_drawback)
+        # 统一在离屏表面上绘制
+        self._render_common(self.offscreen_surface, position, profit, 
+                           current_day_lost, current_drawback)
+
+        # human 模式：将离屏表面渲染到屏幕
+        if render_mode == 'human' and self.screen is not None:
+            self.screen.blit(self.offscreen_surface, (0, 0))
             pygame.display.flip()
             self.clock.tick(60)
-            return None
-        else:
-            # 非 human 模式：绘制到临时表面并返回数组
-            self._render_common(self.screen, position, profit, 
-                              current_day_lost, current_drawback)
-            scaled_screen = pygame.transform.smoothscale(self.screen, self.train_size)
-            x = np.transpose(
-                np.array(pygame.surfarray.pixels3d(scaled_screen)), axes=(1, 0, 2)
-            )
-            x_tensor = torch.from_numpy(x).permute(2, 0, 1)  # (3, H, W)
-            grayscale_img = self.gs(x_tensor)  # (1, H, W)
-            return grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
+
+        # 生成灰度图像并返回
+        scaled_surface = pygame.transform.smoothscale(self.offscreen_surface, self.train_size)
+        x = np.transpose(
+            np.array(pygame.surfarray.pixels3d(scaled_surface)), axes=(1, 0, 2)
+        )
+        x_tensor = torch.from_numpy(x).permute(2, 0, 1)  # (3, H, W)
+        grayscale_img = self.gs(x_tensor)  # (1, H, W)
+        return grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
 
     def __del__(self):
         """清理资源"""
