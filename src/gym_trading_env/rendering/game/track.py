@@ -9,8 +9,9 @@ BASE_ROAD_WIDTH = 160  # 屏幕宽度的 1/5（800 * 0.2 = 160）
 MIDDLE_OFFSET_RANGE = 200  # 中心线最大偏移范围（像素）
 
 class TrackSegment:
-    def __init__(self, date, upper, middle, lower, road_width):
+    def __init__(self, date, upper, middle, lower, road_width, close):
         self.date = date
+        self.close = close
         self.upper = upper  # 映射后的上轨
         self.middle = middle  # 映射后的中轨
         self.lower = lower  # 映射后的下轨
@@ -68,11 +69,12 @@ class Track:
             u_mapped = self.map_to_screen(u, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
             m_mapped = self.map_to_screen(m, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
             l_mapped = self.map_to_screen(l, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
-            
+            close_mapped = self.map_to_screen(close_prices[i], 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
+
             road_width = BASE_ROAD_WIDTH * (self.band_widths[i] / self.avg_band_width)
             road_width = min(BASE_ROAD_WIDTH * 4, max(BASE_ROAD_WIDTH * 0.5, road_width))
             
-            segment = TrackSegment(date, u_mapped, m_mapped, l_mapped, road_width)
+            segment = TrackSegment(date, u_mapped, m_mapped, l_mapped, road_width, close_mapped)
             segments.append(segment)
 
         self.max_segments = len(self.segments)
@@ -104,11 +106,12 @@ class Track:
         u_mapped = self.map_to_screen(u, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
         m_mapped = self.map_to_screen(m, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
         l_mapped = self.map_to_screen(l, 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
-        
+        close_mapped = self.map_to_screen(close_prices[-1], 0.25 * self.draw_rect[2], 0.75 * self.draw_rect[2])
+
         road_width = BASE_ROAD_WIDTH * (band_width / self.avg_band_width)
         road_width = min(BASE_ROAD_WIDTH * 4, max(BASE_ROAD_WIDTH * 0.5, road_width))
         
-        segment = TrackSegment(new_date, u_mapped, m_mapped, l_mapped, road_width)
+        segment = TrackSegment(new_date, u_mapped, m_mapped, l_mapped, road_width, close_mapped)
 
         if len(self.segments) > self.max_segments:
             self.segments.pop(0)
@@ -154,7 +157,7 @@ class Track:
             pygame.draw.polygon(temp_surface, (100,100,100), road_points)
 
             # 保存当前分段的中心点（取该分段高度的中间）
-            centerline_points.append((center_x, current_y + self.track_segment_height / 2))
+            centerline_points.append((segment.close, current_y + self.track_segment_height / 2))
 
             current_y += self.track_segment_height
 
