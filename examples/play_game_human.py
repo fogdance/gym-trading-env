@@ -32,7 +32,7 @@ def register_input():
                 action = Action.HOLD
                 break
             elif event.key == pygame.K_RETURN:
-                done = True
+                action = Action.EMPTY
                 break
             elif event.key == pygame.K_ESCAPE:
                 done = True

@@ -10,6 +10,7 @@ class Action(Enum):
     SHORT_CLOSE = 4
     POSITION_DOWN = 5
     POSITION_UP = 6
+    EMPTY = 7
 
 class ForexCode(Enum):
     SUCCESS = 0

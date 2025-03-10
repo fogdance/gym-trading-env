@@ -112,7 +112,8 @@ class CustomTradingEnv(gym.Env):
             Action.LONG_OPEN,
             Action.LONG_CLOSE,
             Action.SHORT_OPEN,
-            Action.SHORT_CLOSE
+            Action.SHORT_CLOSE,
+            Action.EMPTY
         ]
         
         # 2) 设定 action_space 大小为 5（因为我们只用到这 5 个）
@@ -328,6 +329,8 @@ class CustomTradingEnv(gym.Env):
             result = self._position_up(self.current_price, self.spread)
         elif action_enum == Action.POSITION_DOWN:
             result = self._position_down(self.current_price, self.spread)
+        elif action_enum == Action.EMPTY:
+            result = self._empty_position(self.current_price, self.spread)
 
         # Check termination conditions (e.g., last time step)
         if self.current_step >= len(self.df) - 1:
@@ -791,7 +794,14 @@ class CustomTradingEnv(gym.Env):
         
         return ForexCode.SUCCESS
 
+    def _empty_position(self, price: Decimal, spread: Decimal):
+        while len(self.position_manager.long_positions) > 0:
+            self._long_close(price=price, spread=spread)
 
+        while len(self.position_manager.short_positions) > 0:
+            self._short_close(price=price, spread=spread)
+        
+        return ForexCode.SUCCESS
 
     def _get_obs(self):
         """
