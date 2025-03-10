@@ -100,7 +100,7 @@ class CustomTradingEnv(gym.Env):
 
         # We'll store self.np_random for picking random start
         # if you're using gym>=0.26, you can do self.np_random = np.random.default_rng(seed)
-        self.np_random = np.random.RandomState(seed=42)
+        self.np_random = np.random.default_rng(seed=42)
 
         # Check basic feasibility right away
         self._check_data_sufficiency()
@@ -248,7 +248,7 @@ class CustomTradingEnv(gym.Env):
             # max possible start
             max_start = df_len - self.window_size - self.episode_length
             max_start = max(max_start, 0)  # ensure not negative
-            self.start_idx = self.np_random.randint(low=0, high=max_start+1)
+            self.start_idx = self.np_random.integers(low=0, high=max_start+1)
         else:
             # simple scenario: start at 0
             self.start_idx = 0
