@@ -89,9 +89,9 @@ class CustomTradingEnv(gym.Env):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
 
 
-        self.max_episode_steps = config.get('max_episode_steps', 2000)  # e.g. limit episode length
+        self.max_episode_steps = config.get('max_episode_steps', 1_000_000)  # e.g. limit episode length
         self.randomize_start = config.get('randomize_start', True)     # random start index
-        self.episode_length = config.get('episode_length', 1000)       # if not None, fix length of each episode
+        self.episode_length = config.get('episode_length', 500_000)       # if not None, fix length of each episode
 
         # Initialize step counters
         self.episode_step_count = 0
