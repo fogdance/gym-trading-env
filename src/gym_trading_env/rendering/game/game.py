@@ -123,9 +123,12 @@ class Game:
         )
         x_tensor = torch.from_numpy(x).permute(2, 0, 1)  # (3, H, W)
         grayscale_img = self.gs(x_tensor)  # (1, H, W)
-        grayscale_np = grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
-        grayscale_pil = Image.fromarray((grayscale_np.squeeze() * 255).astype(np.uint8), mode='L')
-        grayscale_pil.save('data/1.png')
+        
+        if False:
+            grayscale_np = grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
+            grayscale_pil = Image.fromarray((grayscale_np.squeeze() * 255).astype(np.uint8), mode='L')
+            grayscale_pil.save('data/gray_frame.png')
+
         return grayscale_img.numpy().transpose(1, 2, 0)  # (H, W, 1)
 
     def __del__(self):
