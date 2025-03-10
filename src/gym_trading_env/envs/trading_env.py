@@ -583,7 +583,8 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
         
-        self.just_closed_trade = pnl
+        self.just_closed_trade = {'pnl': pnl, 'margin': released_margin}
+
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)
@@ -733,7 +734,8 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        self.just_closed_trade = pnl
+        self.just_closed_trade = {'pnl': pnl, 'margin': released_margin}
+
 
         # Collect fees to broker's fees account
         self.broker_accounts.collect_fee(fee)

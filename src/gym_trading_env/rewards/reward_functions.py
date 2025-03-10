@@ -55,7 +55,7 @@ def fast_car_racing_likely_reward_function(env):
 
     # Scale the PnL based on the equity (this way, it's a relative reward)
     if equity > 0:
-        scaled_reward = (delta_pnl / equity) * 100  # For example, reward as percentage of equity
+        scaled_reward = (delta_pnl / equity) * 100 
     else:
         scaled_reward = 0  # Avoid division by zero
 
@@ -77,11 +77,24 @@ def fast_car_racing_likely_reward_function(env):
 
     close_reward = 0.0
     if getattr(env, "just_closed_trade", None) is not None:
-        closed_pnl = env.just_closed_trade  # a Decimal or float representing the closed trade PnL
-        if closed_pnl > 0:
-            close_reward = 1.0
-        elif closed_pnl < 0:
-            close_reward = -0.5
+        closed_trade = env.just_closed_trade  # 例如：{'pnl': Decimal('0.5'), 'margin': Decimal('10')}
+        realized_profit = decimal_to_float(closed_trade["pnl"])
+        margin_used = decimal_to_float(closed_trade["margin"])
+
+        # 计算盈利比例，如果保证金为0则设置为0避免除零
+        if margin_used != 0:
+            profit_ratio = realized_profit / margin_used
+        else:
+            profit_ratio = 0.0
+
+        # 定义最低盈利比例阈值（例如1%）以及奖励放大因子
+        min_profit_threshold = 0.2  # n%盈利门槛
+        bonus_scale = 10.0           # 奖励放大因子，根据实际调参
+
+        if profit_ratio >= min_profit_threshold:
+            close_reward = (profit_ratio - min_profit_threshold) * bonus_scale
+        else:
+            close_reward = 0.0
 
     step_reward += close_reward
 

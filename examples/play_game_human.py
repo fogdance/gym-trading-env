@@ -55,7 +55,7 @@ def main():
         'trading_fee_per_lot': 6,
         'is_round_turn': False,
         'spread': 0.07,        # 2 pips spread
-        'leverage': 100,         # 1:100 leverage
+        'leverage': 500,         # 1:500 leverage
         'lot_size': 100,      # Standard lot size for EUR/USD
         'trade_lot': 0.01,       # Default trade size: 0.01 lot
         'max_long_position': 0.05,     # Maximum long position size: 0.02 lot
