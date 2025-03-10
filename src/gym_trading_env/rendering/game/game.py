@@ -23,7 +23,7 @@ class Game:
     """外汇赛车游戏主类"""
     
     def __init__(self, train_size: Tuple[int, int], df_size: int, 
-                 day_lost: float, drawback: float, 
+                 day_lost_limit: float, drawback_limit: float, 
                  trade_lot: float, max_long_position: float, max_short_position: float,
                  render_mode: str):
         """
@@ -32,8 +32,8 @@ class Game:
         Args:
             train_size: 训练模式下屏幕缩放大小
             df_size: 数据帧大小
-            day_lost: 最大日亏损限制
-            drawback: 最大回撤限制
+            day_lost_limit: 最大日亏损限制
+            drawback_limit: 最大回撤限制
             render_mode: 'human' 或其他（用于训练）
         """
         self.render_mode = render_mode
@@ -55,12 +55,12 @@ class Game:
             self.screen = None  # 非 human 模式下无需显示窗口
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
-        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, trade_lot)
+        self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, day_lost_limit, drawback_limit, trade_lot)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
         self.bottom_panel = BottomPanel(
             (LEFT_WIDTH, TOP_HEIGHT, RIGHT_WIDTH, BOTTOM_HEIGHT),
-            day_lost, drawback,
+            day_lost_limit, drawback_limit,
             trade_lot, max_long_position, max_short_position
         )
 
@@ -83,7 +83,7 @@ class Game:
                               current_day_lost, current_drawback)
         
         self.track.draw(surface)
-        self.car.draw(surface, self.track)
+        self.car.draw(surface, self.track, current_day_lost, current_drawback)
 
     def render(self, position: float, profit: float, current_day_lost: float, 
               current_drawback: float, render_mode: str = None) -> np.ndarray:

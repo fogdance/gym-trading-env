@@ -8,19 +8,19 @@ from torchvision.transforms import Grayscale
 class BottomPanel:
     """右下区域的可视化面板，负责绘制仓位、盈亏、日亏损和回撤"""
     
-    def __init__(self, rect: Tuple[int, int, int, int], day_lost: float, drawback: float,
+    def __init__(self, rect: Tuple[int, int, int, int], day_lost_limit: float, drawback_limit: float,
                     trade_lot: float, max_long_position: float, max_short_position: float):
         """
         初始化底部面板
         
         Args:
             rect: (x, y, width, height) 表示面板区域
-            day_lost: 最大日亏损限制
-            drawback: 最大回撤限制
+            day_lost_limit: 最大日亏损限制
+            drawback_limit: 最大回撤限制
         """
         self.rect = pygame.Rect(rect)
-        self.day_lost = day_lost
-        self.drawback = drawback
+        self.day_lost_limit = day_lost_limit
+        self.drawback_limit = drawback_limit
         self.center_x = self.rect.x + self.rect.width // 2
         self.profit_width = self.rect.width * 0.2
         self.max_width = self.rect.width * 0.2
@@ -58,21 +58,21 @@ class BottomPanel:
                                     -profit_width, self.bar_height)
             pygame.draw.rect(screen, (255, 0, 0), profit_rect)
 
-        # 3. 日亏损 (current_day_lost) - 消失形式
-        if current_day_lost < self.day_lost:
-            lost_ratio = 1 - (current_day_lost / self.day_lost)  # 0时满，1时消失
-            lost_width = lost_ratio * self.max_width
-            lost_rect = pygame.Rect(self.center_x,
-                                  self.rect.y + 2 * self.bar_height + 3 * self.spacing,
-                                  lost_width, self.bar_height)
-            pygame.draw.rect(screen, (255, 165, 0), lost_rect)
+        # # 3. 日亏损 (current_day_lost) - 消失形式
+        # if current_day_lost < self.day_lost_limit:
+        #     lost_ratio = 1 - (current_day_lost / self.day_lost_limit)  # 0时满，1时消失
+        #     lost_width = lost_ratio * self.max_width
+        #     lost_rect = pygame.Rect(self.center_x,
+        #                           self.rect.y + 2 * self.bar_height + 3 * self.spacing,
+        #                           lost_width, self.bar_height)
+        #     pygame.draw.rect(screen, (255, 165, 0), lost_rect)
 
-        # 4. 回撤 (current_drawback) - 消失形式
-        if current_drawback < self.drawback:
-            drawback_ratio = 1 - (current_drawback / self.drawback)  # 0时满，1时消失
-            drawback_width = drawback_ratio * self.max_width
-            drawback_rect = pygame.Rect(self.center_x,
-                                      self.rect.y + 3 * self.bar_height + 4 * self.spacing,
-                                      drawback_width, self.bar_height)
-            pygame.draw.rect(screen, (255, 255, 0), drawback_rect)
+        # # 4. 回撤 (current_drawback) - 消失形式
+        # if current_drawback < self.drawback_limit:
+        #     drawback_ratio = 1 - (current_drawback / self.drawback_limit)  # 0时满，1时消失
+        #     drawback_width = drawback_ratio * self.max_width
+        #     drawback_rect = pygame.Rect(self.center_x,
+        #                               self.rect.y + 3 * self.bar_height + 4 * self.spacing,
+        #                               drawback_width, self.bar_height)
+        #     pygame.draw.rect(screen, (255, 255, 0), drawback_rect)
 
