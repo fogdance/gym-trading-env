@@ -151,7 +151,7 @@ class Track:
                 (center_x + right_width, current_y + self.track_segment_height),
                 (center_x - left_width, current_y + self.track_segment_height)
             ]
-            pygame.draw.polygon(temp_surface, (80, 80, 80), road_points)
+            pygame.draw.polygon(temp_surface, (100,100,100), road_points)
 
             # 保存当前分段的中心点（取该分段高度的中间）
             centerline_points.append((center_x, current_y + self.track_segment_height / 2))

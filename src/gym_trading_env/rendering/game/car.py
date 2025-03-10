@@ -22,7 +22,7 @@ class Car:
         self.trade_lot = trade_lot
         self.position = 0
         self.profit = 0.0
-        self.color = (255, 0, 0)
+        self.color = (255,150,0)
         self.draw_rect = draw_rect
         left, top, width, height = draw_rect
         self.car_height = (height - top) / df_size * 4

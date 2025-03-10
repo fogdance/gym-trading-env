@@ -77,7 +77,7 @@ class Game:
         surface.fill((0, 0, 0))
         
         # 右侧上区域（赛道）
-        pygame.draw.rect(surface, (0, 255, 0), 
+        pygame.draw.rect(surface,  (220,220,220), 
                         (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
 
         # 绘制底部面板

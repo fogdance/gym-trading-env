@@ -36,7 +36,7 @@ class BottomPanel:
 
         # 1. 仓位 (position)
         pos_width = position / self.avg_position * self.profit_width
-        if position > 0:  # 做多 - 向左
+        if position >= 0:  # 做多 - 向左
             pos_rect = pygame.Rect(self.center_x - pos_width, self.rect.y + self.spacing,
                                  pos_width, self.bar_height)
             pygame.draw.rect(screen, (0, 255, 0), pos_rect)
@@ -47,7 +47,7 @@ class BottomPanel:
 
         # 2. 盈亏 (profit)
         profit_width = profit * self.profit_width
-        if profit > 0:  # 盈利 - 向左
+        if profit >= 0:  # 盈利 - 向左
             profit_rect = pygame.Rect(self.center_x - profit_width,
                                     self.rect.y + self.bar_height + 2 * self.spacing,
                                     profit_width, self.bar_height)
