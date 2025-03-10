@@ -369,7 +369,7 @@ class CustomTradingEnv(gym.Env):
 
         if self.terminated:
             self.forced_termination = True
-            self.position_manager.close_all_position(self.current_price, self.lot_size)
+            self._empty_position(self.current_price, self.spread)
             self._update_unrealized_pnl()
 
         # check if we run out of data
