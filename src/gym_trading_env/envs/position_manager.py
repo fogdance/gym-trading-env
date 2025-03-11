@@ -13,7 +13,8 @@ class PositionManager:
         self.long_positions = deque()
         self.short_positions = deque()
         self.realized_pnl = Decimal('0.0')
-    
+        self.closed_trade_profits = []  # 每笔交易的实际盈亏 (正负都存)
+
     def add_long_position(self, position: Position):
         """
         Adds a new long position.
@@ -55,6 +56,8 @@ class PositionManager:
         pnl = (closing_price - pos.entry_price) * pos.size * lot_size
         self.realized_pnl += pnl
         
+        self.closed_trade_profits.append(pnl)
+
         # Release initial margin
         released_margin = pos.initial_margin
         
@@ -85,7 +88,9 @@ class PositionManager:
         # Calculate P&L: (Entry Price - Closing Price) * Size * Lot Size
         pnl = (pos.entry_price - closing_price) * pos.size * lot_size
         self.realized_pnl += pnl
-        
+
+        self.closed_trade_profits.append(pnl)
+
         # Release initial margin
         released_margin = pos.initial_margin
         
@@ -150,3 +155,24 @@ class PositionManager:
             total_closed_size += closed_size
 
         return (total_pnl, total_released_margin, total_closed_size)
+    
+    def calc_profit_factor(self, trades) -> Decimal:
+        """
+        根据给定的一组交易盈亏值(正负)计算盈亏比 (Profit Factor).
+        若无亏损或无交易则需特殊处理.
+        """
+        if not trades:
+            return None
+        
+        sum_win = Decimal('0.0')
+        sum_loss = Decimal('0.0')
+        for p in trades:
+            if p > 0:
+                sum_win += p
+            else:
+                sum_loss += abs(p)
+        
+        if sum_loss == Decimal('0.0'):
+            return Decimal('3.0')
+        
+        return sum_win / sum_loss
