@@ -193,36 +193,3 @@ class Track:
         x = screen_rect.centerx - text_surface.get_width() // 2
         y = screen_rect.centery - text_surface.get_height() // 2
         surface.blit(text_surface, (x, y))
-
-    def _draw_segment_safe(self, surface, segment, bottom_y, surface_width, last):
-        height = self.track_segment_height
-        center_x = segment.middle
-        road_width = segment.road_width
-
-        left_width = road_width / 2
-        right_width = road_width / 2
-
-        max_left = center_x
-        max_right = surface_width - center_x
-        if left_width > max_left or right_width > max_right:
-            scale = min(max_left / left_width, max_right / right_width)
-            left_width *= scale
-            right_width *= scale
-
-        road_points = [
-            (center_x - left_width, bottom_y),
-            (center_x + right_width, bottom_y),
-            (center_x + right_width, bottom_y + height),
-            (center_x - left_width, bottom_y + height)
-        ]
-
-        pygame.draw.polygon(surface, (80, 80, 80), road_points)
-        pygame.draw.line(surface, (255, 255, 255), (center_x, bottom_y), 
-                        (center_x, bottom_y + height), 2)
-        pygame.draw.line(surface, (200, 200, 200), road_points[0], road_points[3], 2)
-        pygame.draw.line(surface, (200, 200, 200), road_points[1], road_points[2], 2)
-
-
-
-        return bottom_y + height
-
