@@ -159,6 +159,11 @@ class Track:
             # 保存当前分段的中心点（取该分段高度的中间）
             centerline_points.append((segment.close, current_y + self.track_segment_height / 2))
 
+            # 调试，则绘制最新分段的日期文本
+            if False and i == len(self.segments) - 1:
+                self.draw_date_on_segment(temp_surface, segment, current_y, self.track_segment_height, width)
+
+
             current_y += self.track_segment_height
 
         # 绘制连续的中轴曲线
@@ -166,6 +171,23 @@ class Track:
 
         surface.blit(temp_surface, (left, top))
 
+    def draw_date_on_segment(self, surface, segment, current_y, segment_height, surface_width):
+        """
+        在给定 surface 上绘制指定分段的日期文本，文本绘制在分段右侧。
+        
+        参数：
+            surface: 要绘制的 pygame.Surface 对象
+            segment: 当前分段（包含 date 属性）
+            current_y: 当前分段在 surface 上的纵坐标
+            segment_height: 分段高度
+            surface_width: surface 的宽度，用于计算右侧边距
+        """
+        font = pygame.font.SysFont(None, 20)
+        date_str = str(segment.date)  # 根据需要调整日期格式
+        text_surface = font.render(date_str, True, (255, 0, 0))
+        x_pos = surface_width - text_surface.get_width() - 10
+        y_pos = current_y + segment_height / 2 - text_surface.get_height() / 2
+        surface.blit(text_surface, (x_pos, y_pos))
 
     def _draw_segment_safe(self, surface, segment, bottom_y, surface_width, last):
         height = self.track_segment_height
