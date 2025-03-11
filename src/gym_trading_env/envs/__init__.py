@@ -37,6 +37,5 @@ def make_custom_trading_env(df: pd.DataFrame, config: dict = None):
 register(
     id='CustomTradingEnv-v0',  # The environment ID
     entry_point=make_custom_trading_env(df, config),  # Pass the factory function
-    max_episode_steps=1000  # Set any other environment parameters
 )
 
