@@ -26,7 +26,7 @@ class Car:
         self.color = (255,150,0)
         self.draw_rect = draw_rect
         left, top, width, height = draw_rect
-        self.car_height = (height - top) / df_size
+        self.car_height = (height - top) / df_size * 2
 
     def update(self, position, profit):
         self.position = position
@@ -67,21 +67,22 @@ class Car:
         if self.position > 0:  # 做多：车辆向左偏移
             # 基础偏移：当持仓达到最大时，基础偏移最大为 road_width/4
             base_offset = (road_width / 4) * min(1.0, self.position / self.max_long_position)
-            # 亏损偏移：当亏损达到单日亏损限额时，偏移最大为 road_width/4
-            loss_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
             # 总偏移 = 基础 + 亏损 + 盈亏比偏移
-            final_offset = base_offset + loss_offset + rrr_offset
+            final_offset = base_offset + rrr_offset
             # 限制最大偏移不超过路边
             final_offset = min(final_offset, road_width / 2)
             car_x = center_x - final_offset
         elif self.position < 0:  # 做空：车辆向右偏移
             base_offset = (road_width / 4) * min(1.0, abs(self.position) / self.max_short_position)
-            loss_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
-            final_offset = base_offset + loss_offset + rrr_offset
+            final_offset = base_offset + rrr_offset
             final_offset = min(final_offset, road_width / 2)
             car_x = center_x + final_offset
-        else:
-            car_x = center_x
+        else:  # 空仓：加上盈亏比偏移
+            base_offset = 0
+            # 总偏移 = 左车道基准 + 盈亏比偏移
+            final_offset = base_offset + rrr_offset
+            final_offset = min(final_offset, road_width / 2)  # 限制不超过左路边
+            car_x = center_x - final_offset
 
         # 取 track.draw_rect 的上边界作为起始 y 坐标，
         # 车辆绘制在最新道路片段的中间位置
