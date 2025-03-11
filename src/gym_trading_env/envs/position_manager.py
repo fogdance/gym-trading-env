@@ -156,17 +156,17 @@ class PositionManager:
 
         return (total_pnl, total_released_margin, total_closed_size)
     
-    def calc_profit_factor(self, trades) -> Decimal:
+    def calc_profit_factor(self) -> Decimal:
         """
         根据给定的一组交易盈亏值(正负)计算盈亏比 (Profit Factor).
         若无亏损或无交易则需特殊处理.
         """
-        if not trades:
+        if len(self.closed_trade_profits) < 1:
             return None
         
         sum_win = Decimal('0.0')
         sum_loss = Decimal('0.0')
-        for p in trades:
+        for p in self.closed_trade_profits:
             if p > 0:
                 sum_win += p
             else:

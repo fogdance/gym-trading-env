@@ -66,8 +66,8 @@ class CustomTradingEnv(gym.Env):
         reward_function_name = config.get('reward_function', 'total_pnl_reward_function')
         self.reward_function = reward_functions.get(reward_function_name, total_pnl_reward_function)
         self.window_size = config.get('window_size', 20)
-        self.risk_free_rate = Decimal(str(config.get('risk_free_rate', 0.0)))
- 
+        self.risk_reward_ratio = Decimal(str(config.get('risk_reward_ratio', 2)))
+
         self.trade_record_manager = TradeRecordManager()
 
         # Set up logging
@@ -125,6 +125,7 @@ class CustomTradingEnv(gym.Env):
         self.channels = config.get('image_channels', 1)
 
         self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio,
+                         self.risk_reward_ratio,
                          decimal_to_float(self.trade_lot, 2), 
                          decimal_to_float(self.max_long_position, 2), 
                          decimal_to_float(self.max_short_position, 2),
@@ -837,6 +838,7 @@ class CustomTradingEnv(gym.Env):
                                     0 if self.user_accounts.margin.get_balance() == Decimal('0') else decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.margin.get_balance(), precision=4), 
                                     decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
                                     decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
+                                    None if self.position_manager.calc_profit_factor() is None else decimal_to_float(self.position_manager.calc_profit_factor(), precision=2), 
                                     render_mode=render_mode)
 
     def render(self):

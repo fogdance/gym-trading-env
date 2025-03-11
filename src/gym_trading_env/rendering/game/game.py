@@ -24,7 +24,7 @@ class Game:
     """外汇赛车游戏主类"""
     
     def __init__(self, train_size: Tuple[int, int], df_size: int, 
-                 day_lost_limit: float, drawback_limit: float, 
+                 day_lost_limit: float, drawback_limit: float, risk_reward_ratio: float,
                  trade_lot: float, max_long_position: float, max_short_position: float,
                  render_mode: str):
         """
@@ -57,7 +57,7 @@ class Game:
 
         self.track = Track((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
         self.car = Car((LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT), df_size, day_lost_limit, 
-                       drawback_limit, trade_lot, max_long_position, max_short_position)
+                       drawback_limit, trade_lot, risk_reward_ratio, max_long_position, max_short_position)
         self.controller = Controller()
         self.gs = Grayscale(num_output_channels=1)
         self.bottom_panel = BottomPanel(
@@ -72,7 +72,7 @@ class Game:
         self.track.step(df)
 
     def _render_common(self, surface, position: float, profit: float, 
-                      current_day_lost: float, current_drawback: float) -> None:
+                      current_day_lost: float, current_drawback: float, current_rrr: float) -> None:
         """通用渲染逻辑，绘制到指定表面"""
         surface.fill((0, 0, 0))
         
@@ -85,10 +85,10 @@ class Game:
                               current_day_lost, current_drawback)
         
         self.track.draw(surface)
-        self.car.draw(surface, self.track, current_day_lost, current_drawback)
+        self.car.draw(surface, self.track, current_day_lost, current_drawback, current_rrr)
 
     def render(self, position: float, profit: float, current_day_lost: float, 
-              current_drawback: float, render_mode: str = None) -> np.ndarray:
+              current_drawback: float, current_rrr: float, render_mode: str = None) -> np.ndarray:
         """
         渲染游戏画面
         
@@ -108,7 +108,7 @@ class Game:
 
         # 统一在离屏表面上绘制
         self._render_common(self.offscreen_surface, position, profit, 
-                           current_day_lost, current_drawback)
+                           current_day_lost, current_drawback, current_rrr)
 
         # human 模式：将离屏表面渲染到屏幕
         if render_mode == 'human' and self.screen is not None:
