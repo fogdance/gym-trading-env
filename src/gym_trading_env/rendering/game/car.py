@@ -26,7 +26,7 @@ class Car:
         self.color = (255,150,0)
         self.draw_rect = draw_rect
         left, top, width, height = draw_rect
-        self.car_height = (height - top) / df_size * 4
+        self.car_height = (height - top) / df_size
 
     def update(self, position, profit):
         self.position = position
@@ -36,10 +36,12 @@ class Car:
         """
         绘制车辆，并根据单日最大亏损和盈亏比调整车辆在赛道上的横向位置：
         - 无持仓时车辆在赛道中轴。
-        - 做多时：基础偏移基于当前仓位与最大多头仓位（max_long_position）的比例，理想状态下最大为左移 BASE_ROAD_WIDTH/4；
-            同时，根据 current_day_lost（单日亏损）与 day_lost_limit 的比例，再额外向左偏移，最大为 BASE_ROAD_WIDTH/4；
-            如果 current_rrr < target_rrr，则撞到左路边。
-        - 做空时逻辑相反，车辆向右偏移，如果 current_rrr < target_rrr，则撞到右路边。
+        - 做多时：基础偏移基于当前仓位，最大为 road_width/4；
+            根据 current_day_lost 增加偏移，最大为 road_width/4；
+            根据 current_rrr 与 target_rrr 的差距增加额外偏移：
+            - current_rrr >= target_rrr 时无额外偏移
+            - current_rrr < target_rrr 时偏移逐渐增大，越接近 2.0 偏移越大，2.0以下撞左路边。
+        - 做空时逻辑相反。
         """
         if not track.segments:
             return
@@ -49,30 +51,35 @@ class Car:
         center_x = latest_segment.middle
         road_width = latest_segment.road_width
 
-        # 检查盈亏比是否达标
-        rrr_not_met = False
-        if current_rrr is not None:
-            rrr_not_met = current_rrr < self.risk_reward_ratio
+        # 计算基于盈亏比的额外偏移
+        rrr_offset = 0
+        target_rrr = self.risk_reward_ratio * 1.25
+        if current_rrr is not None and current_rrr < target_rrr:
+            # 在 2.0 到 target_rrr (2.5) 之间线性插值
+            # current_rrr = 2.5 时偏移为 0，current_rrr = 2.0 时偏移为 road_width/4
+            if current_rrr <= self.risk_reward_ratio:
+                rrr_offset = road_width / 4 + 10 # 最大偏移，撞边
+            else:
+                # 线性计算：(target_rrr - current_rrr) / (target_rrr - 2.0) * (road_width / 4)
+                rrr_offset = (target_rrr - current_rrr) / (target_rrr - self.risk_reward_ratio) * (road_width / 4)
 
         # 根据仓位和亏损指标调整车辆横向位置
         if self.position > 0:  # 做多：车辆向左偏移
-            if rrr_not_met:  # 盈亏比未达标，直接撞左路边
-                car_x = center_x - road_width / 2  # 左路边位置
-            else:
-                # 基础偏移：当持仓达到最大时，基础偏移最大为 road_width/4
-                base_offset = (road_width / 4) * min(1.0, self.position / self.max_long_position)
-                # 额外偏移：当亏损达到单日亏损限额时，额外偏移最大也为 road_width/4
-                additional_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
-                final_offset = base_offset + additional_offset
-                car_x = center_x - final_offset
+            # 基础偏移：当持仓达到最大时，基础偏移最大为 road_width/4
+            base_offset = (road_width / 4) * min(1.0, self.position / self.max_long_position)
+            # 亏损偏移：当亏损达到单日亏损限额时，偏移最大为 road_width/4
+            loss_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
+            # 总偏移 = 基础 + 亏损 + 盈亏比偏移
+            final_offset = base_offset + loss_offset + rrr_offset
+            # 限制最大偏移不超过路边
+            final_offset = min(final_offset, road_width / 2)
+            car_x = center_x - final_offset
         elif self.position < 0:  # 做空：车辆向右偏移
-            if rrr_not_met:  # 盈亏比未达标，直接撞右路边
-                car_x = center_x + road_width / 2  # 右路边位置
-            else:
-                base_offset = (road_width / 4) * min(1.0, abs(self.position) / self.max_short_position)
-                additional_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
-                final_offset = base_offset + additional_offset
-                car_x = center_x + final_offset
+            base_offset = (road_width / 4) * min(1.0, abs(self.position) / self.max_short_position)
+            loss_offset = (road_width / 4) * min(1.0, current_day_lost / self.day_lost_limit)
+            final_offset = base_offset + loss_offset + rrr_offset
+            final_offset = min(final_offset, road_width / 2)
+            car_x = center_x + final_offset
         else:
             car_x = center_x
 
