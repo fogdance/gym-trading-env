@@ -25,29 +25,8 @@ class TestCustomTradingEnv(unittest.TestCase):
             'Close': [Decimal('1.1000') + Decimal('0.0001') * Decimal(str(i)) for i in range(100)]
         }
         df = pd.DataFrame(data)
-        # Define a sample configuration
-        config = {
-            'currency_pair': 'USDJPY',
-            'initial_balance': 10000.0,
-            'trading_fee_per_lot': 3,
-            'is_round_turn': True,
-            'spread': 0.0002,        # 2 pips spread
-            'leverage': 100,         # 1:100 leverage
-            'lot_size': 100000,      # Standard lot size for EUR/USD
-            'trade_lot': 0.01,       # Default trade size: 0.01 lot
-            'max_long_position': 0.02,     # Maximum long position size: 0.02 lot
-            'max_short_position': 0.02,    # Maximum short position size: 0.02 lot
-            'reward_function': 'total_pnl_reward_function',
-            'window_size': 20,
-            'risk_free_rate': 0.0,
-            'image_height': 480,
-            'image_width': 640,
-            'image_channels': 3,  # Assuming RGB images
-            'is_unittest': True,
-            'out_of_boundary_penalty': 100
-        }
 
-        self.env = CustomTradingEnv(df=df, config=config)
+        self.env = CustomTradingEnv(df=df, config_path='tests/test.yaml')
         check_env(self.env, warn=True)
         self.env.reset()
         self.initial_total_funds = self.calculate_total_funds()

@@ -22,6 +22,8 @@ from gym_trading_env.rendering.game.game import Game  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
+from gym_trading_env.envs.config import TradingConfig
+from gym_trading_env.utils.data_processing import load_data
 
 # Set global decimal precision
 getcontext().prec = 28
@@ -31,82 +33,14 @@ getcontext().rounding = ROUND_HALF_UP
 class CustomTradingEnv(gym.Env):
     metadata = {'render_modes': ['human', 'rgb_array']}
 
-    def __init__(self, df: pd.DataFrame, render_mode: str = 'rgb_array', config: dict = None):
+    def __init__(self, df: pd.DataFrame = None, config_path: str = None):
         super(CustomTradingEnv, self).__init__()
 
-        self.render_mode = render_mode
+        config = self._config(config_path=config_path)
 
-        # Configuration management
-        if config is None:
-            config = {}
-        self.is_unittest = config.get('is_unittest', False)
-        self.debug_enabled = False
-    
+        self._data(df=df, config=config)
 
-
-        self.forced_termination = False
-        self.just_closed_trade = None
-
-        # Track last trade step
-        self.last_trade_step = None
-        self.max_drawdown_ratio = float(config.get('max_drawdown_ratio', 0.1))
-        self.daily_lost_ratio = float(config.get('dayily_lost_ratio', 0.05))
-
-        self.currency_pair = config.get('currency_pair', 'EURUSD')
-        self.initial_balance = Decimal(str(config.get('initial_balance', 10000.0)))
-        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
-        self.trading_fee_per_lot = Decimal(str(config.get('trading_fee_per_lot', 5)))
-        self.is_round_turn = config.get('is_round_turn', False)  # False 表示单边收费，True 表示往返收费
-        self.spread = Decimal(str(config.get('spread', 0.0002)))  # Spread in pips
-        self.leverage = Decimal(str(config.get('leverage', 100)))  # 1:100 leverage
-        self.lot_size = Decimal(str(config.get('lot_size', 100000)))  # Standard lot size
-        self.trade_lot = Decimal(str(config.get('trade_lot', 0.01)))  # Default trade size: 0.01 lot
-        self.max_long_position = Decimal(str(config.get('max_long_position', 0.1)))  # Max long position: 0.1 lot
-        self.max_short_position = Decimal(str(config.get('max_short_position', 0.1)))  # Max short position: 0.1 lot
-        reward_function_name = config.get('reward_function', 'total_pnl_reward_function')
-        self.reward_function = reward_functions.get(reward_function_name, total_pnl_reward_function)
-        self.window_size = config.get('window_size', 20)
-        self.risk_reward_ratio = Decimal(str(config.get('risk_reward_ratio', 2)))
-
-        self.trade_record_manager = TradeRecordManager()
-
-        # Set up logging
-        self.logger = logging.getLogger(__name__)
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        if not self.logger.handlers:
-            self.logger.addHandler(handler)
-        self.logger.setLevel(logging.ERROR)
-
-        # Data
-        self.df = df.copy()
-        # Ensure 'Date' is datetime and set as index
-        if 'Date' in self.df.columns:
-            self.df['Date'] = pd.to_datetime(self.df['Date'])
-            self.df.set_index('Date', inplace=True)
-        elif not isinstance(self.df.index, pd.DatetimeIndex):
-            raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
-
-
-        self.max_episode_steps = config.get('max_episode_steps', 1_000_000)  # e.g. limit episode length
-        self.randomize_start = config.get('randomize_start', True)     # random start index
-        self.episode_length = config.get('episode_length', 500_000)       # if not None, fix length of each episode
-
-        # Initialize step counters
-        self.episode_step_count = 0
-        self.start_idx = 0
-        self.end_idx = len(self.df)  # default to entire dataset
-
-        # We'll store self.np_random for picking random start
-        # if you're using gym>=0.26, you can do self.np_random = np.random.default_rng(seed)
-        self.np_random = np.random.default_rng(seed=42)
-
-        # Check basic feasibility right away
-        self._check_data_sufficiency()
-
-
-       # 1) 只取我们需要的 0~4 这五个动作
+        # 1) 只取我们需要的动作
         self.valid_actions = [
             Action.HOLD,
             Action.LONG_OPEN,
@@ -116,13 +50,8 @@ class CustomTradingEnv(gym.Env):
             Action.EMPTY
         ]
         
-        # 2) 设定 action_space 大小为 5（因为我们只用到这 5 个）
         self.action_space = spaces.Discrete(len(self.valid_actions))
 
-        # Define image dimensions
-        self.image_height = config.get('image_height', 256)
-        self.image_width = config.get('image_width', 256)
-        self.channels = config.get('image_channels', 1)
 
         self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio,
                          decimal_to_float(self.risk_reward_ratio, 2), 
@@ -143,15 +72,104 @@ class CustomTradingEnv(gym.Env):
         self.position_manager = PositionManager()
         self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
 
+        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
+        self.trade_record_manager = TradeRecordManager()
+
         # Other state variables
         self.current_step = self.window_size
         self.terminated = False
+
+        self.forced_termination = False
+        self.just_closed_trade = None
+        self.last_trade_step = None
 
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
 
         self.reset()
+
+    def _config(self, config_path):
+
+        # Configuration management
+        if config_path is None:
+            raise ValueError("config_path is None")
+        
+        config = TradingConfig.from_yaml(config_path)
+
+        # Validate config
+        config.validate()
+
+        # Direct access to nested configs
+        self.render_mode = config.training.render_mode
+        self.is_unittest = config.debug.is_unittest
+        self.debug_enabled = False
+
+        # Trading-specific
+        self.currency_pair = config.trading.currency_pair
+        self.initial_balance = config.trading.initial_balance
+        self.trading_fee_per_lot = config.trading.trading_fee_per_lot
+        self.is_round_turn = config.trading.is_round_turn
+        self.spread = config.trading.spread
+        self.leverage = config.trading.leverage
+        self.lot_size = config.trading.lot_size
+        self.trade_lot = config.trading.trade_lot
+        self.max_long_position = config.trading.max_long_position
+        self.max_short_position = config.trading.max_short_position
+
+        # Risk management
+        self.max_drawdown_ratio = config.risk.max_drawdown_ratio
+        self.daily_lost_ratio = config.risk.daily_lost_ratio
+        self.risk_reward_ratio = config.risk.risk_reward_ratio
+
+        # Training-specific
+        self.reward_function = reward_functions.get(config.training.reward_function, total_pnl_reward_function)
+        self.window_size = config.training.window_size
+        self.max_episode_steps = config.training.max_episode_steps
+        self.randomize_start = config.training.randomize_start
+        self.episode_length = config.training.episode_length
+
+        # Visualization
+        self.image_height = config.visualization.image_height
+        self.image_width = config.visualization.image_width
+        self.channels = config.visualization.image_channels
+
+        # Set up logging
+        self.logger = logging.getLogger(__name__)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        if not self.logger.handlers:
+            self.logger.addHandler(handler)
+        log_level = getattr(logging, config.debug.log_level.upper())
+        self.logger.setLevel(log_level)
+
+        return config
+
+
+    def _data(self, df, config):
+        # Data
+        if df is None:
+            df = load_data(config.trading.data_path, config.trading.data_interval)
+        self.df = df.copy()
+        # Ensure 'Date' is datetime and set as index
+        if 'Date' in self.df.columns:
+            self.df['Date'] = pd.to_datetime(self.df['Date'])
+            self.df.set_index('Date', inplace=True)
+        elif not isinstance(self.df.index, pd.DatetimeIndex):
+            raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
+        
+                # Initialize step counters
+        self.episode_step_count = 0
+        self.start_idx = 0
+        self.end_idx = len(self.df)  # default to entire dataset
+
+        # We'll store self.np_random for picking random start
+        # if you're using gym>=0.26, you can do self.np_random = np.random.default_rng(seed)
+        self.np_random = np.random.default_rng(seed=42)
+
+        # Check basic feasibility right away
+        self._check_data_sufficiency()
 
     def _check_data_sufficiency(self):
         """

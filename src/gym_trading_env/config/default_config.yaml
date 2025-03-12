@@ -1,8 +1,54 @@
 # src/gym_trading_env/config/default_config.yaml
 
-initial_balance: 1000.0
-trading_fee_per_lot: 3,
-is_round_turn: True,
-reward_function: total_pnl_reward_function
-window_size: 20
-risk_free_rate: 0.0
+
+XAUUSD: &XAUUSD
+  currency_pair: "XAUUSD"
+  initial_balance: 1000.0
+  trading_fee_per_lot: 6
+  is_round_turn: false
+  spread: 0.07
+  leverage: 500
+  lot_size: 100
+  trade_lot: 0.01
+  max_long_position: 0.05
+  max_short_position: 0.05
+  data_path: "XAUUSD"
+  data_interval: "5m"
+
+EURUSD: &EURUSD
+  currency_pair: "EURUSD"
+  initial_balance: 1000.0
+  trading_fee_per_lot: 3
+  is_round_turn: true
+  spread: 0.0002
+  leverage: 500
+  lot_size: 100000
+  trade_lot: 0.01
+  max_long_position: 0.05
+  max_short_position: 0.05
+  data_path: "EURUSD"
+  data_interval: "5m"
+
+trading:
+  <<: *XAUUSD
+
+risk:
+  max_drawdown_ratio: 0.1
+  daily_lost_ratio: 0.05
+  risk_reward_ratio: 1
+
+training:
+  reward_function: "total_pnl_reward_function"
+  window_size: 60
+  max_episode_steps: 1000000
+  randomize_start: true
+  episode_length: 10000
+  render_mode: "rgb_array"
+
+visualization:
+  image_height: 96
+  image_width: 96
+  image_channels: 1
+
+debug:
+  is_unittest: false

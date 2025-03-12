@@ -45,31 +45,8 @@ def register_input():
 
 
 def main():
-    # Load data
-    df = load_data('XAUUSD', interval = '5m')
-    
-    # Define configuration
-    config = {
-        'currency_pair': 'XAUUSD',
-        'initial_balance': 1000.0,
-        'trading_fee_per_lot': 6,
-        'is_round_turn': False,
-        'spread': 0.07,        # 2 pips spread
-        'leverage': 500,         # 1:500 leverage
-        'lot_size': 100,      # Standard lot size for EUR/USD
-        'trade_lot': 0.01,       # Default trade size: 0.01 lot
-        'max_long_position': 0.05,     # Maximum long position size: 0.02 lot
-        'max_short_position': 0.05,    # Maximum short position size: 0.02 lot
-        'reward_function': 'total_pnl_reward_function',
-        'window_size': 60,
-        'risk_free_rate': 0.0,
-        'image_height': 96,
-        'image_width': 96,
-        'image_channels': 1,
-    }
-    
     # Initialize environment with configuration
-    env = CustomTradingEnv(df=df, render_mode='human', config=config)
+    env = CustomTradingEnv(config_path='data/config.yaml')
 
     # Check environment compatibility
     check_env(env, warn=True)

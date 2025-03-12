@@ -1,0 +1,41 @@
+# src/gym_trading_env/config/default_config.yaml
+
+
+USDJPY: &USDJPY
+  currency_pair: "USDJPY"
+  initial_balance: 10000.0
+  trading_fee_per_lot: 3
+  is_round_turn: True
+  spread: 0.0002
+  leverage: 100
+  lot_size: 100000
+  trade_lot: 0.01
+  max_long_position: 0.02
+  max_short_position: 0.02
+  data_path: "USDJPY"
+  data_interval: "5m"
+
+
+trading:
+  <<: *USDJPY
+
+risk:
+  max_drawdown_ratio: 0.1
+  daily_lost_ratio: 0.05
+  risk_reward_ratio: 0
+
+training:
+  reward_function: "total_pnl_reward_function"
+  window_size: 20
+  max_episode_steps: 1000000
+  randomize_start: true
+  episode_length: 10000
+  render_mode: "rgb_array"
+
+visualization:
+  image_height: 96
+  image_width: 96
+  image_channels: 1
+
+debug:
+  is_unittest: True
