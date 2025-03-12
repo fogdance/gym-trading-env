@@ -857,7 +857,8 @@ class CustomTradingEnv(gym.Env):
 
 
     def _render(self, render_mode):
-        return self.game.render(decimal_to_float((self.position_manager.total_long_position() - self.position_manager.total_short_position()), precision=2),
+        return self.game.render(decimal_to_float(self.position_manager.total_long_position(), precision=2),
+                                decimal_to_float(self.position_manager.total_short_position(), precision=2),
                                     0 if self.user_accounts.margin.get_balance() == Decimal('0') else decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.margin.get_balance(), precision=4), 
                                     decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
                                     decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),

@@ -71,7 +71,7 @@ class Game:
         self.df = df
         self.track.step(df)
 
-    def _render_common(self, surface, position: float, profit: float, 
+    def _render_common(self, surface, long_position: float, short_position: float, profit: float, 
                       current_day_lost: float, current_drawback: float, current_rrr: float) -> None:
         """通用渲染逻辑，绘制到指定表面"""
         surface.fill((0, 0, 0))
@@ -81,13 +81,13 @@ class Game:
                         (LEFT_WIDTH, 0, RIGHT_WIDTH, TOP_HEIGHT))
 
         # 绘制底部面板
-        self.bottom_panel.draw(surface, position, profit, 
+        self.bottom_panel.draw(surface, long_position, short_position, profit, 
                               current_day_lost, current_drawback)
         
         self.track.draw(surface)
         self.car.draw(surface, self.track, current_day_lost, current_drawback, current_rrr)
 
-    def render(self, position: float, profit: float, current_day_lost: float, 
+    def render(self, long_position: float, short_position: float, profit: float, current_day_lost: float, 
               current_drawback: float, current_rrr: float, render_mode: str = None) -> np.ndarray:
         """
         渲染游戏画面
@@ -104,10 +104,10 @@ class Game:
         """
         # 使用传入的 render_mode 或默认使用实例变量
         render_mode = render_mode if render_mode is not None else self.render_mode
-        self.car.update(position, profit)
+        self.car.update(long_position - short_position, profit)
 
         # 统一在离屏表面上绘制
-        self._render_common(self.offscreen_surface, position, profit, 
+        self._render_common(self.offscreen_surface, long_position, short_position, profit, 
                            current_day_lost, current_drawback, current_rrr)
 
         # human 模式：将离屏表面渲染到屏幕

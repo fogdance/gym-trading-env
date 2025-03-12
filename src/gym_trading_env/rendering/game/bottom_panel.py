@@ -28,22 +28,23 @@ class BottomPanel:
         self.spacing = self.rect.height * 0.05
         self.avg_position = (max_long_position + max_short_position) / 2
 
-    def draw(self, screen: pygame.Surface, position: float, profit: float, 
+    def draw(self, screen: pygame.Surface, long_position: float, short_position: float, profit: float, 
              current_day_lost: float, current_drawback: float) -> None:
         """绘制所有指标"""
         # 背景
         pygame.draw.rect(screen, (0, 0, 0), self.rect)
 
         # 1. 仓位 (position)
-        pos_width = position / self.avg_position * self.profit_width
-        if position >= 0:  # 做多 - 向左
+        if long_position > 0:  # 做多 - 向左
+            pos_width = long_position / self.avg_position * self.profit_width
             pos_rect = pygame.Rect(self.center_x - pos_width, self.rect.y + self.spacing,
                                  pos_width, self.bar_height)
             pygame.draw.rect(screen, (0, 255, 0), pos_rect)
-        elif position < 0:  # 做空 - 向右
+        if short_position > 0:  # 做空 - 向右
+            pos_width = short_position / self.avg_position * self.profit_width
             pos_rect = pygame.Rect(self.center_x, self.rect.y + self.spacing,
-                                 -pos_width, self.bar_height)
-            pygame.draw.rect(screen, (255, 0, 0), pos_rect)
+                                   pos_width, self.bar_height)
+            pygame.draw.rect(screen, (255, 0, 0), pos_rect)  # 红色表示空头
 
         # 2. 盈亏 (profit)
         profit_width = profit * self.profit_width
