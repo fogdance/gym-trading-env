@@ -410,7 +410,8 @@ class CustomTradingEnv(gym.Env):
             )
             self.terminated = True
 
-        if self.position_manager.no_position():
+        hedge = self.position_manager.total_long_position() == self.position_manager.total_short_position()
+        if self.position_manager.no_position() or hedge:
             if action_enum == Action.HOLD:
                 reward -= 0.1
             elif action_enum == Action.LONG_OPEN or action_enum == Action.SHORT_OPEN:
