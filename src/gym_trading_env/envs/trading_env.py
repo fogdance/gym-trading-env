@@ -367,6 +367,11 @@ class CustomTradingEnv(gym.Env):
             self.logger.info(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
                            f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
 
+        current_rrr = self.position_manager.calc_profit_factor()
+        if current_rrr is not None and current_rrr < self.risk_reward_ratio:
+            self.terminated = True
+            self.forced_termination = True
+            self.logger.info(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
 
         if self.terminated:
             self.forced_termination = True
