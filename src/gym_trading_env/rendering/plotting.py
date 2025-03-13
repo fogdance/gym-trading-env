@@ -345,6 +345,50 @@ class BollingerBandPlotter:
             print(f"Error: {e}")
             white_image = np.ones((self.fig_height, self.fig_width, self.channels), dtype=np.uint8) * 255  # White image
             return white_image
+
+    def plotOnlyCandle(self, filename=None):
+        """Plot the candlestick chart and Bollinger Bands"""
+        try:
+            # Calculate the figure size in inches based on pixels and DPI
+            fig_width_inch = self.fig_width / self.dpi
+            fig_height_inch = self.fig_height / self.dpi
+
+            fig = plt.figure(figsize=(fig_width_inch, fig_height_inch), dpi=self.dpi)
+
+            # Use GridSpec to define a total of 5 rows (3 subplots + 2 separators)
+            gs = GridSpec(nrows=1, ncols=1, figure=fig, height_ratios=[1], hspace=0, wspace=0)
+
+
+            # Large plot (third row)
+            ax_large = fig.add_subplot(gs[0, 0])
+            # Plot the large chart
+            self.plot_candlestick_chart(ax_large, self.df, show_bollinger=False, show_entry_exit=True, show_macd=False)
+
+
+            # Hide the axes, ticks, and borders of the main subplots
+            for ax in [ax_large]:
+                ax.set_xticks([])
+                ax.set_yticks([])
+                for spine in ax.spines.values():
+                    spine.set_visible(False)
+
+            # Adjust the overall margins of the figure to ensure subplots are tightly arranged
+            fig.subplots_adjust(left=0, right=1, top=1, bottom=0, wspace=0, hspace=0)
+
+            # Ensure the canvas is fully rendered
+            fig.canvas.draw()
+
+            img = self.to_binary(fig, filename)
+
+            plt.close(fig)
+
+            return img
+
+            
+        except Exception as e:
+            print(f"Error: {e}")
+            white_image = np.ones((self.fig_height, self.fig_width, self.channels), dtype=np.uint8) * 255  # White image
+            return white_image
         
 
     
