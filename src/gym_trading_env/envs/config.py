@@ -75,6 +75,7 @@ class RiskParams:
     
     risk_reward_ratio: Decimal = _to_decimal(0.0)
 
+    risk_reward_ratio_enable: bool = False
 
     def validate(self):
         """Validate risk parameters to ensure they are within acceptable bounds."""
@@ -104,6 +105,8 @@ class TrainingParams:
     
     render_mode: str = "rgb_array"
     """Rendering mode: 'human' for visual display, 'rgb_array' for array output."""
+
+    game_mode: bool = False
 
     def validate(self):
         """Validate training parameters to ensure they are feasible."""
@@ -138,6 +141,7 @@ class DebugParams:
     """Debugging and testing parameters."""
     is_unittest: bool = False
     log_level: str = "ERROR"
+    debug_enabled: bool = False
 
     def validate(self):
         """Validate debug parameters."""

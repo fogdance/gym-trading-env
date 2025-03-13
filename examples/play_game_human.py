@@ -46,6 +46,7 @@ def register_input():
 
 def main():
     # Initialize environment with configuration
+    # game_mode = True
     env = CustomTradingEnv(config_path='data/config.yaml')
 
     # Check environment compatibility
