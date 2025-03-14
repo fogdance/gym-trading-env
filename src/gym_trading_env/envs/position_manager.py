@@ -179,39 +179,6 @@ class PositionManager:
         """
         return all(pos is None for pos in self.long_positions) and all(pos is None for pos in self.short_positions)
 
-    def close_all_position(self, closing_price: Decimal, lot_size: Decimal) -> Tuple[Decimal, Decimal, Decimal]:
-        """
-        Closes all positions in all slots.
-
-        Args:
-            closing_price (Decimal): The price used to close every position
-            lot_size (Decimal): The standard lot size
-
-        Returns:
-            Tuple[Decimal, Decimal, Decimal]: Total P&L, total released margin, total closed size
-        """
-        total_pnl = Decimal('0.0')
-        total_released_margin = Decimal('0.0')
-        total_closed_size = Decimal('0.0')
-
-        # Close all long positions
-        for i in range(len(self.long_positions)):
-            if self.long_positions[i] is not None:
-                pnl, released_margin, closed_size = self.close_long_position(closing_price, lot_size, slot=i)
-                total_pnl += pnl
-                total_released_margin += released_margin
-                total_closed_size += closed_size
-
-        # Close all short positions
-        for i in range(len(self.short_positions)):
-            if self.short_positions[i] is not None:
-                pnl, released_margin, closed_size = self.close_short_position(closing_price, lot_size, slot=i)
-                total_pnl += pnl
-                total_released_margin += released_margin
-                total_closed_size += closed_size
-
-        return total_pnl, total_released_margin, total_closed_size
-
     def calc_profit_factor(self) -> Optional[Decimal]:
         """
         Calculates the profit factor based on closed trade profits.

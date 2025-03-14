@@ -71,7 +71,7 @@ class CustomTradingEnv(gym.Env):
             'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(20, ), dtype=np.float32),
             'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
             'account': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
-            'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float32),
+            'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
         })
 
         # Initialize state
@@ -372,14 +372,14 @@ class CustomTradingEnv(gym.Env):
         if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
             self.terminated = True
             self.forced_termination = True
-            self.logger.info(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
+            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
                            f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
 
         current_rrr = self.position_manager.calc_profit_factor()
         if self.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.risk_reward_ratio:
             self.terminated = True
             self.forced_termination = True
-            self.logger.info(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
+            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
 
         if self.terminated:
             self.forced_termination = True
@@ -388,14 +388,14 @@ class CustomTradingEnv(gym.Env):
 
         # check if we run out of data
         if self.current_step >= self.end_idx:
-            self.logger.debug(
+            self.logger.error(
                 f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done."
             )
             self.terminated = True
 
         # or if we exceed max_episode_steps
         if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
-            self.logger.debug(
+            self.logger.error(
                 f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
             )
             self.terminated = True
@@ -594,7 +594,6 @@ class CustomTradingEnv(gym.Env):
             pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.lot_size, slot=slot)
         except ValueError as e:
             self.logger.error(f"Error closing long position: {e}")
-            self.terminated = True
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
@@ -768,7 +767,6 @@ class CustomTradingEnv(gym.Env):
             pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.lot_size, slot=slot)
         except ValueError as e:
             self.logger.error(f"Error closing short position: {e}")
-            self.terminated = True
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
@@ -961,7 +959,8 @@ class CustomTradingEnv(gym.Env):
 
         # 6. 风险管理
         risk = np.array([
-            0.0,
+            float(0 if metrics["sharpe_ratio"] is None else metrics["sharpe_ratio"]),
+            float(0 if metrics["calmar_ratio"] is None else metrics["calmar_ratio"]),
             float(self.daily_lost_ratio),
             float(self.max_drawdown_ratio),
             float(metrics["current_day_lost_pct"]),
