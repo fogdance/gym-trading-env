@@ -30,7 +30,7 @@ EURUSD: &EURUSD
   data_interval: "5m"
 
 trading:
-  <<: *XAUUSD
+  <<: *EURUSD
 
 risk:
   max_drawdown_ratio: 0.1
@@ -46,9 +46,10 @@ training:
   render_mode: "rgb_array"
 
 visualization:
-  image_height: 96
-  image_width: 96
+  image_height: 128
+  image_width: 36
   image_channels: 1
 
 debug:
   is_unittest: false
+  log_level: ERROR

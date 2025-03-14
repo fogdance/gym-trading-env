@@ -86,10 +86,6 @@ class CustomTradingEnv(gym.Env):
         self.current_step = self.window_size
         self.terminated = False
 
-        self.forced_termination = False
-        self.just_closed_trade = None
-        self.last_trade_step = None
-
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
@@ -236,7 +232,6 @@ class CustomTradingEnv(gym.Env):
         # Reset broker accounts
         self.broker_accounts = BrokerAccounts()  # Re-initialize broker accounts with both balance and fees
         self.terminated = False
-        self.forced_termination = False
         self.episode_step_count = 0
         df_len = len(self.df)
 
@@ -271,7 +266,6 @@ class CustomTradingEnv(gym.Env):
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
-        self.last_trade_step = None
         return self._get_obs(), self._get_info()
 
 
@@ -289,10 +283,14 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
+        #
+        # 10:00
+        #
 
-        # Get current price
+        # Get action price
+        action_price = None
         try:
-            self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
+            action_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
         except IndexError:
             self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df)}.")
             self.terminated = True
@@ -306,109 +304,61 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        # If the action is a real trade (not HOLD), update last_trade_step
-        if action_enum != Action.HOLD:
-            self.last_trade_step = self.current_step
-
         result = ForexCode.SUCCESS
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            result = self._long_open(self.current_price, self.spread)
+            result = self._long_open(action_price, self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            result = self._long_close(self.current_price, self.spread)
+            result = self._long_close(action_price, self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            result = self._short_open(self.current_price, self.spread)
+            result = self._short_open(action_price, self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            result = self._short_close(self.current_price, self.spread)
+            result = self._short_close(action_price, self.spread)
         elif action_enum == Action.POSITION_UP:
-            result = self._position_up(self.current_price, self.spread)
+            result = self._position_up(action_price, self.spread)
         elif action_enum == Action.POSITION_DOWN:
-            result = self._position_down(self.current_price, self.spread)
+            result = self._position_down(action_price, self.spread)
         elif action_enum == Action.EMPTY:
-            result = self._empty_position(self.current_price, self.spread)
+            result = self._empty_position(action_price, self.spread)
         elif action_enum == Action.LONG_OPEN0:
-            result = self._long_open(self.current_price, self.spread, slot=0)
+            result = self._long_open(action_price, self.spread, slot=0)
         elif action_enum == Action.LONG_CLOSE0:
-            result = self._long_close(self.current_price, self.spread, slot=0)
+            result = self._long_close(action_price, self.spread, slot=0)
         elif action_enum == Action.SHORT_OPEN0:
-            result = self._short_open(self.current_price, self.spread, slot=0)
+            result = self._short_open(action_price, self.spread, slot=0)
         elif action_enum == Action.SHORT_CLOSE0:
-            result = self._short_close(self.current_price, self.spread, slot=0)
+            result = self._short_close(action_price, self.spread, slot=0)
         elif action_enum == Action.LONG_OPEN1:
-            result = self._long_open(self.current_price, self.spread, slot=1)
+            result = self._long_open(action_price, self.spread, slot=1)
         elif action_enum == Action.LONG_CLOSE1:
-            result = self._long_close(self.current_price, self.spread, slot=1)
+            result = self._long_close(action_price, self.spread, slot=1)
         elif action_enum == Action.SHORT_OPEN1:
-            result = self._short_open(self.current_price, self.spread, slot=1)
+            result = self._short_open(action_price, self.spread, slot=1)
         elif action_enum == Action.SHORT_CLOSE1:
-            result = self._short_close(self.current_price, self.spread, slot=1)
+            result = self._short_close(action_price, self.spread, slot=1)
 
-        # Check termination conditions (e.g., last time step)
-        if self.current_step >= len(self.df) - 1:
-            self.terminated = True
-            self.logger.info(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df)}")
+        #
+        # wait until 10:05
+        #
 
-        # Update step
+        # Update step, now is 10:05
         self.current_step += 1
+        self.episode_step_count += 1
+        self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
         self.metrics.update(self.df.index[self.current_step])
 
-
-        # Check margin requirements
-        self._check_margin()
-    
-
-        self.episode_step_count += 1
-
-        reward = 0
-        metrics = self.metrics.get_metrics()
-        # 检查风险限制（使用百分比形式）
-        daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))  # 转换为小数
-        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'))    # 转换为小数
-        if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
+        if self._should_terminated():
             self.terminated = True
-            self.forced_termination = True
-            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
-                           f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
-
-        current_rrr = self.position_manager.calc_profit_factor()
-        if self.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.risk_reward_ratio:
-            self.terminated = True
-            self.forced_termination = True
-            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
-
-        if self.terminated:
-            self.forced_termination = True
             self._empty_position(self.current_price, self.spread)
             self._update_unrealized_pnl()
 
-        # check if we run out of data
-        if self.current_step >= self.end_idx:
-            self.logger.error(
-                f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done."
-            )
-            self.terminated = True
-
-        # or if we exceed max_episode_steps
-        if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
-            self.logger.error(
-                f"Reached max_episode_steps={self.max_episode_steps}. Episode done."
-            )
-            self.terminated = True
-
-        hedge = self.position_manager.total_long_position() == self.position_manager.total_short_position()
-        if self.position_manager.no_position() or hedge:
-            if action_enum == Action.HOLD:
-                reward -= 0.1
-            elif action_enum == Action.LONG_OPEN or action_enum == Action.SHORT_OPEN:
-                reward += 0.1
-
         # Calculate reward
-        reward += self.reward_function(self)
+        reward = self.reward_function(self)
 
         # Construct observation
         obs = self._get_obs()
@@ -421,7 +371,45 @@ class CustomTradingEnv(gym.Env):
 
         # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
+
+    def _should_terminated(self):
+        # Check termination conditions (e.g., last time step)
+        if self.current_step >= len(self.df) - 1:
+            self.logger.error(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df)}")
+            return True
+
+        # Check margin requirements
+        if self._check_margin():
+            return True
     
+        metrics = self.metrics.get_metrics()
+        # 检查风险限制（使用百分比形式）
+        daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))  # 转换为小数
+        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'))    # 转换为小数
+        if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
+            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
+                           f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
+            return True
+
+        current_rrr = self.position_manager.calc_profit_factor()
+        if self.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.risk_reward_ratio:
+            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
+            return True
+
+
+
+        # check if we run out of data
+        if self.current_step >= self.end_idx:
+            self.logger.error(f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done.")
+            return True
+
+        # or if we exceed max_episode_steps
+        if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
+            self.logger.error(f"Reached max_episode_steps={self.max_episode_steps}. Episode done.")
+            return True
+        
+        return False
+
 
     def _get_info(self):
         """
@@ -498,8 +486,10 @@ class CustomTradingEnv(gym.Env):
                 self._long_close(self.current_price - self.spread)
             while self.user_accounts.short_position > Decimal('0.0'):
                 self._short_close(self.current_price + self.spread)
-            self.terminated = True
-            self.logger.info("Margin requirement not met. Episode terminated.")
+            self.logger.error("Margin requirement not met. Episode terminated.")
+            return True
+        
+        return False
 
 
     def _long_open(self, price: Decimal, spread: Decimal, slot: int = None):
@@ -649,7 +639,6 @@ class CustomTradingEnv(gym.Env):
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # All operations successful
-        self.just_closed_trade = {'pnl': pnl, 'margin': released_margin}
         trade_record = TradeRecord(
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.LONG_CLOSE.name,
@@ -822,7 +811,6 @@ class CustomTradingEnv(gym.Env):
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # All operations successful
-        self.just_closed_trade = {'pnl': pnl, 'margin': released_margin}
         trade_record = TradeRecord(
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.SHORT_CLOSE.name,
