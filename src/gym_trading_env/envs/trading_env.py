@@ -64,12 +64,13 @@ class CustomTradingEnv(gym.Env):
                             decimal_to_float(self.max_short_position, 2),
                             self.render_mode)
 
-        # Update observation space to image
         self.observation_space = spaces.Dict({
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
-            # 'realized_pnl': spaces.Box(low=-np.inf, high=np.inf, shape=(1,), dtype=np.float32),
-            # 'balance': spaces.Box(low=0, high=np.inf, shape=(1,), dtype=np.float32),
-            # 'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 3), dtype=np.float32),
+            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 4), dtype=np.float32),
+            'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(5, 5), dtype=np.float32),
+            'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
+            'account': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
+            'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float32),
         })
 
         # Initialize state
@@ -200,39 +201,6 @@ class CustomTradingEnv(gym.Env):
                 if self.episode_length < 1:
                     raise ValueError("Even after fallback, there's no feasible episode_length. Please provide more data.")
 
-
-    def position_to_features(self, position: Position, is_long: bool) -> np.ndarray:
-        entry_price = position.entry_price
-        position_size = position.size
-        current_price = self.current_price
-
-        if is_long:
-            current_unrealized_pnl = (current_price - entry_price) * position_size * self.lot_size
-            position_type = Action.LONG_OPEN.value
-        else:
-            current_unrealized_pnl = (entry_price - current_price) * position_size * self.lot_size
-            position_type = Action.SHORT_OPEN.value
-
-        features = [
-            float(position_size),
-            float(position_type),
-            float(current_unrealized_pnl),
-        ]
-        return np.array(features, dtype=np.float32)
-    
-    def get_current_positions(self):
-        positions = []
-        for pos in self.position_manager.long_positions:
-            positions.append(self.position_to_features(pos, is_long=True))
-
-        for pos in self.position_manager.short_positions:
-            positions.append(self.position_to_features(pos, is_long=False))
-
-        positions = positions[:4]
-
-        while len(positions) < 4:
-            positions.append(np.zeros(3, dtype=np.float32))
-        return np.array(positions, dtype=np.float32)
 
     def record_trade(self, trade_record: TradeRecord):
         """
@@ -486,7 +454,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for long positions
         unrealized_pnl_long = sum(
             (
-                (self.current_price - pos.entry_price) * pos.size * self.lot_size
+                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=True)
                 for pos in self.position_manager.long_positions if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -495,7 +463,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for short positions
         unrealized_pnl_short = sum(
             (
-                (pos.entry_price - self.current_price) * pos.size * self.lot_size
+                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=False)
                 for pos in self.position_manager.short_positions  if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -506,6 +474,16 @@ class CustomTradingEnv(gym.Env):
 
         # Update user's unrealized P&L
         self.user_accounts.unrealized_pnl = unrealized_pnl_long + unrealized_pnl_short
+
+    def _calc_unrealized_pnl(self, current_price: Decimal,  pos: Position, lot_size: Decimal, long: bool):
+        if pos is None:
+            return Decimal('0')
+        
+        if long:
+            return (current_price - pos.entry_price) * pos.size * self.lot_size
+        else:
+            return (pos.entry_price - current_price) * pos.size * self.lot_size
+
 
     def _check_margin(self, equity: Decimal):
         """
@@ -911,22 +889,91 @@ class CustomTradingEnv(gym.Env):
         Returns:
             np.ndarray: The observation image.
         """
-        if self.is_unittest:
-            # Ugly hack to return random image for unit tests
-            image = np.random.randint(0, 256, size=(self.image_height, self.image_width, self.channels), dtype=np.uint8)
-        else:
-            # Slice the dataframe for the current window
-            window_start = max(0, self.current_step - self.window_size)
-            window_end = self.current_step
-            df_window = self.df.iloc[window_start:window_end]
-            image = self._render(render_mode='rgb_array', df=df_window)
-        
 
-        obs =  {
-            'image': image
+        # Slice the dataframe for the current window
+        window_start = max(0, self.current_step - self.window_size)
+        window_end = self.current_step
+        df_window = self.df.iloc[window_start:window_end]
+        
+        # 1. 当前持仓
+        positions = np.zeros((4, 4), dtype=np.float32)
+        for i, pos in enumerate(self.position_manager.long_positions[:2]):
+            if pos is None:
+                continue
+            direction = 1
+            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=True)
+            positions[i] = [direction, decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
+
+        for i, pos in enumerate(self.position_manager.short_positions[:2]):
+            i += 2
+            if pos is None:
+                continue
+            direction = -1
+            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=False)
+            positions[i] = [direction, decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
+
+
+        # 2. 历史交易（优化版）
+        num_records = 5
+        trade_history = np.zeros((num_records, 5), dtype=np.float32)
+        trades = self.trade_record_manager.trade_history[-20:]
+        count = 0
+
+        # 遍历最近 20 条交易记录（倒序遍历）
+        for trade in reversed(trades):
+            if trade.pnl is None:
+                continue
+
+            if trade.operation_type == Action.LONG_CLOSE.name:
+                direction = 1
+            elif trade.operation_type == Action.SHORT_CLOSE.name:
+                direction = -1
+
+            trade_history[count] = [
+                direction,
+                decimal_to_float(trade.pnl),
+                decimal_to_float(trade.position_size),
+                decimal_to_float(trade.price, 5),
+                decimal_to_float(trade.close_price, 5)
+            ]
+            count += 1
+            if count >= num_records:
+                break
+
+        # 3. K线图
+        image = self._render(render_mode='rgb_array', df=df_window)
+
+        # 4. 技术指标
+        indicators = self._calculate_indicators()
+
+        # 5. 账户信息
+        account = np.array([
+            float(self.user_accounts.balance.get_balance()),
+            float(self.user_accounts.equity()),
+            float(self.user_accounts.margin.get_balance()),
+            float(self._calculate_equity() - self.user_accounts.margin.get_balance()),
+            float(self.trade_record_manager.max_profit),
+            float(self.trade_record_manager.max_loss)
+        ], dtype=np.float32)
+
+        # 6. 风险管理
+        risk = np.array([
+            0.0,
+            float(self.daily_lost_ratio),
+            float(self.max_drawdown_ratio),
+            float(self.user_accounts.current_day_lost),
+            float(self.user_accounts.current_drawdown)
+        ], dtype=np.float32)
+
+        return {
+            'image': image,
+            'positions': positions,
+            'trade_history': trade_history,
+            'indicators': indicators,
+            'account': account,
+            'risk': risk
         }
 
-        return obs
 
 
     def _render(self, render_mode, df):
@@ -1005,3 +1052,22 @@ class CustomTradingEnv(gym.Env):
         """
         self.logger.info("Environment closed.")
         pass
+
+
+    def _calculate_indicators(self):
+        # 计算 h1, l1, h2, l2
+        def get_hl(df, periods):
+            return 0.0, 0.0, 0.0, 0.0
+
+        df_5m = self.df.iloc[-10:]  # 假设10根足够
+        df_15m = self.df.iloc[-10:]
+        df_1h = self.df.iloc[-10:]
+
+        indicators = np.array([
+            *get_hl(df_5m, 5),   # 5分钟
+            *get_hl(df_15m, 2),  # 15分钟
+            *get_hl(df_1h, 2),   # 1小时
+            self.df.iloc[self.current_step]['Close']
+        ], dtype=np.float32)
+        return indicators
+
