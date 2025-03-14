@@ -46,8 +46,8 @@ training:
   render_mode: "rgb_array"
 
 visualization:
-  image_height: 128
-  image_width: 64
+  image_width: 128
+  image_height: 48
   image_channels: 1
 
 debug:
