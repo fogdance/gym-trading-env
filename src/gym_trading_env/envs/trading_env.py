@@ -554,7 +554,7 @@ class CustomTradingEnv(gym.Env):
         try:
             self.position_manager.add_long_position(new_position, slot=slot)
         except ValueError as e:
-            self.logger.error(f"Error opening long position: {e}")
+            self.logger.warning(f"Error opening long position: {e}")
             self.broker_accounts.fees.withdraw(fee)              # Rollback Step 3
             self.user_accounts.release_margin(required_margin)   # Rollback Step 2
             self.user_accounts.balance.deposit(fee)              # Rollback Step 1
@@ -595,7 +595,7 @@ class CustomTradingEnv(gym.Env):
         try:
             pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.lot_size, slot=slot)
         except ValueError as e:
-            self.logger.error(f"Error closing long position: {e}")
+            self.logger.warning(f"Error closing long position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
@@ -728,7 +728,7 @@ class CustomTradingEnv(gym.Env):
         try:
             self.position_manager.add_short_position(new_position, slot=slot)
         except ValueError as e:
-            self.logger.error(f"Error opening short position: {e}")
+            self.logger.warning(f"Error opening short position: {e}")
             self.broker_accounts.fees.withdraw(fee)              # Rollback Step 3
             self.user_accounts.release_margin(required_margin)   # Rollback Step 2
             self.user_accounts.balance.deposit(fee)              # Rollback Step 1
@@ -769,7 +769,7 @@ class CustomTradingEnv(gym.Env):
         try:
             pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.lot_size, slot=slot)
         except ValueError as e:
-            self.logger.error(f"Error closing short position: {e}")
+            self.logger.warning(f"Error closing short position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
         fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
