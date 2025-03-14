@@ -136,9 +136,9 @@ class EventReward:
                     reward += self.once
                 reward += 2.0 * self.repeated
         
-            if metrics['calmar_ratio'] is not None and metrics['sharpe_ratio'] >= 1.0:
+            if metrics['sharpe_ratio'] is not None and metrics['sharpe_ratio'] >= 1.0:
                 if self.sharpe_ratio_goal:
-                    self.calmar_ratio_goal = False
+                    self.sharpe_ratio_goal = False
                     reward += self.once
                 reward += 2.0 * self.repeated
         
