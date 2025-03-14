@@ -16,7 +16,7 @@ from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.metrics import Metrics
-from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
+from gym_trading_env.rewards.reward_functions import TotalPnlReward, reward_classes
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
 from gym_trading_env.rendering.game.game import Game  # Import plotting utility
@@ -85,10 +85,13 @@ class CustomTradingEnv(gym.Env):
         # Other state variables
         self.current_step = self.window_size
         self.terminated = False
+        self.action_result = None
 
         # Reset previous total P&L
         self.previous_total_pnl = Decimal('0.0')
         self.previous_equity = Decimal(self.initial_balance)
+
+        self.last_close_position = None
 
         self.reset()
 
@@ -126,7 +129,11 @@ class CustomTradingEnv(gym.Env):
         self.risk_reward_ratio_enable = config.risk.risk_reward_ratio_enable
 
         # Training-specific
-        self.reward_function = reward_functions.get(config.training.reward_function, total_pnl_reward_function)
+        reward_class = reward_classes.get(
+            config.training.reward_function,
+            TotalPnlReward  # 默认使用 TotalPnlReward
+        )
+        self.reward_function = reward_class(self)
         self.window_size = config.training.window_size
         self.max_episode_steps = config.training.max_episode_steps
         self.randomize_start = config.training.randomize_start
@@ -223,16 +230,25 @@ class CustomTradingEnv(gym.Env):
         self.logger.info("REST env")
 
         super().reset(seed=seed)
-        self.trade_record_manager = TradeRecordManager()
-        # Reset positions
         self.position_manager = PositionManager(logger=self.logger)
-        # Reset user accounts
         self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
+
+        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
+        self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
-        # Reset broker accounts
-        self.broker_accounts = BrokerAccounts()  # Re-initialize broker accounts with both balance and fees
+
+        # Other state variables
+        self.current_step = self.window_size
         self.terminated = False
-        self.episode_step_count = 0
+        self.action_result = None
+
+        # Reset previous total P&L
+        self.previous_total_pnl = Decimal('0.0')
+        self.previous_equity = Decimal(self.initial_balance)
+        
+        self.last_close_position = None
+        
+
         df_len = len(self.df)
 
         # 1) Decide start_idx
@@ -262,10 +278,6 @@ class CustomTradingEnv(gym.Env):
             )
             self.terminated = True
 
-
-        # Reset previous total P&L
-        self.previous_total_pnl = Decimal('0.0')
-        self.previous_equity = Decimal(self.initial_balance)
         return self._get_obs(), self._get_info()
 
 
@@ -304,39 +316,39 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        result = ForexCode.SUCCESS
+        self.action_result = ForexCode.SUCCESS
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            result = self._long_open(action_price, self.spread)
+            self.action_result = self._long_open(action_price, self.spread)
         elif action_enum == Action.LONG_CLOSE:
-            result = self._long_close(action_price, self.spread)
+            self.action_result = self._long_close(action_price, self.spread)
         elif action_enum == Action.SHORT_OPEN:
-            result = self._short_open(action_price, self.spread)
+            self.action_result = self._short_open(action_price, self.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            result = self._short_close(action_price, self.spread)
+            self.action_result = self._short_close(action_price, self.spread)
         elif action_enum == Action.POSITION_UP:
-            result = self._position_up(action_price, self.spread)
+            self.action_result = self._position_up(action_price, self.spread)
         elif action_enum == Action.POSITION_DOWN:
-            result = self._position_down(action_price, self.spread)
+            self.action_result = self._position_down(action_price, self.spread)
         elif action_enum == Action.EMPTY:
-            result = self._empty_position(action_price, self.spread)
+            self.action_result = self._empty_position(action_price, self.spread)
         elif action_enum == Action.LONG_OPEN0:
-            result = self._long_open(action_price, self.spread, slot=0)
+            self.action_result = self._long_open(action_price, self.spread, slot=0)
         elif action_enum == Action.LONG_CLOSE0:
-            result = self._long_close(action_price, self.spread, slot=0)
+            self.action_result = self._long_close(action_price, self.spread, slot=0)
         elif action_enum == Action.SHORT_OPEN0:
-            result = self._short_open(action_price, self.spread, slot=0)
+            self.action_result = self._short_open(action_price, self.spread, slot=0)
         elif action_enum == Action.SHORT_CLOSE0:
-            result = self._short_close(action_price, self.spread, slot=0)
+            self.action_result = self._short_close(action_price, self.spread, slot=0)
         elif action_enum == Action.LONG_OPEN1:
-            result = self._long_open(action_price, self.spread, slot=1)
+            self.action_result = self._long_open(action_price, self.spread, slot=1)
         elif action_enum == Action.LONG_CLOSE1:
-            result = self._long_close(action_price, self.spread, slot=1)
+            self.action_result = self._long_close(action_price, self.spread, slot=1)
         elif action_enum == Action.SHORT_OPEN1:
-            result = self._short_open(action_price, self.spread, slot=1)
+            self.action_result = self._short_open(action_price, self.spread, slot=1)
         elif action_enum == Action.SHORT_CLOSE1:
-            result = self._short_close(action_price, self.spread, slot=1)
+            self.action_result = self._short_close(action_price, self.spread, slot=1)
 
         #
         # wait until 10:05
@@ -358,7 +370,7 @@ class CustomTradingEnv(gym.Env):
             self._update_unrealized_pnl()
 
         # Calculate reward
-        reward = self.reward_function(self)
+        reward = self.reward_function()
 
         # Construct observation
         obs = self._get_obs()
@@ -384,8 +396,8 @@ class CustomTradingEnv(gym.Env):
     
         metrics = self.metrics.get_metrics()
         # 检查风险限制（使用百分比形式）
-        daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))  # 转换为小数
-        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'))    # 转换为小数
+        daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
+        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
         if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
             self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
                            f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
@@ -637,6 +649,8 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.balance.deposit(fee)   # Rollback Step 1
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
+        
+        self.last_close_position = {'pnl': pnl, 'margin': released_margin}
 
         # All operations successful
         trade_record = TradeRecord(
@@ -809,6 +823,8 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.balance.deposit(fee)   # Rollback Step 1
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        self.last_close_position = {'pnl': pnl, 'margin': released_margin}
 
         # All operations successful
         trade_record = TradeRecord(

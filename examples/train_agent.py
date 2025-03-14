@@ -2,8 +2,6 @@
 
 import gymnasium as gym
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
-from gym_trading_env.utils.data_processing import load_data
-from gym_trading_env.rewards.reward_functions import reward_functions
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 
