@@ -47,7 +47,7 @@ training:
 
 visualization:
   image_height: 128
-  image_width: 36
+  image_width: 64
   image_channels: 1
 
 debug:
