@@ -4,7 +4,7 @@ from typing import Tuple, Optional, List
 from gym_trading_env.envs.position import Position
 
 class PositionManager:
-    def __init__(self, logger = None, long_slots: int = 2, short_slots: int = 2):
+    def __init__(self, logger = None, long_slots: int = 10, short_slots: int = 10):
         """
         Initializes the PositionManager with configurable number of long and short slots.
 
