@@ -19,7 +19,7 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(self.pm.total_long_position(), Decimal('0.03'))
         
         # Close the earliest long position
-        pnl, released_margin, closed_size = self.pm.close_long_position(Decimal('1.1100'), Decimal('100000'))
+        pnl, released_margin, closed_size, _ = self.pm.close_long_position(Decimal('1.1100'), Decimal('100000'))
         expected_pnl = (Decimal('1.1100') - Decimal('1.1000')) * Decimal('0.01') * Decimal('100000')
         self.assertEqual(pnl, expected_pnl)
         self.assertEqual(released_margin, Decimal('10.0'))
@@ -37,7 +37,7 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(self.pm.total_short_position(), Decimal('0.03'))
         
         # Close the earliest short position
-        pnl, released_margin, closed_size = self.pm.close_short_position(Decimal('1.1900'), Decimal('100000'))
+        pnl, released_margin, closed_size, _ = self.pm.close_short_position(Decimal('1.1900'), Decimal('100000'))
         expected_pnl = (Decimal('1.2000') - Decimal('1.1900')) * Decimal('0.01') * Decimal('100000')
         self.assertEqual(pnl, expected_pnl)
         self.assertEqual(released_margin, Decimal('15.0'))
@@ -51,7 +51,7 @@ class TestPositionManager(unittest.TestCase):
         self.pm.add_long_position(pos)
         
         # Close the existing position
-        pnl, released_margin, closed_size = self.pm.close_long_position(Decimal('1.1100'), Decimal('100000'))
+        pnl, released_margin, closed_size, _ = self.pm.close_long_position(Decimal('1.1100'), Decimal('100000'))
         expected_pnl = (Decimal('1.1100') - Decimal('1.1000')) * Decimal('0.01') * Decimal('100000')
         self.assertEqual(pnl, expected_pnl)
         self.assertEqual(released_margin, Decimal('10.0'))
@@ -69,7 +69,7 @@ class TestPositionManager(unittest.TestCase):
         self.pm.add_short_position(pos)
         
         # Close the existing short position
-        pnl, released_margin, closed_size = self.pm.close_short_position(Decimal('1.1900'), Decimal('100000'))
+        pnl, released_margin, closed_size, _ = self.pm.close_short_position(Decimal('1.1900'), Decimal('100000'))
         expected_pnl = (Decimal('1.2000') - Decimal('1.1900')) * Decimal('0.01') * Decimal('100000')
         self.assertEqual(pnl, expected_pnl)
         self.assertEqual(released_margin, Decimal('15.0'))

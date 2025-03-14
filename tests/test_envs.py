@@ -22,7 +22,11 @@ class TestCustomTradingEnv(unittest.TestCase):
         dates = pd.date_range('2020-01-01', periods=100, freq='D')
         data = {
             'Date': dates,
-            'Close': [Decimal('1.1000') + Decimal('0.0001') * Decimal(str(i)) for i in range(100)]
+            'Close': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
+            'Open': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
+            'High': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
+            'Low': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
+            'Volume': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)]
         }
         df = pd.DataFrame(data)
 
@@ -914,7 +918,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         # To prevent opening, balance should be less than fee + required_margin
         # Calculate required_fee and required_margin for LONG_OPEN at current step
         current_step = self.env.current_step
-        current_price = self.env.df.iloc[current_step]['Close'] + Decimal(str(self.env.spread))
+        current_price = Decimal(self.env.df.iloc[current_step]['Close']) + Decimal(str(self.env.spread))
         trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
         is_round_turn = self.env.is_round_turn
         trade_lot = Decimal(str(self.env.trade_lot))

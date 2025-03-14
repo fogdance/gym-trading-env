@@ -138,16 +138,16 @@ class BollingerBandPlotter:
     def plot_trade(self, ax, open_record, close_record, trade_type):        
         # Get the entry and exit timestamps and prices
         entry_date = open_record.timestamp
-        entry_price = float(open_record.price)
+        entry_price = float(open_record.open_price)
         exit_date = close_record.timestamp
-        exit_price = float(close_record.price)
+        exit_price = float(close_record.close_price)
 
         return self.plot_trade_and_line(ax, entry_date, entry_price, exit_date, exit_price, trade_type, linestyle='-')
 
     def plot_unclosed_trade(self, ax, open_record, trade_type):        
         # Get the entry timestamp and price
         entry_date = open_record.timestamp
-        entry_price = float(open_record.price)
+        entry_price = float(open_record.open_price)
         exit_date = self.df.index[-1]  # Use the last available timestamp for exit
         exit_price = self.df['Close'].iloc[-1]  # Use the last closing price for exit
 

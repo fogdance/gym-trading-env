@@ -15,6 +15,7 @@ from gym_trading_env.envs.position import Position
 from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
+from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.rewards.reward_functions import total_pnl_reward_function, reward_functions
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
@@ -66,8 +67,8 @@ class CustomTradingEnv(gym.Env):
 
         self.observation_space = spaces.Dict({
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
-            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(4, 4), dtype=np.float32),
-            'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(5, 5), dtype=np.float32),
+            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(12, ), dtype=np.float32),
+            'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(20, ), dtype=np.float32),
             'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
             'account': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
             'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(5,), dtype=np.float32),
@@ -79,6 +80,7 @@ class CustomTradingEnv(gym.Env):
 
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
         self.trade_record_manager = TradeRecordManager()
+        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # Other state variables
         self.current_step = self.window_size
@@ -230,6 +232,7 @@ class CustomTradingEnv(gym.Env):
         self.position_manager = PositionManager(logger=self.logger)
         # Reset user accounts
         self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
+        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
         # Reset broker accounts
         self.broker_accounts = BrokerAccounts()  # Re-initialize broker accounts with both balance and fees
         self.terminated = False
@@ -349,26 +352,23 @@ class CustomTradingEnv(gym.Env):
         # Update step
         self.current_step += 1
 
-        # Calculate new equity
-        equity = self._calculate_equity()
-
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
-        self.user_accounts.update_metrics(self.df.index[self.current_step])
+        self.metrics.update(self.df.index[self.current_step])
 
 
         # Check margin requirements
-        self._check_margin(equity)
+        self._check_margin()
     
 
         self.episode_step_count += 1
 
         reward = 0
-
+        metrics = self.metrics.get_metrics()
         # 检查风险限制（使用百分比形式）
-        daily_lost_pct = decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0'))  # 转换为小数
-        drawdown_pct = decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0'))    # 转换为小数
+        daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))  # 转换为小数
+        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'))    # 转换为小数
         if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
             self.terminated = True
             self.forced_termination = True
@@ -485,13 +485,12 @@ class CustomTradingEnv(gym.Env):
             return (pos.entry_price - current_price) * pos.size * self.lot_size
 
 
-    def _check_margin(self, equity: Decimal):
+    def _check_margin(self):
         """
         Checks margin requirements and performs liquidation if necessary.
 
-        Args:
-            equity (Decimal): The current equity.
         """
+        equity = self._calculate_equity()
         if equity < self.user_accounts.margin.get_balance():
             # Liquidate all positions
             self.logger.info("Equity below margin requirement. Liquidating all positions.")
@@ -564,7 +563,8 @@ class CustomTradingEnv(gym.Env):
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.LONG_OPEN.name,
             position_size=position_size,
-            price=ask_price,
+            open_price=ask_price,
+            close_price=Decimal(0),
             required_margin=required_margin,
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
@@ -591,7 +591,7 @@ class CustomTradingEnv(gym.Env):
 
         # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size = self.position_manager.close_long_position(bid_price, self.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.lot_size, slot=slot)
         except ValueError as e:
             self.logger.error(f"Error closing long position: {e}")
             self.terminated = True
@@ -655,7 +655,8 @@ class CustomTradingEnv(gym.Env):
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.LONG_CLOSE.name,
             position_size=closed_size,
-            price=bid_price,
+            open_price=open_price,
+            close_price=bid_price,
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
@@ -736,7 +737,8 @@ class CustomTradingEnv(gym.Env):
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.SHORT_OPEN.name,
             position_size=position_size,
-            price=bid_price,
+            open_price=bid_price,
+            close_price=Decimal(0),
             required_margin=required_margin,
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
@@ -763,7 +765,7 @@ class CustomTradingEnv(gym.Env):
 
         # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size = self.position_manager.close_short_position(ask_price, self.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.lot_size, slot=slot)
         except ValueError as e:
             self.logger.error(f"Error closing short position: {e}")
             self.terminated = True
@@ -827,7 +829,8 @@ class CustomTradingEnv(gym.Env):
             timestamp=self.df.iloc[self.current_step].name,
             operation_type=Action.SHORT_CLOSE.name,
             position_size=closed_size,
-            price=ask_price,
+            open_price=open_price,
+            close_price=ask_price,
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
@@ -896,26 +899,24 @@ class CustomTradingEnv(gym.Env):
         df_window = self.df.iloc[window_start:window_end]
         
         # 1. 当前持仓
-        positions = np.zeros((4, 4), dtype=np.float32)
+        positions = np.zeros((4, 3), dtype=np.float32)
         for i, pos in enumerate(self.position_manager.long_positions[:2]):
             if pos is None:
                 continue
-            direction = 1
             pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=True)
-            positions[i] = [direction, decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
+            positions[i] = [ decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
 
         for i, pos in enumerate(self.position_manager.short_positions[:2]):
             i += 2
             if pos is None:
                 continue
-            direction = -1
             pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=False)
-            positions[i] = [direction, decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
+            positions[i] = [decimal_to_float(pnl), -decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
 
 
         # 2. 历史交易（优化版）
         num_records = 5
-        trade_history = np.zeros((num_records, 5), dtype=np.float32)
+        trade_history = np.zeros((num_records, 4), dtype=np.float32)
         trades = self.trade_record_manager.trade_history[-20:]
         count = 0
 
@@ -924,16 +925,16 @@ class CustomTradingEnv(gym.Env):
             if trade.pnl is None:
                 continue
 
+            position_size = 0
             if trade.operation_type == Action.LONG_CLOSE.name:
-                direction = 1
+                position_size = decimal_to_float(trade.position_size)
             elif trade.operation_type == Action.SHORT_CLOSE.name:
-                direction = -1
+                position_size = -decimal_to_float(trade.position_size)
 
             trade_history[count] = [
-                direction,
+                position_size,
                 decimal_to_float(trade.pnl),
-                decimal_to_float(trade.position_size),
-                decimal_to_float(trade.price, 5),
+                decimal_to_float(trade.open_price, 5),
                 decimal_to_float(trade.close_price, 5)
             ]
             count += 1
@@ -946,14 +947,16 @@ class CustomTradingEnv(gym.Env):
         # 4. 技术指标
         indicators = self._calculate_indicators()
 
+        metrics = self.metrics.get_metrics()
+
         # 5. 账户信息
         account = np.array([
             float(self.user_accounts.balance.get_balance()),
             float(self.user_accounts.equity()),
             float(self.user_accounts.margin.get_balance()),
             float(self._calculate_equity() - self.user_accounts.margin.get_balance()),
-            float(self.trade_record_manager.max_profit),
-            float(self.trade_record_manager.max_loss)
+            float(metrics["max_profit"]),
+            float(metrics["max_loss"]),
         ], dtype=np.float32)
 
         # 6. 风险管理
@@ -961,14 +964,14 @@ class CustomTradingEnv(gym.Env):
             0.0,
             float(self.daily_lost_ratio),
             float(self.max_drawdown_ratio),
-            float(self.user_accounts.current_day_lost),
-            float(self.user_accounts.current_drawdown)
+            float(metrics["current_day_lost_pct"]),
+            float(metrics["current_drawdown_pct"]),
         ], dtype=np.float32)
 
         return {
             'image': image,
-            'positions': positions,
-            'trade_history': trade_history,
+            'positions': positions.flatten(),
+            'trade_history': trade_history.flatten(),
             'indicators': indicators,
             'account': account,
             'risk': risk
@@ -988,7 +991,7 @@ class CustomTradingEnv(gym.Env):
                                         None if self.position_manager.calc_profit_factor() is None else decimal_to_float(self.position_manager.calc_profit_factor(), precision=2), 
                                         render_mode=render_mode)
         else:
-            if self.render_mode == 'rgb_array':
+            if render_mode == 'rgb_array':
                 output_filepath = None
                 if self.debug_enabled:
                     os.makedirs('output', exist_ok=True)

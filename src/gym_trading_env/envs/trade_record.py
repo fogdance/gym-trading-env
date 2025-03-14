@@ -4,7 +4,7 @@ from decimal import Decimal
 from datetime import datetime
 
 class TradeRecord:
-    def __init__(self, timestamp, operation_type: str, position_size: Decimal, price: Decimal, required_margin: Decimal,
+    def __init__(self, timestamp, operation_type: str, position_size: Decimal, open_price: Decimal, close_price: Decimal, required_margin: Decimal,
                  fee: Decimal, balance: Decimal, leverage: Decimal, free_margin: Decimal, pnl: Decimal = Decimal('0.0'),
                  closed_size: Decimal = Decimal('0.0'), released_margin: Decimal = Decimal('0.0')):
         """
@@ -26,7 +26,8 @@ class TradeRecord:
         self.timestamp = timestamp
         self.operation_type = operation_type  # Operation type: Long/Open, Short/Open, Long/Close, Short/Close
         self.position_size = position_size  # Position size
-        self.price = price  # Trade price
+        self.close_price = close_price  # Trade price
+        self.open_price = open_price  # open price
         self.required_margin = required_margin  # Required margin
         self.fee = fee  # Trading fee
         self.balance = balance  # Current balance
@@ -42,7 +43,8 @@ class TradeRecord:
             "timestamp": self.timestamp.isoformat(),
             "operation_type": self.operation_type,
             "position_size": str(self.position_size),
-            "price": str(self.price),
+            "open_price": str(self.open_price),
+            "close_price": str(self.close_price),
             "required_margin": str(self.required_margin),
             "fee": str(self.fee),
             "balance": str(self.balance),
@@ -54,4 +56,4 @@ class TradeRecord:
         }
 
     def __repr__(self):
-        return f"TradeRecord({self.operation_type}, {self.position_size}, {self.price}, {self.required_margin}, {self.fee})"
+        return f"TradeRecord({self.operation_type}, {self.position_size}, {self.close_price}, {self.required_margin}, {self.fee})"

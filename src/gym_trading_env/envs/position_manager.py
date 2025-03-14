@@ -109,7 +109,7 @@ class PositionManager:
         self.closed_trade_profits.append(pnl)
         released_margin = pos.initial_margin
         closed_size = pos.size
-        return pnl, released_margin, closed_size
+        return pnl, released_margin, closed_size, pos.entry_price
 
     def close_short_position(self, closing_price: Decimal, lot_size: Decimal, slot: Optional[int] = None) -> Tuple[Decimal, Decimal, Decimal]:
         """
@@ -150,7 +150,7 @@ class PositionManager:
         self.closed_trade_profits.append(pnl)
         released_margin = pos.initial_margin
         closed_size = pos.size
-        return pnl, released_margin, closed_size
+        return pnl, released_margin, closed_size, pos.entry_price
 
     def total_long_position(self) -> Decimal:
         """
