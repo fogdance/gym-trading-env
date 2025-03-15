@@ -37,9 +37,9 @@ class CustomTradingEnv(gym.Env):
     def __init__(self, df: pd.DataFrame = None, config_path: str = None):
         super(CustomTradingEnv, self).__init__()
 
-        config = self._config(config_path=config_path)
+        self.config = self._config(config_path=config_path)
 
-        self._data(df=df, config=config)
+        self._data(df=df, config=self.config)
 
         self.valid_actions = [
             Action.HOLD,
@@ -1062,17 +1062,38 @@ class CustomTradingEnv(gym.Env):
 
     def _calculate_indicators(self):
         # 计算 h1, l1, h2, l2
-        def get_hl(df, periods):
-            return 0.0, 0.0, 0.0, 0.0
+        def get_hl(df, up_thresh, down_thresh):
+            engineer = FeatureEngineer()
+            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=False)
+            h1 = features['Prev_High'].iloc[-1]  # 最近高
+            l1 = features['Prev_Low'].iloc[-1]   # 最近低
+            h2 = features['Prev_Prev_High'].iloc[-1]  # 前前高
+            l2 = features['Prev_Prev_Low'].iloc[-1]   # 前前低
+            return h1,l1,h2,l2
+        
+        start_idx = max(0, self.current_step - 200)
+        df_5m = self.df.iloc[start_idx:self.current_step].copy()
 
-        df_5m = self.df.iloc[-10:]  # 假设10根足够
-        df_15m = self.df.iloc[-10:]
-        df_1h = self.df.iloc[-10:]
+        df_15m = df_5m.resample('15min').agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
+
+        df_1h = df_5m.resample('60min').agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
 
         indicators = np.array([
-            *get_hl(df_5m, 5),   # 5分钟
-            *get_hl(df_15m, 2),  # 15分钟
-            *get_hl(df_1h, 2),   # 1小时
+            *get_hl(df_5m[-30:], self.config.trading.up_thresh_5m, self.config.trading.down_thresh_5m),   # 5分钟
+            *get_hl(df_15m[-30:], self.config.trading.up_thresh_15m, self.config.trading.down_thresh_15m),  # 15分钟
+            *get_hl(df_1h[-30:], self.config.trading.up_thresh_1h, self.config.trading.down_thresh_1h),   # 1小时
             self.df.iloc[self.current_step]['Close']
         ], dtype=np.float32)
         return indicators

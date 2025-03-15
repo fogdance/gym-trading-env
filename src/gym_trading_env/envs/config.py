@@ -54,6 +54,14 @@ class TradingParams:
     data_path: str = ""
     data_interval: str = "5m"
 
+    down_thresh_5m: float = -0.0001
+    up_thresh_5m: float = 0.0001
+    down_thresh_15m: float = -0.0001
+    up_thresh_15m: float = 0.0001
+    down_thresh_1h: float = -0.0001
+    up_thresh_1h: float = 0.0001
+    """"ZigZag"""
+
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
         assert self.initial_balance > 0, "Initial balance must be positive"

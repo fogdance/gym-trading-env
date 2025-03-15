@@ -14,6 +14,12 @@ XAUUSD: &XAUUSD
   max_short_position: 0.05
   data_path: "XAUUSD"
   data_interval: "5m"
+  down_thresh_5m: -0.0001
+  up_thresh_5m: 0.0001
+  down_thresh_15m: -0.00015
+  up_thresh_15m: 0.00015
+  down_thresh_1h: -0.00025
+  up_thresh_1h: 0.00025
 
 EURUSD: &EURUSD
   currency_pair: "EURUSD"
@@ -28,6 +34,12 @@ EURUSD: &EURUSD
   max_short_position: 0.05
   data_path: "EURUSD"
   data_interval: "5m"
+  down_thresh_5m: -0.0001
+  up_thresh_5m: 0.0001
+  down_thresh_15m: -0.00015
+  up_thresh_15m: 0.00015
+  down_thresh_1h: -0.00025
+  up_thresh_1h: 0.00025
 
 trading:
   <<: *EURUSD
