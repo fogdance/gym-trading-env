@@ -60,6 +60,7 @@ class FeatureEngineer:
                           - Prev_Low: Previous valley value.
                           - Prev_Prev_Low: Previous previous valley value.
         """
+        df_original = df.copy()
         df = df.copy()
         
         # Ensure 'Close' column exists and has no NaN values
@@ -107,6 +108,20 @@ class FeatureEngineer:
         
         # Drop rows where any of the new features are NaN (i.e., not enough pivots)
         df.dropna(subset=['Prev_High', 'Prev_Prev_High', 'Prev_Low', 'Prev_Prev_Low'], inplace=True)
+
+        if df.empty:
+            global_high = df_original['Close'].max()
+            global_low = df_original['Close'].min()
+
+            fallback_record = pd.DataFrame({
+                'Prev_High': [global_high],
+                'Prev_Prev_High': [global_high],
+                'Prev_Low': [global_low],
+                'Prev_Prev_Low': [global_low],
+                'Close': df_original['Close'].iloc[-1]
+            }, index=[df_original.index[-1]])
+
+            df = fallback_record.copy()
         
         return df
 
@@ -148,4 +163,3 @@ class FeatureEngineer:
             plt.close()  # Close the plot to avoid display
 
         return features_df
-
