@@ -107,7 +107,6 @@ class CustomTradingEnv(gym.Env):
         config.validate()
 
         # Direct access to nested configs
-        self.is_unittest = config.debug.is_unittest
         self.debug_enabled = config.debug.debug_enabled
 
         # Trading-specific

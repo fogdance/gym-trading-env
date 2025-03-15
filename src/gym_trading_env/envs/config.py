@@ -147,7 +147,6 @@ class VisualizationParams:
 @dataclass
 class DebugParams:
     """Debugging and testing parameters."""
-    is_unittest: bool = False
     log_level: str = "ERROR"
     debug_enabled: bool = False
 

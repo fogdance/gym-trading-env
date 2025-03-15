@@ -63,5 +63,4 @@ visualization:
   image_channels: 1
 
 debug:
-  is_unittest: false
   log_level: ERROR
