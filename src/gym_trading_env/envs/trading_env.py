@@ -139,6 +139,7 @@ class CustomTradingEnv(gym.Env):
         self.episode_length = config.training.episode_length
         self.game_mode = config.training.game_mode
         self.render_mode = config.training.render_mode
+        self.data_window_size = 400
 
         # Visualization
         self.image_height = config.visualization.image_height
@@ -170,13 +171,12 @@ class CustomTradingEnv(gym.Env):
         elif not isinstance(self.df.index, pd.DatetimeIndex):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
         
-                # Initialize step counters
+        # Initialize step counters
         self.episode_step_count = 0
         self.start_idx = 0
         self.end_idx = len(self.df)  # default to entire dataset
 
         # We'll store self.np_random for picking random start
-        # if you're using gym>=0.26, you can do self.np_random = np.random.default_rng(seed)
         self.np_random = np.random.default_rng(seed=42)
 
         # Check basic feasibility right away
@@ -253,7 +253,7 @@ class CustomTradingEnv(gym.Env):
         # 1) Decide start_idx
         if self.randomize_start and self.episode_length is not None:
             # max possible start
-            max_start = df_len - self.window_size - self.episode_length
+            max_start = df_len - self.data_window_size - self.episode_length
             max_start = max(max_start, 0)  # ensure not negative
             self.start_idx = self.np_random.integers(low=0, high=max_start+1)
         else:
@@ -895,7 +895,7 @@ class CustomTradingEnv(gym.Env):
         """
 
         # Slice the dataframe for the current window
-        window_start = max(0, self.current_step - self.window_size)
+        window_start = max(0, self.current_step - self.data_window_size)
         window_end = self.current_step
         df_window = self.df.iloc[window_start:window_end]
         
@@ -946,7 +946,7 @@ class CustomTradingEnv(gym.Env):
         image = self._render(render_mode='rgb_array', df=df_window)
 
         # 4. 技术指标
-        indicators = self._calculate_indicators()
+        indicators = self._calculate_indicators(df=df_window)
 
         metrics = self.metrics.get_metrics()
 
@@ -999,11 +999,20 @@ class CustomTradingEnv(gym.Env):
                     os.makedirs('output', exist_ok=True)
                     output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
 
+                df_15m = df.resample('15min').agg({
+                    'Open': 'first',
+                    'High': 'max',
+                    'Low': 'min',
+                    'Close': 'last',
+                    'Volume': 'sum'
+                }).dropna()
+                render_df = df_15m[-self.window_size:]
+
                 # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
                 # print(f'{timestamp_at_window_end} {self.currency_pair}_candlestick_{self.current_step}.png')
                 # Draw the candlestick chart with indicators and return as numpy array
                 plotter = BollingerBandPlotter(
-                    df=df,
+                    df=render_df,
                     channels=self.channels,
                     trade_record_manager=self.trade_record_manager,
                     balance=self.user_accounts.balance.get_balance(),
@@ -1059,19 +1068,18 @@ class CustomTradingEnv(gym.Env):
         pass
 
 
-    def _calculate_indicators(self):
+    def _calculate_indicators(self, df):
         # 计算 h1, l1, h2, l2
         def get_hl(df, up_thresh, down_thresh):
             engineer = FeatureEngineer()
-            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=False)
+            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=self.debug_enabled)
             h1 = features['Prev_High'].iloc[-1]  # 最近高
             l1 = features['Prev_Low'].iloc[-1]   # 最近低
             h2 = features['Prev_Prev_High'].iloc[-1]  # 前前高
             l2 = features['Prev_Prev_Low'].iloc[-1]   # 前前低
             return h1,l1,h2,l2
         
-        start_idx = max(0, self.current_step - 200)
-        df_5m = self.df.iloc[start_idx:self.current_step].copy()
+        df_5m = df.copy()
 
         df_15m = df_5m.resample('15min').agg({
             'Open': 'first',

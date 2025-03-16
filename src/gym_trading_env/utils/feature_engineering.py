@@ -159,7 +159,7 @@ class FeatureEngineer:
             plt.xlabel('Time')
             plt.ylabel('Price')
             plt.legend()
-            plt.savefig('data/zigzag_features_plot.png')  # Save plot
+            plt.savefig(f'output/{df.index.values[-1]}zigzag_features_plot.png')  # Save plot
             plt.close()  # Close the plot to avoid display
 
         return features_df
