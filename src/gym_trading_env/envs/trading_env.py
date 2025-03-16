@@ -88,10 +88,6 @@ class CustomTradingEnv(gym.Env):
         self.terminated = False
         self.action_result = None
 
-        # Reset previous total P&L
-        self.previous_total_pnl = Decimal('0.0')
-        self.previous_equity = Decimal(self.initial_balance)
-
         self.last_close_position = None
 
         self.reset()
@@ -241,10 +237,6 @@ class CustomTradingEnv(gym.Env):
         self.current_step = self.window_size
         self.terminated = False
         self.action_result = None
-
-        # Reset previous total P&L
-        self.previous_total_pnl = Decimal('0.0')
-        self.previous_equity = Decimal(self.initial_balance)
         
         self.last_close_position = None
 

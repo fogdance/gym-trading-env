@@ -88,7 +88,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_funds_before = self.calculate_total_funds()
 
         # Record previous_total_pnl before the step
-        previous_total_pnl = self.env.previous_total_pnl
+        previous_total_pnl = Decimal(0)
 
         action = Action.LONG_OPEN.value
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -172,13 +172,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         # First, execute LONG_OPEN
         action_open = Action.LONG_OPEN.value
         # Record previous_total_pnl before opening
-        previous_total_pnl_open = self.env.previous_total_pnl
         obs, reward_open, terminated, truncated, info = self.env.step(action_open)
         # total_pnl after open
         total_pnl_open = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
 
         # Record previous_total_pnl before closing
-        previous_total_pnl_close = self.env.previous_total_pnl
+        previous_total_pnl_close = total_pnl_open
 
         # Execute LONG_CLOSE
         action_close = Action.LONG_CLOSE.value
@@ -186,7 +185,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # Retrieve environment's internal variables
         open_step = self.env.current_step - 2
-        close_step = self.env.current_step
+        close_step = self.env.current_step - 1
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
         spread = Decimal(str(self.env.spread))
@@ -280,7 +279,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_funds_before = self.calculate_total_funds()
 
         # Record previous_total_pnl before the step
-        previous_total_pnl = self.env.previous_total_pnl
+        previous_total_pnl = Decimal(0)
 
         action = Action.SHORT_OPEN.value
         obs, reward, terminated, truncated, info = self.env.step(action)
@@ -363,13 +362,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         # First, execute SHORT_OPEN
         action_open = Action.SHORT_OPEN.value
         # Record previous_total_pnl before opening
-        previous_total_pnl_open = self.env.previous_total_pnl
         obs, reward_open, terminated, truncated, info = self.env.step(action_open)
         # total_pnl after open
         total_pnl_open = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
 
         # Record previous_total_pnl before closing
-        previous_total_pnl_close = self.env.previous_total_pnl
+        previous_total_pnl_close = total_pnl_open
 
         # Execute SHORT_CLOSE
         action_close = Action.SHORT_CLOSE.value
@@ -538,11 +536,11 @@ class TestCustomTradingEnv(unittest.TestCase):
         """
         obs, info = self.env.reset()
         action = Action.LONG_OPEN.value
+        previous_total_pnl = Decimal(0)
         for step in range(1, 4):  # Attempt to open 0.03 lots, exceeding the 0.02 lot limit
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
                 previous_balance = Decimal(str(info['balance']))
-                previous_total_pnl = self.env.previous_total_pnl
 
                 total_funds_before_step = self.calculate_total_funds()
 
@@ -586,6 +584,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected reward: change in total P&L = total_pnl - previous_total_pnl
                 expected_reward = total_pnl - previous_total_pnl
+                previous_total_pnl = total_pnl
 
                 # Expected long_position after LONG_OPEN
                 expected_long_position = trade_lot * step
@@ -641,11 +640,11 @@ class TestCustomTradingEnv(unittest.TestCase):
         """
         obs, info = self.env.reset()
         action = Action.LONG_OPEN.value
+        previous_total_pnl = Decimal(0)
         for step in range(1, 4):  # Attempt to open 0.03 lots, exceeding the 0.02 lot limit
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
                 previous_balance = Decimal(str(info['balance']))
-                previous_total_pnl = self.env.previous_total_pnl
 
                 total_funds_before_step = self.calculate_total_funds()
 
@@ -680,7 +679,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                 expected_balance = previous_balance - fee
 
                 # P&L after LONG_OPEN (unrealized)
-                pnl = (current_price - ask_price) * actual_trade_lot * lot_size
+                pnl = (Decimal(str(self.env.df.iloc[self.env.current_step]['Close'])) - ask_price) * actual_trade_lot * lot_size
                 total_pnl = pnl  # realized_pnl is 0.0
 
                 # Equity after LONG_OPEN
@@ -688,6 +687,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected reward: change in total P&L = total_pnl - previous_total_pnl
                 expected_reward = total_pnl - previous_total_pnl
+                previous_total_pnl = total_pnl
 
                 # Expected long_position after LONG_OPEN
                 expected_long_position = trade_lot * step
@@ -743,11 +743,11 @@ class TestCustomTradingEnv(unittest.TestCase):
         """
         obs, info = self.env.reset()
         action = Action.SHORT_OPEN.value
+        previous_total_pnl = Decimal(0)
         for step in range(1, 4):  # Attempt to open 0.03 lots, exceeding the 0.02 lot limit
             with self.subTest(step=step):
                 previous_equity = Decimal(str(info['equity']))
                 previous_balance = Decimal(str(info['balance']))
-                previous_total_pnl = self.env.previous_total_pnl
 
                 total_funds_before_step = self.calculate_total_funds()
 
@@ -783,7 +783,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                 expected_balance = previous_balance - fee
 
                 # P&L after SHORT_OPEN (unrealized)
-                pnl = (bid_price - current_price) * actual_trade_lot * lot_size
+                pnl = (bid_price - Decimal(str(self.env.df.iloc[self.env.current_step]['Close']))) * actual_trade_lot * lot_size
                 total_pnl = pnl  # realized_pnl is 0.0
 
                 # Equity after SHORT_OPEN
@@ -791,6 +791,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected reward: change in total P&L = total_pnl - previous_total_pnl
                 expected_reward = total_pnl - previous_total_pnl
+                previous_total_pnl = total_pnl
 
                 # Expected short_position after SHORT_OPEN
                 expected_short_position = trade_lot * step
@@ -850,13 +851,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Execute multiple LONG_OPEN actions
         action_open = Action.LONG_OPEN.value
         # Record previous_total_pnl before the steps
-        previous_total_pnl_step1 = self.env.previous_total_pnl
+        previous_total_pnl_step1 = Decimal(0)
         obs, reward1, terminated, truncated, info = self.env.step(action_open)
         # Calculate expected reward for first step
         current_total_pnl_step1 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
         expected_reward1 = current_total_pnl_step1 - previous_total_pnl_step1
 
-        previous_total_pnl_step2 = self.env.previous_total_pnl
+        previous_total_pnl_step2 = current_total_pnl_step1
         obs, reward2, terminated, truncated, info = self.env.step(action_open)
         # Calculate expected reward for second step
         current_total_pnl_step2 = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl

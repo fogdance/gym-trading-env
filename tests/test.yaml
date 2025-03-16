@@ -20,8 +20,8 @@ trading:
   <<: *USDJPY
 
 risk:
-  max_drawdown_ratio: 0.1
-  daily_lost_ratio: 0.05
+  max_drawdown_ratio: 0.2
+  daily_lost_ratio: 0.02
   risk_reward_ratio: 0
 
 training:
@@ -36,6 +36,3 @@ visualization:
   image_height: 96
   image_width: 96
   image_channels: 1
-
-debug:
-  is_unittest: True
