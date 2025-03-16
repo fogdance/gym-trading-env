@@ -17,7 +17,7 @@ def main():
     # Load sample data
     df = pd.read_csv('data/EURUSD_test5m.csv', parse_dates=['Date'])
 
-    window_size = 30
+    window_size = 60
     current_step = 40
 
     window_start = max(0, current_step - window_size)
@@ -41,7 +41,8 @@ def main():
                 timestamp=row['Date'],
                 operation_type=Action.SHORT_OPEN.name,  # Use Action.LONG_OPEN
                 position_size=Decimal('0.1'),  # Hypothetical position size
-                price=Decimal(str(row['Close'])),  # Use Close price
+                open_price=Decimal(str(row['Close'])),  # Use Close price
+                close_price=Decimal(0),
                 required_margin=Decimal('0.0'),  # Hypothetical required margin
                 fee=Decimal('0.0'),  # Hypothetical fee
                 balance=Decimal('1000.0'),  # Hypothetical balance
@@ -59,7 +60,8 @@ def main():
                 timestamp=row['Date'],
                 operation_type=Action.SHORT_CLOSE.name,  # Use Action.LONG_CLOSE
                 position_size=Decimal('0.1'),  # Hypothetical position size
-                price=Decimal(str(row['Close'])),  # Use Close price
+                open_price=Decimal(str(row['Close'])),  # Use Close price
+                close_price=Decimal(str(row['Close'])),  # Use Close price
                 required_margin=Decimal('0.0'),  # Hypothetical required margin
                 fee=Decimal('0.0'),  # Hypothetical fee
                 balance=Decimal('1000.0'),  # Hypothetical balance
@@ -76,7 +78,8 @@ def main():
         timestamp=df.iloc[-7]['Date'], 
         operation_type=Action.LONG_OPEN.name,  
         position_size=Decimal('0.1'),  # Hypothetical position size
-        price=Decimal(str(df.iloc[-7]['Close'])),  # Use Close price
+        open_price=Decimal(str(df.iloc[-7]['Close'])),  # Use Close price
+        close_price=Decimal(0),
         required_margin=Decimal('0.0'),  # Hypothetical required margin
         fee=Decimal('0.0'),  # Hypothetical fee
         balance=Decimal('1000.0'),  # Hypothetical balance
@@ -90,7 +93,7 @@ def main():
     trade_record_manager.record_trade(trade_record)
 
     # Create a plotter for Bollinger Bands
-    plotter = BollingerBandPlotter(df, trade_record_manager, channels=1, balance=1000, window=window_size, fig_width=128, fig_height=32, dpi=90)
+    plotter = BollingerBandPlotter(df, trade_record_manager, channels=1, balance=1000, window=window_size, fig_width=128, fig_height=48, dpi=100)
     
     # Create output directory if not exists
     os.makedirs('output', exist_ok=True)
