@@ -64,6 +64,7 @@ class StepReward:
     """每步奖励"""
     def __init__(self, env):
         self.env = env
+        self.previous_equity = env.config.trading.initial_balance
 
     def __call__(self):
         reward = Decimal('0.0')
@@ -84,8 +85,9 @@ class StepReward:
         
         # 净值增长奖励
         equity = self.env.user_accounts.equity()
-        equity_change = (equity - self.env.previous_equity) / self.env.initial_balance
+        equity_change = (equity - self.previous_equity) / self.env.config.trading.initial_balance
         reward += Decimal('0.05') * equity_change
+        self.previous_equity = equity
         
         return float(reward)
 
@@ -154,9 +156,9 @@ class TerminationReward:
         metrics = self.env.metrics.get_metrics()
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
         drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
-        if daily_lost_pct > self.env.daily_lost_ratio:
+        if daily_lost_pct > self.env.config.risk.daily_lost_ratio:
             reward = -5.0
-        if drawdown_pct > self.env.max_drawdown_ratio:
+        if drawdown_pct > self.env.config.risk.max_drawdown_ratio:
             reward = -5.0
         return float(reward)
 

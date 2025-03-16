@@ -55,8 +55,8 @@ class TestCustomTradingEnv(unittest.TestCase):
         obs, info = self.env.reset()
         # Verify that the observation is an image with the correct shape
         self.assertIsInstance(obs['image'], np.ndarray, "Observation should be a numpy array (image).")
-        self.assertEqual(obs['image'].shape, (self.env.image_height, self.env.image_width, self.env.channels),
-                         f"Observation shape should be {(self.env.image_height, self.env.image_width, self.env.channels)}, but got {obs['image'].shape}.")
+        self.assertEqual(obs['image'].shape, (self.env.config.visualization.image_height, self.env.config.visualization.image_width, self.env.config.visualization.image_channels),
+                         f"Observation shape should be {(self.env.config.visualization.image_height, self.env.config.visualization.image_width, self.env.config.visualization.image_channels)}, but got {obs['image'].shape}.")
 
         # Verify initial account details
         self.assertEqual(Decimal(str(info['balance'])), Decimal('10000.0'))
@@ -96,12 +96,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Retrieve environment's internal variables
         current_step = self.env.current_step - 1  # step has been incremented
         current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
-        spread = Decimal(str(self.env.spread))
+        spread = Decimal(str(self.env.config.trading.spread))
         ask_price = current_price + spread
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
-        leverage = Decimal(str(self.env.leverage))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
+        leverage = Decimal(str(self.env.config.trading.leverage))
 
         # Calculate expected values
         fee = trade_lot * trading_fee_per_lot
@@ -188,12 +188,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         close_step = self.env.current_step - 1
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
-        spread = Decimal(str(self.env.spread))
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
-        leverage = Decimal(str(self.env.leverage))
+        spread = Decimal(str(self.env.config.trading.spread))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
+        leverage = Decimal(str(self.env.config.trading.leverage))
 
         # Prices at which LONG_OPEN and LONG_CLOSE occurred
         ask_price = open_price + spread
@@ -287,12 +287,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         # Retrieve environment's internal variables
         current_step = self.env.current_step - 1  # step has been incremented
         current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
-        spread = Decimal(str(self.env.spread))
+        spread = Decimal(str(self.env.config.trading.spread))
         bid_price = current_price - spread
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
-        leverage = Decimal(str(self.env.leverage))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
+        leverage = Decimal(str(self.env.config.trading.leverage))
 
         # Calculate expected values
         fee = trade_lot * trading_fee_per_lot
@@ -378,12 +378,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         close_step = self.env.current_step - 1
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
-        spread = Decimal(str(self.env.spread))
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
-        leverage = Decimal(str(self.env.leverage))
+        spread = Decimal(str(self.env.config.trading.spread))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
+        leverage = Decimal(str(self.env.config.trading.leverage))
 
         # Prices at which SHORT_OPEN and SHORT_CLOSE occurred
         bid_price_open = open_price - spread
@@ -488,13 +488,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         step2 = self.env.current_step - 1
         step1_price = Decimal(str(self.env.df.iloc[step1]['Close']))
         step2_price = Decimal(str(self.env.df.iloc[step2]['Close']))
-        spread = Decimal(str(self.env.spread))
+        spread = Decimal(str(self.env.config.trading.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
 
         # Fee per LONG_OPEN
         fee1 = trade_lot * trading_fee_per_lot
@@ -549,20 +549,20 @@ class TestCustomTradingEnv(unittest.TestCase):
                 # Retrieve environment's internal variables
                 current_step = self.env.current_step - 1
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
-                spread = Decimal(str(self.env.spread))
+                spread = Decimal(str(self.env.config.trading.spread))
                 ask_price = current_price + spread
-                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-                is_round_turn = self.env.is_round_turn
-                trade_lot = Decimal(str(self.env.trade_lot))
-                lot_size = Decimal(str(self.env.lot_size))
-                leverage = Decimal(str(self.env.leverage))
+                trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+                is_round_turn = self.env.config.trading.is_round_turn
+                trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+                lot_size = Decimal(str(self.env.config.trading.lot_size))
+                leverage = Decimal(str(self.env.config.trading.leverage))
 
                 # Determine actual trade_lot (may be limited by max_long_position)
-                max_allowed_trade_lot = Decimal(str(self.env.max_long_position)) - Decimal(str(info['long_position']))
+                max_allowed_trade_lot = Decimal(str(self.env.config.trading.max_long_position)) - Decimal(str(info['long_position']))
                 actual_trade_lot = min(trade_lot, max_allowed_trade_lot)
                 if actual_trade_lot <= Decimal('0.0'):
                     # Expect no change due to position limit
-                    self.assertEqual(Decimal(str(info['long_position'])), Decimal(str(self.env.max_long_position)),
+                    self.assertEqual(Decimal(str(info['long_position'])), Decimal(str(self.env.config.trading.max_long_position)),
                                      msg="Long position should not exceed the maximum limit.")
 
                     continue
@@ -588,8 +588,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected long_position after LONG_OPEN
                 expected_long_position = trade_lot * step
-                if expected_long_position > Decimal(str(self.env.max_long_position)):
-                    expected_long_position = Decimal(str(self.env.max_long_position))
+                if expected_long_position > Decimal(str(self.env.config.trading.max_long_position)):
+                    expected_long_position = Decimal(str(self.env.config.trading.max_long_position))
 
                 # Used Margin remains the same since we add required_margin for each new position
                 total_used_margin = required_margin
@@ -653,20 +653,20 @@ class TestCustomTradingEnv(unittest.TestCase):
                 # Retrieve environment's internal variables
                 current_step = self.env.current_step - 1
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
-                spread = Decimal(str(self.env.spread))
+                spread = Decimal(str(self.env.config.trading.spread))
                 ask_price = current_price + spread
-                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-                is_round_turn = self.env.is_round_turn
-                trade_lot = Decimal(str(self.env.trade_lot))
-                lot_size = Decimal(str(self.env.lot_size))
-                leverage = Decimal(str(self.env.leverage))
+                trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+                is_round_turn = self.env.config.trading.is_round_turn
+                trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+                lot_size = Decimal(str(self.env.config.trading.lot_size))
+                leverage = Decimal(str(self.env.config.trading.leverage))
 
                 # Determine actual_trade_lot (may be limited by max_long_position)
-                max_allowed_trade_lot = Decimal(str(self.env.max_long_position)) - Decimal(str(info['long_position']))
+                max_allowed_trade_lot = Decimal(str(self.env.config.trading.max_long_position)) - Decimal(str(info['long_position']))
                 actual_trade_lot = min(trade_lot, max_allowed_trade_lot)
                 if actual_trade_lot <= Decimal('0.0'):
                     # Expect no change due to position limit
-                    self.assertEqual(Decimal(str(info['long_position'])), Decimal(str(self.env.max_long_position)),
+                    self.assertEqual(Decimal(str(info['long_position'])), Decimal(str(self.env.config.trading.max_long_position)),
                                      msg="Long position should not exceed the maximum limit.")
                     continue
 
@@ -691,8 +691,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected long_position after LONG_OPEN
                 expected_long_position = trade_lot * step
-                if expected_long_position > Decimal(str(self.env.max_long_position)):
-                    expected_long_position = Decimal(str(self.env.max_long_position))
+                if expected_long_position > Decimal(str(self.env.config.trading.max_long_position)):
+                    expected_long_position = Decimal(str(self.env.config.trading.max_long_position))
 
                 # Used Margin remains the same since we add required_margin for each new position
                 total_used_margin = required_margin
@@ -756,20 +756,20 @@ class TestCustomTradingEnv(unittest.TestCase):
                 # Retrieve environment's internal variables
                 current_step = self.env.current_step - 1
                 current_price = Decimal(str(self.env.df.iloc[current_step]['Close']))
-                spread = Decimal(str(self.env.spread))
+                spread = Decimal(str(self.env.config.trading.spread))
                 bid_price = current_price - spread
-                trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-                is_round_turn = self.env.is_round_turn
-                trade_lot = Decimal(str(self.env.trade_lot))
-                lot_size = Decimal(str(self.env.lot_size))
-                leverage = Decimal(str(self.env.leverage))
+                trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+                is_round_turn = self.env.config.trading.is_round_turn
+                trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+                lot_size = Decimal(str(self.env.config.trading.lot_size))
+                leverage = Decimal(str(self.env.config.trading.leverage))
 
                 # Determine actual_trade_lot (may be limited by max_short_position)
-                max_allowed_trade_lot = Decimal(str(self.env.max_short_position)) - Decimal(str(info['short_position']))
+                max_allowed_trade_lot = Decimal(str(self.env.config.trading.max_short_position)) - Decimal(str(info['short_position']))
                 actual_trade_lot = min(trade_lot, max_allowed_trade_lot)
                 if actual_trade_lot <= Decimal('0.0'):
                     # Expect no change due to position limit
-                    self.assertEqual(Decimal(str(info['short_position'])), Decimal(str(self.env.max_short_position)),
+                    self.assertEqual(Decimal(str(info['short_position'])), Decimal(str(self.env.config.trading.max_short_position)),
                                      msg="Short position should not exceed the maximum limit.")
 
                     continue
@@ -795,8 +795,8 @@ class TestCustomTradingEnv(unittest.TestCase):
 
                 # Expected short_position after SHORT_OPEN
                 expected_short_position = trade_lot * step
-                if expected_short_position > Decimal(str(self.env.max_short_position)):
-                    expected_short_position = Decimal(str(self.env.max_short_position))
+                if expected_short_position > Decimal(str(self.env.config.trading.max_short_position)):
+                    expected_short_position = Decimal(str(self.env.config.trading.max_short_position))
 
                 # Used Margin remains the same since we add required_margin for each new position
                 total_used_margin = required_margin
@@ -868,13 +868,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         step2 = self.env.current_step - 1
         step1_price = Decimal(str(self.env.df.iloc[step1]['Close']))
         step2_price = Decimal(str(self.env.df.iloc[step2]['Close']))
-        spread = Decimal(str(self.env.spread))
+        spread = Decimal(str(self.env.config.trading.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
 
         # Fee per LONG_OPEN
         fee1 = trade_lot * trading_fee_per_lot
@@ -919,12 +919,12 @@ class TestCustomTradingEnv(unittest.TestCase):
         # To prevent opening, balance should be less than fee + required_margin
         # Calculate required_fee and required_margin for LONG_OPEN at current step
         current_step = self.env.current_step
-        current_price = Decimal(self.env.df.iloc[current_step]['Close']) + Decimal(str(self.env.spread))
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
-        leverage = Decimal(str(self.env.leverage))
+        current_price = Decimal(self.env.df.iloc[current_step]['Close']) + Decimal(str(self.env.config.trading.spread))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
+        leverage = Decimal(str(self.env.config.trading.leverage))
 
         fee = trade_lot * trading_fee_per_lot
         required_margin = (trade_lot * lot_size * current_price) / leverage
@@ -1043,13 +1043,13 @@ class TestCustomTradingEnv(unittest.TestCase):
         step2 = self.env.current_step - 1
         step1_price = Decimal(str(self.env.df.iloc[step1]['Close']))
         step2_price = Decimal(str(self.env.df.iloc[step2]['Close']))
-        spread = Decimal(str(self.env.spread))
+        spread = Decimal(str(self.env.config.trading.spread))
         ask1_price = step1_price + spread
         ask2_price = step2_price + spread
-        trading_fee_per_lot = Decimal(str(self.env.trading_fee_per_lot))
-        is_round_turn = self.env.is_round_turn
-        trade_lot = Decimal(str(self.env.trade_lot))
-        lot_size = Decimal(str(self.env.lot_size))
+        trading_fee_per_lot = Decimal(str(self.env.config.trading.trading_fee_per_lot))
+        is_round_turn = self.env.config.trading.is_round_turn
+        trade_lot = Decimal(str(self.env.config.trading.trade_lot))
+        lot_size = Decimal(str(self.env.config.trading.lot_size))
 
         # Fee per LONG_OPEN
         fee1 = trade_lot * trading_fee_per_lot

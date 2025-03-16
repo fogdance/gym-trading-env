@@ -37,7 +37,7 @@ class CustomTradingEnv(gym.Env):
     def __init__(self, df: pd.DataFrame = None, config_path: str = None):
         super(CustomTradingEnv, self).__init__()
 
-        self.config = self._config(config_path=config_path)
+        self._config(config_path=config_path)
 
         self._data(df=df, config=self.config)
 
@@ -57,17 +57,17 @@ class CustomTradingEnv(gym.Env):
         self.action_space = spaces.Discrete(len(self.valid_actions))
 
         self.game = None
-        if self.game_mode:
-            self.game = Game((self.image_width, self.image_height), self.window_size, self.daily_lost_ratio, self.max_drawdown_ratio,
-                            decimal_to_float(self.risk_reward_ratio, 2), 
-                            decimal_to_float(self.trade_lot, 2), 
-                            decimal_to_float(self.max_long_position, 2), 
-                            decimal_to_float(self.max_short_position, 2),
-                            self.render_mode)
+        if self.config.training.game_mode:
+            self.game = Game((self.config.visualization.image_width, self.config.visualization.image_height), self.config.training.window_size, self.config.risk.daily_lost_ratio, self.config.risk.max_drawdown_ratio,
+                            decimal_to_float(self.config.risk.risk_reward_ratio, 2), 
+                            decimal_to_float(self.config.trading.trade_lot, 2), 
+                            decimal_to_float(self.config.trading.max_long_position, 2), 
+                            decimal_to_float(self.config.trading.max_short_position, 2),
+                            self.config.training.render_mode)
 
         self.observation_space = spaces.Dict({
-            'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
-            'close_15m': spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, ), dtype=np.float32),
+            'image': spaces.Box(low=0, high=255, shape=(self.config.visualization.image_height, self.config.visualization.image_width, self.config.visualization.image_channels), dtype=np.uint8),
+            'close_15m': spaces.Box(low=-np.inf, high=np.inf, shape=(self.config.training.window_size, ), dtype=np.float32),
             'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(12, ), dtype=np.float32),
             'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(20, ), dtype=np.float32),
             'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
@@ -76,15 +76,15 @@ class CustomTradingEnv(gym.Env):
         })
 
         # Initialize state
-        self.position_manager = PositionManager(logger=self.logger)
-        self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
+        self.position_manager = PositionManager()
+        self.user_accounts = UserAccounts(initial_balance=self.config.trading.initial_balance, position_manager=self.position_manager)
 
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
         self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # Other state variables
-        self.current_step = self.window_size
+        self.current_step = self.config.training.window_size
         self.terminated = False
         self.action_result = None
 
@@ -93,55 +93,23 @@ class CustomTradingEnv(gym.Env):
         self.reset()
 
     def _config(self, config_path):
-
         # Configuration management
         if config_path is None:
             raise ValueError("config_path is None")
         
-        config = TradingConfig.from_yaml(config_path)
+        self.config = TradingConfig.from_yaml(config_path)
 
         # Validate config
-        config.validate()
+        self.config.validate()
 
-        # Direct access to nested configs
-        self.debug_enabled = config.debug.debug_enabled
-
-        # Trading-specific
-        self.currency_pair = config.trading.currency_pair
-        self.initial_balance = config.trading.initial_balance
-        self.trading_fee_per_lot = config.trading.trading_fee_per_lot
-        self.is_round_turn = config.trading.is_round_turn
-        self.spread = config.trading.spread
-        self.leverage = config.trading.leverage
-        self.lot_size = config.trading.lot_size
-        self.trade_lot = config.trading.trade_lot
-        self.max_long_position = config.trading.max_long_position
-        self.max_short_position = config.trading.max_short_position
-
-        # Risk management
-        self.max_drawdown_ratio = config.risk.max_drawdown_ratio
-        self.daily_lost_ratio = config.risk.daily_lost_ratio
-        self.risk_reward_ratio = config.risk.risk_reward_ratio
-        self.risk_reward_ratio_enable = config.risk.risk_reward_ratio_enable
 
         # Training-specific
         reward_class = reward_classes.get(
-            config.training.reward_function,
+            self.config.training.reward_function,
             TotalPnlReward  # 默认使用 TotalPnlReward
         )
         self.reward_function = reward_class(self)
-        self.window_size = config.training.window_size
-        self.max_episode_steps = config.training.max_episode_steps
-        self.randomize_start = config.training.randomize_start
-        self.episode_length = config.training.episode_length
-        self.game_mode = config.training.game_mode
-        self.render_mode = config.training.render_mode
         self.data_window_size = 400
-
-        # Visualization
-        self.image_height = config.visualization.image_height
-        self.image_width = config.visualization.image_width
-        self.channels = config.visualization.image_channels
 
         # Set up logging
         self.logger = logging.getLogger(__name__)
@@ -150,10 +118,9 @@ class CustomTradingEnv(gym.Env):
         handler.setFormatter(formatter)
         if not self.logger.handlers:
             self.logger.addHandler(handler)
-        log_level = getattr(logging, config.debug.log_level.upper())
+        log_level = getattr(logging, self.config.debug.log_level.upper())
         self.logger.setLevel(log_level)
 
-        return config
 
 
     def _data(self, df, config):
@@ -185,21 +152,21 @@ class CustomTradingEnv(gym.Env):
         If not sufficient, raise ValueError or adapt the config as fallback.
         """
         df_len = len(self.df)
-        if df_len < self.window_size:
-            raise ValueError(f"Data has only {df_len} rows, smaller than window_size={self.window_size}. Not feasible.")
+        if df_len < self.config.training.window_size:
+            raise ValueError(f"Data has only {df_len} rows, smaller than window_size={self.config.training.window_size}. Not feasible.")
         
-        if self.episode_length is not None:
+        if self.config.training.episode_length is not None:
             # If we do random start, the maximum start index is (df_len - window_size - episode_length)
-            max_start = df_len - self.window_size - self.episode_length
+            max_start = df_len - self.config.training.window_size - self.config.training.episode_length
             if max_start < 0:
                 self.logger.warning(
-                    f"Data length={df_len} is insufficient to support window_size={self.window_size} "
-                    f"and episode_length={self.episode_length} in randomize_start. "
-                    f"Falling back to episode_length={df_len - self.window_size}."
+                    f"Data length={df_len} is insufficient to support window_size={self.config.training.window_size} "
+                    f"and episode_length={self.config.training.episode_length} in randomize_start. "
+                    f"Falling back to episode_length={df_len - self.config.training.window_size}."
                 )
                 # fallback: reduce episode_length
-                self.episode_length = df_len - self.window_size
-                if self.episode_length < 1:
+                self.config.training.episode_length = df_len - self.config.training.window_size
+                if self.config.training.episode_length < 1:
                     raise ValueError("Even after fallback, there's no feasible episode_length. Please provide more data.")
 
 
@@ -226,15 +193,15 @@ class CustomTradingEnv(gym.Env):
         self.logger.info("REST env")
 
         super().reset(seed=seed)
-        self.position_manager = PositionManager(logger=self.logger)
-        self.user_accounts = UserAccounts(initial_balance=self.initial_balance, position_manager=self.position_manager)
+        self.position_manager = PositionManager()
+        self.user_accounts = UserAccounts(initial_balance=self.config.trading.initial_balance, position_manager=self.position_manager)
 
         self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
         self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # Other state variables
-        self.current_step = self.window_size
+        self.current_step = self.config.training.window_size
         self.terminated = False
         self.action_result = None
         
@@ -250,9 +217,9 @@ class CustomTradingEnv(gym.Env):
         df_len = len(self.df)
 
         # 1) Decide start_idx
-        if self.randomize_start and self.episode_length is not None:
+        if self.config.training.randomize_start and self.config.training.episode_length is not None:
             # max possible start
-            max_start = df_len - self.data_window_size - self.episode_length
+            max_start = df_len - self.data_window_size - self.config.training.episode_length
             max_start = max(max_start, 0)  # ensure not negative
             self.start_idx = self.np_random.integers(low=0, high=max_start+1)
         else:
@@ -260,14 +227,14 @@ class CustomTradingEnv(gym.Env):
             self.start_idx = 0
 
         # 2) Decide end_idx
-        if self.episode_length is not None:
-            self.end_idx = min(self.start_idx + self.episode_length, df_len)
+        if self.config.training.episode_length is not None:
+            self.end_idx = min(self.start_idx + self.config.training.episode_length, df_len)
         else:
             # use entire data
             self.end_idx = df_len
 
         # 3) current_step starts after window_size to ensure we have enough hist data
-        self.current_step = self.start_idx + self.window_size
+        self.current_step = self.start_idx + self.config.training.window_size
         if self.current_step >= self.end_idx:
             # if that happens, it means there's no valid range
             self.logger.warning(
@@ -318,35 +285,35 @@ class CustomTradingEnv(gym.Env):
         if action_enum == Action.HOLD:
             pass  # Do nothing
         elif action_enum == Action.LONG_OPEN:
-            self.action_result = self._long_open(action_price, self.spread)
+            self.action_result = self._long_open(action_price, self.config.trading.spread)
         elif action_enum == Action.LONG_CLOSE:
-            self.action_result = self._long_close(action_price, self.spread)
+            self.action_result = self._long_close(action_price, self.config.trading.spread)
         elif action_enum == Action.SHORT_OPEN:
-            self.action_result = self._short_open(action_price, self.spread)
+            self.action_result = self._short_open(action_price, self.config.trading.spread)
         elif action_enum == Action.SHORT_CLOSE:
-            self.action_result = self._short_close(action_price, self.spread)
+            self.action_result = self._short_close(action_price, self.config.trading.spread)
         elif action_enum == Action.POSITION_UP:
-            self.action_result = self._position_up(action_price, self.spread)
+            self.action_result = self._position_up(action_price, self.config.trading.spread)
         elif action_enum == Action.POSITION_DOWN:
-            self.action_result = self._position_down(action_price, self.spread)
+            self.action_result = self._position_down(action_price, self.config.trading.spread)
         elif action_enum == Action.EMPTY:
-            self.action_result = self._empty_position(action_price, self.spread)
+            self.action_result = self._empty_position(action_price, self.config.trading.spread)
         elif action_enum == Action.LONG_OPEN0:
-            self.action_result = self._long_open(action_price, self.spread, slot=0)
+            self.action_result = self._long_open(action_price, self.config.trading.spread, slot=0)
         elif action_enum == Action.LONG_CLOSE0:
-            self.action_result = self._long_close(action_price, self.spread, slot=0)
+            self.action_result = self._long_close(action_price, self.config.trading.spread, slot=0)
         elif action_enum == Action.SHORT_OPEN0:
-            self.action_result = self._short_open(action_price, self.spread, slot=0)
+            self.action_result = self._short_open(action_price, self.config.trading.spread, slot=0)
         elif action_enum == Action.SHORT_CLOSE0:
-            self.action_result = self._short_close(action_price, self.spread, slot=0)
+            self.action_result = self._short_close(action_price, self.config.trading.spread, slot=0)
         elif action_enum == Action.LONG_OPEN1:
-            self.action_result = self._long_open(action_price, self.spread, slot=1)
+            self.action_result = self._long_open(action_price, self.config.trading.spread, slot=1)
         elif action_enum == Action.LONG_CLOSE1:
-            self.action_result = self._long_close(action_price, self.spread, slot=1)
+            self.action_result = self._long_close(action_price, self.config.trading.spread, slot=1)
         elif action_enum == Action.SHORT_OPEN1:
-            self.action_result = self._short_open(action_price, self.spread, slot=1)
+            self.action_result = self._short_open(action_price, self.config.trading.spread, slot=1)
         elif action_enum == Action.SHORT_CLOSE1:
-            self.action_result = self._short_close(action_price, self.spread, slot=1)
+            self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
         #
         # wait until 10:05
@@ -364,7 +331,7 @@ class CustomTradingEnv(gym.Env):
 
         if self._should_terminated():
             self.terminated = True
-            self._empty_position(self.current_price, self.spread)
+            self._empty_position(self.current_price, self.config.trading.spread)
             self._update_unrealized_pnl()
 
         # Calculate reward
@@ -376,7 +343,7 @@ class CustomTradingEnv(gym.Env):
         # Update info
         info = self._get_info()
 
-        if self.terminated and self.debug_enabled:
+        if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
         # Return the observation, reward (float), termination flags, and info
@@ -396,14 +363,14 @@ class CustomTradingEnv(gym.Env):
         # 检查风险限制（使用百分比形式）
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
         drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
-        if daily_lost_pct > self.daily_lost_ratio or drawdown_pct > self.max_drawdown_ratio:
-            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.daily_lost_ratio} "
-                           f"or Drawdown {drawdown_pct:.4f} > {self.max_drawdown_ratio}")
+        if daily_lost_pct > self.config.risk.daily_lost_ratio or drawdown_pct > self.config.risk.max_drawdown_ratio:
+            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.config.risk.daily_lost_ratio} "
+                           f"or Drawdown {drawdown_pct:.4f} > {self.config.risk.max_drawdown_ratio}")
             return True
 
         current_rrr = self.position_manager.calc_profit_factor()
-        if self.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.risk_reward_ratio:
-            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.risk_reward_ratio}")
+        if self.config.risk.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.config.risk.risk_reward_ratio:
+            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.config.risk.risk_reward_ratio}")
             return True
 
 
@@ -414,8 +381,8 @@ class CustomTradingEnv(gym.Env):
             return True
 
         # or if we exceed max_episode_steps
-        if self.max_episode_steps > 0 and self.episode_step_count >= self.max_episode_steps:
-            self.logger.error(f"Reached max_episode_steps={self.max_episode_steps}. Episode done.")
+        if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
+            self.logger.error(f"Reached max_episode_steps={self.config.training.max_episode_steps}. Episode done.")
             return True
         
         return False
@@ -452,7 +419,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for long positions
         unrealized_pnl_long = sum(
             (
-                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=True)
+                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
                 for pos in self.position_manager.long_positions if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -461,7 +428,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for short positions
         unrealized_pnl_short = sum(
             (
-                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=False)
+                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
                 for pos in self.position_manager.short_positions  if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -478,9 +445,9 @@ class CustomTradingEnv(gym.Env):
             return Decimal('0')
         
         if long:
-            return (current_price - pos.entry_price) * pos.size * self.lot_size
+            return (current_price - pos.entry_price) * pos.size * self.config.trading.lot_size
         else:
-            return (pos.entry_price - current_price) * pos.size * self.lot_size
+            return (pos.entry_price - current_price) * pos.size * self.config.trading.lot_size
 
 
     def _check_margin(self):
@@ -493,9 +460,9 @@ class CustomTradingEnv(gym.Env):
             # Liquidate all positions
             self.logger.info("Equity below margin requirement. Liquidating all positions.")
             while self.user_accounts.long_position > Decimal('0.0'):
-                self._long_close(self.current_price - self.spread)
+                self._long_close(self.current_price - self.config.trading.spread)
             while self.user_accounts.short_position > Decimal('0.0'):
-                self._short_close(self.current_price + self.spread)
+                self._short_close(self.current_price + self.config.trading.spread)
             self.logger.error("Margin requirement not met. Episode terminated.")
             return True
         
@@ -507,14 +474,14 @@ class CustomTradingEnv(gym.Env):
         Executes a LONG_OPEN action with manual rollback.
         """
         ask_price = price + spread
-        max_additional_long = self.max_long_position - self.user_accounts.long_position
+        max_additional_long = self.config.trading.max_long_position - self.user_accounts.long_position
         if max_additional_long <= Decimal('0.0'):
             self.logger.warning("Reached maximum long position limit.")
             return ForexCode.ERROR_HIT_MAX_POSITION
 
-        position_size = min(self.trade_lot, max_additional_long)
-        required_margin = (position_size * self.lot_size * ask_price) / self.leverage
-        fee = self.trading_fee_per_lot * position_size
+        position_size = min(self.config.trading.trade_lot, max_additional_long)
+        required_margin = (position_size * self.config.trading.lot_size * ask_price) / self.config.trading.leverage
+        fee = self.config.trading.trading_fee_per_lot * position_size
         total_deduction = required_margin + fee
 
         free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
@@ -568,7 +535,7 @@ class CustomTradingEnv(gym.Env):
             required_margin=required_margin,
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
-            leverage=self.leverage,
+            leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance()
         )
         self.record_trade(trade_record)
@@ -591,12 +558,12 @@ class CustomTradingEnv(gym.Env):
 
         # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.config.trading.lot_size, slot=slot)
         except ValueError as e:
             self.logger.warning(f"Error closing long position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
+        fee = Decimal('0') if not self.config.trading.is_round_turn else self.config.trading.trading_fee_per_lot * self.config.trading.trade_lot
 
         # Step 1: Deduct fee from balance
         try:
@@ -660,7 +627,7 @@ class CustomTradingEnv(gym.Env):
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
-            leverage=self.leverage,
+            leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
@@ -681,14 +648,14 @@ class CustomTradingEnv(gym.Env):
         Executes a SHORT_OPEN action with manual rollback.
         """
         bid_price = price - spread
-        max_additional_short = self.max_short_position - self.user_accounts.short_position
+        max_additional_short = self.config.trading.max_short_position - self.user_accounts.short_position
         if max_additional_short <= Decimal('0.0'):
             self.logger.warning("Reached maximum short position limit.")
             return ForexCode.ERROR_HIT_MAX_POSITION
 
-        position_size = min(self.trade_lot, max_additional_short)
-        required_margin = (position_size * self.lot_size * bid_price) / self.leverage
-        fee = self.trading_fee_per_lot * position_size
+        position_size = min(self.config.trading.trade_lot, max_additional_short)
+        required_margin = (position_size * self.config.trading.lot_size * bid_price) / self.config.trading.leverage
+        fee = self.config.trading.trading_fee_per_lot * position_size
         total_deduction = required_margin + fee
 
         free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
@@ -742,7 +709,7 @@ class CustomTradingEnv(gym.Env):
             required_margin=required_margin,
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
-            leverage=self.leverage,
+            leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance()
         )
         self.record_trade(trade_record)
@@ -765,12 +732,12 @@ class CustomTradingEnv(gym.Env):
 
         # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.config.trading.lot_size, slot=slot)
         except ValueError as e:
             self.logger.warning(f"Error closing short position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.is_round_turn else self.trading_fee_per_lot * self.trade_lot
+        fee = Decimal('0') if not self.config.trading.is_round_turn else self.config.trading.trading_fee_per_lot * self.config.trading.trade_lot
 
         # Step 1: Deduct fee from balance
         try:
@@ -834,7 +801,7 @@ class CustomTradingEnv(gym.Env):
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.balance.get_balance(),
-            leverage=self.leverage,
+            leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
@@ -903,14 +870,14 @@ class CustomTradingEnv(gym.Env):
         for i, pos in enumerate(self.position_manager.long_positions[:2]):
             if pos is None:
                 continue
-            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=True)
+            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
             positions[i] = [ decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
 
         for i, pos in enumerate(self.position_manager.short_positions[:2]):
             i += 2
             if pos is None:
                 continue
-            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.lot_size, long=False)
+            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
             positions[i] = [decimal_to_float(pnl), -decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
 
 
@@ -963,8 +930,8 @@ class CustomTradingEnv(gym.Env):
         risk = np.array([
             float(0 if metrics["sharpe_ratio"] is None else metrics["sharpe_ratio"]),
             float(0 if metrics["calmar_ratio"] is None else metrics["calmar_ratio"]),
-            float(self.daily_lost_ratio),
-            float(self.max_drawdown_ratio),
+            float(self.config.risk.daily_lost_ratio),
+            float(self.config.risk.max_drawdown_ratio),
             float(metrics["current_day_lost_pct"]),
             float(metrics["current_drawdown_pct"]),
         ], dtype=np.float32)
@@ -979,7 +946,7 @@ class CustomTradingEnv(gym.Env):
 
         return {
             'image': image,
-            'close_15m': df_15m['Close'].values[-self.window_size:].astype(np.float32),
+            'close_15m': df_15m['Close'].values[-self.config.training.window_size:].astype(np.float32),
             'positions': positions.flatten(),
             'trade_history': trade_history.flatten(),
             'indicators': indicators,
@@ -990,7 +957,7 @@ class CustomTradingEnv(gym.Env):
 
 
     def _render(self, render_mode, df):
-        if self.game_mode:
+        if self.config.training.game_mode:
             if df is not None:
                 self.game.step(df)
             return self.game.render(decimal_to_float(self.position_manager.total_long_position(), precision=2),
@@ -1003,9 +970,9 @@ class CustomTradingEnv(gym.Env):
         else:
             if render_mode == 'rgb_array':
                 output_filepath = None
-                if self.debug_enabled:
+                if self.config.debug.debug_enabled:
                     os.makedirs('output', exist_ok=True)
-                    output_filepath = os.path.join('output', f'{self.currency_pair}_candlestick_{self.current_step}.png')
+                    output_filepath = os.path.join('output', f'{self.config.trading.currency_pair}_candlestick_{self.current_step}.png')
 
                 df_15m = df.resample('15min').agg({
                     'Open': 'first',
@@ -1014,18 +981,18 @@ class CustomTradingEnv(gym.Env):
                     'Close': 'last',
                     'Volume': 'sum'
                 }).dropna()
-                render_df = df_15m[-self.window_size:]
+                render_df = df_15m[-self.config.training.window_size:]
 
                 # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
-                # print(f'{timestamp_at_window_end} {self.currency_pair}_candlestick_{self.current_step}.png')
+                # print(f'{timestamp_at_window_end} {self.config.trading.currency_pair}_candlestick_{self.current_step}.png')
                 # Draw the candlestick chart with indicators and return as numpy array
                 plotter = BollingerBandPlotter(
                     df=render_df,
-                    channels=self.channels,
+                    channels=self.config.visualization.image_channels,
                     trade_record_manager=self.trade_record_manager,
                     balance=self.user_accounts.balance.get_balance(),
-                    fig_width=self.image_width,
-                    fig_height=self.image_height,
+                    fig_width=self.config.visualization.image_width,
+                    fig_height=self.config.visualization.image_height,
                 )
 
                 return plotter.plotOnlyCandle(filename=output_filepath)
@@ -1039,7 +1006,7 @@ class CustomTradingEnv(gym.Env):
         
         # self._text_render()
 
-        if self.render_mode == 'human':
+        if self.config.training.render_mode == 'human':
             self._render(render_mode='human', df=None)
 
 
@@ -1053,7 +1020,7 @@ class CustomTradingEnv(gym.Env):
         broker_balance = float(decimal_to_float(self.broker_accounts.balance.get_balance(), precision=2))
 
         print(f'Step: {self.current_step}')
-        print(f'Currency Pair: {self.currency_pair}')
+        print(f'Currency Pair: {self.config.trading.currency_pair}')
         print(f'Balance: {self.user_accounts.balance.get_balance():.2f}')
         print(f'Equity: {equity:.2f}')
         print(f'Used Margin: {self.user_accounts.margin.get_balance():.2f}')
@@ -1080,7 +1047,7 @@ class CustomTradingEnv(gym.Env):
         # 计算 h1, l1, h2, l2
         def get_hl(df, up_thresh, down_thresh):
             engineer = FeatureEngineer()
-            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=self.debug_enabled)
+            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=self.config.debug.debug_enabled)
             h1 = features['Prev_High'].iloc[-1]  # 最近高
             l1 = features['Prev_Low'].iloc[-1]   # 最近低
             h2 = features['Prev_Prev_High'].iloc[-1]  # 前前高
