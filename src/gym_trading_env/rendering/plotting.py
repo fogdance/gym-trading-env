@@ -362,7 +362,7 @@ class BollingerBandPlotter:
             # Large plot (third row)
             ax_large = fig.add_subplot(gs[0, 0])
             # Plot the large chart
-            self.plot_candlestick_chart(ax_large, self.df, show_bollinger=False, show_entry_exit=True, show_macd=False)
+            self.plot_candlestick_chart(ax_large, self.df, show_bollinger=False, show_entry_exit=False, show_macd=False)
 
 
             # Hide the axes, ticks, and borders of the main subplots
