@@ -114,7 +114,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = required_margin
 
         # P&L after LONG_OPEN (unrealized)
-        pnl = (current_price - ask_price) * trade_lot * lot_size
+        pnl = (Decimal(str(self.env.df.iloc[self.env.current_step]['Close'])) - ask_price) * trade_lot * lot_size
         total_pnl = pnl  # realized_pnl is 0.0
 
         equity = expected_balance + total_pnl
@@ -186,7 +186,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # Retrieve environment's internal variables
         open_step = self.env.current_step - 2
-        close_step = self.env.current_step - 1
+        close_step = self.env.current_step
         open_price = Decimal(str(self.env.df.iloc[open_step]['Close']))
         close_price = Decimal(str(self.env.df.iloc[close_step]['Close']))
         spread = Decimal(str(self.env.spread))
@@ -305,7 +305,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         total_used_margin = required_margin
 
         # P&L after SHORT_OPEN (unrealized)
-        pnl = (bid_price - current_price) * trade_lot * lot_size
+        pnl = (bid_price - Decimal(str(self.env.df.iloc[self.env.current_step]['Close']))) * trade_lot * lot_size
         total_pnl = pnl  # realized_pnl is 0.0
 
         equity = expected_balance + total_pnl
@@ -578,7 +578,7 @@ class TestCustomTradingEnv(unittest.TestCase):
                 expected_balance = previous_balance - fee
 
                 # P&L after LONG_OPEN (unrealized)
-                pnl = (current_price - ask_price) * actual_trade_lot * lot_size
+                pnl = (Decimal(str(self.env.df.iloc[self.env.current_step]['Close'])) - ask_price) * actual_trade_lot * lot_size
                 total_pnl = pnl  # realized_pnl is 0.0
 
                 # Equity after LONG_OPEN

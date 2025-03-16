@@ -247,6 +247,12 @@ class CustomTradingEnv(gym.Env):
         self.previous_equity = Decimal(self.initial_balance)
         
         self.last_close_position = None
+
+        reward_class = reward_classes.get(
+            self.config.training.reward_function,
+            TotalPnlReward
+        )
+        self.reward_function = reward_class(self)
         
 
         df_len = len(self.df)
