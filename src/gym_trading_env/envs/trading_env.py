@@ -67,6 +67,7 @@ class CustomTradingEnv(gym.Env):
 
         self.observation_space = spaces.Dict({
             'image': spaces.Box(low=0, high=255, shape=(self.image_height, self.image_width, self.channels), dtype=np.uint8),
+            'close_15m': spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, ), dtype=np.float32),
             'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(12, ), dtype=np.float32),
             'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(20, ), dtype=np.float32),
             'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
@@ -970,8 +971,17 @@ class CustomTradingEnv(gym.Env):
             float(metrics["current_drawdown_pct"]),
         ], dtype=np.float32)
 
+        df_15m = df_window.resample('15min').agg({
+            'Open': 'first',
+            'High': 'max',
+            'Low': 'min',
+            'Close': 'last',
+            'Volume': 'sum'
+        }).dropna()
+
         return {
             'image': image,
+            'close_15m': df_15m['Close'].values[-self.window_size:].astype(np.float32),
             'positions': positions.flatten(),
             'trade_history': trade_history.flatten(),
             'indicators': indicators,
