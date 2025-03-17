@@ -233,8 +233,8 @@ class CustomTradingEnv(gym.Env):
             # use entire data
             self.end_idx = df_len
 
-        # 3) current_step starts after window_size to ensure we have enough hist data
-        self.current_step = self.start_idx + self.config.training.window_size
+        # 3) current_step starts after data_window_size to ensure we have enough hist data
+        self.current_step = self.start_idx + self.data_window_size
         if self.current_step >= self.end_idx:
             # if that happens, it means there's no valid range
             self.logger.warning(
@@ -897,6 +897,8 @@ class CustomTradingEnv(gym.Env):
                 position_size = decimal_to_float(trade.position_size)
             elif trade.operation_type == Action.SHORT_CLOSE.name:
                 position_size = -decimal_to_float(trade.position_size)
+            else:
+                continue
 
             trade_history[count] = [
                 position_size,
