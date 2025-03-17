@@ -43,27 +43,13 @@ class CurrentBalanceReward:
         balance = self.env.user_accounts.balance.get_balance()
         return float(decimal_to_float(balance, precision=2))
 
-class FastCarRacingReward():
-    def __init__(self, env):
-        self.env = env
-
-        self.rewards = [
-            StepReward(env),
-            CloseReward(env),
-            EventReward(env, once=0, repeated=0.5),
-            TerminationReward(env),
-        ]
-
-    def __call__(self):
-        reward = sum([fn() for fn in self.rewards])
-        self.env.last_close_position = None
-
-        return reward
 class StepReward:
     """每步奖励"""
-    def __init__(self, env):
+    def __init__(self, env, equity_coeff=3.0, penalty=0.01):
         self.env = env
-        self.previous_equity = env.config.trading.initial_balance  # Decimal
+        self.equity_coeff = Decimal(str(equity_coeff))
+        self.penalty = Decimal(str(penalty))
+        self.previous_equity = env.config.trading.initial_balance
 
     def __call__(self):
         reward = Decimal('0.0')
@@ -71,41 +57,65 @@ class StepReward:
         # 不鼓励空仓
         if self.env.position_manager.total_long_position() == Decimal('0.0') and \
            self.env.position_manager.total_short_position() == Decimal('0.0'):
-            reward -= Decimal('0.01')  # 降低到 -0.01
-        
+            reward -= self.penalty
         # 不鼓励对冲（多空持仓相等）
         if self.env.position_manager.total_long_position() == self.env.position_manager.total_short_position() and \
            self.env.position_manager.total_long_position() > Decimal('0.0'):
-            reward -= Decimal('0.01')  # 降低到 -0.01
-        
+            reward -= self.penalty
         # 无效动作
         if self.env.action_result in [ForexCode.ERROR_HIT_MAX_POSITION, 
                                       ForexCode.ERROR_NO_POSITION_TO_CLOSE, 
                                       ForexCode.ERROR_OPEN_POSITION]:
-            reward -= Decimal('0.01')  # 降低到 -0.01
-        
+            reward -= self.penalty
         # 净值增长奖励
-        equity = self.env.user_accounts.equity()  # Decimal
+        equity = self.env.user_accounts.equity()
         equity_change = (equity - self.previous_equity) / self.env.config.trading.initial_balance
-        reward += Decimal('3.0') * equity_change  # 系数调整为 3.0
+        reward += self.equity_coeff * equity_change
         self.previous_equity = equity
-        
         return float(reward)
 
 class CloseReward:
     """平仓奖励"""
-    def __init__(self, env):
+    def __init__(self, env, min_reward=-0.5, max_reward=0.75):
         self.env = env
+        self.min_reward = min_reward
+        self.max_reward = max_reward
 
     def __call__(self):
         if self.env.last_close_position is None:
             return 0.0
-        
-        pnl = self.env.last_close_position['pnl']  # float
-        margin = self.env.last_close_position['margin']  # float
-        sign = copysign(1, float(pnl))  # 盈亏方向
+        pnl = self.env.last_close_position['pnl']
+        margin = self.env.last_close_position['margin']
+        sign = copysign(1, float(pnl))
         reward = sign * log1p(abs(float(pnl) / float(margin)))  # log1p(abs(pnl / margin))
-        return min(max(reward, -0.5), 0.75)  # 范围 [-0.5, 0.75]
+        return min(max(reward, self.min_reward), self.max_reward)
+
+class FastCarRacingReward:
+    def __init__(self, env, config=None):
+        self.env = env
+        self.lower_limit = -2.0
+        self.upper_limit = 1.0
+        # 默认配置
+        default_config = {
+            'step': {'equity_coeff': 3.0, 'penalty': 0.01},
+            'close': {'min_reward': -0.5, 'max_reward': 0.75},
+            'event': {'once': 0, 'repeated': 0.5, 'max_profit_reward': 1.0, 'max_loss_penalty': -0.5},
+            'termination': {'limit': -2.0}
+        }
+        self.config = config if config else default_config
+
+        self.rewards = [
+            StepReward(env, **self.config['step']),
+            CloseReward(env, **self.config['close']),
+            EventReward(env, once=self.config['event']['once'], repeated=self.config['event']['repeated']),
+            TerminationReward(env, self.config['termination']['limit']),
+        ]
+
+    def __call__(self):
+        reward = sum([fn() for fn in self.rewards])
+        self.env.last_close_position = None
+        return max(self.lower_limit, min(self.upper_limit, reward))
+
 
 class EventReward:
     """事件奖励"""
@@ -148,8 +158,9 @@ class EventReward:
 
 class TerminationReward:
     """终止条件奖励"""
-    def __init__(self, env):
+    def __init__(self, env, limit=-2):
         self.env = env
+        self.limit = limit
 
     def __call__(self):
         reward = 0.0
@@ -157,9 +168,9 @@ class TerminationReward:
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
         drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
         if daily_lost_pct > self.env.config.risk.daily_lost_ratio:
-            reward = -2.0  # 调整为 -2.0
+            reward = self.limit
         if drawdown_pct > self.env.config.risk.max_drawdown_ratio:
-            reward = -2.0  # 调整为 -2.0
+            reward = self.limit
         return float(reward)
 
 reward_classes = {

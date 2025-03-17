@@ -4,7 +4,7 @@ import unittest
 from decimal import Decimal
 from math import log1p, copysign
 from gym_trading_env.envs.trading_env import ForexCode
-from gym_trading_env.rewards.reward_functions import StepReward, CloseReward, EventReward, TerminationReward
+from gym_trading_env.rewards.reward_functions import StepReward, CloseReward, EventReward, TerminationReward,FastCarRacingReward
 
 # Mock 必要的环境类
 class MockConfig:
@@ -57,14 +57,6 @@ class TestRewards(unittest.TestCase):
         # 初始化默认环境
         self.env_normal = MockEnv(equity_value=1000, daily_lost_pct=0.01, drawdown_pct=0.05)
 
-    # 测试 StepReward
-    def test_step_reward_equity_increase(self):
-        """测试净值增长的正常情况"""
-        env = MockEnv(equity_value=1010)  # 净值涨到 1010
-        step_reward = StepReward(env)
-        step_reward.previous_equity = Decimal('1000')
-        reward = step_reward()
-        self.assertAlmostEqual(reward, 0.03, places=5)  # 3.0 * (1010 - 1000) / 1000
 
     def test_step_reward_equity_decrease_with_no_position(self):
         """测试净值下降 + 空仓的边界情况"""
@@ -154,6 +146,42 @@ class TestRewards(unittest.TestCase):
         termination_reward = TerminationReward(env)
         reward = termination_reward()
         self.assertEqual(reward, 0.0)
+
+        # 更新 StepReward 测试
+    def test_step_reward_equity_increase(self):
+        env = MockEnv(equity_value=1010)
+        step_reward = StepReward(env, equity_coeff=3.0, penalty=0.01)
+        step_reward.previous_equity = Decimal('1000')
+        reward = step_reward()
+        self.assertAlmostEqual(reward, 0.03, places=5)
+
+    # 测试 FastCarRacingReward
+    def test_fast_car_racing_reward_range(self):
+        """测试总奖励范围"""
+        env = MockEnv(equity_value=990, daily_lost_pct=0.06)  # 触发终止
+        env.last_close_position = {'pnl': -2.0, 'margin': 1.0}  # 负平仓
+        config = {
+            'step': {'equity_coeff': 3.0, 'penalty': 0.01},
+            'close': {'min_reward': -0.5, 'max_reward': 0.75},
+            'event': {'once': 0, 'repeated': 0.5, 'max_profit_reward': 1.0, 'max_loss_penalty': -0.5},
+            'termination': {'limit': -2.0}
+        }
+        fast_reward = FastCarRacingReward(env, config)
+        reward = fast_reward()
+        # 预期：-2.0 (终止) + -0.5 (平仓) + -0.03 (净值) 被限制为 -2.0
+        self.assertGreaterEqual(reward, -2.0)
+        self.assertLessEqual(reward, 1.0)
+
+    def test_fast_car_racing_reward_positive(self):
+        """测试正向奖励范围"""
+        env = MockEnv(equity_value=1010)
+        env.last_close_position = {'pnl': 5.0, 'margin': 1.0}  # 正平仓
+        env.metrics = MockMetrics(0.01, 0.05, max_profit=4.0, calmar=1.5)
+        fast_reward = FastCarRacingReward(env)
+        reward = fast_reward()
+        # 预期：0.03 (净值) + 0.75 (平仓) + 1.0 (max_profit) + 0.5 (calmar) 被限制为 1.0
+        self.assertGreaterEqual(reward, -2.0)
+        self.assertLessEqual(reward, 1.0)
 
 if __name__ == '__main__':
     unittest.main()
