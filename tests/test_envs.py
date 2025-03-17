@@ -19,14 +19,14 @@ class TestCustomTradingEnv(unittest.TestCase):
         Set up a dummy environment for testing.
         """
         # Create dummy data for testing
-        dates = pd.date_range('2020-01-01', periods=100, freq='D')
+        dates = pd.date_range('2020-01-01', periods=600, freq='D')
         data = {
             'Date': dates,
-            'Close': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
-            'Open': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
-            'High': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
-            'Low': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)],
-            'Volume': [float('1.1000') + float('0.0001') * float((i)) for i in range(100)]
+            'Close': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Open': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'High': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Low': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Volume': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)]
         }
         df = pd.DataFrame(data)
 

@@ -50,7 +50,7 @@ class FastCarRacingReward():
         self.rewards = [
             StepReward(env),
             CloseReward(env),
-            EventReward(env, once=1, repeated=0.5),
+            EventReward(env, once=0, repeated=0.5),
             TerminationReward(env),
         ]
 
@@ -59,12 +59,11 @@ class FastCarRacingReward():
         self.env.last_close_position = None
 
         return reward
-
 class StepReward:
     """每步奖励"""
     def __init__(self, env):
         self.env = env
-        self.previous_equity = env.config.trading.initial_balance
+        self.previous_equity = env.config.trading.initial_balance  # Decimal
 
     def __call__(self):
         reward = Decimal('0.0')
@@ -72,21 +71,23 @@ class StepReward:
         # 不鼓励空仓
         if self.env.position_manager.total_long_position() == Decimal('0.0') and \
            self.env.position_manager.total_short_position() == Decimal('0.0'):
-            reward -= Decimal('0.1')
+            reward -= Decimal('0.01')  # 降低到 -0.01
         
         # 不鼓励对冲（多空持仓相等）
         if self.env.position_manager.total_long_position() == self.env.position_manager.total_short_position() and \
            self.env.position_manager.total_long_position() > Decimal('0.0'):
-            reward -= Decimal('0.1')
+            reward -= Decimal('0.01')  # 降低到 -0.01
         
         # 无效动作
-        if self.env.action_result == ForexCode.ERROR_HIT_MAX_POSITION or self.env.action_result == ForexCode.ERROR_NO_POSITION_TO_CLOSE or self.env.action_result == ForexCode.ERROR_OPEN_POSITION:
-            reward -= Decimal('0.1')
+        if self.env.action_result in [ForexCode.ERROR_HIT_MAX_POSITION, 
+                                      ForexCode.ERROR_NO_POSITION_TO_CLOSE, 
+                                      ForexCode.ERROR_OPEN_POSITION]:
+            reward -= Decimal('0.01')  # 降低到 -0.01
         
         # 净值增长奖励
-        equity = self.env.user_accounts.equity()
+        equity = self.env.user_accounts.equity()  # Decimal
         equity_change = (equity - self.previous_equity) / self.env.config.trading.initial_balance
-        reward += Decimal('0.05') * equity_change
+        reward += Decimal('3.0') * equity_change  # 系数调整为 3.0
         self.previous_equity = equity
         
         return float(reward)
@@ -100,56 +101,55 @@ class CloseReward:
         if self.env.last_close_position is None:
             return 0.0
         
-        pnl = self.env.last_close_position['pnl']
-        margin = self.env.last_close_position['margin']
+        pnl = self.env.last_close_position['pnl']  # float
+        margin = self.env.last_close_position['margin']  # float
         sign = copysign(1, float(pnl))  # 盈亏方向
         reward = sign * log1p(abs(float(pnl) / float(margin)))  # log1p(abs(pnl / margin))
-        return min(reward, 2.0)  # 限制最大值为 2
+        return min(max(reward, -0.5), 0.75)  # 范围 [-0.5, 0.75]
 
 class EventReward:
     """事件奖励"""
     def __init__(self, env, once=0, repeated=1):
         self.env = env
-        self.once = once
-        self.repeated = repeated
+        self.once = once  # 调整为 0，避免重复奖励
+        self.repeated = repeated  # 保持 0.5，累计奖励 1.0
         self.calmar_ratio_goal = True
         self.sharpe_ratio_goal = True
 
     def __call__(self):
         reward = 0.0
+        metrics = self.env.metrics.get_metrics()
+
         if self.env.last_close_position is not None:
-            pnl = self.env.last_close_position['pnl']
-            
-            metrics = self.env.metrics.get_metrics()
+            pnl = self.env.last_close_position['pnl']  # float
 
             # 突破单笔最大盈利
             if pnl > metrics['max_profit']:
-                reward += 2.0
-                self.max_profit = pnl
+                reward += 1.0  # 调整为 1.0
             
             # 突破单笔最大亏损
             if pnl < metrics['max_loss']:
-                reward -= 1.0
-                self.max_loss = pnl
+                reward -= 0.5  # 调整为 -0.5
 
-            if metrics['calmar_ratio'] is not None and metrics['calmar_ratio'] >= 1.0:
-                if self.calmar_ratio_goal:
-                    self.calmar_ratio_goal = False
-                    reward += self.once
-                reward += 2.0 * self.repeated
+        # Calmar 和 Sharpe 比率
+        if metrics['calmar_ratio'] is not None and metrics['calmar_ratio'] >= 1.0:
+            if self.calmar_ratio_goal:
+                self.calmar_ratio_goal = False
+                reward += self.once  # 0
+            reward += 1.0 * self.repeated  # 0.5
         
-            if metrics['sharpe_ratio'] is not None and metrics['sharpe_ratio'] >= 1.0:
-                if self.sharpe_ratio_goal:
-                    self.sharpe_ratio_goal = False
-                    reward += self.once
-                reward += 2.0 * self.repeated
+        if metrics['sharpe_ratio'] is not None and metrics['sharpe_ratio'] >= 1.0:
+            if self.sharpe_ratio_goal:
+                self.sharpe_ratio_goal = False
+                reward += self.once  # 0
+            reward += 1.0 * self.repeated  # 0.5
         
         return float(reward)
 
 class TerminationReward:
     """终止条件奖励"""
     def __init__(self, env):
-        self.env =env
+        self.env = env
 
     def __call__(self):
         reward = 0.0
@@ -157,11 +157,10 @@ class TerminationReward:
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
         drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
         if daily_lost_pct > self.env.config.risk.daily_lost_ratio:
-            reward = -5.0
+            reward = -2.0  # 调整为 -2.0
         if drawdown_pct > self.env.config.risk.max_drawdown_ratio:
-            reward = -5.0
+            reward = -2.0  # 调整为 -2.0
         return float(reward)
-
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
