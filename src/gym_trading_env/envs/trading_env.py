@@ -87,7 +87,7 @@ class CustomTradingEnv(gym.Env):
         self.current_step = self.config.training.window_size
         self.terminated = False
         self.action_result = None
-
+        self.df_window = None
         self.last_close_position = None
 
         self.reset()
@@ -204,7 +204,7 @@ class CustomTradingEnv(gym.Env):
         self.current_step = self.config.training.window_size
         self.terminated = False
         self.action_result = None
-        
+        self.df_window = None
         self.last_close_position = None
 
         reward_class = reward_classes.get(
@@ -863,7 +863,7 @@ class CustomTradingEnv(gym.Env):
         # Slice the dataframe for the current window
         window_start = max(0, self.current_step - self.data_window_size)
         window_end = self.current_step
-        df_window = self.df.iloc[window_start:window_end]
+        self.df_window = self.df.iloc[window_start:window_end]
         
         # 1. 当前持仓
         positions = np.zeros((4, 3), dtype=np.float32)
@@ -911,10 +911,10 @@ class CustomTradingEnv(gym.Env):
                 break
 
         # 3. K线图
-        image = self._render(render_mode='rgb_array', df=df_window)
+        image = self._render(render_mode='rgb_array', df=self.df_window)
 
         # 4. 技术指标
-        indicators = self._calculate_indicators(df=df_window)
+        indicators = self._calculate_indicators(df=self.df_window)
 
         metrics = self.metrics.get_metrics()
 
@@ -938,7 +938,7 @@ class CustomTradingEnv(gym.Env):
             decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'), 5),
         ], dtype=np.float32)
 
-        df_15m = df_window.resample('15min').agg({
+        df_15m = self.df_window.resample('15min').agg({
             'Open': 'first',
             'High': 'max',
             'Low': 'min',

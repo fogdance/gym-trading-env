@@ -5,6 +5,7 @@ from decimal import Decimal
 from math import log1p, copysign
 from gym_trading_env.envs.trading_env import ForexCode
 from gym_trading_env.rewards.reward_functions import StepReward, CloseReward, EventReward, TerminationReward,FastCarRacingReward
+import pandas as pd
 
 # Mock 必要的环境类
 class MockConfig:
@@ -51,26 +52,74 @@ class MockEnv:
         self.action_result = action_result
         self.last_close_position = None
         self.metrics = MockMetrics(daily_lost_pct, drawdown_pct)
+        self.current_price = Decimal(1)
+        dates = pd.date_range('2020-01-01', periods=600, freq='D')
+        data = {
+            'Date': dates,
+            'Close': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Open': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'High': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Low': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],
+            'Volume': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)]
+        }
+        self.df_window = pd.DataFrame(data)
 
 class TestRewards(unittest.TestCase):
     def setUp(self):
         # 初始化默认环境
         self.env_normal = MockEnv(equity_value=1000, daily_lost_pct=0.01, drawdown_pct=0.05)
 
+    def test_equity_decrease(self):
+        """测试净值减少时的奖励"""
+        test_cases = [
+            (-1, -0.19),  # -1 美元，预期约 -0.16667
+            (-3, -0.52),     # -3 美元，预期约 -0.5
+            (-5, -0.81), # -5 美元，预期约 -0.83333
+            (-10, -1.39), # -10 美元，预期约 -1.66667
+            (1, 0.19),
+            (3, 0.52),
+            (5, 0.81),
+            (10, 1.39)
+        ]
+        
+        for equity_change, expected_reward in test_cases:
+            with self.subTest(equity_change=equity_change):
+                initial_equity = 1000
+                new_equity = initial_equity + equity_change
+                env = MockEnv(equity_value=new_equity, long_position=Decimal('0.0'))
+                step_reward = StepReward(env, profit_coeff=2)
+                reward = step_reward()
+                self.assertAlmostEqual(reward, expected_reward, places=2, 
+                                     msg=f"Equity change {equity_change}: expected {expected_reward}, got {reward}")
 
     def test_step_reward_equity_decrease_with_no_position(self):
         """测试净值下降 + 空仓的边界情况"""
-        env = MockEnv(equity_value=990, long_position=Decimal(0))  # 净值跌到 990
+        env = MockEnv(equity_value=999, long_position=Decimal(0))  # 净值跌到 990
         step_reward = StepReward(env)
         step_reward.previous_equity = Decimal('1000')
         reward = step_reward()
-        self.assertAlmostEqual(reward, -0.04, places=5)  # -0.03 (净值) - 0.01 (空仓)
+        self.assertAlmostEqual(reward, -0.19, places=2)
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
+        self.assertAlmostEqual(reward, -0.01, places=5)
 
     def test_step_reward_invalid_action(self):
         """测试无效动作的情况"""
         env = MockEnv(equity_value=1000, action_result=ForexCode.ERROR_OPEN_POSITION)
         step_reward = StepReward(env)
         step_reward.previous_equity = Decimal('1000')
+        reward = step_reward()
+        self.assertAlmostEqual(reward, 0, places=5)  # -0.01 (无效动作)
+        reward = step_reward()
+        reward = step_reward()
+        reward = step_reward()
         reward = step_reward()
         self.assertAlmostEqual(reward, -0.01, places=5)  # -0.01 (无效动作)
 
@@ -104,7 +153,7 @@ class TestRewards(unittest.TestCase):
         env = MockEnv(equity_value=1000)
         env.last_close_position = {'pnl': 5.0}
         env.metrics = MockMetrics(0.01, 0.05, max_profit=4.0, max_loss=-2.0)
-        event_reward = EventReward(env, once=0, repeated=0.5)
+        event_reward = EventReward(env, repeated=0.5)
         reward = event_reward()
         self.assertAlmostEqual(reward, 1.0, places=5)  # 仅最大盈利触发
 
@@ -113,7 +162,7 @@ class TestRewards(unittest.TestCase):
         env = MockEnv(equity_value=1000)
         env.last_close_position = {'pnl': -3.0}
         env.metrics = MockMetrics(0.01, 0.05, max_profit=4.0, max_loss=-2.0)
-        event_reward = EventReward(env, once=0, repeated=0.5)
+        event_reward = EventReward(env, repeated=0.5)
         reward = event_reward()
         self.assertAlmostEqual(reward, -0.5, places=5)  # 仅最大亏损触发
 
@@ -121,9 +170,9 @@ class TestRewards(unittest.TestCase):
         """测试 Calmar 比率达成"""
         env = MockEnv(equity_value=1000)
         env.metrics = MockMetrics(0.01, 0.05, calmar=1.5)
-        event_reward = EventReward(env, once=0, repeated=0.5)
+        event_reward = EventReward(env, repeated=0.5)
         reward = event_reward()
-        self.assertAlmostEqual(reward, 0.5, places=5)  # 首次达成 0.5
+        self.assertAlmostEqual(reward, 0.8, places=5)  # 首次达成 0.8
 
     # 测试 TerminationReward
     def test_termination_reward_daily_loss_exceeded(self):
@@ -150,10 +199,10 @@ class TestRewards(unittest.TestCase):
         # 更新 StepReward 测试
     def test_step_reward_equity_increase(self):
         env = MockEnv(equity_value=1010)
-        step_reward = StepReward(env, equity_coeff=3.0, penalty=0.01)
+        step_reward = StepReward(env, penalty=0.01)
         step_reward.previous_equity = Decimal('1000')
         reward = step_reward()
-        self.assertAlmostEqual(reward, 0.03, places=5)
+        self.assertAlmostEqual(reward, 1.39, places=2)
 
     # 测试 FastCarRacingReward
     def test_fast_car_racing_reward_range(self):
@@ -161,7 +210,7 @@ class TestRewards(unittest.TestCase):
         env = MockEnv(equity_value=990, daily_lost_pct=0.06)  # 触发终止
         env.last_close_position = {'pnl': -2.0, 'margin': 1.0}  # 负平仓
         config = {
-            'step': {'equity_coeff': 3.0, 'penalty': 0.01},
+            'step': {'penalty': 0.01},
             'close': {'min_reward': -0.5, 'max_reward': 0.75},
             'event': {'once': 0, 'repeated': 0.5, 'max_profit_reward': 1.0, 'max_loss_penalty': -0.5},
             'termination': {'limit': -2.0}
