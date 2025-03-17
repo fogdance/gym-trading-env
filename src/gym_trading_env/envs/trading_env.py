@@ -934,8 +934,8 @@ class CustomTradingEnv(gym.Env):
             float(0 if metrics["calmar_ratio"] is None else metrics["calmar_ratio"]),
             float(self.config.risk.daily_lost_ratio),
             float(self.config.risk.max_drawdown_ratio),
-            float(metrics["current_day_lost_pct"]),
-            float(metrics["current_drawdown_pct"]),
+            decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'), 5),
+            decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'), 5),
         ], dtype=np.float32)
 
         df_15m = df_window.resample('15min').agg({
@@ -962,11 +962,14 @@ class CustomTradingEnv(gym.Env):
         if self.config.training.game_mode:
             if df is not None:
                 self.game.step(df)
+            metrics = self.metrics.get_metrics()
+            daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
+            drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
             return self.game.render(decimal_to_float(self.position_manager.total_long_position(), precision=2),
                                     decimal_to_float(self.position_manager.total_short_position(), precision=2),
                                         0 if self.user_accounts.margin.get_balance() == Decimal('0') else decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.margin.get_balance(), precision=4), 
-                                        decimal_to_float(self.user_accounts.current_day_lost_pct / Decimal('100.0')),
-                                        decimal_to_float(self.user_accounts.current_drawdown_pct / Decimal('100.0')),
+                                        daily_lost_pct,
+                                        drawdown_pct,
                                         None if self.position_manager.calc_profit_factor() is None else decimal_to_float(self.position_manager.calc_profit_factor(), precision=2), 
                                         render_mode=render_mode)
         else:
