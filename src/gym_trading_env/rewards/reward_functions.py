@@ -15,7 +15,7 @@ class TotalPnlReward:
         self.env = env
         self.previous_total_pnl = Decimal(0)
 
-    def __call__(self):
+    def __call__(self, obs=None):
         """计算奖励并更新状态"""
         # 计算当前总盈亏
         total_pnl = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
@@ -40,7 +40,7 @@ class CurrentBalanceReward:
     def __init__(self, env):
         self.env = env
 
-    def __call__(self):
+    def __call__(self, obs=None):
         """直接返回当前余额作为奖励"""
         balance = self.env.user_accounts.balance.get_balance()
         return float(decimal_to_float(balance, precision=2))
@@ -63,7 +63,7 @@ class StepReward:
         self.short_atr_period = 25  # 短期 ATR 周期
         self.long_atr_period = 100  # 长期 ATR 周期
 
-    def __call__(self):
+    def __call__(self, obs=None):
         reward = Decimal('0.0')
         
         # 不鼓励空仓
@@ -138,7 +138,7 @@ class CloseReward:
         self.min_reward = min_reward
         self.max_reward = max_reward
 
-    def __call__(self):
+    def __call__(self, obs=None):
         if self.env.last_close_position is None:
             return 0.0
         pnl = self.env.last_close_position['pnl']
@@ -166,13 +166,152 @@ class FastCarRacingReward:
             CloseReward(env, **self.config['close']),
             EventReward(env, repeated=self.config['event']['repeated'], max_profit_reward=self.config['event']['max_profit_reward'], max_loss_penalty=self.config['event']['max_loss_penalty']),
             TerminationReward(env, self.config['termination']['limit']),
+            TrendReward(env),
         ]
 
-    def __call__(self):
-        reward = sum([fn() for fn in self.rewards])
+    def __call__(self, obs=None):
+        reward = sum([fn(obs) for fn in self.rewards])
         self.env.last_close_position = None
         return max(self.lower_limit, min(self.upper_limit, reward))
 
+
+
+class TrendReward:
+    """趋势奖励类，支持多时间框架趋势跟踪和多交易对标准化"""
+    def __init__(self, env, open_coeff=0.2, profit_coeff=0.2, trend_coeff=0.2, breakout_coeff=0.5, close_coeff=0.5):
+        self.env = env
+        self.open_coeff = Decimal(str(open_coeff))
+        self.profit_coeff = Decimal(str(profit_coeff))
+        self.trend_coeff = Decimal(str(trend_coeff))
+        self.breakout_coeff = Decimal(str(breakout_coeff))
+        self.close_coeff = Decimal(str(close_coeff))
+        self.w1 = Decimal('0.7')  # 1h 趋势权重
+        self.w2 = Decimal('0.3')  # 15m 趋势权重
+        self.max_position = Decimal('0.1')  # 最大仓位标准化
+        self.initial_balance = env.config.trading.initial_balance
+        self.long_atr_period = 100
+        self.short_atr_period = 20  # 新增短期 ATR 周期
+        self.last_action = None
+
+    def __call__(self, obs=None):
+        reward = Decimal('0.0')
+        indicators = obs['indicators']
+        try:
+            current_price = Decimal(str(indicators[-1]))  # 当前价格 (Close)
+            long_pos = self.env.position_manager.total_long_position()
+            short_pos = self.env.position_manager.total_short_position()
+            net_position = long_pos - short_pos
+            position_factor = min(abs(net_position) / self.max_position, Decimal('1.0'))
+
+            # 提取趋势指标
+            h1_1h, l1_1h, h2_1h, l2_1h = map(Decimal, map(str, indicators[8:12]))  # 1h
+            h1_15m, l1_15m, h2_15m, l2_15m = map(Decimal, map(str, indicators[4:8]))  # 15m
+            h1_5m, l1_5m, h2_5m, l2_5m = map(Decimal, map(str, indicators[0:4]))  # 5m
+
+            # 计算 20 周期 ATR
+            df_short = self.env.df_window.tail(self.short_atr_period * 2)
+            high_short = np.array(df_short['High'], dtype=float)
+            low_short = np.array(df_short['Low'], dtype=float)
+            close_short = np.array(df_short['Close'], dtype=float)
+            short_atr = Decimal(str(talib.ATR(high_short, low_short, close_short, timeperiod=self.short_atr_period)[-1]))
+            atr_threshold = short_atr * Decimal('2.0')  # 2 个 ATR
+
+            # 趋势一致性
+            trend_align_1h = self._get_trend_alignment(h1_1h, l1_1h, h2_1h, l2_1h, net_position)
+            trend_align_15m = self._get_trend_alignment(h1_15m, l1_15m, h2_15m, l2_15m, net_position)
+
+            # 1. 开仓奖励
+            if 'OPEN' in self.env.action.name:
+                open_trend_factor = self._get_open_trend_factor(h1_1h, l1_1h, h2_1h, l2_1h, self.env.action)
+                entry_proximity_factor = self._get_entry_proximity_factor(
+                    current_price, h1_5m, l1_5m, h1_15m, l1_15m, h1_1h, l1_1h, atr_threshold, self.env.action
+                )
+                reward += self.open_coeff * open_trend_factor * entry_proximity_factor * position_factor
+
+            # # 2. 持仓奖励
+            # if net_position != Decimal('0.0'):
+            #     # 趋势跟随奖励
+            #     trend_factor = self.w1 * trend_align_1h + self.w2 * trend_align_15m
+            #     trend_reward = self.trend_coeff * trend_factor
+
+            #     # 突破奖励
+            #     breakout_factor = self._get_breakout_factor(current_price, h1_1h, l1_1h, h1_15m, l1_15m, net_position)
+            #     breakout_reward = self.breakout_coeff * breakout_factor
+
+            #     reward += trend_reward + breakout_reward
+
+            # 3. 平仓奖励
+            if self.env.last_close_position is not None:
+                close_factor = self._get_close_factor(
+                    current_price, h1_1h, l1_1h, h1_15m, l1_15m, atr_threshold, self.env.last_close_position, self.env.action
+                )
+                reward += self.close_coeff * close_factor
+
+            self.last_action = self.env.action
+            return float(reward)
+
+        except Exception as e:
+            print(f"Error in TrendReward: {e}")
+            return 0.0
+
+    def _get_trend_alignment(self, h1, l1, h2, l2, net_position):
+        if h1 > h2 and l1 > l2:  # 上涨
+            return Decimal('1.0') if net_position > 0 else (Decimal('0') if net_position < 0 else Decimal('0.0'))
+        elif h1 < h2 and l1 < l2:  # 下跌
+            return Decimal('1.0') if net_position < 0 else (Decimal('0') if net_position > 0 else Decimal('0.0'))
+        return Decimal('0.0')  # 振荡或空仓
+
+    def _get_open_trend_factor(self, h1, l1, h2, l2, action):
+        is_long = 'LONG' in action.name
+        if h1 > h2 and l1 > l2:  # 1h 上涨
+            return Decimal('1.0') if is_long else Decimal('0.0')
+        elif h1 < h2 and l1 < l2:  # 1h 下跌
+            return Decimal('1.0') if not is_long else Decimal('0.0')
+        return Decimal('0.5')  # 1h 振荡
+
+    def _get_entry_proximity_factor(self, price, h1_5m, l1_5m, h1_15m, l1_15m, h1_1h, l1_1h, atr_threshold, action):
+        """检查是否在 2 个 20 周期 ATR 内接近前低/前高"""
+        is_long = 'LONG' in action.name
+        levels = [(h1_5m, l1_5m), (h1_15m, l1_15m), (h1_1h, l1_1h)]
+        for h, l in levels:
+            if is_long and l > 0 and (l - atr_threshold) <= price <= (l + atr_threshold):
+                return Decimal('1.0')
+            elif not is_long and h > 0 and (h - atr_threshold) <= price <= (h + atr_threshold):
+                return Decimal('1.0')
+        return Decimal('0.0')
+
+    def _get_breakout_factor(self, price, h1_1h, l1_1h, h1_15m, l1_15m, net_position):
+        if net_position > 0:
+            if price > h1_1h or price > h1_15m:
+                return Decimal('1.0')
+            elif price < l1_1h:
+                return Decimal('-0.5')
+        elif net_position < 0:
+            if (price < l1_1h or price < l1_15m):
+                return Decimal('1.0')
+            elif price > h1_1h:
+                return Decimal('-0.5')
+        return Decimal('0.0')
+
+    def _get_close_factor(self, price, h1_1h, l1_1h, h1_15m, l1_15m, atr_threshold, last_close, action):
+        """计算平仓因子，基于 2 个 20 周期 ATR"""
+        is_long = 'LONG' in action.name
+        pnl = last_close['pnl']
+        if pnl >= Decimal(0):
+            # 止盈
+            for h in [h1_1h, h1_15m]:
+                if is_long and h > 0 and (h - atr_threshold) <= price <= (h + atr_threshold):
+                    return Decimal('1.0')
+            for l in [l1_1h, l1_15m]:
+                if not is_long and l > 0 and (l - atr_threshold) <= price <= (l + atr_threshold):
+                    return Decimal('1.0')
+        else:
+            # 止损
+            if is_long and (price < l1_1h or price < l1_15m):
+                return Decimal('1.5')
+            elif not is_long and (price > h1_1h or price > h1_15m):
+                return Decimal('1.5')
+        return Decimal('0.0')
 
 class EventReward:
     """事件奖励"""
@@ -187,7 +326,7 @@ class EventReward:
             'sharpe': {0.5: 0.2, 0.6: 0.5, 0.8: 0.8}
         }
 
-    def __call__(self):
+    def __call__(self, obs=None):
         reward = 0.0
         metrics = self.env.metrics.get_metrics()
 
@@ -228,7 +367,7 @@ class TerminationReward:
         self.env = env
         self.limit = limit
 
-    def __call__(self):
+    def __call__(self, obs=None):
         reward = 0.0
         metrics = self.env.metrics.get_metrics()
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))

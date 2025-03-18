@@ -75,21 +75,6 @@ class CustomTradingEnv(gym.Env):
             'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
         })
 
-        # Initialize state
-        self.position_manager = PositionManager()
-        self.user_accounts = UserAccounts(initial_balance=self.config.trading.initial_balance, position_manager=self.position_manager)
-
-        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
-        self.trade_record_manager = TradeRecordManager()
-        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
-
-        # Other state variables
-        self.current_step = self.config.training.window_size
-        self.terminated = False
-        self.action_result = None
-        self.df_window = None
-        self.last_close_position = None
-
         self.reset()
 
     def _config(self, config_path):
@@ -206,6 +191,7 @@ class CustomTradingEnv(gym.Env):
         self.action_result = None
         self.df_window = None
         self.last_close_position = None
+        self.action = None
 
         reward_class = reward_classes.get(
             self.config.training.reward_function,
@@ -275,44 +261,44 @@ class CustomTradingEnv(gym.Env):
 
         # Execute action
         try:
-            action_enum = Action(action)
+            self.action = Action(action)
         except ValueError:
             self.logger.error(f"Invalid action: {action}. Action must be one of {list(Action)}.")
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
         self.action_result = ForexCode.SUCCESS
-        if action_enum == Action.HOLD:
+        if self.action == Action.HOLD:
             pass  # Do nothing
-        elif action_enum == Action.LONG_OPEN:
+        elif self.action == Action.LONG_OPEN:
             self.action_result = self._long_open(action_price, self.config.trading.spread)
-        elif action_enum == Action.LONG_CLOSE:
+        elif self.action == Action.LONG_CLOSE:
             self.action_result = self._long_close(action_price, self.config.trading.spread)
-        elif action_enum == Action.SHORT_OPEN:
+        elif self.action == Action.SHORT_OPEN:
             self.action_result = self._short_open(action_price, self.config.trading.spread)
-        elif action_enum == Action.SHORT_CLOSE:
+        elif self.action == Action.SHORT_CLOSE:
             self.action_result = self._short_close(action_price, self.config.trading.spread)
-        elif action_enum == Action.POSITION_UP:
+        elif self.action == Action.POSITION_UP:
             self.action_result = self._position_up(action_price, self.config.trading.spread)
-        elif action_enum == Action.POSITION_DOWN:
+        elif self.action == Action.POSITION_DOWN:
             self.action_result = self._position_down(action_price, self.config.trading.spread)
-        elif action_enum == Action.EMPTY:
+        elif self.action == Action.EMPTY:
             self.action_result = self._empty_position(action_price, self.config.trading.spread)
-        elif action_enum == Action.LONG_OPEN0:
+        elif self.action == Action.LONG_OPEN0:
             self.action_result = self._long_open(action_price, self.config.trading.spread, slot=0)
-        elif action_enum == Action.LONG_CLOSE0:
+        elif self.action == Action.LONG_CLOSE0:
             self.action_result = self._long_close(action_price, self.config.trading.spread, slot=0)
-        elif action_enum == Action.SHORT_OPEN0:
+        elif self.action == Action.SHORT_OPEN0:
             self.action_result = self._short_open(action_price, self.config.trading.spread, slot=0)
-        elif action_enum == Action.SHORT_CLOSE0:
+        elif self.action == Action.SHORT_CLOSE0:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=0)
-        elif action_enum == Action.LONG_OPEN1:
+        elif self.action == Action.LONG_OPEN1:
             self.action_result = self._long_open(action_price, self.config.trading.spread, slot=1)
-        elif action_enum == Action.LONG_CLOSE1:
+        elif self.action == Action.LONG_CLOSE1:
             self.action_result = self._long_close(action_price, self.config.trading.spread, slot=1)
-        elif action_enum == Action.SHORT_OPEN1:
+        elif self.action == Action.SHORT_OPEN1:
             self.action_result = self._short_open(action_price, self.config.trading.spread, slot=1)
-        elif action_enum == Action.SHORT_CLOSE1:
+        elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
         #
@@ -334,14 +320,14 @@ class CustomTradingEnv(gym.Env):
             self._empty_position(self.current_price, self.config.trading.spread)
             self._update_unrealized_pnl()
 
-        # Calculate reward
-        reward = self.reward_function()
-
         # Construct observation
         obs = self._get_obs()
 
         # Update info
         info = self._get_info()
+
+        # Calculate reward
+        reward = self.reward_function(obs)
 
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
@@ -377,7 +363,7 @@ class CustomTradingEnv(gym.Env):
 
         # check if we run out of data
         if self.current_step >= self.end_idx:
-            self.logger.error(f"Reached end_idx={self.end_idx}, current_step={self.current_step}. Episode done.")
+            self.logger.error(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}. Episode done.")
             return True
 
         # or if we exceed max_episode_steps

@@ -215,19 +215,27 @@ class TestRewards(unittest.TestCase):
             'event': {'once': 0, 'repeated': 0.5, 'max_profit_reward': 1.0, 'max_loss_penalty': -0.5},
             'termination': {'limit': -2.0}
         }
+        obs = {'indicators': [1.05, 1.0, 1.04, 0.99,  # 5m
+                        1.05, 1.0, 1.04, 0.99,  # 15m 上涨
+                        1.1, 1.05, 1.09, 1.04,  # 1h 上涨
+                        1.0512]}  # 在 l1_1h (1.05) + 2*ATR (0.0024) 内
         fast_reward = FastCarRacingReward(env, config)
-        reward = fast_reward()
+        reward = fast_reward(obs)
         # 预期：-2.0 (终止) + -0.5 (平仓) + -0.03 (净值) 被限制为 -2.0
         self.assertGreaterEqual(reward, -2.0)
         self.assertLessEqual(reward, 1.0)
 
     def test_fast_car_racing_reward_positive(self):
         """测试正向奖励范围"""
+        obs = {'indicators': [1.05, 1.0, 1.04, 0.99,  # 5m
+                1.05, 1.0, 1.04, 0.99,  # 15m 上涨
+                1.1, 1.05, 1.09, 1.04,  # 1h 上涨
+                1.0512]}  # 在 l1_1h (1.05) + 2*ATR (0.0024) 内
         env = MockEnv(equity_value=1010)
         env.last_close_position = {'pnl': 5.0, 'margin': 1.0}  # 正平仓
         env.metrics = MockMetrics(0.01, 0.05, max_profit=4.0, calmar=1.5)
         fast_reward = FastCarRacingReward(env)
-        reward = fast_reward()
+        reward = fast_reward(obs)
         # 预期：0.03 (净值) + 0.75 (平仓) + 1.0 (max_profit) + 0.5 (calmar) 被限制为 1.0
         self.assertGreaterEqual(reward, -2.0)
         self.assertLessEqual(reward, 1.0)
