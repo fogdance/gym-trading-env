@@ -1,13 +1,14 @@
 # src/gym_trading_env/rewards/reward_functions.py
 
 from decimal import Decimal
-from gym_trading_env.utils.conversion import decimal_to_float
+from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
 from math import log1p, copysign
 from collections import deque
 from gym_trading_env.envs.action import ForexCode
 import numpy as np
 import talib
 
+from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
 class TotalPnlReward:
     """基于总盈亏（已实现 + 未实现）的奖励类"""
@@ -47,7 +48,7 @@ class CurrentBalanceReward:
 
 class StepReward:
     """每步奖励"""
-    def __init__(self, env, profit_coeff=2, penalty=0.01):
+    def __init__(self, env, profit_coeff=2, penalty=0.01, min_reward=-0.5, max_reward=0.75):
         self.env = env
         self.penalty = Decimal(str(penalty))
         self.previous_equity = env.config.trading.initial_balance
@@ -58,7 +59,9 @@ class StepReward:
         self.max_hedge_count = 10
         self.invalid_action = 0
         self.max_invalid_action = 5
-
+        self.min_reward = min_reward
+        self.max_reward = max_reward
+        
         self.profit_coeff = Decimal(str(profit_coeff))  # 每美元收益系数
         self.short_atr_period = 25  # 短期 ATR 周期
         self.long_atr_period = 100  # 长期 ATR 周期
@@ -97,37 +100,22 @@ class StepReward:
         else:
             self.invalid_action = 0
 
+        # 持仓收益奖励
+        def pos_reward(pos, long: bool):
+            if pos is None:
+                return Decimal('0')
 
-        # 净值增长奖励
-        equity = self.env.user_accounts.equity()
-        equity_change = equity - self.previous_equity
-        if equity_change != Decimal('0.0'):
-            current_price = self.env.current_price
-            
-            # 计算短期和长期波动率
-            df_short = self.env.df_window.tail(self.short_atr_period*2)
-            df_long = self.env.df_window.tail(self.long_atr_period*2)
-            high_short = np.array(df_short['High'], dtype=float)
-            low_short = np.array(df_short['Low'], dtype=float)
-            close_short = np.array(df_short['Close'], dtype=float)
-            high_long = np.array(df_long['High'], dtype=float)
-            low_long = np.array(df_long['Low'], dtype=float)
-            close_long = np.array(df_long['Close'], dtype=float)
-            
-            short_atr = talib.ATR(high_short, low_short, close_short, timeperiod=self.short_atr_period)[-1]
-            long_atr = talib.ATR(high_long, low_long, close_long, timeperiod=self.long_atr_period)[-1]
-            short_vol = Decimal(str(short_atr / float(current_price)))
-            long_vol = Decimal(str(long_atr / float(current_price)))
-            
-            # 调整系数
-            adjusted_coeff = self.profit_coeff * (long_vol / short_vol)
-            
-            # 标准化收益
-            profit_ratio = abs(equity_change) / self.initial_balance * 100
-            sign = Decimal('1.0') if equity_change > 0 else Decimal('-1.0')
-            reward += adjusted_coeff * Decimal(str(log1p(float(profit_ratio)))) * sign
+            pnl = calc_unrealized_pnl(self.env.current_price, pos, self.env.config.trading.lot_size, long)
 
-        self.previous_equity = equity
+            sign = copysign(1, float(pnl))
+            reward = sign * log1p(abs(float(pnl) / float(pos.initial_margin)))  # log1p(abs(pnl / margin))
+            reward = min(max(reward, self.min_reward), self.max_reward)
+            return float_to_decimal(reward)
+
+        for pos in self.env.position_manager.long_positions:
+            reward += pos_reward(pos, True)
+        for pos in self.env.position_manager.short_positions:
+            reward += pos_reward(pos, False)
 
         return float(reward)
 

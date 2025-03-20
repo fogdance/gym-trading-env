@@ -18,6 +18,7 @@ from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.rewards.reward_functions import TotalPnlReward, reward_classes
 from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
+from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
 from gym_trading_env.rendering.game.game import Game  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
@@ -405,7 +406,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for long positions
         unrealized_pnl_long = sum(
             (
-                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
+                calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
                 for pos in self.position_manager.long_positions if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -414,7 +415,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate unrealized P&L for short positions
         unrealized_pnl_short = sum(
             (
-                self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
+                calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
                 for pos in self.position_manager.short_positions  if pos is not None
             ),
             Decimal('0.0')  # Specify Decimal start value
@@ -426,14 +427,6 @@ class CustomTradingEnv(gym.Env):
         # Update user's unrealized P&L
         self.user_accounts.unrealized_pnl = unrealized_pnl_long + unrealized_pnl_short
 
-    def _calc_unrealized_pnl(self, current_price: Decimal,  pos: Position, lot_size: Decimal, long: bool):
-        if pos is None:
-            return Decimal('0')
-        
-        if long:
-            return (current_price - pos.entry_price) * pos.size * self.config.trading.lot_size
-        else:
-            return (pos.entry_price - current_price) * pos.size * self.config.trading.lot_size
 
 
     def _check_margin(self):
@@ -856,14 +849,14 @@ class CustomTradingEnv(gym.Env):
         for i, pos in enumerate(self.position_manager.long_positions[:2]):
             if pos is None:
                 continue
-            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
+            pnl = calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
             positions[i] = [ decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
 
         for i, pos in enumerate(self.position_manager.short_positions[:2]):
             i += 2
             if pos is None:
                 continue
-            pnl = self._calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
+            pnl = calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
             positions[i] = [decimal_to_float(pnl), -decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
 
 
