@@ -365,9 +365,147 @@ class TerminationReward:
         if drawdown_pct > self.env.config.risk.max_drawdown_ratio:
             reward = self.limit
         return float(reward)
+    
+
+
+class NoviceModeReward:
+    def __init__(self, env):
+        self.env = env
+        self.lower_limit = -0.5
+        self.upper_limit = 0.5
+        self.step_count = 0
+        self.rewards = [
+            NoviceModeActionReward(env),
+            NoviceModeProfitLossReward(env),
+            NoviceModeTradeCompletionReward(env),
+            NoviceModePositionHoldingReward(env),
+            NoviceModeInactionPenalty(env),
+        ]
+        self.episode_trades = 0
+
+    def __call__(self, obs=None):
+        self.step_count += 1
+        reward = sum([fn(obs) for fn in self.rewards])
+        if 'OPEN' in self.env.action.name:
+            self.episode_trades += 1
+        if self.env.terminated:
+            if self.episode_trades > 0:
+                reward += 0.2
+            self.episode_trades = 0
+        self.env.last_close_position = None
+        return max(self.lower_limit, min(self.upper_limit, reward))
+
+class NoviceModeActionReward:
+    def __init__(self, env):
+        self.env = env
+        self.was_empty = True
+
+    def __call__(self, obs=None):
+        if 'OPEN' not in self.env.action.name:
+            return 0.0
+        long_pos = self.env.position_manager.total_long_position()
+        short_pos = self.env.position_manager.total_short_position()
+        if long_pos > 0 or short_pos > 0:
+            if self.was_empty:
+                self.was_empty = False
+                return 0.2
+            return 0.1
+        return 0.0
+
+class NoviceModeProfitLossReward:
+    def __init__(self, env, min_reward=-0.5, max_reward=0.75):
+        self.env = env
+        self.min_reward = min_reward
+        self.max_reward = max_reward
+
+    def __call__(self, obs=None):
+        pt = float(self._get_unrealized_pnl(obs))
+        if pt > 0:
+            return min(pt * 0.2, 0.2)
+        else:
+            return max(pt * 0.05, -0.05)
+
+
+    def _get_unrealized_pnl(self, obs):
+        reward = Decimal('0')
+        # 持仓收益奖励
+        def pos_reward(pos, long: bool):
+            if pos is None:
+                return Decimal('0')
+
+            pnl = calc_unrealized_pnl(self.env.current_price, pos, self.env.config.trading.lot_size, long)
+
+            sign = copysign(1, float(pnl))
+            reward = sign * (abs(float(pnl) / float(pos.initial_margin)))  # (abs(pnl / margin))
+            
+            return float_to_decimal(reward)
+
+        for pos in self.env.position_manager.long_positions:
+            reward += pos_reward(pos, True)
+        for pos in self.env.position_manager.short_positions:
+            reward += pos_reward(pos, False)
+        return reward
+
+class NoviceModeTradeCompletionReward:
+    def __init__(self, env):
+        self.env = env
+        self.position_steps = 0
+
+    def __call__(self, obs=None):
+        long_pos = self.env.position_manager.total_long_position()
+        short_pos = self.env.position_manager.total_short_position()
+        if long_pos > 0 or short_pos > 0:
+            self.position_steps += 1
+        if self.env.last_close_position is not None:
+            if self.position_steps >= 5:
+                self.position_steps = 0
+                return 0.1
+            self.position_steps = 0
+        return 0.0
+
+class NoviceModePositionHoldingReward:
+    def __init__(self, env):
+        self.env = env
+        self.episode_hold_reward = 0.0
+
+    def __call__(self, obs=None):
+        long_pos = self.env.position_manager.total_long_position()
+        short_pos = self.env.position_manager.total_short_position()
+        if long_pos > 0 or short_pos > 0:
+            reward = 0.01
+            self.episode_hold_reward += reward
+            if self.episode_hold_reward > 0.2:
+                reward = 0.0
+                self.episode_hold_reward = 0.2
+            return reward
+        return 0.0
+
+class NoviceModeInactionPenalty:
+    def __init__(self, env):
+        self.env = env
+        self.empty_steps = 0
+        self.episode_penalty = 0.0
+
+    def __call__(self, obs=None):
+        long_pos = self.env.position_manager.total_long_position()
+        short_pos = self.env.position_manager.total_short_position()
+        if long_pos == 0 and short_pos == 0:
+            self.empty_steps += 1
+            if self.empty_steps > 200:
+                penalty = -0.01
+                self.episode_penalty += -penalty
+                if self.episode_penalty > 0.2:
+                    penalty = 0.0
+                    self.episode_penalty = 0.2
+                return penalty
+        else:
+            self.empty_steps = 0
+        return 0.0
+            
+
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
     'total_pnl_reward_function': TotalPnlReward,
-    'fast_car_racing_likely_reward_function': FastCarRacingReward,
+    'fast_car_racing_likely_reward_function': NoviceModeReward,
 }
