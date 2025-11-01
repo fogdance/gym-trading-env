@@ -6,12 +6,12 @@ from typing import Optional
 import logging
 
 class ForexDataDownloader:
-    def __init__(self, proxy: Optional[dict] = None):
+    def __init__(self, proxy: Optional[str] = None):
         """
         Initializes the ForexDataDownloader with the given proxy settings.
 
         Args:
-            proxy (dict, optional): Dictionary of proxies to use for HTTP requests. Defaults to None.
+            proxy (str, optional): http://user:pwd@ip:port Defaults to None.
         """
         self.proxy = proxy
         self.logger = logging.getLogger(__name__)
