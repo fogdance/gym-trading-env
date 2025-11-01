@@ -49,10 +49,6 @@ class TestCustomTradingEnv(unittest.TestCase):
         Test the reset functionality of the environment.
         """
         obs, info = self.env.reset()
-        # Verify that the observation is an image with the correct shape
-        self.assertIsInstance(obs['image'], np.ndarray, "Observation should be a numpy array (image).")
-        self.assertEqual(obs['image'].shape, (self.env.config.visualization.image_height, self.env.config.visualization.image_width, self.env.config.visualization.image_channels),
-                         f"Observation shape should be {(self.env.config.visualization.image_height, self.env.config.visualization.image_width, self.env.config.visualization.image_channels)}, but got {obs['image'].shape}.")
 
         # Verify initial account details
         self.assertEqual(D(info['balance']), Decimal('10000.0'))

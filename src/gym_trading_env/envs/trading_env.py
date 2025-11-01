@@ -19,15 +19,13 @@ from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.rewards.reward_functions import TotalPnlReward, reward_classes
 from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decimal
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
-from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
-from gym_trading_env.rendering.game.game import Game  # Import plotting utility
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
-
+from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT, build_market_features
 
 
 class CustomTradingEnv(gym.Env):
@@ -44,37 +42,96 @@ class CustomTradingEnv(gym.Env):
             Action.HOLD,
             Action.LONG_OPEN0,
             Action.LONG_CLOSE0,
-            Action.LONG_OPEN1,
-            Action.LONG_CLOSE1,
             Action.SHORT_OPEN0,
-            Action.SHORT_CLOSE0,
-            Action.SHORT_OPEN1,
-            Action.SHORT_CLOSE1,
-            Action.EMPTY
+            Action.SHORT_CLOSE0
         ]
         
-        self.action_space = spaces.Discrete(len(self.valid_actions))
 
-        self.game = None
-        if self.config.training.game_mode:
-            self.game = Game((self.config.visualization.image_width, self.config.visualization.image_height), self.config.training.window_size, self.config.risk.daily_lost_ratio, self.config.risk.max_drawdown_ratio,
-                            decimal_to_float(self.config.risk.risk_reward_ratio, 2), 
-                            decimal_to_float(self.config.trading.trade_lot, 2), 
-                            decimal_to_float(self.config.trading.max_long_position, 2), 
-                            decimal_to_float(self.config.trading.max_short_position, 2),
-                            self.config.training.render_mode)
+        self.action_space = spaces.Discrete(len(self.valid_actions))
+        self.df_market = build_market_features(self.df, tz="Asia/Singapore", rollover_hour_local=5)
+
+
+        # ---- constants ----
+        self.DAY_LEN = 1440
+        self._F_MARKET = len(FEATURES_MARKET)
+        self._F_AGENT  = len(FEATURES_AGENT)
+
+        # Enforce column order and dtype
+        dfm = self.df_market.copy()
+        dfm = dfm.astype(np.float32)
+
+        # Required session columns
+        required_cols = {"day_id", "minute_index_t", "mask_t"}
+        missing = required_cols - set(dfm.columns)
+        if missing:
+            raise ValueError(f"df_market missing columns: {missing}")
+
+        # Numpy views
+        minute_idx = dfm["minute_index_t"].to_numpy(dtype=np.int32, copy=False)
+        mask_np    = dfm["mask_t"].to_numpy(dtype=np.float32, copy=False)
+        X_all      = dfm[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
+        day_ids    = dfm["day_id"].to_numpy(copy=False)
+
+        # Discover day segments (contiguous blocks per day_id in order)
+        # Assumes df_market is sorted by time.
+        unique_days, first_idx = np.unique(day_ids, return_index=True)
+        order = np.argsort(first_idx)
+        self._days = unique_days[order]
+        self._sid_to_dayi = {str(sid): i for i, sid in enumerate(self._days)}
+        self._day_ranges = []  # list[(start,end)] half-open
+        for d in self._days:
+            sel = (day_ids == d)
+            start = int(np.argmax(sel))                       # first True
+            end   = int(start + sel.sum())                    # first index of next day
+            self._day_ranges.append((start, end))
+
+        # Prebuild “full-day” tensors (zeros, then fill rows where mask==1)
+        # Shape: [num_days, 1440, F_MARKET]
+        num_days = len(self._days)
+        self._daily_X = np.zeros((num_days, self.DAY_LEN, self._F_MARKET), dtype=np.float32)
+        self._daily_mask = np.zeros((num_days, self.DAY_LEN), dtype=np.float32)
+
+        for di, (s, e) in enumerate(self._day_ranges):
+            m_idx = minute_idx[s:e]        # [0..1439]
+            msk   = mask_np[s:e]           # 0/1
+            rows  = (msk >= 0.5)
+            if rows.any():
+                self._daily_X[di, m_idx[rows], :] = X_all[s:e, :][rows]
+                self._daily_mask[di, m_idx] = msk
+
 
         self.observation_space = spaces.Dict({
-            'image': spaces.Box(low=0, high=255, shape=(self.config.visualization.image_height, self.config.visualization.image_width, self.config.visualization.image_channels), dtype=np.uint8),
-            'close_15m': spaces.Box(low=-np.inf, high=np.inf, shape=(self.config.training.window_size, ), dtype=np.float32),
-            'positions': spaces.Box(low=-np.inf, high=np.inf, shape=(12, ), dtype=np.float32),
-            'trade_history': spaces.Box(low=-np.inf, high=np.inf, shape=(20, ), dtype=np.float32),
-            'indicators': spaces.Box(low=-np.inf, high=np.inf, shape=(13,), dtype=np.float32),
-            'account': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
-            'risk': spaces.Box(low=-np.inf, high=np.inf, shape=(6,), dtype=np.float32),
+            "market_seq": spaces.Box(
+                low=-np.inf, high=np.inf,
+                shape=(self.DAY_LEN, self._F_MARKET),
+                dtype=np.float32
+            ),
+            "agent_state": spaces.Box(
+                low=-np.inf, high=np.inf,
+                shape=(self._F_AGENT,),
+                dtype=np.float32
+            ),
         })
 
+
         self.reset()
+
+    def _slice_window_np(self, end_idx: int) -> np.ndarray:
+        """
+        Returns a (window, F_MARKET) float32 view or a left-padded copy if at the head.
+        Assumes 0 <= end_idx < len(self._market_np).
+        """
+        w = self.window
+        start = end_idx - w
+        if start >= 0:
+            # Fast path: pure view, no allocs
+            return self._market_np[start:end_idx, :]
+        # Head padding (allocates once per call in the early episode only)
+        pad_rows = -start
+        out = np.zeros((w, self._F_MARKET), dtype=np.float32)
+        out[pad_rows:, :] = self._market_np[0:end_idx, :]
+        return out
+
 
     def _config(self, config_path):
         # Configuration management
@@ -185,7 +242,7 @@ class CustomTradingEnv(gym.Env):
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # Other state variables
-        self.current_step = self.config.training.window_size
+        self.current_step = 0
         self.terminated = False
         self.action_result = None
         self.df_window = None
@@ -198,37 +255,46 @@ class CustomTradingEnv(gym.Env):
         )
         self.reward_function = reward_class(self)
         
+        usable = np.where(self._daily_mask.sum(axis=1) > 0)[0]
+        if usable.size == 0:
+            raise RuntimeError("No days contain any valid minutes (mask_t).")
 
-        df_len = len(self.df)
-
-        # 1) Decide start_idx
-        if self.config.training.randomize_start and self.config.training.episode_length is not None:
-            # max possible start
-            max_start = df_len - self.data_window_size - self.config.training.episode_length
-            max_start = max(max_start, 0)  # ensure not negative
-            self.start_idx = self.np_random.integers(low=0, high=max_start+1)
+        if getattr(self.config.training, "randomize_start", True):
+            self._day_i = int(self.np_random.choice(usable))
         else:
-            # simple scenario: start at 0
-            self.start_idx = 0
+            self._day_i = int(usable[0])
 
-        # 2) Decide end_idx
-        if self.config.training.episode_length is not None:
-            self.end_idx = min(self.start_idx + self.config.training.episode_length, df_len)
-        else:
-            # use entire data
-            self.end_idx = df_len
+        self.current_minute = 0  # or: int(np.argmax(self._daily_mask[self._day_i] >= 0.5))
+        self.episode_step_count = 0
+        self.terminated = False
+        self.truncated = False
 
-        # 3) current_step starts after data_window_size to ensure we have enough hist data
-        self.current_step = self.start_idx + self.data_window_size
-        if self.current_step >= self.end_idx:
-            # if that happens, it means there's no valid range
-            self.logger.warning(
-                f"current_step={self.current_step} >= end_idx={self.end_idx}. "
-                f"Data might be too short. Forcing ended episode."
-            )
-            self.terminated = True
+        # init agent accounting
+        self.position = 0
+        self.entry_price = D0
+        self.holding_minutes = 0
+        self.upnl = D0
+        self.realized_step = D0
+        self.realized_cum  = D0
+        self.fee_step = D0
+        self.fee_cum  = D0
+        self.equity = D(self.config.trading.initial_balance)
+        self.max_equity = self.equity
+        self.drawdown = D0
+        self.sigma_entry = D0
+        self.sl_ticks = D0
+        self.tp_ticks = D0
+        self.sl_price = D0
+        self.tp_price = D0
+        self.minutes_to_timeout = 0
+        
+        self._prev_realized_pnl_cum = D0
+        self._prev_fee_cum = D0
 
-        return self._get_obs(), self._get_info()
+        # price cache at the *current* minute (if you want: derive price from df at day/minute)
+        obs = self._get_obs()
+        info = self._get_info()
+        return obs, info
 
 
 
@@ -312,6 +378,12 @@ class CustomTradingEnv(gym.Env):
         if self.current_step >= len(self.df):
             self.terminated = True
             return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
+
+        ts = self.df.index[self.current_step]
+        try:
+            self.current_minute = int(self.df_market.loc[ts, "minute_index_t"])
+        except KeyError:
+            self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
 
 
         self.current_price = D(self.df.iloc[self.current_step]['Close'])
@@ -836,155 +908,180 @@ class CustomTradingEnv(gym.Env):
         
         return ForexCode.SUCCESS
 
+
     def _get_obs(self):
         """
-        Constructs the observation as an image with K-line and technical indicators.
-
-        Returns:
-            np.ndarray: The observation image.
+        Returns the observation dict. This version focuses on the market_seq part.
+        - market_seq: (1440, F_MARKET)
+            * Past & current minutes (<= current_minute) → data as built (already includes data-valid mask_t).
+            * Future minutes (> current_minute)         → all zeros, including mask_t column.
+        - agent_state: filled elsewhere; omitted here if you are implementing in two steps.
         """
+        # --- Market sequence with temporal censoring ---
+        # Base full-day tensor for this episode day: already 0 where data-invalid (mask_t==0).
+        X_day = self._daily_X[self._day_i]        # shape: (1440, F_MARKET), dtype float32
 
-        # Slice the dataframe for the current window
-        window_start = max(0, self.current_step - self.data_window_size)
-        window_end = self.current_step
-        self.df_window = self.df.iloc[window_start:window_end]
-        
-        # 1. 当前持仓
-        positions = np.zeros((4, 3), dtype=np.float32)
-        for i, pos in enumerate(self.position_manager.long_positions[:2]):
-            if pos is None:
-                continue
-            pnl = calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
-            positions[i] = [ decimal_to_float(pnl), decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]
+        # Build a visibility mask that hides the future minutes strictly.
+        # Example: at 10:00, current_minute = 600, we allow indices [0..600].
+        end = int(min(self.current_minute, self.DAY_LEN - 1))
+        vis = np.zeros((self.DAY_LEN, 1), dtype=np.float32)
+        vis[:end + 1, 0] = 1.0
 
-        for i, pos in enumerate(self.position_manager.short_positions[:2]):
-            i += 2
-            if pos is None:
-                continue
-            pnl = calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
-            positions[i] = [decimal_to_float(pnl), -decimal_to_float(pos.size), decimal_to_float(pos.entry_price, 5)]                
+        # Apply temporal visibility (no copy necessary; multiplication produces a new array)
+        market_seq = X_day * vis  # future minutes become all-zero rows (incl. mask_t col)
+
+        # --- Agent vector to be implemented in your next step ---
+        agent_state = self._get_agent_state_vector()  # stub you’ll implement next
+
+        return {"market_seq": market_seq, "agent_state": agent_state}
 
 
-        # 2. 历史交易（优化版）
-        num_records = 5
-        trade_history = np.zeros((num_records, 4), dtype=np.float32)
-        trades = self.trade_record_manager.trade_history[-20:]
-        count = 0
+    def _get_agent_state_vector(self) -> np.ndarray:
+        """
+        Build FEATURES_AGENT strictly from existing system state.
+        All internal math stays in Decimal; convert with decimal_to_float at the edge.
+        """
+        # Net position in lots (Decimal), have_long/short flags
+        long_lots  = self.user_accounts.long_position             # Decimal
+        short_lots = self.user_accounts.short_position            # Decimal
+        net_lots   = long_lots - short_lots                       # Decimal
 
-        # 遍历最近 20 条交易记录（倒序遍历）
-        for trade in reversed(trades):
-            if trade.pnl is None:
-                continue
+        have_long = 1.0 if long_lots > D0 else 0.0
+        have_short= 1.0 if short_lots > D0 else 0.0
 
-            position_size = 0
-            if trade.operation_type == Action.LONG_CLOSE.name:
-                position_size = decimal_to_float(trade.position_size)
-            elif trade.operation_type == Action.SHORT_CLOSE.name:
-                position_size = -decimal_to_float(trade.position_size)
-            else:
-                continue
-
-            trade_history[count] = [
-                position_size,
-                decimal_to_float(trade.pnl),
-                decimal_to_float(trade.open_price, 5),
-                decimal_to_float(trade.close_price, 5)
-            ]
-            count += 1
-            if count >= num_records:
-                break
-
-        # 3. K线图
-        image = self._render(render_mode='rgb_array', df=self.df_window)
-
-        # 4. 技术指标
-        indicators = self._calculate_indicators(df=self.df_window)
-
-        metrics = self.metrics.get_metrics()
-
-        # 5. 账户信息
-        account = np.array([
-            float(self.user_accounts.balance.get_balance()),
-            float(self.user_accounts.equity()),
-            float(self.user_accounts.margin.get_balance()),
-            float(self._calculate_equity() - self.user_accounts.margin.get_balance()),
-            float(metrics["max_profit"]),
-            float(metrics["max_loss"]),
-        ], dtype=np.float32)
-
-        # 6. 风险管理
-        risk = np.array([
-            float(0 if metrics["sharpe_ratio"] is None else metrics["sharpe_ratio"]),
-            float(0 if metrics["calmar_ratio"] is None else metrics["calmar_ratio"]),
-            float(self.config.risk.daily_lost_ratio),
-            float(self.config.risk.max_drawdown_ratio),
-            decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'), 5),
-            decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'), 5),
-        ], dtype=np.float32)
-
-        df_15m = self.df_window.resample('15min').agg({
-            'Open': 'first',
-            'High': 'max',
-            'Low': 'min',
-            'Close': 'last',
-            'Volume': 'sum'
-        }).dropna()
-
-        return {
-            'image': image,
-            'close_15m': df_15m['Close'].values[-self.config.training.window_size:].astype(np.float32),
-            'positions': positions.flatten(),
-            'trade_history': trade_history.flatten(),
-            'indicators': indicators,
-            'account': account,
-            'risk': risk
-        }
-
-
-
-    def _render(self, render_mode, df):
-        if self.config.training.game_mode:
-            if df is not None:
-                self.game.step(df)
-            metrics = self.metrics.get_metrics()
-            daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
-            drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
-            return self.game.render(decimal_to_float(self.position_manager.total_long_position(), precision=2),
-                                    decimal_to_float(self.position_manager.total_short_position(), precision=2),
-                                        0 if self.user_accounts.margin.get_balance() == Decimal('0') else decimal_to_float(self.user_accounts.unrealized_pnl/self.user_accounts.margin.get_balance(), precision=4), 
-                                        daily_lost_pct,
-                                        drawdown_pct,
-                                        None if self.position_manager.calc_profit_factor() is None else decimal_to_float(self.position_manager.calc_profit_factor(), precision=2), 
-                                        render_mode=render_mode)
+        # Pick active side snapshot for entry price & age
+        snap = self._active_side_snapshot()
+        if snap["side"] is None:
+            entry_price = D0
+            holding_minutes = D0
         else:
-            if render_mode == 'rgb_array':
-                output_filepath = None
-                if self.config.debug.debug_enabled:
-                    os.makedirs('output', exist_ok=True)
-                    output_filepath = os.path.join('output', f'{self.config.trading.currency_pair}_candlestick_{self.current_step}.png')
+            entry_price = snap["vwap"]          # Decimal VWAP of active side
+            holding_minutes = snap["age_min"]   # Decimal minutes (size-weighted)
 
-                df_15m = df.resample('15min').agg({
-                    'Open': 'first',
-                    'High': 'max',
-                    'Low': 'min',
-                    'Close': 'last',
-                    'Volume': 'sum'
-                }).dropna()
-                render_df = df_15m[-self.config.training.window_size:]
+        # Unrealized & realized (cum) PnL, equity
+        upnl_dec = self.user_accounts.unrealized_pnl                      # Decimal
+        realized_cum_dec = self.user_accounts.realized_pnl                # Decimal
+        equity_dec = self._calculate_equity()                              # Decimal
 
-                # timestamp_at_window_end = df_window.index[-1] if len(df_window) > 0 else None
-                # print(f'{timestamp_at_window_end} {self.config.trading.currency_pair}_candlestick_{self.current_step}.png')
-                # Draw the candlestick chart with indicators and return as numpy array
-                plotter = BollingerBandPlotter(
-                    df=render_df,
-                    channels=self.config.visualization.image_channels,
-                    trade_record_manager=self.trade_record_manager,
-                    balance=self.user_accounts.balance.get_balance(),
-                    fig_width=self.config.visualization.image_width,
-                    fig_height=self.config.visualization.image_height,
-                )
+        # Per-step deltas (safe even if no trade this step)
+        realized_step_dec, fee_step_dec = self._step_deltas_from_cum()     # Decimal, Decimal
+        fee_cum_dec = self.broker_accounts.fees.get_balance()              # Decimal
 
-                return plotter.plotOnlyCandle(filename=output_filepath)
+        # Peak equity & drawdown from Metrics (already Decimal)
+        peak_equity_dec = self.metrics.peak_equity
+        drawdown_dec = self.metrics.metrics.get('current_drawdown', D0)
+
+        # Not implemented in your system yet → keep zeros
+        sigma_entry_dec = D0
+        sl_ticks_dec = D0
+        tp_ticks_dec = D0
+        sl_price_dec = D0
+        tp_price_dec = D0
+        minutes_to_timeout_dec = D0
+
+        # Convert to float32 at the very edge (use your helper)
+        vec = np.array([
+            decimal_to_float(net_lots),             # pos_t (signed lots)
+            float(have_long),                       # have_long_t
+            float(have_short),                      # have_short_t
+            decimal_to_float(entry_price),          # entry_price_t
+            decimal_to_float(holding_minutes),      # holding_minutes_t
+            decimal_to_float(upnl_dec),             # upnl_t
+            decimal_to_float(realized_step_dec),    # realized_pnl_step_t
+            decimal_to_float(realized_cum_dec),     # realized_pnl_cum_t
+            decimal_to_float(fee_step_dec),         # fee_step_t
+            decimal_to_float(fee_cum_dec),          # fee_cum_t
+            decimal_to_float(equity_dec),           # equity_t
+            decimal_to_float(peak_equity_dec),      # max_equity_t
+            decimal_to_float(drawdown_dec),         # drawdown_t
+            decimal_to_float(sigma_entry_dec),      # sigma_entry_t
+            decimal_to_float(sl_ticks_dec),         # sl_ticks_t
+            decimal_to_float(tp_ticks_dec),         # tp_ticks_t
+            decimal_to_float(sl_price_dec),         # sl_price_t
+            decimal_to_float(tp_price_dec),         # tp_price_t
+            decimal_to_float(minutes_to_timeout_dec)# minutes_to_timeout_t
+        ], dtype=np.float32)
+
+        return vec
+
+
+    def _sum_sizes_and_vwap(self, positions, is_long: bool):
+        """
+        Returns (total_size, vwap_entry_price, size_weighted_avg_age_minutes).
+        - total_size: Decimal (sum of lots)
+        - vwap_entry_price: Decimal (0 if no positions)
+        - age_minutes: Decimal (size-weighted mean of (current_step - open_step))
+        """
+        total_size = D0
+        vwap_num = D0     # sum(size * entry_price)
+        age_num  = D0     # sum(size * age_minutes)
+        for pos in positions:
+            if pos is None:
+                continue
+            sz = pos.size
+            total_size += sz
+            vwap_num += (sz * pos.entry_price)
+            # open_step is int; convert to Decimal only at the end
+            age_minutes = Decimal(self.current_step - pos.open_step)
+            age_num += (sz * age_minutes)
+
+        if total_size == D0:
+            return D0, D0, D0
+
+        vwap = (vwap_num / total_size)
+        age  = (age_num  / total_size)
+        return total_size, vwap, age
+
+    def _active_side_snapshot(self):
+        """
+        Decide the 'active side' to report entry/holding for:
+        - If only long: use long side
+        - If only short: use short side
+        - If both: choose the side with larger total lots; if equal, choose the side whose most recent open is later.
+        Returns: dict with keys:
+            side ('long'|'short'|None), size (Decimal), vwap (Decimal), age_min (Decimal)
+        """
+        long_size, long_vwap, long_age = self._sum_sizes_and_vwap(self.position_manager.long_positions, is_long=True)
+        short_size, short_vwap, short_age = self._sum_sizes_and_vwap(self.position_manager.short_positions, is_long=False)
+
+        if long_size > D0 and short_size == D0:
+            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
+        if short_size > D0 and long_size == D0:
+            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
+        if long_size == D0 and short_size == D0:
+            return {"side":None, "size": D0, "vwap": D0, "age_min": D0}
+
+        # both present → choose larger size; if tie, choose more recent open
+        if long_size > short_size:
+            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
+        if short_size > long_size:
+            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
+
+        # equal size → pick side with latest open_step (most recent)
+        latest_long_open = max((p.open_step for p in self.position_manager.long_positions if p is not None), default=-1)
+        latest_short_open= max((p.open_step for p in self.position_manager.short_positions if p is not None), default=-1)
+        if latest_long_open >= latest_short_open:
+            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
+        else:
+            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
+
+    def _step_deltas_from_cum(self):
+        """
+        Compute per-step deltas for realized PnL and fees from cumulatives, then update caches.
+        Returns (realized_step: Decimal, fee_step: Decimal)
+        """
+        realized_cum_now = self.user_accounts.realized_pnl                       # Decimal
+        fee_cum_now = self.broker_accounts.fees.get_balance()                    # Decimal
+
+        realized_step = realized_cum_now - self._prev_realized_pnl_cum
+        fee_step = fee_cum_now - self._prev_fee_cum
+
+        # update caches for next call
+        self._prev_realized_pnl_cum = realized_cum_now
+        self._prev_fee_cum = fee_cum_now
+
+        return realized_step, fee_step
+
 
 
     def render(self):
@@ -995,8 +1092,6 @@ class CustomTradingEnv(gym.Env):
         
         # self._text_render()
 
-        if self.config.training.render_mode == 'human':
-            self._render(render_mode='human', df=None)
 
 
     def _text_render(self):
@@ -1032,40 +1127,4 @@ class CustomTradingEnv(gym.Env):
         pass
 
 
-    def _calculate_indicators(self, df):
-        # 计算 h1, l1, h2, l2
-        def get_hl(df, up_thresh, down_thresh):
-            engineer = FeatureEngineer()
-            features = engineer.get_zigzag_features(df=df, up_thresh=up_thresh, down_thresh=down_thresh, debug=self.config.debug.debug_enabled)
-            h1 = features['Prev_High'].iloc[-1]  # 最近高
-            l1 = features['Prev_Low'].iloc[-1]   # 最近低
-            h2 = features['Prev_Prev_High'].iloc[-1]  # 前前高
-            l2 = features['Prev_Prev_Low'].iloc[-1]   # 前前低
-            return h1,l1,h2,l2
-        
-        df_5m = df.copy()
-
-        df_15m = df_5m.resample('15min').agg({
-            'Open': 'first',
-            'High': 'max',
-            'Low': 'min',
-            'Close': 'last',
-            'Volume': 'sum'
-        }).dropna()
-
-        df_1h = df_5m.resample('60min').agg({
-            'Open': 'first',
-            'High': 'max',
-            'Low': 'min',
-            'Close': 'last',
-            'Volume': 'sum'
-        }).dropna()
-
-        indicators = np.array([
-            *get_hl(df_5m[-30:], self.config.trading.up_thresh_5m, self.config.trading.down_thresh_5m),   # 5分钟
-            *get_hl(df_15m[-30:], self.config.trading.up_thresh_15m, self.config.trading.down_thresh_15m),  # 15分钟
-            *get_hl(df_1h[-30:], self.config.trading.up_thresh_1h, self.config.trading.down_thresh_1h),   # 1小时
-            self.df.iloc[self.current_step]['Close']
-        ], dtype=np.float32)
-        return indicators
 
