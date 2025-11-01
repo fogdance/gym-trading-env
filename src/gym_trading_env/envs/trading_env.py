@@ -116,21 +116,6 @@ class CustomTradingEnv(gym.Env):
 
         self.reset()
 
-    def _slice_window_np(self, end_idx: int) -> np.ndarray:
-        """
-        Returns a (window, F_MARKET) float32 view or a left-padded copy if at the head.
-        Assumes 0 <= end_idx < len(self._market_np).
-        """
-        w = self.window
-        start = end_idx - w
-        if start >= 0:
-            # Fast path: pure view, no allocs
-            return self._market_np[start:end_idx, :]
-        # Head padding (allocates once per call in the early episode only)
-        pad_rows = -start
-        out = np.zeros((w, self._F_MARKET), dtype=np.float32)
-        out[pad_rows:, :] = self._market_np[0:end_idx, :]
-        return out
 
 
     def _config(self, config_path):
@@ -264,7 +249,16 @@ class CustomTradingEnv(gym.Env):
         else:
             self._day_i = int(usable[0])
 
-        self.current_minute = 0  # or: int(np.argmax(self._daily_mask[self._day_i] >= 0.5))
+        
+        ts0 = self.df.index[self.current_step]
+        try:
+            self._start_minute = int(self.df_market.loc[ts0, "minute_index_t"])
+        except KeyError:
+            self._start_minute = 0
+
+        self.current_minute = self._start_minute
+
+
         self.episode_step_count = 0
         self.terminated = False
         self.truncated = False
@@ -379,12 +373,7 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
 
-        ts = self.df.index[self.current_step]
-        try:
-            self.current_minute = int(self.df_market.loc[ts, "minute_index_t"])
-        except KeyError:
-            self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
-
+        self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
 
         self.current_price = D(self.df.iloc[self.current_step]['Close'])
 
