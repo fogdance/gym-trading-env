@@ -309,6 +309,13 @@ class CustomTradingEnv(gym.Env):
         # Update step, now is 10:05
         self.current_step += 1
         self.episode_step_count += 1
+
+        # If we are past the last valid row, terminate BEFORE reading df
+        if self.current_step >= len(self.df):
+            self.terminated = True
+            return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
+
+
         self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
 
         # Update unrealized P&L
