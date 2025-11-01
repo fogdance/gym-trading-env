@@ -80,7 +80,7 @@ class PositionManager:
             slot (Optional[int]): Specific slot index, or None for earliest position
 
         Returns:
-            Tuple[Decimal, Decimal, Decimal]: Realized P&L, released margin, closed size
+            Tuple[Decimal, Decimal, Decimal, Decimal]: Realized P&L, released margin, closed size, entry_price
 
         Raises:
             ValueError: If no positions to close or specified slot is empty/invalid

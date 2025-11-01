@@ -439,9 +439,9 @@ class CustomTradingEnv(gym.Env):
             # Liquidate all positions
             self.logger.info("Equity below margin requirement. Liquidating all positions.")
             while self.user_accounts.long_position > Decimal('0.0'):
-                self._long_close(self.current_price - self.config.trading.spread)
+                self._long_close(self.current_price, self.config.trading.spread)
             while self.user_accounts.short_position > Decimal('0.0'):
-                self._short_close(self.current_price + self.config.trading.spread)
+                self._short_close(self.current_price, self.config.trading.spread)
             self.logger.error("Margin requirement not met. Episode terminated.")
             return True
         
