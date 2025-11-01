@@ -15,7 +15,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         Set up a dummy environment for testing.
         """
         # Create dummy data for testing
-        dates = pd.date_range('2020-01-01', periods=600, freq='D')
+        dates = pd.date_range('2020-01-01', periods=600, freq='min')
         data = {
             'Date': dates,
             'Close': [float('1.1000') + float('0.0001') * float((i)) for i in range(600)],

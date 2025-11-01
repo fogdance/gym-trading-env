@@ -25,7 +25,7 @@ def safe_sum(decimals) -> Decimal:
     from decimal import Decimal
     return sum(decimals, Decimal('0'))
 
-def decimal_to_float(value, precision=2):
+def decimal_to_float(value, precision=5):
     """
     Converts a Decimal to float with specified precision.
     

@@ -13,7 +13,7 @@ USDJPY: &USDJPY
   max_long_position: 0.02
   max_short_position: 0.02
   data_path: "USDJPY"
-  data_interval: "5m"
+  data_interval: "1m"
 
 
 trading:
