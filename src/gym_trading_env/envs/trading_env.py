@@ -72,18 +72,25 @@ class CustomTradingEnv(gym.Env):
         X_all      = dfm[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
         day_ids    = dfm["day_id"].to_numpy(copy=False)
 
-        # Discover day segments (contiguous blocks per day_id in order)
-        # Assumes df_market is sorted by time.
-        unique_days, first_idx = np.unique(day_ids, return_index=True)
+        # Normalize all day ids once
+        day_ids_norm = np.array([self._day_key(x) for x in day_ids], dtype=object)
+
+        # Compute unique days in order of first appearance
+        unique_days, first_idx = np.unique(day_ids_norm, return_index=True)
         order = np.argsort(first_idx)
         self._days = unique_days[order]
-        self._sid_to_dayi = {str(sid): i for i, sid in enumerate(self._days)}
-        self._day_ranges = []  # list[(start,end)] half-open
-        for d in self._days:
-            sel = (day_ids == d)
-            start = int(np.argmax(sel))                       # first True
-            end   = int(start + sel.sum())                    # first index of next day
+
+        # Map day_key -> day_index
+        self._sid_to_dayi = {dk: i for i, dk in enumerate(self._days)}
+
+        # Day ranges (half-open)
+        self._day_ranges = []
+        for dk in self._days:
+            sel = (day_ids_norm == dk)
+            start = int(np.argmax(sel))           # first True
+            end   = int(start + sel.sum())        # first index of next day
             self._day_ranges.append((start, end))
+
 
         # Prebuild “full-day” tensors (zeros, then fill rows where mask==1)
         # Shape: [num_days, 1440, F_MARKET]
@@ -208,70 +215,108 @@ class CustomTradingEnv(gym.Env):
     def reset(self, seed=None, options=None):
         """
         Resets the environment to an initial state and returns an initial observation.
-
-        Args:
-            seed (int, optional): Seed for the environment's random number generator.
-            options (dict, optional): Additional options for resetting the environment.
-
-        Returns:
-            Tuple: (observation, info)
+        Picks a random valid start row if training.randomize_start is True.
+        At reset, the visible market window shows all minutes from the session open
+        (minute_index_t==0, e.g., 05:00) up to the chosen start minute (inclusive).
         """
         self.logger.info("REST env")
-
         super().reset(seed=seed)
-        self.position_manager = PositionManager()
-        self.user_accounts = UserAccounts(initial_balance=self.config.trading.initial_balance, position_manager=self.position_manager)
 
-        self.broker_accounts = BrokerAccounts()  # Initialize broker accounts with balance and fees
+        # --- Fresh state containers ---
+        self.position_manager = PositionManager()
+        self.user_accounts = UserAccounts(
+            initial_balance=self.config.trading.initial_balance,
+            position_manager=self.position_manager,
+        )
+        self.broker_accounts = BrokerAccounts()
         self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
-        # Other state variables
-        self.current_step = 0
+        # --- Housekeeping ---
         self.terminated = False
+        self.truncated = False
         self.action_result = None
         self.df_window = None
         self.last_close_position = None
         self.action = None
 
         reward_class = reward_classes.get(
-            self.config.training.reward_function,
-            TotalPnlReward
+            self.config.training.reward_function, TotalPnlReward
         )
         self.reward_function = reward_class(self)
-        
-        usable = np.where(self._daily_mask.sum(axis=1) > 0)[0]
-        if usable.size == 0:
-            raise RuntimeError("No days contain any valid minutes (mask_t).")
 
+        # -------------------------------
+        # Choose a valid start row (mask_t == 1)
+        # -------------------------------
+        mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
+        valid_rows = np.flatnonzero(mask_np >= 0.5)
+        if valid_rows.size == 0:
+            raise RuntimeError("No valid rows with mask_t==1 found in df_market.")
+
+        # Constrain by episode_length, if specified, so we have enough room to run.
+        df_len = len(self.df)
+        episode_len = self.config.training.episode_length
+        if episode_len is not None:
+            max_start = df_len - int(episode_len) - 1
+            restricted = valid_rows[valid_rows <= max_start]
+            if restricted.size > 0:
+                valid_rows = restricted
+            else:
+                self.logger.warning(
+                    "No valid start rows satisfy episode_length window; falling back to earliest valid row."
+                )
+
+        # Allow tests to patch a deterministic sampler if present
         if getattr(self.config.training, "randomize_start", True):
-            self._day_i = int(self.np_random.choice(usable))
+            if hasattr(self, "_sample_start_index"):
+                start_row = int(self._sample_start_index(valid_rows))
+            else:
+                start_row = int(self.np_random.choice(valid_rows))
         else:
-            self._day_i = int(usable[0])
+            start_row = int(valid_rows[0])
 
-        
+        # --- Align all counters/indexes to this chosen row ---
+        self.current_step = start_row
         ts0 = self.df.index[self.current_step]
+
+        # Resolve the episode's day index using normalized day_id
+        try:
+            day_id_raw = self.df_market.loc[ts0, "day_id"]
+            self._day_i = int(self._sid_to_dayi[self._day_key(day_id_raw)])
+        except Exception:
+            # Fallback: find the day range that contains current_step
+            self._day_i = 0
+            for i, (s, e) in enumerate(self._day_ranges):
+                if s <= self.current_step < e:
+                    self._day_i = i
+                    break
+
+        # Set the current visible minute using minute_index_t (not +1 arithmetic)
         try:
             self._start_minute = int(self.df_market.loc[ts0, "minute_index_t"])
         except KeyError:
             self._start_minute = 0
+        self.current_minute = self._start_minute  # <-- drives full-history visibility in _get_obs()
 
-        self.current_minute = self._start_minute
+        # Bound the episode if episode_length is provided
+        self.start_idx = self.current_step
+        if episode_len is not None:
+            self.end_idx = min(df_len, self.start_idx + int(episode_len))
+        else:
+            self.end_idx = df_len
 
-
+        # Per-episode counters
         self.episode_step_count = 0
-        self.terminated = False
-        self.truncated = False
 
-        # init agent accounting
+        # --- Accounting zeros ---
         self.position = 0
         self.entry_price = D0
         self.holding_minutes = 0
         self.upnl = D0
         self.realized_step = D0
-        self.realized_cum  = D0
+        self.realized_cum = D0
         self.fee_step = D0
-        self.fee_cum  = D0
+        self.fee_cum = D0
         self.equity = D(self.config.trading.initial_balance)
         self.max_equity = self.equity
         self.drawdown = D0
@@ -281,15 +326,30 @@ class CustomTradingEnv(gym.Env):
         self.sl_price = D0
         self.tp_price = D0
         self.minutes_to_timeout = 0
-        
+
+        # Cumulative caches (used to compute per-step deltas)
         self._prev_realized_pnl_cum = D0
         self._prev_fee_cum = D0
 
-        # price cache at the *current* minute (if you want: derive price from df at day/minute)
+        # First observation (shows 05:00..current_minute)
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
 
+
+
+    def _day_key(self, val):
+        """Normalize day_id to a single canonical string form.
+        Handles numpy scalars and float vs int (e.g. 0, 0.0) uniformly."""
+        import numpy as _np
+        if isinstance(val, _np.generic):
+            val = val.item()
+        if isinstance(val, (int, _np.integer)):
+            return str(int(val))
+        if isinstance(val, (float, _np.floating)):
+            # ':g' turns 0.0 -> '0', 20200101.0 -> '20200101'
+            return f"{float(val):g}"
+        return str(val)
 
 
     def step(self, action):
