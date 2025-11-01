@@ -8,6 +8,7 @@ from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.trade_record import TradeRecord
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 class MockPositionManager:
     def total_long_position(self):
@@ -184,7 +185,7 @@ class TestMetrics(unittest.TestCase):
         metrics = self.metrics.get_metrics()
         total_pnl = Decimal('125')
         time_span_days = 2
-        annualized_return = (total_pnl / self.initial_balance) / Decimal(str(time_span_days / 365.0))
+        annualized_return = (total_pnl / self.initial_balance) / D(time_span_days / 365.0)
         expected_calmar = float(annualized_return / Decimal('200'))
         expected.update({
             'current_day_lost': Decimal('200'),
@@ -495,7 +496,7 @@ class TestMetrics(unittest.TestCase):
         trades = []
         for i in range(100):
             timestamp = datetime(2023, 1, 1) + timedelta(days=i)
-            pnl = Decimal(str(i % 2 * 100 - 50))  # 交替盈利 50 和亏损 50
+            pnl = D(i % 2 * 100 - 50)  # 交替盈利 50 和亏损 50
             trades.append(
                 TradeRecord(
                     timestamp=timestamp,
@@ -521,7 +522,7 @@ class TestMetrics(unittest.TestCase):
         expected_sharpe = (avg_return - 0.012 / 365) / std_return
         total_pnl = sum(trade.pnl for trade in trades)
         time_span_days = 99
-        annualized_return = (total_pnl / self.initial_balance) / Decimal(str(time_span_days / 365.0))
+        annualized_return = (total_pnl / self.initial_balance) / D(time_span_days / 365.0)
         expected = {
             'current_day_lost': Decimal('0.0'),
             'current_day_lost_pct': Decimal('0.0'),

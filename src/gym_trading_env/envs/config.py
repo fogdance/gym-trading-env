@@ -4,12 +4,13 @@ from dataclasses import dataclass, field
 import yaml
 from typing import Optional
 from decimal import Decimal
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 # Helper to convert float/int to Decimal
 def _to_decimal(value):
     """Convert a numeric value to Decimal for precise financial calculations."""
     try:
-        return Decimal(str(value)) if value is not None else None
+        return D(value) if value is not None else None
     except Exception as e:
         print(f"[DEBUG] Cannot convert value={value} (type={type(value)}) to Decimal")
         raise e

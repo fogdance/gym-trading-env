@@ -12,6 +12,7 @@ from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.rendering.plotting import BollingerBandPlotter
 from gym_trading_env.envs.action import Action
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 def main():
     # Load sample data
@@ -41,7 +42,7 @@ def main():
                 timestamp=row['Date'],
                 operation_type=Action.SHORT_OPEN.name,  # Use Action.LONG_OPEN
                 position_size=Decimal('0.1'),  # Hypothetical position size
-                open_price=Decimal(str(row['Close'])),  # Use Close price
+                open_price=D(row['Close']),  # Use Close price
                 close_price=Decimal(0),
                 required_margin=Decimal('0.0'),  # Hypothetical required margin
                 fee=Decimal('0.0'),  # Hypothetical fee
@@ -60,8 +61,8 @@ def main():
                 timestamp=row['Date'],
                 operation_type=Action.SHORT_CLOSE.name,  # Use Action.LONG_CLOSE
                 position_size=Decimal('0.1'),  # Hypothetical position size
-                open_price=Decimal(str(row['Close'])),  # Use Close price
-                close_price=Decimal(str(row['Close'])),  # Use Close price
+                open_price=D(row['Close']),  # Use Close price
+                close_price=D(row['Close']),  # Use Close price
                 required_margin=Decimal('0.0'),  # Hypothetical required margin
                 fee=Decimal('0.0'),  # Hypothetical fee
                 balance=Decimal('1000.0'),  # Hypothetical balance
@@ -78,7 +79,7 @@ def main():
         timestamp=df.iloc[-7]['Date'], 
         operation_type=Action.LONG_OPEN.name,  
         position_size=Decimal('0.1'),  # Hypothetical position size
-        open_price=Decimal(str(df.iloc[-7]['Close'])),  # Use Close price
+        open_price=D(df.iloc[-7]['Close']),  # Use Close price
         close_price=Decimal(0),
         required_margin=Decimal('0.0'),  # Hypothetical required margin
         fee=Decimal('0.0'),  # Hypothetical fee

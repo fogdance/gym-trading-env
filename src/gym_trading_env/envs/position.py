@@ -1,6 +1,7 @@
 # src/gym_trading_env/envs/position.py
 
 from decimal import Decimal
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 class Position:
     def __init__(self, size: Decimal, entry_price: Decimal, initial_margin: Decimal, open_step: int = 0):
@@ -13,11 +14,11 @@ class Position:
             initial_margin (Decimal): The margin allocated for this position.
         """
         if not isinstance(size, Decimal):
-            size = Decimal(str(size))
+            size = D(size)
         if not isinstance(entry_price, Decimal):
-            entry_price = Decimal(str(entry_price))
+            entry_price = D(entry_price)
         if not isinstance(initial_margin, Decimal):
-            initial_margin = Decimal(str(initial_margin))
+            initial_margin = D(initial_margin)
         
         self.size = size
         self.entry_price = entry_price

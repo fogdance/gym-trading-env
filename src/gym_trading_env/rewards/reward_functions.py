@@ -1,12 +1,13 @@
 # src/gym_trading_env/rewards/reward_functions.py
 
 from decimal import Decimal
-from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
+from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decimal
 from math import log1p, copysign
 from collections import deque
 from gym_trading_env.envs.action import ForexCode
 import numpy as np
 import talib
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
@@ -50,7 +51,7 @@ class StepReward:
     """每步奖励"""
     def __init__(self, env, profit_coeff=2, penalty=0.01, min_reward=-0.5, max_reward=0.75):
         self.env = env
-        self.penalty = Decimal(str(penalty))
+        self.penalty = D(penalty)
         self.previous_equity = env.config.trading.initial_balance
         self.initial_balance = env.config.trading.initial_balance
         self.empty_position_count = 0
@@ -62,7 +63,7 @@ class StepReward:
         self.min_reward = min_reward
         self.max_reward = max_reward
         
-        self.profit_coeff = Decimal(str(profit_coeff))  # 每美元收益系数
+        self.profit_coeff = D(profit_coeff)  # 每美元收益系数
         self.short_atr_period = 25  # 短期 ATR 周期
         self.long_atr_period = 100  # 长期 ATR 周期
 
@@ -168,11 +169,11 @@ class TrendReward:
     """趋势奖励类，支持多时间框架趋势跟踪和多交易对标准化"""
     def __init__(self, env, open_coeff=0.2, profit_coeff=0.2, trend_coeff=0.2, breakout_coeff=0.5, close_coeff=0.5):
         self.env = env
-        self.open_coeff = Decimal(str(open_coeff))
-        self.profit_coeff = Decimal(str(profit_coeff))
-        self.trend_coeff = Decimal(str(trend_coeff))
-        self.breakout_coeff = Decimal(str(breakout_coeff))
-        self.close_coeff = Decimal(str(close_coeff))
+        self.open_coeff = D(open_coeff)
+        self.profit_coeff = D(profit_coeff)
+        self.trend_coeff = D(trend_coeff)
+        self.breakout_coeff = D(breakout_coeff)
+        self.close_coeff = D(close_coeff)
         self.w1 = Decimal('0.7')  # 1h 趋势权重
         self.w2 = Decimal('0.3')  # 15m 趋势权重
         self.max_position = Decimal('0.1')  # 最大仓位标准化
@@ -185,7 +186,7 @@ class TrendReward:
         reward = Decimal('0.0')
         indicators = obs['indicators']
         try:
-            current_price = Decimal(str(indicators[-1]))  # 当前价格 (Close)
+            current_price = D(indicators[-1])  # 当前价格 (Close)
             long_pos = self.env.position_manager.total_long_position()
             short_pos = self.env.position_manager.total_short_position()
             net_position = long_pos - short_pos
@@ -201,7 +202,7 @@ class TrendReward:
             high_short = np.array(df_short['High'], dtype=float)
             low_short = np.array(df_short['Low'], dtype=float)
             close_short = np.array(df_short['Close'], dtype=float)
-            short_atr = Decimal(str(talib.ATR(high_short, low_short, close_short, timeperiod=self.short_atr_period)[-1]))
+            short_atr = D(talib.ATR(high_short, low_short, close_short, timeperiod=self.short_atr_period)[-1])
             atr_threshold = short_atr * Decimal('2.0')  # 2 个 ATR
 
             # 趋势一致性

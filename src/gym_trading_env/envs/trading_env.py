@@ -17,7 +17,7 @@ from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.rewards.reward_functions import TotalPnlReward, reward_classes
-from gym_trading_env.utils.conversion import decimal_to_float, float_to_decimal
+from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decimal
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.rendering.plotting import BollingerBandPlotter  # Import plotting utility
 from gym_trading_env.rendering.game.game import Game  # Import plotting utility
@@ -26,10 +26,8 @@ from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
-# Set global decimal precision
-getcontext().prec = 28
-getcontext().rounding = ROUND_HALF_UP
 
 
 class CustomTradingEnv(gym.Env):
@@ -254,7 +252,7 @@ class CustomTradingEnv(gym.Env):
         # Get action price
         action_price = None
         try:
-            action_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
+            action_price = D(self.df.iloc[self.current_step]['Close'])
         except IndexError:
             self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df)}.")
             self.terminated = True
@@ -316,7 +314,7 @@ class CustomTradingEnv(gym.Env):
             return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
 
 
-        self.current_price = Decimal(str(self.df.iloc[self.current_step]['Close']))
+        self.current_price = D(self.df.iloc[self.current_step]['Close'])
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
