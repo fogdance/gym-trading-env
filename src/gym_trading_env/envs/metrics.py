@@ -110,15 +110,21 @@ class Metrics:
         return self.metrics
 
     
-    def on_step(self, action, in_market: bool):
+    def on_step(self, action, action_success: bool, in_market: bool):
         """Lightweight per-step counters for behavior analysis."""
         # Lazily create once.
         if not hasattr(self, "_counters"):
             self._counters = {
                 "steps_total": 0,
                 "hold_steps": 0,
-                "open_steps": 0,
-                "close_steps": 0,
+                "long_open_steps": 0,
+                "long_close_steps": 0,
+                "short_open_steps": 0,
+                "short_close_steps": 0,
+                "long_open_steps_success": 0,
+                "long_close_steps_success": 0,
+                "short_open_steps_success": 0,
+                "short_close_steps_success": 0,
                 "empty_steps": 0,
                 "in_market_steps": 0,
             }
@@ -135,10 +141,22 @@ class Metrics:
 
         if "HOLD" in aname:
             c["hold_steps"] += 1
-        elif "OPEN" in aname:
-            c["open_steps"] += 1
-        elif "CLOSE" in aname:
-            c["close_steps"] += 1
+        elif "LONG_OPEN" in aname:
+            c["long_open_steps"] += 1
+            if action_success:
+                c["long_open_steps_success"] += 1
+        elif "LONG_CLOSE" in aname:
+            c["long_close_steps"] += 1
+            if action_success:
+                c["long_close_steps_success"] += 1
+        elif "SHORT_OPEN" in aname:
+            c["short_open_steps"] += 1
+            if action_success:
+                c["short_open_steps_success"] += 1
+        elif "SHORT_CLOSE" in aname:
+            c["short_close_steps"] += 1          
+            if action_success:
+                c["short_close_steps_success"] += 1  
         elif "EMPTY" in aname:
             c["empty_steps"] += 1
 
@@ -149,16 +167,30 @@ class Metrics:
         if not c or c["steps_total"] == 0:
             return {
                 "action_hold_ratio": None,
-                "action_open_ratio": None,
-                "action_close_ratio": None,
+                "action_long_open_ratio": None,
+                "action_long_close_ratio": None,
+                "action_short_open_ratio": None,
+                "action_short_close_ratio": None,
+
+                "action_long_open_success_ratio": None,
+                "action_long_close_success_ratio": None,
+                "action_short_open_success_ratio": None,
+                "action_short_close_success_ratio": None,
                 "exposure_ratio": None,
                 "trades_opened": 0,
                 "trades_closed": 0,
             }
         steps = float(c["steps_total"])
         out["action_hold_ratio"]  = float(c["hold_steps"])  / steps
-        out["action_open_ratio"]  = float(c["open_steps"])  / steps
-        out["action_close_ratio"] = float(c["close_steps"]) / steps
+        out["action_long_open_ratio"]  = float(c["long_open_steps"])  / steps
+        out["action_long_close_ratio"] = float(c["long_close_steps"]) / steps
+        out["action_short_open_ratio"]  = float(c["short_open_steps"])  / steps
+        out["action_short_close_ratio"] = float(c["short_close_steps"]) / steps
+
+        out["action_long_open_success_ratio"]  = float(c["long_open_steps_success"])  / float(c["long_open_steps"])
+        out["action_long_close_success_ratio"] = float(c["long_close_steps_success"]) / float(c["long_close_steps"])
+        out["action_short_open_success_ratio"]  = float(c["short_open_steps_success"])  / float(c["long_close_steps"])
+        out["action_short_close_success_ratio"] = float(c["short_close_steps_success"]) / float(c["long_close_steps"])
         out["exposure_ratio"]     = float(c["in_market_steps"]) / steps
 
         # Count open/close events from trade history (robust to multiple slots).
