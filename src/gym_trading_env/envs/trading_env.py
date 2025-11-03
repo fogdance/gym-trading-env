@@ -24,7 +24,7 @@ from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
-from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
+from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT, build_market_features
 
 
@@ -139,7 +139,7 @@ class CustomTradingEnv(gym.Env):
         # Training-specific
         reward_class = reward_classes.get(
             self.config.training.reward_function,
-            TotalPnlReward  # 默认使用 TotalPnlReward
+            TotalPnlReward
         )
         self.reward_function = reward_class(self)
         self.data_window_size = 400
@@ -420,11 +420,12 @@ class CustomTradingEnv(gym.Env):
         elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
-        #
-        # wait until 10:05
-        #
+        try:
+            in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
+        except Exception:
+            in_market = False
+        self.metrics.on_step(self.action, in_market=in_market)
 
-        # Update step, now is 10:05
         self.current_step += 1
         self.episode_step_count += 1
 
@@ -520,6 +521,21 @@ class CustomTradingEnv(gym.Env):
             'long_position': self.user_accounts.long_position,
             'short_position': self.user_accounts.short_position,
         }
+
+
+        # Add the whole metrics bag under 'log/env/*'
+        env_metrics = self.metrics.get_metrics()
+        for k, v in env_metrics.items():
+            vv = np.nan if v is None else number_to_float(v)
+            info[f'log/env/{k}'] = np.asarray(vv, dtype=np.float32).reshape(())
+
+        # Handy real-time signals
+        info['log/env/equity'] = number_to_float(info['equity'])
+        info['log/env/used_margin'] = number_to_float(info['used_margin'])
+        info['log/env/free_margin'] = number_to_float(info['free_margin'])
+        info['log/env/long_position'] = number_to_float(info['long_position'])
+        info['log/env/short_position'] = number_to_float(info['short_position'])
+
         return info
 
     def _calculate_equity(self) -> Decimal:

@@ -40,7 +40,15 @@ def decimal_to_float(value, precision=5):
     if isinstance(value, Decimal):
         return float(value.quantize(Decimal(quantize_str), rounding=ROUND_HALF_UP))
     else:
-        raise TypeError("Value must be a Decimal.")
+        raise TypeError(f"Value must be a Decimal. Got: {type(value)}")    
+    
+def number_to_float(x):
+    if isinstance(x, Decimal):
+        return float(x)
+    try:
+        return float(x)
+    except Exception:
+        return 0.0
     
 def float_to_decimal(value):
     return D(value)
