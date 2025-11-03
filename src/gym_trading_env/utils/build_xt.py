@@ -11,6 +11,8 @@ FEATURES_MARKET: List[str] = [
     "V_t",                    # Volume at time t
     "I_t",                    # Open Interest at time t
     "cumVWAP_t",              # Cumulative VWAP up to time t
+    "dC_minus_cumVWAP_t",     # C_t - cumVWAP_t
+    "cmp_C_vs_cumVWAP_t",     # sign(C_t - cumVWAP_t) -> {-1,0,1}
     "ref_close_t",            # Reference closing price (e.g., previous day close)
     "session_high_t",         # Session high price up to time t
     "session_low_t",          # Session low price up to time t
@@ -192,6 +194,10 @@ def _build_market_future(df_1m: pd.DataFrame,
     c_valid = X["C_t"].where(mask_t == 1, np.nan)
     cum_mean_c = c_valid.groupby(session_id).expanding().mean().reset_index(level=0, drop=True)
     X["cumVWAP_t"] = pd.Series(cum_vwap).fillna(cum_mean_c).fillna(0.0).astype(float)
+
+    # cumVWAP_t 已计算完毕
+    X["dC_minus_cumVWAP_t"] = (X["C_t"] - X["cumVWAP_t"]).astype(float)
+    X["cmp_C_vs_cumVWAP_t"] = np.sign(X["dC_minus_cumVWAP_t"]).astype(int)
 
     # 5) session 高/低（只用有效分钟更新）
     H_valid = X["High"].where(mask_t == 1, np.nan)
