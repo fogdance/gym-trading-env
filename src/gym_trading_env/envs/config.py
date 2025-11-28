@@ -63,6 +63,9 @@ class TradingParams:
     up_thresh_1h: float = 0.0001
     """"ZigZag"""
 
+
+    is_future: bool = True
+
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
         assert self.initial_balance > 0, "Initial balance must be positive"
@@ -117,12 +120,16 @@ class TrainingParams:
 
     game_mode: bool = False
 
+    start_clock: str = "random_9_or_21"
+
     def validate(self):
         """Validate training parameters to ensure they are feasible."""
         assert self.window_size > 0, "Window size must be positive"
         assert self.max_episode_steps > 0, "Max episode steps must be positive"
         if self.episode_length is not None:
             assert self.episode_length > 0, "Episode length must be positive"
+        allowed = {"random_9_or_21", "09:00", "21:00", "any"}
+        assert self.start_clock in allowed, f"start_clock must be one of {allowed}"
 
 @dataclass
 class VisualizationParams:

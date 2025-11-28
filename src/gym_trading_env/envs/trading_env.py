@@ -9,6 +9,7 @@ import pandas as pd
 from collections import deque
 from typing import Tuple
 import os
+from pathlib import Path
 
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
 from gym_trading_env.envs.position import Position
@@ -26,6 +27,7 @@ from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT, build_market_features
+from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 
 
 class CustomTradingEnv(gym.Env):
@@ -48,7 +50,7 @@ class CustomTradingEnv(gym.Env):
         
 
         self.action_space = spaces.Discrete(len(self.valid_actions))
-        self.df_market = build_market_features(self.df, tz="Asia/Singapore", rollover_hour_local=5)
+        self.df_market = build_market_features(self.df, tz="Asia/Singapore", rollover_hour_local=5, is_future=self.config.trading.is_future)
 
 
         # ---- constants ----
@@ -154,7 +156,7 @@ class CustomTradingEnv(gym.Env):
         log_level = getattr(logging, self.config.debug.log_level.upper())
         self.logger.setLevel(log_level)
 
-
+        self.logger.info(f"config_path (absolute): {Path(config_path).resolve()}")
 
     def _data(self, df, config):
         # Data
@@ -246,34 +248,36 @@ class CustomTradingEnv(gym.Env):
         self.reward_function = reward_class(self)
 
         # -------------------------------
-        # Choose a valid start row (mask_t == 1)
+        # Choose a valid start row by clock anchor
         # -------------------------------
-        mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
-        valid_rows = np.flatnonzero(mask_np >= 0.5)
-        if valid_rows.size == 0:
-            raise RuntimeError("No valid rows with mask_t==1 found in df_market.")
+        start_policy = getattr(self.config.training, "start_clock", "random_9_or_21")
 
-        # Constrain by episode_length, if specified, so we have enough room to run.
+        # 先根据时钟锚点生成候选行
+        candidate_rows = self._candidate_start_rows_by_clock(start_policy)
+
+        # 约束 episode_length（需要给定窗口足够）
         df_len = len(self.df)
         episode_len = self.config.training.episode_length
         if episode_len is not None:
             max_start = df_len - int(episode_len) - 1
-            restricted = valid_rows[valid_rows <= max_start]
-            if restricted.size > 0:
-                valid_rows = restricted
-            else:
-                self.logger.warning(
-                    "No valid start rows satisfy episode_length window; falling back to earliest valid row."
-                )
+            candidate_rows = candidate_rows[candidate_rows <= max_start]
 
-        # Allow tests to patch a deterministic sampler if present
+        # 若锚点集合为空，退回到原有的“任意有效行”
+        if candidate_rows.size == 0:
+            mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
+            candidate_rows = np.flatnonzero(mask_np >= 0.5)
+            if episode_len is not None:
+                max_start = df_len - int(episode_len) - 1
+                candidate_rows = candidate_rows[candidate_rows <= max_start]
+            if candidate_rows.size == 0:
+                raise RuntimeError("No valid start rows found (after applying start_clock and episode_length).")
+
+        # 随机挑选：如策略为 random_9_or_21，并且既有 09:00 也有 21:00，会混合在 candidate_rows 再随机
         if getattr(self.config.training, "randomize_start", True):
-            if hasattr(self, "_sample_start_index"):
-                start_row = int(self._sample_start_index(valid_rows))
-            else:
-                start_row = int(self.np_random.choice(valid_rows))
+            start_row = int(self.np_random.choice(candidate_rows))
         else:
-            start_row = int(valid_rows[0])
+            start_row = int(candidate_rows[0])
+
 
         # --- Align all counters/indexes to this chosen row ---
         self.current_step = start_row
@@ -304,6 +308,12 @@ class CustomTradingEnv(gym.Env):
             self.end_idx = min(df_len, self.start_idx + int(episode_len))
         else:
             self.end_idx = df_len
+
+        if self.config.trading.is_future:
+            end_idx_15 = self._compute_end_idx_at_15(start_row, tz="Asia/Shanghai")
+            self.end_idx = min(self.end_idx, end_idx_15)
+
+        self.logger.info(f"{self.df.index[self.current_step]} -> {self.df.index[self.end_idx]}")
 
         # Per-episode counters
         self.episode_step_count = 0
@@ -568,6 +578,86 @@ class CustomTradingEnv(gym.Env):
 
         # Update user's unrealized P&L
         self.user_accounts.unrealized_pnl = unrealized_pnl_long + unrealized_pnl_short
+
+    # --- NEW: 将索引本地化 ---
+    def _localize_index(self, idx, tz: str):
+        if getattr(idx, "tz", None) is None:
+            return idx.tz_localize(tz)
+        return idx.tz_convert(tz)
+
+    # --- NEW: 根据时钟锚点生成候选起点行 ---
+    def _candidate_start_rows_by_clock(self, start_clock: str) -> np.ndarray:
+        """
+        返回满足 start_clock 条件（'09:00'/'21:00'/'random_9_or_21'）且 mask_t==1 的行号数组。
+        若 start_clock == 'any' 则返回所有 mask_t==1 的行。
+        """
+        mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
+        # 先挑 mask==1
+        valid_mask_rows = np.flatnonzero(mask_np >= 0.5)
+
+        if start_clock == "any":
+            return valid_mask_rows
+
+        # 将 df.index 本地化到期货默认时区（或按需替换为数据所在时区）
+        tz = DEFAULT_TZ  # "Asia/Shanghai"
+        idx_local = self._localize_index(self.df.index, tz)
+        hours = idx_local.hour
+        minutes = idx_local.minute
+
+        def rows_at(hh, mm):
+            sel = np.flatnonzero((hours == hh) & (minutes == mm))
+            # 同时要求 mask==1
+            return np.intersect1d(sel, valid_mask_rows, assume_unique=False)
+
+        if start_clock == "09:00":
+            return rows_at(9, 0)
+
+        if start_clock == "21:00":
+            return rows_at(21, 0)
+
+        if start_clock == "random_9_or_21":
+            r9 = rows_at(9, 0)
+            r21 = rows_at(21, 0)
+            # 两个集合并，随机时刻在 reset() 里用 choice 再随机
+            return np.concatenate([r9, r21]) if (r9.size + r21.size) > 0 else np.array([], dtype=int)
+
+        # 兜底
+        return valid_mask_rows
+
+    # --- NEW: 计算“当日 15:00（或夜盘起 -> 次日 15:00）”对应的 self.end_idx ---
+    def _compute_end_idx_at_15(self, start_row: int, tz: str = "Asia/Shanghai") -> int:
+        """
+        给定 start_row，返回使得 episode 在“该交易日 15:00”收盘结束的 end_idx（半开区间上界）。
+        - 若起点为 09:00（白盘）：同日 15:00
+        - 若起点为 21:00（夜盘）：次日 15:00
+        返回值作为 self.end_idx（half-open）：episode 在到达 end_idx 时终止。
+        """
+        idx_local = self._localize_index(self.df.index, tz)
+        df_len = len(self.df)
+
+        # 起点对应的本地时刻
+        t0 = idx_local[start_row]
+        base_day = t0.normalize()
+
+        # 规则：21:00 夜盘 -> 次日 15:00；否则同日 15:00
+        if t0.hour >= 18:  # 我们的起点策略只会给 21:00 或 09:00；>=18 可以稳妥覆盖夜盘
+            end_day = base_day + pd.Timedelta(days=1)
+        else:
+            end_day = base_day
+
+        end_ts = pd.Timestamp(end_day.date(), tz=tz) + pd.Timedelta(hours=15)  # 15:00
+
+        # 找到第一个 >= 15:00 的行位置；作为 half-open 上界需要 +1 才能“包含 15:00 这分钟”
+        arr_ns = idx_local.asi8  # int64 纳秒
+        target_ns = end_ts.value
+        pos = int(np.searchsorted(arr_ns, target_ns, side="left"))
+
+        # half-open 上界：包含 15:00 这一分钟（若存在），所以设为 pos+1；并裁剪到 df 边界
+        end_idx_15 = min(df_len, pos - 1)
+
+        # 确保不会小于起点（极端数据稀疏情况下）
+        end_idx_15 = max(end_idx_15, start_row + 1)
+        return end_idx_15
 
 
 

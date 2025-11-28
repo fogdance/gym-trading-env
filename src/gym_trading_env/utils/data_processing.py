@@ -31,8 +31,8 @@ def load_data(symbol: str, interval: str, proxy: str = None) -> pd.DataFrame:
         logger.addHandler(handler)
     logger.setLevel(logging.INFO)
 
+    logger.info(f"Loading existing data from {filepath}, exist {os.path.exists(filepath)}")
     if os.path.exists(filepath):
-        logger.info(f"Loading existing data from {filepath}.")
         df = pd.read_csv(filepath, index_col=0, parse_dates=True)
     else:
         downloader = ForexDataDownloader(proxy=proxy)
