@@ -124,7 +124,7 @@ class CustomTradingEnv(gym.Env):
 
 
         self.reset()
-        
+
         if self.config.debug.debug_enabled:
             i = self.current_step
             print("df        :", self.df.index[i])
@@ -393,7 +393,8 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        self.logger.info(f"{self.df_market.index[self.current_step]}")
+        if self.config.debug.debug_enabled:
+            self.logger.info(f"{self.df_market.index[self.current_step]}")
 
         # Get action price
         action_price = None
@@ -1091,7 +1092,42 @@ class CustomTradingEnv(gym.Env):
         # --- Agent vector to be implemented in your next step ---
         agent_state = self._get_agent_state_vector()  # stub you’ll implement next
 
+        if self.config.debug.debug_enabled:
+            ts = self.df_market.index[self.current_step]
+            mi = int(self.df_market.loc[ts, "minute_index_t"])
+            row_df = self.df_market.loc[ts, FEATURES_MARKET].to_numpy(np.float32)
+            row_X  = self._daily_X[self._day_i, mi, :]
+            if not np.allclose(row_df, row_X, atol=1e-6, rtol=0):
+                raise RuntimeError(f"daily_X build mismatch at {ts} mi={mi}")
+    
+            dfp = self._obs_market_df(market_seq)
+            save_intraday_html(
+                df_market=dfp,
+                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[self.current_step]}",
+                out_path=f"/tmp/obs_{self.df_market.index[self.current_step]}.html",
+                start_pos=0,
+                end_pos=self.current_minute + 1,
+            )
+            
         return {"market_seq": market_seq, "agent_state": agent_state}
+
+    def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
+        # 找到该 day 的 minute=0 的真实开盘 timestamp，用它当 1440 分钟时间轴起点
+        s, e = self._day_ranges[self._day_i]
+        sub = self.df_market.iloc[s:e]
+
+        try:
+            t0 = sub.index[sub["minute_index_t"].astype(int).to_numpy() == 0][0]
+        except Exception:
+            t0 = sub.index[0]
+
+        idx = pd.date_range(t0, periods=self.DAY_LEN, freq="min", tz=t0.tz)
+
+        dfp = pd.DataFrame(market_seq, index=idx, columns=FEATURES_MARKET)
+        # 如果 save_intraday_html 依赖这些列，就补上
+        dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
+        dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
+        return dfp
 
 
     def _get_agent_state_vector(self) -> np.ndarray:
