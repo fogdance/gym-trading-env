@@ -1,16 +1,18 @@
-# tests/unit/test_trading_env_accounting_integration.py
+# tests/integration/test_trading_env_accounting_integration.py
 
-import pytest
 import pandas as pd
 from decimal import Decimal
 from pathlib import Path
 import tempfile
 import yaml
+import pytest
+pytestmark = pytest.mark.integration
 
 pytest.importorskip("talib")
 pytest.importorskip("zigzag")
 
-from gym_trading_env.envs.trading_env import CustomTradingEnv
+from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
+from gym_trading_env.utils.trade_util import step_wrapper
 
 def test_open_close_updates_ledger_balances():
     # 构造最小 1min 数据（避免 hard gap）
@@ -51,14 +53,14 @@ def test_open_close_updates_ledger_balances():
 
         env = CustomTradingEnv(df=df, config_path=str(p))
         # action mapping: [HOLD, LONG_OPEN0, LONG_CLOSE0, SHORT_OPEN0, SHORT_CLOSE0]
-        obs, reward, term, trunc, info = env.step(1)  # LONG_OPEN0
+        obs, reward, term, trunc, info = step_wrapper(env, Action.LONG_OPEN0)  # LONG_OPEN0
         # 开仓后：现金减少(保证金+手续费)，保证金账户增加，broker_fee_income 增加
         b1 = env.ledger.balances()
         assert b1["broker_fee_income"] > Decimal("0")
         assert b1["user_margin"] > Decimal("0")
         assert b1["user_cash"] < Decimal("10000")
 
-        obs, reward, term, trunc, info = env.step(2)  # LONG_CLOSE0
+        obs, reward, term, trunc, info = step_wrapper(env, Action.LONG_CLOSE0)  # LONG_CLOSE0
         b2 = env.ledger.balances()
         # 平仓后保证金释放回 0
         assert b2["user_margin"] == Decimal("0")

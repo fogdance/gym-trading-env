@@ -6,6 +6,9 @@ import pandas as pd
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT
+from gym_trading_env.utils.trade_util import step_wrapper
+import pytest
+pytestmark = pytest.mark.unit
 
 # ================= Configuration knobs for alignment ===================
 
@@ -16,7 +19,7 @@ FILL_ON_CURRENT_BAR = True
 
 # ===================== Deterministic test data =========================
 
-def make_df_linear(start="2020-01-01 05:00:00", minutes=100, p0=1.1000, dp=0.001, volume=1.0):
+def make_df_linear(start="2020-01-01 21:01:00", minutes=100, p0=1.1000, dp=0.001, volume=1.0):
     """
     Build a deterministic 1-min series:
     Close/Open/High/Low drift linearly; volume constant.
@@ -200,7 +203,7 @@ class TestActionObservationStrict(unittest.TestCase):
         """
 
         # --- 1) HOLD ---
-        obs, reward, terminated, truncated, info = self.env.step(Action.HOLD.value)
+        obs, reward, terminated, truncated, info = step_wrapper(self.env,Action.HOLD)
         self.t += 1  # frontier advances by one row
 
         market_seq = obs["market_seq"]
@@ -223,7 +226,7 @@ class TestActionObservationStrict(unittest.TestCase):
         entry_ask = ask_from_close(pre_close, self.spread)
         fee_open = fee_per_side(self.trading_fee_per_lot, self.trade_lot)
 
-        obs, reward, terminated, truncated, info = self.env.step(Action.LONG_OPEN0.value)
+        obs, reward, terminated, truncated, info = step_wrapper(self.env,Action.LONG_OPEN0)
         self.t += 1
         market_seq = obs["market_seq"]
         agent_vec = obs["agent_state"].astype(float)
@@ -254,7 +257,7 @@ class TestActionObservationStrict(unittest.TestCase):
         fee_close = fee_per_side(self.trading_fee_per_lot, self.trade_lot) if self.FEE_ON_CLOSE else 0.0
         realized = long_realized(exit_bid, self.entry_price, self.trade_lot, self.lot_size)
 
-        obs, reward, terminated, truncated, info = self.env.step(Action.LONG_CLOSE0.value)
+        obs, reward, terminated, truncated, info = step_wrapper(self.env,Action.LONG_CLOSE0)
         self.t += 1
         market_seq = obs["market_seq"]
         agent_vec = obs["agent_state"].astype(float)
@@ -280,7 +283,7 @@ class TestActionObservationStrict(unittest.TestCase):
         entry_bid = bid_from_close(pre_close, self.spread)
         fee_open_s = fee_per_side(self.trading_fee_per_lot, self.trade_lot)
 
-        obs, reward, terminated, truncated, info = self.env.step(Action.SHORT_OPEN0.value)
+        obs, reward, terminated, truncated, info = step_wrapper(self.env,Action.SHORT_OPEN0)
         self.t += 1
         market_seq = obs["market_seq"]
         agent_vec = obs["agent_state"].astype(float)
@@ -306,7 +309,7 @@ class TestActionObservationStrict(unittest.TestCase):
         fee_close_s = fee_per_side(self.trading_fee_per_lot, self.trade_lot) if self.FEE_ON_CLOSE else 0.0
         realized_s = short_realized(exit_ask, self.entry_price, self.trade_lot, self.lot_size)
 
-        obs, reward, terminated, truncated, info = self.env.step(Action.SHORT_CLOSE0.value)
+        obs, reward, terminated, truncated, info = step_wrapper(self.env,Action.SHORT_CLOSE0)
         self.t += 1
         market_seq = obs["market_seq"]
         agent_vec = obs["agent_state"].astype(float)

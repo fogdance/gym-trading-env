@@ -6,7 +6,7 @@ from gym_trading_env.utils.build_xt import build_market_features, FEATURES_MARKE
 
 pytestmark = pytest.mark.unit
 
-def _mk_fx_df(start="2020-01-01 05:00:00", closes=None, vols=None):
+def _mk_fx_df(start="2020-01-01 21:01:00", closes=None, vols=None):
     if closes is None:
         closes = [1.0, 2.0, 3.0, 4.0, 5.0]
     n = len(closes)
@@ -74,7 +74,7 @@ def test_build_market_fx_key_features_values():
 
 def test_build_market_fx_rollover_ref_close_uses_prev_session_close():
     # 构造跨 rollover(05:00) 的 3 根：04:59 属于上一 session，05:00/05:01 属于新 session
-    idx = pd.to_datetime(["2020-01-01 04:59:00", "2020-01-01 05:00:00", "2020-01-01 05:01:00"])
+    idx = pd.to_datetime(["2020-01-01 04:59:00", "2020-01-01 21:01:00", "2020-01-01 05:01:00"])
     closes = [100.0, 200.0, 201.0]
     df = pd.DataFrame(
         {"Date": idx, "Open": closes, "High": closes, "Low": closes, "Close": closes, "Volume":[1,1,1]}

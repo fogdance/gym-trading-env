@@ -15,9 +15,24 @@ USDJPY: &USDJPY
   data_path: "USDJPY"
   data_interval: "1m"
 
+DCE_JM2601: &JM
+  currency_pair: "JM2601"
+  initial_balance: 10000.0
+  trading_fee_per_lot: 3
+  is_round_turn: true
+  spread: 0.5
+  leverage: 10
+  lot_size: 60
+  trade_lot: 1
+  max_long_position: 1
+  max_short_position: 1
+  data_path: "DCE_JM2601"
+  data_interval: "1m"
+
 
 trading:
-  <<: *USDJPY
+  <<: *JM
+
 
 risk:
   max_drawdown_ratio: 0.2
@@ -29,8 +44,8 @@ training:
   window_size: 20
   max_episode_steps: 1000000
   randomize_start: true
-  episode_length: 10000
   render_mode: "rgb_array"
+  start_clock: "21:00"   # 或 '09:00' / '21:00' / 'any'
 
 visualization:
   image_height: 96

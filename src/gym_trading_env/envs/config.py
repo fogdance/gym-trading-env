@@ -112,7 +112,7 @@ class TrainingParams:
     randomize_start: bool = True
     """Whether to randomize the starting index in the dataset for each episode."""
     
-    episode_length: Optional[int] = 500_000
+    episode_length: Optional[int] = None
     """Fixed length of each episode in steps, or None for variable length. Must be positive if set."""
     
     render_mode: str = "rgb_array"

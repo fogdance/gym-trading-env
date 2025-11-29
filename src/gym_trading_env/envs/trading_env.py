@@ -1115,44 +1115,75 @@ class CustomTradingEnv(gym.Env):
         return dfp
 
     
+    def _position_snapshot(self):
+        """
+        The single source of truth for position-related agent_state.
+        MUST NOT infer from action, MUST NOT use cached self.position.
+        """
+        # 统一从 position_manager 读（slot 合计）
+        long_lots  = self.position_manager.total_long_position()
+        short_lots = self.position_manager.total_short_position()
+
+        net_lots = long_lots - short_lots
+
+        have_long  = 1.0 if long_lots  > D0 else 0.0
+        have_short = 1.0 if short_lots > D0 else 0.0
+
+        # flat 的一致性约束：只有“真正无持仓”才叫 flat（不能用 net==0 判定，因为可能对冲）
+        is_flat = (long_lots == D0) and (short_lots == D0)
+        if is_flat:
+            # 这里强制三者一致
+            net_lots = D0
+            have_long = 0.0
+            have_short = 0.0
+
+        return {
+            "long_lots": long_lots,
+            "short_lots": short_lots,
+            "net_lots": net_lots,
+            "have_long": have_long,
+            "have_short": have_short,
+            "is_flat": is_flat,
+        }
+
     def _get_agent_state_vector(self) -> np.ndarray:
         """
         Build FEATURES_AGENT strictly from existing system state.
-        All internal math stays in Decimal; convert with decimal_to_float at the edge.
-        IMPORTANT: No side effects here (must be idempotent within the same step).
+        IMPORTANT: No side effects here (idempotent within the same step).
         """
-        # Net position in lots (Decimal), have_long/short flags
-        long_lots  = self.user_accounts.long_position
-        short_lots = self.user_accounts.short_position
-        net_lots   = long_lots - short_lots
+        ps = self._position_snapshot()
 
-        have_long  = 1.0 if long_lots > D0 else 0.0
-        have_short = 1.0 if short_lots > D0 else 0.0
+        # pos_t / have_long_t / have_short_t：唯一来源
+        net_lots   = ps["net_lots"]
+        have_long  = ps["have_long"]
+        have_short = ps["have_short"]
 
-        # Pick active side snapshot for entry price & age
-        snap = self._active_side_snapshot()
-        if snap["side"] is None:
+        # entry_price / holding_minutes：也不要用 action 推断，直接从当前持仓计算
+        if ps["is_flat"]:
             entry_price = D0
             holding_minutes = D0
         else:
-            entry_price = snap["vwap"]
-            holding_minutes = snap["age_min"]
+            snap = self._active_side_snapshot()  # 你现有实现：从 position_manager 各 slot 算 vwap & age
+            if snap["side"] is None:
+                entry_price = D0
+                holding_minutes = D0
+            else:
+                entry_price = snap["vwap"]
+                holding_minutes = snap["age_min"]
 
-        # Unrealized & realized (cum) PnL, equity
+        # 其它字段保持从系统状态读（不要在这里更新缓存）
         upnl_dec = self.user_accounts.unrealized_pnl
         realized_cum_dec = self.user_accounts.realized_pnl
         equity_dec = self._calculate_equity()
 
-        # Per-step deltas & fee cumulatives (computed once in step())
         realized_step_dec = getattr(self, "realized_step", D0)
         fee_step_dec = getattr(self, "fee_step", D0)
         fee_cum_dec = self.broker_accounts.fee_income.get_balance()
 
-        # Peak equity & drawdown from Metrics (already Decimal)
         peak_equity_dec = getattr(self.metrics, "peak_equity", self.config.trading.initial_balance)
         drawdown_dec = self.metrics.metrics.get("current_drawdown", D0)
 
-        # Not implemented yet → keep zeros
+        # 未实现项先 0
         sigma_entry_dec = D0
         sl_ticks_dec = D0
         tp_ticks_dec = D0
@@ -1182,7 +1213,14 @@ class CustomTradingEnv(gym.Env):
             decimal_to_float(minutes_to_timeout_dec) # minutes_to_timeout_t
         ], dtype=np.float32)
 
-        return vec
+        # flat 一致性（只在 flat 时做强约束）
+        if ps["is_flat"]:
+            # 注意：pos_t 是 float，直接比较 0 即可
+            assert vec[FEATURES_AGENT.index("pos_t")] == 0.0
+            assert vec[FEATURES_AGENT.index("have_long_t")] == 0.0
+            assert vec[FEATURES_AGENT.index("have_short_t")] == 0.0
+
+        return vec    
 
 
 

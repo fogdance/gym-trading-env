@@ -5,6 +5,7 @@ import pandas as pd
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.build_xt import FEATURES_AGENT
+from gym_trading_env.utils.trade_util import step_wrapper
 
 pytestmark = pytest.mark.unit
 
@@ -38,7 +39,7 @@ def test_agent_state_has_all_fields_and_tail_fields_reasonable():
         assert v >= 0.0
 
     # 开仓后：仍需满足“合理范围/关系”
-    obs1, r1, term1, trunc1, info1 = env.step(Action.LONG_OPEN0.value)
+    obs1, r1, term1, trunc1, info1 = step_wrapper(env, Action.LONG_OPEN0)
     vec1 = obs1["agent_state"].astype(float)
     _assert_finite(vec1)
 
@@ -68,7 +69,7 @@ def test_agent_state_has_all_fields_and_tail_fields_reasonable():
         assert tp_price == 0.0
 
     # 若 timeout 启用（tmo > 0），再走一步 HOLD 应不增加（最好递减）
-    obs2, r2, term2, trunc2, info2 = env.step(Action.HOLD.value)
+    obs2, r2, term2, trunc2, info2 = step_wrapper(env, Action.HOLD)
     vec2 = obs2["agent_state"].astype(float)
     _assert_finite(vec2)
 
