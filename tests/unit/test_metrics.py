@@ -9,6 +9,8 @@ from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
+import pytest
+pytestmark = pytest.mark.unit
 
 class MockPositionManager:
     def total_long_position(self):

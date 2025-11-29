@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 
 from gym_trading_env.utils.build_xt import build_market_features, FEATURES_MARKET
+import pytest
+pytestmark = pytest.mark.unit
 
 TZ = "Asia/Shanghai"
 

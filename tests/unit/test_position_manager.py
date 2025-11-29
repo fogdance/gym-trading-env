@@ -4,6 +4,8 @@ import unittest
 from decimal import Decimal
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.position import Position
+import pytest
+pytestmark = pytest.mark.unit
 
 class TestPositionManager(unittest.TestCase):
     def setUp(self):
