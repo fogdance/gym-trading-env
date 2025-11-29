@@ -363,6 +363,8 @@ class CustomTradingEnv(gym.Env):
         self.realized_step = D0
         self.fee_step = D0
 
+        self._last_valid_price = D(self.df_market.iloc[self.current_step]["C_t"])
+
         # First observation
         obs = self._get_obs()
         info = self._get_info()
@@ -384,7 +386,6 @@ class CustomTradingEnv(gym.Env):
             return f"{float(val):g}"
         return str(val)
 
-
     def step(self, action):
         """
         Executes one time step within the environment.
@@ -398,23 +399,36 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        if self.config.debug.debug_enabled:
-            self.logger.info(f"{self.df_market.index[self.current_step]}")
-
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
             a = int(action)
             if a < 0 or a >= len(self.valid_actions):
                 raise ValueError(f"Action index out of range: {a}")
-            self.action = self.valid_actions[a]
+            requested_action = self.valid_actions[a]
+            self.action = requested_action
         except Exception:
             self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        # Get action price at current_step
+        if self.config.debug.debug_enabled:
+            self.logger.info(f"{self.df_market.index[self.current_step]}, {action} -> {self.action}")
+
+
+        # --- Price / market-closed gate at CURRENT step (t) ---
         try:
-            action_price = D(self.df_market.iloc[self.current_step]["C_t"])
+            mask_now = float(self.df_market.iloc[self.current_step]["mask_t"])
+            market_open = (mask_now >= 0.5)
+
+            if market_open:
+                action_price = D(self.df_market.iloc[self.current_step]["C_t"])
+                self._last_valid_price = action_price
+                market_code = ForexCode.SUCCESS
+            else:
+                action_price = self._last_valid_price
+                # 若 agent 在闭市时尝试非 HOLD，则记为 market closed；否则仍算 SUCCESS
+                market_code = ForexCode.SUCCESS if (self.action == Action.HOLD) else ForexCode.ERROR_MARKET_CLOSED
+                self.action = Action.HOLD  # 强制不交易
         except Exception as e:
             self.logger.error(
                 f"Failed to read action price at step={self.current_step} "
@@ -423,8 +437,9 @@ class CustomTradingEnv(gym.Env):
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        # Execute action
-        self.action_result = ForexCode.SUCCESS
+        # --- Execute action ---
+        self.action_result = market_code
+
         if self.action == Action.HOLD:
             pass
         elif self.action == Action.LONG_OPEN:
@@ -465,22 +480,27 @@ class CustomTradingEnv(gym.Env):
             in_market = False
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market)
 
-        # Advance time
+        # --- Advance time to NEXT step (t+1) ---
         self.current_step += 1
         self.episode_step_count += 1
 
-        # If we are past the last valid row, terminate BEFORE reading df
+        # Bound check BEFORE sync/index access
         if self.current_step >= len(self.df_market):
             self.terminated = True
             # Update deltas once for this final transition
             self._update_step_deltas()
-            return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
+            return self._get_obs(), 0.0, self.terminated, False, self._get_info()
 
-        # Update visibility minute
-        self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
+        # Sync day/minute based on minute_index_t (no +1 drift)
+        self._sync_day_and_minute()
 
-        # Update current_price for mark-to-market (at new step)
-        self.current_price = D(self.df_market.iloc[self.current_step]["C_t"])
+        # Mark-to-market price at NEXT step
+        mask_next = float(self.df_market.iloc[self.current_step]["mask_t"])
+        if mask_next < 0.5:
+            self.current_price = self._last_valid_price
+        else:
+            self.current_price = D(self.df_market.iloc[self.current_step]["C_t"])
+            self._last_valid_price = self.current_price
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
@@ -508,6 +528,13 @@ class CustomTradingEnv(gym.Env):
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
         return obs, reward, self.terminated, False, info
+
+
+    def _sync_day_and_minute(self):
+        ts = self.df_market.index[self.current_step]
+        day_key = self._day_key(self.df_market.loc[ts, "day_id"])
+        self._day_i = int(self._sid_to_dayi[day_key])
+        self.current_minute = int(self.df_market.loc[ts, "minute_index_t"])
 
 
     def _update_step_deltas(self):
