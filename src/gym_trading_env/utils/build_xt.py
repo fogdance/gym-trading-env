@@ -103,6 +103,10 @@ def _build_market_fx(df_1m: pd.DataFrame,
     cum_mean_c = df["C_t"].groupby(sid).expanding().mean().reset_index(level=0, drop=True)
     df["cumVWAP_t"] = cum_vwap.fillna(cum_mean_c)
 
+    # cumVWAP_t 已计算完毕
+    df["dC_minus_cumVWAP_t"] = (df["C_t"] - df["cumVWAP_t"]).astype(float)
+    df["cmp_C_vs_cumVWAP_t"] = np.sign(df["dC_minus_cumVWAP_t"]).astype(int)
+
     df["ref_close_t"] = meta["prev_session_close"].astype(float)
     df["session_high_t"] = df["High"].groupby(sid).cummax().astype(float)
     df["session_low_t"]  = df["Low"].groupby(sid).cummin().astype(float)
@@ -141,6 +145,7 @@ def _build_market_future(df_1m: pd.DataFrame,
                          df_prev_session: Optional[pd.DataFrame] = None,
                          limit_up_pct: Optional[float] = None,
                          limit_down_pct: Optional[float] = None):
+
     # 1) 严格 345 对齐（含 canonical 索引）
     base = strict_reindex_futures_345(df_1m, tz=tz)
     X = base["aligned"].copy()
@@ -226,11 +231,21 @@ def _build_market_future(df_1m: pd.DataFrame,
 
     # 9) 涨跌停（如无参数则置 0）
     if (limit_up_pct is not None) and (limit_down_pct is not None):
-        X["limit_up_price_t"] = X["ref_close_t"] * (1.0 + float(limit_up_pct))
-        X["limit_down_price_t"] = X["ref_close_t"] * (1.0 + float(limit_down_pct))
+        up = float(limit_up_pct)
+        down = float(limit_down_pct)
+
+        # Contract: both must be positive magnitudes in [0, 1]
+        if not (0.0 <= up <= 1.0):
+            raise ValueError(f"limit_up_pct must be in [0, 1], got {limit_up_pct}")
+        if not (0.0 <= down <= 1.0):
+            raise ValueError(f"limit_down_pct must be in [0, 1], got {limit_down_pct}")
+
+        X["limit_up_price_t"] = X["ref_close_t"] * (1.0 + up)
+        X["limit_down_price_t"] = X["ref_close_t"] * (1.0 - down)
     else:
         X["limit_up_price_t"] = 0.0
         X["limit_down_price_t"] = 0.0
+
 
     # 10) dI_from_yclose（上一交易日最后 OI）
     oi_last = X.loc[minute_index == 344, ["I_t"]].copy()
