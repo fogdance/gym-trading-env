@@ -31,6 +31,8 @@ from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 from gym_trading_env.utils.plot_intraday import save_intraday_html
+from gym_trading_env.envs.account import Account
+
 from gym_trading_env.utils.agent_features import (
     AgentFeatureInput, compute_agent_features, agent_feature_vector, compute_unrealized_pnl
 )
@@ -249,25 +251,35 @@ class CustomTradingEnv(gym.Env):
         self.logger.info("REST env")
         super().reset(seed=seed)
 
-        # --- Fresh state containers ---
         self.position_manager = PositionManager()
-        self.user_accounts = UserAccounts(
-            initial_balance=self.config.trading.initial_balance,
-            position_manager=self.position_manager,
-        )
         self.broker_accounts = BrokerAccounts()
         self.trade_record_manager = TradeRecordManager()
-        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
+
         # --- Ledger (double-entry) ---
         self.ledger = Ledger()
-        # 资产类：不允许为负
-        self.ledger.register("user_cash", self.user_accounts.cash_balance, strict_nonnegative=True)
-        self.ledger.register("user_margin", self.user_accounts.used_margin, strict_nonnegative=True)
-        # 收入/对冲类：允许为负（broker_pnl 可能为负）
+
+        # 1) 创建“真钱账户”（唯一一份）
+        user_cash_acct = Account(Decimal(str(self.config.trading.initial_balance)))
+        user_margin_acct = Account(Decimal("0.0"))
+
+        # 2) 先注册进 Ledger（Ledger 以后会操作这些账户）
+        self.ledger.register("user_cash", user_cash_acct, strict_nonnegative=True)
+        self.ledger.register("user_margin", user_margin_acct, strict_nonnegative=True)
         self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
         self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
 
+        # 3) UserAccounts 只引用这些账户（读余额、算 equity、存 pnl 投影）
+        self.user_accounts = UserAccounts(
+            ledger=self.ledger,
+            position_manager=self.position_manager,
+            cash_account=user_cash_acct,
+            margin_account=user_margin_acct,
+            initial_balance=self.config.trading.initial_balance,
+        )
+
         self._ledger_total0 = self.ledger.total_balance()
+
+        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # --- Housekeeping ---
         self.terminated = False

@@ -9,6 +9,10 @@ from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
+from gym_trading_env.envs.accounting import Ledger, JournalEntry, Posting, LedgerError
+from gym_trading_env.envs.account import Account
+from gym_trading_env.envs.broker_accounts import BrokerAccounts
+
 import pytest
 pytestmark = pytest.mark.unit
 
@@ -21,15 +25,47 @@ class MockPositionManager:
 class TestMetrics(unittest.TestCase):
     def setUp(self):
         self.initial_balance = Decimal('10000')
-        self.user_accounts = UserAccounts(self.initial_balance, MockPositionManager())
         self.trade_record_manager = TradeRecordManager()
+        # --- Ledger (double-entry) ---
+        self.ledger = Ledger()
+
+        # 1) 创建“真钱账户”（唯一一份）
+        user_cash_acct = Account(Decimal(str(self.initial_balance)))
+        user_margin_acct = Account(Decimal("0.0"))
+        self.broker_accounts = BrokerAccounts()
+
+        # 2) 先注册进 Ledger（Ledger 以后会操作这些账户）
+        self.ledger.register("user_cash", user_cash_acct, strict_nonnegative=True)
+        self.ledger.register("user_margin", user_margin_acct, strict_nonnegative=True)
+        self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
+        self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
+
+        # 3) UserAccounts 只引用这些账户（读余额、算 equity、存 pnl 投影）
+        self.user_accounts = UserAccounts(
+            ledger=self.ledger,
+            position_manager=MockPositionManager(),
+            cash_account=user_cash_acct,
+            margin_account=user_margin_acct,
+            initial_balance=self.initial_balance,
+        )
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager, risk_free_rate=Decimal('0.012'))
 
     def _settle_pnl(self, pnl: Decimal):
         # 统计字段（可留可不留，不影响 equity）
         self.user_accounts.realize_pnl(pnl)
-        # 关键：结算进现金腿，让 equity 真正变化
-        self.user_accounts.cash_balance.balance += pnl
+
+        # 复式记账：把 pnl 结算进用户现金腿
+        # user_cash 增加 pnl，broker_pnl 减少 pnl（对手腿）
+        self.ledger.post(
+            JournalEntry(
+                timestamp=None,
+                memo="settle pnl (test)",
+                postings=[
+                    Posting("user_cash", pnl),
+                    Posting("broker_pnl", -pnl),
+                ],
+            )
+        )
 
 
     def assert_all_metrics(self, metrics, expected_values):
@@ -480,16 +516,16 @@ class TestMetrics(unittest.TestCase):
 
     def test_excessive_drawdown(self):
         # 测试回撤超过初始资金
-        self._settle_pnl(Decimal('-15000'))  # 净值变为 -5000
+        self._settle_pnl(Decimal('-10000'))  # 净值变为 0
         self.metrics.update(datetime(2023, 1, 1))
         metrics = self.metrics.get_metrics()
         expected = {
-            'current_day_lost': Decimal('15000'),
-            'current_day_lost_pct': Decimal('150.0'),
-            'current_drawdown': Decimal('15000'),
-            'current_drawdown_pct': Decimal('150.0'),
-            'max_drawdown': Decimal('15000'),
-            'max_drawdown_pct': Decimal('150.0'),
+            'current_day_lost': Decimal('10000'),
+            'current_day_lost_pct': Decimal('100.0'),
+            'current_drawdown': Decimal('10000'),
+            'current_drawdown_pct': Decimal('100.0'),
+            'max_drawdown': Decimal('10000'),
+            'max_drawdown_pct': Decimal('100.0'),
             'total_trades': 0,
             'winning_trades': 0,
             'max_profit': Decimal('0.0'),
@@ -551,8 +587,30 @@ class TestMetrics(unittest.TestCase):
 
     def test_negative_initial_balance(self):
         # 测试负初始余额（假设环境允许）
-        self.initial_balance = Decimal('-10000')
-        self.user_accounts = UserAccounts(self.initial_balance, MockPositionManager())
+        self.initial_balance = Decimal('10000')
+        self.trade_record_manager = TradeRecordManager()
+        # --- Ledger (double-entry) ---
+        self.ledger = Ledger()
+
+        # 1) 创建“真钱账户”（唯一一份）
+        user_cash_acct = Account(Decimal(str(self.initial_balance)))
+        user_margin_acct = Account(Decimal("0.0"))
+        self.broker_accounts = BrokerAccounts()
+
+        # 2) 先注册进 Ledger（Ledger 以后会操作这些账户）
+        self.ledger.register("user_cash", user_cash_acct, strict_nonnegative=True)
+        self.ledger.register("user_margin", user_margin_acct, strict_nonnegative=True)
+        self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
+        self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
+
+        # 3) UserAccounts 只引用这些账户（读余额、算 equity、存 pnl 投影）
+        self.user_accounts = UserAccounts(
+            ledger=self.ledger,
+            position_manager=MockPositionManager(),
+            cash_account=user_cash_acct,
+            margin_account=user_margin_acct,
+            initial_balance=self.initial_balance,
+        )
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager, risk_free_rate=Decimal('0.012'))
         self.metrics.update(datetime(2023, 1, 1))
         metrics = self.metrics.get_metrics()
