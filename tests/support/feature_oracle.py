@@ -17,52 +17,58 @@ class FeatureOracle:
 
     @staticmethod
     def frontier_from_obs_market(market_seq: np.ndarray) -> int:
-        nz = np.where(np.any(market_seq != 0.0, axis=1))[0]
-        assert len(nz) >= 1, "market_seq should reveal at least 1 row (t=0)"
-        return int(nz[-1])
+        """
+        右 padding 合约下：
+        - frontier = 最后一个“可见(非 padding)”行的 index
+        """
+        # 优先用 mask_t（如果它在 FEATURES_MARKET 里）
+        if "mask_t" in FEATURES_MARKET:
+            mi = FEATURES_MARKET.index("mask_t")
+            mask_col = market_seq[:, mi]
+            nz = np.flatnonzero(mask_col > 0.0)
+            return int(nz[-1]) if nz.size else 0
 
+        # fallback：用 row 是否全 0 判定
+        row_nz = np.flatnonzero(np.any(np.abs(market_seq) > 0.0, axis=1))
+        return int(row_nz[-1]) if row_nz.size else 0
 
     @staticmethod
     def expected_market_seq(env, frontier: int) -> np.ndarray:
-        # 关键：expected 的时间长度必须和 obs 一致
-        T = int(getattr(env, "DAY_LEN", env.config.training.episode_length))
-        F = len(FEATURES_MARKET)
+        """
+        跟 env._get_obs() 同构：
+        - 从 env._daily_X 取窗口
+        - 右侧补 0
+        """
+        X_day = env._daily_X[env._day_i]  # (DAY_LEN, F)
+        ws = int(env.window_size)
 
-        frontier = int(np.clip(frontier, 0, T - 1))
-        exp = np.zeros((T, F), dtype=np.float32)
+        end = int(min(frontier, env.DAY_LEN - 1))
+        start = max(0, end - ws + 1)
 
-        # 关键：用 env 自己生成的“真值”来源，避免你在 oracle 里再算一遍 minute_index/特征导致错位
-        if hasattr(env, "_daily_X"):
-            X_day = env._daily_X[env._day_i].astype(np.float32)   # (T, F)
+        window = X_day[start:end + 1, :]
+        L = window.shape[0]
+        if L < ws:
+            pad = np.zeros((ws - L, env._F_MARKET), dtype=np.float32)
+            out = np.concatenate([window, pad], axis=0)
         else:
-            X_day = env.df_market[FEATURES_MARKET].to_numpy(np.float32)[:T]  # (T, F)
-
-        exp[:frontier + 1] = X_day[:frontier + 1]   # temporal reveal
-        return exp
-
+            out = window.astype(np.float32, copy=False)
+        return out.astype(np.float32, copy=False)
 
     @staticmethod
     def assert_market_columnwise(actual: np.ndarray, expected: np.ndarray, frontier: int):
-        assert actual.shape == expected.shape
-        # 只对可见区间逐列对齐（不可见区间 expected 已经是 0）
-        vis = slice(0, frontier + 1)
+        assert actual.shape == expected.shape, f"shape mismatch: {actual.shape} vs {expected.shape}"
 
-        a = actual[vis, :].astype(np.float64)
-        e = expected[vis, :].astype(np.float64)
-
-        assert np.isfinite(a).all(), "obs market_seq visible part must be finite"
-        assert np.isfinite(e).all(), "expected market_seq visible part must be finite"
-
-        for j, name in enumerate(FEATURES_MARKET):
-            if not np.allclose(a[:, j], e[:, j], rtol=1e-6, atol=1e-6):
-                k = int(np.argmax(np.abs(a[:, j] - e[:, j])))
+        # 逐列对比（更容易定位哪一列错）
+        for j in range(actual.shape[1]):
+            a = actual[:, j]
+            e = expected[:, j]
+            if not np.allclose(a, e, atol=1e-6, rtol=0):
+                # 找第一处 mismatch
+                idx = int(np.argmax(np.abs(a - e) > 1e-6))
                 raise AssertionError(
-                    f"[MARKET] feature='{name}' mismatch at row={k}: actual={a[k, j]} expected={e[k, j]}"
+                    f"market column {j} mismatch at row={idx}, frontier={frontier}: "
+                    f"actual={a[idx]} expected={e[idx]}"
                 )
-
-        # 不可见区间必须全 0
-        if frontier + 1 < actual.shape[0]:
-            assert np.all(actual[frontier + 1 :, :] == 0.0), "Future rows must be all-zero"
 
     @staticmethod
     def expected_agent_state_no_position(env) -> np.ndarray:

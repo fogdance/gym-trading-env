@@ -10,7 +10,7 @@ from gym_trading_env.utils.trade_util import step_wrapper
 
 pytestmark = pytest.mark.unit
 
-def make_df_linear(start="2020-01-01 21:01:00", minutes=50, p0=1.1000, dp=0.0001):
+def make_df_linear(start="2020-01-01 21:01:00", minutes=150, p0=1.1000, dp=0.0001):
     idx = pd.date_range(start=start, periods=minutes, freq="min")
     close = p0 + dp * np.arange(minutes, dtype=float)
     df = pd.DataFrame(

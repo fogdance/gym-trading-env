@@ -41,7 +41,7 @@ risk:
 
 training:
   reward_function: "total_pnl_reward_function"
-  window_size: 20
+  window_size: 60
   max_episode_steps: 1000000
   randomize_start: true
   render_mode: "rgb_array"

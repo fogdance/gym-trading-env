@@ -61,10 +61,7 @@ class CustomTradingEnv(gym.Env):
         self.df_market = build_market_features(self.df, rollover_hour_local=5, is_future=self.config.trading.is_future)
 
         # ---- constants ----
-        if self.config.trading.is_future:
-            self.DAY_LEN = 345
-        else:
-            self.DAY_LEN = 1440
+
         self._F_MARKET = len(FEATURES_MARKET)
         self._F_AGENT  = len(FEATURES_AGENT)
 
@@ -122,7 +119,7 @@ class CustomTradingEnv(gym.Env):
         self.observation_space = spaces.Dict({
             "market_seq": spaces.Box(
                 low=-np.inf, high=np.inf,
-                shape=(self.DAY_LEN, self._F_MARKET),
+                shape=(self.window_size, self._F_MARKET),
                 dtype=np.float32
             ),
             "agent_state": spaces.Box(
@@ -162,6 +159,19 @@ class CustomTradingEnv(gym.Env):
         # Validate config
         self.config.validate()
 
+        # DAY_LEN 只依赖 is_future，提前定好
+        self.DAY_LEN = 345 if self.config.trading.is_future else 1440
+
+        # window_size：不允许超过 DAY_LEN（否则你永远无法从“单日 full tensor”里切出更长窗口）
+        ws = int(getattr(self.config.training, "window_size", self.DAY_LEN))
+        if ws <= 0:
+            raise ValueError(f"window_size must be > 0, got {ws}")
+        if ws > self.DAY_LEN:
+            self.logger.warning(f"window_size={ws} > DAY_LEN={self.DAY_LEN}, clamp to {self.DAY_LEN}")
+            ws = self.DAY_LEN
+
+        self.window_size = ws
+        self.config.training.window_size = ws 
 
         # Training-specific
         reward_class = reward_classes.get(
@@ -1091,46 +1101,29 @@ class CustomTradingEnv(gym.Env):
 
     def _get_obs(self):
         """
-        Returns the observation dict. This version focuses on the market_seq part.
-        - market_seq: (1440, F_MARKET)
-            * Past & current minutes (<= current_minute) → data as built (already includes data-valid mask_t).
-            * Future minutes (> current_minute)         → all zeros, including mask_t column.
-        - agent_state: filled elsewhere; omitted here if you are implementing in two steps.
+        market_seq: (window_size, F_MARKET)
+        - 取最近 window_size 分钟的“已发生历史片段”
+        - 当历史不足 window_size：右侧补 0
         """
-        # --- Market sequence with temporal censoring ---
-        # Base full-day tensor for this episode day: already 0 where data-invalid (mask_t==0).
-        X_day = self._daily_X[self._day_i]        # shape: (1440, F_MARKET), dtype float32
+        X_day = self._daily_X[self._day_i]  # (DAY_LEN, F_MARKET)
 
-        # Build a visibility mask that hides the future minutes strictly.
-        # Example: at 10:00, current_minute = 600, we allow indices [0..600].
         end = int(min(self.current_minute, self.DAY_LEN - 1))
-        vis = np.zeros((self.DAY_LEN, 1), dtype=np.float32)
-        vis[:end + 1, 0] = 1.0
+        start = max(0, end - self.window_size + 1)
 
-        # Apply temporal visibility (no copy necessary; multiplication produces a new array)
-        market_seq = X_day * vis  # future minutes become all-zero rows (incl. mask_t col)
+        window = X_day[start:end + 1, :]   # (L, F), L<=window_size
+        L = window.shape[0]
 
-        # --- Agent vector to be implemented in your next step ---
+        if L < self.window_size:
+            pad = np.zeros((self.window_size - L, self._F_MARKET), dtype=np.float32)
+            market_seq = np.concatenate([window, pad], axis=0)  # 右侧补 0
+        else:
+            market_seq = window.astype(np.float32, copy=False)
+
         agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
-
-        if self.config.debug.debug_enabled:
-            ts = self.df_market.index[self.current_step]
-            mi = int(self.df_market.loc[ts, "minute_index_t"])
-            row_df = self.df_market.loc[ts, FEATURES_MARKET].to_numpy(np.float32)
-            row_X  = self._daily_X[self._day_i, mi, :]
-            if not np.allclose(row_df, row_X, atol=1e-6, rtol=0):
-                raise RuntimeError(f"daily_X build mismatch at {ts} mi={mi}")
-    
-            dfp = self._obs_market_df(market_seq)
-            save_intraday_html(
-                df_market=dfp,
-                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[self.current_step]}",
-                out_path=f"/tmp/obs_{self.df_market.index[self.current_step]}.html",
-                start_pos=0,
-                end_pos=self.current_minute + 1,
-            )
-            
         return {"market_seq": market_seq, "agent_state": agent_state}
+
+
+
 
     def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
         # 找到该 day 的 minute=0 的真实开盘 timestamp，用它当 1440 分钟时间轴起点

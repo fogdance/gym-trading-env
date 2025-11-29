@@ -38,18 +38,19 @@ def env():
     e.close()
 
 
-def _assert_shapes_and_dtypes(obs):
-    assert "market_seq" in obs, "obs must contain 'market_seq'"
-    assert "agent_state" in obs, "obs must contain 'agent_state'"
+def _assert_shapes_and_dtypes(env, obs):
+    assert "market_seq" in obs
+    assert "agent_state" in obs
 
     m = obs["market_seq"]
     a = obs["agent_state"]
 
-    assert m.shape == (345, len(FEATURES_MARKET)), f"market_seq shape mismatch: {m.shape}"
+    assert m.shape == (env.window_size, len(FEATURES_MARKET)), f"market_seq shape mismatch: {m.shape}"
     assert a.shape == (len(FEATURES_AGENT),), f"agent_state shape mismatch: {a.shape}"
 
-    assert m.dtype == np.float32, f"market_seq dtype should be float32, got {m.dtype}"
-    assert a.dtype == np.float32, f"agent_state dtype should be float32, got {a.dtype}"
+    assert m.dtype == np.float32
+    assert a.dtype == np.float32
+
 
 
 def test_hold_only_three_steps_feature_integrity(env):
@@ -61,7 +62,7 @@ def test_hold_only_three_steps_feature_integrity(env):
     """
     # t0
     obs0, info0 = env.reset()
-    _assert_shapes_and_dtypes(obs0)
+    _assert_shapes_and_dtypes(env,obs0)
 
     f0 = FeatureOracle.frontier_from_obs_market(obs0["market_seq"])
     # 在 episode_length=345 且不允许非 0 起步的前提下，t0 一般应该只 reveal 到 0
@@ -76,7 +77,7 @@ def test_hold_only_three_steps_feature_integrity(env):
     # t1~t3
     for t in [1, 2, 3]:
         obs, reward, terminated, truncated, info = step_wrapper(env, Action.HOLD)
-        _assert_shapes_and_dtypes(obs)
+        _assert_shapes_and_dtypes(env,obs)
 
         f = FeatureOracle.frontier_from_obs_market(obs["market_seq"])
         assert f == t, f"after {t} HOLD steps, frontier must be {t}, got {f}"

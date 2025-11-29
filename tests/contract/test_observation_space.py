@@ -45,7 +45,7 @@ def test_obs_shapes_dtypes_and_episode_len_is_one_day():
     market = obs["market_seq"]
     agent = obs["agent_state"]
 
-    assert market.shape == (DAY_MINUTES, len(FEATURES_MARKET))
+    assert market.shape == (env.window_size, len(FEATURES_MARKET))
     assert agent.shape == (len(FEATURES_AGENT),)
     assert market.dtype == np.float32
     assert agent.dtype == np.float32
