@@ -11,6 +11,7 @@ from typing import Tuple
 import os
 from pathlib import Path
 
+from gym_trading_env.envs.accounting import Ledger, JournalEntry, Posting, LedgerError
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
 from gym_trading_env.envs.position import Position
 from gym_trading_env.envs.user_accounts import UserAccounts
@@ -250,6 +251,16 @@ class CustomTradingEnv(gym.Env):
         self.broker_accounts = BrokerAccounts()
         self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
+        # --- Ledger (double-entry) ---
+        self.ledger = Ledger()
+        # 资产类：不允许为负
+        self.ledger.register("user_cash", self.user_accounts.cash_balance, strict_nonnegative=True)
+        self.ledger.register("user_margin", self.user_accounts.used_margin, strict_nonnegative=True)
+        # 收入/对冲类：允许为负（broker_pnl 可能为负）
+        self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
+        self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
+
+        self._ledger_total0 = self.ledger.total_balance()
 
         # --- Housekeeping ---
         self.terminated = False
@@ -357,7 +368,7 @@ class CustomTradingEnv(gym.Env):
 
         # Cumulative caches (used to compute per-step deltas) — initialize from current totals
         self._prev_realized_pnl_cum = self.user_accounts.realized_pnl
-        self._prev_fee_cum = self.broker_accounts.fees.get_balance()
+        self._prev_fee_cum = self.broker_accounts.fee_income.get_balance()
 
         # Make sure deltas start at 0 for the first obs
         self.realized_step = D0
@@ -544,7 +555,7 @@ class CustomTradingEnv(gym.Env):
         and NEVER inside _get_obs() / _get_agent_state_vector().
         """
         realized_cum_now = self.user_accounts.realized_pnl            # Decimal
-        fee_cum_now = self.broker_accounts.fees.get_balance()         # Decimal
+        fee_cum_now = self.broker_accounts.fee_income.get_balance()         # Decimal
 
         # Per-step deltas
         self.realized_step = realized_cum_now - self._prev_realized_pnl_cum
@@ -603,12 +614,12 @@ class CustomTradingEnv(gym.Env):
         info = {
             'realized_pnl': self.user_accounts.realized_pnl,
             'unrealized_pnl': self.user_accounts.unrealized_pnl,
-            'fees_collected': self.broker_accounts.fees.get_balance(),
-            'broker_balance': self.broker_accounts.balance.get_balance(),  # Added broker balance
-            'balance': self.user_accounts.balance.get_balance(),
+            'fees_collected': self.broker_accounts.fee_income.get_balance(),
+            'broker_balance': self.broker_accounts.broker_pnl.get_balance(),  # Added broker balance
+            'balance': self.user_accounts.cash_balance .get_balance(),
             'equity': self._calculate_equity(),
-            'used_margin': self.user_accounts.margin.get_balance(),
-            'free_margin': self._calculate_equity() - self.user_accounts.margin.get_balance(),
+            'used_margin': self.user_accounts.used_margin .get_balance(),
+            'free_margin': self._calculate_equity() - self.user_accounts.used_margin .get_balance(),
             'long_position': self.user_accounts.long_position,
             'short_position': self.user_accounts.short_position,
         }
@@ -735,7 +746,7 @@ class CustomTradingEnv(gym.Env):
 
         """
         equity = self._calculate_equity()
-        if equity < self.user_accounts.margin.get_balance():
+        if equity < self.user_accounts.used_margin .get_balance():
             # Liquidate all positions
             self.logger.info("Equity below margin requirement. Liquidating all positions.")
             while self.user_accounts.long_position > Decimal('0.0'):
@@ -747,6 +758,18 @@ class CustomTradingEnv(gym.Env):
         
         return False
 
+    def _post_atomic(self, entry: JournalEntry) -> None:
+        """
+        单条分录原子入账：失败抛 LedgerError，由调用方 snapshot/restore。
+        """
+        self.ledger.post(entry)
+
+    def _assert_ledger_conservation(self):
+        # 可选：debug 时确保系统内资金守恒
+        if self.config.debug.debug_enabled:
+            now = self.ledger.total_balance()
+            if now != self._ledger_total0:
+                raise RuntimeError(f"Ledger conservation broken: {now} != {self._ledger_total0}")
 
     def _long_open(self, price: Decimal, spread: Decimal, slot: int = None):
         """
@@ -761,166 +784,115 @@ class CustomTradingEnv(gym.Env):
         position_size = min(self.config.trading.trade_lot, max_additional_long)
         required_margin = (position_size * self.config.trading.lot_size * ask_price) / self.config.trading.leverage
         fee = self.config.trading.trading_fee_per_lot * position_size
-        total_deduction = required_margin + fee
 
-        free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
-        if total_deduction > free_margin:
+        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        if (required_margin + fee) > free_margin:
             self.logger.warning("Insufficient free margin to execute LONG_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin, open_step=self.current_step)
 
-        # Step 1: Deduct fee from balance
-        try:
-            self.user_accounts.balance.withdraw(fee)
-        except ValueError:
-            self.logger.warning("Insufficient balance to execute LONG_OPEN.")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
+        ts = self.df_market.iloc[self.current_step].name
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="LONG_OPEN",
+            postings=[
+                Posting("user_cash", -(required_margin + fee)),
+                Posting("user_margin", +required_margin),
+                Posting("broker_fee_income", +fee),
+            ],
+            meta={"side":"long","slot":slot,"price":str(ask_price)}
+        )
 
-        # Step 2: Allocate margin
+        snap = self.ledger.snapshot()
         try:
-            self.user_accounts.allocate_margin(required_margin)
-        except ValueError as e:
-            self.logger.warning(f"Failed to allocate margin: {e}")
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 3: Collect fee to broker
-        try:
-            self.broker_accounts.collect_fee(fee)
-        except ValueError as e:
-            self.logger.error(f"Error collecting fee to broker: {e}")
-            self.user_accounts.release_margin(required_margin)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)              # Rollback Step 1
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 4: Add long position
-        try:
+            self._post_atomic(entry)
             self.position_manager.add_long_position(new_position, slot=slot)
-        except ValueError as e:
-            self.logger.warning(f"Error opening long position: {e}")
-            self.broker_accounts.fees.withdraw(fee)              # Rollback Step 3
-            self.user_accounts.release_margin(required_margin)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)              # Rollback Step 1
-            return ForexCode.ERROR_OPEN_POSITION
+            self._assert_ledger_conservation()
+        except (LedgerError, ValueError) as e:
+            self.ledger.restore(snap)
+            self.logger.warning(f"LONG_OPEN failed and rolled back: {e}")
+            return ForexCode.ERROR_OPEN_POSITION if isinstance(e, ValueError) else ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df_market.iloc[self.current_step].name,
+            timestamp=ts,
             operation_type=Action.LONG_OPEN.name,
             position_size=position_size,
             open_price=ask_price,
             close_price=Decimal(0),
             required_margin=required_margin,
             fee=fee,
-            balance=self.user_accounts.balance.get_balance(),
+            balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance()
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
         )
         self.record_trade(trade_record)
-
-        self.logger.debug(f"Opened LONG position: {new_position}")
-        self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
-                          f"Long position: {self.user_accounts.long_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
-                          f"Fee: {fee}")
         return ForexCode.SUCCESS
+
 
     def _long_close(self, price: Decimal, spread: Decimal, slot: int = None):
         """
         Executes a LONG_CLOSE action with manual rollback.
-        """
+        """        
         bid_price = price - spread
         if self.user_accounts.long_position <= Decimal('0.0'):
             self.logger.warning("No long position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(bid_price, self.config.trading.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(
+                bid_price, self.config.trading.lot_size, slot=slot
+            )
         except ValueError as e:
             self.logger.warning(f"Error closing long position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.config.trading.is_round_turn else self.config.trading.trading_fee_per_lot * self.config.trading.trade_lot
+        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        # Step 1: Deduct fee from balance
+        ts = self.df_market.iloc[self.current_step].name
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="LONG_CLOSE",
+            postings=[
+                Posting("user_margin", -released_margin),
+                Posting("broker_pnl", -pnl),  # pnl>0 用户赚 -> broker_pnl 减少
+                Posting("broker_fee_income", +fee),
+                Posting("user_cash", +(released_margin + pnl - fee)),
+            ],
+            meta={"side":"long","slot":slot,"close_price":str(bid_price),"pnl":str(pnl)}
+        )
+
+        snap = self.ledger.snapshot()
         try:
-            self.user_accounts.balance.withdraw(fee)
-        except ValueError:
-            self.logger.warning("Insufficient balance to pay fees on LONG_CLOSE.")
+            self._post_atomic(entry)
+            self.user_accounts.realize_pnl(pnl)  # 仅统计字段
+            self._assert_ledger_conservation()
+        except LedgerError as e:
+            self.ledger.restore(snap)
+            self.logger.error(f"LONG_CLOSE failed and rolled back: {e}")
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        # Step 2: Collect fee to broker
-        try:
-            self.broker_accounts.collect_fee(fee)
-        except ValueError as e:
-            self.logger.error(f"Error collecting fee to broker: {e}")
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 3: Realize PNL
-        try:
-            self.user_accounts.realize_pnl(pnl)
-        except ValueError as e:
-            self.logger.error(f"Error realizing PNL: {e}")
-            self.broker_accounts.fees.withdraw(fee)  # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 4: Adjust broker balance
-        try:
-            self.broker_accounts.adjust_balance(-pnl)
-        except ValueError as e:
-            self.logger.error(f"Error adjusting broker balance: {e}")
-            self.user_accounts.realize_pnl(-pnl)     # Rollback Step 3
-            self.broker_accounts.fees.withdraw(fee)  # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 5: Release margin
-        try:
-            self.user_accounts.release_margin(released_margin)
-        except ValueError as e:
-            self.logger.error(f"Error releasing margin: {e}")
-            self.broker_accounts.adjust_balance(pnl)  # Rollback Step 4
-            self.user_accounts.realize_pnl(-pnl)      # Rollback Step 3
-            self.broker_accounts.fees.withdraw(fee)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)   # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-        
         self.last_close_position = {'pnl': pnl, 'margin': released_margin}
 
-        # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df_market.iloc[self.current_step].name,
+            timestamp=ts,
             operation_type=Action.LONG_CLOSE.name,
             position_size=closed_size,
             open_price=open_price,
             close_price=bid_price,
             required_margin=Decimal('0'),
             fee=fee,
-            balance=self.user_accounts.balance.get_balance(),
+            balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
             released_margin=released_margin
         )
         self.record_trade(trade_record)
-
-        self.logger.debug(f"Closed LONG position at price {bid_price}")
-        self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
-                          f"Long position: {self.user_accounts.long_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
-                          f"Fee: {fee}")
-        
         return ForexCode.SUCCESS
+   
 
     def _short_open(self, price: Decimal, spread: Decimal, slot: int = None):
         """
@@ -935,70 +907,51 @@ class CustomTradingEnv(gym.Env):
         position_size = min(self.config.trading.trade_lot, max_additional_short)
         required_margin = (position_size * self.config.trading.lot_size * bid_price) / self.config.trading.leverage
         fee = self.config.trading.trading_fee_per_lot * position_size
-        total_deduction = required_margin + fee
 
-        free_margin = self._calculate_equity() - self.user_accounts.margin.get_balance()
-        if total_deduction > free_margin:
+        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        if (required_margin + fee) > free_margin:
             self.logger.warning("Insufficient free margin to execute SHORT_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin, open_step=self.current_step)
 
-        # Step 1: Deduct fee from balance
-        try:
-            self.user_accounts.balance.withdraw(fee)
-        except ValueError:
-            self.logger.warning("Insufficient balance to execute SHORT_OPEN.")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
+        ts = self.df_market.iloc[self.current_step].name
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="SHORT_OPEN",
+            postings=[
+                Posting("user_cash", -(required_margin + fee)),
+                Posting("user_margin", +required_margin),
+                Posting("broker_fee_income", +fee),
+            ],
+            meta={"side":"short","slot":slot,"price":str(bid_price)}
+        )
 
-        # Step 2: Allocate margin
+        snap = self.ledger.snapshot()
         try:
-            self.user_accounts.allocate_margin(required_margin)
-        except ValueError as e:
-            self.logger.warning(f"Failed to allocate margin: {e}")
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 3: Collect fee to broker
-        try:
-            self.broker_accounts.collect_fee(fee)
-        except ValueError as e:
-            self.logger.error(f"Error collecting fee to broker: {e}")
-            self.user_accounts.release_margin(required_margin)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)              # Rollback Step 1
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 4: Add short position
-        try:
+            self._post_atomic(entry)
             self.position_manager.add_short_position(new_position, slot=slot)
-        except ValueError as e:
-            self.logger.warning(f"Error opening short position: {e}")
-            self.broker_accounts.fees.withdraw(fee)              # Rollback Step 3
-            self.user_accounts.release_margin(required_margin)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)              # Rollback Step 1
-            return ForexCode.ERROR_OPEN_POSITION
+            self._assert_ledger_conservation()
+        except (LedgerError, ValueError) as e:
+            self.ledger.restore(snap)
+            self.logger.warning(f"SHORT_OPEN failed and rolled back: {e}")
+            return ForexCode.ERROR_OPEN_POSITION if isinstance(e, ValueError) else ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df_market.iloc[self.current_step].name,
+            timestamp=ts,
             operation_type=Action.SHORT_OPEN.name,
             position_size=position_size,
             open_price=bid_price,
             close_price=Decimal(0),
             required_margin=required_margin,
             fee=fee,
-            balance=self.user_accounts.balance.get_balance(),
+            balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance()
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
         )
         self.record_trade(trade_record)
-
-        self.logger.debug(f"Opened SHORT position: {new_position}")
-        self.logger.debug(f"New balance: {self.user_accounts.balance.get_balance()}, "
-                          f"Short position: {self.user_accounts.short_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
-                          f"Fee: {fee}")
         return ForexCode.SUCCESS
+   
 
     def _short_close(self, price: Decimal, spread: Decimal, slot: int = None):
         """
@@ -1009,92 +962,60 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("No short position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        # Close position to get PNL and margin
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(ask_price, self.config.trading.lot_size, slot=slot)
+            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(
+                ask_price, self.config.trading.lot_size, slot=slot
+            )
         except ValueError as e:
             self.logger.warning(f"Error closing short position: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.config.trading.is_round_turn else self.config.trading.trading_fee_per_lot * self.config.trading.trade_lot
+        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        # Step 1: Deduct fee from balance
-        try:
-            self.user_accounts.balance.withdraw(fee)
-        except ValueError:
-            self.logger.warning("Insufficient balance to pay fees on SHORT_CLOSE.")
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
+        ts = self.df_market.iloc[self.current_step].name
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="SHORT_CLOSE",
+            postings=[
+                Posting("user_margin", -released_margin),
+                Posting("broker_pnl", -pnl),
+                Posting("broker_fee_income", +fee),
+                Posting("user_cash", +(released_margin + pnl - fee)),
+            ],
+            meta={"side":"short","slot":slot,"close_price":str(ask_price),"pnl":str(pnl)}
+        )
 
-        # Step 2: Collect fee to broker
+        snap = self.ledger.snapshot()
         try:
-            self.broker_accounts.collect_fee(fee)
-        except ValueError as e:
-            self.logger.error(f"Error collecting fee to broker: {e}")
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 3: Realize PNL
-        try:
+            self._post_atomic(entry)
             self.user_accounts.realize_pnl(pnl)
-        except ValueError as e:
-            self.logger.error(f"Error realizing PNL: {e}")
-            self.broker_accounts.fees.withdraw(fee)  # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 4: Adjust broker balance
-        try:
-            self.broker_accounts.adjust_balance(-pnl)
-        except ValueError as e:
-            self.logger.error(f"Error adjusting broker balance: {e}")
-            self.user_accounts.realize_pnl(-pnl)     # Rollback Step 3
-            self.broker_accounts.fees.withdraw(fee)  # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)  # Rollback Step 1
-            self.terminated = True
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # Step 5: Release margin
-        try:
-            self.user_accounts.release_margin(released_margin)
-        except ValueError as e:
-            self.logger.error(f"Error releasing margin: {e}")
-            self.broker_accounts.adjust_balance(pnl)  # Rollback Step 4
-            self.user_accounts.realize_pnl(-pnl)      # Rollback Step 3
-            self.broker_accounts.fees.withdraw(fee)   # Rollback Step 2
-            self.user_accounts.balance.deposit(fee)   # Rollback Step 1
+            self._assert_ledger_conservation()
+        except LedgerError as e:
+            self.ledger.restore(snap)
+            self.logger.error(f"SHORT_CLOSE failed and rolled back: {e}")
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         self.last_close_position = {'pnl': pnl, 'margin': released_margin}
 
-        # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df_market.iloc[self.current_step].name,
+            timestamp=ts,
             operation_type=Action.SHORT_CLOSE.name,
             position_size=closed_size,
             open_price=open_price,
             close_price=ask_price,
             required_margin=Decimal('0'),
             fee=fee,
-            balance=self.user_accounts.balance.get_balance(),
+            balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.margin.get_balance(),
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
             released_margin=released_margin
         )
         self.record_trade(trade_record)
-
-        self.logger.debug(f"Closed SHORT position at price {ask_price}")
-        self.logger.debug(f"P&L: {pnl}, New balance: {self.user_accounts.balance.get_balance()}, "
-                          f"Short position: {self.user_accounts.short_position}, "
-                          f"Used margin: {self.user_accounts.margin.get_balance()}, "
-                          f"Fee: {fee}")
-        
         return ForexCode.SUCCESS
+   
 
     def _position_up(self, price: Decimal, spread: Decimal):
         for pos in self.position_manager.long_positions:
@@ -1225,7 +1146,7 @@ class CustomTradingEnv(gym.Env):
         # Per-step deltas & fee cumulatives (computed once in step())
         realized_step_dec = getattr(self, "realized_step", D0)
         fee_step_dec = getattr(self, "fee_step", D0)
-        fee_cum_dec = self.broker_accounts.fees.get_balance()
+        fee_cum_dec = self.broker_accounts.fee_income.get_balance()
 
         # Peak equity & drawdown from Metrics (already Decimal)
         peak_equity_dec = getattr(self.metrics, "peak_equity", self.config.trading.initial_balance)
@@ -1330,9 +1251,9 @@ class CustomTradingEnv(gym.Env):
 
     def render(self):
         equity = self._calculate_equity()
-        free_margin = equity - self.user_accounts.margin.get_balance()
+        free_margin = equity - self.user_accounts.used_margin .get_balance()
 
-        print(f'Step: {self.current_step} Balance: {self.user_accounts.balance.get_balance():.2f} Equity: {equity:.2f} Margin: {self.user_accounts.margin.get_balance():.2f} Free Margin: {free_margin:.2f}')
+        print(f'Step: {self.current_step} Balance: {self.user_accounts.cash_balance .get_balance():.2f} Equity: {equity:.2f} Margin: {self.user_accounts.used_margin .get_balance():.2f} Free Margin: {free_margin:.2f}')
         
         # self._text_render()
 
@@ -1340,18 +1261,18 @@ class CustomTradingEnv(gym.Env):
 
     def _text_render(self):
         equity = self._calculate_equity()
-        free_margin = equity - self.user_accounts.margin.get_balance()
+        free_margin = equity - self.user_accounts.used_margin .get_balance()
         total_asset = float(decimal_to_float(equity, precision=2))
         realized_pnl = float(decimal_to_float(self.user_accounts.realized_pnl, precision=2))
         unrealized_pnl = float(decimal_to_float(self.user_accounts.unrealized_pnl, precision=2))
-        fees_collected = float(decimal_to_float(self.broker_accounts.fees.get_balance(), precision=2))
-        broker_balance = float(decimal_to_float(self.broker_accounts.balance.get_balance(), precision=2))
+        fees_collected = float(decimal_to_float(self.broker_accounts.fee_income.get_balance(), precision=2))
+        broker_balance = float(decimal_to_float(self.broker_accounts.broker_pnl.get_balance(), precision=2))
 
         print(f'Step: {self.current_step}')
         print(f'Currency Pair: {self.config.trading.currency_pair}')
-        print(f'Balance: {self.user_accounts.balance.get_balance():.2f}')
+        print(f'Balance: {self.user_accounts.cash_balance .get_balance():.2f}')
         print(f'Equity: {equity:.2f}')
-        print(f'Used Margin: {self.user_accounts.margin.get_balance():.2f}')
+        print(f'Used Margin: {self.user_accounts.used_margin .get_balance():.2f}')
         print(f'Free Margin: {free_margin:.2f}')
         print(f'Long Position: {self.user_accounts.long_position:.4f} lots')
         print(f'Short Position: {self.user_accounts.short_position:.4f} lots')

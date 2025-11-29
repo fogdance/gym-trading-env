@@ -25,6 +25,13 @@ class TestMetrics(unittest.TestCase):
         self.trade_record_manager = TradeRecordManager()
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager, risk_free_rate=Decimal('0.012'))
 
+    def _settle_pnl(self, pnl: Decimal):
+        # 统计字段（可留可不留，不影响 equity）
+        self.user_accounts.realize_pnl(pnl)
+        # 关键：结算进现金腿，让 equity 真正变化
+        self.user_accounts.cash_balance.balance += pnl
+
+
     def assert_all_metrics(self, metrics, expected_values):
         self.assertEqual(metrics['current_day_lost'], expected_values['current_day_lost'])
         self.assertEqual(metrics['current_day_lost_pct'], expected_values['current_day_lost_pct'])
@@ -72,7 +79,7 @@ class TestMetrics(unittest.TestCase):
 
     def test_day_loss(self):
         self.metrics.update(datetime(2023, 1, 1))
-        self.user_accounts.realize_pnl(Decimal('-500'))
+        self._settle_pnl(Decimal('-500'))
         self.metrics.update(datetime(2023, 1, 1))
         metrics = self.metrics.get_metrics()
         expected = {
@@ -93,7 +100,7 @@ class TestMetrics(unittest.TestCase):
         self.assert_all_metrics(metrics, expected)
 
     def test_new_day_reset(self):
-        self.user_accounts.realize_pnl(Decimal('-500'))
+        self._settle_pnl(Decimal('-500'))
         self.metrics.update(datetime(2023, 1, 1))
         self.metrics.update(datetime(2023, 1, 2))
         metrics = self.metrics.get_metrics()
@@ -182,7 +189,7 @@ class TestMetrics(unittest.TestCase):
         self.assert_all_metrics(metrics, expected)
 
         # 模拟回撤
-        self.user_accounts.realize_pnl(Decimal('-200'))
+        self._settle_pnl(Decimal('-200'))
         self.metrics.update(datetime(2023, 1, 3))
         metrics = self.metrics.get_metrics()
         total_pnl = Decimal('125')
@@ -202,7 +209,7 @@ class TestMetrics(unittest.TestCase):
 
     # 边界条件测试
     def test_no_trades(self):
-        self.user_accounts.realize_pnl(Decimal('-1000'))
+        self._settle_pnl(Decimal('-1000'))
         self.metrics.update(datetime(2023, 1, 1))
         metrics = self.metrics.get_metrics()
         expected = {
@@ -337,7 +344,7 @@ class TestMetrics(unittest.TestCase):
         ]
         for trade in trades:
             self.trade_record_manager.record_trade(trade)
-        self.user_accounts.realize_pnl(Decimal('-200'))
+        self._settle_pnl(Decimal('-200'))
         self.metrics.update(datetime(2023, 1, 1, 10, 1))
         metrics = self.metrics.get_metrics()
         returns = [0.01, 0.005]
@@ -473,7 +480,7 @@ class TestMetrics(unittest.TestCase):
 
     def test_excessive_drawdown(self):
         # 测试回撤超过初始资金
-        self.user_accounts.realize_pnl(Decimal('-15000'))  # 净值变为 -5000
+        self._settle_pnl(Decimal('-15000'))  # 净值变为 -5000
         self.metrics.update(datetime(2023, 1, 1))
         metrics = self.metrics.get_metrics()
         expected = {

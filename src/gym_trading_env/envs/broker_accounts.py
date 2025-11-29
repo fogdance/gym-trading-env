@@ -5,8 +5,8 @@ from gym_trading_env.envs.account import Account
 
 class BrokerAccounts:
     def __init__(self):
-        self.balance = Account(Decimal('0.0'))  # Broker's balance account for P&L hedging
-        self.fees = Account(Decimal('0.0'))    # Broker's fees account for storing fees and spread profits
+        self.broker_pnl = Account(Decimal('0.0'))  # Broker's balance account for P&L hedging
+        self.fee_income = Account(Decimal('0.0'))    # Broker's fees account for storing fees and spread profits
 
     def collect_fee(self, amount: Decimal):
         """
@@ -15,7 +15,7 @@ class BrokerAccounts:
         Args:
             amount (Decimal): The fee amount to be collected.
         """
-        self.fees.deposit(amount)
+        self.fee_income.deposit(amount)
 
     def adjust_balance(self, amount: Decimal):
         """
@@ -24,7 +24,7 @@ class BrokerAccounts:
         Args:
             amount (Decimal): The amount to adjust the balance by.
         """
-        self.balance.deposit(amount)
+        self.broker_pnl.deposit(amount)
 
     def get_total_balance(self) -> Decimal:
         """
@@ -33,4 +33,4 @@ class BrokerAccounts:
         Returns:
             Decimal: The total balance.
         """
-        return self.balance.get_balance() + self.fees.get_balance()
+        return self.broker_pnl.get_balance() + self.fee_income.get_balance()

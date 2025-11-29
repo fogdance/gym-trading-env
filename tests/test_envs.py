@@ -923,7 +923,7 @@ class TestCustomTradingEnv(unittest.TestCase):
 
         # Set balance to fee + required_margin - 0.01 to make it insufficient
         insufficient_balance = fee + required_margin - Decimal('0.01')
-        self.env.user_accounts.balance.balance = insufficient_balance
+        self.env.user_accounts.cash_balance .balance = insufficient_balance
         total_funds_before = self.calculate_total_funds()
 
         action = Action.LONG_OPEN.value
@@ -976,7 +976,7 @@ class TestCustomTradingEnv(unittest.TestCase):
         # To prevent opening, balance should be sufficient to cover any required margin if applicable
         # For SHORT_OPEN, typically no immediate balance requirement, but ensure the environment handles it
         # Set balance to a negative value to simulate insufficient margin
-        self.env.user_accounts.balance.balance = Decimal('-1.0')  # Negative balance
+        self.env.user_accounts.cash_balance .balance = Decimal('-1.0')  # Negative balance
         total_funds_before = self.calculate_total_funds()
 
         action = Action.SHORT_OPEN.value

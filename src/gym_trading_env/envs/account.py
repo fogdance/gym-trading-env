@@ -1,5 +1,4 @@
 # src/gym_trading_env/envs/account.py
-
 from decimal import Decimal
 
 class Account:
@@ -19,3 +18,8 @@ class Account:
     
     def get_balance(self):
         return self.balance
+
+    # NEW: 给 Ledger snapshot/restore 用
+    def set_balance(self, new_balance: Decimal):
+        assert isinstance(new_balance, Decimal), "new_balance must be a Decimal."
+        self.balance = new_balance
