@@ -28,6 +28,7 @@ from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT, build_market_features
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
+from gym_trading_env.utils.plot_intraday import save_intraday_html
 
 
 class CustomTradingEnv(gym.Env):
@@ -50,8 +51,7 @@ class CustomTradingEnv(gym.Env):
         
 
         self.action_space = spaces.Discrete(len(self.valid_actions))
-        self.df_market = build_market_features(self.df, tz="Asia/Singapore", rollover_hour_local=5, is_future=self.config.trading.is_future)
-
+        self.df_market = build_market_features(self.df, rollover_hour_local=5, is_future=self.config.trading.is_future)
 
         # ---- constants ----
         self.DAY_LEN = 1440
@@ -124,6 +124,21 @@ class CustomTradingEnv(gym.Env):
 
 
         self.reset()
+        
+        if self.config.debug.debug_enabled:
+            i = self.current_step
+            print("df        :", self.df.index[i])
+            print("df_market :", self.df_market.index[i])             # 如果这里不是同一个时间，就是 iloc 错位
+            ts = self.df.index[i]
+            print("df_m.loc  :", None if ts not in self.df_market.index else ts)
+            print("len(df)=", len(self.df), "len(df_market)=", len(self.df_market))
+
+            save_intraday_html(
+                df_market=self.df_market,
+                title = (f"{self.config.trading.currency_pair} "f"{self.df_market.index[self.current_step]}"),
+                out_path= ("/tmp/"f"{self.config.trading.currency_pair} "f"{self.df_market.index[self.current_step]}"".html"),
+                start_pos=self.current_step,
+                end_pos=self.end_idx)
 
 
 
@@ -162,31 +177,33 @@ class CustomTradingEnv(gym.Env):
         # Data
         if df is None:
             df = load_data(config.trading.data_path, config.trading.data_interval)
-        self.df = df.copy()
         # Ensure 'Date' is datetime and set as index
-        if 'Date' in self.df.columns:
-            self.df['Date'] = pd.to_datetime(self.df['Date'])
-            self.df.set_index('Date', inplace=True)
-        elif not isinstance(self.df.index, pd.DatetimeIndex):
+        if 'Date' in df.columns:
+            df['Date'] = pd.to_datetime(df['Date'])
+            df.set_index('Date', inplace=True)
+        elif not isinstance(df.index, pd.DatetimeIndex):
             raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
         
         # Initialize step counters
         self.episode_step_count = 0
         self.start_idx = 0
-        self.end_idx = len(self.df)  # default to entire dataset
+        self.end_idx = len(df)  # default to entire dataset
 
         # We'll store self.np_random for picking random start
         self.np_random = np.random.default_rng(seed=42)
 
         # Check basic feasibility right away
-        self._check_data_sufficiency()
+        self._check_data_sufficiency(df)
 
-    def _check_data_sufficiency(self):
+        self.df = df.copy()
+
+
+    def _check_data_sufficiency(self, df):
         """
         Checks if the DataFrame is large enough given window_size and episode_length.
         If not sufficient, raise ValueError or adapt the config as fallback.
         """
-        df_len = len(self.df)
+        df_len = len(df)
         if df_len < self.config.training.window_size:
             raise ValueError(f"Data has only {df_len} rows, smaller than window_size={self.config.training.window_size}. Not feasible.")
         
@@ -256,10 +273,10 @@ class CustomTradingEnv(gym.Env):
         candidate_rows = self._candidate_start_rows_by_clock(start_policy)
 
         # 约束 episode_length（需要给定窗口足够）
-        df_len = len(self.df)
+        df_len = len(self.df_market)
         episode_len = self.config.training.episode_length
         if episode_len is not None:
-            max_start = df_len - int(episode_len) - 1
+            max_start = df_len - int(episode_len)
             candidate_rows = candidate_rows[candidate_rows <= max_start]
 
         # 若锚点集合为空，退回到原有的“任意有效行”
@@ -267,7 +284,7 @@ class CustomTradingEnv(gym.Env):
             mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
             candidate_rows = np.flatnonzero(mask_np >= 0.5)
             if episode_len is not None:
-                max_start = df_len - int(episode_len) - 1
+                max_start = df_len - int(episode_len)
                 candidate_rows = candidate_rows[candidate_rows <= max_start]
             if candidate_rows.size == 0:
                 raise RuntimeError("No valid start rows found (after applying start_clock and episode_length).")
@@ -281,7 +298,7 @@ class CustomTradingEnv(gym.Env):
 
         # --- Align all counters/indexes to this chosen row ---
         self.current_step = start_row
-        ts0 = self.df.index[self.current_step]
+        ts0 = self.df_market.index[self.current_step]
 
         # Resolve the episode's day index using normalized day_id
         try:
@@ -313,7 +330,8 @@ class CustomTradingEnv(gym.Env):
             end_idx_15 = self._compute_end_idx_at_15(start_row, tz="Asia/Shanghai")
             self.end_idx = min(self.end_idx, end_idx_15)
 
-        self.logger.info(f"{self.df.index[self.current_step]} -> {self.df.index[self.end_idx]}")
+        end_ts = self.df_market.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
+        self.logger.info(f"{ts0} -> {end_ts} (end_idx={self.end_idx})")
 
         # Per-episode counters
         self.episode_step_count = 0
@@ -375,16 +393,14 @@ class CustomTradingEnv(gym.Env):
         if self.terminated:
             return self._get_obs(), 0.0, self.terminated, False, {}
 
-        #
-        # 10:00
-        #
+        self.logger.info(f"{self.df_market.index[self.current_step]}")
 
         # Get action price
         action_price = None
         try:
-            action_price = D(self.df.iloc[self.current_step]['Close'])
+            action_price = D(self.df_market.iloc[self.current_step]['C_t'])
         except IndexError:
-            self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df)}.")
+            self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df_market)}.")
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
@@ -440,18 +456,18 @@ class CustomTradingEnv(gym.Env):
         self.episode_step_count += 1
 
         # If we are past the last valid row, terminate BEFORE reading df
-        if self.current_step >= len(self.df):
+        if self.current_step >= len(self.df_market):
             self.terminated = True
             return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
 
         self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
 
-        self.current_price = D(self.df.iloc[self.current_step]['Close'])
+        self.current_price = D(self.df_market.iloc[self.current_step]['C_t'])
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
-        self.metrics.update(self.df.index[self.current_step])
+        self.metrics.update(self.df_market.index[self.current_step])
 
         if self._should_terminated():
             self.terminated = True
@@ -475,8 +491,8 @@ class CustomTradingEnv(gym.Env):
 
     def _should_terminated(self):
         # Check termination conditions (e.g., last time step)
-        if self.current_step >= len(self.df) - 1:
-            self.logger.error(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df)}")
+        if self.current_step >= len(self.df_market) - 1:
+            self.logger.error(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df_market)}")
             return True
 
         # Check margin requirements
@@ -584,7 +600,7 @@ class CustomTradingEnv(gym.Env):
         if getattr(idx, "tz", None) is None:
             return idx.tz_localize(tz)
         return idx.tz_convert(tz)
-
+    
     # --- NEW: 根据时钟锚点生成候选起点行 ---
     def _candidate_start_rows_by_clock(self, start_clock: str) -> np.ndarray:
         """
@@ -600,7 +616,8 @@ class CustomTradingEnv(gym.Env):
 
         # 将 df.index 本地化到期货默认时区（或按需替换为数据所在时区）
         tz = DEFAULT_TZ  # "Asia/Shanghai"
-        idx_local = self._localize_index(self.df.index, tz)
+        idx_local = self._localize_index(self.df_market.index, tz)
+
         hours = idx_local.hour
         minutes = idx_local.minute
 
@@ -610,14 +627,14 @@ class CustomTradingEnv(gym.Env):
             return np.intersect1d(sel, valid_mask_rows, assume_unique=False)
 
         if start_clock == "09:00":
-            return rows_at(9, 0)
+            return rows_at(9, 1)
 
         if start_clock == "21:00":
-            return rows_at(21, 0)
+            return rows_at(21, 1)
 
         if start_clock == "random_9_or_21":
-            r9 = rows_at(9, 0)
-            r21 = rows_at(21, 0)
+            r9 = rows_at(9, 1)
+            r21 = rows_at(21, 1)
             # 两个集合并，随机时刻在 reset() 里用 choice 再随机
             return np.concatenate([r9, r21]) if (r9.size + r21.size) > 0 else np.array([], dtype=int)
 
@@ -626,38 +643,24 @@ class CustomTradingEnv(gym.Env):
 
     # --- NEW: 计算“当日 15:00（或夜盘起 -> 次日 15:00）”对应的 self.end_idx ---
     def _compute_end_idx_at_15(self, start_row: int, tz: str = "Asia/Shanghai") -> int:
-        """
-        给定 start_row，返回使得 episode 在“该交易日 15:00”收盘结束的 end_idx（半开区间上界）。
-        - 若起点为 09:00（白盘）：同日 15:00
-        - 若起点为 21:00（夜盘）：次日 15:00
-        返回值作为 self.end_idx（half-open）：episode 在到达 end_idx 时终止。
-        """
-        idx_local = self._localize_index(self.df.index, tz)
-        df_len = len(self.df)
+        idx_local = self._localize_index(self.df_market.index, tz)
 
-        # 起点对应的本地时刻
+        df_len = len(self.df_market)
+
         t0 = idx_local[start_row]
         base_day = t0.normalize()
+        end_day = base_day + pd.Timedelta(days=1) if t0.hour >= 18 else base_day
 
-        # 规则：21:00 夜盘 -> 次日 15:00；否则同日 15:00
-        if t0.hour >= 18:  # 我们的起点策略只会给 21:00 或 09:00；>=18 可以稳妥覆盖夜盘
-            end_day = base_day + pd.Timedelta(days=1)
-        else:
-            end_day = base_day
+        # 你的数据锚点是 xx:01，这里用 15:01 更匹配
+        end_ts = pd.Timestamp(end_day.date(), tz=tz) + pd.Timedelta(hours=15, minutes=1)
 
-        end_ts = pd.Timestamp(end_day.date(), tz=tz) + pd.Timedelta(hours=15)  # 15:00
+        arr_ns = idx_local.asi8
+        # half-open: first index STRICTLY greater than end_ts
+        end_idx = int(np.searchsorted(arr_ns, end_ts.value, side="right"))
 
-        # 找到第一个 >= 15:00 的行位置；作为 half-open 上界需要 +1 才能“包含 15:00 这分钟”
-        arr_ns = idx_local.asi8  # int64 纳秒
-        target_ns = end_ts.value
-        pos = int(np.searchsorted(arr_ns, target_ns, side="left"))
+        end_idx = min(df_len, max(end_idx, start_row + 1))
+        return end_idx
 
-        # half-open 上界：包含 15:00 这一分钟（若存在），所以设为 pos+1；并裁剪到 df 边界
-        end_idx_15 = min(df_len, pos - 1)
-
-        # 确保不会小于起点（极端数据稀疏情况下）
-        end_idx_15 = max(end_idx_15, start_row + 1)
-        return end_idx_15
 
 
 
@@ -738,7 +741,7 @@ class CustomTradingEnv(gym.Env):
 
         # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df.iloc[self.current_step].name,
+            timestamp=self.df_market.iloc[self.current_step].name,
             operation_type=Action.LONG_OPEN.name,
             position_size=position_size,
             open_price=ask_price,
@@ -830,7 +833,7 @@ class CustomTradingEnv(gym.Env):
 
         # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df.iloc[self.current_step].name,
+            timestamp=self.df_market.iloc[self.current_step].name,
             operation_type=Action.LONG_CLOSE.name,
             position_size=closed_size,
             open_price=open_price,
@@ -912,7 +915,7 @@ class CustomTradingEnv(gym.Env):
 
         # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df.iloc[self.current_step].name,
+            timestamp=self.df_market.iloc[self.current_step].name,
             operation_type=Action.SHORT_OPEN.name,
             position_size=position_size,
             open_price=bid_price,
@@ -1004,7 +1007,7 @@ class CustomTradingEnv(gym.Env):
 
         # All operations successful
         trade_record = TradeRecord(
-            timestamp=self.df.iloc[self.current_step].name,
+            timestamp=self.df_market.iloc[self.current_step].name,
             operation_type=Action.SHORT_CLOSE.name,
             position_size=closed_size,
             open_price=open_price,
