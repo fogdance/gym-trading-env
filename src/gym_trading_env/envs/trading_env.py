@@ -236,7 +236,7 @@ class CustomTradingEnv(gym.Env):
         Resets the environment to an initial state and returns an initial observation.
         Picks a random valid start row if training.randomize_start is True.
         At reset, the visible market window shows all minutes from the session open
-        (minute_index_t==0, e.g., 05:00) up to the chosen start minute (inclusive).
+        up to the chosen start minute (inclusive).
         """
         self.logger.info("REST env")
         super().reset(seed=seed)
@@ -317,7 +317,7 @@ class CustomTradingEnv(gym.Env):
             self._start_minute = int(self.df_market.loc[ts0, "minute_index_t"])
         except KeyError:
             self._start_minute = 0
-        self.current_minute = self._start_minute  # <-- drives full-history visibility in _get_obs()
+        self.current_minute = self._start_minute
 
         # Bound the episode if episode_length is provided
         self.start_idx = self.current_step
@@ -355,14 +355,19 @@ class CustomTradingEnv(gym.Env):
         self.tp_price = D0
         self.minutes_to_timeout = 0
 
-        # Cumulative caches (used to compute per-step deltas)
-        self._prev_realized_pnl_cum = D0
-        self._prev_fee_cum = D0
+        # Cumulative caches (used to compute per-step deltas) — initialize from current totals
+        self._prev_realized_pnl_cum = self.user_accounts.realized_pnl
+        self._prev_fee_cum = self.broker_accounts.fees.get_balance()
 
-        # First observation (shows 05:00..current_minute)
+        # Make sure deltas start at 0 for the first obs
+        self.realized_step = D0
+        self.fee_step = D0
+
+        # First observation
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
+
 
 
 
@@ -385,7 +390,7 @@ class CustomTradingEnv(gym.Env):
         Executes one time step within the environment.
 
         Args:
-            action (int): The action to take.
+            action (int): The action to take (index into self.valid_actions).
 
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
@@ -396,26 +401,32 @@ class CustomTradingEnv(gym.Env):
         if self.config.debug.debug_enabled:
             self.logger.info(f"{self.df_market.index[self.current_step]}")
 
-        # Get action price
-        action_price = None
+        # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
-            action_price = D(self.df_market.iloc[self.current_step]['C_t'])
-        except IndexError:
-            self.logger.error(f"Current step {self.current_step} is out of bounds for DataFrame with length {len(self.df_market)}.")
+            a = int(action)
+            if a < 0 or a >= len(self.valid_actions):
+                raise ValueError(f"Action index out of range: {a}")
+            self.action = self.valid_actions[a]
+        except Exception:
+            self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
+            self.terminated = True
+            return self._get_obs(), 0.0, self.terminated, False, {}
+
+        # Get action price at current_step
+        try:
+            action_price = D(self.df_market.iloc[self.current_step]["C_t"])
+        except Exception as e:
+            self.logger.error(
+                f"Failed to read action price at step={self.current_step} "
+                f"(len={len(self.df_market)}): {e}"
+            )
             self.terminated = True
             return self._get_obs(), 0.0, self.terminated, False, {}
 
         # Execute action
-        try:
-            self.action = Action(action)
-        except ValueError:
-            self.logger.error(f"Invalid action: {action}. Action must be one of {list(Action)}.")
-            self.terminated = True
-            return self._get_obs(), 0.0, self.terminated, False, {}
-
         self.action_result = ForexCode.SUCCESS
         if self.action == Action.HOLD:
-            pass  # Do nothing
+            pass
         elif self.action == Action.LONG_OPEN:
             self.action_result = self._long_open(action_price, self.config.trading.spread)
         elif self.action == Action.LONG_CLOSE:
@@ -447,38 +458,47 @@ class CustomTradingEnv(gym.Env):
         elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
+        # Behavior counters
         try:
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
         except Exception:
             in_market = False
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market)
 
+        # Advance time
         self.current_step += 1
         self.episode_step_count += 1
 
         # If we are past the last valid row, terminate BEFORE reading df
         if self.current_step >= len(self.df_market):
             self.terminated = True
+            # Update deltas once for this final transition
+            self._update_step_deltas()
             return self._get_obs(), float(0.0), self.terminated, False, self._get_info()
 
+        # Update visibility minute
         self.current_minute = min(self.current_minute + 1, self.DAY_LEN - 1)
 
-        self.current_price = D(self.df_market.iloc[self.current_step]['C_t'])
+        # Update current_price for mark-to-market (at new step)
+        self.current_price = D(self.df_market.iloc[self.current_step]["C_t"])
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
+        # Update metrics (equity/drawdown etc.)
         self.metrics.update(self.df_market.index[self.current_step])
 
+        # Termination rules
         if self._should_terminated():
             self.terminated = True
             self._empty_position(self.current_price, self.config.trading.spread)
             self._update_unrealized_pnl()
 
-        # Construct observation
-        obs = self._get_obs()
+        # IMPORTANT: update per-step deltas ONCE here (no side effects in obs)
+        self._update_step_deltas()
 
-        # Update info
+        # Construct observation & info
+        obs = self._get_obs()
         info = self._get_info()
 
         # Calculate reward
@@ -487,8 +507,25 @@ class CustomTradingEnv(gym.Env):
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
-        # Return the observation, reward (float), termination flags, and info
         return obs, reward, self.terminated, False, info
+
+
+    def _update_step_deltas(self):
+        """
+        Update per-step deltas from cumulative realized pnl & fees.
+        IMPORTANT: This must be called exactly once per env.step(),
+        and NEVER inside _get_obs() / _get_agent_state_vector().
+        """
+        realized_cum_now = self.user_accounts.realized_pnl            # Decimal
+        fee_cum_now = self.broker_accounts.fees.get_balance()         # Decimal
+
+        # Per-step deltas
+        self.realized_step = realized_cum_now - self._prev_realized_pnl_cum
+        self.fee_step = fee_cum_now - self._prev_fee_cum
+
+        # Update caches
+        self._prev_realized_pnl_cum = realized_cum_now
+        self._prev_fee_cum = fee_cum_now
 
     def _should_terminated(self):
         # Check termination conditions (e.g., last time step)
@@ -1129,19 +1166,20 @@ class CustomTradingEnv(gym.Env):
         dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
         return dfp
 
-
+    
     def _get_agent_state_vector(self) -> np.ndarray:
         """
         Build FEATURES_AGENT strictly from existing system state.
         All internal math stays in Decimal; convert with decimal_to_float at the edge.
+        IMPORTANT: No side effects here (must be idempotent within the same step).
         """
         # Net position in lots (Decimal), have_long/short flags
-        long_lots  = self.user_accounts.long_position             # Decimal
-        short_lots = self.user_accounts.short_position            # Decimal
-        net_lots   = long_lots - short_lots                       # Decimal
+        long_lots  = self.user_accounts.long_position
+        short_lots = self.user_accounts.short_position
+        net_lots   = long_lots - short_lots
 
-        have_long = 1.0 if long_lots > D0 else 0.0
-        have_short= 1.0 if short_lots > D0 else 0.0
+        have_long  = 1.0 if long_lots > D0 else 0.0
+        have_short = 1.0 if short_lots > D0 else 0.0
 
         # Pick active side snapshot for entry price & age
         snap = self._active_side_snapshot()
@@ -1149,23 +1187,24 @@ class CustomTradingEnv(gym.Env):
             entry_price = D0
             holding_minutes = D0
         else:
-            entry_price = snap["vwap"]          # Decimal VWAP of active side
-            holding_minutes = snap["age_min"]   # Decimal minutes (size-weighted)
+            entry_price = snap["vwap"]
+            holding_minutes = snap["age_min"]
 
         # Unrealized & realized (cum) PnL, equity
-        upnl_dec = self.user_accounts.unrealized_pnl                      # Decimal
-        realized_cum_dec = self.user_accounts.realized_pnl                # Decimal
-        equity_dec = self._calculate_equity()                              # Decimal
+        upnl_dec = self.user_accounts.unrealized_pnl
+        realized_cum_dec = self.user_accounts.realized_pnl
+        equity_dec = self._calculate_equity()
 
-        # Per-step deltas (safe even if no trade this step)
-        realized_step_dec, fee_step_dec = self._step_deltas_from_cum()     # Decimal, Decimal
-        fee_cum_dec = self.broker_accounts.fees.get_balance()              # Decimal
+        # Per-step deltas & fee cumulatives (computed once in step())
+        realized_step_dec = getattr(self, "realized_step", D0)
+        fee_step_dec = getattr(self, "fee_step", D0)
+        fee_cum_dec = self.broker_accounts.fees.get_balance()
 
         # Peak equity & drawdown from Metrics (already Decimal)
-        peak_equity_dec = self.metrics.peak_equity
-        drawdown_dec = self.metrics.metrics.get('current_drawdown', D0)
+        peak_equity_dec = getattr(self.metrics, "peak_equity", self.config.trading.initial_balance)
+        drawdown_dec = self.metrics.metrics.get("current_drawdown", D0)
 
-        # Not implemented in your system yet → keep zeros
+        # Not implemented yet → keep zeros
         sigma_entry_dec = D0
         sl_ticks_dec = D0
         tp_ticks_dec = D0
@@ -1173,30 +1212,30 @@ class CustomTradingEnv(gym.Env):
         tp_price_dec = D0
         minutes_to_timeout_dec = D0
 
-        # Convert to float32 at the very edge (use your helper)
         vec = np.array([
-            decimal_to_float(net_lots),             # pos_t (signed lots)
-            float(have_long),                       # have_long_t
-            float(have_short),                      # have_short_t
-            decimal_to_float(entry_price),          # entry_price_t
-            decimal_to_float(holding_minutes),      # holding_minutes_t
-            decimal_to_float(upnl_dec),             # upnl_t
-            decimal_to_float(realized_step_dec),    # realized_pnl_step_t
-            decimal_to_float(realized_cum_dec),     # realized_pnl_cum_t
-            decimal_to_float(fee_step_dec),         # fee_step_t
-            decimal_to_float(fee_cum_dec),          # fee_cum_t
-            decimal_to_float(equity_dec),           # equity_t
-            decimal_to_float(peak_equity_dec),      # max_equity_t
-            decimal_to_float(drawdown_dec),         # drawdown_t
-            decimal_to_float(sigma_entry_dec),      # sigma_entry_t
-            decimal_to_float(sl_ticks_dec),         # sl_ticks_t
-            decimal_to_float(tp_ticks_dec),         # tp_ticks_t
-            decimal_to_float(sl_price_dec),         # sl_price_t
-            decimal_to_float(tp_price_dec),         # tp_price_t
-            decimal_to_float(minutes_to_timeout_dec)# minutes_to_timeout_t
+            decimal_to_float(net_lots),              # pos_t
+            float(have_long),                        # have_long_t
+            float(have_short),                       # have_short_t
+            decimal_to_float(entry_price),           # entry_price_t
+            decimal_to_float(holding_minutes),       # holding_minutes_t
+            decimal_to_float(upnl_dec),              # upnl_t
+            decimal_to_float(realized_step_dec),     # realized_pnl_step_t
+            decimal_to_float(realized_cum_dec),      # realized_pnl_cum_t
+            decimal_to_float(fee_step_dec),          # fee_step_t
+            decimal_to_float(fee_cum_dec),           # fee_cum_t
+            decimal_to_float(equity_dec),            # equity_t
+            decimal_to_float(peak_equity_dec),       # max_equity_t
+            decimal_to_float(drawdown_dec),          # drawdown_t
+            decimal_to_float(sigma_entry_dec),       # sigma_entry_t
+            decimal_to_float(sl_ticks_dec),          # sl_ticks_t
+            decimal_to_float(tp_ticks_dec),          # tp_ticks_t
+            decimal_to_float(sl_price_dec),          # sl_price_t
+            decimal_to_float(tp_price_dec),          # tp_price_t
+            decimal_to_float(minutes_to_timeout_dec) # minutes_to_timeout_t
         ], dtype=np.float32)
 
         return vec
+
 
 
     def _sum_sizes_and_vwap(self, positions, is_long: bool):
@@ -1259,22 +1298,6 @@ class CustomTradingEnv(gym.Env):
         else:
             return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
 
-    def _step_deltas_from_cum(self):
-        """
-        Compute per-step deltas for realized PnL and fees from cumulatives, then update caches.
-        Returns (realized_step: Decimal, fee_step: Decimal)
-        """
-        realized_cum_now = self.user_accounts.realized_pnl                       # Decimal
-        fee_cum_now = self.broker_accounts.fees.get_balance()                    # Decimal
-
-        realized_step = realized_cum_now - self._prev_realized_pnl_cum
-        fee_step = fee_cum_now - self._prev_fee_cum
-
-        # update caches for next call
-        self._prev_realized_pnl_cum = realized_cum_now
-        self._prev_fee_cum = fee_cum_now
-
-        return realized_step, fee_step
 
 
 
