@@ -167,8 +167,16 @@ class TestCustomTradingEnv(unittest.TestCase):
         fee_close = D(info2["fees_collected"]) - D(info1["fees_collected"])
         self.assertEqual(fee_close, fp if is_round_turn else D0)
 
-        # reward 契约：Δtotal_pnl（沿用你旧测试口径）
-        expected_reward = total_pnl(info2) - pnl_before_close
+        
+        eps = Decimal("1e-8")
+
+        # close 前一步的 equity（t-1）
+        eq_prev = D(info1["equity"])
+        # close 后的 equity（t）
+        eq_cur  = D(info2["equity"])
+
+        delta = eq_cur - eq_prev
+        expected_reward = delta / max(abs(eq_prev), eps)
         self.assertAlmostEqual(
             r2,
             float(decimal_to_float(expected_reward, precision=2)),
@@ -208,7 +216,15 @@ class TestCustomTradingEnv(unittest.TestCase):
         fee_close = D(info2["fees_collected"]) - D(info1["fees_collected"])
         self.assertEqual(fee_close, fp if is_round_turn else D0)
 
-        expected_reward = total_pnl(info2) - pnl_before_close
+        eps = Decimal("1e-8")
+
+        # close 前一步的 equity（t-1）
+        eq_prev = D(info1["equity"])
+        # close 后的 equity（t）
+        eq_cur  = D(info2["equity"])
+
+        delta = eq_cur - eq_prev
+        expected_reward = delta / max(abs(eq_prev), eps)
         self.assertAlmostEqual(
             r2,
             float(decimal_to_float(expected_reward, precision=2)),

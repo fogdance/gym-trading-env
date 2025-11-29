@@ -6,119 +6,72 @@ from math import log1p, copysign
 from collections import deque
 from gym_trading_env.envs.action import ForexCode
 import numpy as np
-import talib
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
-class TotalPnlReward:
-    """基于总盈亏（已实现 + 未实现）的奖励类"""
-    def __init__(self, env):
+from decimal import Decimal
+from gym_trading_env.utils.decimal_util import decimal_to_float
+
+
+class EquityDeltaReward:
+    """
+    复式记账版：
+    equity = user_cash + user_margin + unrealized_pnl(投影)
+    reward:
+      - mode="delta": equity(t) - equity(t-1)
+      - mode="pct":   (equity(t)-equity(t-1)) / max(|equity(t-1)|, eps)
+    """
+    def __init__(self, env, precision=6, mode="pct", include_margin=True, include_unrealized=True, eps=Decimal("1e-8")):
         self.env = env
-        self.previous_total_pnl = Decimal(0)
+        self.precision = precision
+        self.mode = mode
+        self.include_margin = include_margin
+        self.include_unrealized = include_unrealized
+        self.eps = eps
+        self.previous_equity = None
+
+    def _equity(self) -> Decimal:
+        b = self.env.ledger.balances()  # Dict[str, Decimal]
+
+        cash = b.get("user_cash", Decimal("0"))
+        margin = b.get("user_margin", Decimal("0")) if self.include_margin else Decimal("0")
+        unreal = getattr(self.env.user_accounts, "unrealized_pnl", Decimal("0")) if self.include_unrealized else Decimal("0")
+
+        return cash + margin + unreal
+
+    def reset(self):
+        self.previous_equity = self._equity()
 
     def __call__(self, obs=None):
-        """计算奖励并更新状态"""
-        # 计算当前总盈亏
-        total_pnl = self.env.user_accounts.realized_pnl + self.env.user_accounts.unrealized_pnl
-        
-        # 计算奖励：当前总盈亏与上一步的差值
-        reward = total_pnl - self.previous_total_pnl
-        
-        # 日志记录（调试用）
-        self.env.logger.debug(f"Previous Total P&L: {self.previous_total_pnl}")
-        self.env.logger.debug(f"Current Total P&L: {total_pnl}")
-        self.env.logger.debug(f"Reward: {reward}")
-        
-        # 更新状态
-        self.previous_total_pnl = total_pnl
-        
-        # 转换为 float，保留两位小数
-        return float(decimal_to_float(reward, precision=2))
+        equity = self._equity()
+
+        if self.previous_equity is None:
+            self.previous_equity = equity
+            return 0.0
+
+        delta = equity - self.previous_equity
+
+        if self.mode == "pct":
+            denom = max(abs(self.previous_equity), self.eps)
+            reward = delta / denom
+        else:
+            reward = delta
+
+        self.previous_equity = equity
+        return float(decimal_to_float(reward, precision=self.precision))
 
 
 class CurrentBalanceReward:
-    """基于当前余额的奖励类"""
-    def __init__(self, env):
+    """复式记账版：返回当前现金(user_cash)"""
+    def __init__(self, env, precision=2):
         self.env = env
+        self.precision = precision
 
     def __call__(self, obs=None):
-        """直接返回当前余额作为奖励"""
-        balance = self.env.user_accounts.balance.get_balance()
-        return float(decimal_to_float(balance, precision=2))
+        cash = self.env.ledger.balances().get("user_cash", Decimal("0"))
+        return float(decimal_to_float(cash, precision=self.precision))
 
-class StepReward:
-    """每步奖励"""
-    def __init__(self, env, profit_coeff=2, penalty=0.01, min_reward=-0.5, max_reward=0.75):
-        self.env = env
-        self.penalty = D(penalty)
-        self.previous_equity = env.config.trading.initial_balance
-        self.initial_balance = env.config.trading.initial_balance
-        self.empty_position_count = 0
-        self.max_empty_position_count = 10
-        self.hedge_count = 0
-        self.max_hedge_count = 10
-        self.invalid_action = 0
-        self.max_invalid_action = 5
-        self.min_reward = min_reward
-        self.max_reward = max_reward
-        
-        self.profit_coeff = D(profit_coeff)  # 每美元收益系数
-        self.short_atr_period = 25  # 短期 ATR 周期
-        self.long_atr_period = 100  # 长期 ATR 周期
-
-    def __call__(self, obs=None):
-        reward = Decimal('0.0')
-        
-        # 不鼓励空仓
-        if self.env.position_manager.total_long_position() == Decimal('0.0') and \
-           self.env.position_manager.total_short_position() == Decimal('0.0'):
-            self.empty_position_count += 1
-            if self.empty_position_count >= self.max_empty_position_count:
-                self.empty_position_count = 0
-                reward -= self.penalty
-        else:
-            self.empty_position_count = 0
-
-        # 不鼓励对冲（多空持仓相等）
-        if self.env.position_manager.total_long_position() == self.env.position_manager.total_short_position() and \
-           self.env.position_manager.total_long_position() > Decimal('0.0'):
-            self.hedge_count += 1
-            if self.hedge_count >= self.max_hedge_count:
-                self.hedge_count = 0
-                reward -= self.penalty
-        else:
-            self.hedge_count = 0
-
-        # 无效动作
-        if self.env.action_result in [ForexCode.ERROR_HIT_MAX_POSITION, 
-                                      ForexCode.ERROR_NO_POSITION_TO_CLOSE, 
-                                      ForexCode.ERROR_OPEN_POSITION]:
-            self.invalid_action += 1
-            if self.invalid_action >= self.max_invalid_action:
-                self.invalid_action = 0
-                reward -= self.penalty
-        else:
-            self.invalid_action = 0
-
-        # 持仓收益奖励
-        def pos_reward(pos, long: bool):
-            if pos is None:
-                return Decimal('0')
-
-            pnl = calc_unrealized_pnl(self.env.current_price, pos, self.env.config.trading.lot_size, long)
-
-            sign = copysign(1, float(pnl))
-            reward = sign * log1p(abs(float(pnl) / float(pos.initial_margin)))  # log1p(abs(pnl / margin))
-            reward = min(max(reward, self.min_reward), self.max_reward)
-            return float_to_decimal(reward)
-
-        for pos in self.env.position_manager.long_positions:
-            reward += pos_reward(pos, True)
-        for pos in self.env.position_manager.short_positions:
-            reward += pos_reward(pos, False)
-
-        return float(reward)
 
 class CloseReward:
     """平仓奖励"""
@@ -151,11 +104,9 @@ class FastCarRacingReward:
         self.config = config if config else default_config
 
         self.rewards = [
-            StepReward(env, **self.config['step']),
             CloseReward(env, **self.config['close']),
             EventReward(env, repeated=self.config['event']['repeated'], max_profit_reward=self.config['event']['max_profit_reward'], max_loss_penalty=self.config['event']['max_loss_penalty']),
             TerminationReward(env, self.config['termination']['limit']),
-            TrendReward(env),
         ]
 
     def __call__(self, obs=None):
@@ -164,143 +115,6 @@ class FastCarRacingReward:
         return max(self.lower_limit, min(self.upper_limit, reward))
 
 
-
-class TrendReward:
-    """趋势奖励类，支持多时间框架趋势跟踪和多交易对标准化"""
-    def __init__(self, env, open_coeff=0.2, profit_coeff=0.2, trend_coeff=0.2, breakout_coeff=0.5, close_coeff=0.5):
-        self.env = env
-        self.open_coeff = D(open_coeff)
-        self.profit_coeff = D(profit_coeff)
-        self.trend_coeff = D(trend_coeff)
-        self.breakout_coeff = D(breakout_coeff)
-        self.close_coeff = D(close_coeff)
-        self.w1 = Decimal('0.7')  # 1h 趋势权重
-        self.w2 = Decimal('0.3')  # 15m 趋势权重
-        self.max_position = Decimal('0.1')  # 最大仓位标准化
-        self.initial_balance = env.config.trading.initial_balance
-        self.long_atr_period = 100
-        self.short_atr_period = 20  # 新增短期 ATR 周期
-        self.last_action = None
-
-    def __call__(self, obs=None):
-        reward = Decimal('0.0')
-        indicators = obs['indicators']
-        try:
-            current_price = D(indicators[-1])  # 当前价格 (Close)
-            long_pos = self.env.position_manager.total_long_position()
-            short_pos = self.env.position_manager.total_short_position()
-            net_position = long_pos - short_pos
-            position_factor = min(abs(net_position) / self.max_position, Decimal('1.0'))
-
-            # 提取趋势指标
-            h1_1h, l1_1h, h2_1h, l2_1h = map(Decimal, map(str, indicators[8:12]))  # 1h
-            h1_15m, l1_15m, h2_15m, l2_15m = map(Decimal, map(str, indicators[4:8]))  # 15m
-            h1_5m, l1_5m, h2_5m, l2_5m = map(Decimal, map(str, indicators[0:4]))  # 5m
-
-            # 计算 20 周期 ATR
-            df_short = self.env.df_window.tail(self.short_atr_period * 2)
-            high_short = np.array(df_short['High'], dtype=float)
-            low_short = np.array(df_short['Low'], dtype=float)
-            close_short = np.array(df_short['Close'], dtype=float)
-            short_atr = D(talib.ATR(high_short, low_short, close_short, timeperiod=self.short_atr_period)[-1])
-            atr_threshold = short_atr * Decimal('2.0')  # 2 个 ATR
-
-            # 趋势一致性
-            trend_align_1h = self._get_trend_alignment(h1_1h, l1_1h, h2_1h, l2_1h, net_position)
-            trend_align_15m = self._get_trend_alignment(h1_15m, l1_15m, h2_15m, l2_15m, net_position)
-
-            # 1. 开仓奖励
-            if 'OPEN' in self.env.action.name:
-                open_trend_factor = self._get_open_trend_factor(h1_1h, l1_1h, h2_1h, l2_1h, self.env.action)
-                entry_proximity_factor = self._get_entry_proximity_factor(
-                    current_price, h1_5m, l1_5m, h1_15m, l1_15m, h1_1h, l1_1h, atr_threshold, self.env.action
-                )
-                reward += self.open_coeff * open_trend_factor * entry_proximity_factor * position_factor
-
-            # # 2. 持仓奖励
-            # if net_position != Decimal('0.0'):
-            #     # 趋势跟随奖励
-            #     trend_factor = self.w1 * trend_align_1h + self.w2 * trend_align_15m
-            #     trend_reward = self.trend_coeff * trend_factor
-
-            #     # 突破奖励
-            #     breakout_factor = self._get_breakout_factor(current_price, h1_1h, l1_1h, h1_15m, l1_15m, net_position)
-            #     breakout_reward = self.breakout_coeff * breakout_factor
-
-            #     reward += trend_reward + breakout_reward
-
-            # 3. 平仓奖励
-            if self.env.last_close_position is not None:
-                close_factor = self._get_close_factor(
-                    current_price, h1_1h, l1_1h, h1_15m, l1_15m, atr_threshold, self.env.last_close_position, self.env.action
-                )
-                reward += self.close_coeff * close_factor
-
-            self.last_action = self.env.action
-            return float(reward)
-
-        except Exception as e:
-            print(f"Error in TrendReward: {e}")
-            return 0.0
-
-    def _get_trend_alignment(self, h1, l1, h2, l2, net_position):
-        if h1 > h2 and l1 > l2:  # 上涨
-            return Decimal('1.0') if net_position > 0 else (Decimal('0') if net_position < 0 else Decimal('0.0'))
-        elif h1 < h2 and l1 < l2:  # 下跌
-            return Decimal('1.0') if net_position < 0 else (Decimal('0') if net_position > 0 else Decimal('0.0'))
-        return Decimal('0.0')  # 振荡或空仓
-
-    def _get_open_trend_factor(self, h1, l1, h2, l2, action):
-        is_long = 'LONG' in action.name
-        if h1 > h2 and l1 > l2:  # 1h 上涨
-            return Decimal('1.0') if is_long else Decimal('0.0')
-        elif h1 < h2 and l1 < l2:  # 1h 下跌
-            return Decimal('1.0') if not is_long else Decimal('0.0')
-        return Decimal('0.5')  # 1h 振荡
-
-    def _get_entry_proximity_factor(self, price, h1_5m, l1_5m, h1_15m, l1_15m, h1_1h, l1_1h, atr_threshold, action):
-        """检查是否在 2 个 20 周期 ATR 内接近前低/前高"""
-        is_long = 'LONG' in action.name
-        levels = [(h1_5m, l1_5m), (h1_15m, l1_15m), (h1_1h, l1_1h)]
-        for h, l in levels:
-            if is_long and l > 0 and (l - atr_threshold) <= price <= (l + atr_threshold):
-                return Decimal('1.0')
-            elif not is_long and h > 0 and (h - atr_threshold) <= price <= (h + atr_threshold):
-                return Decimal('1.0')
-        return Decimal('0.0')
-
-    def _get_breakout_factor(self, price, h1_1h, l1_1h, h1_15m, l1_15m, net_position):
-        if net_position > 0:
-            if price > h1_1h or price > h1_15m:
-                return Decimal('1.0')
-            elif price < l1_1h:
-                return Decimal('-0.5')
-        elif net_position < 0:
-            if (price < l1_1h or price < l1_15m):
-                return Decimal('1.0')
-            elif price > h1_1h:
-                return Decimal('-0.5')
-        return Decimal('0.0')
-
-    def _get_close_factor(self, price, h1_1h, l1_1h, h1_15m, l1_15m, atr_threshold, last_close, action):
-        """计算平仓因子，基于 2 个 20 周期 ATR"""
-        is_long = 'LONG' in action.name
-        pnl = last_close['pnl']
-        if pnl >= Decimal(0):
-            # 止盈
-            for h in [h1_1h, h1_15m]:
-                if is_long and h > 0 and (h - atr_threshold) <= price <= (h + atr_threshold):
-                    return Decimal('1.0')
-            for l in [l1_1h, l1_15m]:
-                if not is_long and l > 0 and (l - atr_threshold) <= price <= (l + atr_threshold):
-                    return Decimal('1.0')
-        else:
-            # 止损
-            if is_long and (price < l1_1h or price < l1_15m):
-                return Decimal('1.5')
-            elif not is_long and (price > h1_1h or price > h1_15m):
-                return Decimal('1.5')
-        return Decimal('0.0')
 
 class EventReward:
     """事件奖励"""
@@ -507,6 +321,6 @@ class NoviceModeInactionPenalty:
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
-    'total_pnl_reward_function': TotalPnlReward,
+    'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,
 }

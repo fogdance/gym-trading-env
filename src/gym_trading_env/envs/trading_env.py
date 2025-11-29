@@ -18,7 +18,7 @@ from gym_trading_env.envs.user_accounts import UserAccounts
 from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.metrics import Metrics
-from gym_trading_env.rewards.reward_functions import TotalPnlReward, reward_classes
+from gym_trading_env.rewards.reward_functions import EquityDeltaReward, reward_classes
 from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decimal
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
@@ -59,7 +59,10 @@ class CustomTradingEnv(gym.Env):
         self.df_market = build_market_features(self.df, rollover_hour_local=5, is_future=self.config.trading.is_future)
 
         # ---- constants ----
-        self.DAY_LEN = 1440
+        if self.config.trading.is_future:
+            self.DAY_LEN = 345
+        else:
+            self.DAY_LEN = 1440
         self._F_MARKET = len(FEATURES_MARKET)
         self._F_AGENT  = len(FEATURES_AGENT)
 
@@ -161,7 +164,7 @@ class CustomTradingEnv(gym.Env):
         # Training-specific
         reward_class = reward_classes.get(
             self.config.training.reward_function,
-            TotalPnlReward
+            EquityDeltaReward
         )
         self.reward_function = reward_class(self)
         self.data_window_size = 400
@@ -275,7 +278,7 @@ class CustomTradingEnv(gym.Env):
         self.action = None
 
         reward_class = reward_classes.get(
-            self.config.training.reward_function, TotalPnlReward
+            self.config.training.reward_function, EquityDeltaReward
         )
         self.reward_function = reward_class(self)
 

@@ -8,7 +8,7 @@ from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
 
-DAY_MINUTES = 1440
+DAY_MINUTES = 345
 
 
 def make_one_day_df(start="2020-01-01 21:01:00", periods=DAY_MINUTES):
