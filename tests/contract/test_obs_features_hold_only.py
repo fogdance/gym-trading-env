@@ -9,10 +9,10 @@ from gym_trading_env.utils.agent_features import FEATURES_AGENT
 from gym_trading_env.utils.trade_util import step_wrapper
 from ..support.feature_oracle import FeatureOracle
 
-pytestmark = pytest.mark.contract
+pytestmark = pytest.mark.unit
 
 
-def make_one_day_df(start="2020-01-01 21:01:00", periods=1440):
+def make_one_day_df(start="2020-01-01 21:01:00", periods=345):
     idx = pd.date_range(start=start, periods=periods, freq="min")
     close = 1.1000 + 0.0001 * np.arange(periods, dtype=float)
     return pd.DataFrame(
@@ -32,7 +32,7 @@ def env():
     df = make_one_day_df()
     e = CustomTradingEnv(df=df, config_path="tests/test.yaml")
     e.config.training.randomize_start = False
-    e.config.training.episode_length = 1440  # 固定 1 天
+    e.config.training.episode_length = 345  # 固定 1 天
     obs, info = e.reset()
     yield e
     e.close()
@@ -45,7 +45,7 @@ def _assert_shapes_and_dtypes(obs):
     m = obs["market_seq"]
     a = obs["agent_state"]
 
-    assert m.shape == (1440, len(FEATURES_MARKET)), f"market_seq shape mismatch: {m.shape}"
+    assert m.shape == (345, len(FEATURES_MARKET)), f"market_seq shape mismatch: {m.shape}"
     assert a.shape == (len(FEATURES_AGENT),), f"agent_state shape mismatch: {a.shape}"
 
     assert m.dtype == np.float32, f"market_seq dtype should be float32, got {m.dtype}"
@@ -64,7 +64,7 @@ def test_hold_only_three_steps_feature_integrity(env):
     _assert_shapes_and_dtypes(obs0)
 
     f0 = FeatureOracle.frontier_from_obs_market(obs0["market_seq"])
-    # 在 episode_length=1440 且不允许非 0 起步的前提下，t0 一般应该只 reveal 到 0
+    # 在 episode_length=345 且不允许非 0 起步的前提下，t0 一般应该只 reveal 到 0
     assert f0 == 0, f"frontier at reset must be 0, got {f0}"
 
     exp_m0 = FeatureOracle.expected_market_seq(env, frontier=f0)

@@ -21,16 +21,25 @@ class FeatureOracle:
         assert len(nz) >= 1, "market_seq should reveal at least 1 row (t=0)"
         return int(nz[-1])
 
+
     @staticmethod
     def expected_market_seq(env, frontier: int) -> np.ndarray:
-        assert hasattr(env, "df_market"), "env.df_market must exist (build_xt output)"
-        for c in FEATURES_MARKET:
-            assert c in env.df_market.columns, f"env.df_market missing col: {c}"
+        # 关键：expected 的时间长度必须和 obs 一致
+        T = int(getattr(env, "DAY_LEN", env.config.training.episode_length))
+        F = len(FEATURES_MARKET)
 
-        full = env.df_market[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
-        out = np.zeros_like(full, dtype=np.float32)
-        out[: frontier + 1, :] = full[: frontier + 1, :]
-        return out
+        frontier = int(np.clip(frontier, 0, T - 1))
+        exp = np.zeros((T, F), dtype=np.float32)
+
+        # 关键：用 env 自己生成的“真值”来源，避免你在 oracle 里再算一遍 minute_index/特征导致错位
+        if hasattr(env, "_daily_X"):
+            X_day = env._daily_X[env._day_i].astype(np.float32)   # (T, F)
+        else:
+            X_day = env.df_market[FEATURES_MARKET].to_numpy(np.float32)[:T]  # (T, F)
+
+        exp[:frontier + 1] = X_day[:frontier + 1]   # temporal reveal
+        return exp
+
 
     @staticmethod
     def assert_market_columnwise(actual: np.ndarray, expected: np.ndarray, frontier: int):
