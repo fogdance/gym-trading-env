@@ -27,7 +27,6 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(released_margin, Decimal('10.0'))
         self.assertEqual(closed_size, Decimal('0.01'))
         self.assertEqual(self.pm.total_long_position(), Decimal('0.02'))
-        self.assertEqual(self.pm.realized_pnl, pnl)
     
     def test_close_short_position(self):
         # Add short positions
@@ -45,7 +44,6 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(released_margin, Decimal('15.0'))
         self.assertEqual(closed_size, Decimal('0.01'))
         self.assertEqual(self.pm.total_short_position(), Decimal('0.02'))
-        self.assertEqual(self.pm.realized_pnl, pnl)
     
     def test_close_more_than_existing_long_positions(self):
         # Add a single long position
@@ -59,7 +57,6 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(released_margin, Decimal('10.0'))
         self.assertEqual(closed_size, Decimal('0.01'))
         self.assertEqual(self.pm.total_long_position(), Decimal('0.0'))
-        self.assertEqual(self.pm.realized_pnl, pnl)
         
         # Attempt to close another long position, which should not exist
         with self.assertRaises(ValueError):
@@ -77,7 +74,6 @@ class TestPositionManager(unittest.TestCase):
         self.assertEqual(released_margin, Decimal('15.0'))
         self.assertEqual(closed_size, Decimal('0.01'))
         self.assertEqual(self.pm.total_short_position(), Decimal('0.0'))
-        self.assertEqual(self.pm.realized_pnl, pnl)
         
         # Attempt to close another short position, which should not exist
         with self.assertRaises(ValueError):

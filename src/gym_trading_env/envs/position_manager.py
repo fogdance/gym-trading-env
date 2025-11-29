@@ -14,7 +14,6 @@ class PositionManager:
         """
         self.long_positions: List[Optional[Position]] = [None] * long_slots  # e.g., [None, None]
         self.short_positions: List[Optional[Position]] = [None] * short_slots  # e.g., [None, None]
-        self.realized_pnl = Decimal('0.0')
         self.closed_trade_profits = []
 
     def add_long_position(self, position: Position, slot: Optional[int] = None):
@@ -104,7 +103,6 @@ class PositionManager:
 
         # Calculate P&L: (Closing Price - Entry Price) * Size * Lot Size
         pnl = (closing_price - pos.entry_price) * pos.size * lot_size
-        self.realized_pnl += pnl
         self.closed_trade_profits.append(pnl)
         released_margin = pos.initial_margin
         closed_size = pos.size
@@ -145,7 +143,6 @@ class PositionManager:
 
         # Calculate P&L: (Entry Price - Closing Price) * Size * Lot Size
         pnl = (pos.entry_price - closing_price) * pos.size * lot_size
-        self.realized_pnl += pnl
         self.closed_trade_profits.append(pnl)
         released_margin = pos.initial_margin
         closed_size = pos.size
