@@ -27,9 +27,13 @@ from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
-from gym_trading_env.utils.build_xt import FEATURES_MARKET, FEATURES_AGENT, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.agent_features import FEATURES_AGENT
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 from gym_trading_env.utils.plot_intraday import save_intraday_html
+from gym_trading_env.utils.agent_features import (
+    AgentFeatureInput, compute_agent_features, agent_feature_vector, compute_unrealized_pnl
+)
 
 
 class CustomTradingEnv(gym.Env):
@@ -375,6 +379,7 @@ class CustomTradingEnv(gym.Env):
         self.fee_step = D0
 
         self._last_valid_price = D(self.df_market.iloc[self.current_step]["C_t"])
+        self._refresh_agent_state()
 
         # First observation
         obs = self._get_obs()
@@ -528,6 +533,9 @@ class CustomTradingEnv(gym.Env):
         # IMPORTANT: update per-step deltas ONCE here (no side effects in obs)
         self._update_step_deltas()
 
+        # refresh agent state vector ONCE
+        self._refresh_agent_state()
+
         # Construct observation & info
         obs = self._get_obs()
         info = self._get_info()
@@ -552,7 +560,7 @@ class CustomTradingEnv(gym.Env):
         """
         Update per-step deltas from cumulative realized pnl & fees.
         IMPORTANT: This must be called exactly once per env.step(),
-        and NEVER inside _get_obs() / _get_agent_state_vector().
+        and NEVER inside _get_obs() .
         """
         realized_cum_now = self.user_accounts.realized_pnl            # Decimal
         fee_cum_now = self.broker_accounts.fee_income.get_balance()         # Decimal
@@ -644,32 +652,45 @@ class CustomTradingEnv(gym.Env):
         return self.user_accounts.equity()
 
     def _update_unrealized_pnl(self):
-        """
-        Updates the user's unrealized P&L based on current prices.
-        """
-        # Calculate unrealized P&L for long positions
-        unrealized_pnl_long = sum(
-            (
-                calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=True)
-                for pos in self.position_manager.long_positions if pos is not None
-            ),
-            Decimal('0.0')  # Specify Decimal start value
+        self.user_accounts.unrealized_pnl = compute_unrealized_pnl(
+            self.position_manager.long_positions,
+            self.position_manager.short_positions,
+            self.current_price,
+            self.config.trading.lot_size,
         )
-        
-        # Calculate unrealized P&L for short positions
-        unrealized_pnl_short = sum(
-            (
-                calc_unrealized_pnl(self.current_price, pos=pos, lot_size=self.config.trading.lot_size, long=False)
-                for pos in self.position_manager.short_positions  if pos is not None
-            ),
-            Decimal('0.0')  # Specify Decimal start value
-        )
-        
-        assert isinstance(unrealized_pnl_long, Decimal), "unrealized_pnl_long must be a Decimal."
-        assert isinstance(unrealized_pnl_short, Decimal), "unrealized_pnl_short must be a Decimal."
 
-        # Update user's unrealized P&L
-        self.user_accounts.unrealized_pnl = unrealized_pnl_long + unrealized_pnl_short
+    def _refresh_agent_state(self):
+        # prev_max_equity 用 env 里的 max_equity 做缓存（只在 step() 的固定位置更新）
+        prev_max = getattr(self, "max_equity", D(self.config.trading.initial_balance))
+
+        inp = AgentFeatureInput(
+            long_positions=self.position_manager.long_positions,
+            short_positions=self.position_manager.short_positions,
+            current_step=self.current_step,
+            current_price=getattr(self, "current_price", self._last_valid_price),
+            lot_size=self.config.trading.lot_size,
+
+            realized_pnl_step=getattr(self, "realized_step", D0),
+            realized_pnl_cum=self.user_accounts.realized_pnl,
+            fee_step=getattr(self, "fee_step", D0),
+            fee_cum=self.broker_accounts.fee_income.get_balance(),
+
+            cash_balance=self.user_accounts.cash_balance.get_balance(),
+            used_margin=self.user_accounts.used_margin.get_balance(),
+
+            prev_max_equity=prev_max,
+        )
+
+        feat = compute_agent_features(inp)
+
+        # 缓存（让 state 更新发生在 step / reset，而不是 _get_obs）
+        self.upnl = feat["upnl_t"]
+        self.equity = feat["equity_t"]
+        self.max_equity = feat["max_equity_t"]
+        self.drawdown = feat["drawdown_t"]
+
+        self._agent_state_vec = agent_feature_vector(feat)
+
 
     # --- NEW: 将索引本地化 ---
     def _localize_index(self, idx, tz: str):
@@ -1075,7 +1096,7 @@ class CustomTradingEnv(gym.Env):
         market_seq = X_day * vis  # future minutes become all-zero rows (incl. mask_t col)
 
         # --- Agent vector to be implemented in your next step ---
-        agent_state = self._get_agent_state_vector()  # stub you’ll implement next
+        agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
 
         if self.config.debug.debug_enabled:
             ts = self.df_market.index[self.current_step]
@@ -1115,175 +1136,6 @@ class CustomTradingEnv(gym.Env):
         return dfp
 
     
-    def _position_snapshot(self):
-        """
-        The single source of truth for position-related agent_state.
-        MUST NOT infer from action, MUST NOT use cached self.position.
-        """
-        # 统一从 position_manager 读（slot 合计）
-        long_lots  = self.position_manager.total_long_position()
-        short_lots = self.position_manager.total_short_position()
-
-        net_lots = long_lots - short_lots
-
-        have_long  = 1.0 if long_lots  > D0 else 0.0
-        have_short = 1.0 if short_lots > D0 else 0.0
-
-        # flat 的一致性约束：只有“真正无持仓”才叫 flat（不能用 net==0 判定，因为可能对冲）
-        is_flat = (long_lots == D0) and (short_lots == D0)
-        if is_flat:
-            # 这里强制三者一致
-            net_lots = D0
-            have_long = 0.0
-            have_short = 0.0
-
-        return {
-            "long_lots": long_lots,
-            "short_lots": short_lots,
-            "net_lots": net_lots,
-            "have_long": have_long,
-            "have_short": have_short,
-            "is_flat": is_flat,
-        }
-
-    def _get_agent_state_vector(self) -> np.ndarray:
-        """
-        Build FEATURES_AGENT strictly from existing system state.
-        IMPORTANT: No side effects here (idempotent within the same step).
-        """
-        ps = self._position_snapshot()
-
-        # pos_t / have_long_t / have_short_t：唯一来源
-        net_lots   = ps["net_lots"]
-        have_long  = ps["have_long"]
-        have_short = ps["have_short"]
-
-        # entry_price / holding_minutes：也不要用 action 推断，直接从当前持仓计算
-        if ps["is_flat"]:
-            entry_price = D0
-            holding_minutes = D0
-        else:
-            snap = self._active_side_snapshot()  # 你现有实现：从 position_manager 各 slot 算 vwap & age
-            if snap["side"] is None:
-                entry_price = D0
-                holding_minutes = D0
-            else:
-                entry_price = snap["vwap"]
-                holding_minutes = snap["age_min"]
-
-        # 其它字段保持从系统状态读（不要在这里更新缓存）
-        upnl_dec = self.user_accounts.unrealized_pnl
-        realized_cum_dec = self.user_accounts.realized_pnl
-        equity_dec = self._calculate_equity()
-
-        realized_step_dec = getattr(self, "realized_step", D0)
-        fee_step_dec = getattr(self, "fee_step", D0)
-        fee_cum_dec = self.broker_accounts.fee_income.get_balance()
-
-        peak_equity_dec = getattr(self.metrics, "peak_equity", self.config.trading.initial_balance)
-        drawdown_dec = self.metrics.metrics.get("current_drawdown", D0)
-
-        # 未实现项先 0
-        sigma_entry_dec = D0
-        sl_ticks_dec = D0
-        tp_ticks_dec = D0
-        sl_price_dec = D0
-        tp_price_dec = D0
-        minutes_to_timeout_dec = D0
-
-        vec = np.array([
-            decimal_to_float(net_lots),              # pos_t
-            float(have_long),                        # have_long_t
-            float(have_short),                       # have_short_t
-            decimal_to_float(entry_price),           # entry_price_t
-            decimal_to_float(holding_minutes),       # holding_minutes_t
-            decimal_to_float(upnl_dec),              # upnl_t
-            decimal_to_float(realized_step_dec),     # realized_pnl_step_t
-            decimal_to_float(realized_cum_dec),      # realized_pnl_cum_t
-            decimal_to_float(fee_step_dec),          # fee_step_t
-            decimal_to_float(fee_cum_dec),           # fee_cum_t
-            decimal_to_float(equity_dec),            # equity_t
-            decimal_to_float(peak_equity_dec),       # max_equity_t
-            decimal_to_float(drawdown_dec),          # drawdown_t
-            decimal_to_float(sigma_entry_dec),       # sigma_entry_t
-            decimal_to_float(sl_ticks_dec),          # sl_ticks_t
-            decimal_to_float(tp_ticks_dec),          # tp_ticks_t
-            decimal_to_float(sl_price_dec),          # sl_price_t
-            decimal_to_float(tp_price_dec),          # tp_price_t
-            decimal_to_float(minutes_to_timeout_dec) # minutes_to_timeout_t
-        ], dtype=np.float32)
-
-        # flat 一致性（只在 flat 时做强约束）
-        if ps["is_flat"]:
-            # 注意：pos_t 是 float，直接比较 0 即可
-            assert vec[FEATURES_AGENT.index("pos_t")] == 0.0
-            assert vec[FEATURES_AGENT.index("have_long_t")] == 0.0
-            assert vec[FEATURES_AGENT.index("have_short_t")] == 0.0
-
-        return vec    
-
-
-
-    def _sum_sizes_and_vwap(self, positions, is_long: bool):
-        """
-        Returns (total_size, vwap_entry_price, size_weighted_avg_age_minutes).
-        - total_size: Decimal (sum of lots)
-        - vwap_entry_price: Decimal (0 if no positions)
-        - age_minutes: Decimal (size-weighted mean of (current_step - open_step))
-        """
-        total_size = D0
-        vwap_num = D0     # sum(size * entry_price)
-        age_num  = D0     # sum(size * age_minutes)
-        for pos in positions:
-            if pos is None:
-                continue
-            sz = pos.size
-            total_size += sz
-            vwap_num += (sz * pos.entry_price)
-            # open_step is int; convert to Decimal only at the end
-            age_minutes = Decimal(self.current_step - pos.open_step)
-            age_num += (sz * age_minutes)
-
-        if total_size == D0:
-            return D0, D0, D0
-
-        vwap = (vwap_num / total_size)
-        age  = (age_num  / total_size)
-        return total_size, vwap, age
-
-    def _active_side_snapshot(self):
-        """
-        Decide the 'active side' to report entry/holding for:
-        - If only long: use long side
-        - If only short: use short side
-        - If both: choose the side with larger total lots; if equal, choose the side whose most recent open is later.
-        Returns: dict with keys:
-            side ('long'|'short'|None), size (Decimal), vwap (Decimal), age_min (Decimal)
-        """
-        long_size, long_vwap, long_age = self._sum_sizes_and_vwap(self.position_manager.long_positions, is_long=True)
-        short_size, short_vwap, short_age = self._sum_sizes_and_vwap(self.position_manager.short_positions, is_long=False)
-
-        if long_size > D0 and short_size == D0:
-            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
-        if short_size > D0 and long_size == D0:
-            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
-        if long_size == D0 and short_size == D0:
-            return {"side":None, "size": D0, "vwap": D0, "age_min": D0}
-
-        # both present → choose larger size; if tie, choose more recent open
-        if long_size > short_size:
-            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
-        if short_size > long_size:
-            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
-
-        # equal size → pick side with latest open_step (most recent)
-        latest_long_open = max((p.open_step for p in self.position_manager.long_positions if p is not None), default=-1)
-        latest_short_open= max((p.open_step for p in self.position_manager.short_positions if p is not None), default=-1)
-        if latest_long_open >= latest_short_open:
-            return {"side":"long", "size": long_size, "vwap": long_vwap, "age_min": long_age}
-        else:
-            return {"side":"short","size": short_size,"vwap": short_vwap,"age_min": short_age}
-
 
 
 

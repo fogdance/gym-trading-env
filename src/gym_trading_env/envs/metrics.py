@@ -189,8 +189,9 @@ class Metrics:
 
         out["action_long_open_success_ratio"]  = float(c["long_open_steps_success"])  / float(c["long_open_steps"]) if float(c["long_open_steps"]) != 0 else 0
         out["action_long_close_success_ratio"] = float(c["long_close_steps_success"]) / float(c["long_close_steps"]) if float(c["long_close_steps"]) != 0 else 0
-        out["action_short_open_success_ratio"]  = float(c["short_open_steps_success"])  / float(c["long_close_steps"]) if float(c["long_close_steps"]) != 0 else 0
-        out["action_short_close_success_ratio"] = float(c["short_close_steps_success"]) / float(c["long_close_steps"]) if float(c["long_close_steps"]) != 0 else 0
+        out["action_short_open_success_ratio"]  = float(c["short_open_steps_success"])  / float(c["short_open_steps"])  if c["short_open_steps"]  else 0.0
+        out["action_short_close_success_ratio"] = float(c["short_close_steps_success"]) / float(c["short_close_steps"]) if c["short_close_steps"] else 0.0
+
         out["exposure_ratio"]     = float(c["in_market_steps"]) / steps
 
         # Count open/close events from trade history (robust to multiple slots).

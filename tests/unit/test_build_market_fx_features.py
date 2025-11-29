@@ -2,7 +2,8 @@
 import pytest
 import numpy as np
 import pandas as pd
-from gym_trading_env.utils.build_xt import build_market_features, FEATURES_MARKET
+from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
 
@@ -69,8 +70,10 @@ def test_build_market_fx_key_features_values():
     # bar_dir：首根 0，之后递增为 1
     assert out["bar_dir_t"].astype(int).tolist() == [0,1,1,1,1]
 
-    # turnover：当前实现是 C*V（非累计），这里按实现断言
-    np.testing.assert_allclose(out["turnover_t"].to_numpy(), np.array(closes)*1.0, rtol=0, atol=0)
+    
+    # turnover：累计成交额 = cumsum(C*V)
+    exp_turnover = np.cumsum(np.array(closes, dtype=float) * 1.0)
+    np.testing.assert_allclose(out["turnover_t"].to_numpy(dtype=float), exp_turnover, rtol=0, atol=1e-12)
 
 def test_build_market_fx_rollover_ref_close_uses_prev_session_close():
     # 构造跨 rollover(05:00) 的 3 根：04:59 属于上一 session，05:00/05:01 属于新 session

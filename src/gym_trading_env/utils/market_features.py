@@ -1,4 +1,4 @@
-# utils/build_xt.py
+# utils/market_features.py
 import numpy as np
 import pandas as pd
 from typing import List, Optional, Dict
@@ -17,7 +17,7 @@ FEATURES_MARKET: List[str] = [
     "session_high_t",         # Session high price up to time t
     "session_low_t",          # Session low price up to time t
     "bar_dir_t",              # Direction of the current bar (1 = up, -1 = down, 0 = flat)
-    "turnover_t",             # Turnover (cumulative volume * price) at time t
+    "turnover_t",             # cumulative sum of (price * volume) within session
     "minute_index_t",         # Minute index within the trading session
     "limit_up_price_t",       # Upper price limit at time t
     "limit_down_price_t",     # Lower price limit at time t
@@ -27,29 +27,6 @@ FEATURES_MARKET: List[str] = [
     "mask_t",                 # Mask flag (e.g., valid data or trading halt)
     "weekday_sin_t",          # Sine-encoded weekday (for cyclical time feature)
     "weekday_cos_t",          # Cosine-encoded weekday (for cyclical time feature)
-]
-
-# Agent-side features (single vector, emitted by env at runtime)
-FEATURES_AGENT: List[str] = [
-    "pos_t",                  # Current position size (positive = long, negative = short)
-    "have_long_t",            # 1 if holding long position, 0 otherwise
-    "have_short_t",           # 1 if holding short position, 0 otherwise
-    "entry_price_t",          # Entry price of the current position
-    "holding_minutes_t",      # Number of minutes the position has been held
-    "upnl_t",                 # Unrealized PnL at time t
-    "realized_pnl_step_t",    # Realized PnL in the current step
-    "realized_pnl_cum_t",     # Cumulative realized PnL
-    "fee_step_t",             # Trading fee in the current step
-    "fee_cum_t",              # Cumulative trading fees
-    "equity_t",               # Current equity (cash + unrealized PnL)
-    "max_equity_t",           # Historical maximum equity (for drawdown calc)
-    "drawdown_t",             # Current drawdown from peak equity
-    "sigma_entry_t",          # Volatility estimate at entry time
-    "sl_ticks_t",             # Stop-loss distance in ticks
-    "tp_ticks_t",             # Take-profit distance in ticks
-    "sl_price_t",             # Stop-loss price level
-    "tp_price_t",             # Take-profit price level
-    "minutes_to_timeout_t",   # Minutes remaining until position timeout
 ]
 
 
@@ -114,7 +91,10 @@ def _build_market_fx(df_1m: pd.DataFrame,
     prev_close = df["Close"].shift(1)
     df["bar_dir_t"] = np.sign(df["Close"] - prev_close).fillna(0).astype(int)
 
-    df["turnover_t"] = (df["C_t"] * df["V_t"]).astype(float)
+    # turnover/amount: cumsum(C*V) within session
+    cv = (df["C_t"] * df["V_t"]).astype(float)
+    df["turnover_t"] = cv.groupby(sid).cumsum().astype(float)
+
     df["minute_index_t"] = meta["minute_index"].astype(int)
 
     df["limit_up_price_t"] = 0.0
@@ -220,8 +200,12 @@ def _build_market_future(df_1m: pd.DataFrame,
     bar_dir = np.where(minute_index == 0, 0.0, bar_dir)
     X["bar_dir_t"] = bar_dir.astype(int)
 
-    # 7) turnover（C*V）
-    X["turnover_t"] = (X["C_t"] * X["V_t"]).astype(float)
+
+    # 7) turnover/amount: cumsum(C*V) within session (invalid minutes contribute 0 via mask)
+    valid_V = X["V_t"] * mask_t
+    cv = (X["C_t"] * valid_V).astype(float)
+    X["turnover_t"] = cv.groupby(session_id).cumsum().astype(float)
+
 
     # 8) 分钟索引、weekday
     X["minute_index_t"] = minute_index.astype(int)

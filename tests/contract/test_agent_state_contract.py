@@ -4,7 +4,8 @@ import pandas as pd
 import pytest
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
-from gym_trading_env.utils.build_xt import FEATURES_AGENT, FEATURES_MARKET
+from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.agent_features import FEATURES_AGENT
 from gym_trading_env.utils.trade_util import step_wrapper
 
 pytestmark = pytest.mark.unit

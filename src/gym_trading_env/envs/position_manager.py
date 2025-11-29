@@ -68,7 +68,7 @@ class PositionManager:
                     return
             raise ValueError("No available short slots")
 
-    def close_long_position(self, closing_price: Decimal, lot_size: Decimal, slot: Optional[int] = None) -> Tuple[Decimal, Decimal, Decimal]:
+    def close_long_position(self, closing_price: Decimal, lot_size: Decimal, slot: Optional[int] = None) -> Tuple[Decimal, Decimal, Decimal, Decimal]:
         """
         Closes a long position. If slot is None, closes the earliest position (FIFO).
         If slot is specified, closes the position at that slot.
@@ -108,7 +108,7 @@ class PositionManager:
         closed_size = pos.size
         return pnl, released_margin, closed_size, pos.entry_price
 
-    def close_short_position(self, closing_price: Decimal, lot_size: Decimal, slot: Optional[int] = None) -> Tuple[Decimal, Decimal, Decimal]:
+    def close_short_position(self, closing_price: Decimal, lot_size: Decimal, slot: Optional[int] = None) -> Tuple[Decimal, Decimal, Decimal, Decimal]:
         """
         Closes a short position. If slot is None, closes the earliest position (FIFO).
         If slot is specified, closes the position at that slot.
