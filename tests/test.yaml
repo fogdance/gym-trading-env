@@ -28,6 +28,7 @@ DCE_JM2601: &JM
   max_short_position: 1
   data_path: "DCE_JM2601"
   data_interval: "1m"
+  is_future: true
 
 
 trading:
@@ -46,7 +47,6 @@ training:
   randomize_start: False
   render_mode: "rgb_array"
   start_clock: "21:00"   # 或 '09:00' / '21:00' / 'any'
-  # is_future: True
 
 visualization:
   image_height: 96

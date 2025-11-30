@@ -5,7 +5,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-def save_intraday_html(df_market, title, out_path, start_pos=None, end_pos=None, enforce_mask=True, debug=False):
+def save_intraday_html(df_market, title, out_path, start_pos=None, end_pos=None, enforce_mask=True, debug=True):
     """
     绘制分时图，并包含调试信息的打印功能。
     """

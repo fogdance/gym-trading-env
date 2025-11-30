@@ -1181,8 +1181,53 @@ class CustomTradingEnv(gym.Env):
         else:
             market_seq = window.astype(np.float32, copy=False)
 
+        if self.config.debug.debug_enabled:
+            ts = self.df_market.index[self.current_step]
+            mi = int(self.df_market.loc[ts, "minute_index_t"])
+            row_df = self.df_market.loc[ts, FEATURES_MARKET].to_numpy(np.float32)
+            row_X  = self._daily_X[self._day_i, mi, :]
+            if not np.allclose(row_df, row_X, atol=1e-6, rtol=0):
+                raise RuntimeError(f"daily_X build mismatch at {ts} mi={mi}")
+    
+            dfp = self._obs_market_df(market_seq)
+            save_intraday_html(
+                df_market=dfp,
+                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[self.current_step]}",
+                out_path=f"/tmp/obs_{self.df_market.index[self.current_step]}.html",
+                start_pos=0,
+                end_pos=self.DAY_LEN
+            )
+
         agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
         return {"market_seq": market_seq, "agent_state": agent_state}
+
+    def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
+        # 取当天严格345时钟的真实时间戳（夜盘在前一自然日，日盘在当日，且中间有大断档）
+        s, e = self._day_ranges[self._day_i]
+        sub = self.df_market.iloc[s:e]
+        idx = sub.index
+
+        if len(idx) != self.DAY_LEN:
+            raise RuntimeError(f"day slice length != DAY_LEN: {len(idx)} vs {self.DAY_LEN}")
+
+        # 先造一张“整天分时图”的空画布：345行，全 NaN -> 视觉上就是空白
+        dfp = pd.DataFrame(np.nan, index=idx, columns=FEATURES_MARKET, dtype=np.float32)
+
+        # 把 market_seq（agent真实输入）放回整天对应的位置
+        end = int(min(self.current_minute, self.DAY_LEN - 1))
+        start = max(0, end - self.window_size + 1)
+        L = end - start + 1  # 真实历史长度（<= window_size）
+
+        # market_seq 右侧 pad 的 0 不应该映射到未来分钟，所以只取前 L 行
+        dfp.iloc[start:end + 1, :] = market_seq[:L, :]
+
+        # 如果 save_intraday_html 依赖这些列，就补上（这俩不是 agent 输入，但用于画坐标/遮罩很有用）
+        dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
+        dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
+
+        return dfp
+
+    
 
 
     def _get_bar_low_high(self):
@@ -1225,26 +1270,6 @@ class CustomTradingEnv(gym.Env):
         else:
             self.logger.warning(f"StopLoss: unknown mode={mode}, ignored.")
             return None
-
-    def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
-        # 找到该 day 的 minute=0 的真实开盘 timestamp，用它当 1440 分钟时间轴起点
-        s, e = self._day_ranges[self._day_i]
-        sub = self.df_market.iloc[s:e]
-
-        try:
-            t0 = sub.index[sub["minute_index_t"].astype(int).to_numpy() == 0][0]
-        except Exception:
-            t0 = sub.index[0]
-
-        idx = pd.date_range(t0, periods=self.DAY_LEN, freq="min", tz=t0.tz)
-
-        dfp = pd.DataFrame(market_seq, index=idx, columns=FEATURES_MARKET)
-        # 如果 save_intraday_html 依赖这些列，就补上
-        dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
-        dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
-        return dfp
-
-    
 
 
 

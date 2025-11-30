@@ -31,11 +31,10 @@ def make_intraday_rows(start_ts: str, minutes: int, price_base=2300.0, vol=10.0,
     }
     return _mk_df(rows)
 
-
-def _canonicalize_futures_index_like(df: pd.DataFrame, tz: str) -> pd.DataFrame:
+def _tz_align_index_like_out(df: pd.DataFrame, tz: str) -> pd.DataFrame:
     """
-    把 df 的索引按期货“交易日”规则规范化（夜盘21-23→次日；凌晨0-5→前一日），
-    返回一个新 df，索引 = canonical_index（tz-aware），列保留原始。
+    仅把 df.index 对齐到 tz（不做交易日 shift）。
+    因为 strict 345 的 out.index 使用真实自然时间（夜盘在前一自然日晚上）。
     """
     if not isinstance(df.index, pd.DatetimeIndex):
         raise ValueError("df.index must be DatetimeIndex")
@@ -45,58 +44,44 @@ def _canonicalize_futures_index_like(df: pd.DataFrame, tz: str) -> pd.DataFrame:
     else:
         idx = idx.tz_convert(tz)
 
-    # 交易日映射
-    d = idx.normalize()
-    h = idx.hour
-    trading_day = d.where(~((h>=21)&(h<=23)), d + pd.Timedelta(days=1))
-    trading_day = trading_day.where(~((h>=0)&(h<=5)), d - pd.Timedelta(days=1))
-
-    # canonical: 用“交易日日期00:00”+ 原时分秒
-    time_of_day = idx - idx.normalize()
-    canonical = trading_day.normalize() + time_of_day
-
     out = df.copy()
-    out.index = canonical
+    out.index = idx
     return out
 
 def _assert_input_equals_output_on_data_minutes(df_1m: pd.DataFrame, out: pd.DataFrame, tz: str):
     """
-    断言：在 df_1m 有数据的分钟，out 的各列与之完全一致：
-      C_t == Close, V_t == Volume(缺省0), I_t == OpenInterest(缺省0), mask_t == 1
-    out 来自 build_market_features(..., is_future=True) 的结果。
+    自然时间模型：输入 df_1m 的真实分钟时间戳必须落在 out(345 clock) 上，
+    并且对应分钟的 C_t/V_t/I_t/mask_t 必须一致。
     """
-    # 1) 规范化输入索引为 canonical
-    df_can = _canonicalize_futures_index_like(df_1m, tz)
+    # 1) 仅做时区对齐（不做交易日 shift）
+    df_local = _tz_align_index_like_out(df_1m, tz)
 
-    # 2) 取出 out 里我们要核对的列（和 df_can 对齐）
-    cols_in = {
-        "C_t": "Close",
-        "V_t": "Volume",
-        "I_t": "OpenInterest",
-    }
-    # 若输入里缺失 Volume / OpenInterest，则当 0 处理以匹配产线逻辑
-    tmp_in = pd.DataFrame(index=df_can.index)
-    tmp_in["Close"] = df_can["Close"].astype(float)
-    tmp_in["Volume"] = df_can["Volume"].astype(float) if "Volume" in df_can.columns else 0.0
-    tmp_in["OpenInterest"] = df_can["OpenInterest"].astype(float) if "OpenInterest" in df_can.columns else 0.0
+    cols_in = {"C_t": "Close", "V_t": "Volume", "I_t": "OpenInterest"}
+
+    tmp_in = pd.DataFrame(index=df_local.index)
+    tmp_in["Close"] = df_local["Close"].astype(float)
+    tmp_in["Volume"] = df_local["Volume"].astype(float) if "Volume" in df_local.columns else 0.0
+    tmp_in["OpenInterest"] = df_local["OpenInterest"].astype(float) if "OpenInterest" in df_local.columns else 0.0
 
     tmp_out = out[["C_t", "V_t", "I_t", "mask_t"]].copy()
 
-    # 3) 对齐到公共索引（输入的 canonical 分钟应该都在 out 的 345 时钟上）
+    # 2) 真实时间戳对齐
     common_idx = tmp_in.index.intersection(tmp_out.index)
     assert len(common_idx) == len(tmp_in.index), (
-        f"有 {len(tmp_in.index) - len(common_idx)} 个输入分钟不在 345 时钟上，请检查索引或时区/夜盘映射。"
+        f"有 {len(tmp_in.index) - len(common_idx)} 个输入分钟不在 345 时钟上；"
+        "请检查：是否用“分钟收盘时刻”(夜盘从21:01、日盘从09:01) 以及 tz。"
     )
 
-    # 4) 数值一致性检查
+    # 3) 数值一致性
     for out_col, in_col in cols_in.items():
         a = tmp_out.loc[common_idx, out_col].to_numpy(dtype=float)
         b = tmp_in.loc[common_idx, in_col].to_numpy(dtype=float)
         np.testing.assert_allclose(a, b, rtol=0, atol=0, err_msg=f"{out_col} != {in_col} on data minutes")
 
-    # 5) mask 必须为 1
+    # 4) 有数据分钟 mask=1
     m = tmp_out.loc[common_idx, "mask_t"].to_numpy(dtype=float)
     assert np.all(m == 1.0), "mask_t 必须在有数据的分钟为 1"
+
 
 
 class TestFuturesStrict345(unittest.TestCase):
