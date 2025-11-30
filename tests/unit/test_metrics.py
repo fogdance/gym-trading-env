@@ -1,4 +1,4 @@
-# tests/test_metrics.py
+# tests/unit/test_metrics.py
 
 import unittest
 from decimal import Decimal

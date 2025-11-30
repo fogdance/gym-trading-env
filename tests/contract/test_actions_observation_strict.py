@@ -1,4 +1,4 @@
-# tests/test_actions_observation_strict.py
+# tests/contract/test_actions_observation_strict.py
 import math
 import unittest
 import numpy as np

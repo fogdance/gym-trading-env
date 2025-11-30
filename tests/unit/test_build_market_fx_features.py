@@ -2,7 +2,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET, REQUIRED_MARKET_COLS, build_market_features
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
@@ -31,7 +31,7 @@ def test_build_market_fx_columns_types_and_no_nan():
     out = build_market_features(df, tz="Asia/Singapore", rollover_hour_local=5, is_future=False)
 
     # 列完整 + 顺序契约
-    assert list(out.columns) == FEATURES_MARKET + ["day_id"]
+    assert list(out.columns) == REQUIRED_MARKET_COLS
 
     # dtype: 特征应为 float，day_id 为 int32
     for c in FEATURES_MARKET:

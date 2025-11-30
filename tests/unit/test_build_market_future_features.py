@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import pandas as pd
 
-from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET, REQUIRED_MARKET_COLS, build_market_features
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
@@ -60,7 +60,7 @@ def test_build_market_future_columns_and_shape_and_finite():
     out = build_market_features(df, tz=TZ, is_future=True, limit_up_pct=0.1, limit_down_pct=0.1)
 
     assert out.shape[0] == 345
-    assert list(out.columns) == FEATURES_MARKET + ["day_id"]
+    assert list(out.columns) == REQUIRED_MARKET_COLS
 
     X = out[FEATURES_MARKET].to_numpy(dtype=float)
     assert np.isfinite(X).all(), "Features contain NaN/Inf"

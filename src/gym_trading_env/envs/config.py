@@ -15,6 +15,8 @@ def _to_decimal(value):
         print(f"[DEBUG] Cannot convert value={value} (type={type(value)}) to Decimal")
         raise e
     
+
+
 @dataclass
 class TradingParams:
     """Trading-specific parameters for CFD (Contract for Difference) trading environment.
@@ -66,12 +68,26 @@ class TradingParams:
 
     is_future: bool = True
 
+    stop_loss_enabled: bool = False
+    stop_loss_mode: str = "pct"          # "pct" | "abs"
+    stop_loss_value: Decimal = _to_decimal(0.02)  # pct=0.02; abs=0.0010
+
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
         assert self.initial_balance > 0, "Initial balance must be positive"
         assert self.leverage > 0, "Leverage must be positive"
         assert self.trade_lot <= self.max_long_position, "Trade lot exceeds max long position"
         assert self.trade_lot <= self.max_short_position, "Trade lot exceeds max short position"
+
+        allowed = {"pct", "abs"}
+        assert self.stop_loss_mode in allowed, f"stop_loss_mode must be one of {allowed}"
+        if self.stop_loss_enabled:
+            assert self.stop_loss_value is not None, "stop_loss_value must not be None"
+            assert self.stop_loss_value > 0, "stop_loss_value must be > 0"
+            if self.stop_loss_mode == "pct":
+                assert self.stop_loss_value < 1, "stop_loss_value (pct) must be < 1"
+
+
 
 @dataclass
 class RiskParams:
@@ -93,6 +109,8 @@ class RiskParams:
         """Validate risk parameters to ensure they are within acceptable bounds."""
         assert 0 <= self.max_drawdown_ratio <= 1, "Max drawdown ratio must be between 0 and 1"
         assert 0 <= self.daily_lost_ratio <= 1, "Daily lost ratio must be between 0 and 1"
+
+
 
 @dataclass
 class TrainingParams:

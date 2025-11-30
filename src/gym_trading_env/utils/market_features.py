@@ -29,7 +29,11 @@ FEATURES_MARKET: List[str] = [
     "weekday_cos_t",          # Cosine-encoded weekday (for cyclical time feature)
 ]
 
+# 仅用于环境内部逻辑（止损/滑点/撮合等），不进 obs
+AUX_MARKET_COLS = ["H_t", "L_t"]
 
+# env 里会强依赖的列
+REQUIRED_MARKET_COLS = ["day_id"] + AUX_MARKET_COLS + FEATURES_MARKET
 
 def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
     # 将 session_id 统一转为字符串再解析，避免 dtype 干扰
@@ -69,6 +73,8 @@ def _build_market_fx(df_1m: pd.DataFrame,
     meta = compute_session_meta(df, tz=tz, rollover_hour_local=rollover_hour_local)
     sid = meta["session_id"]
 
+    df["L_t"] = df["Low"].astype(float)
+    df["H_t"] = df["High"].astype(float)
     df["C_t"] = df["Close"].astype(float)
     df["V_t"] = df.get("Volume", pd.Series(0, index=df.index)).fillna(0).astype(float)
     df["I_t"] = 0.0
@@ -118,7 +124,7 @@ def _build_market_fx(df_1m: pd.DataFrame,
     for col in FEATURES_MARKET:
         df[col] = df[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
-    return df[FEATURES_MARKET + ["day_id"]]
+    return df[REQUIRED_MARKET_COLS]
 
 def _build_market_future(df_1m: pd.DataFrame,
                          tz: str = "Asia/Singapore",
@@ -136,6 +142,8 @@ def _build_market_future(df_1m: pd.DataFrame,
 
     # 2) 基础价量持仓
     X["C_t"] = X["Close"].astype(float)
+    X["H_t"] = X["High"].astype(float)
+    X["L_t"] = X["Low"].astype(float)
     X["V_t"] = X.get("Volume", 0.0).astype(float)
     X["I_t"] = X.get("OpenInterest", 0.0).astype(float)
 
@@ -254,7 +262,7 @@ def _build_market_future(df_1m: pd.DataFrame,
 
     # === 12.5) 统一按 mask 抹零（无效分钟所有特征都为 0；保留 mask_t 自身）===
     m = X["mask_t"].astype(float)
-    for col in FEATURES_MARKET:
+    for col in FEATURES_MARKET + AUX_MARKET_COLS:
         if col == "mask_t":
             continue
         X[col] = (X[col].astype(float) * m).astype(float)
@@ -265,4 +273,4 @@ def _build_market_future(df_1m: pd.DataFrame,
             X[col] = 0.0
         X[col] = X[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
-    return X[FEATURES_MARKET + ["day_id"]]
+    return X[REQUIRED_MARKET_COLS]

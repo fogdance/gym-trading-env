@@ -1,4 +1,4 @@
-# tests/test_position_manager.py
+# tests/unit/test_position_manager.py
 
 import unittest
 from decimal import Decimal

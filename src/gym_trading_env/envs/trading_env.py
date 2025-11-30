@@ -71,10 +71,13 @@ class CustomTradingEnv(gym.Env):
 
         # Required session columns
         required_cols = {"day_id", "minute_index_t", "mask_t"}
+        if getattr(self.config.trading, "stop_loss_enabled", False):
+            required_cols |= {"H_t", "L_t"}
         missing = required_cols - set(dfm.columns)
         if missing:
             raise ValueError(f"df_market missing columns: {missing}")
-
+        
+            
         # Numpy views
         minute_idx = dfm["minute_index_t"].to_numpy(dtype=np.int32, copy=False)
         mask_np    = dfm["mask_t"].to_numpy(dtype=np.float32, copy=False)
@@ -402,6 +405,7 @@ class CustomTradingEnv(gym.Env):
         # Make sure deltas start at 0 for the first obs
         self.realized_step = D0
         self.fee_step = D0
+        self.stop_loss_fired = 0
 
         self._last_valid_price = D(self.df_market.iloc[self.current_step]["C_t"])
         self._refresh_agent_state()
@@ -521,6 +525,10 @@ class CustomTradingEnv(gym.Env):
             in_market = False
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market)
 
+        #
+        # 推进到 t+1 → 设置 current_price → 先跑止损 → 再 update_unrealized → metrics.update
+        #
+
         # --- Advance time to NEXT step (t+1) ---
         self.current_step += 1
         self.episode_step_count += 1
@@ -542,6 +550,9 @@ class CustomTradingEnv(gym.Env):
         else:
             self.current_price = D(self.df_market.iloc[self.current_step]["C_t"])
             self._last_valid_price = self.current_price
+
+        # 先止损（可能会自动平仓，改变仓位/保证金/现金）
+        self.stop_loss_fired += self._apply_stop_losses()
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
@@ -655,6 +666,7 @@ class CustomTradingEnv(gym.Env):
             'free_margin': self._calculate_equity() - self.user_accounts.used_margin .get_balance(),
             'long_position': self.user_accounts.long_position,
             'short_position': self.user_accounts.short_position,
+            'stop_loss_fired': self.stop_loss_fired,
         }
 
 
@@ -670,6 +682,7 @@ class CustomTradingEnv(gym.Env):
         info['log/env/free_margin'] = number_to_float(info['free_margin'])
         info['log/env/long_position'] = number_to_float(info['long_position'])
         info['log/env/short_position'] = number_to_float(info['short_position'])
+        info['log/env/stop_loss_fired'] = number_to_float(info['stop_loss_fired'])
 
         return info
 
@@ -836,7 +849,8 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient free margin to execute LONG_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin, open_step=self.current_step)
+        new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin, open_step=self.current_step,
+                                stop_loss_price=self._compute_stop_loss_price(ask_price, side="long"))
 
         ts = self.df_market.iloc[self.current_step].name
         entry = JournalEntry(
@@ -959,7 +973,8 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient free margin to execute SHORT_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin, open_step=self.current_step)
+        new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin, open_step=self.current_step,
+                                stop_loss_price=self._compute_stop_loss_price(bid_price, side="short"))
 
         ts = self.df_market.iloc[self.current_step].name
         entry = JournalEntry(
@@ -1061,7 +1076,54 @@ class CustomTradingEnv(gym.Env):
         )
         self.record_trade(trade_record)
         return ForexCode.SUCCESS
-   
+    
+    def _apply_stop_losses(self) -> int:
+        """
+        返回本 step 触发止损的平仓次数。
+        触发规则：
+        long:  low <= pos.stop_loss_price
+        short: high >= pos.stop_loss_price
+        成交价：用 stop_loss_price 作为成交价（并复用 close 的 spread 逻辑）
+        """
+        if self.config.trading.stop_loss_enabled == False:        
+            return 0
+
+        # 闭市不触发
+        mask_next = float(self.df_market.iloc[self.current_step]["mask_t"])
+        if mask_next < 0.5:
+            return 0
+
+        low, high = self._get_bar_low_high()
+        if low is None or high is None:
+            return 0
+
+        fired = 0
+        spr = self.config.trading.spread
+
+        # long slots
+        for slot, pos in enumerate(self.position_manager.long_positions):
+            if pos is None or pos.stop_loss_price is None:
+                continue
+            if low <= pos.stop_loss_price:
+                # 让 _long_close 的 bid_price = stop_loss_price
+                # _long_close 里 bid = price - spread => 传入 price = SL + spread
+                self._long_close(price=pos.stop_loss_price + spr, spread=spr, slot=slot)
+                self.logger.warning(f"trigger stoploss, long {pos}")
+                fired += 1
+
+        # short slots
+        for slot, pos in enumerate(self.position_manager.short_positions):
+            if pos is None or pos.stop_loss_price is None:
+                continue
+            if high >= pos.stop_loss_price:
+                # 让 _short_close 的 ask_price = stop_loss_price
+                # _short_close 里 ask = price + spread => 传入 price = SL - spread
+                self._short_close(price=pos.stop_loss_price - spr, spread=spr, slot=slot)
+                self.logger.warning(f"trigger stoploss, short {pos}")
+                fired += 1
+
+        return fired
+
 
     def _position_up(self, price: Decimal, spread: Decimal):
         for pos in self.position_manager.long_positions:
@@ -1123,7 +1185,46 @@ class CustomTradingEnv(gym.Env):
         return {"market_seq": market_seq, "agent_state": agent_state}
 
 
+    def _get_bar_low_high(self):
+        row = self.df_market.iloc[self.current_step]
+        # 兼容列名（看你 build_market_features 输出）
+        if "L_t" in row and "H_t" in row:
+            low = D(row["L_t"])
+            high = D(row["H_t"])
+        elif "Low" in row and "High" in row:
+            low = D(row["Low"])
+            high = D(row["High"])
+        else:
+            # 没有高低价就没法做“触发<=low”的止损
+            self.logger.warning("StopLoss: df_market missing low/high columns (L_t/H_t or Low/High).")
+            low = None
+            high = None
+        return low, high
 
+
+    def _compute_stop_loss_price(self, entry_price: Decimal, side: str) -> Decimal | None:
+        if self.config.trading.stop_loss_enabled == False:
+            return None
+        
+        mode = self.config.trading.stop_loss_mode
+        value  = self.config.trading.stop_loss_value  # Decimal
+
+        if value <= 0:
+            return None
+
+        if mode == "pct":
+            if side == "long":
+                return entry_price * (Decimal("1") - value)
+            else:
+                return entry_price * (Decimal("1") + value)
+        elif mode == "abs":
+            if side == "long":
+                return entry_price - value
+            else:
+                return entry_price + value
+        else:
+            self.logger.warning(f"StopLoss: unknown mode={mode}, ignored.")
+            return None
 
     def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
         # 找到该 day 的 minute=0 的真实开盘 timestamp，用它当 1440 分钟时间轴起点
