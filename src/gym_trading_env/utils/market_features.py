@@ -6,6 +6,30 @@ from gym_trading_env.utils.session_fx import compute_session_meta
 from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345, DEFAULT_TZ
 
 # Market-side features (sequence)
+FEATURES_MARKET_OBS: List[str] = [
+    "obs_C_t",                    # Closing price at time t
+    "obs_V_t",                    # Volume at time t
+    "obs_I_t",                    # Open Interest at time t
+    "obs_cumVWAP_t",              # Cumulative VWAP up to time t
+    "obs_dC_minus_cumVWAP_t",     # C_t - cumVWAP_t
+    "obs_cmp_C_vs_cumVWAP_t",     # sign(C_t - cumVWAP_t) -> {-1,0,1}
+    "obs_ref_close_t",            # Reference closing price (e.g., previous day close)
+    "obs_session_high_t",         # Session high price up to time t
+    "obs_session_low_t",          # Session low price up to time t
+    "obs_bar_dir_t",              # Direction of the current bar (1 = up, -1 = down, 0 = flat)
+    "obs_minute_index_t",         # Minute index within the trading session
+    "obs_limit_up_price_t",       # Upper price limit at time t
+    "obs_limit_down_price_t",     # Lower price limit at time t
+    "obs_dI_from_yclose_t",       # Change in imbalance from yesterday's close
+    "obs_dP_from_ref_t",          # Price change from reference price
+    "obs_pct_chg_from_ref_t",     # Percentage change from reference price
+    "obs_mask_t",                 # Mask flag (e.g., valid data or trading halt)
+    "obs_weekday_sin_t",          # Sine-encoded weekday (for cyclical time feature)
+    "obs_weekday_cos_t",          # Cosine-encoded weekday (for cyclical time feature)
+    "obs_day_trend_t",
+]
+
+# Market-side features (sequence)
 FEATURES_MARKET: List[str] = [
     "C_t",                    # Closing price at time t
     "V_t",                    # Volume at time t
@@ -33,7 +57,8 @@ FEATURES_MARKET: List[str] = [
 AUX_MARKET_COLS = ["H_t", "L_t"]
 
 # env 里会强依赖的列
-REQUIRED_MARKET_COLS = ["day_id"] + AUX_MARKET_COLS + FEATURES_MARKET
+REQUIRED_MARKET_COLS = ["day_id"] + AUX_MARKET_COLS + FEATURES_MARKET + FEATURES_MARKET_OBS
+
 
 def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
     # 将 session_id 统一转为字符串再解析，避免 dtype 干扰
@@ -45,6 +70,61 @@ def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
     }, index=session_id.index)
 
 
+def _add_obs_features_inplace(df: pd.DataFrame) -> None:
+    """
+    基于 raw FEATURES_MARKET 生成 obs_ 归一化特征列（写回 df）。
+    默认：价格类按 ref_close 做相对变化；量/持仓做 log1p；离散/时钟类保留。
+    """
+    eps = 1e-12
+
+    m = df.get("mask_t", pd.Series(1.0, index=df.index)).astype(float)
+    ref = df.get("ref_close_t", pd.Series(0.0, index=df.index)).astype(float)
+    ref_safe = ref.where(ref > eps, eps)
+
+    # price-like relative to ref_close
+    df["obs_C_t"] = (df["C_t"].astype(float) / ref_safe - 1.0).astype(float)
+    df["obs_cumVWAP_t"] = (df["cumVWAP_t"].astype(float) / ref_safe - 1.0).astype(float)
+    df["obs_dC_minus_cumVWAP_t"] = (df["dC_minus_cumVWAP_t"].astype(float) / ref_safe).astype(float)
+    df["obs_ref_close_t"] = np.log(ref_safe).astype(float)
+
+    df["obs_session_high_t"] = (df["session_high_t"].astype(float) / ref_safe - 1.0).astype(float)
+    df["obs_session_low_t"] = (df["session_low_t"].astype(float) / ref_safe - 1.0).astype(float)
+
+    # discrete
+    df["obs_cmp_C_vs_cumVWAP_t"] = df["cmp_C_vs_cumVWAP_t"].astype(float)
+    df["obs_bar_dir_t"] = df["bar_dir_t"].astype(float)
+
+    # volume / open interest (heavy-tail)
+    df["obs_V_t"] = np.log1p(df["V_t"].astype(float).clip(lower=0.0)).astype(float)
+    df["obs_I_t"] = np.log1p(df["I_t"].astype(float).clip(lower=0.0)).astype(float)
+
+    # limits: if not provided (0), keep 0 in obs
+    lu = df["limit_up_price_t"].astype(float)
+    ld = df["limit_down_price_t"].astype(float)
+    df["obs_limit_up_price_t"] = np.where(lu != 0.0, lu / ref_safe - 1.0, 0.0).astype(float)
+    df["obs_limit_down_price_t"] = np.where(ld != 0.0, ld / ref_safe - 1.0, 0.0).astype(float)
+
+    # delta features
+    df["obs_dP_from_ref_t"] = (df["dP_from_ref_t"].astype(float) / ref_safe).astype(float)
+    df["obs_pct_chg_from_ref_t"] = df["pct_chg_from_ref_t"].astype(float)
+    dI = df["dI_from_yclose_t"].astype(float)
+    df["obs_dI_from_yclose_t"] = (np.sign(dI) * np.log1p(np.abs(dI))).astype(float)
+
+    # time / mask
+    df["obs_mask_t"] = df["mask_t"].astype(float)
+    df["obs_weekday_sin_t"] = df["weekday_sin_t"].astype(float)
+    df["obs_weekday_cos_t"] = df["weekday_cos_t"].astype(float)
+    df["obs_minute_index_t"] = (df["minute_index_t"].astype(float) / 344.0).astype(float)
+
+
+    df["obs_day_trend_t"] = (df["minute_index_t"].astype(float) / 344.0).astype(float)
+    # apply mask to obs features except clock-like + mask itself
+    for col in FEATURES_MARKET_OBS:
+        if col in ("obs_mask_t", "obs_minute_index_t", "obs_weekday_sin_t", "obs_weekday_cos_t"):
+            continue
+        df[col] = (df[col].astype(float) * m).astype(float)
+
+
 def build_market_features(df_1m: pd.DataFrame,
                           tz: str = "Asia/Singapore",
                           rollover_hour_local: int = 5,
@@ -52,14 +132,15 @@ def build_market_features(df_1m: pd.DataFrame,
                           is_future: bool = False,
                           limit_up_pct: Optional[float] = None,
                           limit_down_pct: Optional[float] = None):
-    need_cols = {"Open","High","Low","Close"}
+    need_cols = {"Open", "High", "Low", "Close"}
     if not need_cols.issubset(df_1m.columns):
         raise ValueError(f"df_1m must contain {need_cols}")
-    
+
     if is_future:
         return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct)
     else:
         return _build_market_fx(df_1m, tz, rollover_hour_local)
+
 
 def _build_market_fx(df_1m: pd.DataFrame,
                      tz: str = "Asia/Singapore",
@@ -81,7 +162,7 @@ def _build_market_fx(df_1m: pd.DataFrame,
 
     cv = (df["C_t"] * df["V_t"]).astype(float)
     csum_cv = cv.groupby(sid).cumsum()
-    csum_v  = df["V_t"].groupby(sid).cumsum()
+    csum_v = df["V_t"].groupby(sid).cumsum()
     cum_vwap = csum_cv / csum_v.replace(0, np.nan)
     cum_mean_c = df["C_t"].groupby(sid).expanding().mean().reset_index(level=0, drop=True)
     df["cumVWAP_t"] = cum_vwap.fillna(cum_mean_c)
@@ -92,7 +173,7 @@ def _build_market_fx(df_1m: pd.DataFrame,
 
     df["ref_close_t"] = meta["prev_session_close"].astype(float)
     df["session_high_t"] = df["High"].groupby(sid).cummax().astype(float)
-    df["session_low_t"]  = df["Low"].groupby(sid).cummin().astype(float)
+    df["session_low_t"] = df["Low"].groupby(sid).cummin().astype(float)
 
     prev_close = df["Close"].shift(1)
     df["bar_dir_t"] = np.sign(df["Close"] - prev_close).fillna(0).astype(int)
@@ -116,7 +197,7 @@ def _build_market_fx(df_1m: pd.DataFrame,
     df["weekday_sin_t"] = meta["weekday_sin"].astype(float)
     df["weekday_cos_t"] = meta["weekday_cos"].astype(float)
 
-    has_ohlc = df[["Open","High","Low","Close"]].notna().all(axis=1).astype(int)
+    has_ohlc = df[["Open", "High", "Low", "Close"]].notna().all(axis=1).astype(int)
     no_gap = (1 - meta["is_hard_gap"]).astype(int)
     df["mask_t"] = (has_ohlc * no_gap).astype(float)
     df["day_id"] = meta["day_id"].astype(np.int32)
@@ -124,7 +205,13 @@ def _build_market_fx(df_1m: pd.DataFrame,
     for col in FEATURES_MARKET:
         df[col] = df[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
+    _add_obs_features_inplace(df)
+
+    for col in FEATURES_MARKET_OBS:
+        df[col] = df[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
     return df[REQUIRED_MARKET_COLS]
+
 
 def _build_market_future(df_1m: pd.DataFrame,
                          tz: str = "Asia/Singapore",
@@ -147,41 +234,44 @@ def _build_market_future(df_1m: pd.DataFrame,
     X["V_t"] = X.get("Volume", 0.0).astype(float)
     X["I_t"] = X.get("OpenInterest", 0.0).astype(float)
 
-    # 3) 参照价（上一交易日收盘）
+    # 3) 参照价（上一交易日收盘）——改为“有效分钟 first/last close”
+    valid_close = X["Close"].where(mask_t == 1, np.nan).astype(float)
+
+    sid_order = pd.Index(pd.unique(session_id.astype(str)))
+    first_valid_by_sid = valid_close.groupby(session_id).first()
+    last_valid_by_sid = valid_close.groupby(session_id).last()
+
+    first_valid_ordered = pd.Series([first_valid_by_sid.get(sid, np.nan) for sid in sid_order], index=sid_order)
+    last_valid_ordered = pd.Series([last_valid_by_sid.get(sid, np.nan) for sid in sid_order], index=sid_order)
+
+    prev_close_map = last_valid_ordered.shift(1)  # 上一交易日“最后一个有效 close”
+    ref_close_t = session_id.map(prev_close_map).astype(float)
+
+    # 缺上一日收盘时：用本 session “第一个有效 close” 兜底（避免夜盘补零分钟污染）
+    ref_close_t = ref_close_t.fillna(session_id.map(first_valid_ordered).astype(float))
+
+    # 如果 caller 传了 df_prev_session：第一交易日直接用 prev_session 的“最后有效 close”
     if df_prev_session is not None and len(df_prev_session) > 0:
         prev = strict_reindex_futures_345(df_prev_session, tz=tz)
-        prev_last_close = float(prev["aligned"]["Close"].tail(1).iloc[0])
-        ref_close_t = pd.Series(np.nan, index=X.index, dtype=float)
+        prev_aligned = prev["aligned"]
+        prev_mask = prev["mask"].astype(int)
+        prev_valid_close = prev_aligned["Close"].where(prev_mask == 1, np.nan).astype(float)
+        if prev_valid_close.notna().any():
+            prev_last_close = float(prev_valid_close.dropna().iloc[-1])
+        else:
+            prev_last_close = float(prev_aligned["Close"].tail(1).iloc[0])
 
         first_sid = session_id.iloc[0]
-        first_mask = (session_id == first_sid)
-        ref_close_t.loc[first_mask] = prev_last_close
+        ref_close_t.loc[session_id == first_sid] = prev_last_close
 
-        sid_last_close = X.loc[minute_index == 344, ["Close"]].copy()
-        sid_last_close["session_id"] = session_id[minute_index == 344]
-        sid_last_close = sid_last_close.set_index("session_id").rename(columns={"Close": "prev_close"})
-        prev_map = sid_last_close["prev_close"].shift(1)
-        ref_close_rest = session_id.map(prev_map).astype(float)
-        ref_close_t = ref_close_t.fillna(ref_close_rest)
-    else:
-        sid_last_close = X.loc[minute_index == 344, ["Close"]].copy()
-        sid_last_close["session_id"] = session_id[minute_index == 344]
-        sid_last_close = sid_last_close.set_index("session_id").rename(columns={"Close": "prev_close"})
-        prev_map = sid_last_close["prev_close"].shift(1)
-        ref_close_t = session_id.map(prev_map).astype(float)
-
-        first_sid = session_id.iloc[0]
-        first_val = float(X.loc[session_id == first_sid, "Close"].iloc[0])
-        ref_close_t.loc[session_id == first_sid] = ref_close_t.loc[session_id == first_sid].fillna(first_val)
-
-    # 使用 ffill/bfill 避免 FutureWarning
-    X["ref_close_t"] = ref_close_t.ffill().bfill().astype(float)
+    # 仍保持 ffill/bfill（兼容极端情况：整段都 NaN）
+    X["ref_close_t"] = ref_close_t.ffill().bfill().fillna(0.0).astype(float)
 
     # 4) cumVWAP（用 mask 过滤）
     valid_V = X["V_t"] * mask_t
     valid_C = X["C_t"]
     csum_cv = (valid_C * valid_V).groupby(session_id).cumsum()
-    csum_v  = valid_V.groupby(session_id).cumsum()
+    csum_v = valid_V.groupby(session_id).cumsum()
     with np.errstate(divide="ignore", invalid="ignore"):
         cum_vwap = csum_cv / csum_v
     c_valid = X["C_t"].where(mask_t == 1, np.nan)
@@ -196,9 +286,9 @@ def _build_market_future(df_1m: pd.DataFrame,
     H_valid = X["High"].where(mask_t == 1, np.nan)
     L_valid = X["Low"].where(mask_t == 1, np.nan)
     session_high = H_valid.groupby(session_id).cummax()
-    session_low  = L_valid.groupby(session_id).cummin()
+    session_low = L_valid.groupby(session_id).cummin()
     X["session_high_t"] = session_high.groupby(session_id).ffill().fillna(0.0).astype(float)
-    X["session_low_t"]  = session_low.groupby(session_id).ffill().fillna(0.0).astype(float)
+    X["session_low_t"] = session_low.groupby(session_id).ffill().fillna(0.0).astype(float)
 
     # 6) bar_dir（相邻有效收盘方向；跨日/无效置 0）
     prev_close = X["C_t"].shift(1)
@@ -208,12 +298,10 @@ def _build_market_future(df_1m: pd.DataFrame,
     bar_dir = np.where(minute_index == 0, 0.0, bar_dir)
     X["bar_dir_t"] = bar_dir.astype(int)
 
-
     # 7) turnover/amount: cumsum(C*V) within session (invalid minutes contribute 0 via mask)
     valid_V = X["V_t"] * mask_t
     cv = (X["C_t"] * valid_V).astype(float)
     X["turnover_t"] = cv.groupby(session_id).cumsum().astype(float)
-
 
     # 8) 分钟索引、weekday
     X["minute_index_t"] = minute_index.astype(int)
@@ -238,11 +326,10 @@ def _build_market_future(df_1m: pd.DataFrame,
         X["limit_up_price_t"] = 0.0
         X["limit_down_price_t"] = 0.0
 
-
     # 10) dI_from_yclose（上一交易日最后 OI）
     oi_last = X.loc[minute_index == 344, ["I_t"]].copy()
     oi_last["session_id"] = session_id[minute_index == 344]
-    oi_last = oi_last.set_index("session_id").rename(columns={"I_t":"prev_oi"})
+    oi_last = oi_last.set_index("session_id").rename(columns={"I_t": "prev_oi"})
     prev_oi_map = oi_last["prev_oi"].shift(1)
     I_yclose = session_id.map(prev_oi_map).astype(float)
     first_sid = session_id.iloc[0]
@@ -260,15 +347,24 @@ def _build_market_future(df_1m: pd.DataFrame,
     X["mask_t"] = mask_t.astype(float)
     X["day_id"] = day_id.astype(np.int32)
 
-    # === 12.5) 统一按 mask 抹零（无效分钟所有特征都为 0；保留 mask_t 自身）===
+    # === 12.5) 统一按 mask 抹零（无效分钟所有特征都为 0；保留 mask_t 自身；不抹 time 类特征）===
     m = X["mask_t"].astype(float)
     for col in FEATURES_MARKET + AUX_MARKET_COLS:
         if col == "mask_t":
+            continue
+        if col in ("minute_index_t", "weekday_sin_t", "weekday_cos_t"):
             continue
         X[col] = (X[col].astype(float) * m).astype(float)
 
     # 13) 清洗并返回
     for col in FEATURES_MARKET:
+        if col not in X.columns:
+            X[col] = 0.0
+        X[col] = X[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+
+    _add_obs_features_inplace(X)
+
+    for col in FEATURES_MARKET_OBS:
         if col not in X.columns:
             X[col] = 0.0
         X[col] = X[col].astype(float).replace([np.inf, -np.inf], np.nan).fillna(0.0)

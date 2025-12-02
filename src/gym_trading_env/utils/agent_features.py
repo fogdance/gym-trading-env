@@ -11,6 +11,29 @@ from gym_trading_env.envs.position import Position
 from gym_trading_env.utils.decimal_util import D0, D, decimal_to_float
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
+# Agent-side features (single vector, emitted by env at runtime)
+FEATURES_AGENT_OBS: List[str] = [
+    "obs_pos_t",                  # Current position size (positive = long, negative = short)
+    "obs_have_long_t",            # 1 if holding long position, 0 otherwise
+    "obs_have_short_t",           # 1 if holding short position, 0 otherwise
+    "obs_entry_price_t",          # Entry price of the current position
+    "obs_holding_minutes_t",      # Number of minutes the position has been held
+    "obs_upnl_t",                 # Unrealized PnL at time t
+    "obs_realized_pnl_step_t",    # Realized PnL in the current step
+    "obs_realized_pnl_cum_t",     # Cumulative realized PnL
+    "obs_fee_step_t",             # Trading fee in the current step
+    "obs_fee_cum_t",              # Cumulative trading fees
+    "obs_equity_t",               # Current equity (cash + unrealized PnL)
+    "obs_max_equity_t",           # Historical maximum equity (for drawdown calc)
+    "obs_drawdown_t",             # Current drawdown from peak equity
+    "obs_sigma_entry_t",          # Volatility estimate at entry time
+    "obs_sl_ticks_t",             # Stop-loss distance in ticks
+    "obs_tp_ticks_t",             # Take-profit distance in ticks
+    "obs_sl_price_t",             # Stop-loss price level
+    "obs_tp_price_t",             # Take-profit price level
+    "obs_minutes_to_timeout_t",   # Minutes remaining until position timeout
+]
+
 
 # Agent-side features (single vector, emitted by env at runtime)
 FEATURES_AGENT: List[str] = [

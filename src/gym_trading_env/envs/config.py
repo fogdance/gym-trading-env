@@ -72,6 +72,9 @@ class TradingParams:
     stop_loss_mode: str = "pct"          # "pct" | "abs"
     stop_loss_value: Decimal = _to_decimal(0.02)  # pct=0.02; abs=0.0010
 
+    # 新增：obs 使用哪套特征（默认 raw：兼容旧测试；obs：用归一化 obs_ 列）
+    obs_feature_mode: str = "raw"   # "raw" | "obs"
+
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
         assert self.initial_balance > 0, "Initial balance must be positive"
@@ -86,7 +89,10 @@ class TradingParams:
             assert self.stop_loss_value > 0, "stop_loss_value must be > 0"
             if self.stop_loss_mode == "pct":
                 assert self.stop_loss_value < 1, "stop_loss_value (pct) must be < 1"
-
+                
+        # 新增校验
+        allowed_obs = {"raw", "obs"}
+        assert self.obs_feature_mode in allowed_obs, f"obs_feature_mode must be one of {allowed_obs}"
 
 
 @dataclass

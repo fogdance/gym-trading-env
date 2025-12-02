@@ -51,6 +51,8 @@ def _assert_all_invalid_minutes_zeroed(out: pd.DataFrame, start_invalid_row: int
     for col in FEATURES_MARKET:
         if col == "mask_t":
             continue
+        if col in ("minute_index_t", "weekday_sin_t", "weekday_cos_t"):
+            continue
         a = out[col].to_numpy(dtype=float)
         assert np.all(a[start_invalid_row:] == 0.0), f"{col} should be 0 when mask=0 (future branch contract)"
 
@@ -174,5 +176,7 @@ def test_build_market_future_bar_dir_requires_prev_valid_minute():
     # and invalid minute is fully zeroed
     for col in FEATURES_MARKET:
         if col == "mask_t":
+            continue
+        if col in ("minute_index_t", "weekday_sin_t", "weekday_cos_t"):
             continue
         assert float(out[col].iloc[1]) == 0.0

@@ -27,8 +27,8 @@ from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
-from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
-from gym_trading_env.utils.agent_features import FEATURES_AGENT
+from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, build_market_features
+from gym_trading_env.utils.agent_features import FEATURES_AGENT,FEATURES_AGENT_OBS
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 from gym_trading_env.utils.plot_intraday import save_intraday_html
 from gym_trading_env.envs.account import Account
@@ -55,15 +55,22 @@ class CustomTradingEnv(gym.Env):
             Action.SHORT_OPEN0,
             Action.SHORT_CLOSE0
         ]
-        
 
         self.action_space = spaces.Discrete(len(self.valid_actions))
         self.df_market = build_market_features(self.df, rollover_hour_local=5, is_future=self.config.trading.is_future)
 
-        # ---- constants ----
+        # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
+        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
+        if mode == "obs":
+            self._OBS_FEATURES_MARKET = FEATURES_MARKET_OBS
+            self._OBS_FEATURES_AGENT = FEATURES_AGENT_OBS
+        else:
+            self._OBS_FEATURES_MARKET = FEATURES_MARKET  # default = old behavior
+            self._OBS_FEATURES_AGENT = FEATURES_AGENT  # default = old behavior
 
-        self._F_MARKET = len(FEATURES_MARKET)
-        self._F_AGENT  = len(FEATURES_AGENT)
+        # ---- constants ----
+        self._F_MARKET = len(self._OBS_FEATURES_MARKET)
+        self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
 
         # Enforce column order and dtype
         dfm = self.df_market.copy()
@@ -76,12 +83,11 @@ class CustomTradingEnv(gym.Env):
         missing = required_cols - set(dfm.columns)
         if missing:
             raise ValueError(f"df_market missing columns: {missing}")
-        
-            
+
         # Numpy views
         minute_idx = dfm["minute_index_t"].to_numpy(dtype=np.int32, copy=False)
         mask_np    = dfm["mask_t"].to_numpy(dtype=np.float32, copy=False)
-        X_all      = dfm[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
+        X_all      = dfm[self._OBS_FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
         day_ids    = dfm["day_id"].to_numpy(copy=False)
 
         # Normalize all day ids once
@@ -103,21 +109,27 @@ class CustomTradingEnv(gym.Env):
             end   = int(start + sel.sum())        # first index of next day
             self._day_ranges.append((start, end))
 
-
-        # Prebuild “full-day” tensors (zeros, then fill rows where mask==1)
-        # Shape: [num_days, 1440, F_MARKET]
+        # Prebuild “full-day” tensors (zeros, then fill)
+        # Shape: [num_days, DAY_LEN, F_MARKET]
         num_days = len(self._days)
         self._daily_X = np.zeros((num_days, self.DAY_LEN, self._F_MARKET), dtype=np.float32)
         self._daily_mask = np.zeros((num_days, self.DAY_LEN), dtype=np.float32)
 
         for di, (s, e) in enumerate(self._day_ranges):
-            m_idx = minute_idx[s:e]        # [0..1439]
+            m_idx = minute_idx[s:e]        # futures: [0..344]
             msk   = mask_np[s:e]           # 0/1
-            rows  = (msk >= 0.5)
-            if rows.any():
-                self._daily_X[di, m_idx[rows], :] = X_all[s:e, :][rows]
-                self._daily_mask[di, m_idx] = msk
 
+            if self.config.trading.is_future:
+                # futures：把 obs_ 全量写进去（非价量的 time 特征也要保留），
+                # 价量类本身在 build_market_features 里就已按 mask 抹零
+                self._daily_X[di, m_idx, :] = X_all[s:e, :]
+                self._daily_mask[di, m_idx] = msk
+            else:
+                # fx：保持旧行为（无效分钟不写入 -> 仍为 0）
+                rows = (msk >= 0.5)
+                if rows.any():
+                    self._daily_X[di, m_idx[rows], :] = X_all[s:e, :][rows]
+                self._daily_mask[di, m_idx] = msk
 
         self.observation_space = spaces.Dict({
             "market_seq": spaces.Box(
@@ -132,7 +144,6 @@ class CustomTradingEnv(gym.Env):
             ),
         })
 
-
         self.reset()
 
         if self.config.debug.debug_enabled:
@@ -143,12 +154,23 @@ class CustomTradingEnv(gym.Env):
             print("df_m.loc  :", None if ts not in self.df_market.index else ts)
             print("len(df)=", len(self.df), "len(df_market)=", len(self.df_market))
 
+            # 在 debug_enabled 分支里（reset 后已有 self._day_i 和 _day_ranges）
+            s, e = self._day_ranges[self._day_i]
+            sub = self.df_market.iloc[s:e]
+
             save_intraday_html(
-                df_market=self.df_market,
-                title = (f"{self.config.trading.currency_pair} "f"{self.df_market.index[self.current_step]}"),
-                out_path= ("/tmp/"f"{self.config.trading.currency_pair} "f"{self.df_market.index[self.current_step]}"".html"),
-                start_pos=self.current_step,
-                end_pos=self.end_idx)
+                df_market=sub,
+                title=f"{self.config.trading.currency_pair} {sub.index[0]}",
+                out_path=f"/tmp/{self.config.trading.currency_pair}_{sub.index[0]}.html",
+                start_pos=0,
+                end_pos=self.DAY_LEN,          # 完整 345
+                focus_ts=sub.index[0],         # 或者 focus_ts=self.df_market.index[self.current_step]
+                agent_raw=None,
+                agent_obs=None,
+            )
+
+
+
 
 
 
@@ -1163,46 +1185,75 @@ class CustomTradingEnv(gym.Env):
 
     def _get_obs(self):
         """
-        market_seq: (window_size, F_MARKET)
+        market_seq: (window_size, F_MARKET_SELECTED)
         - 取最近 window_size 分钟的“已发生历史片段”
         - 当历史不足 window_size：右侧补 0
         """
-        X_day = self._daily_X[self._day_i]  # (DAY_LEN, F_MARKET)
+        X_day = self._daily_X[self._day_i]  # (DAY_LEN, F)
 
         end = int(min(self.current_minute, self.DAY_LEN - 1))
         start = max(0, end - self.window_size + 1)
 
-        window = X_day[start:end + 1, :]   # (L, F), L<=window_size
+        window = X_day[start:end + 1, :]
         L = window.shape[0]
 
         if L < self.window_size:
             pad = np.zeros((self.window_size - L, self._F_MARKET), dtype=np.float32)
-            market_seq = np.concatenate([window, pad], axis=0)  # 右侧补 0
+            market_seq = np.concatenate([window, pad], axis=0)
         else:
             market_seq = window.astype(np.float32, copy=False)
 
+        agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
+
         if self.config.debug.debug_enabled:
+            # 1) 校验 daily_X 与 df_market 对齐
             ts = self.df_market.index[self.current_step]
             mi = int(self.df_market.loc[ts, "minute_index_t"])
-            row_df = self.df_market.loc[ts, FEATURES_MARKET].to_numpy(np.float32)
-            row_X  = self._daily_X[self._day_i, mi, :]
+            row_df = self.df_market.loc[ts, self._OBS_FEATURES_MARKET].to_numpy(np.float32)
+            row_X = self._daily_X[self._day_i, mi, :]
             if not np.allclose(row_df, row_X, atol=1e-6, rtol=0):
                 raise RuntimeError(f"daily_X build mismatch at {ts} mi={mi}")
-    
+
+            # 2) 造 dfp：带 raw+obs（obs 窗口来自 agent）
             dfp = self._obs_market_df(market_seq)
+
+            # 3) agent raw/obs dict（obs 预留接口）
+            try:
+                from gym_trading_env.utils.agent_features import FEATURES_AGENT
+            except Exception:
+                FEATURES_AGENT = [f"agent_{i}" for i in range(len(agent_state))]
+
+            agent_raw = {k: float(v) for k, v in zip(FEATURES_AGENT, agent_state)}
+
+            agent_obs = None
+            agent_state_obs = getattr(self, "_agent_state_obs_vec", None)
+            if agent_state_obs is not None:
+                try:
+                    from gym_trading_env.utils.agent_features import FEATURES_AGENT_OBS
+                    agent_obs = {k: float(v) for k, v in zip(FEATURES_AGENT_OBS, agent_state_obs)}
+                except Exception:
+                    agent_obs = None
+
+            # 4) 只画 window_size（start..end）
             save_intraday_html(
                 df_market=dfp,
                 title=f"{self.config.trading.currency_pair} obs {self.df_market.index[self.current_step]}",
                 out_path=f"/tmp/obs_{self.df_market.index[self.current_step]}.html",
-                start_pos=0,
-                end_pos=self.DAY_LEN
+                start_pos=start,
+                end_pos=end + 1,
+                focus_pos=end,
+                agent_raw=agent_raw,
+                agent_obs=agent_obs,
             )
 
-        agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
         return {"market_seq": market_seq, "agent_state": agent_state}
 
+
+
+
     def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
-        # 取当天严格345时钟的真实时间戳（夜盘在前一自然日，日盘在当日，且中间有大断档）
+        from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
+
         s, e = self._day_ranges[self._day_i]
         sub = self.df_market.iloc[s:e]
         idx = sub.index
@@ -1210,24 +1261,46 @@ class CustomTradingEnv(gym.Env):
         if len(idx) != self.DAY_LEN:
             raise RuntimeError(f"day slice length != DAY_LEN: {len(idx)} vs {self.DAY_LEN}")
 
-        # 先造一张“整天分时图”的空画布：345行，全 NaN -> 视觉上就是空白
-        dfp = pd.DataFrame(np.nan, index=idx, columns=FEATURES_MARKET, dtype=np.float32)
+        # 画布：先把 raw 全量铺进去（用于对照），obs 用 NaN 先占位（未来分钟保持空白）
+        cols = list(dict.fromkeys(list(FEATURES_MARKET) + list(FEATURES_MARKET_OBS)))
+        dfp = pd.DataFrame(np.nan, index=idx, columns=cols, dtype=np.float32)
 
-        # 把 market_seq（agent真实输入）放回整天对应的位置
+        # raw：直接从 df_market 取（整天 345）
+        for c in FEATURES_MARKET:
+            if c in sub.columns:
+                dfp[c] = sub[c].to_numpy(dtype=np.float32, copy=False)
+
+        # obs：把 agent “可见窗口”映射回当天对应分钟
         end = int(min(self.current_minute, self.DAY_LEN - 1))
         start = max(0, end - self.window_size + 1)
         L = end - start + 1  # 真实历史长度（<= window_size）
 
-        # market_seq 右侧 pad 的 0 不应该映射到未来分钟，所以只取前 L 行
-        dfp.iloc[start:end + 1, :] = market_seq[:L, :]
+        # market_seq 的列顺序严格对应 self._OBS_FEATURES_MARKET
+        obs_cols = list(self._OBS_FEATURES_MARKET)
 
-        # 如果 save_intraday_html 依赖这些列，就补上（这俩不是 agent 输入，但用于画坐标/遮罩很有用）
+        # 只把真实历史段写入；market_seq 右侧 pad 不写入未来分钟
+        dfp.iloc[start:end + 1, dfp.columns.get_indexer(obs_cols)] = market_seq[:L, :].astype(np.float32, copy=False)
+
+        # 辅助列：两套都补（方便 plot_intraday 正常工作）
         dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
         dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
 
+        # 如果 sub 里已有 obs_minute_index_t / obs_mask_t，顺便带上（表格/调试更完整）
+        if "obs_minute_index_t" in sub.columns:
+            dfp["obs_minute_index_t"] = sub["obs_minute_index_t"].to_numpy(dtype=np.float32, copy=False)
+        else:
+            dfp["obs_minute_index_t"] = dfp["minute_index_t"].astype(np.float32)
+
+        if "obs_mask_t" in sub.columns:
+            dfp["obs_mask_t"] = sub["obs_mask_t"].to_numpy(dtype=np.float32, copy=False)
+        else:
+            # obs_mask_t 的语义：agent 可见历史段为 1，未来/空白为 0
+            obs_mask = np.zeros((self.DAY_LEN,), dtype=np.float32)
+            obs_mask[start:end + 1] = 1.0
+            dfp["obs_mask_t"] = obs_mask
+
         return dfp
 
-    
 
 
     def _get_bar_low_high(self):
