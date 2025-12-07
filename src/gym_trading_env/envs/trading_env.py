@@ -28,14 +28,20 @@ from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, build_market_features
-from gym_trading_env.utils.agent_features import FEATURES_AGENT,FEATURES_AGENT_OBS
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 from gym_trading_env.utils.plot_intraday import save_intraday_html
 from gym_trading_env.envs.account import Account
+from gym_trading_env.utils.daily_features import (
+    build_daily_context_and_seq,
+    FEATURES_DAILY_CONTEXT, FEATURES_DAILY_CONTEXT_OBS,
+    DAILY_SEQ_LEN,
+)
 
 from gym_trading_env.utils.agent_features import (
-    AgentFeatureInput, compute_agent_features, agent_feature_vector, compute_unrealized_pnl
+    AgentFeatureInput, compute_agent_features_raw, compute_agent_features_obs, compute_unrealized_pnl,
+    agent_feature_vector, FEATURES_AGENT, FEATURES_AGENT_OBS
 )
+
 
 
 class CustomTradingEnv(gym.Env):
@@ -72,9 +78,8 @@ class CustomTradingEnv(gym.Env):
         self._F_MARKET = len(self._OBS_FEATURES_MARKET)
         self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
 
-        # Enforce column order and dtype
-        dfm = self.df_market.copy()
-        dfm = dfm.astype(np.float32)
+        dfm = self.df_market  # DON'T astype the whole df (keeps day_id dtype stable)
+
 
         # Required session columns
         required_cols = {"day_id", "minute_index_t", "mask_t"}
@@ -131,18 +136,44 @@ class CustomTradingEnv(gym.Env):
                     self._daily_X[di, m_idx[rows], :] = X_all[s:e, :][rows]
                 self._daily_mask[di, m_idx] = msk
 
-        self.observation_space = spaces.Dict({
-            "market_seq": spaces.Box(
-                low=-np.inf, high=np.inf,
-                shape=(self.window_size, self._F_MARKET),
-                dtype=np.float32
-            ),
-            "agent_state": spaces.Box(
-                low=-np.inf, high=np.inf,
-                shape=(self._F_AGENT,),
-                dtype=np.float32
-            ),
-        })
+        # --- STEP3: daily context / daily seq ---
+        self._use_daily_context = bool(getattr(self.config.trading, "use_daily_context", False))
+        self._use_daily_seq_7 = bool(getattr(self.config.trading, "use_daily_seq_7", False))
+
+        self._F_DAILY_CTX = 0
+        self._daily_ctx_raw = None
+        self._daily_ctx_obs = None
+        self._daily_seq7_raw = None
+        self._daily_seq7_obs = None
+
+        if self._use_daily_context or self._use_daily_seq_7:
+            ctx_raw, ctx_obs, seq_raw, seq_obs, _summary = build_daily_context_and_seq(
+                self.df_market,
+                day_key_fn=self._day_key,
+                days_order=self._days,
+                day_id_col="day_id",
+                mask_col="mask_t",
+            )
+            self._daily_ctx_raw = ctx_raw
+            self._daily_ctx_obs = ctx_obs
+            self._daily_seq7_raw = seq_raw
+            self._daily_seq7_obs = seq_obs
+            self._F_DAILY_CTX = ctx_raw.shape[1]
+
+
+        obs_dict = {
+            "market_seq": spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, self._F_MARKET), dtype=np.float32),
+            "agent_state": spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_AGENT,), dtype=np.float32),
+        }
+
+        if self._use_daily_context:
+            obs_dict["daily_context"] = spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_DAILY_CTX,), dtype=np.float32)
+
+        if self._use_daily_seq_7:
+            obs_dict["daily_seq_7"] = spaces.Box(low=-np.inf, high=np.inf, shape=(DAILY_SEQ_LEN, 3), dtype=np.float32)
+
+        self.observation_space = spaces.Dict(obs_dict)
+
 
         self.reset()
 
@@ -184,6 +215,18 @@ class CustomTradingEnv(gym.Env):
         # Validate config
         self.config.validate()
 
+        # Set up logging
+        self.logger = logging.getLogger(__name__)
+        handler = logging.StreamHandler()
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        if not self.logger.handlers:
+            self.logger.addHandler(handler)
+        log_level = getattr(logging, self.config.debug.log_level.upper())
+        self.logger.setLevel(log_level)
+
+        self.logger.info(f"config_path (absolute): {Path(config_path).resolve()}")
+
         # DAY_LEN 只依赖 is_future，提前定好
         self.DAY_LEN = 345 if self.config.trading.is_future else 1440
 
@@ -206,17 +249,7 @@ class CustomTradingEnv(gym.Env):
         self.reward_function = reward_class(self)
         self.data_window_size = 400
 
-        # Set up logging
-        self.logger = logging.getLogger(__name__)
-        handler = logging.StreamHandler()
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        handler.setFormatter(formatter)
-        if not self.logger.handlers:
-            self.logger.addHandler(handler)
-        log_level = getattr(logging, self.config.debug.log_level.upper())
-        self.logger.setLevel(log_level)
 
-        self.logger.info(f"config_path (absolute): {Path(config_path).resolve()}")
 
     def _data(self, df, config):
         # Data
@@ -429,8 +462,20 @@ class CustomTradingEnv(gym.Env):
         self.fee_step = D0
         self.stop_loss_fired = 0
 
+        # --- intraday day caches (for agent obs normalization) ---
+        self._entries_used_today = 0
+        self._day_start_realized_cum = self.user_accounts.realized_pnl
+
+        # compute EOD absolute index for this day/session
+        day_start_row = self._day_ranges[self._day_i][0]
+        if self.config.trading.is_future:
+            self._eod_idx = self._compute_end_idx_at_15(day_start_row, tz="Asia/Shanghai")
+        else:
+            self._eod_idx = self._day_ranges[self._day_i][1]  # end of day slice
+
         self._last_valid_price = D(self.df_market.iloc[self.current_step]["C_t"])
         self._refresh_agent_state()
+
 
         # First observation
         obs = self._get_obs()
@@ -610,8 +655,26 @@ class CustomTradingEnv(gym.Env):
     def _sync_day_and_minute(self):
         ts = self.df_market.index[self.current_step]
         day_key = self._day_key(self.df_market.loc[ts, "day_id"])
-        self._day_i = int(self._sid_to_dayi[day_key])
+        new_day_i = int(self._sid_to_dayi[day_key])
+
+        # day change hook
+        if not hasattr(self, "_day_i"):
+            self._day_i = new_day_i
+        elif new_day_i != self._day_i:
+            self._day_i = new_day_i
+            self._entries_used_today = 0
+            self._day_start_realized_cum = self.user_accounts.realized_pnl
+
+            day_start_row = self._day_ranges[self._day_i][0]
+            if self.config.trading.is_future:
+                self._eod_idx = self._compute_end_idx_at_15(day_start_row, tz="Asia/Shanghai")
+            else:
+                self._eod_idx = self._day_ranges[self._day_i][1]
+        else:
+            self._day_i = new_day_i
+
         self.current_minute = int(self.df_market.loc[ts, "minute_index_t"])
+
 
 
     def _update_step_deltas(self):
@@ -720,13 +783,47 @@ class CustomTradingEnv(gym.Env):
         )
 
     def _refresh_agent_state(self):
-        # prev_max_equity 用 env 里的 max_equity 做缓存（只在 step() 的固定位置更新）
         prev_max = getattr(self, "max_equity", D(self.config.trading.initial_balance))
+
+        # --- minutes to EOD (absolute index -> remaining minutes) ---
+        eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
+        minutes_to_eod = max(0, eod_idx - int(self.current_step))
+
+        # --- realized today ---
+        day_start_realized = getattr(self, "_day_start_realized_cum", self.user_accounts.realized_pnl)
+        realized_today_cash = self.user_accounts.realized_pnl - day_start_realized
+
+        # --- R_cash scale (1R in cash) ---
+        # Use entry_price if in position else current_price as ref
+        ref_price = getattr(self, "current_price", self._last_valid_price)
+        try:
+            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
+                # if any position exists, approximate ref with current_price (stable enough for scaling)
+                ref_price = getattr(self, "current_price", self._last_valid_price)
+        except Exception:
+            pass
+
+        R_cash = D0
+        if bool(getattr(self.config.trading, "stop_loss_enabled", False)):
+            mode = getattr(self.config.trading, "stop_loss_mode", "pct")
+            slv = getattr(self.config.trading, "stop_loss_value", D0)
+            if slv is None:
+                slv = D0
+            if mode == "pct":
+                sl_dist = ref_price * slv
+            else:
+                sl_dist = slv
+            R_cash = sl_dist * self.config.trading.lot_size * self.config.trading.trade_lot
+
+        # fallback if SL disabled / degenerate
+        if R_cash <= D0:
+            B0 = D(self.config.trading.initial_balance)
+            R_cash = max(B0 * Decimal("0.001"), Decimal("1"))
 
         inp = AgentFeatureInput(
             long_positions=self.position_manager.long_positions,
             short_positions=self.position_manager.short_positions,
-            current_step=self.current_step,
+            current_step=int(self.current_step),
             current_price=getattr(self, "current_price", self._last_valid_price),
             lot_size=self.config.trading.lot_size,
 
@@ -739,17 +836,39 @@ class CustomTradingEnv(gym.Env):
             used_margin=self.user_accounts.used_margin.get_balance(),
 
             prev_max_equity=prev_max,
+
+            # intraday extras
+            entries_used_today=int(getattr(self, "_entries_used_today", 0)),
+            max_entries_per_day=int(getattr(self.config.trading, "max_entries_per_day", 1)),
+            minutes_to_eod=int(minutes_to_eod),
+            day_len=int(self.DAY_LEN),
+
+            initial_balance=D(self.config.trading.initial_balance),
+            realized_today_cash=realized_today_cash,
+            R_cash=R_cash,
         )
 
-        feat = compute_agent_features(inp)
+        raw = compute_agent_features_raw(inp)
+        obs = compute_agent_features_obs(inp, raw)
 
-        # 缓存（让 state 更新发生在 step / reset，而不是 _get_obs）
-        self.upnl = feat["upnl_t"]
-        self.equity = feat["equity_t"]
-        self.max_equity = feat["max_equity_t"]
-        self.drawdown = feat["drawdown_t"]
+        # env caches (unchanged semantics)
+        self.upnl = raw["upnl_t"]
+        self.equity = raw["equity_t"]
+        self.max_equity = raw["max_equity_t"]
+        self.drawdown = raw["drawdown_t"]
 
-        self._agent_state_vec = agent_feature_vector(feat)
+        # vectors
+        self._agent_state_raw_vec = agent_feature_vector(raw, FEATURES_AGENT)
+        self._agent_state_obs_vec = agent_feature_vector(obs, FEATURES_AGENT_OBS)
+
+        # debug dicts (labels never mismatch)
+        self._agent_raw_debug = {k: float(decimal_to_float(raw.get(k, D0))) for k in FEATURES_AGENT}
+        self._agent_obs_debug = {k: float(decimal_to_float(obs.get(k, D0))) for k in FEATURES_AGENT_OBS}
+
+        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
+        self._agent_state_vec = self._agent_state_obs_vec if mode == "obs" else self._agent_state_raw_vec
+
+
 
 
     # --- NEW: 将索引本地化 ---
@@ -856,6 +975,18 @@ class CustomTradingEnv(gym.Env):
         """
         Executes a LONG_OPEN action with manual rollback.
         """
+        # ---- intraday constraints ----
+        if bool(getattr(self.config.trading, "intraday_single_position", True)):
+            # already in any position => reject (no add, no simultaneous long/short)
+            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
+                self.logger.warning("Intraday rule: cannot open while already in position (no add / no flip).")
+                return ForexCode.ERROR_OPEN_POSITION
+
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
+            return ForexCode.ERROR_OPEN_POSITION
+
         ask_price = price + spread
         max_additional_long = self.config.trading.max_long_position - self.user_accounts.long_position
         if max_additional_long <= Decimal('0.0'):
@@ -909,6 +1040,8 @@ class CustomTradingEnv(gym.Env):
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
         )
         self.record_trade(trade_record)
+        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+
         return ForexCode.SUCCESS
 
 
@@ -980,6 +1113,18 @@ class CustomTradingEnv(gym.Env):
         """
         Executes a SHORT_OPEN action with manual rollback.
         """
+        # ---- intraday constraints ----
+        if bool(getattr(self.config.trading, "intraday_single_position", True)):
+            # already in any position => reject (no add, no simultaneous long/short)
+            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
+                self.logger.warning("Intraday rule: cannot open while already in position (no add / no flip).")
+                return ForexCode.ERROR_OPEN_POSITION
+
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
+            return ForexCode.ERROR_OPEN_POSITION
+                
         bid_price = price - spread
         max_additional_short = self.config.trading.max_short_position - self.user_accounts.short_position
         if max_additional_short <= Decimal('0.0'):
@@ -1033,6 +1178,8 @@ class CustomTradingEnv(gym.Env):
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
         )
         self.record_trade(trade_record)
+        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+
         return ForexCode.SUCCESS
    
 
@@ -1218,21 +1365,16 @@ class CustomTradingEnv(gym.Env):
             dfp = self._obs_market_df(market_seq)
 
             # 3) agent raw/obs dict（obs 预留接口）
-            try:
-                from gym_trading_env.utils.agent_features import FEATURES_AGENT
-            except Exception:
-                FEATURES_AGENT = [f"agent_{i}" for i in range(len(agent_state))]
+            raw_vec = getattr(self, "_agent_state_raw_vec", None)
+            obs_vec = getattr(self, "_agent_state_obs_vec", None)
 
-            agent_raw = {k: float(v) for k, v in zip(FEATURES_AGENT, agent_state)}
+            agent_raw = getattr(self, "_agent_raw_debug", None)
+            if agent_raw is None and raw_vec is not None:
+                agent_raw = {k: float(v) for k, v in zip(FEATURES_AGENT, raw_vec)}
 
-            agent_obs = None
-            agent_state_obs = getattr(self, "_agent_state_obs_vec", None)
-            if agent_state_obs is not None:
-                try:
-                    from gym_trading_env.utils.agent_features import FEATURES_AGENT_OBS
-                    agent_obs = {k: float(v) for k, v in zip(FEATURES_AGENT_OBS, agent_state_obs)}
-                except Exception:
-                    agent_obs = None
+            agent_obs = getattr(self, "_agent_obs_debug", None)
+            if agent_obs is None and obs_vec is not None:
+                agent_obs = {k: float(v) for k, v in zip(FEATURES_AGENT_OBS, obs_vec)}
 
             # 4) 只画 window_size（start..end）
             save_intraday_html(
@@ -1246,7 +1388,19 @@ class CustomTradingEnv(gym.Env):
                 agent_obs=agent_obs,
             )
 
-        return {"market_seq": market_seq, "agent_state": agent_state}
+        out = {"market_seq": market_seq, "agent_state": agent_state}
+
+        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
+        use_obs = (mode == "obs")
+
+        if self._use_daily_context:
+            out["daily_context"] = (self._daily_ctx_obs[self._day_i] if use_obs else self._daily_ctx_raw[self._day_i])
+
+        if self._use_daily_seq_7:
+            out["daily_seq_7"] = (self._daily_seq7_obs[self._day_i] if use_obs else self._daily_seq7_raw[self._day_i])
+
+        return out
+
 
 
 

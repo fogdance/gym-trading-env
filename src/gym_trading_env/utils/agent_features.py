@@ -3,60 +3,55 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence, List
+
 import numpy as np
-from typing import List, Optional, Dict
 
 from gym_trading_env.envs.position import Position
 from gym_trading_env.utils.decimal_util import D0, D, decimal_to_float
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
-# Agent-side features (single vector, emitted by env at runtime)
-FEATURES_AGENT_OBS: List[str] = [
-    "obs_pos_t",                  # Current position size (positive = long, negative = short)
-    "obs_have_long_t",            # 1 if holding long position, 0 otherwise
-    "obs_have_short_t",           # 1 if holding short position, 0 otherwise
-    "obs_entry_price_t",          # Entry price of the current position
-    "obs_holding_minutes_t",      # Number of minutes the position has been held
-    "obs_upnl_t",                 # Unrealized PnL at time t
-    "obs_realized_pnl_step_t",    # Realized PnL in the current step
-    "obs_realized_pnl_cum_t",     # Cumulative realized PnL
-    "obs_fee_step_t",             # Trading fee in the current step
-    "obs_fee_cum_t",              # Cumulative trading fees
-    "obs_equity_t",               # Current equity (cash + unrealized PnL)
-    "obs_max_equity_t",           # Historical maximum equity (for drawdown calc)
-    "obs_drawdown_t",             # Current drawdown from peak equity
-    "obs_sigma_entry_t",          # Volatility estimate at entry time
-    "obs_sl_ticks_t",             # Stop-loss distance in ticks
-    "obs_tp_ticks_t",             # Take-profit distance in ticks
-    "obs_sl_price_t",             # Stop-loss price level
-    "obs_tp_price_t",             # Take-profit price level
-    "obs_minutes_to_timeout_t",   # Minutes remaining until position timeout
-]
 
-
-# Agent-side features (single vector, emitted by env at runtime)
+# -----------------------------
+# RAW features (debug/log)
+# -----------------------------
 FEATURES_AGENT: List[str] = [
-    "pos_t",                  # Current position size (positive = long, negative = short)
-    "have_long_t",            # 1 if holding long position, 0 otherwise
-    "have_short_t",           # 1 if holding short position, 0 otherwise
-    "entry_price_t",          # Entry price of the current position
-    "holding_minutes_t",      # Number of minutes the position has been held
-    "upnl_t",                 # Unrealized PnL at time t
-    "realized_pnl_step_t",    # Realized PnL in the current step
-    "realized_pnl_cum_t",     # Cumulative realized PnL
-    "fee_step_t",             # Trading fee in the current step
-    "fee_cum_t",              # Cumulative trading fees
-    "equity_t",               # Current equity (cash + unrealized PnL)
-    "max_equity_t",           # Historical maximum equity (for drawdown calc)
-    "drawdown_t",             # Current drawdown from peak equity
-    "sigma_entry_t",          # Volatility estimate at entry time
-    "sl_ticks_t",             # Stop-loss distance in ticks
-    "tp_ticks_t",             # Take-profit distance in ticks
-    "sl_price_t",             # Stop-loss price level
-    "tp_price_t",             # Take-profit price level
-    "minutes_to_timeout_t",   # Minutes remaining until position timeout
+    "pos_t",                  # Net lots (+long, -short). In intraday single-position mode, magnitude is fixed trade_lot.
+    "have_long_t",            # 1 if holding any long position else 0
+    "have_short_t",           # 1 if holding any short position else 0
+    "entry_price_t",          # VWAP entry price of active side (0 if flat)
+    "holding_minutes_t",      # Holding age in minutes (0 if flat)
+    "upnl_t",                 # Unrealized PnL in cash currency
+    "realized_pnl_step_t",    # Realized PnL delta this step (cash)
+    "realized_pnl_cum_t",     # Cumulative realized PnL (cash)
+    "fee_step_t",             # Fee delta this step (cash)
+    "fee_cum_t",              # Cumulative fee (cash)
+    "equity_t",               # cash + used_margin + upnl (cash)
+    "max_equity_t",           # max equity seen so far (cash)
+    "drawdown_t",             # max_equity - equity (cash)
+    "sigma_entry_t",          # (optional) volatility at entry (cash or unitless), default 0
+    "sl_ticks_t",             # (optional) SL dist in ticks, default 0
+    "tp_ticks_t",             # (optional) TP dist in ticks, default 0
+    "sl_price_t",             # (optional) SL price, default 0
+    "tp_price_t",             # (optional) TP price, default 0
+    "minutes_to_timeout_t",   # (optional) timeout mins, default 0
 ]
+
+
+# -----------------------------
+# OBS features (train-time, 8D)
+# -----------------------------
+FEATURES_AGENT_OBS: List[str] = [
+    "obs_pos_side_t",            # {-1,0,+1} position side: short=-1, flat=0, long=+1 (no long+short simultaneously)
+    "obs_entries_left_frac_t",   # [0,1] remaining entries fraction for today
+    "obs_minutes_to_eod_frac_t", # [0,1] minutes to end-of-day liquidation fraction
+    "obs_holding_frac_t",        # [0,1] holding age fraction of DAY_LEN (flat=0)
+    "obs_upnl_R_t",              # clipped cash PnL in R units (R_cash defined by stop-loss distance)
+    "obs_realized_today_R_t",    # clipped realized-today cash PnL in R units
+    "obs_equity_frac_t",         # clipped (equity - B0)/B0
+    "obs_drawdown_frac_t",       # clipped drawdown/B0
+]
+
 
 @dataclass(frozen=True)
 class AgentFeatureInput:
@@ -65,7 +60,7 @@ class AgentFeatureInput:
     short_positions: Sequence[Optional[Position]]
 
     # time/price
-    current_step: int                 # step index (minute granularity)
+    current_step: int
     current_price: Decimal
     lot_size: Decimal
 
@@ -82,7 +77,17 @@ class AgentFeatureInput:
     # drawdown tracking
     prev_max_equity: Decimal
 
-    # optional risk features (未实现也能先接 0)
+    # ---- intraday / normalization extras (required for 8D OBS) ----
+    entries_used_today: int = 0
+    max_entries_per_day: int = 1
+    minutes_to_eod: int = 0
+    day_len: int = 1
+
+    initial_balance: Decimal = D0             # B0
+    realized_today_cash: Decimal = D0         # realized_pnl_cum - day_start_realized_cum
+    R_cash: Decimal = D0                      # 1R cash scale (derived from SL distance, passed from env)
+
+    # optional (kept for backward compat / future use)
     sigma_entry: Decimal = D0
     sl_ticks: Decimal = D0
     tp_ticks: Decimal = D0
@@ -91,7 +96,23 @@ class AgentFeatureInput:
     minutes_to_timeout: Decimal = D0
 
 
+def _clip_dec(x: Decimal, lo: Decimal, hi: Decimal) -> Decimal:
+    if x < lo:
+        return lo
+    if x > hi:
+        return hi
+    return x
+
+
+def _safe_div(a: Decimal, b: Decimal) -> Decimal:
+    return a / b if b != D0 else D0
+
+
 def _sum_sizes_vwap_age(positions: Sequence[Optional[Position]], current_step: int):
+    """
+    Weighted sums across multiple slots.
+    Returns: (total_size, vwap_entry, vwap_age_minutes)
+    """
     total = D0
     vwap_num = D0
     age_num = D0
@@ -107,6 +128,11 @@ def _sum_sizes_vwap_age(positions: Sequence[Optional[Position]], current_step: i
 
 
 def _active_side_snapshot(long_positions, short_positions, current_step: int):
+    """
+    Choose a single 'active' side snapshot for RAW display.
+    In intraday single-position mode you should never have both sides simultaneously,
+    but we keep deterministic behavior anyway.
+    """
     L, L_vwap, L_age = _sum_sizes_vwap_age(long_positions, current_step)
     S, S_vwap, S_age = _sum_sizes_vwap_age(short_positions, current_step)
 
@@ -131,17 +157,22 @@ def _active_side_snapshot(long_positions, short_positions, current_step: int):
 
 def compute_unrealized_pnl(long_positions, short_positions, current_price: Decimal, lot_size: Decimal) -> Decimal:
     upnl_long = sum(
-        (calc_unrealized_pnl(current_price, pos=p, lot_size=lot_size, long=True) for p in long_positions if p is not None),
+        (calc_unrealized_pnl(current_price, pos=p, lot_size=lot_size, long=True)
+         for p in long_positions if p is not None),
         Decimal("0")
     )
     upnl_short = sum(
-        (calc_unrealized_pnl(current_price, pos=p, lot_size=lot_size, long=False) for p in short_positions if p is not None),
+        (calc_unrealized_pnl(current_price, pos=p, lot_size=lot_size, long=False)
+         for p in short_positions if p is not None),
         Decimal("0")
     )
     return upnl_long + upnl_short
 
 
-def compute_agent_features(inp: AgentFeatureInput) -> Dict[str, Decimal]:
+def compute_agent_features_raw(inp: AgentFeatureInput) -> Dict[str, Decimal]:
+    """
+    RAW features for debug/log. Values are in cash units where applicable.
+    """
     long_lots, _, _ = _sum_sizes_vwap_age(inp.long_positions, inp.current_step)
     short_lots, _, _ = _sum_sizes_vwap_age(inp.short_positions, inp.current_step)
 
@@ -183,6 +214,8 @@ def compute_agent_features(inp: AgentFeatureInput) -> Dict[str, Decimal]:
         "equity_t": equity,
         "max_equity_t": max_equity,
         "drawdown_t": drawdown,
+
+        # optional passthroughs (keep stable keys)
         "sigma_entry_t": inp.sigma_entry,
         "sl_ticks_t": inp.sl_ticks,
         "tp_ticks_t": inp.tp_ticks,
@@ -191,13 +224,94 @@ def compute_agent_features(inp: AgentFeatureInput) -> Dict[str, Decimal]:
         "minutes_to_timeout_t": inp.minutes_to_timeout,
     }
 
-    # flat 强约束（可选）
+    # strict flat constraint (optional)
     if is_flat:
         assert out["pos_t"] == D0 and out["have_long_t"] == 0 and out["have_short_t"] == 0
 
     return out
 
 
-def agent_feature_vector(feat: Dict[str, Decimal]) -> np.ndarray:
-    vec = np.array([decimal_to_float(feat[k]) for k in FEATURES_AGENT], dtype=np.float32)
+def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) -> Dict[str, Decimal]:
+    """
+    8D OBS features for training, already normalized/clipped.
+
+    Normalization rules:
+    - pos_side: {-1,0,+1}
+    - entries_left_frac: [0,1]
+    - minutes_to_eod_frac: [0,1]
+    - holding_frac: [0,1]
+    - upnl_R: clip(upnl_cash/R_cash, -5, 5)
+    - realized_today_R: clip(realized_today_cash/R_cash, -10, 10)
+    - equity_frac: clip((equity-B0)/B0, -1, 1)
+    - drawdown_frac: clip(drawdown/B0, 0, 1)
+    """
+    have_long = raw.get("have_long_t", D0)
+    have_short = raw.get("have_short_t", D0)
+
+    # pos_side
+    if have_long > D0 and have_short == D0:
+        pos_side = Decimal(1)
+    elif have_short > D0 and have_long == D0:
+        pos_side = Decimal(-1)
+    else:
+        pos_side = Decimal(0)
+
+    # entries_left_frac
+    max_e = int(inp.max_entries_per_day) if int(inp.max_entries_per_day) > 0 else 1
+    used = int(inp.entries_used_today) if int(inp.entries_used_today) >= 0 else 0
+    left = max(0, max_e - used)
+    entries_left_frac = Decimal(left) / Decimal(max_e)
+
+    # minutes_to_eod_frac
+    day_len = int(inp.day_len) if int(inp.day_len) > 0 else 1
+    m2e = max(0, int(inp.minutes_to_eod))
+    minutes_to_eod_frac = Decimal(min(m2e, day_len)) / Decimal(day_len)
+
+    # holding_frac
+    holding_minutes = raw.get("holding_minutes_t", D0)
+    holding_frac = _safe_div(holding_minutes, Decimal(day_len))
+    if holding_frac < D0:
+        holding_frac = D0
+    if holding_frac > Decimal(1):
+        holding_frac = Decimal(1)
+
+    # R normalization
+    R_cash = inp.R_cash if inp.R_cash is not None else D0
+    if R_cash <= D0:
+        R_cash = Decimal("1")  # last-ditch fallback
+
+    upnl_R = _clip_dec(_safe_div(raw.get("upnl_t", D0), R_cash), Decimal("-5"), Decimal("5"))
+    realized_today_R = _clip_dec(_safe_div(inp.realized_today_cash, R_cash), Decimal("-10"), Decimal("10"))
+
+    # equity / drawdown normalized by initial balance
+    B0 = inp.initial_balance if inp.initial_balance is not None else D0
+    if B0 <= D0:
+        equity_frac = D0
+        drawdown_frac = D0
+    else:
+        equity = raw.get("equity_t", D0)
+        drawdown = raw.get("drawdown_t", D0)
+        equity_frac = _clip_dec((equity - B0) / B0, Decimal("-1"), Decimal("1"))
+        drawdown_frac = _clip_dec(drawdown / B0, Decimal("0"), Decimal("1"))
+
+    return {
+        "obs_pos_side_t": pos_side,
+        "obs_entries_left_frac_t": entries_left_frac,
+        "obs_minutes_to_eod_frac_t": minutes_to_eod_frac,
+        "obs_holding_frac_t": holding_frac,
+        "obs_upnl_R_t": upnl_R,
+        "obs_realized_today_R_t": realized_today_R,
+        "obs_equity_frac_t": equity_frac,
+        "obs_drawdown_frac_t": drawdown_frac,
+    }
+
+
+def agent_feature_vector(feat: Dict[str, Decimal], feature_list: Optional[List[str]] = None) -> np.ndarray:
+    """
+    Convert {name: Decimal} dict into float32 vector in the specified order.
+    Missing keys are treated as 0.
+    """
+    if feature_list is None:
+        feature_list = FEATURES_AGENT
+    vec = np.array([decimal_to_float(feat.get(k, D0)) for k in feature_list], dtype=np.float32)
     return vec

@@ -4,6 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+
 def save_intraday_html(
     df_market: pd.DataFrame,
     title: str,
@@ -24,15 +25,15 @@ def save_intraday_html(
 ):
     """
     输出：
-      - Market RAW 图（Close/VWAP/Ref + Volume）
-      - Market OBS 图（obs_Close/obs_VWAP/obs_Ref + obs_Volume）
+      - Market RAW 图（Close/VWAP/Ref + Volume；OI 叠加在 Volume 子图右轴，折线）
+      - Market OBS 图（obs_Close/obs_VWAP/obs_Ref + obs_Volume；obs_OI 同上）
       - Market 表格：focus 点 raw vs obs 全量指标
       - Agent 表格：focus 点 raw vs obs 全量指标（如果提供 agent_raw/agent_obs）
     """
     if not isinstance(df_market, pd.DataFrame):
         raise TypeError(f"df_market must be pd.DataFrame, got {type(df_market)}")
 
-    # 防止把 DataFrame 误当作 features 传进来（你之前的报错就来自这里）
+    # 防止把 DataFrame 误当作 features 传进来
     if market_features is not None and not isinstance(market_features, (list, tuple)):
         raise TypeError(f"market_features must be list[str] | None, got {type(market_features)}")
     if market_features_obs is not None and not isinstance(market_features_obs, (list, tuple)):
@@ -60,7 +61,6 @@ def save_intraday_html(
         except Exception:
             FEATURES_AGENT = []
 
-        # agent obs list 可能还没落地：允许没有
         try:
             from gym_trading_env.utils.agent_features import FEATURES_AGENT_OBS
         except Exception:
@@ -107,53 +107,94 @@ def save_intraday_html(
 
     _to_float_cols([
         x_col,
-        "mask_t", "C_t", "cumVWAP_t", "ref_close_t", "V_t",
-        "obs_mask_t", "obs_C_t", "obs_cumVWAP_t", "obs_ref_close_t", "obs_V_t",
+        "mask_t", "C_t", "cumVWAP_t", "ref_close_t", "V_t", "I_t",
+        "obs_mask_t", "obs_C_t", "obs_cumVWAP_t", "obs_ref_close_t", "obs_V_t", "obs_I_t",
     ])
 
-    # 6) mask：不删行，只把无效分钟变成 NaN（避免斜线/连线）
-    def _apply_mask(mask_col: str, price_cols: list[str], vol_cols: list[str]):
+    # 6) mask：不删行；price -> NaN（断线），volume -> 0；OI(line) -> NaN（断线）
+    def apply_mask(mask_col: str, price_cols: list[str], vol_cols: list[str], line_cols: list[str]):
         if mask_col not in df.columns:
             return
-        m = pd.to_numeric(df[mask_col], errors="coerce").fillna(0.0).to_numpy() > 0.0
+        m = (df[mask_col].fillna(0.0).to_numpy() > 0.0)
         if debug:
             print(f"[Debug] apply_mask_to_series: mask_col={mask_col}, invalid_rows={(~m).sum()}/{len(m)}")
+
         for c in price_cols:
             if c in df.columns:
                 a = df[c].to_numpy(dtype=float, copy=False)
                 a[~m] = np.nan
                 df[c] = a
+
         for c in vol_cols:
             if c in df.columns:
                 a = df[c].to_numpy(dtype=float, copy=False)
                 a[~m] = 0.0
                 df[c] = a
 
+        for c in line_cols:
+            if c in df.columns:
+                a = df[c].to_numpy(dtype=float, copy=False)
+                a[~m] = np.nan
+                df[c] = a
+
     if enforce_mask:
-        _apply_mask("mask_t", ["C_t", "cumVWAP_t", "ref_close_t"], ["V_t"])
-        _apply_mask("obs_mask_t", ["obs_C_t", "obs_cumVWAP_t", "obs_ref_close_t"], ["obs_V_t"])
+        apply_mask(
+            "mask_t",
+            price_cols=["C_t", "cumVWAP_t", "ref_close_t"],
+            vol_cols=["V_t"],
+            line_cols=["I_t"],
+        )
+        apply_mask(
+            "obs_mask_t",
+            price_cols=["obs_C_t", "obs_cumVWAP_t", "obs_ref_close_t"],
+            vol_cols=["obs_V_t"],
+            line_cols=["obs_I_t"],
+        )
 
     x = pd.to_numeric(df[x_col], errors="coerce").fillna(0).to_numpy(dtype=float)
 
-    # 7) 画图：RAW
+    # 7) 画图：RAW（row2 开 secondary_y：Volume 左轴 + OI 右轴折线）
     fig_raw = make_subplots(
         rows=2, cols=1, shared_xaxes=True,
         row_heights=[0.7, 0.3], vertical_spacing=0.06,
-        subplot_titles=(f"{title} (RAW)", "Volume (RAW)")
+        specs=[[{"secondary_y": False}], [{"secondary_y": True}]],
+        subplot_titles=(f"{title} (RAW)", "Volume / OI (RAW)")
     )
+
     if "C_t" in df.columns:
         fig_raw.add_trace(go.Scattergl(x=x, y=df["C_t"], name="Close", mode="lines", connectgaps=False), row=1, col=1)
     if "cumVWAP_t" in df.columns:
         fig_raw.add_trace(go.Scattergl(x=x, y=df["cumVWAP_t"], name="VWAP", mode="lines", connectgaps=False), row=1, col=1)
     if "ref_close_t" in df.columns:
-        fig_raw.add_trace(go.Scattergl(
-            x=x, y=df["ref_close_t"],
-            name="Ref Close", mode="lines",
-            line=dict(dash="dash", color="gray"),
-            connectgaps=True
-        ), row=1, col=1)
+        fig_raw.add_trace(
+            go.Scattergl(
+                x=x, y=df["ref_close_t"],
+                name="Ref Close",
+                mode="lines",
+                line=dict(dash="dash", color="gray"),
+                connectgaps=True,
+            ),
+            row=1, col=1
+        )
+
+    # row2: Volume (left)
     if "V_t" in df.columns:
-        fig_raw.add_trace(go.Bar(x=x, y=df["V_t"], name="Volume"), row=2, col=1)
+        fig_raw.add_trace(go.Bar(x=x, y=df["V_t"], name="Volume"), row=2, col=1, secondary_y=False)
+
+    # row2: OI line (right) —— 折线（不是直方图）
+    if "I_t" in df.columns:
+        s = df["I_t"].to_numpy(dtype=float, copy=False)
+        if np.isfinite(s).any() and np.nanmax(np.abs(s)) > 0:
+            fig_raw.add_trace(
+                go.Scattergl(
+                    x=x, y=df["I_t"],
+                    name="OI",
+                    mode="lines",
+                    connectgaps=False,
+                    line=dict(width=1.5, color="white"),
+                ),
+                row=2, col=1, secondary_y=True
+            )
 
     fig_raw.update_layout(
         legend=dict(orientation="h", y=1.02, x=0.5, xanchor="center"),
@@ -163,25 +204,48 @@ def save_intraday_html(
         hovermode="x unified"
     )
 
-    # 8) 画图：OBS
+    # 8) 画图：OBS（row2 same）
     fig_obs = make_subplots(
         rows=2, cols=1, shared_xaxes=True,
         row_heights=[0.7, 0.3], vertical_spacing=0.06,
-        subplot_titles=(f"{title} (OBS)", "Volume (OBS)")
+        specs=[[{"secondary_y": False}], [{"secondary_y": True}]],
+        subplot_titles=(f"{title} (OBS)", "Volume / OI (OBS)")
     )
+
     if "obs_C_t" in df.columns:
         fig_obs.add_trace(go.Scattergl(x=x, y=df["obs_C_t"], name="obs_Close", mode="lines", connectgaps=False), row=1, col=1)
     if "obs_cumVWAP_t" in df.columns:
         fig_obs.add_trace(go.Scattergl(x=x, y=df["obs_cumVWAP_t"], name="obs_VWAP", mode="lines", connectgaps=False), row=1, col=1)
     if "obs_ref_close_t" in df.columns:
-        fig_obs.add_trace(go.Scattergl(
-            x=x, y=df["obs_ref_close_t"],
-            name="obs_Ref Close", mode="lines",
-            line=dict(dash="dash", color="gray"),
-            connectgaps=True
-        ), row=1, col=1)
+        fig_obs.add_trace(
+            go.Scattergl(
+                x=x, y=df["obs_ref_close_t"],
+                name="obs_Ref Close",
+                mode="lines",
+                line=dict(dash="dash", color="gray"),
+                connectgaps=True,
+            ),
+            row=1, col=1
+        )
+
+    # row2: Volume (left)
     if "obs_V_t" in df.columns:
-        fig_obs.add_trace(go.Bar(x=x, y=df["obs_V_t"], name="obs_Volume"), row=2, col=1)
+        fig_obs.add_trace(go.Bar(x=x, y=df["obs_V_t"], name="obs_Volume"), row=2, col=1, secondary_y=False)
+
+    # row2: OI line (right)
+    if "obs_I_t" in df.columns:
+        s = df["obs_I_t"].to_numpy(dtype=float, copy=False)
+        if np.isfinite(s).any() and np.nanmax(np.abs(s)) > 0:
+            fig_obs.add_trace(
+                go.Scattergl(
+                    x=x, y=df["obs_I_t"],
+                    name="obs_OI",
+                    mode="lines",
+                    connectgaps=False,
+                    line=dict(width=1.5, color="white"),
+                ),
+                row=2, col=1, secondary_y=True
+            )
 
     fig_obs.update_layout(
         legend=dict(orientation="h", y=1.02, x=0.5, xanchor="center"),
@@ -256,7 +320,6 @@ def save_intraday_html(
         agent_raw = {} if agent_raw is None else dict(agent_raw)
         agent_obs = {} if agent_obs is None else dict(agent_obs)
 
-        # 同样用 raw->obs_ 映射
         a_rows = []
         for k in agent_features:
             ok = f"obs_{k}"
@@ -264,7 +327,6 @@ def save_intraday_html(
             ov = agent_obs.get(ok, None)
             a_rows.append((k, _fmt(rv), ok, _fmt(ov)))
 
-        # obs-only
         for ok in agent_features_obs:
             if ok.startswith("obs_"):
                 base = ok.removeprefix("obs_")

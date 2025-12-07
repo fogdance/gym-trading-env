@@ -5,29 +5,28 @@ from typing import List, Optional, Dict
 from gym_trading_env.utils.session_fx import compute_session_meta
 from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345, DEFAULT_TZ
 
-# Market-side features (sequence)
+# Market-side features (sequence) - OBS (normalized)
 FEATURES_MARKET_OBS: List[str] = [
-    "obs_C_t",                    # Closing price at time t
-    "obs_V_t",                    # Volume at time t
-    "obs_I_t",                    # Open Interest at time t
-    "obs_cumVWAP_t",              # Cumulative VWAP up to time t
-    "obs_dC_minus_cumVWAP_t",     # C_t - cumVWAP_t
-    "obs_cmp_C_vs_cumVWAP_t",     # sign(C_t - cumVWAP_t) -> {-1,0,1}
-    "obs_ref_close_t",            # Reference closing price (e.g., previous day close)
-    "obs_session_high_t",         # Session high price up to time t
-    "obs_session_low_t",          # Session low price up to time t
-    "obs_bar_dir_t",              # Direction of the current bar (1 = up, -1 = down, 0 = flat)
-    "obs_minute_index_t",         # Minute index within the trading session
-    "obs_limit_up_price_t",       # Upper price limit at time t
-    "obs_limit_down_price_t",     # Lower price limit at time t
-    "obs_dI_from_yclose_t",       # Change in imbalance from yesterday's close
-    "obs_dP_from_ref_t",          # Price change from reference price
-    "obs_pct_chg_from_ref_t",     # Percentage change from reference price
-    "obs_mask_t",                 # Mask flag (e.g., valid data or trading halt)
-    "obs_weekday_sin_t",          # Sine-encoded weekday (for cyclical time feature)
-    "obs_weekday_cos_t",          # Cosine-encoded weekday (for cyclical time feature)
-    "obs_day_trend_t",
+    "obs_C_t",
+    "obs_V_t",
+    "obs_I_t",
+    "obs_cumVWAP_t",
+    "obs_dC_minus_cumVWAP_t",
+    "obs_cmp_C_vs_cumVWAP_t",
+    "obs_ref_close_t",          # keep for debug-table alignment, constant 0.0
+    "obs_session_high_t",
+    "obs_session_low_t",
+    "obs_bar_dir_t",
+    "obs_minute_index_t",
+    "obs_dI_from_yclose_t",
+    "obs_dP_from_ref_t",
+    "obs_pct_chg_from_ref_t",
+    "obs_mask_t",
+    "obs_weekday_sin_t",
+    "obs_weekday_cos_t",
 ]
+
+
 
 # Market-side features (sequence)
 FEATURES_MARKET: List[str] = [
@@ -73,56 +72,96 @@ def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
 def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     """
     基于 raw FEATURES_MARKET 生成 obs_ 归一化特征列（写回 df）。
-    默认：价格类按 ref_close 做相对变化；量/持仓做 log1p；离散/时钟类保留。
+
+    方式A（统一口径）：
+      - 价格类：相对 ref_close 的 log-ratio: log(x / ref_close)
+      - 差值类（可能为负）：signed-log 压缩：sign(z)*log1p(|z|/ref_close)
+      - 量/持仓：log1p
+      - 离散/时钟类：保留；minute_index 做 0..1（分母按 day_id 自适应）
+      - obs_ref_close_t：保留列名，但恒为 0.0（用于 debug 表格对齐）
     """
     eps = 1e-12
 
+    # mask
     m = df.get("mask_t", pd.Series(1.0, index=df.index)).astype(float)
-    ref = df.get("ref_close_t", pd.Series(0.0, index=df.index)).astype(float)
-    ref_safe = ref.where(ref > eps, eps)
+    valid = (m.to_numpy(dtype=float, copy=False) > 0.0)
 
-    # price-like relative to ref_close
-    df["obs_C_t"] = (df["C_t"].astype(float) / ref_safe - 1.0).astype(float)
-    df["obs_cumVWAP_t"] = (df["cumVWAP_t"].astype(float) / ref_safe - 1.0).astype(float)
-    df["obs_dC_minus_cumVWAP_t"] = (df["dC_minus_cumVWAP_t"].astype(float) / ref_safe).astype(float)
-    df["obs_ref_close_t"] = np.log(ref_safe).astype(float)
+    # ref_close：若缺失/为0，用 C_t 兜底（让 log(C/ref)=0，不引入爆炸值）
+    C = pd.to_numeric(df.get("C_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    ref = pd.to_numeric(df.get("ref_close_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    ref_safe = np.where(ref > eps, ref, np.where(C > eps, C, eps))
 
-    df["obs_session_high_t"] = (df["session_high_t"].astype(float) / ref_safe - 1.0).astype(float)
-    df["obs_session_low_t"] = (df["session_low_t"].astype(float) / ref_safe - 1.0).astype(float)
+    def _log_ratio(x: np.ndarray) -> np.ndarray:
+        x_safe = np.where(x > eps, x, eps)
+        out = np.zeros_like(x_safe, dtype=float)
+        out[valid] = np.log(x_safe[valid] / ref_safe[valid])
+        return out
 
-    # discrete
-    df["obs_cmp_C_vs_cumVWAP_t"] = df["cmp_C_vs_cumVWAP_t"].astype(float)
-    df["obs_bar_dir_t"] = df["bar_dir_t"].astype(float)
+    def _signed_log1p_ratio(z: np.ndarray) -> np.ndarray:
+        # sign(z) * log1p(|z|/ref)
+        out = np.zeros_like(z, dtype=float)
+        z_abs = np.abs(z)
+        ratio = z_abs / np.maximum(ref_safe, eps)
+        out[valid] = np.sign(z[valid]) * np.log1p(ratio[valid])
+        return out
 
-    # volume / open interest (heavy-tail)
-    df["obs_V_t"] = np.log1p(df["V_t"].astype(float).clip(lower=0.0)).astype(float)
-    df["obs_I_t"] = np.log1p(df["I_t"].astype(float).clip(lower=0.0)).astype(float)
+    # --- price-like (log-ratio) ---
+    df["obs_C_t"] = _log_ratio(C)
 
-    # limits: if not provided (0), keep 0 in obs
-    lu = df["limit_up_price_t"].astype(float)
-    ld = df["limit_down_price_t"].astype(float)
-    df["obs_limit_up_price_t"] = np.where(lu != 0.0, lu / ref_safe - 1.0, 0.0).astype(float)
-    df["obs_limit_down_price_t"] = np.where(ld != 0.0, ld / ref_safe - 1.0, 0.0).astype(float)
+    cumVWAP = pd.to_numeric(df.get("cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    df["obs_cumVWAP_t"] = _log_ratio(cumVWAP)
 
-    # delta features
-    df["obs_dP_from_ref_t"] = (df["dP_from_ref_t"].astype(float) / ref_safe).astype(float)
-    df["obs_pct_chg_from_ref_t"] = df["pct_chg_from_ref_t"].astype(float)
-    dI = df["dI_from_yclose_t"].astype(float)
+    sh = pd.to_numeric(df.get("session_high_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    sl = pd.to_numeric(df.get("session_low_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    df["obs_session_high_t"] = _log_ratio(sh)
+    df["obs_session_low_t"] = _log_ratio(sl)
+
+    # --- delta-like (signed log) ---
+    dC = pd.to_numeric(df.get("dC_minus_cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    df["obs_dC_minus_cumVWAP_t"] = _signed_log1p_ratio(dC)
+
+    dP = pd.to_numeric(df.get("dP_from_ref_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    df["obs_dP_from_ref_t"] = _signed_log1p_ratio(dP)
+
+    dI = pd.to_numeric(df.get("dI_from_yclose_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    # dI 本来也可能为负，直接做 sign*log1p(|dI|)
     df["obs_dI_from_yclose_t"] = (np.sign(dI) * np.log1p(np.abs(dI))).astype(float)
 
-    # time / mask
-    df["obs_mask_t"] = df["mask_t"].astype(float)
-    df["obs_weekday_sin_t"] = df["weekday_sin_t"].astype(float)
-    df["obs_weekday_cos_t"] = df["weekday_cos_t"].astype(float)
-    df["obs_minute_index_t"] = (df["minute_index_t"].astype(float) / 344.0).astype(float)
+    # --- discrete ---
+    df["obs_cmp_C_vs_cumVWAP_t"] = pd.to_numeric(df.get("cmp_C_vs_cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    df["obs_bar_dir_t"] = pd.to_numeric(df.get("bar_dir_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
+    # --- volume / open interest (heavy-tail) ---
+    V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    I = pd.to_numeric(df.get("I_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    df["obs_V_t"] = np.log1p(np.clip(V, 0.0, None)).astype(float)
+    df["obs_I_t"] = np.log1p(np.clip(I, 0.0, None)).astype(float)
 
-    df["obs_day_trend_t"] = (df["minute_index_t"].astype(float) / 344.0).astype(float)
+    # --- pct feature（名称就是 pct，保留原始定义） ---
+    df["obs_pct_chg_from_ref_t"] = pd.to_numeric(df.get("pct_chg_from_ref_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+
+    # --- time / mask / weekday ---
+    df["obs_mask_t"] = m.astype(float)
+    df["obs_weekday_sin_t"] = pd.to_numeric(df.get("weekday_sin_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    df["obs_weekday_cos_t"] = pd.to_numeric(df.get("weekday_cos_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+
+    mi = pd.to_numeric(df.get("minute_index_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    if "day_id" in df.columns:
+        denom = pd.to_numeric(df["minute_index_t"], errors="coerce").groupby(df["day_id"]).transform("max")
+    else:
+        denom = pd.Series(float(np.nanmax(mi.to_numpy())), index=df.index)
+    denom = pd.to_numeric(denom, errors="coerce").fillna(1.0).astype(float).clip(lower=1.0)
+    df["obs_minute_index_t"] = (mi / denom).clip(0.0, 1.0).astype(float)
+
+    # --- ref_close: keep column for table alignment, constant 0 ---
+    df["obs_ref_close_t"] = 0.0
+
     # apply mask to obs features except clock-like + mask itself
     for col in FEATURES_MARKET_OBS:
         if col in ("obs_mask_t", "obs_minute_index_t", "obs_weekday_sin_t", "obs_weekday_cos_t"):
             continue
-        df[col] = (df[col].astype(float) * m).astype(float)
+        if col in df.columns:
+            df[col] = (pd.to_numeric(df[col], errors="coerce").fillna(0.0).astype(float) * m).astype(float)
 
 
 def build_market_features(df_1m: pd.DataFrame,
@@ -326,16 +365,38 @@ def _build_market_future(df_1m: pd.DataFrame,
         X["limit_up_price_t"] = 0.0
         X["limit_down_price_t"] = 0.0
 
-    # 10) dI_from_yclose（上一交易日最后 OI）
-    oi_last = X.loc[minute_index == 344, ["I_t"]].copy()
-    oi_last["session_id"] = session_id[minute_index == 344]
-    oi_last = oi_last.set_index("session_id").rename(columns={"I_t": "prev_oi"})
-    prev_oi_map = oi_last["prev_oi"].shift(1)
+    # 10) dI_from_yclose（上一交易日最后“有效分钟”的 OI；缺失则用本 session 第一个有效 OI 兜底）
+    valid_oi = X["I_t"].where(mask_t == 1, np.nan).astype(float)
+
+    sid_order = pd.Index(pd.unique(session_id))
+    first_oi_by_sid = valid_oi.groupby(session_id).first().reindex(sid_order)
+    last_oi_by_sid  = valid_oi.groupby(session_id).last().reindex(sid_order)
+
+    prev_oi_map = last_oi_by_sid.shift(1)              # 上一交易日 last-valid OI
     I_yclose = session_id.map(prev_oi_map).astype(float)
-    first_sid = session_id.iloc[0]
-    first_I0 = float(X.loc[session_id == first_sid, "I_t"].iloc[0])
-    I_yclose.loc[session_id == first_sid] = I_yclose.loc[session_id == first_sid].fillna(first_I0)
-    X["dI_from_yclose_t"] = (X["I_t"] - I_yclose).fillna(0.0).astype(float)
+
+    # 兜底：没有上一日 OI 时，用本 session first-valid OI（避免无效分钟污染）
+    I_yclose = I_yclose.fillna(session_id.map(first_oi_by_sid).astype(float))
+
+    # 如果 caller 传了 df_prev_session：第一交易日直接用 prev_session 的 last-valid OI
+    if df_prev_session is not None and len(df_prev_session) > 0:
+        prev = strict_reindex_futures_345(df_prev_session, tz=tz)
+        prev_aligned = prev["aligned"]
+        prev_mask = prev["mask"].astype(int)
+        prev_valid_oi = prev_aligned.get("OpenInterest", 0.0)
+        prev_valid_oi = pd.to_numeric(prev_valid_oi, errors="coerce").astype(float)
+        prev_valid_oi = prev_valid_oi.where(prev_mask == 1, np.nan)
+
+        if prev_valid_oi.notna().any():
+            prev_last_oi = float(prev_valid_oi.dropna().iloc[-1])
+        else:
+            prev_last_oi = float(pd.to_numeric(prev_aligned.get("OpenInterest", 0.0), errors="coerce").fillna(0.0).iloc[-1])
+
+        first_sid = session_id.iloc[0]
+        I_yclose.loc[session_id == first_sid] = prev_last_oi
+
+    X["dI_from_yclose_t"] = (X["I_t"].astype(float) - I_yclose).fillna(0.0).astype(float)
+
 
     # 11) dP / pct_chg
     X["dP_from_ref_t"] = (X["C_t"] - X["ref_close_t"]).astype(float)

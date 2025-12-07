@@ -75,6 +75,12 @@ class TradingParams:
     # 新增：obs 使用哪套特征（默认 raw：兼容旧测试；obs：用归一化 obs_ 列）
     obs_feature_mode: str = "raw"   # "raw" | "obs"
 
+    use_daily_context: bool = False
+    use_daily_seq_7: bool = False
+    max_entries_per_day: int = 3
+    intraday_single_position: bool = True
+
+
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
         assert self.initial_balance > 0, "Initial balance must be positive"
@@ -93,6 +99,9 @@ class TradingParams:
         # 新增校验
         allowed_obs = {"raw", "obs"}
         assert self.obs_feature_mode in allowed_obs, f"obs_feature_mode must be one of {allowed_obs}"
+        
+        assert int(self.max_entries_per_day) > 0, "max_entries_per_day must be > 0"
+
 
 
 @dataclass
