@@ -461,6 +461,7 @@ class CustomTradingEnv(gym.Env):
         self.realized_step = D0
         self.fee_step = D0
         self.stop_loss_fired = 0
+        self.take_profit_fired = 0
 
         # --- intraday day caches (for agent obs normalization) ---
         self._entries_used_today = 0
@@ -621,6 +622,8 @@ class CustomTradingEnv(gym.Env):
         # 先止损（可能会自动平仓，改变仓位/保证金/现金）
         self.stop_loss_fired += self._apply_stop_losses()
 
+        self.take_profit_fired += self._apply_take_profits()
+
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
@@ -630,7 +633,7 @@ class CustomTradingEnv(gym.Env):
         # Termination rules
         if self._should_terminated():
             self.terminated = True
-            self._empty_position(self.current_price, self.config.trading.spread)
+            self._empty_position(self.current_price, self.config.trading.spread, "EOD")
             self._update_unrealized_pnl()
 
         # IMPORTANT: update per-step deltas ONCE here (no side effects in obs)
@@ -752,6 +755,7 @@ class CustomTradingEnv(gym.Env):
             'long_position': self.user_accounts.long_position,
             'short_position': self.user_accounts.short_position,
             'stop_loss_fired': self.stop_loss_fired,
+            'take_profit_fired': self.take_profit_fired,
         }
 
 
@@ -946,16 +950,11 @@ class CustomTradingEnv(gym.Env):
 
         """
         equity = self._calculate_equity()
-        if equity < self.user_accounts.used_margin .get_balance():
-            # Liquidate all positions
+        if equity < self.user_accounts.used_margin.get_balance():
             self.logger.info("Equity below margin requirement. Liquidating all positions.")
-            while self.user_accounts.long_position > Decimal('0.0'):
-                self._long_close(self.current_price, self.config.trading.spread)
-            while self.user_accounts.short_position > Decimal('0.0'):
-                self._short_close(self.current_price, self.config.trading.spread)
+            self._empty_position(self.current_price, self.config.trading.spread, close_reason="MARGIN_CALL")
             self.logger.error("Margin requirement not met. Episode terminated.")
             return True
-        
         return False
 
     def _post_atomic(self, entry: JournalEntry) -> None:
@@ -1002,8 +1001,18 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient free margin to execute LONG_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        new_position = Position(size=position_size, entry_price=ask_price, initial_margin=required_margin, open_step=self.current_step,
-                                stop_loss_price=self._compute_stop_loss_price(ask_price, side="long"))
+        sl = self._compute_stop_loss_price(ask_price, side="long")
+        tp = self._compute_take_profit_price(entry_exec_price=ask_price, sl_exec_price=sl, side="long")
+
+        new_position = Position(
+            size=position_size,
+            entry_price=ask_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+
 
         ts = self.df_market.iloc[self.current_step].name
         entry = JournalEntry(
@@ -1045,7 +1054,7 @@ class CustomTradingEnv(gym.Env):
         return ForexCode.SUCCESS
 
 
-    def _long_close(self, price: Decimal, spread: Decimal, slot: int = None):
+    def _long_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
         """
         Executes a LONG_CLOSE action with manual rollback.
         """        
@@ -1103,7 +1112,12 @@ class CustomTradingEnv(gym.Env):
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
-            released_margin=released_margin
+            released_margin=released_margin,
+            meta={
+                "side": "long",
+                "slot": slot,
+                "reason": close_reason or "MANUAL",
+            },
         )
         self.record_trade(trade_record)
         return ForexCode.SUCCESS
@@ -1140,8 +1154,18 @@ class CustomTradingEnv(gym.Env):
             self.logger.warning("Insufficient free margin to execute SHORT_OPEN.")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        new_position = Position(size=position_size, entry_price=bid_price, initial_margin=required_margin, open_step=self.current_step,
-                                stop_loss_price=self._compute_stop_loss_price(bid_price, side="short"))
+        sl = self._compute_stop_loss_price(bid_price, side="short")
+        tp = self._compute_take_profit_price(entry_exec_price=bid_price, sl_exec_price=sl, side="short")
+
+        new_position = Position(
+            size=position_size,
+            entry_price=bid_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+
 
         ts = self.df_market.iloc[self.current_step].name
         entry = JournalEntry(
@@ -1183,7 +1207,7 @@ class CustomTradingEnv(gym.Env):
         return ForexCode.SUCCESS
    
 
-    def _short_close(self, price: Decimal, spread: Decimal, slot: int = None):
+    def _short_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
         """
         Executes a SHORT_CLOSE action with manual rollback.
         """
@@ -1241,57 +1265,87 @@ class CustomTradingEnv(gym.Env):
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
             pnl=pnl,
             closed_size=closed_size,
-            released_margin=released_margin
+            released_margin=released_margin,
+            meta={
+                "side": "short",
+                "slot": slot,
+                "reason": close_reason or "MANUAL",
+            },
         )
         self.record_trade(trade_record)
         return ForexCode.SUCCESS
     
-    def _apply_stop_losses(self) -> int:
-        """
-        返回本 step 触发止损的平仓次数。
-        触发规则：
-        long:  low <= pos.stop_loss_price
-        short: high >= pos.stop_loss_price
-        成交价：用 stop_loss_price 作为成交价（并复用 close 的 spread 逻辑）
-        """
-        if self.config.trading.stop_loss_enabled == False:        
+    def _apply_take_profits(self) -> int:
+        if not bool(getattr(self.config.trading, "take_profit_enabled", False)):
             return 0
-
-        # 闭市不触发
-        mask_next = float(self.df_market.iloc[self.current_step]["mask_t"])
-        if mask_next < 0.5:
+        if float(self.df_market.iloc[self.current_step]["mask_t"]) < 0.5:
             return 0
 
         low, high = self._get_bar_low_high()
         if low is None or high is None:
             return 0
 
-        fired = 0
         spr = self.config.trading.spread
+        fired = 0
 
-        # long slots
+        long_hits = []
         for slot, pos in enumerate(self.position_manager.long_positions):
-            if pos is None or pos.stop_loss_price is None:
-                continue
-            if low <= pos.stop_loss_price:
-                # 让 _long_close 的 bid_price = stop_loss_price
-                # _long_close 里 bid = price - spread => 传入 price = SL + spread
-                self._long_close(price=pos.stop_loss_price + spr, spread=spr, slot=slot)
-                self.logger.warning(f"trigger stoploss, long {pos}")
-                fired += 1
+            if pos is not None and pos.take_profit_price is not None and high >= pos.take_profit_price:
+                long_hits.append((slot, pos, pos.take_profit_price))
 
-        # short slots
+        short_hits = []
         for slot, pos in enumerate(self.position_manager.short_positions):
-            if pos is None or pos.stop_loss_price is None:
-                continue
-            if high >= pos.stop_loss_price:
-                # 让 _short_close 的 ask_price = stop_loss_price
-                # _short_close 里 ask = price + spread => 传入 price = SL - spread
-                self._short_close(price=pos.stop_loss_price - spr, spread=spr, slot=slot)
-                self.logger.warning(f"trigger stoploss, short {pos}")
-                fired += 1
+            if pos is not None and pos.take_profit_price is not None and low <= pos.take_profit_price:
+                short_hits.append((slot, pos, pos.take_profit_price))
+
+        for slot, pos, tp in long_hits:
+            self.logger.info(f"trigger takeprofit, long {pos}")
+            self._long_close(price=tp + spr, spread=spr, slot=slot, close_reason="TAKE_PROFIT")
+            fired += 1
+
+        for slot, pos, tp in short_hits:
+            self.logger.info(f"trigger takeprofit, short {pos}")
+            self._short_close(price=tp - spr, spread=spr, slot=slot, close_reason="TAKE_PROFIT")
+            fired += 1
 
         return fired
+
+
+    def _apply_stop_losses(self) -> int:
+        if self.config.trading.stop_loss_enabled == False:
+            return 0
+        if float(self.df_market.iloc[self.current_step]["mask_t"]) < 0.5:
+            return 0
+
+        low, high = self._get_bar_low_high()
+        if low is None or high is None:
+            return 0
+
+        spr = self.config.trading.spread
+        fired = 0
+
+        long_hits = []
+        for slot, pos in enumerate(self.position_manager.long_positions):
+            if pos is not None and pos.stop_loss_price is not None and low <= pos.stop_loss_price:
+                long_hits.append((slot, pos, pos.stop_loss_price))
+
+        short_hits = []
+        for slot, pos in enumerate(self.position_manager.short_positions):
+            if pos is not None and pos.stop_loss_price is not None and high >= pos.stop_loss_price:
+                short_hits.append((slot, pos, pos.stop_loss_price))
+
+        for slot, pos, sl in long_hits:
+            self.logger.warning(f"trigger stoploss, long {pos}")
+            self._long_close(price=sl + spr, spread=spr, slot=slot, close_reason="STOP_LOSS")
+            fired += 1
+
+        for slot, pos, sl in short_hits:
+            self.logger.warning(f"trigger stoploss, short {pos}")
+            self._short_close(price=sl - spr, spread=spr, slot=slot, close_reason="STOP_LOSS")
+            fired += 1
+
+        return fired
+
 
 
     def _position_up(self, price: Decimal, spread: Decimal):
@@ -1316,18 +1370,18 @@ class CustomTradingEnv(gym.Env):
         
         return ForexCode.SUCCESS
 
-    def _empty_position(self, price: Decimal, spread: Decimal):
-        # Close all long positions
-        for pos in self.position_manager.long_positions:
-            if pos is not None:
-                self._long_close(price=price, spread=spread)
+    def _empty_position(self, price: Decimal, spread: Decimal, close_reason: str | None = None):
+        # close all long by slot
+        for slot in range(len(self.position_manager.long_positions)):
+            if self.position_manager.long_positions[slot] is not None:
+                self._long_close(price=price, spread=spread, slot=slot, close_reason=close_reason)
 
-        # Close all short positions
-        for pos in self.position_manager.short_positions:
-            if pos is not None:
-                self._short_close(price=price, spread=spread)
-        
+        for slot in range(len(self.position_manager.short_positions)):
+            if self.position_manager.short_positions[slot] is not None:
+                self._short_close(price=price, spread=spread, slot=slot, close_reason=close_reason)
+
         return ForexCode.SUCCESS
+
 
 
     def _get_obs(self):
@@ -1455,6 +1509,42 @@ class CustomTradingEnv(gym.Env):
 
         return dfp
 
+    def _compute_take_profit_price(
+        self,
+        entry_exec_price: Decimal,
+        sl_exec_price: Decimal | None,
+        side: str,
+    ) -> Decimal | None:
+        if not bool(getattr(self.config.trading, "take_profit_enabled", False)):
+            return None
+
+        mode = getattr(self.config.trading, "take_profit_mode", "rr")
+        if mode != "rr":
+            self.logger.warning(f"TakeProfit: unknown mode={mode}, ignored.")
+            return None
+
+        rr = getattr(self.config.trading, "take_profit_rr", None)
+        if rr is None:
+            return None
+        rr = Decimal(rr)
+
+        # RR needs a valid SL
+        if sl_exec_price is None:
+            return None
+
+        if rr <= D0:
+            return None
+
+        if side == "long":
+            R = entry_exec_price - sl_exec_price
+            if R <= D0:
+                return None
+            return entry_exec_price + rr * R
+        else:
+            R = sl_exec_price - entry_exec_price
+            if R <= D0:
+                return None
+            return entry_exec_price - rr * R
 
 
     def _get_bar_low_high(self):

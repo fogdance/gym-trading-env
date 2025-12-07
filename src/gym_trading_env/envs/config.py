@@ -80,6 +80,11 @@ class TradingParams:
     max_entries_per_day: int = 3
     intraday_single_position: bool = True
 
+    take_profit_enabled: bool = False
+    take_profit_mode: str = "rr"              # currently only "rr"
+    take_profit_rr: Decimal = _to_decimal(2.0)  # e.g. 2R
+
+
 
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""
@@ -99,9 +104,17 @@ class TradingParams:
         # 新增校验
         allowed_obs = {"raw", "obs"}
         assert self.obs_feature_mode in allowed_obs, f"obs_feature_mode must be one of {allowed_obs}"
-        
+
         assert int(self.max_entries_per_day) > 0, "max_entries_per_day must be > 0"
 
+        allowed_tp = {"rr"}
+        assert self.take_profit_mode in allowed_tp, f"take_profit_mode must be one of {allowed_tp}"
+
+        if self.take_profit_enabled:
+            # RR TP requires SL to define 1R
+            assert self.stop_loss_enabled, "take_profit_enabled=True requires stop_loss_enabled=True (RR needs SL)"
+            assert self.take_profit_rr is not None, "take_profit_rr must not be None"
+            assert self.take_profit_rr > 0, "take_profit_rr must be > 0"
 
 
 @dataclass

@@ -1,46 +1,88 @@
 # src/gym_trading_env/envs/trade_record.py
 
+from __future__ import annotations
+
 from decimal import Decimal
-from datetime import datetime
+from typing import Any, Dict, Optional
+
 
 class TradeRecord:
-    def __init__(self, timestamp, operation_type: str, position_size: Decimal, open_price: Decimal, close_price: Decimal, required_margin: Decimal,
-                 fee: Decimal, balance: Decimal, leverage: Decimal, free_margin: Decimal, pnl: Decimal = Decimal('0.0'),
-                 closed_size: Decimal = Decimal('0.0'), released_margin: Decimal = Decimal('0.0')):
-        """
-        Initialize a trade record
+    """
+    Immutable-ish trade log record.
 
-        Args:
-            operation_type (str): The type of operation, 'Long/Open', 'Short/Open', 'Long/Close', 'Short/Close'
-            position_size (Decimal): The size of the position
-            price (Decimal): The trade price (opening or closing price)
-            required_margin (Decimal): The required margin
-            fee (Decimal): The trading fee
-            balance (Decimal): The current balance
-            leverage (Decimal): The current leverage
-            free_margin (Decimal): The available margin
-            pnl (Decimal, optional): The profit or loss, defaults to 0.0
-            closed_size (Decimal, optional): The position size when closed, defaults to 0.0
-            released_margin (Decimal, optional): The released margin when the position is closed, defaults to 0.0
-        """
+    meta: optional dict for extra structured info, e.g.
+      {
+        "side": "long"|"short",
+        "slot": 0,
+        "reason": "MANUAL"|"STOP_LOSS"|"TAKE_PROFIT"|"EOD",
+        "sl": "...",
+        "tp": "..."
+      }
+    """
+
+    __slots__ = (
+        "timestamp",
+        "operation_type",
+        "position_size",
+        "open_price",
+        "close_price",
+        "required_margin",
+        "fee",
+        "balance",
+        "leverage",
+        "free_margin",
+        "pnl",
+        "closed_size",
+        "released_margin",
+        "meta",
+    )
+
+    def __init__(
+        self,
+        timestamp,
+        operation_type: str,
+        position_size: Decimal,
+        open_price: Decimal,
+        close_price: Decimal,
+        required_margin: Decimal,
+        fee: Decimal,
+        balance: Decimal,
+        leverage: Decimal,
+        free_margin: Decimal,
+        pnl: Decimal = Decimal("0.0"),
+        closed_size: Decimal = Decimal("0.0"),
+        released_margin: Decimal = Decimal("0.0"),
+        meta: Optional[Dict[str, Any]] = None,
+    ):
         self.timestamp = timestamp
-        self.operation_type = operation_type  # Operation type: Long/Open, Short/Open, Long/Close, Short/Close
-        self.position_size = position_size  # Position size
-        self.close_price = close_price  # Trade price
-        self.open_price = open_price  # open price
-        self.required_margin = required_margin  # Required margin
-        self.fee = fee  # Trading fee
-        self.balance = balance  # Current balance
-        self.leverage = leverage  # Current leverage
-        self.free_margin = free_margin  # Available margin
-        self.pnl = pnl  # Profit or loss (only recorded when the position is closed)
-        self.closed_size = closed_size  # Position size when closed
-        self.released_margin = released_margin  # Released margin (when closing the position)
+        self.operation_type = operation_type
 
-    def to_dict(self):
-        """Convert the trade record to a dictionary"""
+        self.position_size = position_size
+        self.open_price = open_price
+        self.close_price = close_price
+
+        self.required_margin = required_margin
+        self.fee = fee
+        self.balance = balance
+        self.leverage = leverage
+        self.free_margin = free_margin
+
+        self.pnl = pnl
+        self.closed_size = closed_size
+        self.released_margin = released_margin
+
+        self.meta = meta or {}
+
+    def to_dict(self) -> Dict[str, Any]:
+        # robust timestamp serialization (pd.Timestamp / datetime / str)
+        ts = self.timestamp
+        if hasattr(ts, "isoformat"):
+            ts_s = ts.isoformat()
+        else:
+            ts_s = str(ts)
+
         return {
-            "timestamp": self.timestamp.isoformat(),
+            "timestamp": ts_s,
             "operation_type": self.operation_type,
             "position_size": str(self.position_size),
             "open_price": str(self.open_price),
@@ -52,8 +94,14 @@ class TradeRecord:
             "free_margin": str(self.free_margin),
             "pnl": str(self.pnl),
             "closed_size": str(self.closed_size),
-            "released_margin": str(self.released_margin)
+            "released_margin": str(self.released_margin),
+            "meta": self.meta,
         }
 
-    def __repr__(self):
-        return f"TradeRecord({self.operation_type}, {self.position_size}, {self.close_price}, {self.required_margin}, {self.fee})"
+    def __repr__(self) -> str:
+        return (
+            "TradeRecord("
+            f"{self.operation_type}, size={self.position_size}, "
+            f"open={self.open_price}, close={self.close_price}, "
+            f"fee={self.fee}, pnl={self.pnl}, meta={self.meta})"
+        )
