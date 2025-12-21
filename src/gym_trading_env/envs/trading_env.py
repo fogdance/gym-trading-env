@@ -274,9 +274,6 @@ class CustomTradingEnv(gym.Env):
         self.start_idx = 0
         self.end_idx = len(df)  # default to entire dataset
 
-        # We'll store self.np_random for picking random start
-        self.np_random = np.random.default_rng(seed=42)
-
         # Check basic feasibility right away
         self._check_data_sufficiency(df)
 
@@ -325,6 +322,9 @@ class CustomTradingEnv(gym.Env):
         """
         self.logger.info("REST env")
         super().reset(seed=seed)
+        if seed is not None:
+            self.np_random = np.random.default_rng(seed=seed)
+
 
         self.position_manager = PositionManager()
         self.broker_accounts = BrokerAccounts()
@@ -1409,60 +1409,47 @@ class CustomTradingEnv(gym.Env):
     def _get_obs(self):
         """
         market_seq: (window_size, F_MARKET_SELECTED)
-        - 取最近 window_size 分钟的“已发生历史片段”
-        - 当历史不足 window_size：右侧补 0
+        - 取全局 [t0-window_size+1, t0] 的数据（按 step 回看，跨天也允许）
+        - 如果到达数据开头不够 window_size，才左侧补 0
         """
-        X_day = self._daily_X[self._day_i]  # (DAY_LEN, F)
+        end_i = int(self.current_step)
+        start_i = end_i - self.window_size + 1
 
-        end = int(min(self.current_minute, self.DAY_LEN - 1))
-        start = max(0, end - self.window_size + 1)
-
-        window = X_day[start:end + 1, :]
-        L = window.shape[0]
-
-        if L < self.window_size:
-            pad = np.zeros((self.window_size - L, self._F_MARKET), dtype=np.float32)
-            market_seq = np.concatenate([window, pad], axis=0)
+        if start_i >= 0:
+            window = self.df_market.iloc[start_i:end_i + 1][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
+            market_seq = window  # (window_size, F)
+            L = self.window_size
+            pad_len = 0
         else:
-            market_seq = window.astype(np.float32, copy=False)
+            # 数据集开头不够：左侧补0
+            pad_len = -start_i
+            window = self.df_market.iloc[0:end_i + 1][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
+            L = window.shape[0]
+            pad = np.zeros((pad_len, self._F_MARKET), dtype=np.float32)
+            market_seq = np.concatenate([pad, window], axis=0)  # (window_size, F)
 
         agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
 
         if self.config.debug.debug_enabled:
-            # 1) 校验 daily_X 与 df_market 对齐
-            ts = self.df_market.index[self.current_step]
-            mi = int(self.df_market.loc[ts, "minute_index_t"])
-            row_df = self.df_market.loc[ts, self._OBS_FEATURES_MARKET].to_numpy(np.float32)
-            row_X = self._daily_X[self._day_i, mi, :]
-            if not np.allclose(row_df, row_X, atol=1e-6, rtol=0):
-                raise RuntimeError(f"daily_X build mismatch at {ts} mi={mi}")
+            # 1) 末行必须对齐当前 df_market 行（保证 agent 看到的最后一根就是 t0）
+            row_df = self.df_market.iloc[end_i][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
+            if not np.allclose(market_seq[-1], row_df, atol=1e-6, rtol=0):
+                raise RuntimeError(f"market_seq last row mismatch at step={end_i} ts={self.df_market.index[end_i]}")
 
-            # 2) 造 dfp：带 raw+obs（obs 窗口来自 agent）
-            dfp = self._obs_market_df(market_seq)
-
-            # 3) agent raw/obs dict（obs 预留接口）
-            raw_vec = getattr(self, "_agent_state_raw_vec", None)
-            obs_vec = getattr(self, "_agent_state_obs_vec", None)
-
-            agent_raw = getattr(self, "_agent_raw_debug", None)
-            if agent_raw is None and raw_vec is not None:
-                agent_raw = {k: float(v) for k, v in zip(FEATURES_AGENT, raw_vec)}
-
-            agent_obs = getattr(self, "_agent_obs_debug", None)
-            if agent_obs is None and obs_vec is not None:
-                agent_obs = {k: float(v) for k, v in zip(FEATURES_AGENT_OBS, obs_vec)}
-
-            # 4) 只画 window_size（start..end）
+            # 2) HTML：画的必须和 agent 输入一致（包括 padding）
+            dfw = self._obs_window_df(end_i=end_i, pad_len=pad_len, market_seq=market_seq)
             save_intraday_html(
-                df_market=dfp,
-                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[self.current_step]}",
-                out_path=f"/tmp/obs_{self.df_market.index[self.current_step]}.html",
-                start_pos=start,
-                end_pos=end + 1,
-                focus_pos=end,
-                agent_raw=agent_raw,
-                agent_obs=agent_obs,
+                df_market=dfw,
+                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[end_i]}",
+                out_path=f"/tmp/obs_{self.df_market.index[end_i]}.html",
+                start_pos=0,
+                end_pos=len(dfw),
+                focus_pos=len(dfw) - 1,
+                agent_raw=getattr(self, "_agent_raw_debug", None),
+                agent_obs=getattr(self, "_agent_obs_debug", None),
             )
+
+
 
         out = {"market_seq": market_seq, "agent_state": agent_state}
 
@@ -1502,6 +1489,54 @@ class CustomTradingEnv(gym.Env):
         return out
 
 
+    def _obs_window_df(self, end_i: int, pad_len: int, market_seq: np.ndarray) -> pd.DataFrame:
+        """
+        构造一个用于 debug 绘图的 dfw：
+        - 行数恒等于 window_size
+        - 最后 L 行对应 df_market 的真实时间戳
+        - 前 pad_len 行为 padding（obs_mask_t=0），但列值与 agent 输入一致（通常是0）
+        """
+        cols = list(dict.fromkeys(list(FEATURES_MARKET) + list(FEATURES_MARKET_OBS)))
+        F = len(cols)
+
+        # 真实段长度
+        L = self.window_size - pad_len
+
+        # 真实时间索引（最后 L 行）
+        idx_real = self.df_market.iloc[end_i - L + 1:end_i + 1].index if L > 0 else pd.DatetimeIndex([])
+
+        # padding 时间索引：用 1min 倒推合成（仅用于可视化对齐）
+        if pad_len > 0:
+            ts0 = idx_real[0] if L > 0 else self.df_market.index[end_i]
+            idx_pad = pd.date_range(end=ts0 - pd.Timedelta(minutes=1), periods=pad_len, freq="1min", tz=getattr(ts0, "tz", None))
+            idx = idx_pad.append(idx_real)
+        else:
+            idx = idx_real
+
+        dfw = pd.DataFrame(np.nan, index=idx, columns=cols, dtype=np.float32)
+
+        # raw（可选）：只填真实段，pad 段留空
+        if L > 0:
+            sub = self.df_market.iloc[end_i - L + 1:end_i + 1]
+            for c in FEATURES_MARKET:
+                if c in sub.columns and c in dfw.columns:
+                    dfw.iloc[-L:, dfw.columns.get_loc(c)] = sub[c].to_numpy(dtype=np.float32, copy=False)
+
+        # obs：严格等于 agent 输入（包含 pad）
+        obs_cols = list(self._OBS_FEATURES_MARKET)
+        dfw.iloc[:, dfw.columns.get_indexer(obs_cols)] = market_seq.astype(np.float32, copy=False)
+
+        # mask：pad 段为 0，真实段为 1（让图上“<60 时只画 <60 根”也成立）
+        dfw["obs_mask_t"] = 0.0
+        if L > 0:
+            dfw.iloc[-L:, dfw.columns.get_loc("obs_mask_t")] = 1.0
+
+        # 给 plot_intraday 一些常用辅助列（不强依赖真实 minute_index_t）
+        dfw["minute_index_t"] = np.arange(self.window_size, dtype=np.int32)
+        dfw["mask_t"] = dfw["obs_mask_t"].astype(np.float32)
+        dfw["obs_minute_index_t"] = dfw["minute_index_t"].astype(np.float32)
+
+        return dfw
 
 
 
@@ -1533,7 +1568,7 @@ class CustomTradingEnv(gym.Env):
         obs_cols = list(self._OBS_FEATURES_MARKET)
 
         # 只把真实历史段写入；market_seq 右侧 pad 不写入未来分钟
-        dfp.iloc[start:end + 1, dfp.columns.get_indexer(obs_cols)] = market_seq[:L, :].astype(np.float32, copy=False)
+        dfp.iloc[start:end + 1, dfp.columns.get_indexer(obs_cols)] = market_seq[-L:, :].astype(np.float32, copy=False)
 
         # 辅助列：两套都补（方便 plot_intraday 正常工作）
         dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
