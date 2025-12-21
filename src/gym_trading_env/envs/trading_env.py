@@ -45,14 +45,21 @@ from gym_trading_env.utils.agent_features import (
 
 
 class CustomTradingEnv(gym.Env):
-    metadata = {'render_modes': ['human', 'rgb_array', 'none']}
+    metadata = {'render_modes': ['human', 'rgb_array']}
 
-    def __init__(self, df: pd.DataFrame = None, config_path: str = None):
+    def __init__(self, df: pd.DataFrame = None, config_path: str = None, render_mode: str | None = None):
         super(CustomTradingEnv, self).__init__()
 
         self._config(config_path=config_path)
 
         self._data(df=df, config=self.config)
+
+        self.render_mode = render_mode or getattr(self.config.training, "render_mode", "none")
+        if self.render_mode is None:
+            self.render_mode = "none"
+        if self.render_mode != "none" and self.render_mode not in self.metadata.get("render_modes", []):
+            raise ValueError(f"Unsupported render_mode={self.render_mode}, must be one of {self.metadata.get('render_modes')}")
+ 
 
         self.valid_actions = [
             Action.HOLD,
@@ -509,8 +516,10 @@ class CustomTradingEnv(gym.Env):
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
         """
-        if self.terminated:
-            return self._get_obs(), 0.0, self.terminated, False, {}
+        
+        # gymnasium: stop stepping after either terminated OR truncated
+        if self.terminated or self.truncated:
+            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
 
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
@@ -522,7 +531,8 @@ class CustomTradingEnv(gym.Env):
         except Exception:
             self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
             self.terminated = True
-            return self._get_obs(), 0.0, self.terminated, False, {}
+            self.truncated = False
+            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
 
         if self.config.debug.debug_enabled:
             self.logger.info(f"{self.df_market.index[self.current_step]}, {action} -> {self.action}")
@@ -548,7 +558,8 @@ class CustomTradingEnv(gym.Env):
                 f"(len={len(self.df_market)}): {e}"
             )
             self.terminated = True
-            return self._get_obs(), 0.0, self.terminated, False, {}
+            self.truncated = False
+            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
 
         # --- Execute action ---
         self.action_result = market_code
@@ -603,10 +614,12 @@ class CustomTradingEnv(gym.Env):
 
         # Bound check BEFORE sync/index access
         if self.current_step >= len(self.df_market):
-            self.terminated = True
+            # data exhausted => truncated
+            self.terminated = False
+            self.truncated = True
             # Update deltas once for this final transition
             self._update_step_deltas()
-            return self._get_obs(), 0.0, self.terminated, False, self._get_info()
+            return self._get_obs(), 0.0, self.terminated, self.truncated, self._get_info()
 
         # Sync day/minute based on minute_index_t (no +1 drift)
         self._sync_day_and_minute()
@@ -632,9 +645,10 @@ class CustomTradingEnv(gym.Env):
 
         # Termination rules
         if self._should_terminated():
-            self.terminated = True
-            self._empty_position(self.current_price, self.config.trading.spread, "EOD")
-            self._update_unrealized_pnl()
+            # _should_terminated() will set terminated/truncated flags
+            if not (self.terminated or self.truncated):
+                # safety fallback: treat as truncated
+                self.truncated = True
 
         # IMPORTANT: update per-step deltas ONCE here (no side effects in obs)
         self._update_step_deltas()
@@ -652,7 +666,7 @@ class CustomTradingEnv(gym.Env):
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
-        return obs, reward, self.terminated, False, info
+        return obs, reward, self.terminated, self.truncated, info
 
 
     def _sync_day_and_minute(self):
@@ -698,13 +712,11 @@ class CustomTradingEnv(gym.Env):
         self._prev_fee_cum = fee_cum_now
 
     def _should_terminated(self):
-        # Check termination conditions (e.g., last time step)
-        if self.current_step >= len(self.df_market) - 1:
-            self.logger.error(f"Episode terminated. current_step: {self.current_step}, df_len: {len(self.df_market)}")
-            return True
-
         # Check margin requirements
         if self._check_margin():
+            # margin call => terminated
+            self.terminated = True
+            self.truncated = False
             return True
     
         metrics = self.metrics.get_metrics()
@@ -714,11 +726,15 @@ class CustomTradingEnv(gym.Env):
         if daily_lost_pct > self.config.risk.daily_lost_ratio or drawdown_pct > self.config.risk.max_drawdown_ratio:
             self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.config.risk.daily_lost_ratio} "
                            f"or Drawdown {drawdown_pct:.4f} > {self.config.risk.max_drawdown_ratio}")
+            self.terminated = True
+            self.truncated = False
             return True
 
         current_rrr = self.position_manager.calc_profit_factor()
         if self.config.risk.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.config.risk.risk_reward_ratio:
             self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.config.risk.risk_reward_ratio}")
+            self.terminated = True
+            self.truncated = False
             return True
 
 
@@ -726,11 +742,17 @@ class CustomTradingEnv(gym.Env):
         # check if we run out of data
         if self.current_step >= self.end_idx:
             self.logger.error(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}. Episode done.")
+            # time/data bound => truncated
+            self.terminated = False
+            self.truncated = True
             return True
 
         # or if we exceed max_episode_steps
         if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
             self.logger.error(f"Reached max_episode_steps={self.config.training.max_episode_steps}. Episode done.")
+            # time limit => truncated
+            self.terminated = False
+            self.truncated = True
             return True
         
         return False
@@ -1448,10 +1470,34 @@ class CustomTradingEnv(gym.Env):
         use_obs = (mode == "obs")
 
         if self._use_daily_context:
-            out["daily_context"] = (self._daily_ctx_obs[self._day_i] if use_obs else self._daily_ctx_raw[self._day_i])
+            out["daily_context"] = (self._daily_ctx_obs[self._day_i] if use_obs else self._daily_ctx_raw[self._day_i]).astype(np.float32, copy=False)
+
 
         if self._use_daily_seq_7:
-            out["daily_seq_7"] = (self._daily_seq7_obs[self._day_i] if use_obs else self._daily_seq7_raw[self._day_i])
+            out["daily_seq_7"] = (self._daily_seq7_obs[self._day_i] if use_obs else self._daily_seq7_raw[self._day_i]).astype(np.float32, copy=False)
+
+
+        # Debug-only: assert all outputs are finite (NaN/Inf will break Dreamer-style training fast)
+        if self.config.debug.debug_enabled:
+            for k, v in out.items():
+                if isinstance(v, np.ndarray):
+                    ok = np.isfinite(v)
+                    if not np.all(ok):
+                        bad = np.where(~ok)
+                        # show up to first 5 bad indices for quick定位
+                        bad_idx = list(zip(*(b[:5] for b in bad)))
+                        raise RuntimeError(
+                            f"Non-finite values in obs[{k}] at step={self.current_step} "
+                            f"ts={self.df_market.index[self.current_step]} bad_idx={bad_idx}"
+                        )
+        else:
+            # --- NEW: harden against NaN/Inf (Dreamer hates them) ---
+            out["market_seq"] = np.nan_to_num(out["market_seq"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
+            out["agent_state"] = np.nan_to_num(out["agent_state"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
+            if "daily_context" in out:
+                out["daily_context"] = np.nan_to_num(out["daily_context"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
+            if "daily_seq_7" in out:
+                out["daily_seq_7"] = np.nan_to_num(out["daily_seq_7"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
 
         return out
 
