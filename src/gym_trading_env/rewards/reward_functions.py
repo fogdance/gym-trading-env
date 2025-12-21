@@ -10,8 +10,9 @@ from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 
+from math import tanh
+from gym_trading_env.utils.decimal_util import D, D0, decimal_to_float
 from decimal import Decimal
-from gym_trading_env.utils.decimal_util import decimal_to_float
 
 
 class EquityDeltaReward:
@@ -318,9 +319,163 @@ class NoviceModeInactionPenalty:
         return 0.0
             
 
+class FuturesIntradayReward:
+    """
+    期货日内奖励（推荐 baseline）：
+    - 主项：Δequity（含未实现）/ R_cash 归一化
+    - 惩罚：手续费、回撤增量、临近EOD持仓、闭市乱操作、止损触发
+    - 小塑形：平仓按 pnl/R_cash 给一点点奖励（不要太大）
+    """
+    def __init__(
+        self,
+        env,
+        w_fee=0.35,
+        w_dd=0.30,
+        w_eod=0.25,
+        eod_grace_minutes=10,
+        w_close=0.10,
+        w_stoploss=0.20,
+        w_market_closed=0.05,
+        clip=1.0,
+        eps=Decimal("1e-6"),
+    ):
+        self.env = env
+        self.w_fee = float(w_fee)
+        self.w_dd = float(w_dd)
+        self.w_eod = float(w_eod)
+        self.eod_grace = int(eod_grace_minutes)
+        self.w_close = float(w_close)
+        self.w_stoploss = float(w_stoploss)
+        self.w_market_closed = float(w_market_closed)
+        self.clip = float(clip)
+        self.eps = eps
+
+        self.prev_equity = None
+        self.prev_dd_cash = None
+        self.prev_stoploss_fired = 0
+
+    def _equity(self) -> Decimal:
+        # 含未实现：用 user_accounts.equity()（你现在就是这样算风控/metrics 的）
+        return self.env.user_accounts.equity()
+
+    def _R_cash(self) -> Decimal:
+        rc = getattr(self.env, "_R_cash_last", None)
+        if rc is None:
+            # fallback：极端情况下给个不为0的尺度
+            return Decimal("1")
+        if isinstance(rc, Decimal):
+            return max(rc, self.eps)
+        # rc 可能是 float/np scalar
+        return max(Decimal(str(rc)), self.eps)
+
+    def __call__(self, obs=None):
+        eq = self._equity()
+
+        # drawdown cash：用 env.max_equity（你在 agent features 里维护了 max_equity）
+        peak = getattr(self.env, "max_equity", eq)
+        dd_cash = peak - eq
+        if dd_cash < D0:
+            dd_cash = D0
+
+        if self.prev_equity is None:
+            self.prev_equity = eq
+            self.prev_dd_cash = dd_cash
+            self.prev_stoploss_fired = int(getattr(self.env, "stop_loss_fired", 0))
+            # 初始化不发奖惩
+            self.env._reward_debug = {
+                "pnl": 0.0, "fee": 0.0, "dd": 0.0, "eod": 0.0,
+                "close": 0.0, "sl": 0.0, "mkt_closed": 0.0, "total": 0.0
+            }
+            return 0.0
+
+        scale = self._R_cash()
+
+        # --- 主项：Δequity / R_cash ---
+        dE = eq - self.prev_equity
+        r_pnl = tanh(float(decimal_to_float(dE / scale)))
+
+        # --- fee 惩罚（fee_step >= 0）---
+        fee = getattr(self.env, "fee_step", D0)
+        r_fee = -self.w_fee * tanh(float(decimal_to_float(fee / scale))) if fee > D0 else 0.0
+
+        # --- 回撤“变差增量”惩罚（只罚 dd 上升的那部分）---
+        prev_dd = self.prev_dd_cash if self.prev_dd_cash is not None else dd_cash
+        dd_inc = dd_cash - prev_dd
+        if dd_inc < D0:
+            dd_inc = D0
+        r_dd = -self.w_dd * tanh(float(decimal_to_float(dd_inc / scale))) if dd_inc > D0 else 0.0
+
+        # --- EOD 引导：临近收盘仍持仓就罚（线性加大）---
+        # 用 env 缓存 minutes_to_eod（推荐），没有就现算
+        m2eod = getattr(self.env, "_minutes_to_eod_last", None)
+        if m2eod is None:
+            eod_idx = int(getattr(self.env, "_eod_idx", getattr(self.env, "end_idx", self.env.current_step)))
+            m2eod = max(0, eod_idx - int(self.env.current_step))
+        m2eod = int(m2eod)
+
+        in_market = False
+        try:
+            in_market = (self.env.user_accounts.long_position > D0) or (self.env.user_accounts.short_position > D0)
+        except Exception:
+            in_market = False
+
+        r_eod = 0.0
+        if self.eod_grace > 0 and in_market and m2eod < self.eod_grace:
+            frac = float(self.eod_grace - m2eod) / float(self.eod_grace)  # 0..1
+            r_eod = -self.w_eod * frac
+
+        # --- 平仓事件小奖励（避免太大）---
+        r_close = 0.0
+        lcp = getattr(self.env, "last_close_position", None)
+        if lcp is not None and "pnl" in lcp:
+            pnl = lcp["pnl"]
+            try:
+                pnl = pnl if isinstance(pnl, Decimal) else Decimal(str(pnl))
+                r_close = self.w_close * tanh(float(decimal_to_float(pnl / scale)))
+            except Exception:
+                r_close = 0.0
+            # 防止重复给奖
+            self.env.last_close_position = None
+
+        # --- 止损触发惩罚（按“触发次数”计）---
+        sl_now = int(getattr(self.env, "stop_loss_fired", 0))
+        dsl = max(0, sl_now - int(self.prev_stoploss_fired))
+        r_sl = -self.w_stoploss * float(dsl) if dsl > 0 else 0.0
+
+        # --- 闭市乱操作惩罚 ---
+        r_mc = 0.0
+        if getattr(self.env, "action_result", None) == ForexCode.ERROR_MARKET_CLOSED:
+            r_mc = -self.w_market_closed
+
+        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_sl + r_mc
+        if total > self.clip:
+            total = self.clip
+        elif total < -self.clip:
+            total = -self.clip
+
+        # 给 TB/调试用（你后面可以塞进 log/env）
+        self.env._reward_debug = {
+            "pnl": float(r_pnl),
+            "fee": float(r_fee),
+            "dd": float(r_dd),
+            "eod": float(r_eod),
+            "close": float(r_close),
+            "sl": float(r_sl),
+            "mkt_closed": float(r_mc),
+            "total": float(total),
+        }
+
+        # 更新 prev
+        self.prev_equity = eq
+        self.prev_dd_cash = dd_cash
+        self.prev_stoploss_fired = sl_now
+
+        return float(total)
+
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
     'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,
+    'futures_intraday_reward_function': FuturesIntradayReward,
 }

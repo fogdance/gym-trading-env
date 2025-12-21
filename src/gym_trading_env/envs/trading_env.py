@@ -431,9 +431,12 @@ class CustomTradingEnv(gym.Env):
         else:
             self.end_idx = df_len
 
-        if self.config.trading.is_future:
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+
+        if self.config.trading.is_future and intraday_mode:
             end_idx_15 = self._compute_end_idx_at_15(start_row, tz="Asia/Shanghai")
             self.end_idx = min(self.end_idx, end_idx_15)
+
 
         end_ts = self.df_market.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
         self.logger.info(f"{ts0} -> {end_ts} (end_idx={self.end_idx})")
@@ -597,6 +600,25 @@ class CustomTradingEnv(gym.Env):
         elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
+        # --- OPTIONAL: force flatten at EOD (default True) ---
+        force_flatten = bool(getattr(self.config.trading, "force_flatten_eod", True))
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+
+        if force_flatten and intraday_mode:
+            eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
+
+            # 当前 step 就是当日最后一根（因为 eod_idx 是“严格大于 15:01 的第一个 index”）
+            if int(self.current_step) >= (eod_idx - 1):
+                try:
+                    in_market_now = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
+                except Exception:
+                    in_market_now = False
+
+                if in_market_now:
+                    # 用当前 action_price 平（close 函数内部会用 spread 算 bid/ask）
+                    self._empty_position(price=action_price, spread=self.config.trading.spread, close_reason="EOD")
+
+
         # Behavior counters
         try:
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
@@ -667,6 +689,13 @@ class CustomTradingEnv(gym.Env):
         reward = self.reward_function(obs)
         info["log/env/reward"] = np.asarray(float(reward), dtype=np.float32).reshape(())
 
+        # NEW: log breakdown
+        rd = getattr(self, "_reward_debug", None)
+        if isinstance(rd, dict):
+            for k, v in rd.items():
+                info[f"log/env/reward/{k}"] = np.asarray(float(v), dtype=np.float32).reshape(())
+
+
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
@@ -715,7 +744,30 @@ class CustomTradingEnv(gym.Env):
         self._prev_realized_pnl_cum = realized_cum_now
         self._prev_fee_cum = fee_cum_now
 
+    def _force_flatten_if_any(self, reason: str):
+        try:
+            in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
+        except Exception:
+            in_market = False
+        if in_market:
+            px = getattr(self, "current_price", getattr(self, "_last_valid_price", D0))
+            self._empty_position(price=px, spread=self.config.trading.spread, close_reason=reason)
+
+
+
     def _should_terminated(self):
+        if self.current_step >= self.end_idx:
+            self._force_flatten_if_any("TRUNCATE_END_IDX")
+            self.terminated = False
+            self.truncated = True
+            return True
+
+        if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
+            self._force_flatten_if_any("TRUNCATE_MAX_STEPS")
+            self.terminated = False
+            self.truncated = True
+            return True
+    
         # Check margin requirements
         if self._check_margin():
             # margin call => terminated
@@ -849,6 +901,9 @@ class CustomTradingEnv(gym.Env):
         if R_cash <= D0:
             B0 = D(self.config.trading.initial_balance)
             R_cash = max(B0 * Decimal("0.001"), Decimal("1"))
+
+        self._R_cash_last = R_cash
+        self._minutes_to_eod_last = int(minutes_to_eod)
 
         inp = AgentFeatureInput(
             long_positions=self.position_manager.long_positions,
