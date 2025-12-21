@@ -641,7 +641,10 @@ class CustomTradingEnv(gym.Env):
         self._update_unrealized_pnl()
 
         # Update metrics (equity/drawdown etc.)
-        self.metrics.update(self.df_market.index[self.current_step])
+        ts = self.df_market.index[self.current_step]
+        day_id = self.df_market.iloc[self.current_step]["day_id"]
+        self.metrics.update(ts, day_id=day_id)
+
 
         # Termination rules
         if self._should_terminated():
@@ -662,6 +665,7 @@ class CustomTradingEnv(gym.Env):
 
         # Calculate reward
         reward = self.reward_function(obs)
+        info["log/env/reward"] = np.asarray(float(reward), dtype=np.float32).reshape(())
 
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
