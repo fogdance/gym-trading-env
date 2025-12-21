@@ -5,7 +5,7 @@ from decimal import Decimal
 from gym_trading_env.envs.position import Position
 from gym_trading_env.utils.decimal_util import D
 from gym_trading_env.utils.agent_features import (
-    AgentFeatureInput, compute_agent_features, agent_feature_vector
+    AgentFeatureInput, compute_agent_features_raw, agent_feature_vector
 )
 
 def test_agent_features_single_long():
@@ -29,7 +29,7 @@ def test_agent_features_single_long():
         prev_max_equity=D("11050"),
     )
 
-    feat = compute_agent_features(inp)
+    feat = compute_agent_features_raw(inp)
 
     # 手算 upnl = (1.1010-1.1000)*0.02*100000 = 2
     assert feat["pos_t"] == D("0.02")
@@ -69,7 +69,7 @@ def test_agent_features_hedge_not_flat():
         used_margin=D("0"),
         prev_max_equity=D("10000"),
     )
-    feat = compute_agent_features(inp)
+    feat = compute_agent_features_raw(inp)
     assert feat["pos_t"] == D("0")          # 净仓为 0
     assert feat["have_long_t"] == 1
     assert feat["have_short_t"] == 1        # 关键：不是 flat

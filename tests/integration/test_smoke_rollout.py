@@ -26,7 +26,7 @@ def assert_obs_ok(obs):
     assert "market_seq" in obs and "agent_state" in obs
     m = obs["market_seq"]
     a = obs["agent_state"]
-    assert m.shape == (1440, len(FEATURES_MARKET))
+    assert m.shape == (60, len(FEATURES_MARKET))
     assert a.shape == (len(FEATURES_AGENT),)
     assert m.dtype == np.float32
     assert a.dtype == np.float32

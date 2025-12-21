@@ -314,34 +314,38 @@ def save_intraday_html(
         + "</tbody></table>"
     )
 
-    # 10) 表格：agent（raw vs obs，可选）
+    # 10) 表格：agent（raw / obs 分开显示，避免错误 “obs_ + raw” 映射）
     agent_table = ""
     if agent_raw is not None or agent_obs is not None:
         agent_raw = {} if agent_raw is None else dict(agent_raw)
         agent_obs = {} if agent_obs is None else dict(agent_obs)
 
-        a_rows = []
+        raw_rows = []
         for k in agent_features:
-            ok = f"obs_{k}"
-            rv = agent_raw.get(k, None)
-            ov = agent_obs.get(ok, None)
-            a_rows.append((k, _fmt(rv), ok, _fmt(ov)))
+            raw_rows.append((k, _fmt(agent_raw.get(k, None))))
 
-        for ok in agent_features_obs:
-            if ok.startswith("obs_"):
-                base = ok.removeprefix("obs_")
-                if base in agent_features:
-                    continue
-            ov = agent_obs.get(ok, None)
-            a_rows.append(("", "", ok, _fmt(ov)))
+        obs_rows = []
+        for k in agent_features_obs:
+            obs_rows.append((k, _fmt(agent_obs.get(k, None))))
 
         agent_table = (
             "<h3 style='margin:18px 0 10px 0;'>Agent Features</h3>"
+            "<div style='display:flex; gap:12px; flex-wrap:wrap;'>"
+            "<div style='flex:1; min-width:360px;'>"
+            "<div style='color:#9fb3c8;font-size:12px;margin:0 0 6px 0;'>RAW</div>"
             "<table class='feat-table'>"
-            "<thead><tr><th>raw</th><th>raw_val</th><th>obs</th><th>obs_val</th></tr></thead><tbody>"
-            + "".join([f"<tr><td>{r}</td><td>{rv}</td><td>{o}</td><td>{ov}</td></tr>" for r, rv, o, ov in a_rows])
-            + "</tbody></table>"
+            "<thead><tr><th>name</th><th>val</th></tr></thead><tbody>"
+            + "".join([f"<tr><td>{n}</td><td>{v}</td></tr>" for n, v in raw_rows])
+            + "</tbody></table></div>"
+            "<div style='flex:1; min-width:360px;'>"
+            "<div style='color:#9fb3c8;font-size:12px;margin:0 0 6px 0;'>OBS</div>"
+            "<table class='feat-table'>"
+            "<thead><tr><th>name</th><th>val</th></tr></thead><tbody>"
+            + "".join([f"<tr><td>{n}</td><td>{v}</td></tr>" for n, v in obs_rows])
+            + "</tbody></table></div>"
+            "</div>"
         )
+
 
     # 11) 拼 HTML
     style = """
