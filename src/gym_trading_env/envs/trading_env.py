@@ -45,7 +45,7 @@ from gym_trading_env.utils.agent_features import (
 
 
 class CustomTradingEnv(gym.Env):
-    metadata = {'render_modes': ['human', 'rgb_array']}
+    metadata = {'render_modes': ['human', 'rgb_array', 'none']}
 
     def __init__(self, df: pd.DataFrame = None, config_path: str = None):
         super(CustomTradingEnv, self).__init__()
@@ -1591,6 +1591,10 @@ class CustomTradingEnv(gym.Env):
 
 
     def render(self):
+        if self.render_mode != "human":
+            return None
+        if self.current_step % 200 != 0:
+            return None
         equity = self._calculate_equity()
         free_margin = equity - self.user_accounts.used_margin .get_balance()
 

@@ -277,11 +277,14 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
 
     # R normalization
     R_cash = inp.R_cash if inp.R_cash is not None else D0
-    if R_cash <= D0:
-        R_cash = Decimal("1")  # last-ditch fallback
 
-    upnl_R = _clip_dec(_safe_div(raw.get("upnl_t", D0), R_cash), Decimal("-5"), Decimal("5"))
-    realized_today_R = _clip_dec(_safe_div(inp.realized_today_cash, R_cash), Decimal("-10"), Decimal("10"))
+    # avoid scale-jump fallback when R_cash is invalid ===
+    if R_cash <= D0:
+        upnl_R = D0
+        realized_today_R = D0
+    else:
+        upnl_R = _clip_dec(_safe_div(raw.get("upnl_t", D0), R_cash), Decimal("-5"), Decimal("5"))
+        realized_today_R = _clip_dec(_safe_div(inp.realized_today_cash, R_cash), Decimal("-10"), Decimal("10"))
 
     # equity / drawdown normalized by initial balance
     B0 = inp.initial_balance if inp.initial_balance is not None else D0

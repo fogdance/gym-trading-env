@@ -7,7 +7,7 @@ from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_
 
 # Market-side features (sequence) - OBS (normalized)
 FEATURES_MARKET_OBS: List[str] = [
-    "obs_C_t",
+    # "obs_C_t",
     "obs_V_t",
     "obs_I_t",
     "obs_cumVWAP_t",
@@ -19,7 +19,7 @@ FEATURES_MARKET_OBS: List[str] = [
     "obs_bar_dir_t",
     "obs_minute_index_t",
     "obs_dI_from_yclose_t",
-    "obs_dP_from_ref_t",
+    # "obs_dP_from_ref_t",
     "obs_pct_chg_from_ref_t",
     "obs_mask_t",
     "obs_weekday_sin_t",
@@ -91,11 +91,14 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     ref = pd.to_numeric(df.get("ref_close_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     ref_safe = np.where(ref > eps, ref, np.where(C > eps, C, eps))
 
+    # clip outputs to avoid huge values from dirty zeros ===
+    _LOG_CLIP = 1.0  # keep tight; adjust if needed
+
     def _log_ratio(x: np.ndarray) -> np.ndarray:
         x_safe = np.where(x > eps, x, eps)
         out = np.zeros_like(x_safe, dtype=float)
         out[valid] = np.log(x_safe[valid] / ref_safe[valid])
-        return out
+        return np.clip(out, -_LOG_CLIP, _LOG_CLIP)
 
     def _signed_log1p_ratio(z: np.ndarray) -> np.ndarray:
         # sign(z) * log1p(|z|/ref)
@@ -103,10 +106,10 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
         z_abs = np.abs(z)
         ratio = z_abs / np.maximum(ref_safe, eps)
         out[valid] = np.sign(z[valid]) * np.log1p(ratio[valid])
-        return out
+        return np.clip(out, -_LOG_CLIP, _LOG_CLIP)
 
     # --- price-like (log-ratio) ---
-    df["obs_C_t"] = _log_ratio(C)
+    # df["obs_C_t"] = _log_ratio(C)
 
     cumVWAP = pd.to_numeric(df.get("cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     df["obs_cumVWAP_t"] = _log_ratio(cumVWAP)
@@ -121,7 +124,7 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     df["obs_dC_minus_cumVWAP_t"] = _signed_log1p_ratio(dC)
 
     dP = pd.to_numeric(df.get("dP_from_ref_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
-    df["obs_dP_from_ref_t"] = _signed_log1p_ratio(dP)
+    # df["obs_dP_from_ref_t"] = _signed_log1p_ratio(dP)
 
     dI = pd.to_numeric(df.get("dI_from_yclose_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     # dI 本来也可能为负，直接做 sign*log1p(|dI|)
@@ -132,10 +135,13 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     df["obs_bar_dir_t"] = pd.to_numeric(df.get("bar_dir_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
     # --- volume / open interest (heavy-tail) ---
+    # tanh squash after log1p to bound scale ===
     V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     I = pd.to_numeric(df.get("I_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
-    df["obs_V_t"] = np.log1p(np.clip(V, 0.0, None)).astype(float)
-    df["obs_I_t"] = np.log1p(np.clip(I, 0.0, None)).astype(float)
+    v = np.log1p(np.clip(V, 0.0, None))
+    oi = np.log1p(np.clip(I, 0.0, None))
+    df["obs_V_t"] = np.tanh(v / 5.0).astype(float)
+    df["obs_I_t"] = np.tanh(oi / 5.0).astype(float)
 
     # --- pct feature（名称就是 pct，保留原始定义） ---
     df["obs_pct_chg_from_ref_t"] = pd.to_numeric(df.get("pct_chg_from_ref_t", 0.0), errors="coerce").fillna(0.0).astype(float)
@@ -165,7 +171,7 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
 
 
 def build_market_features(df_1m: pd.DataFrame,
-                          tz: str = "Asia/Singapore",
+                          tz: str = DEFAULT_TZ,
                           rollover_hour_local: int = 5,
                           df_prev_session: Optional[pd.DataFrame] = None,
                           is_future: bool = False,
