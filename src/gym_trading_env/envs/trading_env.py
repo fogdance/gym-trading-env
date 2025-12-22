@@ -764,9 +764,33 @@ class CustomTradingEnv(gym.Env):
             px = getattr(self, "current_price", getattr(self, "_last_valid_price", D0))
             self._empty_position(price=px, spread=self.config.trading.spread, close_reason=reason)
 
+    def _episode_last_bar_idx(self) -> int:
+        """Return the last valid bar index for this episode (inclusive)."""
+        # end_idx 是 half-open
+        last_idx = int(self.end_idx) - 1
+
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+        if intraday_mode:
+            # _eod_idx 也是 half-open（你当前语义：严格大于 15:01 的第一个 index）
+            eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
+            last_idx = min(last_idx, eod_idx - 1)
+
+        # 保险：不越界
+        last_idx = max(0, min(last_idx, len(self.df_market) - 1))
+        return last_idx
 
 
     def _should_terminated(self):
+        # intraday EOD cut (episode ends ON the last bar, e.g. 15:00) ---
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+        if intraday_mode:
+            last_bar_idx = self._episode_last_bar_idx()
+            if int(self.current_step) >= last_bar_idx:
+                self._force_flatten_if_any("TRUNCATE_EOD")
+                self.terminated = False
+                self.truncated = True
+                return True
+
         if self.current_step >= self.end_idx:
             self._force_flatten_if_any("TRUNCATE_END_IDX")
             self.terminated = False
@@ -823,6 +847,7 @@ class CustomTradingEnv(gym.Env):
             return True
         
         return False
+
 
 
     def _get_info(self):
