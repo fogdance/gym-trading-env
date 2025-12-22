@@ -56,6 +56,8 @@ class Metrics:
         self._loss_n = 0
         self._sum_pnl = 0.0
         self._fee_total = 0.0
+        self._open_n = 0
+        self._close_n = 0
 
         # --- metrics dict (mixed Decimal + float) ---
         self.metrics = {
@@ -105,6 +107,9 @@ class Metrics:
             "exposure_ratio": None,
             "trades_opened": 0,
             "trades_closed": 0,
+            # behavior / cost derived
+            "opens_per_1000_steps": None,
+            "fee_drag_ratio": None,
         }
 
         # behavior counters
@@ -305,7 +310,8 @@ class Metrics:
                 "action_short_open_ratio", "action_short_close_ratio",
                 "action_long_open_success_ratio", "action_long_close_success_ratio",
                 "action_short_open_success_ratio", "action_short_close_success_ratio",
-                "exposure_ratio"
+                "exposure_ratio",
+                "opens_per_1000_steps",
             ]} | {"trades_opened": 0, "trades_closed": 0}
 
         steps = float(c["steps_total"])
@@ -324,11 +330,15 @@ class Metrics:
             "exposure_ratio": float(c["in_market_steps"]) / steps,
         }
 
-        # robust event counts from trade_history
-        th = self.trade_record_manager.trade_history
-        out["trades_opened"] = sum(1 for t in th if "OPEN" in getattr(t, "operation_type", ""))
-        out["trades_closed"] = sum(1 for t in th if "CLOSE" in getattr(t, "operation_type", ""))
+        # NEW: robust counts from incremental stats (no scan)
+        out["trades_opened"] = int(self.metrics.get("trades_opened", 0))
+        out["trades_closed"] = int(self.metrics.get("trades_closed", 0))
+
+        # NEW: opens per 1000 steps (over this episode so far)
+        out["opens_per_1000_steps"] = (float(out["trades_opened"]) / steps) * 1000.0
+
         return out
+
 
     # -------- trade stats (incremental) --------
 
@@ -340,8 +350,16 @@ class Metrics:
         new = th[self._th_i:]
         self._th_i = len(th)
 
-        # update fees & close-trade stats only
         for t in new:
+            op = getattr(t, "operation_type", "") or ""
+
+            # NEW: incremental open/close counts
+            if "OPEN" in op:
+                self._open_n += 1
+            if "CLOSE" in op:
+                self._close_n += 1
+
+            # fee (accumulate regardless of open/close)
             fee = getattr(t, "fee", None)
             if fee is not None:
                 try:
@@ -349,14 +367,13 @@ class Metrics:
                 except Exception:
                     pass
 
-            op = getattr(t, "operation_type", "") or ""
+            # pnl stats only for CLOSE trades
             pnl = getattr(t, "pnl", None)
             if pnl is None:
                 continue
             if "CLOSE" not in op:
                 continue
 
-            # close trade
             try:
                 pnl_f = float(pnl)
             except Exception:
@@ -377,10 +394,23 @@ class Metrics:
             except Exception:
                 pass
 
+        # publish opened/closed counts (NEW)
+        self.metrics["trades_opened"] = int(self._open_n)
+        self.metrics["trades_closed"] = int(self._close_n)
+
+        # existing close-trade stats
         total = self._win_n + self._loss_n
         self.metrics["total_trades"] = int(total)
         self.metrics["winning_trades"] = int(self._win_n)
         self.metrics["fee_total"] = D(str(self._fee_total))
+
+        # NEW: fee drag ratio = fee_total / gross_pnl_abs
+        # gross_pnl_abs = sum_win + abs(sum_loss)
+        gross_pnl_abs = self._sum_win + abs(self._sum_loss)
+        if gross_pnl_abs > 0:
+            self.metrics["fee_drag_ratio"] = float(self._fee_total) / float(gross_pnl_abs)
+        else:
+            self.metrics["fee_drag_ratio"] = None
 
         if total > 0:
             win_rate = float(self._win_n) / float(total)
@@ -388,7 +418,7 @@ class Metrics:
 
             avg_pnl = self._sum_pnl / float(total)
             self.metrics["avg_pnl"] = avg_pnl
-            self.metrics["expectancy"] = avg_pnl  # cash expectancy per trade
+            self.metrics["expectancy"] = avg_pnl
 
             self.metrics["avg_win"] = (self._sum_win / float(self._win_n)) if self._win_n else 0.0
             self.metrics["avg_loss"] = (abs(self._sum_loss) / float(self._loss_n)) if self._loss_n else 0.0
@@ -396,7 +426,6 @@ class Metrics:
             if self._sum_loss < 0:
                 self.metrics["profit_factor"] = (self._sum_win / abs(self._sum_loss)) if abs(self._sum_loss) > 0 else None
             else:
-                # no losing trades yet
                 self.metrics["profit_factor"] = None
         else:
             self.metrics["win_rate"] = None
@@ -405,6 +434,7 @@ class Metrics:
             self.metrics["avg_win"] = None
             self.metrics["avg_loss"] = None
             self.metrics["profit_factor"] = None
+
 
     # -------- equity-curve ratios --------
 

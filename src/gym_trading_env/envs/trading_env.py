@@ -42,6 +42,18 @@ from gym_trading_env.utils.agent_features import (
     agent_feature_vector, FEATURES_AGENT, FEATURES_AGENT_OBS
 )
 
+CORE_LOG_ENV_KEYS = [
+    "equity",
+    "return_pct",
+    "current_drawdown_pct",
+    "max_drawdown_pct",
+    "trades_opened",
+    "opens_per_1000_steps",
+    "fee_total",
+    "fee_drag_ratio",
+    "profit_factor",
+    "expectancy",
+]
 
 
 class CustomTradingEnv(gym.Env):
@@ -522,7 +534,9 @@ class CustomTradingEnv(gym.Env):
         
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
-            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
+            info = self._get_info()
+            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+
 
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
@@ -535,7 +549,9 @@ class CustomTradingEnv(gym.Env):
             self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
             self.terminated = True
             self.truncated = False
-            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
+            info = self._get_info()
+            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+
 
         if self.config.debug.debug_enabled:
             self.logger.info(f"{self.df_market.index[self.current_step]}, {action} -> {self.action}")
@@ -562,7 +578,8 @@ class CustomTradingEnv(gym.Env):
             )
             self.terminated = True
             self.truncated = False
-            return self._get_obs(), 0.0, self.terminated, self.truncated, {}
+            info = self._get_info()
+            return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
         # --- Execute action ---
         self.action_result = market_code
@@ -641,7 +658,9 @@ class CustomTradingEnv(gym.Env):
             self.truncated = True
             # Update deltas once for this final transition
             self._update_step_deltas()
-            return self._get_obs(), 0.0, self.terminated, self.truncated, self._get_info()
+            info = self._get_info()
+            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+
 
         # Sync day/minute based on minute_index_t (no +1 drift)
         self._sync_day_and_minute()
@@ -687,14 +706,6 @@ class CustomTradingEnv(gym.Env):
 
         # Calculate reward
         reward = self.reward_function(obs)
-        info["log/env/reward"] = np.asarray(float(reward), dtype=np.float32).reshape(())
-
-        # NEW: log breakdown
-        rd = getattr(self, "_reward_debug", None)
-        if isinstance(rd, dict):
-            for k, v in rd.items():
-                info[f"log/env/reward/{k}"] = np.asarray(float(v), dtype=np.float32).reshape(())
-
 
         if self.terminated and self.config.debug.debug_enabled:
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
@@ -837,19 +848,13 @@ class CustomTradingEnv(gym.Env):
         }
 
 
-        # Add the whole metrics bag under 'log/env/*'
+        # Core log/env metrics: fixed set, always present
         env_metrics = self.metrics.get_metrics()
-        for k, v in env_metrics.items():
+        for k in CORE_LOG_ENV_KEYS:
+            v = env_metrics.get(k, None)
             vv = np.nan if v is None else number_to_float(v)
             info[f'log/env/{k}'] = np.asarray(vv, dtype=np.float32).reshape(())
 
-        # Handy real-time signals
-        info['log/env/equity'] = number_to_float(info['equity'])
-        info['log/env/used_margin'] = number_to_float(info['used_margin'])
-        info['log/env/free_margin'] = number_to_float(info['free_margin'])
-        info['log/env/long_position'] = number_to_float(info['long_position'])
-        info['log/env/short_position'] = number_to_float(info['short_position'])
-        info['log/env/stop_loss_fired'] = number_to_float(info['stop_loss_fired'])
 
         return info
 
