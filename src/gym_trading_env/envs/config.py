@@ -168,6 +168,9 @@ class TrainingParams:
 
     start_clock: str = "random_9_or_21"
 
+    bar_source: str = "csv"   # "csv" | "juejin"
+
+
     def validate(self):
         """Validate training parameters to ensure they are feasible."""
         assert self.window_size > 0, "Window size must be positive"
@@ -177,6 +180,8 @@ class TrainingParams:
         allowed = {"random_9_or_21", "09:00", "21:00", "any"}
         assert self.start_clock in allowed, f"start_clock must be one of {allowed}"
 
+        allowed_src = {"csv", "juejin"}
+        assert self.bar_source in allowed_src, f"bar_source must be one of {allowed_src}"
 @dataclass
 class VisualizationParams:
     """Visualization and observation space parameters.

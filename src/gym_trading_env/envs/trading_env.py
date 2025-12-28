@@ -25,9 +25,9 @@ from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode
 from gym_trading_env.envs.config import TradingConfig
-from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
-from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
+from gym_trading_env.utils.bar_source import CsvBarSource, JuejinBarSource
 from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
 from gym_trading_env.utils.plot_intraday import save_intraday_html
 from gym_trading_env.envs.account import Account
@@ -82,7 +82,6 @@ class CustomTradingEnv(gym.Env):
         ]
 
         self.action_space = spaces.Discrete(len(self.valid_actions))
-        self.df_market = build_market_features(self.df, rollover_hour_local=5, is_future=self.config.trading.is_future)
 
         # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
         mode = getattr(self.config.trading, "obs_feature_mode", "raw")
@@ -271,25 +270,30 @@ class CustomTradingEnv(gym.Env):
 
 
     def _data(self, df, config):
-        # Data
-        if df is None:
-            df = load_data(config.trading.data_path, config.trading.data_interval)
-        # Ensure 'Date' is datetime and set as index
-        if 'Date' in df.columns:
-            df['Date'] = pd.to_datetime(df['Date'])
-            df.set_index('Date', inplace=True)
-        elif not isinstance(df.index, pd.DatetimeIndex):
-            raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
-        
-        # Initialize step counters
+        # Initialize episode counters & bounds
         self.episode_step_count = 0
         self.start_idx = 0
-        self.end_idx = len(df)  # default to entire dataset
+        self.end_idx = 0
 
-        # Check basic feasibility right away
-        self._check_data_sufficiency(df)
+        src = getattr(config.training, "bar_source", "csv")
 
-        self.df = df.copy()
+        if src == "csv":
+            self.bar_source = CsvBarSource(config=config, df=df)
+        elif src == "juejin":
+            self.bar_source = JuejinBarSource(config=config, df=df)  # v1 会 NotImplemented
+        else:
+            raise ValueError(f"Unknown bar_source={src}")
+
+        # Expose raw & engineered data to keep env logic unchanged (v1 not hiding)
+        self.df = self.bar_source.df_raw
+        self.df_market = self.bar_source.df_market
+
+        # Compatibility: keep your existing sufficiency check, but check df_market (not raw df)
+        self._check_data_sufficiency(self.df_market)
+
+        # default to full dataset (reset() will pick start/end)
+        self.end_idx = len(self.df_market)
+
 
 
     def _check_data_sufficiency(self, df):
