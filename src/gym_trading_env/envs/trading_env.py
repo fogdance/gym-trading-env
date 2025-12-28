@@ -329,7 +329,7 @@ class CustomTradingEnv(gym.Env):
         # -------------------------------
         # Choose a valid start row by clock anchor
         # -------------------------------
-        start_policy = getattr(self.config.training, "start_clock", "random_9_or_21")
+        start_policy = getattr(self.config.training, "start_clock", "future_night")
 
         # 先根据时钟锚点生成候选行
         candidate_rows = self._candidate_start_rows_by_clock(start_policy)
@@ -351,7 +351,7 @@ class CustomTradingEnv(gym.Env):
             if candidate_rows.size == 0:
                 raise RuntimeError("No valid start rows found (after applying start_clock and episode_length).")
 
-        # 随机挑选：如策略为 random_9_or_21，并且既有 09:00 也有 21:00，会混合在 candidate_rows 再随机
+        # 随机挑选：如策略为 random_9_or_21
         if getattr(self.config.training, "randomize_start", True):
             start_row = int(self.np_random.choice(candidate_rows))
         else:

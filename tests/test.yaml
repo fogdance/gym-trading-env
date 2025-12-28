@@ -46,7 +46,7 @@ training:
   max_episode_steps: 1000000
   randomize_start: False
   render_mode: "rgb_array"
-  start_clock: "21:00"   # 或 '09:00' / '21:00' / 'any'
+  start_clock: "future_night"
   bar_source: "csv"
 
 visualization:

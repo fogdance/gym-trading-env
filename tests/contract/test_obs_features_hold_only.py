@@ -32,7 +32,7 @@ def env():
     e.config.training.episode_length = 345  # 固定 1 天
 
     # 强制从 21:01 锚点起步（你的 make_one_day_df 正好从 21:01 开始）
-    e.config.training.start_clock = "21:00"
+    e.config.training.start_clock = "future_night"
 
     obs, info = e.reset()
     yield e

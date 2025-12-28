@@ -273,10 +273,10 @@ class MarketStore:
             sel = np.flatnonzero((hours == hh) & (minutes == mm))
             return np.intersect1d(sel, valid_rows, assume_unique=False)
 
-        if start_clock == "09:00":
+        if start_clock == "future_day":
             return rows_at(9, 1)
 
-        if start_clock == "21:00":
+        if start_clock == "future_night":
             return rows_at(21, 1)
 
         if start_clock == "random_9_or_21":

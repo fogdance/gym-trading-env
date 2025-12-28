@@ -104,7 +104,7 @@ class TestActionObservationStrict(unittest.TestCase):
 
         # Make sure we start at the first bar of the provided df (21:01 => row0)
         self.env.config.training.randomize_start = False
-        self.env.config.training.start_clock = "21:00"
+        self.env.config.training.start_clock = "future_night"
 
         self.FEE_ON_CLOSE = bool(self.env.config.trading.is_round_turn)
         self.fee_per_side = float(self.env.config.trading.trading_fee_per_lot * self.env.config.trading.trade_lot)

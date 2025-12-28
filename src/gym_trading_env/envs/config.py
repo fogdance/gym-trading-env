@@ -185,7 +185,7 @@ class TrainingParams:
     game_mode: bool = False
     """ 游戏模式 """
 
-    start_clock: str = "random_9_or_21"
+    start_clock: str = "future_night"
     """ 开盘时间 """
 
     bar_source: str = "csv"   # "csv" | "juejin"
@@ -198,7 +198,7 @@ class TrainingParams:
         assert self.max_episode_steps > 0, "Max episode steps must be positive"
         if self.episode_length is not None:
             assert self.episode_length > 0, "Episode length must be positive"
-        allowed = {"random_9_or_21", "09:00", "21:00", "any"}
+        allowed = {"random_9_or_21", "future_day", "future_night", "any"}
         assert self.start_clock in allowed, f"start_clock must be one of {allowed}"
 
         allowed_src = {"csv", "juejin"}
