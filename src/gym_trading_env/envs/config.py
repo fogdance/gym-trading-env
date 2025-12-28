@@ -56,7 +56,9 @@ class TradingParams:
 
     data_path: str = ""
     data_interval: str = "5m"
-
+    data_tz: Optional[str] = "Asia/Shanghai" # "UTC" / "Asia/Shanghai"
+    " csv的时区"
+    
     down_thresh_5m: float = -0.0001
     up_thresh_5m: float = 0.0001
     down_thresh_15m: float = -0.0001
@@ -105,6 +107,12 @@ class TradingParams:
 
     trading_date: str = None # "2025-12-28"
     """交易日期， 不填默认今天"""
+
+
+    live_mode: bool = False
+    """"实盘模式"""
+
+
 
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""

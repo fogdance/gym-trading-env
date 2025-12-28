@@ -12,7 +12,7 @@ from gym_trading_env.utils.market_features import (
     FEATURES_MARKET_OBS,
 )
 from gym_trading_env.utils.daily_features import build_daily_context_and_seq, DAILY_SEQ_LEN
-from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ
 
 
 def _day_key_default(val) -> str:
@@ -65,6 +65,8 @@ class MarketStore:
 
     # NEW: keep raw day_id for metrics/debug (same length as rows)
     row_day_id: np.ndarray        # int32   [n_rows]
+    row_session_id: np.ndarray    # object [n_rows]  # "YYYYMMDD"
+    row_trading_day: np.ndarray   # int32  [n_rows]  # YYYYMMDD
 
     row_C: np.ndarray             # float32 [n_rows]
     row_H: np.ndarray             # float32 [n_rows]
@@ -119,10 +121,16 @@ class MarketStore:
         idx = df_market.index
         n_rows = int(len(df_market))
 
-        # Required columns
-        for col in ("day_id", "minute_index_t", "mask_t", "C_t"):
+        # Required columns: day_id, session_id, trading_day, minute_index_t, mask_t, C_t
+        for col in ("day_id", "session_id", "trading_day", "minute_index_t", "mask_t", "C_t"):
             if col not in df_market.columns:
                 raise ValueError(f"df_market missing required column: {col}")
+
+        row_session_id = df_market["session_id"].astype(str).to_numpy(dtype=object, copy=True)
+        row_trading_day = df_market["trading_day"].to_numpy(dtype=np.int32, copy=True)
+
+        # day_key 用 session_id（稳定、可读、可查错）
+        row_day_key = row_session_id
 
         # day_key normalize (object array, stable)
         day_ids = df_market["day_id"].to_numpy(copy=False)
@@ -234,6 +242,8 @@ class MarketStore:
 
             # NEW: day_id and global X matrices for env runtime
             row_day_id=np.ascontiguousarray(row_day_id),
+            row_session_id=np.ascontiguousarray(row_session_id),
+            row_trading_day=np.ascontiguousarray(row_trading_day),
             X_market_raw=X_raw_all,
             X_market_obs=X_obs_all,
 
@@ -301,6 +311,43 @@ class MarketStore:
             build_daily=build_daily,
         )
 
+    def inplace_overwrite_day_from_df_market(self, day_i: int, df_market_day: pd.DataFrame) -> None:
+        """
+        In-place overwrite a whole futures session block (strict 345 rows) into numpy tensors.
+
+        Contract:
+        - futures strict: len(df_market_day) must == self.day_len (345)
+        - df_market_day must be aligned to the SAME index order as store.index slice [s:e)
+
+        This mutates numpy arrays IN PLACE (store object remains the same).
+        """
+        di = int(day_i)
+        s, e = self.day_ranges[di]
+        sub_len = int(e - s)
+
+        if int(len(df_market_day)) != sub_len:
+            raise ValueError(f"inplace_overwrite_day: len(df_market_day)={len(df_market_day)} != slice_len={sub_len}")
+
+        # --- per-row arrays ---
+        self.row_mask[s:e] = df_market_day["mask_t"].to_numpy(dtype=np.float32, copy=False)
+        self.row_minute[s:e] = df_market_day["minute_index_t"].to_numpy(dtype=np.int32, copy=False)
+        self.row_C[s:e] = df_market_day["C_t"].to_numpy(dtype=np.float32, copy=False)
+
+        if "H_t" in df_market_day.columns:
+            self.row_H[s:e] = df_market_day["H_t"].to_numpy(dtype=np.float32, copy=False)
+        if "L_t" in df_market_day.columns:
+            self.row_L[s:e] = df_market_day["L_t"].to_numpy(dtype=np.float32, copy=False)
+
+        # --- global feature matrices ---
+        self.X_market_raw[s:e, :] = df_market_day[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
+        self.X_market_obs[s:e, :] = df_market_day[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32, copy=False)
+
+        # --- daily tensors (futures strict reshape is safe) ---
+        self.daily_mask[di, :] = self.row_mask[s:e]
+        self.daily_X_raw[di, :, :] = self.X_market_raw[s:e, :]
+        self.daily_X_obs[di, :, :] = self.X_market_obs[s:e, :]
+
+
     # --------- optional helpers (for env) ---------
 
     def candidate_start_rows_by_clock(self, start_clock: str) -> np.ndarray:
@@ -313,9 +360,9 @@ class MarketStore:
 
         idx_local = self.index
         if getattr(idx_local, "tz", None) is None:
-            idx_local = idx_local.tz_localize(self.tz)
-        else:
-            idx_local = idx_local.tz_convert(self.tz)
+            raise RuntimeError("MarketStore.index is naive. This is a bug: index must be tz-aware at ingestion.")
+        idx_local = idx_local.tz_convert(self.tz)
+
 
         hours = idx_local.hour
         minutes = idx_local.minute

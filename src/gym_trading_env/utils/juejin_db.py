@@ -7,8 +7,9 @@ from typing import Optional, Sequence
 
 import pandas as pd
 import pymysql
-
-from config.settings import DB_CONFIG  # 你刚贴的 DBConfig/DB_CONFIG
+from gym_trading_env.utils.time_contract import from_db_naive_series, from_db_naive_dt
+from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
+from gym_trading_env.config.settings import DB_CONFIG  # 你刚贴的 DBConfig/DB_CONFIG
 
 
 @dataclass
@@ -42,71 +43,91 @@ class JuejinDBClient:
         )
 
     def fetch_bars(
-        self,
-        *,
-        underlying: Optional[str],
-        symbol: Optional[str],
-        start_eob: datetime,
-        end_eob: datetime,
-        sources: Optional[Sequence[str]] = None,
-    ) -> pd.DataFrame:
-        """
-        读取 [start_eob, end_eob) 的 1m bar，按 eob 升序。
-        优先用 symbol 过滤，没传 symbol 就用 underlying。
-        """
-        if symbol is None and underlying is None:
-            raise ValueError("fetch_bars: symbol 和 underlying 至少要给一个")
+            self,
+            *,
+            underlying: Optional[str],
+            symbol: Optional[str],
+            start_eob: datetime,
+            end_eob: datetime,
+            sources: Optional[Sequence[str]] = None,
+        ) -> pd.DataFrame:
+            """
+            读取 [start_eob, end_eob) 的 1m bar，按 eob 升序。
+            返回：index=eob(tz-aware FEATURE_TZ)，包含标准列 Open/High/Low/Close/Volume/OpenInterest
+            """
+            if symbol is None and underlying is None:
+                raise ValueError("fetch_bars: symbol 和 underlying 至少要给一个")
 
-        conditions = ["eob >= %s", "eob < %s"]
-        params: list = [start_eob, end_eob]
+            conditions = ["eob >= %s", "eob < %s"]
+            params: list = [start_eob, end_eob]
 
-        if symbol is not None:
-            conditions.append("symbol = %s")
-            params.append(symbol)
-        if underlying is not None:
-            conditions.append("underlying = %s")
-            params.append(underlying)
-        if sources:
-            # source in (...)
-            placeholders = ", ".join(["%s"] * len(sources))
-            conditions.append(f"source IN ({placeholders})")
-            params.extend(list(sources))
+            if symbol is not None:
+                conditions.append("symbol = %s")
+                params.append(symbol)
+            if underlying is not None:
+                conditions.append("underlying = %s")
+                params.append(underlying)
+            if sources:
+                placeholders = ", ".join(["%s"] * len(sources))
+                conditions.append(f"source IN ({placeholders})")
+                params.extend(list(sources))
 
-        where_sql = " AND ".join(conditions)
-        sql = f"""
-            SELECT
-                trading_date,
-                symbol,
-                underlying,
-                bob,
-                eob,
-                `open`,
-                `high`,
-                `low`,
-                `close`,
-                `volume`,
-                `position`,
-                `source`,
-                `provider`
-            FROM fut_bar_1m_v2
-            WHERE {where_sql}
-            ORDER BY eob ASC
-        """
+            where_sql = " AND ".join(conditions)
+            sql = f"""
+                SELECT
+                    trading_date,
+                    symbol,
+                    underlying,
+                    bob,
+                    eob,
+                    `open`,
+                    `high`,
+                    `low`,
+                    `close`,
+                    `volume`,
+                    `position`,
+                    `source`,
+                    `provider`
+                FROM fut_bar_1m_v2
+                WHERE {where_sql}
+                ORDER BY eob ASC
+            """
 
-        with self._connect() as conn:
-            with conn.cursor() as cur:
-                cur.execute(sql, params)
-                rows = cur.fetchall()
+            with self._connect() as conn:
+                with conn.cursor() as cur:
+                    cur.execute(sql, params)
+                    rows = cur.fetchall()
 
-        if not rows:
-            return pd.DataFrame()
+            if not rows:
+                return pd.DataFrame()
 
-        df = pd.DataFrame(rows)
-        # 转成 pandas 时间戳，下一步在 BarSource 里再本地化时区
-        df["bob"] = pd.to_datetime(df["bob"])
-        df["eob"] = pd.to_datetime(df["eob"])
-        df["trading_date"] = pd.to_datetime(df["trading_date"]).dt.date
-        return df
+            df = pd.DataFrame(rows)
+
+            # DB DATETIME(naive) -> tz-aware FEATURE_TZ
+            df["bob"] = from_db_naive_series(df["bob"])
+            df["eob"] = from_db_naive_series(df["eob"])
+
+            # Standard OHLCVI columns
+            df.rename(
+                columns={
+                    "open": "Open",
+                    "high": "High",
+                    "low": "Low",
+                    "close": "Close",
+                    "volume": "Volume",
+                    "position": "OpenInterest",
+                },
+                inplace=True,
+            )
+
+            df = df.set_index("eob").sort_index()
+            df = normalize_ohlcvi(df)  # ensures floats + missing Volume/OI handled
+
+            # keep extra fields (symbol/underlying/source/provider/trading_date/bob)
+            if "trading_date" in df.columns:
+                df["trading_date"] = pd.to_datetime(df["trading_date"], errors="coerce").dt.date
+
+            return df
 
     def fetch_latest_eob(
         self,
@@ -115,7 +136,7 @@ class JuejinDBClient:
         underlying: Optional[str],
     ) -> Optional[datetime]:
         """
-        查询当前窗口内最新一根 bar 的 eob，方便轮询 live。
+        查询最新一根 bar 的 eob，返回 tz-aware FEATURE_TZ timestamp
         """
         if symbol is None and underlying is None:
             raise ValueError("fetch_latest_eob: symbol 和 underlying 至少要给一个")
@@ -146,4 +167,5 @@ class JuejinDBClient:
 
         if not row:
             return None
-        return row["eob"]
+
+        return from_db_naive_dt(row["eob"])

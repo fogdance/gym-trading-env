@@ -5,7 +5,8 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345, DEFAULT_TZ
+from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ
 
 
 def _make_ohlc_df(idx):

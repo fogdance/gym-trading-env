@@ -32,21 +32,15 @@ def make_intraday_rows(start_ts: str, minutes: int, price_base=2300.0, vol=10.0,
     return _mk_df(rows)
 
 def _tz_align_index_like_out(df: pd.DataFrame, tz: str) -> pd.DataFrame:
-    """
-    仅把 df.index 对齐到 tz（不做交易日 shift）。
-    因为 strict 345 的 out.index 使用真实自然时间（夜盘在前一自然日晚上）。
-    """
     if not isinstance(df.index, pd.DatetimeIndex):
         raise ValueError("df.index must be DatetimeIndex")
     idx = df.index
     if idx.tz is None:
-        idx = idx.tz_localize(tz)
-    else:
-        idx = idx.tz_convert(tz)
-
+        raise AssertionError("Test input index must be tz-aware; localize explicitly at ingestion, not here.")
     out = df.copy()
-    out.index = idx
+    out.index = idx.tz_convert(tz)
     return out
+
 
 def _assert_input_equals_output_on_data_minutes(df_1m: pd.DataFrame, out: pd.DataFrame, tz: str):
     """

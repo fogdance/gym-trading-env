@@ -11,6 +11,10 @@ from typing import Tuple
 import os
 from pathlib import Path
 
+from gym_trading_env.utils.rpc_protocol import TradeSignal
+from gym_trading_env.utils.rpc_client import LanOrderClient
+from gym_trading_env.config.settings import RPC_ORDER_CONFIG
+
 from gym_trading_env.envs.accounting import Ledger, JournalEntry, Posting, LedgerError
 from gym_trading_env.utils.feature_engineering import FeatureEngineer
 from gym_trading_env.envs.position import Position
@@ -28,7 +32,7 @@ from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
 from gym_trading_env.utils.bar_source import CsvBarSource, JuejinBarSource
-from gym_trading_env.utils.session_futures_strict import DEFAULT_TZ
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ts_to_naive_str
 from gym_trading_env.utils.plot_intraday import save_intraday_html
 from gym_trading_env.envs.account import Account
 from gym_trading_env.utils.daily_features import (
@@ -64,6 +68,20 @@ class CustomTradingEnv(gym.Env):
 
         self._config(config_path=config_path)
         self._data(df=df, config=self.config)
+
+        # ---- LIVE 下单信号 client（默认关闭）----
+        self._order_client = None
+
+        if self._live_mode and RPC_ORDER_CONFIG.order_enabled:
+            self._order_client = LanOrderClient(
+                endpoint=RPC_ORDER_CONFIG.order_endpoint,
+                token=RPC_ORDER_CONFIG.order_token,
+                timeout_sec=RPC_ORDER_CONFIG.order_timeout_sec,
+                logger=self.logger,
+            )
+            self.logger.info(f"LAN order client enabled: {RPC_ORDER_CONFIG.order_endpoint}")
+
+
 
         self.render_mode = render_mode or getattr(self.config.training, "render_mode", "none")
         if self.render_mode is None:
@@ -202,6 +220,7 @@ class CustomTradingEnv(gym.Env):
         )
         self.reward_function = reward_class(self)
         self.data_window_size = 400
+        self._live_mode = getattr(self.config.trading, "live_mode", False)
 
 
 
@@ -457,11 +476,12 @@ class CustomTradingEnv(gym.Env):
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
         """
-
+                
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
+
 
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
@@ -566,23 +586,33 @@ class CustomTradingEnv(gym.Env):
             in_market = False
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market)
 
+        # ---------------------------------------------------------
+        #   分界线：action 已经在 t 执行完了
+        #    live：现在立刻 RPC -> 然后等下一根K
+        # ---------------------------------------------------------
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=self.store.index[self.current_step],
+                action=self.action,
+                result=self.action_result,
+                price=action_price,
+            )
+
         #
         # 推进到 t+1 → 设置 current_price → 先跑止损 → 再 update_unrealized → metrics.update
         #
-
-        # --- Advance time to NEXT step (t+1) ---
-        self.current_step += 1
-        self.episode_step_count += 1
-
-        # Bound check BEFORE sync/index access
-        if self.current_step >= int(self.store.n_rows):
-            # data exhausted => truncated
+        next_i = self._advance_next_step(live=self._live_mode)
+        if next_i is None:
+            # day finished or out of window
             self.terminated = False
             self.truncated = True
-            # Update deltas once for this final transition
             self._update_step_deltas()
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
+
+        # --- Advance time to NEXT step (t+1) ---
+        self.current_step = next_i
+        self.episode_step_count += 1
 
         # Sync day/minute from store
         self._sync_day_and_minute()
@@ -631,6 +661,52 @@ class CustomTradingEnv(gym.Env):
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
         return obs, reward, self.terminated, self.truncated, info
+
+    def _advance_next_step(self, *, live: bool) -> int | None:
+        if live:
+            # 关键：只在“新K到来”时推进 step，修正不推进
+            while True:
+                prev_last = getattr(self.bar_source, "_last_eob", None)
+                ok = self.bar_source.wait_kline_block()   # True=更新/修正, False=收盘结束
+                if not ok:
+                    return None
+
+                new_last = getattr(self.bar_source, "_last_eob", None)
+                # 只有 last_eob 变大，才说明真的来了“下一根K”
+                if (prev_last is None) or (new_last is not None and new_last > prev_last):
+                    break
+                # 否则只是修正，继续等真正的新K
+
+        ni = int(self.current_step) + 1
+        return None if ni >= int(self.store.n_rows) else ni
+
+    def _rpc_send_after_execute(self, ts, action, result, price):
+        eob_naive_str = ts_to_naive_str(ts, tz=DEFAULT_TZ)
+
+        symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
+
+        action_index = int(self.valid_actions.index(action))  # 0..len-1
+
+        sig = TradeSignal(
+            signal_id=f"{symbol}|{eob_naive_str}|{action.name}",
+            symbol=symbol,
+            eob=eob_naive_str,
+            action_index=action_index,
+            action_name=action.name,
+            volume=int(getattr(self.config.trading, "trade_lot", 1)),
+            price=float(price),
+            meta={
+                "result": int(getattr(result, "value", -1)),
+                "equity": float(self._calculate_equity()),
+            },
+        )
+        
+        ok = self._order_client.send(sig)
+        self.logger.info(f"[RPC] send signal_id={sig.signal_id} action={sig.action_name} eob={sig.eob}")
+        if not ok:
+            self.logger.exception(
+                f"[RPC] send failed signal_id={sig.signal_id} action={sig.action_name} eob={sig.eob}"
+            )
 
     def _sync_day_and_minute(self):
         new_day_i = int(self.store.row_day_i[self.current_step])
@@ -900,12 +976,6 @@ class CustomTradingEnv(gym.Env):
 
 
 
-
-    # --- NEW: 将索引本地化 ---
-    def _localize_index(self, idx, tz: str):
-        if getattr(idx, "tz", None) is None:
-            return idx.tz_localize(tz)
-        return idx.tz_convert(tz)
     
     # --- NEW: 根据时钟锚点生成候选起点行 ---
     def _candidate_start_rows_by_clock(self, start_clock: str) -> np.ndarray:

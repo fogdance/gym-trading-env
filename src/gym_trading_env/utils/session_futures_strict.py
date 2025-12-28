@@ -2,8 +2,7 @@
 import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple, Optional
-
-DEFAULT_TZ = "Asia/Shanghai"
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ensure_index_tz_strict
 
 # 固定的 4 段交易时间（按“分钟收盘时刻”）
 SEGMENTS: List[Tuple[str, str]] = [
@@ -13,10 +12,6 @@ SEGMENTS: List[Tuple[str, str]] = [
     ("13:30", "15:00"),
 ]
 
-def _localize_index(index: pd.DatetimeIndex, tz: str) -> pd.DatetimeIndex:
-    if index.tz is None:
-        return index.tz_localize(tz)
-    return index.tz_convert(tz)
 
 def _infer_trading_days(idx_local: pd.DatetimeIndex) -> pd.DatetimeIndex:
     """
@@ -115,7 +110,7 @@ def strict_reindex_futures_345(
         raise ValueError("df_1m must contain ['Open','High','Low','Close']")
 
     df = df_1m.copy()
-    idx_local = _localize_index(df.index, tz)
+    idx_local = ensure_index_tz_strict(df.index, target_tz=tz)
     df.index = idx_local
 
     if df.empty:

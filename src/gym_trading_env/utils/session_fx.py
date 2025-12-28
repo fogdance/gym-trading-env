@@ -2,15 +2,12 @@
 import numpy as np
 import pandas as pd
 from typing import Dict
+from gym_trading_env.utils.timebase import FEATURE_TZ, ensure_index_tz_strict
 
-def _localize_index(index: pd.DatetimeIndex, tz: str) -> pd.DatetimeIndex:
-    """Ensure index is timezone-aware in tz."""
-    if index.tz is None:
-        return index.tz_localize(tz)
-    return index.tz_convert(tz)
+
 
 def compute_session_meta(df: pd.DataFrame,
-                         tz: str = "Asia/Singapore",
+                         tz: str = FEATURE_TZ,
                          rollover_hour_local: int = 5) -> Dict[str, pd.Series]:
     """
     Compute FX session metadata with rollover at `rollover_hour_local`.
@@ -25,7 +22,7 @@ def compute_session_meta(df: pd.DataFrame,
     if not isinstance(df.index, pd.DatetimeIndex):
         raise ValueError("df.index must be a DatetimeIndex")
 
-    idx_local = _localize_index(df.index, tz)
+    idx_local = ensure_index_tz_strict(df.index, target_tz=tz)
 
     hours = idx_local.hour
     dates = idx_local.date

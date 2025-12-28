@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 from typing import List, Optional, Dict
 from gym_trading_env.utils.session_fx import compute_session_meta
-from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345, DEFAULT_TZ
+from gym_trading_env.utils.session_futures_strict import strict_reindex_futures_345
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ensure_index_tz_strict
 
 # Market-side features (sequence) - OBS (normalized)
 FEATURES_MARKET_OBS: List[str] = [
@@ -56,7 +57,7 @@ FEATURES_MARKET: List[str] = [
 AUX_MARKET_COLS = ["H_t", "L_t"]
 
 # env 里会强依赖的列
-REQUIRED_MARKET_COLS = ["day_id"] + AUX_MARKET_COLS + FEATURES_MARKET + FEATURES_MARKET_OBS
+REQUIRED_MARKET_COLS = ["day_id", "session_id", "trading_day"] + AUX_MARKET_COLS + FEATURES_MARKET + FEATURES_MARKET_OBS
 
 
 def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
@@ -181,6 +182,8 @@ def build_market_features(df_1m: pd.DataFrame,
     if not need_cols.issubset(df_1m.columns):
         raise ValueError(f"df_1m must contain {need_cols}")
 
+    _ = ensure_index_tz_strict(df_1m.index, target_tz=tz)  # 只校验，不改 df（或 df = df.copy(); df.index = _）
+
     if is_future:
         return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct)
     else:
@@ -197,7 +200,10 @@ def _build_market_fx(df_1m: pd.DataFrame,
         df.drop(columns=["Date"], inplace=True)
 
     meta = compute_session_meta(df, tz=tz, rollover_hour_local=rollover_hour_local)
-    sid = meta["session_id"]
+    sid = meta["session_id"].astype(str)  # YYYYMMDD
+    df["session_id"] = sid
+    df["trading_day"] = sid.astype(int)
+
 
     df["L_t"] = df["Low"].astype(float)
     df["H_t"] = df["High"].astype(float)
@@ -269,6 +275,9 @@ def _build_market_future(df_1m: pd.DataFrame,
     X = base["aligned"].copy()
     mask_t = base["mask"].astype(int)
     session_id = base["session_id"]
+    X["session_id"] = session_id.astype(str)
+    X["trading_day"] = session_id.astype(str).astype(int)
+
     minute_index = base["minute_index"]
     day_id = base["day_id"]
 
