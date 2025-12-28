@@ -100,7 +100,11 @@ class TradingParams:
     take_profit_rr: Decimal = _to_decimal(2.0)  # e.g. 2R
     """"止盈值"""
 
+    future_symbol: str = None #"DCE.jm2601"
+    """"期货symbol, 交易所.主力合约"""
 
+    trading_date: str = None # "2025-12-28"
+    """交易日期， 不填默认今天"""
 
     def validate(self):
         """Validate trading parameters to ensure they are feasible."""

@@ -38,6 +38,13 @@ class MarketStore:
       - df replacement won't break views
       - updates can be done atomically (swap store)
       - contract tests (future-zero padding) stay stable
+
+    实盘时：
+      - 当 df_raw / df_market 更新时，不要 in-place 改这些 numpy，
+        而是重新构建一个新的 MarketStore，再整体替换引用：
+            new_store = MarketStore.rebuild(prev_store, df_raw=new_df_raw, df_market=new_df_market, is_future=True)
+            bar_source.store = new_store
+            env.store = new_store
     """
 
     # debug / inspection
@@ -67,7 +74,6 @@ class MarketStore:
     X_market_raw: np.ndarray      # float32 [n_rows, F_raw]  (FEATURES_MARKET)
     X_market_obs: np.ndarray      # float32 [n_rows, F_obs]  (FEATURES_MARKET_OBS)
 
-
     # day structures
     days: np.ndarray              # object [num_days]
     sid_to_dayi: Dict[str, int]
@@ -87,6 +93,9 @@ class MarketStore:
     # helper for daily_features
     day_key_fn: Callable[[object], str]
 
+    # ------------------------------------------------------------------ #
+    #   初次构建：从 df_raw / df_market 生成一个新的 MarketStore
+    # ------------------------------------------------------------------ #
     @staticmethod
     def from_frames(
         *,
@@ -176,7 +185,7 @@ class MarketStore:
                 daily_X_obs[di, :, :] = X_obs_all[s:e, :]
                 daily_mask[di, :] = row_mask[s:e]
             else:
-                # FX: placeholder for later (you said暂不处理)
+                # FX: placeholder for later（目前你没用 FX 实盘）
                 # We still try a safe pack by minute_index into a day canvas.
                 m = row_minute[s:e]
                 m = np.clip(m, 0, day_len - 1)
@@ -246,6 +255,50 @@ class MarketStore:
             daily_seq7_obs=daily_seq7_obs,
 
             day_key_fn=day_key_fn,
+        )
+
+    # ------------------------------------------------------------------ #
+    #   实盘/增量场景：基于已有 store 的配置重建一个新的 store
+    # ------------------------------------------------------------------ #
+    @classmethod
+    def rebuild(
+        cls,
+        prev_store: "MarketStore",
+        *,
+        df_raw: pd.DataFrame,
+        df_market: pd.DataFrame,
+        is_future: bool,
+        build_daily: Optional[bool] = None,
+    ) -> "MarketStore":
+        """
+        使用与 prev_store 相同的 tz / day_key_fn / daily 开关，重新构建一个新的 MarketStore。
+
+        场景：
+          - 实盘中 JuejinBarSource 从 DB 增量拉到了新的 1m bar，
+            并已更新/重建出一份新的 df_raw + df_market
+          - 希望用统一的方式生成新的 store，并一次性替换引用
+
+        用法示例：
+            new_store = MarketStore.rebuild(
+                prev_store=self.store,
+                df_raw=new_df_raw,
+                df_market=new_df_market,
+                is_future=True,
+            )
+            self.store = new_store
+        """
+        if build_daily is None:
+            # 默认保持和原 store 一致：如果之前有 daily_ctx/seq，就继续构建；否则不构建
+            has_daily = (prev_store.daily_ctx_raw is not None) or (prev_store.daily_seq7_raw is not None)
+            build_daily = has_daily
+
+        return cls.from_frames(
+            df_raw=df_raw,
+            df_market=df_market,
+            is_future=is_future,
+            tz=prev_store.tz,
+            day_key_fn=prev_store.day_key_fn,
+            build_daily=build_daily,
         )
 
     # --------- optional helpers (for env) ---------
