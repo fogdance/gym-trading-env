@@ -67,22 +67,38 @@ class TradingParams:
 
 
     is_future: bool = True
+    """"是否期货"""
 
     stop_loss_enabled: bool = False
+    """"是否开启止损"""
     stop_loss_mode: str = "pct"          # "pct" | "abs"
+    """"止损是百分比pct还是固定点差abs"""
     stop_loss_value: Decimal = _to_decimal(0.02)  # pct=0.02; abs=0.0010
+    """"止损值"""
 
-    # 新增：obs 使用哪套特征（默认 raw：兼容旧测试；obs：用归一化 obs_ 列）
     obs_feature_mode: str = "raw"   # "raw" | "obs"
+    """"obs 使用哪套特征（默认 raw：兼容旧测试；obs：用归一化 obs_ 列）"""
 
     use_daily_context: bool = False
+    """"日内k线信息"""
+
     use_daily_seq_7: bool = False
+    """"最近7天的k线信息"""
+
     max_entries_per_day: int = 3
+    """"每天最大可开仓数量"""
+
     intraday_single_position: bool = True
+    """"日内交易是否单向持仓"""
 
     take_profit_enabled: bool = False
+    """"启用止盈"""
+
     take_profit_mode: str = "rr"              # currently only "rr"
+    """"止盈模式"""
+
     take_profit_rr: Decimal = _to_decimal(2.0)  # e.g. 2R
+    """"止盈值"""
 
 
 
@@ -130,8 +146,10 @@ class RiskParams:
     """Maximum allowable daily loss as a ratio of balance (e.g., 0.05 = 5%). Range: [0, 1]."""
     
     risk_reward_ratio: Decimal = _to_decimal(0.0)
+    """盈亏比"""
 
     risk_reward_ratio_enable: bool = False
+    """启用盈亏比"""
 
     def validate(self):
         """Validate risk parameters to ensure they are within acceptable bounds."""
@@ -165,10 +183,13 @@ class TrainingParams:
     """Rendering mode: 'human' for visual display, 'rgb_array' for array output."""
 
     game_mode: bool = False
+    """ 游戏模式 """
 
     start_clock: str = "random_9_or_21"
+    """ 开盘时间 """
 
     bar_source: str = "csv"   # "csv" | "juejin"
+    """ 数据来源 """
 
 
     def validate(self):
