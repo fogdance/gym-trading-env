@@ -57,7 +57,7 @@ def test_obs_shapes_dtypes_and_episode_len_is_one_day():
     # 确保 reset 选固定起点（否则随机起点导致 expected 不可控）
     env.config.training.randomize_start = False
     # 可选：明确锚点，保证 start_row=0（我们 df 从 21:01 开始）
-    env.config.training.start_clock = "21:00"
+    env.config.training.start_clock = "future_night"
 
     obs, info = env.reset()
     market = obs["market_seq"]
@@ -83,7 +83,7 @@ def test_reset_starts_at_minute0_and_obs_is_left_padded():
     df = make_one_day_df()
     env = CustomTradingEnv(df=df, config_path="tests/test.yaml")
     env.config.training.randomize_start = False
-    env.config.training.start_clock = "21:00"
+    env.config.training.start_clock = "future_night"
 
     obs, _ = env.reset()
     market = obs["market_seq"]
@@ -112,7 +112,7 @@ def test_hold_shifts_window_by_one_row():
     df = make_one_day_df()
     env = CustomTradingEnv(df=df, config_path="tests/test.yaml")
     env.config.training.randomize_start = False
-    env.config.training.start_clock = "21:00"
+    env.config.training.start_clock = "future_night"
 
     obs0, _ = env.reset()
     assert int(env.current_step) == 0
