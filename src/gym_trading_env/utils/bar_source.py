@@ -1,16 +1,14 @@
 # src/gym_trading_env/utils/bar_source.py
-
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Optional, Literal
 
-import numpy as np
 import pandas as pd
 
-from gym_trading_env.envs.config import TradingConfig
+from gym_trading_env.envs.config import TradingConfig  # 保持你原 import 口径
 from gym_trading_env.utils.data_processing import load_data
 from gym_trading_env.utils.market_features import build_market_features
+from gym_trading_env.utils.market_store import MarketStore
 
 
 BarSourceKind = Literal["csv", "juejin"]
@@ -36,11 +34,9 @@ def _normalize_ohlcvi_df(df: pd.DataFrame) -> pd.DataFrame:
     if not isinstance(df.index, pd.DatetimeIndex):
         raise TypeError("DataFrame must have a 'Date' column or a DatetimeIndex.")
 
-    # Basic cleanup
     df = df[~df.index.isna()]
     df = df.sort_index()
 
-    # If duplicates exist, keep last (useful for live feeds overwriting the last bar)
     if df.index.has_duplicates:
         df = df[~df.index.duplicated(keep="last")]
 
@@ -49,11 +45,13 @@ def _normalize_ohlcvi_df(df: pd.DataFrame) -> pd.DataFrame:
 
 class BaseBarSource:
     """
-    v1: does NOT hide df/df_market; env can still access them directly.
+    v2: env reads ONLY from self.store (numpy stable arrays).
+    df_raw/df_market remain for debug/visualization.
 
     Must provide:
-      - df_raw: normalized OHLCVI dataframe
-      - df_market: feature-engineered dataframe (build_market_features output)
+      - df_raw
+      - df_market
+      - store : MarketStore
     """
 
     kind: BarSourceKind = "csv"
@@ -62,6 +60,8 @@ class BaseBarSource:
         self.config = config
         self.df_raw: pd.DataFrame = pd.DataFrame()
         self.df_market: pd.DataFrame = pd.DataFrame()
+        self.store: Optional[MarketStore] = None
+
         self._build(df=df)
         self._validate_basic()
 
@@ -69,26 +69,23 @@ class BaseBarSource:
         raise NotImplementedError
 
     def _validate_basic(self):
-        # --- Basic length feasibility for Dreamer-style windowing ---
-        df_len = len(self.df_market)
+        if self.store is None:
+            raise RuntimeError("BarSource.store is None (build failed)")
+
         ws = int(getattr(self.config.training, "window_size", 1))
-        if df_len < ws:
-            raise ValueError(
-                f"df_market has only {df_len} rows, smaller than window_size={ws}. Not feasible."
-            )
+        if ws <= 0:
+            raise ValueError(f"window_size must be > 0, got {ws}")
 
-        ep_len = getattr(self.config.training, "episode_length", None)
-        if ep_len is not None:
-            ep_len = int(ep_len)
-            if ep_len <= 0:
-                raise ValueError(f"episode_length must be > 0, got {ep_len}")
-            # 至少能跑 1 step（env.reset 的 start_row 逻辑还有更细的候选行过滤，这里只做硬下限）
-            if df_len - ep_len < 1:
-                raise ValueError(
-                    f"df_market length={df_len} is insufficient for episode_length={ep_len}."
-                )
+        # futures: obs is day-based & right-padded to window_size
+        if bool(getattr(self.config.trading, "is_future", False)):
+            if ws > int(self.store.day_len):
+                raise ValueError(f"window_size={ws} > day_len={self.store.day_len} (futures). Clamp in env or config.")
 
-        # --- Required columns sanity (fail fast) ---
+        # Basic availability: must have at least 1 day
+        if len(self.store.days) < 1:
+            raise ValueError("store has no days")
+
+        # Required columns sanity (fail fast)
         required = {"day_id", "minute_index_t", "mask_t", "C_t"}
         if bool(getattr(self.config.trading, "stop_loss_enabled", False)) or bool(
             getattr(self.config.trading, "take_profit_enabled", False)
@@ -112,11 +109,19 @@ class CsvBarSource(BaseBarSource):
 
         self.df_raw = _normalize_ohlcvi_df(df)
 
-        # 2) Feature engineering ONCE
+        # 2) Feature engineering
         self.df_market = build_market_features(
             self.df_raw,
             rollover_hour_local=5,
             is_future=bool(getattr(self.config.trading, "is_future", False)),
+        )
+
+        # 3) Build stable store (numpy arrays)
+        self.store = MarketStore.from_frames(
+            df_raw=self.df_raw,
+            df_market=self.df_market,
+            is_future=bool(getattr(self.config.trading, "is_future", False)),
+            build_daily=bool(getattr(self.config.trading, "use_daily_context", False) or getattr(self.config.trading, "use_daily_seq_7", False)),
         )
 
 
@@ -124,7 +129,6 @@ class JuejinBarSource(BaseBarSource):
     kind: BarSourceKind = "juejin"
 
     def _build(self, df: Optional[pd.DataFrame]):
-        # v1 先占位：后续实现 ingest/append-only 逻辑
         raise NotImplementedError(
             "JuejinBarSource v1 is not implemented yet. Use CsvBarSource for now."
         )

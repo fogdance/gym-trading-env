@@ -63,7 +63,6 @@ class CustomTradingEnv(gym.Env):
         super(CustomTradingEnv, self).__init__()
 
         self._config(config_path=config_path)
-
         self._data(df=df, config=self.config)
 
         self.render_mode = render_mode or getattr(self.config.training, "render_mode", "none")
@@ -71,7 +70,6 @@ class CustomTradingEnv(gym.Env):
             self.render_mode = "none"
         if self.render_mode != "none" and self.render_mode not in self.metadata.get("render_modes", []):
             raise ValueError(f"Unsupported render_mode={self.render_mode}, must be one of {self.metadata.get('render_modes')}")
- 
 
         self.valid_actions = [
             Action.HOLD,
@@ -80,7 +78,6 @@ class CustomTradingEnv(gym.Env):
             Action.SHORT_OPEN0,
             Action.SHORT_CLOSE0
         ]
-
         self.action_space = spaces.Discrete(len(self.valid_actions))
 
         # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
@@ -90,100 +87,29 @@ class CustomTradingEnv(gym.Env):
             self._OBS_FEATURES_AGENT = FEATURES_AGENT_OBS
         else:
             self._OBS_FEATURES_MARKET = FEATURES_MARKET  # default = old behavior
-            self._OBS_FEATURES_AGENT = FEATURES_AGENT  # default = old behavior
+            self._OBS_FEATURES_AGENT = FEATURES_AGENT    # default = old behavior
 
-        # ---- constants ----
         self._F_MARKET = len(self._OBS_FEATURES_MARKET)
         self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
 
-        dfm = self.df_market  # DON'T astype the whole df (keeps day_id dtype stable)
+        # ---- sanity: store day_len should match env DAY_LEN policy ----
+        if int(getattr(self.store, "day_len", self.DAY_LEN)) != int(self.DAY_LEN):
+            self.logger.warning(f"store.day_len={self.store.day_len} != env.DAY_LEN={self.DAY_LEN} (check store build policy)")
 
-
-        # Required session columns
-        required_cols = {"day_id", "minute_index_t", "mask_t"}
-        if getattr(self.config.trading, "stop_loss_enabled", False):
-            required_cols |= {"H_t", "L_t"}
-        missing = required_cols - set(dfm.columns)
-        if missing:
-            raise ValueError(f"df_market missing columns: {missing}")
-
-        # Numpy views
-        minute_idx = dfm["minute_index_t"].to_numpy(dtype=np.int32, copy=False)
-        mask_np    = dfm["mask_t"].to_numpy(dtype=np.float32, copy=False)
-        X_all      = dfm[self._OBS_FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
-        day_ids    = dfm["day_id"].to_numpy(copy=False)
-
-        # Normalize all day ids once
-        day_ids_norm = np.array([self._day_key(x) for x in day_ids], dtype=object)
-
-        # Compute unique days in order of first appearance
-        unique_days, first_idx = np.unique(day_ids_norm, return_index=True)
-        order = np.argsort(first_idx)
-        self._days = unique_days[order]
-
-        # Map day_key -> day_index
-        self._sid_to_dayi = {dk: i for i, dk in enumerate(self._days)}
-
-        # Day ranges (half-open)
-        self._day_ranges = []
-        for dk in self._days:
-            sel = (day_ids_norm == dk)
-            start = int(np.argmax(sel))           # first True
-            end   = int(start + sel.sum())        # first index of next day
-            self._day_ranges.append((start, end))
-
-        # Prebuild “full-day” tensors (zeros, then fill)
-        # Shape: [num_days, DAY_LEN, F_MARKET]
-        num_days = len(self._days)
-        self._daily_X = np.zeros((num_days, self.DAY_LEN, self._F_MARKET), dtype=np.float32)
-        self._daily_mask = np.zeros((num_days, self.DAY_LEN), dtype=np.float32)
-
-        for di, (s, e) in enumerate(self._day_ranges):
-            m_idx = minute_idx[s:e]        # futures: [0..344]
-            msk   = mask_np[s:e]           # 0/1
-
-            if self.config.trading.is_future:
-                # futures：把 obs_ 全量写进去（非价量的 time 特征也要保留），
-                # 价量类本身在 build_market_features 里就已按 mask 抹零
-                self._daily_X[di, m_idx, :] = X_all[s:e, :]
-                self._daily_mask[di, m_idx] = msk
-            else:
-                # fx：保持旧行为（无效分钟不写入 -> 仍为 0）
-                rows = (msk >= 0.5)
-                if rows.any():
-                    self._daily_X[di, m_idx[rows], :] = X_all[s:e, :][rows]
-                self._daily_mask[di, m_idx] = msk
-
-        # --- STEP3: daily context / daily seq ---
+        # ---- daily extras flags (store should already have them if enabled) ----
         self._use_daily_context = bool(getattr(self.config.trading, "use_daily_context", False))
         self._use_daily_seq_7 = bool(getattr(self.config.trading, "use_daily_seq_7", False))
 
         self._F_DAILY_CTX = 0
-        self._daily_ctx_raw = None
-        self._daily_ctx_obs = None
-        self._daily_seq7_raw = None
-        self._daily_seq7_obs = None
-
-        if self._use_daily_context or self._use_daily_seq_7:
-            ctx_raw, ctx_obs, seq_raw, seq_obs, _summary = build_daily_context_and_seq(
-                self.df_market,
-                day_key_fn=self._day_key,
-                days_order=self._days,
-                day_id_col="day_id",
-                mask_col="mask_t",
-            )
-            self._daily_ctx_raw = ctx_raw
-            self._daily_ctx_obs = ctx_obs
-            self._daily_seq7_raw = seq_raw
-            self._daily_seq7_obs = seq_obs
-            self._F_DAILY_CTX = ctx_raw.shape[1]
-
+        if self._use_daily_context:
+            if getattr(self.store, "daily_ctx_raw", None) is None:
+                raise RuntimeError("use_daily_context=True but store.daily_ctx_raw is None (store not built with daily ctx)")
+            self._F_DAILY_CTX = int(self.store.daily_ctx_raw.shape[1])
 
         obs_dict = {
             "market_seq": spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, self._F_MARKET), dtype=np.float32),
             "agent_state": spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_AGENT,), dtype=np.float32),
         }
-
         if self._use_daily_context:
             obs_dict["daily_context"] = spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_DAILY_CTX,), dtype=np.float32)
 
@@ -192,28 +118,38 @@ class CustomTradingEnv(gym.Env):
 
         self.observation_space = spaces.Dict(obs_dict)
 
-
         self.reset()
 
         if self.config.debug.debug_enabled:
-            i = self.current_step
-            print("df        :", self.df.index[i])
-            print("df_market :", self.df_market.index[i])             # 如果这里不是同一个时间，就是 iloc 错位
-            ts = self.df.index[i]
-            print("df_m.loc  :", None if ts not in self.df_market.index else ts)
+            i = int(self.current_step)
+
+            ts_store = self.store.index[i]
+            ts_raw = self.df.index[i] if i < len(self.df) else None
+            ts_mkt = self.df_market.index[i] if i < len(self.df_market) else None
+
+            print("store     :", ts_store)
+            print("df_raw    :", ts_raw)
+            print("df_market :", ts_mkt)
+            print("df_m.loc  :", ts_store if ts_store in self.df_market.index else None)
             print("len(df)=", len(self.df), "len(df_market)=", len(self.df_market))
 
-            # 在 debug_enabled 分支里（reset 后已有 self._day_i 和 _day_ranges）
-            s, e = self._day_ranges[self._day_i]
-            sub = self.df_market.iloc[s:e]
+            # 用 store.day_ranges + store.index 做“当日切片锚点”，避免 df_market iloc 错位导致画错日
+            s, e = self.store.day_ranges[self._day_i]
+            idx_day = self.store.index[s:e]
+
+            # reindex 保证顺序与 store 对齐；如有缺失会产生 NaN（debug 反而能暴露问题）
+            sub = self.df_market.reindex(idx_day)
+
+            # 文件名避免 ":"（某些系统/工具不喜欢）
+            ts0_str = str(idx_day[0]).replace(":", "-") if len(idx_day) > 0 else "NA"
 
             save_intraday_html(
                 df_market=sub,
-                title=f"{self.config.trading.currency_pair} {sub.index[0]}",
-                out_path=f"/tmp/{self.config.trading.currency_pair}_{sub.index[0]}.html",
+                title=f"{self.config.trading.currency_pair} {idx_day[0] if len(idx_day) > 0 else ts_store}",
+                out_path=f"/tmp/{self.config.trading.currency_pair}_{ts0_str}.html",
                 start_pos=0,
-                end_pos=self.DAY_LEN,          # 完整 345
-                focus_ts=sub.index[0],         # 或者 focus_ts=self.df_market.index[self.current_step]
+                end_pos=self.DAY_LEN,
+                focus_ts=(idx_day[0] if len(idx_day) > 0 else ts_store),
                 agent_raw=None,
                 agent_obs=None,
             )
@@ -284,15 +220,23 @@ class CustomTradingEnv(gym.Env):
         else:
             raise ValueError(f"Unknown bar_source={src}")
 
-        # Expose raw & engineered data to keep env logic unchanged (v1 not hiding)
+        # Keep DF only for debug / legacy bits (not as env truth)
         self.df = self.bar_source.df_raw
         self.df_market = self.bar_source.df_market
+
+        # NEW: env single source of truth
+        self.store = self.bar_source.store
+        if self.store is None:
+            raise RuntimeError("bar_source.store is None")
 
         # Compatibility: keep your existing sufficiency check, but check df_market (not raw df)
         self._check_data_sufficiency(self.df_market)
 
         # default to full dataset (reset() will pick start/end)
-        self.end_idx = len(self.df_market)
+        self.end_idx = int(self.store.n_rows)
+
+
+
 
 
 
@@ -341,7 +285,6 @@ class CustomTradingEnv(gym.Env):
         if seed is not None:
             self.np_random = np.random.default_rng(seed=seed)
 
-
         self.position_manager = PositionManager()
         self.broker_accounts = BrokerAccounts()
         self.trade_record_manager = TradeRecordManager()
@@ -380,9 +323,7 @@ class CustomTradingEnv(gym.Env):
         self.last_close_position = None
         self.action = None
 
-        reward_class = reward_classes.get(
-            self.config.training.reward_function, EquityDeltaReward
-        )
+        reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
         self.reward_function = reward_class(self)
 
         # -------------------------------
@@ -394,7 +335,7 @@ class CustomTradingEnv(gym.Env):
         candidate_rows = self._candidate_start_rows_by_clock(start_policy)
 
         # 约束 episode_length（需要给定窗口足够）
-        df_len = len(self.df_market)
+        df_len = int(self.store.n_rows)
         episode_len = self.config.training.episode_length
         if episode_len is not None:
             max_start = df_len - int(episode_len)
@@ -402,8 +343,8 @@ class CustomTradingEnv(gym.Env):
 
         # 若锚点集合为空，退回到原有的“任意有效行”
         if candidate_rows.size == 0:
-            mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
-            candidate_rows = np.flatnonzero(mask_np >= 0.5)
+            # fallback: any valid row
+            candidate_rows = np.flatnonzero(self.store.row_mask >= 0.5)
             if episode_len is not None:
                 max_start = df_len - int(episode_len)
                 candidate_rows = candidate_rows[candidate_rows <= max_start]
@@ -416,28 +357,15 @@ class CustomTradingEnv(gym.Env):
         else:
             start_row = int(candidate_rows[0])
 
-
         # --- Align all counters/indexes to this chosen row ---
         self.current_step = start_row
-        ts0 = self.df_market.index[self.current_step]
+        ts0 = self.store.index[self.current_step]
 
-        # Resolve the episode's day index using normalized day_id
-        try:
-            day_id_raw = self.df_market.loc[ts0, "day_id"]
-            self._day_i = int(self._sid_to_dayi[self._day_key(day_id_raw)])
-        except Exception:
-            # Fallback: find the day range that contains current_step
-            self._day_i = 0
-            for i, (s, e) in enumerate(self._day_ranges):
-                if s <= self.current_step < e:
-                    self._day_i = i
-                    break
+        # NEW: day index directly from store
+        self._day_i = int(self.store.row_day_i[self.current_step])
 
-        # Set the current visible minute using minute_index_t (not +1 arithmetic)
-        try:
-            self._start_minute = int(self.df_market.loc[ts0, "minute_index_t"])
-        except KeyError:
-            self._start_minute = 0
+        # NEW: minute directly from store
+        self._start_minute = int(self.store.row_minute[self.current_step])
         self.current_minute = self._start_minute
 
         # Bound the episode if episode_length is provided
@@ -449,12 +377,12 @@ class CustomTradingEnv(gym.Env):
 
         intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
 
+        # futures intraday: cut to end of this session/day (store gives half-open range)
         if self.config.trading.is_future and intraday_mode:
-            end_idx_15 = self._compute_end_idx_at_15(start_row, tz="Asia/Shanghai")
-            self.end_idx = min(self.end_idx, end_idx_15)
+            eod_end = int(self.store.day_ranges[self._day_i][1])
+            self.end_idx = min(self.end_idx, eod_end)
 
-
-        end_ts = self.df_market.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
+        end_ts = self.store.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
         self.logger.info(f"{ts0} -> {end_ts} (end_idx={self.end_idx})")
 
         # Per-episode counters
@@ -493,22 +421,16 @@ class CustomTradingEnv(gym.Env):
         self._entries_used_today = 0
         self._day_start_realized_cum = self.user_accounts.realized_pnl
 
-        # compute EOD absolute index for this day/session
-        day_start_row = self._day_ranges[self._day_i][0]
-        if self.config.trading.is_future:
-            self._eod_idx = self._compute_end_idx_at_15(day_start_row, tz="Asia/Shanghai")
-        else:
-            self._eod_idx = self._day_ranges[self._day_i][1]  # end of day slice
+        # NEW: compute EOD absolute index for this day/session from store
+        self._eod_idx = int(self.store.day_ranges[self._day_i][1])
 
-        self._last_valid_price = D(self.df_market.iloc[self.current_step]["C_t"])
+        # NEW: last valid price from store (not df_market)
+        self._last_valid_price = D(self.store.row_C[self.current_step])
         self._refresh_agent_state()
 
-
-        # First observation
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
-
 
 
 
@@ -535,12 +457,11 @@ class CustomTradingEnv(gym.Env):
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
         """
-        
+
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
-
 
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
@@ -556,18 +477,18 @@ class CustomTradingEnv(gym.Env):
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
-
         if self.config.debug.debug_enabled:
-            self.logger.info(f"{self.df_market.index[self.current_step]}, {action} -> {self.action}")
-
+            # NEW: use store index (env runtime does not rely on df_market)
+            self.logger.info(f"{self.store.index[self.current_step]}, {action} -> {self.action}")
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
-            mask_now = float(self.df_market.iloc[self.current_step]["mask_t"])
+            # NEW: read mask/price from store
+            mask_now = float(self.store.row_mask[self.current_step])
             market_open = (mask_now >= 0.5)
 
             if market_open:
-                action_price = D(self.df_market.iloc[self.current_step]["C_t"])
+                action_price = D(self.store.row_C[self.current_step])
                 self._last_valid_price = action_price
                 market_code = ForexCode.SUCCESS
             else:
@@ -578,7 +499,7 @@ class CustomTradingEnv(gym.Env):
         except Exception as e:
             self.logger.error(
                 f"Failed to read action price at step={self.current_step} "
-                f"(len={len(self.df_market)}): {e}"
+                f"(len={int(self.store.n_rows)}): {e}"
             )
             self.terminated = True
             self.truncated = False
@@ -628,17 +549,15 @@ class CustomTradingEnv(gym.Env):
         if force_flatten and intraday_mode:
             eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
 
-            # 当前 step 就是当日最后一根（因为 eod_idx 是“严格大于 15:01 的第一个 index”）
+            # 当前 step 就是当日最后一根（因为 eod_idx 是当日/session 的 half-open end）
             if int(self.current_step) >= (eod_idx - 1):
                 try:
                     in_market_now = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
                 except Exception:
                     in_market_now = False
-
                 if in_market_now:
                     # 用当前 action_price 平（close 函数内部会用 spread 算 bid/ask）
                     self._empty_position(price=action_price, spread=self.config.trading.spread, close_reason="EOD")
-
 
         # Behavior counters
         try:
@@ -656,7 +575,7 @@ class CustomTradingEnv(gym.Env):
         self.episode_step_count += 1
 
         # Bound check BEFORE sync/index access
-        if self.current_step >= len(self.df_market):
+        if self.current_step >= int(self.store.n_rows):
             # data exhausted => truncated
             self.terminated = False
             self.truncated = True
@@ -665,31 +584,28 @@ class CustomTradingEnv(gym.Env):
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
-
-        # Sync day/minute based on minute_index_t (no +1 drift)
+        # Sync day/minute from store
         self._sync_day_and_minute()
 
         # Mark-to-market price at NEXT step
-        mask_next = float(self.df_market.iloc[self.current_step]["mask_t"])
+        mask_next = float(self.store.row_mask[self.current_step])
         if mask_next < 0.5:
             self.current_price = self._last_valid_price
         else:
-            self.current_price = D(self.df_market.iloc[self.current_step]["C_t"])
+            self.current_price = D(self.store.row_C[self.current_step])
             self._last_valid_price = self.current_price
 
         # 先止损（可能会自动平仓，改变仓位/保证金/现金）
         self.stop_loss_fired += self._apply_stop_losses()
-
         self.take_profit_fired += self._apply_take_profits()
 
         # Update unrealized P&L
         self._update_unrealized_pnl()
 
-        # Update metrics (equity/drawdown etc.)
-        ts = self.df_market.index[self.current_step]
-        day_id = self.df_market.iloc[self.current_step]["day_id"]
+        # metrics update (use store index/day_id; env runtime does not rely on df_market)
+        ts = self.store.index[self.current_step]
+        day_id = int(self.store.row_day_id[self.current_step])
         self.metrics.update(ts, day_id=day_id)
-
 
         # Termination rules
         if self._should_terminated():
@@ -716,13 +632,9 @@ class CustomTradingEnv(gym.Env):
 
         return obs, reward, self.terminated, self.truncated, info
 
-
     def _sync_day_and_minute(self):
-        ts = self.df_market.index[self.current_step]
-        day_key = self._day_key(self.df_market.loc[ts, "day_id"])
-        new_day_i = int(self._sid_to_dayi[day_key])
+        new_day_i = int(self.store.row_day_i[self.current_step])
 
-        # day change hook
         if not hasattr(self, "_day_i"):
             self._day_i = new_day_i
         elif new_day_i != self._day_i:
@@ -730,15 +642,13 @@ class CustomTradingEnv(gym.Env):
             self._entries_used_today = 0
             self._day_start_realized_cum = self.user_accounts.realized_pnl
 
-            day_start_row = self._day_ranges[self._day_i][0]
-            if self.config.trading.is_future:
-                self._eod_idx = self._compute_end_idx_at_15(day_start_row, tz="Asia/Shanghai")
-            else:
-                self._eod_idx = self._day_ranges[self._day_i][1]
+            # NEW: day/session end from store
+            self._eod_idx = int(self.store.day_ranges[self._day_i][1])
         else:
             self._day_i = new_day_i
 
-        self.current_minute = int(self.df_market.loc[ts, "minute_index_t"])
+        self.current_minute = int(self.store.row_minute[self.current_step])
+
 
 
 
@@ -775,13 +685,14 @@ class CustomTradingEnv(gym.Env):
 
         intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
         if intraday_mode:
-            # _eod_idx 也是 half-open（你当前语义：严格大于 15:01 的第一个 index）
+            # _eod_idx 也是 half-open（当日/session 的 end）
             eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
             last_idx = min(last_idx, eod_idx - 1)
 
         # 保险：不越界
-        last_idx = max(0, min(last_idx, len(self.df_market) - 1))
+        last_idx = max(0, min(last_idx, int(self.store.n_rows) - 1))
         return last_idx
+
 
 
     def _should_terminated(self):
@@ -999,62 +910,10 @@ class CustomTradingEnv(gym.Env):
     # --- NEW: 根据时钟锚点生成候选起点行 ---
     def _candidate_start_rows_by_clock(self, start_clock: str) -> np.ndarray:
         """
-        返回满足 start_clock 条件（'09:00'/'21:00'/'random_9_or_21'）且 mask_t==1 的行号数组。
-        若 start_clock == 'any' 则返回所有 mask_t==1 的行。
+        返回满足 start_clock 条件且 mask_t==1 的行号数组。
+        现在统一由 store 维护（env 不再关心 index 本地化 / 交集逻辑）。
         """
-        mask_np = self.df_market["mask_t"].to_numpy(dtype=np.float32, copy=False)
-        # 先挑 mask==1
-        valid_mask_rows = np.flatnonzero(mask_np >= 0.5)
-
-        if start_clock == "any":
-            return valid_mask_rows
-
-        # 将 df.index 本地化到期货默认时区（或按需替换为数据所在时区）
-        tz = DEFAULT_TZ  # "Asia/Shanghai"
-        idx_local = self._localize_index(self.df_market.index, tz)
-
-        hours = idx_local.hour
-        minutes = idx_local.minute
-
-        def rows_at(hh, mm):
-            sel = np.flatnonzero((hours == hh) & (minutes == mm))
-            # 同时要求 mask==1
-            return np.intersect1d(sel, valid_mask_rows, assume_unique=False)
-
-        if start_clock == "09:00":
-            return rows_at(9, 1)
-
-        if start_clock == "21:00":
-            return rows_at(21, 1)
-
-        if start_clock == "random_9_or_21":
-            r9 = rows_at(9, 1)
-            r21 = rows_at(21, 1)
-            # 两个集合并，随机时刻在 reset() 里用 choice 再随机
-            return np.concatenate([r9, r21]) if (r9.size + r21.size) > 0 else np.array([], dtype=int)
-
-        # 兜底
-        return valid_mask_rows
-
-    # --- NEW: 计算“当日 15:00（或夜盘起 -> 次日 15:00）”对应的 self.end_idx ---
-    def _compute_end_idx_at_15(self, start_row: int, tz: str = "Asia/Shanghai") -> int:
-        idx_local = self._localize_index(self.df_market.index, tz)
-
-        df_len = len(self.df_market)
-
-        t0 = idx_local[start_row]
-        base_day = t0.normalize()
-        end_day = base_day + pd.Timedelta(days=1) if t0.hour >= 18 else base_day
-
-        # 你的数据锚点是 xx:01，这里用 15:01 更匹配
-        end_ts = pd.Timestamp(end_day.date(), tz=tz) + pd.Timedelta(hours=15, minutes=1)
-
-        arr_ns = idx_local.asi8
-        # half-open: first index STRICTLY greater than end_ts
-        end_idx = int(np.searchsorted(arr_ns, end_ts.value, side="right"))
-
-        end_idx = min(df_len, max(end_idx, start_row + 1))
-        return end_idx
+        return self.store.candidate_start_rows_by_clock(start_clock)
 
 
 
@@ -1129,7 +988,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.df_market.iloc[self.current_step].name
+        ts = self.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_OPEN",
@@ -1188,7 +1047,7 @@ class CustomTradingEnv(gym.Env):
 
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        ts = self.df_market.iloc[self.current_step].name
+        ts = self.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_CLOSE",
@@ -1282,7 +1141,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.df_market.iloc[self.current_step].name
+        ts = self.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_OPEN",
@@ -1341,7 +1200,7 @@ class CustomTradingEnv(gym.Env):
 
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        ts = self.df_market.iloc[self.current_step].name
+        ts = self.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_CLOSE",
@@ -1393,7 +1252,7 @@ class CustomTradingEnv(gym.Env):
     def _apply_take_profits(self) -> int:
         if not bool(getattr(self.config.trading, "take_profit_enabled", False)):
             return 0
-        if float(self.df_market.iloc[self.current_step]["mask_t"]) < 0.5:
+        if float(self.store.row_mask[self.current_step]) < 0.5:
             return 0
 
         low, high = self._get_bar_low_high()
@@ -1429,7 +1288,7 @@ class CustomTradingEnv(gym.Env):
     def _apply_stop_losses(self) -> int:
         if self.config.trading.stop_loss_enabled == False:
             return 0
-        if float(self.df_market.iloc[self.current_step]["mask_t"]) < 0.5:
+        if float(self.store.row_mask[self.current_step]) < 0.5:
             return 0
 
         low, high = self._get_bar_low_high()
@@ -1460,7 +1319,6 @@ class CustomTradingEnv(gym.Env):
             fired += 1
 
         return fired
-
 
 
     def _position_up(self, price: Decimal, spread: Decimal):
@@ -1498,43 +1356,51 @@ class CustomTradingEnv(gym.Env):
         return ForexCode.SUCCESS
 
 
-
     def _get_obs(self):
         """
         market_seq: (window_size, F_MARKET_SELECTED)
         - 取全局 [t0-window_size+1, t0] 的数据（按 step 回看，跨天也允许）
-        - 如果到达数据开头不够 window_size，才左侧补 0
+        - 只有到达数据开头不够 window_size，才左侧补 0
         """
         end_i = int(self.current_step)
         start_i = end_i - self.window_size + 1
 
+        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
+        use_obs = (mode == "obs")
+
+        # NEW: 从 store 取底层数组（行序与 df_market 完全对齐）
+        X_all = self.store.X_market_obs if use_obs else self.store.X_market_raw  # shape=(n_rows, F)
+
         if start_i >= 0:
-            window = self.df_market.iloc[start_i:end_i + 1][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
-            market_seq = window  # (window_size, F)
-            L = self.window_size
+            window = X_all[start_i:end_i + 1, :]  # view
+            market_seq = window.astype(np.float32, copy=False)
             pad_len = 0
+            L = self.window_size
         else:
-            # 数据集开头不够：左侧补0
             pad_len = -start_i
-            window = self.df_market.iloc[0:end_i + 1][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
-            L = window.shape[0]
-            pad = np.zeros((pad_len, self._F_MARKET), dtype=np.float32)
-            market_seq = np.concatenate([pad, window], axis=0)  # (window_size, F)
+            window = X_all[0:end_i + 1, :]
+            L = int(window.shape[0])
+            pad = np.zeros((pad_len, X_all.shape[1]), dtype=np.float32)
+            market_seq = np.concatenate([pad, window.astype(np.float32, copy=False)], axis=0)
 
         agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
 
         if self.config.debug.debug_enabled:
-            # 1) 末行必须对齐当前 df_market 行（保证 agent 看到的最后一根就是 t0）
-            row_df = self.df_market.iloc[end_i][self._OBS_FEATURES_MARKET].to_numpy(np.float32, copy=False)
-            if not np.allclose(market_seq[-1], row_df, atol=1e-6, rtol=0):
-                raise RuntimeError(f"market_seq last row mismatch at step={end_i} ts={self.df_market.index[end_i]}")
+            ts = self.store.index[end_i]
+
+            # 1) 最后一行必须对齐当前 step 的底层行
+            row_x = X_all[end_i, :].astype(np.float32, copy=False)
+            if not np.allclose(market_seq[-1], row_x, atol=1e-6, rtol=0):
+                raise RuntimeError(f"market_seq last row mismatch at step={end_i} ts={ts}")
 
             # 2) HTML：画的必须和 agent 输入一致（包括 padding）
             dfw = self._obs_window_df(end_i=end_i, pad_len=pad_len, market_seq=market_seq)
+
+            ts_str = str(ts).replace(":", "-")
             save_intraday_html(
                 df_market=dfw,
-                title=f"{self.config.trading.currency_pair} obs {self.df_market.index[end_i]}",
-                out_path=f"/tmp/obs_{self.df_market.index[end_i]}.html",
+                title=f"{self.config.trading.currency_pair} obs {ts}",
+                out_path=f"/tmp/obs_{ts_str}.html",
                 start_pos=0,
                 end_pos=len(dfw),
                 focus_pos=len(dfw) - 1,
@@ -1543,35 +1409,32 @@ class CustomTradingEnv(gym.Env):
             )
 
 
-
         out = {"market_seq": market_seq, "agent_state": agent_state}
 
-        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
-        use_obs = (mode == "obs")
-
+        # daily_context / daily_seq_7：不再由 env 自己维护，改为 store 提供（语义不变）
         if self._use_daily_context:
-            out["daily_context"] = (self._daily_ctx_obs[self._day_i] if use_obs else self._daily_ctx_raw[self._day_i]).astype(np.float32, copy=False)
-
+            out["daily_context"] = (
+                self.store.daily_ctx_obs[self._day_i] if use_obs else self.store.daily_ctx_raw[self._day_i]
+            ).astype(np.float32, copy=False)
 
         if self._use_daily_seq_7:
-            out["daily_seq_7"] = (self._daily_seq7_obs[self._day_i] if use_obs else self._daily_seq7_raw[self._day_i]).astype(np.float32, copy=False)
+            out["daily_seq_7"] = (
+                self.store.daily_seq7_obs[self._day_i] if use_obs else self.store.daily_seq7_raw[self._day_i]
+            ).astype(np.float32, copy=False)
 
-
-        # Debug-only: assert all outputs are finite (NaN/Inf will break Dreamer-style training fast)
+        # Harden against NaN/Inf (不改变语义，只做数值安全)
         if self.config.debug.debug_enabled:
             for k, v in out.items():
                 if isinstance(v, np.ndarray):
                     ok = np.isfinite(v)
                     if not np.all(ok):
                         bad = np.where(~ok)
-                        # show up to first 5 bad indices for quick定位
                         bad_idx = list(zip(*(b[:5] for b in bad)))
                         raise RuntimeError(
                             f"Non-finite values in obs[{k}] at step={self.current_step} "
                             f"ts={self.df_market.index[self.current_step]} bad_idx={bad_idx}"
                         )
         else:
-            # --- NEW: harden against NaN/Inf (Dreamer hates them) ---
             out["market_seq"] = np.nan_to_num(out["market_seq"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
             out["agent_state"] = np.nan_to_num(out["agent_state"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
             if "daily_context" in out:
@@ -1586,31 +1449,38 @@ class CustomTradingEnv(gym.Env):
         """
         构造一个用于 debug 绘图的 dfw：
         - 行数恒等于 window_size
-        - 最后 L 行对应 df_market 的真实时间戳
+        - 最后 L 行对应 store.index 的真实时间戳（避免 df_market iloc 错位）
         - 前 pad_len 行为 padding（obs_mask_t=0），但列值与 agent 输入一致（通常是0）
         """
         cols = list(dict.fromkeys(list(FEATURES_MARKET) + list(FEATURES_MARKET_OBS)))
-        F = len(cols)
 
         # 真实段长度
-        L = self.window_size - pad_len
+        L = int(self.window_size - int(pad_len))
 
-        # 真实时间索引（最后 L 行）
-        idx_real = self.df_market.iloc[end_i - L + 1:end_i + 1].index if L > 0 else pd.DatetimeIndex([])
+        # 真实时间索引：从 store 取，作为唯一锚点
+        if L > 0:
+            idx_real = self.store.index[end_i - L + 1:end_i + 1]
+        else:
+            idx_real = pd.DatetimeIndex([])
 
         # padding 时间索引：用 1min 倒推合成（仅用于可视化对齐）
         if pad_len > 0:
-            ts0 = idx_real[0] if L > 0 else self.df_market.index[end_i]
-            idx_pad = pd.date_range(end=ts0 - pd.Timedelta(minutes=1), periods=pad_len, freq="1min", tz=getattr(ts0, "tz", None))
+            ts0 = idx_real[0] if L > 0 else self.store.index[end_i]
+            idx_pad = pd.date_range(
+                end=ts0 - pd.Timedelta(minutes=1),
+                periods=int(pad_len),
+                freq="1min",
+                tz=getattr(ts0, "tz", None),
+            )
             idx = idx_pad.append(idx_real)
         else:
             idx = idx_real
 
         dfw = pd.DataFrame(np.nan, index=idx, columns=cols, dtype=np.float32)
 
-        # raw（可选）：只填真实段，pad 段留空
+        # raw：只填真实段，且按 idx_real 用 reindex 对齐（避免 iloc 错位）
         if L > 0:
-            sub = self.df_market.iloc[end_i - L + 1:end_i + 1]
+            sub = self.df_market.reindex(idx_real)
             for c in FEATURES_MARKET:
                 if c in sub.columns and c in dfw.columns:
                     dfw.iloc[-L:, dfw.columns.get_loc(c)] = sub[c].to_numpy(dtype=np.float32, copy=False)
@@ -1619,7 +1489,7 @@ class CustomTradingEnv(gym.Env):
         obs_cols = list(self._OBS_FEATURES_MARKET)
         dfw.iloc[:, dfw.columns.get_indexer(obs_cols)] = market_seq.astype(np.float32, copy=False)
 
-        # mask：pad 段为 0，真实段为 1（让图上“<60 时只画 <60 根”也成立）
+        # mask：pad 段为 0，真实段为 1
         dfw["obs_mask_t"] = 0.0
         if L > 0:
             dfw.iloc[-L:, dfw.columns.get_loc("obs_mask_t")] = 1.0
@@ -1632,56 +1502,6 @@ class CustomTradingEnv(gym.Env):
         return dfw
 
 
-
-    def _obs_market_df(self, market_seq: np.ndarray) -> pd.DataFrame:
-        from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
-
-        s, e = self._day_ranges[self._day_i]
-        sub = self.df_market.iloc[s:e]
-        idx = sub.index
-
-        if len(idx) != self.DAY_LEN:
-            raise RuntimeError(f"day slice length != DAY_LEN: {len(idx)} vs {self.DAY_LEN}")
-
-        # 画布：先把 raw 全量铺进去（用于对照），obs 用 NaN 先占位（未来分钟保持空白）
-        cols = list(dict.fromkeys(list(FEATURES_MARKET) + list(FEATURES_MARKET_OBS)))
-        dfp = pd.DataFrame(np.nan, index=idx, columns=cols, dtype=np.float32)
-
-        # raw：直接从 df_market 取（整天 345）
-        for c in FEATURES_MARKET:
-            if c in sub.columns:
-                dfp[c] = sub[c].to_numpy(dtype=np.float32, copy=False)
-
-        # obs：把 agent “可见窗口”映射回当天对应分钟
-        end = int(min(self.current_minute, self.DAY_LEN - 1))
-        start = max(0, end - self.window_size + 1)
-        L = end - start + 1  # 真实历史长度（<= window_size）
-
-        # market_seq 的列顺序严格对应 self._OBS_FEATURES_MARKET
-        obs_cols = list(self._OBS_FEATURES_MARKET)
-
-        # 只把真实历史段写入；market_seq 右侧 pad 不写入未来分钟
-        dfp.iloc[start:end + 1, dfp.columns.get_indexer(obs_cols)] = market_seq[-L:, :].astype(np.float32, copy=False)
-
-        # 辅助列：两套都补（方便 plot_intraday 正常工作）
-        dfp["minute_index_t"] = np.arange(self.DAY_LEN, dtype=np.int32)
-        dfp["mask_t"] = self._daily_mask[self._day_i].astype(np.float32)
-
-        # 如果 sub 里已有 obs_minute_index_t / obs_mask_t，顺便带上（表格/调试更完整）
-        if "obs_minute_index_t" in sub.columns:
-            dfp["obs_minute_index_t"] = sub["obs_minute_index_t"].to_numpy(dtype=np.float32, copy=False)
-        else:
-            dfp["obs_minute_index_t"] = dfp["minute_index_t"].astype(np.float32)
-
-        if "obs_mask_t" in sub.columns:
-            dfp["obs_mask_t"] = sub["obs_mask_t"].to_numpy(dtype=np.float32, copy=False)
-        else:
-            # obs_mask_t 的语义：agent 可见历史段为 1，未来/空白为 0
-            obs_mask = np.zeros((self.DAY_LEN,), dtype=np.float32)
-            obs_mask[start:end + 1] = 1.0
-            dfp["obs_mask_t"] = obs_mask
-
-        return dfp
 
     def _compute_take_profit_price(
         self,
@@ -1722,20 +1542,11 @@ class CustomTradingEnv(gym.Env):
 
 
     def _get_bar_low_high(self):
-        row = self.df_market.iloc[self.current_step]
-        # 兼容列名（看你 build_market_features 输出）
-        if "L_t" in row and "H_t" in row:
-            low = D(row["L_t"])
-            high = D(row["H_t"])
-        elif "Low" in row and "High" in row:
-            low = D(row["Low"])
-            high = D(row["High"])
-        else:
-            # 没有高低价就没法做“触发<=low”的止损
-            self.logger.warning("StopLoss: df_market missing low/high columns (L_t/H_t or Low/High).")
-            low = None
-            high = None
+        # store 已经保证缺失时用 0.0（或你 build_market_features 里保证列存在）
+        low = D(self.store.row_L[self.current_step])
+        high = D(self.store.row_H[self.current_step])
         return low, high
+
 
 
     def _compute_stop_loss_price(self, entry_price: Decimal, side: str) -> Decimal | None:
