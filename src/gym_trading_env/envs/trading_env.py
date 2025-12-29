@@ -111,8 +111,8 @@ class CustomTradingEnv(gym.Env):
         self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
 
         # ---- sanity: store day_len should match env DAY_LEN policy ----
-        if int(getattr(self.store, "day_len", self.DAY_LEN)) != int(self.DAY_LEN):
-            self.logger.warning(f"store.day_len={self.store.day_len} != env.DAY_LEN={self.DAY_LEN} (check store build policy)")
+        if int(getattr(self.bar_source.store, "day_len", self.DAY_LEN)) != int(self.DAY_LEN):
+            self.logger.warning(f"store.day_len={self.bar_source.store.day_len} != env.DAY_LEN={self.DAY_LEN} (check store build policy)")
 
         # ---- daily extras flags (store should already have them if enabled) ----
         self._use_daily_context = bool(getattr(self.config.trading, "use_daily_context", False))
@@ -120,9 +120,9 @@ class CustomTradingEnv(gym.Env):
 
         self._F_DAILY_CTX = 0
         if self._use_daily_context:
-            if getattr(self.store, "daily_ctx_raw", None) is None:
+            if getattr(self.bar_source.store, "daily_ctx_raw", None) is None:
                 raise RuntimeError("use_daily_context=True but store.daily_ctx_raw is None (store not built with daily ctx)")
-            self._F_DAILY_CTX = int(self.store.daily_ctx_raw.shape[1])
+            self._F_DAILY_CTX = int(self.bar_source.store.daily_ctx_raw.shape[1])
 
         obs_dict = {
             "market_seq": spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, self._F_MARKET), dtype=np.float32),
@@ -141,7 +141,7 @@ class CustomTradingEnv(gym.Env):
         if self.config.debug.debug_enabled:
             i = int(self.current_step)
 
-            ts_store = self.store.index[i]
+            ts_store = self.bar_source.store.index[i]
             ts_raw = self.bar_source.df_raw.index[i] if i < len(self.bar_source.df_raw) else None
             ts_mkt = self.bar_source.df_market.index[i] if i < len(self.bar_source.df_market) else None
 
@@ -152,8 +152,8 @@ class CustomTradingEnv(gym.Env):
             print("len(df)=", len(self.bar_source.df_raw), "len(df_market)=", len(self.bar_source.df_market))
 
             # 用 store.day_ranges + store.index 做“当日切片锚点”，避免 df_market iloc 错位导致画错日
-            s, e = self.store.day_ranges[self._day_i]
-            idx_day = self.store.index[s:e]
+            s, e = self.bar_source.store.day_ranges[self._day_i]
+            idx_day = self.bar_source.store.index[s:e]
 
             dfm = self.bar_source.df_market
             sub = dfm.iloc[s:e]
@@ -240,16 +240,11 @@ class CustomTradingEnv(gym.Env):
             raise ValueError(f"Unknown bar_source={src}")
 
 
-        # NEW: env single source of truth
-        self.store = self.bar_source.store
-        if self.store is None:
-            raise RuntimeError("bar_source.store is None")
-
         # Compatibility: keep your existing sufficiency check, but check df_market (not raw df)
         self._check_data_sufficiency(self.bar_source.df_market)
 
         # default to full dataset (reset() will pick start/end)
-        self.end_idx = int(self.store.n_rows)
+        self.end_idx = int(self.bar_source.store.n_rows)
 
 
 
@@ -342,7 +337,7 @@ class CustomTradingEnv(gym.Env):
         reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
         self.reward_function = reward_class(self)
 
-        df_len = int(self.store.n_rows)
+        df_len = int(self.bar_source.store.n_rows)
         episode_len = self.config.training.episode_length
         intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
 
@@ -352,19 +347,19 @@ class CustomTradingEnv(gym.Env):
         if self._live_mode:
             # today trading_day from bar_source (resolved at build)
             td_int = yyyymmdd_int(self.bar_source._trading_date)
-            day_sel = np.flatnonzero(self.store.row_trading_day == td_int)
+            day_sel = np.flatnonzero(self.bar_source.store.row_trading_day == td_int)
 
             if day_sel.size == 0:
                 raise RuntimeError(f"No rows for trading_day={td_int} in store window")
 
             # only rows where data exists
-            valid_day = day_sel[self.store.row_mask[day_sel] >= 0.5]
+            valid_day = day_sel[self.bar_source.store.row_mask[day_sel] >= 0.5]
 
             # if no bar yet, wait until first bar arrives
             while valid_day.size == 0:
                 self.logger.info("[LIVE reset] no bar yet, waiting first kline...")
                 self.bar_source.wait_kline_block()
-                valid_day = day_sel[self.store.row_mask[day_sel] >= 0.5]
+                valid_day = day_sel[self.bar_source.store.row_mask[day_sel] >= 0.5]
 
             # start from latest available bar (common live behavior)
             start_row = int(valid_day.max())
@@ -379,7 +374,7 @@ class CustomTradingEnv(gym.Env):
                 candidate_rows = candidate_rows[candidate_rows <= max_start]
 
             if candidate_rows.size == 0:
-                candidate_rows = np.flatnonzero(self.store.row_mask >= 0.5)
+                candidate_rows = np.flatnonzero(self.bar_source.store.row_mask >= 0.5)
                 if episode_len is not None:
                     max_start = df_len - int(episode_len)
                     candidate_rows = candidate_rows[candidate_rows <= max_start]
@@ -393,10 +388,10 @@ class CustomTradingEnv(gym.Env):
 
         # --- Align all counters/indexes to chosen row ---
         self.current_step = int(start_row)
-        ts0 = self.store.index[self.current_step]
+        ts0 = self.bar_source.store.index[self.current_step]
 
-        self._day_i = int(self.store.row_day_i[self.current_step])
-        self._start_minute = int(self.store.row_minute[self.current_step])
+        self._day_i = int(self.bar_source.store.row_day_i[self.current_step])
+        self._start_minute = int(self.bar_source.store.row_minute[self.current_step])
         self.current_minute = self._start_minute
 
         # Bound the episode if episode_length is provided
@@ -408,10 +403,10 @@ class CustomTradingEnv(gym.Env):
 
         # futures intraday: cut to end of this session/day
         if self.config.trading.is_future and intraday_mode:
-            eod_end = int(self.store.day_ranges[self._day_i][1])
+            eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])
             self.end_idx = min(self.end_idx, eod_end)
 
-        end_ts = self.store.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
+        end_ts = self.bar_source.store.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
         self.logger.info(f"{ts0} -> {end_ts} (end_idx={self.end_idx})")
 
         # Per-episode counters
@@ -451,10 +446,10 @@ class CustomTradingEnv(gym.Env):
         self._day_start_realized_cum = self.user_accounts.realized_pnl
 
         # NEW: compute EOD absolute index for this day/session from store
-        self._eod_idx = int(self.store.day_ranges[self._day_i][1])
+        self._eod_idx = int(self.bar_source.store.day_ranges[self._day_i][1])
 
         # NEW: last valid price from store (not df_market)
-        self._last_valid_price = D(self.store.row_C[self.current_step])
+        self._last_valid_price = D(self.bar_source.store.row_C[self.current_step])
 
         self._refresh_agent_state()
 
@@ -487,7 +482,7 @@ class CustomTradingEnv(gym.Env):
             Tuple: (observation, reward, terminated, truncated, info)
         """
 
-        assert self.store is self.bar_source.store
+        assert self.bar_source.store is self.bar_source.store
 
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
@@ -511,16 +506,16 @@ class CustomTradingEnv(gym.Env):
 
         if self.config.debug.debug_enabled:
             # NEW: use store index (env runtime does not rely on df_market)
-            self.logger.info(f"{self.store.index[self.current_step]}, {action} -> {self.action}")
+            self.logger.info(f"{self.bar_source.store.index[self.current_step]}, {action} -> {self.action}")
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
             # NEW: read mask/price from store
-            mask_now = float(self.store.row_mask[self.current_step])
+            mask_now = float(self.bar_source.store.row_mask[self.current_step])
             market_open = (mask_now >= 0.5)
 
             if market_open:
-                action_price = D(self.store.row_C[self.current_step])
+                action_price = D(self.bar_source.store.row_C[self.current_step])
                 self._last_valid_price = action_price
                 market_code = ForexCode.SUCCESS
             else:
@@ -531,7 +526,7 @@ class CustomTradingEnv(gym.Env):
         except Exception as e:
             self.logger.error(
                 f"Failed to read action price at step={self.current_step} "
-                f"(len={int(self.store.n_rows)}): {e}"
+                f"(len={int(self.bar_source.store.n_rows)}): {e}"
             )
             self.terminated = True
             self.truncated = False
@@ -604,7 +599,7 @@ class CustomTradingEnv(gym.Env):
         # ---------------------------------------------------------
         if self._live_mode:
             self._rpc_send_after_execute(
-                ts=self.store.index[self.current_step],
+                ts=self.bar_source.store.index[self.current_step],
                 action=self.action,
                 result=self.action_result,
                 price=action_price,
@@ -630,11 +625,11 @@ class CustomTradingEnv(gym.Env):
         self._sync_day_and_minute()
 
         # Mark-to-market price at NEXT step
-        mask_next = float(self.store.row_mask[self.current_step])
+        mask_next = float(self.bar_source.store.row_mask[self.current_step])
         if mask_next < 0.5:
             self.current_price = self._last_valid_price
         else:
-            self.current_price = D(self.store.row_C[self.current_step])
+            self.current_price = D(self.bar_source.store.row_C[self.current_step])
             self._last_valid_price = self.current_price
 
         # 先止损（可能会自动平仓，改变仓位/保证金/现金）
@@ -645,8 +640,8 @@ class CustomTradingEnv(gym.Env):
         self._update_unrealized_pnl()
 
         # metrics update (use store index/day_id; env runtime does not rely on df_market)
-        ts = self.store.index[self.current_step]
-        day_id = int(self.store.row_day_id[self.current_step])
+        ts = self.bar_source.store.index[self.current_step]
+        day_id = int(self.bar_source.store.row_day_id[self.current_step])
         self.metrics.update(ts, day_id=day_id)
 
         # Termination rules
@@ -683,7 +678,7 @@ class CustomTradingEnv(gym.Env):
         next_i = int(self.current_step) + 1
 
         # bounds: window/episode
-        if next_i >= int(self.store.n_rows):
+        if next_i >= int(self.bar_source.store.n_rows):
             return None
         if next_i >= int(self.end_idx):
             return None
@@ -692,14 +687,14 @@ class CustomTradingEnv(gym.Env):
             return next_i
 
         #  mask_t is "data exists" by design (strict_reindex_futures_345 computes it before fillna)
-        if float(self.store.row_mask[next_i]) >= 0.5:
+        if float(self.bar_source.store.row_mask[next_i]) >= 0.5:
             return next_i
 
         #  otherwise block until the next bar arrives (mask flips to 1)
-        while float(self.store.row_mask[next_i]) < 0.5:
-            print("env.store id:", id(self.store))
+        while float(self.bar_source.store.row_mask[next_i]) < 0.5:
+            print("env.store id:", id(self.bar_source.store))
             print("bs.store  id:", id(self.bar_source.store))
-            print("same?", self.store is self.bar_source.store)
+            print("same?", self.bar_source.store is self.bar_source.store)
 
             self.bar_source.wait_kline_block()  # blocks until update/correction applied
             # store is updated in-place, so row_mask will eventually change
@@ -740,7 +735,7 @@ class CustomTradingEnv(gym.Env):
                 self.logger.error(f"[RPC] send failed signal_id={sig.signal_id} reason={result.get('msg')} {result.get('error')}")
 
     def _sync_day_and_minute(self):
-        new_day_i = int(self.store.row_day_i[self.current_step])
+        new_day_i = int(self.bar_source.store.row_day_i[self.current_step])
 
         if not hasattr(self, "_day_i"):
             self._day_i = new_day_i
@@ -750,11 +745,11 @@ class CustomTradingEnv(gym.Env):
             self._day_start_realized_cum = self.user_accounts.realized_pnl
 
             # NEW: day/session end from store
-            self._eod_idx = int(self.store.day_ranges[self._day_i][1])
+            self._eod_idx = int(self.bar_source.store.day_ranges[self._day_i][1])
         else:
             self._day_i = new_day_i
 
-        self.current_minute = int(self.store.row_minute[self.current_step])
+        self.current_minute = int(self.bar_source.store.row_minute[self.current_step])
 
 
 
@@ -797,7 +792,7 @@ class CustomTradingEnv(gym.Env):
             last_idx = min(last_idx, eod_idx - 1)
 
         # 保险：不越界
-        last_idx = max(0, min(last_idx, int(self.store.n_rows) - 1))
+        last_idx = max(0, min(last_idx, int(self.bar_source.store.n_rows) - 1))
         return last_idx
 
 
@@ -1014,7 +1009,7 @@ class CustomTradingEnv(gym.Env):
         返回满足 start_clock 条件且 mask_t==1 的行号数组。
         现在统一由 store 维护（env 不再关心 index 本地化 / 交集逻辑）。
         """
-        return self.store.candidate_start_rows_by_clock(start_clock)
+        return self.bar_source.store.candidate_start_rows_by_clock(start_clock)
 
 
 
@@ -1089,7 +1084,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.store.index[self.current_step]
+        ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_OPEN",
@@ -1148,7 +1143,7 @@ class CustomTradingEnv(gym.Env):
 
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        ts = self.store.index[self.current_step]
+        ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_CLOSE",
@@ -1242,7 +1237,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.store.index[self.current_step]
+        ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_OPEN",
@@ -1301,7 +1296,7 @@ class CustomTradingEnv(gym.Env):
 
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
 
-        ts = self.store.index[self.current_step]
+        ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_CLOSE",
@@ -1353,7 +1348,7 @@ class CustomTradingEnv(gym.Env):
     def _apply_take_profits(self) -> int:
         if not bool(getattr(self.config.trading, "take_profit_enabled", False)):
             return 0
-        if float(self.store.row_mask[self.current_step]) < 0.5:
+        if float(self.bar_source.store.row_mask[self.current_step]) < 0.5:
             return 0
 
         low, high = self._get_bar_low_high()
@@ -1389,7 +1384,7 @@ class CustomTradingEnv(gym.Env):
     def _apply_stop_losses(self) -> int:
         if self.config.trading.stop_loss_enabled == False:
             return 0
-        if float(self.store.row_mask[self.current_step]) < 0.5:
+        if float(self.bar_source.store.row_mask[self.current_step]) < 0.5:
             return 0
 
         low, high = self._get_bar_low_high()
@@ -1470,7 +1465,7 @@ class CustomTradingEnv(gym.Env):
         use_obs = (mode == "obs")
 
         # NEW: 从 store 取底层数组（行序与 df_market 完全对齐）
-        X_all = self.store.X_market_obs if use_obs else self.store.X_market_raw  # shape=(n_rows, F)
+        X_all = self.bar_source.store.X_market_obs if use_obs else self.bar_source.store.X_market_raw  # shape=(n_rows, F)
 
         if start_i >= 0:
             window = X_all[start_i:end_i + 1, :]  # view
@@ -1487,7 +1482,7 @@ class CustomTradingEnv(gym.Env):
         agent_state = getattr(self, "_agent_state_vec", np.zeros((self._F_AGENT,), dtype=np.float32))
 
         if self.config.debug.debug_enabled:
-            ts = self.store.index[end_i]
+            ts = self.bar_source.store.index[end_i]
 
             # 1) 最后一行必须对齐当前 step 的底层行
             row_x = X_all[end_i, :].astype(np.float32, copy=False)
@@ -1515,12 +1510,12 @@ class CustomTradingEnv(gym.Env):
         # daily_context / daily_seq_7：不再由 env 自己维护，改为 store 提供（语义不变）
         if self._use_daily_context:
             out["daily_context"] = (
-                self.store.daily_ctx_obs[self._day_i] if use_obs else self.store.daily_ctx_raw[self._day_i]
+                self.bar_source.store.daily_ctx_obs[self._day_i] if use_obs else self.bar_source.store.daily_ctx_raw[self._day_i]
             ).astype(np.float32, copy=False)
 
         if self._use_daily_seq_7:
             out["daily_seq_7"] = (
-                self.store.daily_seq7_obs[self._day_i] if use_obs else self.store.daily_seq7_raw[self._day_i]
+                self.bar_source.store.daily_seq7_obs[self._day_i] if use_obs else self.bar_source.store.daily_seq7_raw[self._day_i]
             ).astype(np.float32, copy=False)
 
         # Harden against NaN/Inf (不改变语义，只做数值安全)
@@ -1560,13 +1555,13 @@ class CustomTradingEnv(gym.Env):
 
         # 真实时间索引：从 store 取，作为唯一锚点
         if L > 0:
-            idx_real = self.store.index[end_i - L + 1:end_i + 1]
+            idx_real = self.bar_source.store.index[end_i - L + 1:end_i + 1]
         else:
             idx_real = pd.DatetimeIndex([])
 
         # padding 时间索引：用 1min 倒推合成（仅用于可视化对齐）
         if pad_len > 0:
-            ts0 = idx_real[0] if L > 0 else self.store.index[end_i]
+            ts0 = idx_real[0] if L > 0 else self.bar_source.store.index[end_i]
             idx_pad = pd.date_range(
                 end=ts0 - pd.Timedelta(minutes=1),
                 periods=int(pad_len),
@@ -1648,8 +1643,8 @@ class CustomTradingEnv(gym.Env):
 
     def _get_bar_low_high(self):
         # store 已经保证缺失时用 0.0（或你 build_market_features 里保证列存在）
-        low = D(self.store.row_L[self.current_step])
-        high = D(self.store.row_H[self.current_step])
+        low = D(self.bar_source.store.row_L[self.current_step])
+        high = D(self.bar_source.store.row_H[self.current_step])
         return low, high
 
 

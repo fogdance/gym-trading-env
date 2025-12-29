@@ -536,17 +536,12 @@ class JuejinBarSource(BaseBarSource):
             da = np.abs(np.nan_to_num(a) - np.nan_to_num(b))
             return bool(np.any(da > eps))
 
-        def _overwrite_df_inplace(dst: pd.DataFrame, src: pd.DataFrame):
-            if (not dst.index.equals(src.index)) or (list(dst.columns) != list(src.columns)):
-                raise RuntimeError("df_market schema/index changed; cannot inplace overwrite")
-            # 覆写全部数据，不改变对象 id
-            dst.iloc[:, :] = src.to_numpy(copy=False)
 
         def _apply_update(incoming: pd.DataFrame, idx_hit: pd.DatetimeIndex) -> None:
-            # update df_raw (no index change)
-            self.df_raw.loc[idx_hit, cols_raw] = incoming.loc[idx_hit, cols_raw].to_numpy()
+            # 1) update df_raw values (index must stay stable)
+            self.df_raw.loc[idx_hit, cols_raw] = incoming.loc[idx_hit, cols_raw].to_numpy(copy=False)
 
-            # full recompute df_market (reliable)
+            # 2) recompute df_market from full df_raw (authoritative)
             new_df_market = build_market_features(
                 self.df_raw,
                 tz=DEFAULT_TZ,
@@ -554,24 +549,43 @@ class JuejinBarSource(BaseBarSource):
                 limit_up_pct=limit_up_pct,
                 limit_down_pct=limit_down_pct,
             )
+
+            # 3) contract: canonical index must remain stable
+            if self.store is None:
+                raise RuntimeError("store is None")
+
             if not new_df_market.index.equals(self.store.index):
                 raise RuntimeError(
-                    "df_market index changed; cannot in-place update store. "
+                    "df_market index changed; cannot rebuild store safely without resetting env pointers. "
                     "Ensure fixed window + strict_reindex_futures_345 is stable."
                 )
 
-            # impacted day blocks
-            pos = self.store.index.get_indexer(idx_hit)
-            pos = pos[pos >= 0]
-            if pos.size == 0:
-                raise RuntimeError("idx_hit exists but none found in store.index (index mismatch)")
+            # （可选但推荐）确保 df_raw 也严格对齐 canonical grid
+            if not self.df_raw.index.equals(new_df_market.index):
+                # self.df_raw = self.df_raw.reindex(new_df_market.index)
+                raise RuntimeError(
+                    "df_raw index changed;"
+                )
+                
+                
+            # 4) rebuild a NEW store (includes daily_ctx/seq7 if previously enabled)
+            prev_store = self.store
+            new_store = MarketStore.rebuild(
+                prev_store=prev_store,
+                df_raw=self.df_raw,
+                df_market=new_df_market,
+                is_future=True,
+                # build_daily=None -> follow prev_store (your rebuild() already does this)
+            )
 
-            day_is = np.unique(self.store.row_day_i[pos]).astype(int)
-            for di in day_is:
-                s, e = self.store.day_ranges[int(di)]
-                self.store.inplace_overwrite_day_from_df_market(int(di), new_df_market.iloc[s:e])
-
+            # 5) atomic swap references (no external holders now)
+            self.store = new_store
             self.df_market = new_df_market
+
+            # （可选）如果你还有依赖 row_trading_day 的派生量，重算一下更稳
+            # td = yyyymmdd_int(self._trading_date)
+            # pos_td = np.flatnonzero(self.store.row_trading_day == td)
+            # self._expected_eod_eob = _to_local_ts(self.store.index[int(pos_td.max())])
 
         import time as _time
 
