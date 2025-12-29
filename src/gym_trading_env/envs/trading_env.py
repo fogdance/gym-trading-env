@@ -597,7 +597,7 @@ class CustomTradingEnv(gym.Env):
         #   分界线：action 已经在 t 执行完了
         #    live：现在立刻 RPC -> 然后等下一根K
         # ---------------------------------------------------------
-        if self._live_mode:
+        if self._live_mode and self.action_result == ForexCode.SUCCESS:
             self._rpc_send_after_execute(
                 ts=self.bar_source.store.index[self.current_step],
                 action=self.action,
@@ -692,9 +692,6 @@ class CustomTradingEnv(gym.Env):
 
         #  otherwise block until the next bar arrives (mask flips to 1)
         while float(self.bar_source.store.row_mask[next_i]) < 0.5:
-            print("env.store id:", id(self.bar_source.store))
-            print("bs.store  id:", id(self.bar_source.store))
-            print("same?", self.bar_source.store is self.bar_source.store)
 
             self.bar_source.wait_kline_block()  # blocks until update/correction applied
             # store is updated in-place, so row_mask will eventually change
