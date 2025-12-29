@@ -571,7 +571,7 @@ class JuejinBarSource(BaseBarSource):
                 s, e = self.store.day_ranges[int(di)]
                 self.store.inplace_overwrite_day_from_df_market(int(di), new_df_market.iloc[s:e])
 
-            _overwrite_df_inplace(self.df_market, new_df_market) 
+            self.df_market = new_df_market
 
         import time as _time
 
