@@ -122,13 +122,22 @@ def strict_reindex_futures_345(
             "day_id": pd.Series([], dtype=np.int32),
         }
 
-    trading_days = _infer_trading_days(idx_local)
+    # 分流：DB 有 trading_day -> 直接用；CSV 没有 -> 走原推断
+    if "trading_day" in df.columns:
+        td = pd.to_numeric(df["trading_day"], errors="coerce").astype("Int64")
+        if td.isna().all():
+            raise ValueError("df_1m.trading_day exists but all NaN")
 
-    # 先算每条 bar 属于哪个 trading day（session）
-    td_list = [_trading_day_for_ts(ts, trading_days) for ts in idx_local]
-    trading_day_idx = pd.DatetimeIndex(td_list)
+        # session_id_series：每条原始 bar 的 session_id（YYYYMMDD 字符串）
+        session_id_series = td.astype(str)
+        session_id_series.index = df.index
+        session_id_series.name = "session_id"
+    else:
+        trading_days = _infer_trading_days(idx_local)
+        td_list = [_trading_day_for_ts(ts, trading_days) for ts in idx_local]
+        trading_day_idx = pd.DatetimeIndex(td_list)
+        session_id_series = pd.Series(trading_day_idx.strftime("%Y%m%d"), index=df.index, name="session_id")
 
-    session_id_series = pd.Series(trading_day_idx.strftime("%Y%m%d"), index=df.index, name="session_id")
 
     out_frames: List[pd.DataFrame] = []
     out_masks: List[pd.Series] = []

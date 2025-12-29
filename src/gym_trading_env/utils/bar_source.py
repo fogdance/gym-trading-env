@@ -191,6 +191,8 @@ class JuejinBarSource(BaseBarSource):
             df_raw["OpenInterest"] = pd.to_numeric(df_raw["OpenInterest"], errors="coerce").fillna(0.0).astype(float)
         else:
             df_raw["OpenInterest"] = 0.0
+            
+        df_raw["trading_day"] = df_market["trading_day"].astype(np.int32)
 
         # Keep
         self.df_raw = df_raw
@@ -315,6 +317,10 @@ class JuejinBarSource(BaseBarSource):
             df = df.dropna(subset=["eob"]).copy()
             df = df.sort_values("eob").set_index("eob")
 
+            # 现在 index 是 eob，先把 trading_day 变成和 index 对齐的 Series
+            td_series = pd.to_datetime(df["trading_date"]).dt.strftime("%Y%m%d").astype(np.int32)
+            td_series.index = df.index
+
             # --- rename to standard OHLCVI ---
             df.rename(
                 columns={
@@ -336,9 +342,13 @@ class JuejinBarSource(BaseBarSource):
                     f"All OHLC rows from {JUEJIN_FUT_BAR_TABLE} are NaN for symbol={symbol} between {t0} and {t1}"
                 )
             df = df[mask_valid].copy()
+            td_series = td_series.loc[df.index]
 
             # Enforce OHLCVI contract (float, missing VI -> 0)
             df = normalize_ohlcvi(df, date_col="Date")  # Date col ignored since index already set
+
+            df["trading_day"] = td_series.astype(np.int32)
+            
 
             return df
 
