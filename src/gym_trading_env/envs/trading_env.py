@@ -32,7 +32,7 @@ from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
 from gym_trading_env.utils.bar_source import CsvBarSource, JuejinBarSource
-from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ts_to_naive_str
+from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ts_to_naive_str, yyyymmdd_int
 from gym_trading_env.utils.plot_intraday import save_intraday_html
 from gym_trading_env.envs.account import Account
 from gym_trading_env.utils.daily_features import (
@@ -142,21 +142,21 @@ class CustomTradingEnv(gym.Env):
             i = int(self.current_step)
 
             ts_store = self.store.index[i]
-            ts_raw = self.df.index[i] if i < len(self.df) else None
-            ts_mkt = self.df_market.index[i] if i < len(self.df_market) else None
+            ts_raw = self.bar_source.df_raw.index[i] if i < len(self.bar_source.df_raw) else None
+            ts_mkt = self.bar_source.df_market.index[i] if i < len(self.bar_source.df_market) else None
 
             print("store     :", ts_store)
             print("df_raw    :", ts_raw)
             print("df_market :", ts_mkt)
-            print("df_m.loc  :", ts_store if ts_store in self.df_market.index else None)
-            print("len(df)=", len(self.df), "len(df_market)=", len(self.df_market))
+            print("df_m.loc  :", ts_store if ts_store in self.bar_source.df_market.index else None)
+            print("len(df)=", len(self.bar_source.df_raw), "len(df_market)=", len(self.bar_source.df_market))
 
             # 用 store.day_ranges + store.index 做“当日切片锚点”，避免 df_market iloc 错位导致画错日
             s, e = self.store.day_ranges[self._day_i]
             idx_day = self.store.index[s:e]
 
-            # reindex 保证顺序与 store 对齐；如有缺失会产生 NaN（debug 反而能暴露问题）
-            sub = self.df_market.reindex(idx_day)
+            dfm = self.bar_source.df_market
+            sub = dfm.iloc[s:e]
 
             # 文件名避免 ":"（某些系统/工具不喜欢）
             ts0_str = str(idx_day[0]).replace(":", "-") if len(idx_day) > 0 else "NA"
@@ -164,7 +164,7 @@ class CustomTradingEnv(gym.Env):
             save_intraday_html(
                 df_market=sub,
                 title=f"{self.config.trading.currency_pair} {idx_day[0] if len(idx_day) > 0 else ts_store}",
-                out_path=f"/tmp/{self.config.trading.currency_pair}_{ts0_str}.html",
+                out_path=f"/tmp/{self.config.trading.currency_pair}/{self.config.trading.currency_pair}_{ts0_str}.html",
                 start_pos=0,
                 end_pos=self.DAY_LEN,
                 focus_ts=(idx_day[0] if len(idx_day) > 0 else ts_store),
@@ -239,9 +239,6 @@ class CustomTradingEnv(gym.Env):
         else:
             raise ValueError(f"Unknown bar_source={src}")
 
-        # Keep DF only for debug / legacy bits (not as env truth)
-        self.df = self.bar_source.df_raw
-        self.df_market = self.bar_source.df_market
 
         # NEW: env single source of truth
         self.store = self.bar_source.store
@@ -249,7 +246,7 @@ class CustomTradingEnv(gym.Env):
             raise RuntimeError("bar_source.store is None")
 
         # Compatibility: keep your existing sufficiency check, but check df_market (not raw df)
-        self._check_data_sufficiency(self.df_market)
+        self._check_data_sufficiency(self.bar_source.df_market)
 
         # default to full dataset (reset() will pick start/end)
         self.end_idx = int(self.store.n_rows)
@@ -295,9 +292,11 @@ class CustomTradingEnv(gym.Env):
     def reset(self, seed=None, options=None):
         """
         Resets the environment to an initial state and returns an initial observation.
-        Picks a random valid start row if training.randomize_start is True.
-        At reset, the visible market window shows all minutes from the session open
-        up to the chosen start minute (inclusive).
+
+        Live mode:
+        - start_row MUST satisfy row_mask==1 (data exists).
+        - if no bar yet for today's trading_day, block until first bar arrives.
+        - default start_row = latest available bar for the trading_day.
         """
         self.logger.info("REST env")
         super().reset(seed=seed)
@@ -308,7 +307,6 @@ class CustomTradingEnv(gym.Env):
         self.broker_accounts = BrokerAccounts()
         self.trade_record_manager = TradeRecordManager()
 
-        # --- Ledger (double-entry) ---
         self.ledger = Ledger()
 
         # 1) 创建“真钱账户”（唯一一份）
@@ -331,7 +329,6 @@ class CustomTradingEnv(gym.Env):
         )
 
         self._ledger_total0 = self.ledger.total_balance()
-
         self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
 
         # --- Housekeeping ---
@@ -345,45 +342,60 @@ class CustomTradingEnv(gym.Env):
         reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
         self.reward_function = reward_class(self)
 
-        # -------------------------------
-        # Choose a valid start row by clock anchor
-        # -------------------------------
-        start_policy = getattr(self.config.training, "start_clock", "future_night")
-
-        # 先根据时钟锚点生成候选行
-        candidate_rows = self._candidate_start_rows_by_clock(start_policy)
-
-        # 约束 episode_length（需要给定窗口足够）
         df_len = int(self.store.n_rows)
         episode_len = self.config.training.episode_length
-        if episode_len is not None:
-            max_start = df_len - int(episode_len)
-            candidate_rows = candidate_rows[candidate_rows <= max_start]
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
 
-        # 若锚点集合为空，退回到原有的“任意有效行”
-        if candidate_rows.size == 0:
-            # fallback: any valid row
-            candidate_rows = np.flatnonzero(self.store.row_mask >= 0.5)
+        # -------------------------------
+        # Choose start_row
+        # -------------------------------
+        if self._live_mode:
+            # today trading_day from bar_source (resolved at build)
+            td_int = yyyymmdd_int(self.bar_source._trading_date)
+            day_sel = np.flatnonzero(self.store.row_trading_day == td_int)
+
+            if day_sel.size == 0:
+                raise RuntimeError(f"No rows for trading_day={td_int} in store window")
+
+            # only rows where data exists
+            valid_day = day_sel[self.store.row_mask[day_sel] >= 0.5]
+
+            # if no bar yet, wait until first bar arrives
+            while valid_day.size == 0:
+                self.logger.info("[LIVE reset] no bar yet, waiting first kline...")
+                self.bar_source.wait_kline_block()
+                valid_day = day_sel[self.store.row_mask[day_sel] >= 0.5]
+
+            # start from latest available bar (common live behavior)
+            start_row = int(valid_day.max())
+
+        else:
+            # backtest/train: your original anchor policy
+            start_policy = getattr(self.config.training, "start_clock", "future_night")
+            candidate_rows = self._candidate_start_rows_by_clock(start_policy)
+
             if episode_len is not None:
                 max_start = df_len - int(episode_len)
                 candidate_rows = candidate_rows[candidate_rows <= max_start]
+
             if candidate_rows.size == 0:
-                raise RuntimeError("No valid start rows found (after applying start_clock and episode_length).")
+                candidate_rows = np.flatnonzero(self.store.row_mask >= 0.5)
+                if episode_len is not None:
+                    max_start = df_len - int(episode_len)
+                    candidate_rows = candidate_rows[candidate_rows <= max_start]
+                if candidate_rows.size == 0:
+                    raise RuntimeError("No valid start rows found (after applying start_clock and episode_length).")
 
-        # 随机挑选：如策略为 random_9_or_21
-        if getattr(self.config.training, "randomize_start", True):
-            start_row = int(self.np_random.choice(candidate_rows))
-        else:
-            start_row = int(candidate_rows[0])
+            if getattr(self.config.training, "randomize_start", True):
+                start_row = int(self.np_random.choice(candidate_rows))
+            else:
+                start_row = int(candidate_rows[0])
 
-        # --- Align all counters/indexes to this chosen row ---
-        self.current_step = start_row
+        # --- Align all counters/indexes to chosen row ---
+        self.current_step = int(start_row)
         ts0 = self.store.index[self.current_step]
 
-        # NEW: day index directly from store
         self._day_i = int(self.store.row_day_i[self.current_step])
-
-        # NEW: minute directly from store
         self._start_minute = int(self.store.row_minute[self.current_step])
         self.current_minute = self._start_minute
 
@@ -394,9 +406,7 @@ class CustomTradingEnv(gym.Env):
         else:
             self.end_idx = df_len
 
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
-
-        # futures intraday: cut to end of this session/day (store gives half-open range)
+        # futures intraday: cut to end of this session/day
         if self.config.trading.is_future and intraday_mode:
             eod_end = int(self.store.day_ranges[self._day_i][1])
             self.end_idx = min(self.end_idx, eod_end)
@@ -445,12 +455,12 @@ class CustomTradingEnv(gym.Env):
 
         # NEW: last valid price from store (not df_market)
         self._last_valid_price = D(self.store.row_C[self.current_step])
+
         self._refresh_agent_state()
 
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
-
 
 
     def _day_key(self, val):
@@ -476,7 +486,9 @@ class CustomTradingEnv(gym.Env):
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
         """
-                
+
+        assert self.store is self.bar_source.store
+
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
             info = self._get_info()
@@ -663,22 +675,37 @@ class CustomTradingEnv(gym.Env):
         return obs, reward, self.terminated, self.truncated, info
 
     def _advance_next_step(self, *, live: bool) -> int | None:
-        if live:
-            # 关键：只在“新K到来”时推进 step，修正不推进
-            while True:
-                prev_last = getattr(self.bar_source, "_last_eob", None)
-                ok = self.bar_source.wait_kline_block()   # True=更新/修正, False=收盘结束
-                if not ok:
-                    return None
+        """
+        Live mode (fixed store index):
+        - Only block when next bar's mask==0 (data not arrived yet).
+        - If next bar already exists (mask==1), do NOT block (catch-up).
+        """
+        next_i = int(self.current_step) + 1
 
-                new_last = getattr(self.bar_source, "_last_eob", None)
-                # 只有 last_eob 变大，才说明真的来了“下一根K”
-                if (prev_last is None) or (new_last is not None and new_last > prev_last):
-                    break
-                # 否则只是修正，继续等真正的新K
+        # bounds: window/episode
+        if next_i >= int(self.store.n_rows):
+            return None
+        if next_i >= int(self.end_idx):
+            return None
 
-        ni = int(self.current_step) + 1
-        return None if ni >= int(self.store.n_rows) else ni
+        if not live:
+            return next_i
+
+        #  mask_t is "data exists" by design (strict_reindex_futures_345 computes it before fillna)
+        if float(self.store.row_mask[next_i]) >= 0.5:
+            return next_i
+
+        #  otherwise block until the next bar arrives (mask flips to 1)
+        while float(self.store.row_mask[next_i]) < 0.5:
+            print("env.store id:", id(self.store))
+            print("bs.store  id:", id(self.bar_source.store))
+            print("same?", self.store is self.bar_source.store)
+
+            self.bar_source.wait_kline_block()  # blocks until update/correction applied
+            # store is updated in-place, so row_mask will eventually change
+
+        return next_i
+
 
     def _rpc_send_after_execute(self, ts, action, result, price):
         eob_naive_str = ts_to_naive_str(ts, tz=DEFAULT_TZ)
@@ -701,12 +728,16 @@ class CustomTradingEnv(gym.Env):
             },
         )
         
-        ok = self._order_client.send(sig)
-        self.logger.info(f"[RPC] send signal_id={sig.signal_id} action={sig.action_name} eob={sig.eob}")
-        if not ok:
-            self.logger.exception(
-                f"[RPC] send failed signal_id={sig.signal_id} action={sig.action_name} eob={sig.eob}"
-            )
+        result = self._order_client.send(sig)
+
+        if result.get("success"):
+            self.logger.info(f"[RPC] send success signal_id={sig.signal_id} action={sig.action_name} msg={result['msg']}")
+        else:
+            # 现在可以区分是网络错误还是被拒绝（如重复）
+            if result["msg"] in ("duplicate", "queue_full"):
+                self.logger.warning(f"[RPC] signal rejected: {result['msg']} signal_id={sig.signal_id}")
+            else:
+                self.logger.error(f"[RPC] send failed signal_id={sig.signal_id} reason={result.get('msg')} {result.get('error')}")
 
     def _sync_day_and_minute(self):
         new_day_i = int(self.store.row_day_i[self.current_step])
@@ -1470,7 +1501,7 @@ class CustomTradingEnv(gym.Env):
             save_intraday_html(
                 df_market=dfw,
                 title=f"{self.config.trading.currency_pair} obs {ts}",
-                out_path=f"/tmp/obs_{ts_str}.html",
+                out_path=f"/tmp/{self.config.trading.currency_pair}/{self.config.trading.currency_pair}_{ts_str}.html",
                 start_pos=0,
                 end_pos=len(dfw),
                 focus_pos=len(dfw) - 1,
@@ -1502,7 +1533,7 @@ class CustomTradingEnv(gym.Env):
                         bad_idx = list(zip(*(b[:5] for b in bad)))
                         raise RuntimeError(
                             f"Non-finite values in obs[{k}] at step={self.current_step} "
-                            f"ts={self.df_market.index[self.current_step]} bad_idx={bad_idx}"
+                            f"ts={self.bar_source.df_market.index[self.current_step]} bad_idx={bad_idx}"
                         )
         else:
             out["market_seq"] = np.nan_to_num(out["market_seq"], nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32, copy=False)
@@ -1550,10 +1581,14 @@ class CustomTradingEnv(gym.Env):
 
         # raw：只填真实段，且按 idx_real 用 reindex 对齐（避免 iloc 错位）
         if L > 0:
-            sub = self.df_market.reindex(idx_real)
+            start_i = end_i - L + 1
+            dfm = self.bar_source.df_market
+            sub = dfm.iloc[start_i:end_i+1]
+            assert sub.index.equals(idx_real)
             for c in FEATURES_MARKET:
                 if c in sub.columns and c in dfw.columns:
                     dfw.iloc[-L:, dfw.columns.get_loc(c)] = sub[c].to_numpy(dtype=np.float32, copy=False)
+
 
         # obs：严格等于 agent 输入（包含 pad）
         obs_cols = list(self._OBS_FEATURES_MARKET)

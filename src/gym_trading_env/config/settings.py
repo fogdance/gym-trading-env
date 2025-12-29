@@ -35,6 +35,6 @@ RPC_ORDER_CONFIG = RpcOrder(
     order_enabled=os.getenv("RPC_ORDER_ENABLED", "true").lower() == "true",
     order_endpoint=os.getenv("RPC_ORDER_ENDPOINT", "http://10.0.0.33:9001"),
     order_token=os.getenv("RPC_ORDER_TOKEN", "devtoken"),
-    order_timeout_sec=float(os.getenv("RPC_ORDER_TIMEOUT_SEC", "0.8")),
+    order_timeout_sec=float(os.getenv("RPC_ORDER_TIMEOUT_SEC", "10")),
     order_volume=int(os.getenv("RPC_ORDER_VOLUME", "1")),
 )

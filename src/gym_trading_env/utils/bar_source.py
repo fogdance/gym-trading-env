@@ -146,7 +146,6 @@ class JuejinBarSource(BaseBarSource):
           - 否则用当前本地日期（服务器时间）
       - 实盘时你可以在开盘前构造一次 env / BarSource，这个窗口固定，
         数据全部从 DB 读（HISTORY/EOD/LIVE 都写在一张表里），
-        后续如需增量刷新，可调用 refresh_from_db()（下面也给出实现）
     """
 
     kind: BarSourceKind = "juejin"
@@ -165,6 +164,7 @@ class JuejinBarSource(BaseBarSource):
             raise ValueError("JuejinBarSource does not accept df injection; use CsvBarSource or mock DB.")
         else:
             df_raw = self._load_from_db_initial_window()
+        last_real_eob = _to_local_ts(df_raw.index.max())
 
         # 2) build df_market (strict futures 345 + canonical index)
         limit_up_pct = getattr(self.config.trading, "limit_up_pct", None)
@@ -221,58 +221,25 @@ class JuejinBarSource(BaseBarSource):
         else:
             self._expected_eod_eob = self._t1 - timedelta(minutes=1)
 
-
-        # 5) init last_eob for incremental polling
-        valid = np.flatnonzero(self.store.row_mask >= 0.5)
-        if valid.size > 0:
-            # store.index is DatetimeIndex; DB uses naive DATETIME
-            self._last_eob = _to_local_ts(self.store.index[valid].max())
+        # init _last_eob = REAL DB last bar, aligned to canonical store.index
+        # do NOT use row_mask to init _last_eob; row_mask is "data exists" per-minute, not "latest DB waterline"
+        idx = self.store.index
+        # align/pad in case last_real_eob not exactly on the canonical grid
+        pos = idx.get_indexer([last_real_eob], method="pad")
+        if pos.size == 0 or int(pos[0]) < 0:
+            self._last_eob = _to_local_ts(idx.min())
         else:
-            self._last_eob = _to_local_ts(self.store.index.min())
+            self._last_eob = _to_local_ts(idx[int(pos[0])])
+
+        if getattr(self.config.debug, "debug_enabled", False):
+            # mask==0 的地方，raw Close 必须是 NaN（否则说明有人把缺失填成 0 了）
+            idx0 = self.store.index[self.store.row_mask < 0.5]
+            if len(idx0) > 0:
+                bad = self.df_raw.loc[idx0, "Close"].notna().any()
+                if bad:
+                    raise RuntimeError("Contract broken: mask_t==0 but df_raw Close is not NaN (missing bars must stay NaN in df_raw)")
 
 
-    # ------------------------------------------------------------------ #
-    #   对外刷新入口（实盘可选用）
-    # ------------------------------------------------------------------ #
-    def refresh_from_db(self) -> None:
-        """
-        从 DB 重新拉取 [t0, t1] 窗口内所有 bar，并重建 df_raw/df_market/store。
-
-        说明：
-          - 窗口定义与 _load_from_db_initial_window 相同（同一个 trading_date、同一 t0/t1）
-          - 用 MarketStore.rebuild 保持 tz/day_key_fn 等配置一致
-          - 这是一个同步刷新，调用者必须自己控制调用频率（例如收盘后 / 每隔 N 分钟）
-        """
-        if self.store is None:
-            # 第一次构建时 _build 已经处理，不在这里兜底
-            raise RuntimeError("refresh_from_db called before initial build")
-
-        is_future = bool(getattr(self.config.trading, "is_future", False))
-        if not is_future:
-            raise ValueError("JuejinBarSource.refresh_from_db only supports futures")
-
-        new_df_raw = self._load_from_db_initial_window()
-
-        limit_up_pct = getattr(self.config.trading, "limit_up_pct", None)
-        limit_down_pct = getattr(self.config.trading, "limit_down_pct", None)
-
-        new_df_market = build_market_features(
-            new_df_raw,
-            tz=DEFAULT_TZ,
-            is_future=is_future,
-            limit_up_pct=limit_up_pct,
-            limit_down_pct=limit_down_pct,
-        )
-
-        # 基于旧 store 的 tz / day_key_fn / daily 配置重建
-        self.df_raw = new_df_raw
-        self.df_market = new_df_market
-        self.store = MarketStore.rebuild(
-            prev_store=self.store,
-            df_raw=self.df_raw,
-            df_market=self.df_market,
-            is_future=is_future,
-        )
 
     # ------------------------------------------------------------------ #
     #   内部：从 fut_bar_1m_v2 读取 [t0, t1] 窗口的原始 OHLCVI
@@ -457,15 +424,18 @@ class JuejinBarSource(BaseBarSource):
 
     def wait_kline_block(self, poll_interval: float = 1.0, lookback_minutes: int = 2) -> bool:
         """
-        Block until DB has a truly new bar or a real correction in lookback window,
-        then update store IN PLACE.
+        Block until DB has:
+        - a newer bar (mx > _last_eob), OR
+        - a real correction in lookback window (<= _last_eob)
 
-        End condition:
-        - return False only when DB MAX(eob) for this trading_date has reached expected EOD eob.
+        IMPORTANT (per your requirement):
+        - This function NEVER returns "finished/end-of-day".
+        - Exit logic must be handled by env (end_idx / eod_idx / episode rules).
+        - Therefore this function returns True whenever it applied update/correction,
+            and otherwise keeps blocking (sleep + poll).
 
         Returns:
-        True  -> updated (new bar OR correction applied)
-        False -> DB indicates the trading_date is finished (last bar arrived)
+        True -> applied update (new bar or correction)
         """
         if self.store is None:
             raise RuntimeError("wait_kline_block called before initial build (store is None)")
@@ -479,20 +449,15 @@ class JuejinBarSource(BaseBarSource):
         if not hasattr(self, "_expected_eod_eob"):
             raise RuntimeError("Missing _expected_eod_eob. Ensure _build computed expected EOD timestamp.")
         if not hasattr(self, "_last_eob"):
-            # extremely defensive
             self._last_eob = _to_local_ts(self.store.index.min())
 
         td = self._trading_date
-        t1 = self._t1
         lookback = timedelta(minutes=int(lookback_minutes))
 
         limit_up_pct = getattr(self.config.trading, "limit_up_pct", None)
         limit_down_pct = getattr(self.config.trading, "limit_down_pct", None)
 
         cols_raw = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
-
-
-
 
         def _db_max_eob(conn) -> Optional[pd.Timestamp]:
             with conn.cursor() as cursor:
@@ -507,7 +472,6 @@ class JuejinBarSource(BaseBarSource):
                 row = cursor.fetchone()
             mx = row.get("max_eob") if row else None
             return from_db_naive_dt(mx) if mx is not None else None
-
 
         def _fetch_rows(conn, start_eob: pd.Timestamp, end_eob: pd.Timestamp) -> pd.DataFrame:
             with conn.cursor() as cursor:
@@ -545,15 +509,9 @@ class JuejinBarSource(BaseBarSource):
             )
 
             d = normalize_ohlcvi(d)
-            return d[["Open", "High", "Low", "Close", "Volume", "OpenInterest"]]
-
-
+            return d[cols_raw]
 
         def _has_real_change(idx: pd.DatetimeIndex, incoming: pd.DataFrame, eps: float = 1e-9) -> bool:
-            """
-            Detect whether incoming rows differ from current df_raw on the same timestamps.
-            Treat NaN <-> value as change.
-            """
             if len(idx) == 0:
                 return False
             cur = self.df_raw.loc[idx, cols_raw]
@@ -568,11 +526,17 @@ class JuejinBarSource(BaseBarSource):
             da = np.abs(np.nan_to_num(a) - np.nan_to_num(b))
             return bool(np.any(da > eps))
 
+        def _overwrite_df_inplace(dst: pd.DataFrame, src: pd.DataFrame):
+            if (not dst.index.equals(src.index)) or (list(dst.columns) != list(src.columns)):
+                raise RuntimeError("df_market schema/index changed; cannot inplace overwrite")
+            # 覆写全部数据，不改变对象 id
+            dst.iloc[:, :] = src.to_numpy(copy=False)
+
         def _apply_update(incoming: pd.DataFrame, idx_hit: pd.DatetimeIndex) -> None:
             # update df_raw (no index change)
             self.df_raw.loc[idx_hit, cols_raw] = incoming.loc[idx_hit, cols_raw].to_numpy()
 
-            # full recompute df_market (MVP reliable)
+            # full recompute df_market (reliable)
             new_df_market = build_market_features(
                 self.df_raw,
                 tz=DEFAULT_TZ,
@@ -589,13 +553,15 @@ class JuejinBarSource(BaseBarSource):
             # impacted day blocks
             pos = self.store.index.get_indexer(idx_hit)
             pos = pos[pos >= 0]
-            day_is = np.unique(self.store.row_day_i[pos]).astype(int)
+            if pos.size == 0:
+                raise RuntimeError("idx_hit exists but none found in store.index (index mismatch)")
 
+            day_is = np.unique(self.store.row_day_i[pos]).astype(int)
             for di in day_is:
                 s, e = self.store.day_ranges[int(di)]
                 self.store.inplace_overwrite_day_from_df_market(int(di), new_df_market.iloc[s:e])
 
-            self.df_market = new_df_market
+            _overwrite_df_inplace(self.df_market, new_df_market) 
 
         import time as _time
 
@@ -604,20 +570,12 @@ class JuejinBarSource(BaseBarSource):
             while True:
                 mx = _db_max_eob(conn)
 
-                # DB 还没有任何当日 K（比如周末/开盘前/夜盘未开始） -> 继续等
+                # DB has no bar yet for this trading_date -> keep waiting
                 if mx is None:
                     _time.sleep(float(poll_interval))
                     continue
 
-                # 结束条件：DB 当日最新K已经到达“当日最后一根K的时间”
-                if mx >= self._expected_eod_eob:
-                    # 这里还可以要求 _last_eob 也 >= expected_eod（确保我们已消费到末尾）
-                    if self._last_eob >= self._expected_eod_eob:
-                        return False
-                    # DB 已结束但我们还没同步到末尾：继续走更新逻辑
-                    # fallthrough
-
-                # 1) 新 K：mx > last_eob 才算“有新bar”
+                # 1) New bars arrived: mx > _last_eob
                 if mx > self._last_eob:
                     start = max(self._last_eob - lookback, self._t0)
                     incoming = _fetch_rows(conn, start, mx)
@@ -627,16 +585,19 @@ class JuejinBarSource(BaseBarSource):
 
                     idx_hit = incoming.index.intersection(self.df_raw.index)
                     if len(idx_hit) == 0:
-                        # 仍然前进 last_eob，避免卡住
-                        self._last_eob = mx
-                        return True
+                        # This is serious: DB timestamps not on our canonical grid.
+                        raise RuntimeError(
+                            f"Incoming bars [{incoming.index.min()}..{incoming.index.max()}] not in df_raw.index. "
+                            f"Check tz conversion / strict futures grid alignment."
+                        )
 
-                    # 只要包含新 eob（>last_eob），就更新（不需要比较）
                     _apply_update(incoming, idx_hit)
+
+                    # ✅ Update DB-last cursor (latest arrived bar)
                     self._last_eob = mx
                     return True
 
-                # 2) 没有新 K：只检查 lookback 范围内是否有“修正”
+                # 2) No new bar: check corrections within lookback
                 start = max(self._last_eob - lookback, self._t0)
                 incoming = _fetch_rows(conn, start, self._last_eob)
                 if incoming.empty:
@@ -646,11 +607,10 @@ class JuejinBarSource(BaseBarSource):
                 idx_hit = incoming.index.intersection(self.df_raw.index)
                 if len(idx_hit) > 0 and _has_real_change(idx_hit, incoming):
                     _apply_update(incoming, idx_hit)
-                    # last_eob 不变（只有修正）
+                    # ✅ correction only: _last_eob unchanged
                     return True
 
-                # 3) 既没新K也没修正 -> 阻塞等待
+                # 3) Nothing changed -> keep blocking
                 _time.sleep(float(poll_interval))
-
         finally:
             conn.close()
