@@ -219,7 +219,6 @@ class CustomTradingEnv(gym.Env):
             EquityDeltaReward
         )
         self.reward_function = reward_class(self)
-        self.data_window_size = 400
         self._live_mode = getattr(self.config.trading, "live_mode", False)
 
 
@@ -293,7 +292,7 @@ class CustomTradingEnv(gym.Env):
         - if no bar yet for today's trading_day, block until first bar arrives.
         - default start_row = latest available bar for the trading_day.
         """
-        self.logger.info("REST env")
+        self.logger.info("RESET env")
         super().reset(seed=seed)
         if seed is not None:
             self.np_random = np.random.default_rng(seed=seed)
@@ -458,20 +457,9 @@ class CustomTradingEnv(gym.Env):
         return obs, info
 
 
-    def _day_key(self, val):
-        """Normalize day_id to a single canonical string form.
-        Handles numpy scalars and float vs int (e.g. 0, 0.0) uniformly."""
-        import numpy as _np
-        if isinstance(val, _np.generic):
-            val = val.item()
-        if isinstance(val, (int, _np.integer)):
-            return str(int(val))
-        if isinstance(val, (float, _np.floating)):
-            # ':g' turns 0.0 -> '0', 20200101.0 -> '20200101'
-            return f"{float(val):g}"
-        return str(val)
 
-    def _market_close_14_59(self) -> bool:
+
+    def _near_eod(self) -> bool:
         last_bar = self._episode_last_bar_idx()
 
         return int(self.current_step) >= (last_bar - 1)          # 14:59 及之后
@@ -488,7 +476,6 @@ class CustomTradingEnv(gym.Env):
             Tuple: (observation, reward, terminated, truncated, info)
         """
 
-        assert self.bar_source.store is self.bar_source.store
 
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
@@ -518,7 +505,7 @@ class CustomTradingEnv(gym.Env):
         intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
 
         if force_flatten and intraday_mode:
-            if self._market_close_14_59():
+            if self._near_eod():
                 if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
                                         Action.LONG_OPEN1, Action.SHORT_OPEN1):
                     self.logger.info(f"time is 14:59, makrket will close, force {self.action} -> Action.HOLD")
@@ -588,7 +575,7 @@ class CustomTradingEnv(gym.Env):
 
         # --- OPTIONAL: force flatten at EOD (default True) ---
         if force_flatten and intraday_mode:
-            if self._market_close_14_59():
+            if self._near_eod():
                 try:
                     in_market_now = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
                 except Exception:
@@ -622,12 +609,26 @@ class CustomTradingEnv(gym.Env):
         #
         next_i = self._advance_next_step(live=self._live_mode)
         if next_i is None:
-            # day finished or out of window
+            # 1) 如果需要，强制平仓（避免带仓结束 episode）
+            if bool(getattr(self.config.trading, "force_flatten_eod", True)) and bool(getattr(self.config.trading, "intraday_mode", True)):
+                self._force_flatten_if_any("TRUNCATE_NO_NEXT_BAR")
+
+            # 2) 用 last_valid_price 做一次 mark-to-market（可选，但建议）
+            self.current_price = getattr(self, "_last_valid_price", D0)
+            self._update_unrealized_pnl()
+
+            # 3) 更新 deltas & agent_state（保证最后一步 info/obs 一致）
+            self._update_step_deltas()
+            self._refresh_agent_state()
+
             self.terminated = False
             self.truncated = True
-            self._update_step_deltas()
+
+            obs = self._get_obs()
             info = self._get_info()
-            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+            reward = self.reward_function(obs)  # 或者给 0，但更推荐一致结算
+            return obs, reward, self.terminated, self.truncated, info
+
 
         # --- Advance time to NEXT step (t+1) ---
         self.current_step = next_i
@@ -826,6 +827,7 @@ class CustomTradingEnv(gym.Env):
             return True
 
         if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
+            self.logger.error(f"Reached max_episode_steps={self.config.training.max_episode_steps}. Episode done.")
             self._force_flatten_if_any("TRUNCATE_MAX_STEPS")
             self.terminated = False
             self.truncated = True
@@ -856,14 +858,6 @@ class CustomTradingEnv(gym.Env):
             self.truncated = False
             return True
 
-
-        # or if we exceed max_episode_steps
-        if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
-            self.logger.error(f"Reached max_episode_steps={self.config.training.max_episode_steps}. Episode done.")
-            # time limit => truncated
-            self.terminated = False
-            self.truncated = True
-            return True
         
         return False
 
