@@ -993,6 +993,10 @@ class CustomTradingEnv(gym.Env):
         self._R_cash_last = R_cash
         self._minutes_to_eod_last = int(minutes_to_eod)
 
+        # env 里 self.action_result 是 ForexCode 或 None
+        ar = getattr(self, "action_result", None)
+        action_result_code = int(getattr(ar, "value", 0))  # None -> 0 (当作 SUCCESS/初始态)
+
         inp = AgentFeatureInput(
             long_positions=self.position_manager.long_positions,
             short_positions=self.position_manager.short_positions,
@@ -1019,6 +1023,7 @@ class CustomTradingEnv(gym.Env):
             initial_balance=D(self.config.trading.initial_balance),
             realized_today_cash=realized_today_cash,
             R_cash=R_cash,
+            action_result_code=action_result_code,
         )
 
         raw = compute_agent_features_raw(inp)

@@ -10,6 +10,7 @@ import numpy as np
 from gym_trading_env.envs.position import Position
 from gym_trading_env.utils.decimal_util import D0, D, decimal_to_float
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
+from gym_trading_env.envs.action import ForexCode
 
 
 # -----------------------------
@@ -50,6 +51,7 @@ FEATURES_AGENT_OBS: List[str] = [
     "obs_realized_today_R_t",    # clipped realized-today cash PnL in R units
     "obs_equity_frac_t",         # clipped (equity - B0)/B0
     "obs_drawdown_frac_t",       # clipped drawdown/B0
+    "obs_action_result_t",       # 上一步 action 执行结果（ForexCode），归一化到[0,1]
 ]
 
 
@@ -94,7 +96,7 @@ class AgentFeatureInput:
     sl_price: Decimal = D0
     tp_price: Decimal = D0
     minutes_to_timeout: Decimal = D0
-
+    action_result_code: int = 0   # ForexCode.value (0..N)
 
 def _clip_dec(x: Decimal, lo: Decimal, hi: Decimal) -> Decimal:
     if x < lo:
@@ -245,6 +247,21 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
     - equity_frac: clip((equity-B0)/B0, -1, 1)
     - drawdown_frac: clip(drawdown/B0, 0, 1)
     """
+
+    # action_result normalized to [0,1] using ForexCode enum dynamically
+    max_code = max(int(x.value) for x in ForexCode)  # robust even if enum grows
+    code = int(getattr(inp, "action_result_code", 0))
+
+    # clamp into [0, max_code]
+    if code < 0:
+        code = 0
+    if max_code <= 0:
+        obs_action_result = Decimal(0)
+    else:
+        if code > max_code:
+            code = max_code
+        obs_action_result = Decimal(code) / Decimal(max_code)
+
     have_long = raw.get("have_long_t", D0)
     have_short = raw.get("have_short_t", D0)
 
@@ -306,6 +323,7 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
         "obs_realized_today_R_t": realized_today_R,
         "obs_equity_frac_t": equity_frac,
         "obs_drawdown_frac_t": drawdown_frac,
+        "obs_action_result_t": obs_action_result,
     }
 
 
