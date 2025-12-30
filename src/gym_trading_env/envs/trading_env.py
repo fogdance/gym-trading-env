@@ -471,6 +471,12 @@ class CustomTradingEnv(gym.Env):
             return f"{float(val):g}"
         return str(val)
 
+    def _market_close_14_59(self) -> bool:
+        last_bar = self._episode_last_bar_idx()
+
+        return int(self.current_step) >= (last_bar - 1)          # 14:59 及之后
+
+
     def step(self, action):
         """
         Executes one time step within the environment.
@@ -506,7 +512,17 @@ class CustomTradingEnv(gym.Env):
 
         if self.config.debug.debug_enabled:
             # NEW: use store index (env runtime does not rely on df_market)
-            self.logger.info(f"{self.bar_source.store.index[self.current_step]}, {action} -> {self.action}")
+            self.logger.info(f"bob {self.bar_source.store.index[self.current_step]}, {action} -> {self.action}")
+
+        force_flatten = bool(getattr(self.config.trading, "force_flatten_eod", True))
+        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+
+        if force_flatten and intraday_mode:
+            if self._market_close_14_59():
+                if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
+                                        Action.LONG_OPEN1, Action.SHORT_OPEN1):
+                    self.logger.info(f"time is 14:59, makrket will close, force {self.action} -> Action.HOLD")
+                    self.action = Action.HOLD
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
@@ -569,20 +585,16 @@ class CustomTradingEnv(gym.Env):
         elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
 
+
         # --- OPTIONAL: force flatten at EOD (default True) ---
-        force_flatten = bool(getattr(self.config.trading, "force_flatten_eod", True))
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
-
         if force_flatten and intraday_mode:
-            eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
-
-            # 当前 step 就是当日最后一根（因为 eod_idx 是当日/session 的 half-open end）
-            if int(self.current_step) >= (eod_idx - 1):
+            if self._market_close_14_59():
                 try:
                     in_market_now = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
                 except Exception:
                     in_market_now = False
                 if in_market_now:
+                    self.logger.info(f"time is 14:59, makrket will close, force empty all position.")
                     # 用当前 action_price 平（close 函数内部会用 spread 算 bid/ask）
                     self._empty_position(price=action_price, spread=self.config.trading.spread, close_reason="EOD")
 
@@ -664,7 +676,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate reward
         reward = self.reward_function(obs)
 
-        if self.terminated and self.config.debug.debug_enabled:
+        if self.config.debug.debug_enabled and (self.truncated or self.terminated):
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
         return obs, reward, self.terminated, self.truncated, info
@@ -800,12 +812,14 @@ class CustomTradingEnv(gym.Env):
         if intraday_mode:
             last_bar_idx = self._episode_last_bar_idx()
             if int(self.current_step) >= last_bar_idx:
+                self.logger.warning(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}, last_bar_idx={last_bar_idx}. Episode done.")
                 self._force_flatten_if_any("TRUNCATE_EOD")
                 self.terminated = False
                 self.truncated = True
                 return True
 
         if self.current_step >= self.end_idx:
+            self.logger.warning(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}. Episode done.")
             self._force_flatten_if_any("TRUNCATE_END_IDX")
             self.terminated = False
             self.truncated = True
@@ -842,15 +856,6 @@ class CustomTradingEnv(gym.Env):
             self.truncated = False
             return True
 
-
-
-        # check if we run out of data
-        if self.current_step >= self.end_idx:
-            self.logger.error(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}. Episode done.")
-            # time/data bound => truncated
-            self.terminated = False
-            self.truncated = True
-            return True
 
         # or if we exceed max_episode_steps
         if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
