@@ -851,12 +851,16 @@ class CustomTradingEnv(gym.Env):
             self.truncated = False
             return True
 
-        current_rrr = self.position_manager.calc_profit_factor()
-        if self.config.risk.risk_reward_ratio_enable and current_rrr is not None and current_rrr < self.config.risk.risk_reward_ratio:
-            self.logger.error(f"Terminated: RRR {current_rrr:.4f} < {self.config.risk.risk_reward_ratio}")
-            self.terminated = True
-            self.truncated = False
-            return True
+        
+        pf = self.metrics.get_metrics().get("profit_factor", None)   # float or None
+        if self.config.risk.risk_reward_ratio_enable and pf is not None:
+            thr = float(self.config.risk.risk_reward_ratio)
+            if pf < thr:
+                self.logger.error(f"Terminated: RRR {pf:.4f} < {self.config.risk.risk_reward_ratio}")
+
+                self.terminated = True
+                self.truncated = False
+                return True
 
         
         return False
