@@ -16,6 +16,21 @@ def _to_decimal(value):
         print(f"[DEBUG] Cannot convert value={value} (type={type(value)}) to Decimal")
         raise e
 
+TRADING_DECIMAL_KEYS = {
+    "initial_balance", "trading_fee_per_lot", "spread", "leverage", "lot_size",
+    "trade_lot", "max_long_position", "max_short_position",
+    "stop_loss_value", "take_profit_rr",
+}
+RISK_DECIMAL_KEYS = {"risk_reward_ratio"}
+
+def _cast_decimals(d: dict, keys: set[str]) -> dict:
+    out = {}
+    for k, v in d.items():
+        if k in keys and isinstance(v, (int, float)) and not isinstance(v, bool):
+            out[k] = _to_decimal(v)
+        else:
+            out[k] = v
+    return out
 
 # ============================================================
 # Policy blocks: strongly-typed configs
@@ -164,6 +179,9 @@ class TradingParams:
 
     live_mode: bool = False
     """"实盘模式"""
+
+    intraday_mode: bool = True
+    """True: session end 相关逻辑启用（配合 policy）"""
 
     # -----------------------------
     # NEW: SessionPolicy (strong type)
@@ -353,18 +371,14 @@ class TradingConfig:
         trading_dict = dict(config_dict.get("trading", {}) or {})
         sp_dict = dict(trading_dict.pop("session_policy", {}) or {})
 
-        trading_kwargs = {
-            k: _to_decimal(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else v
-            for k, v in trading_dict.items()
-        }
+        trading_kwargs = _cast_decimals(trading_dict, TRADING_DECIMAL_KEYS)
+
         trading_kwargs["session_policy"] = SessionPolicy(**sp_dict)
 
         # ---- risk ----
         risk_dict = dict(config_dict.get("risk", {}) or {})
-        risk_kwargs = {
-            k: _to_decimal(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else v
-            for k, v in risk_dict.items()
-        }
+        risk_kwargs    = _cast_decimals(risk_dict, RISK_DECIMAL_KEYS)
+
 
         # ---- training ----
         training_dict = dict(config_dict.get("training", {}) or {})
@@ -396,3 +410,4 @@ class TradingConfig:
         out.update(asdict(self.training))
         out.update(asdict(self.visualization))
         out.update(asdict(self.debug))
+        return out

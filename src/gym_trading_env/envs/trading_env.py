@@ -338,7 +338,6 @@ class CustomTradingEnv(gym.Env):
 
         df_len = int(self.bar_source.store.n_rows)
         episode_len = self.config.training.episode_length
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
 
         # -------------------------------
         # Choose start_row
@@ -405,7 +404,7 @@ class CustomTradingEnv(gym.Env):
 
         # Futures: if truncate_on_session_end=True, clamp episode end to current session/day end.
         # If False (MC monthly), DO NOT clamp here; episode can span multiple sessions.
-        if self.config.trading.is_future and truncate_on_session_end:
+        if self.config.trading.is_future and self.config.trading.intraday_mode and truncate_on_session_end:
             eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])  # half-open
             self.end_idx = min(self.end_idx, eod_end)
 
@@ -519,14 +518,17 @@ class CustomTradingEnv(gym.Env):
             # NEW: use store index (env runtime does not rely on df_market)
             self.logger.info(f"bob {self.bar_source.store.index[self.current_step]}, {action} -> {self.action}")
 
-        force_flatten = bool(getattr(self.config.trading, "force_flatten_eod", True))
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
+        sp = self.config.trading.session_policy
 
-        if force_flatten and intraday_mode:
+        block_open = bool(sp.block_open_near_eod)
+        force_flatten = bool(sp.force_flatten_eod)
+
+        if block_open and self.config.trading.intraday_mode:
             if self._near_eod():
                 if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
                                         Action.LONG_OPEN1, Action.SHORT_OPEN1):
-                    self.logger.info(f"time is 14:59, makrket will close, force {self.action} -> Action.HOLD")
+                    ts_now = self.bar_source.store.index[self.current_step]
+                    self.logger.info(f"{ts_now} near_eod -> force {self.action} to HOLD")
                     self.action = Action.HOLD
 
         # --- Price / market-closed gate at CURRENT step (t) ---
@@ -592,7 +594,7 @@ class CustomTradingEnv(gym.Env):
 
 
         # --- OPTIONAL: force flatten at EOD (default True) ---
-        if force_flatten and intraday_mode:
+        if force_flatten and self.config.trading.intraday_mode:
             if self._near_eod():
                 try:
                     in_market_now = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
@@ -628,7 +630,7 @@ class CustomTradingEnv(gym.Env):
         next_i = self._advance_next_step(live=self._live_mode)
         if next_i is None:
             # 1) 如果需要，强制平仓（避免带仓结束 episode）
-            if bool(getattr(self.config.trading, "force_flatten_eod", True)) and bool(getattr(self.config.trading, "intraday_mode", True)):
+            if bool(self.config.trading.session_policy.force_flatten_eod) and self.config.trading.intraday_mode:
                 self._force_flatten_if_any("TRUNCATE_NO_NEXT_BAR")
 
             # 2) 用 last_valid_price 做一次 mark-to-market（可选，但建议）
@@ -813,8 +815,7 @@ class CustomTradingEnv(gym.Env):
         # end_idx 是 half-open
         last_idx = int(self.end_idx) - 1
 
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
-        if intraday_mode:
+        if self.config.trading.intraday_mode:
             # _eod_idx 也是 half-open（当日/session 的 end）
             eod_idx = int(getattr(self, "_eod_idx", self.end_idx))
             last_idx = min(last_idx, eod_idx - 1)
@@ -833,7 +834,7 @@ class CustomTradingEnv(gym.Env):
 
 
         # --- 1) Episode boundary: session end (optional) ---
-        if truncate_on_session_end and bool(getattr(self.config.trading, "intraday_mode", True)):
+        if truncate_on_session_end and self.config.trading.intraday_mode:
             # End at the end of CURRENT session/day
             eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])  # half-open
             last_bar_idx = eod_end - 1
@@ -1209,7 +1210,7 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.realize_pnl(q.pnl)
 
             self._assert_ledger_conservation()
-        except LedgerError as e:
+        except (LedgerError, ValueError) as e:
             self.ledger.restore(snap)
             self.logger.error(f"LONG_CLOSE failed and rolled back (position NOT removed): {e}")
             self.terminated = True
@@ -1375,7 +1376,7 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.realize_pnl(q.pnl)
 
             self._assert_ledger_conservation()
-        except LedgerError as e:
+        except (LedgerError, ValueError) as e:
             self.ledger.restore(snap)
             self.logger.error(f"SHORT_CLOSE failed and rolled back (position NOT removed): {e}")
             self.terminated = True
