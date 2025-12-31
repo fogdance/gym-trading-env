@@ -1126,71 +1126,86 @@ class CustomTradingEnv(gym.Env):
 
     def _long_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
         """
-        Executes a LONG_CLOSE action with manual rollback.
-        """        
+        Executes a LONG_CLOSE action atomically:
+        1) quote (no mutation)
+        2) ledger post (may fail)
+        3) commit position removal (mutates only after ledger success)
+        """
         bid_price = price - spread
         if self.user_accounts.long_position <= Decimal('0.0'):
             self.logger.warning("No long position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
+        # 1) quote (NO mutation)
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_long_position(
-                bid_price, self.config.trading.lot_size, slot=slot
+            slot_i, q = self.position_manager.quote_close_long(
+                closing_price=bid_price,
+                lot_size=self.config.trading.lot_size,
+                slot=slot,
             )
         except ValueError as e:
-            self.logger.warning(f"Error closing long position: {e}")
+            self.logger.warning(f"Error quoting long close: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
+        # fee: round-turn means charge on close as well
+        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
 
         ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_CLOSE",
             postings=[
-                Posting("user_margin", -released_margin),
-                Posting("broker_pnl", -pnl),  # pnl>0 用户赚 -> broker_pnl 减少
+                Posting("user_margin", -q.released_margin),
+                Posting("broker_pnl", -q.pnl),  # pnl>0 user wins => broker_pnl decreases
                 Posting("broker_fee_income", +fee),
-                Posting("user_cash", +(released_margin + pnl - fee)),
+                Posting("user_cash", +(q.released_margin + q.pnl - fee)),
             ],
-            meta={"side":"long","slot":slot,"close_price":str(bid_price),"pnl":str(pnl)}
+            meta={"side": "long", "slot": slot_i, "close_price": str(bid_price), "pnl": str(q.pnl)}
         )
 
         snap = self.ledger.snapshot()
         try:
+            # 2) ledger post
             self._post_atomic(entry)
-            self.user_accounts.realize_pnl(pnl)  # 仅统计字段
+
+            # 3) commit position removal ONLY after ledger success
+            self.position_manager.commit_close_long(slot_i, quote=q)
+
+            # stats-only projection
+            self.user_accounts.realize_pnl(q.pnl)
+
             self._assert_ledger_conservation()
         except LedgerError as e:
             self.ledger.restore(snap)
-            self.logger.error(f"LONG_CLOSE failed and rolled back: {e}")
+            self.logger.error(f"LONG_CLOSE failed and rolled back (position NOT removed): {e}")
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        self.last_close_position = {'pnl': pnl, 'margin': released_margin}
+        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
 
         trade_record = TradeRecord(
             timestamp=ts,
             operation_type=Action.LONG_CLOSE.name,
-            position_size=closed_size,
-            open_price=open_price,
+            position_size=q.closed_size,
+            open_price=q.entry_price,
             close_price=bid_price,
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=pnl,
-            closed_size=closed_size,
-            released_margin=released_margin,
+            pnl=q.pnl,
+            closed_size=q.closed_size,
+            released_margin=q.released_margin,
             meta={
                 "side": "long",
-                "slot": slot,
+                "slot": slot_i,
                 "reason": close_reason or "MANUAL",
             },
         )
         self.record_trade(trade_record)
         return ForexCode.SUCCESS
+
    
 
     def _short_open(self, price: Decimal, spread: Decimal, slot: int = None):
@@ -1279,72 +1294,85 @@ class CustomTradingEnv(gym.Env):
 
     def _short_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
         """
-        Executes a SHORT_CLOSE action with manual rollback.
+        Executes a SHORT_CLOSE action atomically:
+        1) quote (no mutation)
+        2) ledger post (may fail)
+        3) commit position removal (mutates only after ledger success)
         """
         ask_price = price + spread
         if self.user_accounts.short_position <= Decimal('0.0'):
             self.logger.warning("No short position to close.")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
+        # 1) quote (NO mutation)
         try:
-            pnl, released_margin, closed_size, open_price = self.position_manager.close_short_position(
-                ask_price, self.config.trading.lot_size, slot=slot
+            slot_i, q = self.position_manager.quote_close_short(
+                closing_price=ask_price,
+                lot_size=self.config.trading.lot_size,
+                slot=slot,
             )
         except ValueError as e:
-            self.logger.warning(f"Error closing short position: {e}")
+            self.logger.warning(f"Error quoting short close: {e}")
             return ForexCode.ERROR_NO_POSITION_TO_CLOSE
 
-        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * closed_size)
+        fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
 
         ts = self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_CLOSE",
             postings=[
-                Posting("user_margin", -released_margin),
-                Posting("broker_pnl", -pnl),
+                Posting("user_margin", -q.released_margin),
+                Posting("broker_pnl", -q.pnl),
                 Posting("broker_fee_income", +fee),
-                Posting("user_cash", +(released_margin + pnl - fee)),
+                Posting("user_cash", +(q.released_margin + q.pnl - fee)),
             ],
-            meta={"side":"short","slot":slot,"close_price":str(ask_price),"pnl":str(pnl)}
+            meta={"side": "short", "slot": slot_i, "close_price": str(ask_price), "pnl": str(q.pnl)}
         )
 
         snap = self.ledger.snapshot()
         try:
+            # 2) ledger post
             self._post_atomic(entry)
-            self.user_accounts.realize_pnl(pnl)
+
+            # 3) commit position removal ONLY after ledger success
+            self.position_manager.commit_close_short(slot_i, quote=q)
+
+            self.user_accounts.realize_pnl(q.pnl)
+
             self._assert_ledger_conservation()
         except LedgerError as e:
             self.ledger.restore(snap)
-            self.logger.error(f"SHORT_CLOSE failed and rolled back: {e}")
+            self.logger.error(f"SHORT_CLOSE failed and rolled back (position NOT removed): {e}")
             self.terminated = True
             return ForexCode.ERROR_NO_ENOUGH_MONEY
 
-        self.last_close_position = {'pnl': pnl, 'margin': released_margin}
+        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
 
         trade_record = TradeRecord(
             timestamp=ts,
             operation_type=Action.SHORT_CLOSE.name,
-            position_size=closed_size,
-            open_price=open_price,
+            position_size=q.closed_size,
+            open_price=q.entry_price,
             close_price=ask_price,
             required_margin=Decimal('0'),
             fee=fee,
             balance=self.user_accounts.cash_balance.get_balance(),
             leverage=self.config.trading.leverage,
             free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=pnl,
-            closed_size=closed_size,
-            released_margin=released_margin,
+            pnl=q.pnl,
+            closed_size=q.closed_size,
+            released_margin=q.released_margin,
             meta={
                 "side": "short",
-                "slot": slot,
+                "slot": slot_i,
                 "reason": close_reason or "MANUAL",
             },
         )
         self.record_trade(trade_record)
         return ForexCode.SUCCESS
-    
+
+
     def _apply_take_profits(self) -> int:
         if not bool(getattr(self.config.trading, "take_profit_enabled", False)):
             return 0

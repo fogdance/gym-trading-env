@@ -2,6 +2,19 @@
 from decimal import Decimal
 from typing import Tuple, Optional, List
 from gym_trading_env.envs.position import Position
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class CloseQuote:
+    """
+    A read-only close quote for a single slot.
+
+    All fields are final cash/margin numbers assuming full close of that slot.
+    """
+    pnl: Decimal
+    released_margin: Decimal
+    closed_size: Decimal
+    entry_price: Decimal
 
 class PositionManager:
     def __init__(self, long_slots: int = 10, short_slots: int = 10):
@@ -216,3 +229,135 @@ class PositionManager:
         if not (0 <= slot < len(positions)):
             raise ValueError(f"Invalid slot: {slot}. Must be between 0 and {len(positions)-1}")
         return positions[slot]
+
+    # ---------------------------
+    # slot helpers (NEW)
+    # ---------------------------
+
+    def _validate_slot(self, slot: int, is_long: bool) -> None:
+        positions = self.long_positions if is_long else self.short_positions
+        if not (0 <= slot < len(positions)):
+            side = "long" if is_long else "short"
+            raise ValueError(f"Invalid {side} slot: {slot}. Must be between 0 and {len(positions)-1}")
+
+    def _find_first_occupied_slot(self, is_long: bool) -> int:
+        positions = self.long_positions if is_long else self.short_positions
+        for i, pos in enumerate(positions):
+            if pos is not None:
+                return i
+        side = "long" if is_long else "short"
+        raise ValueError(f"No {side} positions to operate on")
+
+    def peek_long(self, slot: Optional[int] = None) -> Tuple[int, Position]:
+        """
+        Peek a long position WITHOUT modifying state.
+
+        Returns:
+            (slot_index, Position)
+
+        Raises:
+            ValueError if no position exists.
+        """
+        if slot is None:
+            slot = self._find_first_occupied_slot(is_long=True)
+        self._validate_slot(slot, is_long=True)
+        pos = self.long_positions[slot]
+        if pos is None:
+            raise ValueError(f"No long position in slot {slot}")
+        return slot, pos
+
+    def peek_short(self, slot: Optional[int] = None) -> Tuple[int, Position]:
+        """
+        Peek a short position WITHOUT modifying state.
+        """
+        if slot is None:
+            slot = self._find_first_occupied_slot(is_long=False)
+        self._validate_slot(slot, is_long=False)
+        pos = self.short_positions[slot]
+        if pos is None:
+            raise ValueError(f"No short position in slot {slot}")
+        return slot, pos
+
+    def pop_long(self, slot: int) -> Position:
+        """
+        Pop (remove) a long position from a slot. MUTATES state.
+        """
+        self._validate_slot(slot, is_long=True)
+        pos = self.long_positions[slot]
+        if pos is None:
+            raise ValueError(f"No long position in slot {slot} to pop")
+        self.long_positions[slot] = None
+        return pos
+
+    def pop_short(self, slot: int) -> Position:
+        """
+        Pop (remove) a short position from a slot. MUTATES state.
+        """
+        self._validate_slot(slot, is_long=False)
+        pos = self.short_positions[slot]
+        if pos is None:
+            raise ValueError(f"No short position in slot {slot} to pop")
+        self.short_positions[slot] = None
+        return pos    
+
+    # ---------------------------
+    # NEW: quote + commit close (atomic-friendly)
+    # ---------------------------
+
+    def quote_close_long(
+        self,
+        closing_price: Decimal,
+        lot_size: Decimal,
+        slot: Optional[int] = None
+    ) -> Tuple[int, CloseQuote]:
+        """
+        Compute close results for a long position WITHOUT modifying state.
+
+        Returns:
+            (slot_index, CloseQuote)
+        """
+        slot_i, pos = self.peek_long(slot)
+        pnl = (closing_price - pos.entry_price) * pos.size * lot_size
+        q = CloseQuote(
+            pnl=pnl,
+            released_margin=pos.initial_margin,
+            closed_size=pos.size,
+            entry_price=pos.entry_price,
+        )
+        return slot_i, q
+
+    def quote_close_short(
+        self,
+        closing_price: Decimal,
+        lot_size: Decimal,
+        slot: Optional[int] = None
+    ) -> Tuple[int, CloseQuote]:
+        """
+        Compute close results for a short position WITHOUT modifying state.
+        """
+        slot_i, pos = self.peek_short(slot)
+        pnl = (pos.entry_price - closing_price) * pos.size * lot_size
+        q = CloseQuote(
+            pnl=pnl,
+            released_margin=pos.initial_margin,
+            closed_size=pos.size,
+            entry_price=pos.entry_price,
+        )
+        return slot_i, q
+
+    def commit_close_long(self, slot: int, quote: Optional[CloseQuote] = None) -> None:
+        """
+        Commit the close by removing the position from the slot.
+        Should be called ONLY after external accounting (Ledger) succeeds.
+        """
+        self.pop_long(slot)
+        if quote is not None:
+            self.closed_trade_profits.append(quote.pnl)
+
+    def commit_close_short(self, slot: int, quote: Optional[CloseQuote] = None) -> None:
+        """
+        Commit the close by removing the position from the slot.
+        """
+        self.pop_short(slot)
+        if quote is not None:
+            self.closed_trade_profits.append(quote.pnl)
