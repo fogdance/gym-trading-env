@@ -400,10 +400,15 @@ class CustomTradingEnv(gym.Env):
         else:
             self.end_idx = df_len
 
-        # futures intraday: cut to end of this session/day
-        if self.config.trading.is_future and intraday_mode:
-            eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])
+        # --- EpisodePolicy: should we truncate the episode at every session end? ---
+        truncate_on_session_end = bool(self.config.training.episode_policy.truncate_on_session_end)
+
+        # Futures: if truncate_on_session_end=True, clamp episode end to current session/day end.
+        # If False (MC monthly), DO NOT clamp here; episode can span multiple sessions.
+        if self.config.trading.is_future and truncate_on_session_end:
+            eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])  # half-open
             self.end_idx = min(self.end_idx, eod_end)
+
 
         end_ts = self.bar_source.store.index[self.end_idx - 1] if self.end_idx > self.start_idx else ts0
         self.logger.info(f"{ts0} -> {end_ts} (end_idx={self.end_idx})")
@@ -460,9 +465,22 @@ class CustomTradingEnv(gym.Env):
 
 
     def _near_eod(self) -> bool:
-        last_bar = self._episode_last_bar_idx()
+        """
+        SessionPolicy: define "near EOD" window inside current session/day.
 
-        return int(self.current_step) >= (last_bar - 1)          # 14:59 及之后
+        Default behavior (compatible with your old comment “14:59 及之后”):
+        - near_eod_bars defaults to 2 => last 2 bars of the session.
+        If last bar is 15:00, then 14:59 and 15:00 are "near EOD".
+        """
+        near_eod_bars = int(self.config.trading.session_policy.near_eod_bars)
+
+        # current session/day last bar idx (inclusive)
+        eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])  # half-open
+        last_bar_idx = eod_end - 1
+
+        threshold = last_bar_idx - (near_eod_bars - 1)
+        return int(self.current_step) >= int(threshold)
+
 
 
     def step(self, action):
@@ -806,47 +824,63 @@ class CustomTradingEnv(gym.Env):
         return last_idx
 
 
-
     def _should_terminated(self):
-        # intraday EOD cut (episode ends ON the last bar, e.g. 15:00) ---
-        intraday_mode = bool(getattr(self.config.trading, "intraday_mode", True))
-        if intraday_mode:
-            last_bar_idx = self._episode_last_bar_idx()
-            if int(self.current_step) >= last_bar_idx:
-                self.logger.warning(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}, last_bar_idx={last_bar_idx}. Episode done.")
-                self._force_flatten_if_any("TRUNCATE_EOD")
+        """
+        Episode termination logic is governed by EpisodePolicy.
+        SessionPolicy (flatten EOD / block open near EOD) stays elsewhere.
+        """
+        truncate_on_session_end = bool(self.config.training.episode_policy.truncate_on_session_end)
+
+
+        # --- 1) Episode boundary: session end (optional) ---
+        if truncate_on_session_end and bool(getattr(self.config.trading, "intraday_mode", True)):
+            # End at the end of CURRENT session/day
+            eod_end = int(self.bar_source.store.day_ranges[self._day_i][1])  # half-open
+            last_bar_idx = eod_end - 1
+            if int(self.current_step) >= int(last_bar_idx):
+                self.logger.warning(
+                    f"Reached session end. day_i={self._day_i} "
+                    f"current_step={self.current_step} last_bar_idx={last_bar_idx} end_idx={self.end_idx}"
+                )
+                self._force_flatten_if_any("TRUNCATE_SESSION_END")
                 self.terminated = False
                 self.truncated = True
                 return True
 
-        if self.current_step >= self.end_idx:
-            self.logger.warning(f"Reached end_idx={self.end_idx}, start_idx={self.start_idx}, episode_length={self.config.training.episode_length}, current_step={self.current_step}. Episode done.")
+        # --- 2) Episode boundary: end_idx (dataset / episode_length) ---
+        if int(self.current_step) >= int(self.end_idx) - 1:
+            self.logger.warning(
+                f"Reached end_idx boundary. start_idx={self.start_idx} end_idx={self.end_idx} "
+                f"episode_length={self.config.training.episode_length} current_step={self.current_step}."
+            )
             self._force_flatten_if_any("TRUNCATE_END_IDX")
             self.terminated = False
             self.truncated = True
             return True
 
+        # --- 3) Hard cap on steps ---
         if self.config.training.max_episode_steps > 0 and self.episode_step_count >= self.config.training.max_episode_steps:
             self.logger.error(f"Reached max_episode_steps={self.config.training.max_episode_steps}. Episode done.")
             self._force_flatten_if_any("TRUNCATE_MAX_STEPS")
             self.terminated = False
             self.truncated = True
             return True
-    
-        # Check margin requirements
+
+        # --- 4) Margin call => terminated ---
         if self._check_margin():
-            # margin call => terminated
             self.terminated = True
             self.truncated = False
             return True
-    
+
+        # --- 5) Risk guardrails (still terminate, not truncate) ---
         metrics = self.metrics.get_metrics()
-        # 检查风险限制（使用百分比形式）
         daily_lost_pct = decimal_to_float(metrics['current_day_lost_pct'] / Decimal('100.0'))
-        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0')) 
+        drawdown_pct = decimal_to_float(metrics['current_drawdown_pct'] / Decimal('100.0'))
         if daily_lost_pct > self.config.risk.daily_lost_ratio or drawdown_pct > self.config.risk.max_drawdown_ratio:
-            self.logger.error(f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.config.risk.daily_lost_ratio} "
-                           f"or Drawdown {drawdown_pct:.4f} > {self.config.risk.max_drawdown_ratio}")
+            self.logger.error(
+                f"Terminated: Daily Loss {daily_lost_pct:.4f} > {self.config.risk.daily_lost_ratio} "
+                f"or Drawdown {drawdown_pct:.4f} > {self.config.risk.max_drawdown_ratio}"
+            )
             self.terminated = True
             self.truncated = False
             return True
