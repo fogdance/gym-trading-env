@@ -110,6 +110,11 @@ class Metrics:
             # behavior / cost derived
             "opens_per_1000_steps": None,
             "fee_drag_ratio": None,
+
+            # invalid action (per-step + cumulative)
+            "invalid_action": 0,          # 0/1 for last step
+            "invalid_action_total": 0,    # cumulative count
+            "invalid_action_ratio": None, # optional
         }
 
         # behavior counters
@@ -126,6 +131,7 @@ class Metrics:
             "short_close_steps_success": 0,
             "empty_steps": 0,
             "in_market_steps": 0,
+            "invalid_steps": 0,
         }
 
     # -------- public API --------
@@ -270,7 +276,7 @@ class Metrics:
 
     # -------- behavior metrics --------
 
-    def on_step(self, action, action_success: bool, in_market: bool):
+    def on_step(self, action, action_success: bool, in_market: bool, invalid_action: bool = False):
         c = self._counters
         c["steps_total"] += 1
         if in_market:
@@ -302,6 +308,13 @@ class Metrics:
         elif "EMPTY" in aname:
             c["empty_steps"] += 1
 
+        if invalid_action:
+            c["invalid_steps"] += 1
+
+        # publish last-step + cumulative
+        self.metrics["invalid_action"] = 1 if invalid_action else 0
+        self.metrics["invalid_action_total"] = int(c["invalid_steps"])
+
     def _behavior_metrics(self):
         c = self._counters
         if c["steps_total"] <= 0:
@@ -328,6 +341,7 @@ class Metrics:
             "action_short_close_success_ratio": (float(c["short_close_steps_success"]) / float(c["short_close_steps"])) if c["short_close_steps"] else 0.0,
 
             "exposure_ratio": float(c["in_market_steps"]) / steps,
+            "invalid_action_ratio": float(c.get("invalid_steps", 0)) / steps,
         }
 
         # NEW: robust counts from incremental stats (no scan)

@@ -57,6 +57,7 @@ CORE_LOG_ENV_KEYS = [
     "fee_drag_ratio",
     "profit_factor",
     "expectancy",
+    "invalid_action",
 ]
 
 
@@ -610,7 +611,12 @@ class CustomTradingEnv(gym.Env):
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
         except Exception:
             in_market = False
-        self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market)
+        invalid_action = ((self.action_result == ForexCode.ERROR_HIT_MAX_POSITION)
+                        or (self.action_result == ForexCode.ERROR_OPEN_POSITION)
+                        or (self.action_result == ForexCode.ERROR_NO_POSITION_TO_CLOSE)
+                        )
+
+        self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market, invalid_action=invalid_action)
 
         # ---------------------------------------------------------
         #   分界线：action 已经在 t 执行完了
