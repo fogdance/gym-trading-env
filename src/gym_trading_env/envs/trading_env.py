@@ -940,6 +940,7 @@ class CustomTradingEnv(gym.Env):
             info[f'log/env/{k}'] = np.asarray(vv, dtype=np.float32).reshape(())
 
 
+        info[f'log/env/is_truncated'] = np.bool_(self.truncated)
         return info
 
     def _calculate_equity(self) -> Decimal:
