@@ -29,7 +29,10 @@ DCE_JM2601: &JM
   data_path: "DCE_JM2601"
   data_interval: "1m"
   is_future: true
-
+  session_policy:
+    near_eod_bars: 2
+    block_open_near_eod: true
+    force_flatten_eod: true
 
 trading:
   <<: *JM
@@ -48,7 +51,10 @@ training:
   render_mode: "rgb_array"
   start_clock: "future_night"
   bar_source: "csv"
+  episode_policy:
+    truncate_on_session_end: true   # MC false; 训练/实盘 true
 
+    
 visualization:
   image_height: 96
   image_width: 96

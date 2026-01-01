@@ -59,11 +59,11 @@ class FeatureOracle:
 
         start_i = end_i - ws + 1
         if start_i >= 0:
-            window = env.df_market.iloc[start_i:end_i + 1][feats].to_numpy(np.float32, copy=False)
+            window = env.bar_source.df_market.iloc[start_i:end_i + 1][feats].to_numpy(np.float32, copy=False)
             out = window
         else:
             pad_len = -start_i
-            window = env.df_market.iloc[0:end_i + 1][feats].to_numpy(np.float32, copy=False)
+            window = env.bar_source.df_market.iloc[0:end_i + 1][feats].to_numpy(np.float32, copy=False)
             pad = np.zeros((pad_len, len(feats)), dtype=np.float32)
             out = np.concatenate([pad, window], axis=0)
 

@@ -33,7 +33,7 @@ def _mk_env_stub(truncate_on_session_end: bool):
         training=SimpleNamespace(
             episode_length=None,
             max_episode_steps=10_000_000,
-            episode_policy={"truncate_on_session_end": truncate_on_session_end},
+            episode_policy=SimpleNamespace(truncate_on_session_end=truncate_on_session_end),
         ),
         risk=SimpleNamespace(
             daily_lost_ratio=1.0,
