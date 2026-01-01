@@ -21,6 +21,7 @@ class Action(Enum):
     POSITION_UP = 15
     
 
+# 添加错误码后，更新_is_invalid_action
 class ForexCode(Enum):
     SUCCESS = 0
     ERROR_HIT_MAX_POSITION = 1
@@ -28,3 +29,4 @@ class ForexCode(Enum):
     ERROR_NO_ENOUGH_MONEY = 3
     ERROR_OPEN_POSITION = 4
     ERROR_MARKET_CLOSED = 5
+    ERROR_BLOCKED_NEAR_EOD = 6

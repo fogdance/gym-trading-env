@@ -318,13 +318,12 @@ class NoviceModeInactionPenalty:
             self.empty_steps = 0
         return 0.0
             
-
 class FuturesIntradayReward:
     """
     期货日内奖励（推荐 baseline）：
     - 主项：Δequity（含未实现）/ R_cash 归一化
     - 惩罚：手续费、回撤增量、临近EOD持仓、闭市乱操作、止损触发
-    - 小塑形：平仓按 pnl/R_cash 给一点点奖励（不要太大）
+    - NEW：无效操作小惩罚（如 flat 还 close / 有仓还 open / near_eod 禁开 等）
     """
     def __init__(
         self,
@@ -336,6 +335,7 @@ class FuturesIntradayReward:
         w_close=0.10,
         w_stoploss=0.20,
         w_market_closed=0.05,
+        w_invalid_action=0.02,   # <<< NEW: 小惩罚
         clip=1.0,
         eps=Decimal("1e-6"),
     ):
@@ -347,6 +347,7 @@ class FuturesIntradayReward:
         self.w_close = float(w_close)
         self.w_stoploss = float(w_stoploss)
         self.w_market_closed = float(w_market_closed)
+        self.w_invalid_action = float(w_invalid_action)  # <<< NEW
         self.clip = float(clip)
         self.eps = eps
 
@@ -368,6 +369,42 @@ class FuturesIntradayReward:
         # rc 可能是 float/np scalar
         return max(Decimal(str(rc)), self.eps)
 
+    def _is_invalid_action(self) -> bool:
+        """
+        根据 ForexCode 精确判断是否“无效操作”(invalid action)：
+        - SUCCESS: 不罚
+        - ERROR_MARKET_CLOSED: 由 r_mc 单独罚，避免叠加
+        - 其余 ERROR_*：均视为无效操作（如没仓位去平仓、持仓还开仓、资金不足、near_eod 禁开等）
+        """
+        ar = getattr(self.env, "action_result", None)
+        if ar is None:
+            return False
+
+        # 统一成 int code（兼容 env.action_result 可能是 Enum 或 int）
+        try:
+            code = int(getattr(ar, "value", ar))
+        except Exception:
+            return False
+
+        # SUCCESS 不罚
+        if code == int(ForexCode.SUCCESS.value):
+            return False
+
+        # market closed 单独罚，避免 double-penalty
+        if code == int(ForexCode.ERROR_MARKET_CLOSED.value):
+            return False
+
+        # 这些都算 invalid（你现在的全部非闭市错误）
+        invalid_codes = {
+            int(ForexCode.ERROR_HIT_MAX_POSITION.value),
+            int(ForexCode.ERROR_NO_POSITION_TO_CLOSE.value),
+            int(ForexCode.ERROR_NO_ENOUGH_MONEY.value),
+            int(ForexCode.ERROR_OPEN_POSITION.value),
+            int(ForexCode.ERROR_BLOCKED_NEAR_EOD.value),
+        }
+        return code in invalid_codes
+
+
     def __call__(self, obs=None):
         eq = self._equity()
 
@@ -384,7 +421,9 @@ class FuturesIntradayReward:
             # 初始化不发奖惩
             self.env._reward_debug = {
                 "pnl": 0.0, "fee": 0.0, "dd": 0.0, "eod": 0.0,
-                "close": 0.0, "sl": 0.0, "mkt_closed": 0.0, "total": 0.0
+                "close": 0.0, "sl": 0.0, "mkt_closed": 0.0,
+                "invalid_action": 0.0,  # <<< NEW
+                "total": 0.0
             }
             return 0.0
 
@@ -447,7 +486,10 @@ class FuturesIntradayReward:
         if getattr(self.env, "action_result", None) == ForexCode.ERROR_MARKET_CLOSED:
             r_mc = -self.w_market_closed
 
-        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_sl + r_mc
+        # --- NEW: 无效操作小惩罚 ---
+        r_invalid = -self.w_invalid_action if self._is_invalid_action() else 0.0
+
+        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_sl + r_mc + r_invalid
         if total > self.clip:
             total = self.clip
         elif total < -self.clip:
@@ -462,6 +504,7 @@ class FuturesIntradayReward:
             "close": float(r_close),
             "sl": float(r_sl),
             "mkt_closed": float(r_mc),
+            "invalid_action": float(r_invalid),  # <<< NEW
             "total": float(total),
         }
 

@@ -531,6 +531,7 @@ class CustomTradingEnv(gym.Env):
                     ts_now = self.bar_source.store.index[self.current_step]
                     self.logger.info(f"{ts_now} near_eod -> force {self.action} to HOLD")
                     self.action = Action.HOLD
+                    market_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
@@ -963,6 +964,40 @@ class CustomTradingEnv(gym.Env):
         day_start_realized = getattr(self, "_day_start_realized_cum", self.user_accounts.realized_pnl)
         realized_today_cash = self.user_accounts.realized_pnl - day_start_realized
 
+        # --- market_open (from store mask) ---
+        try:
+            market_open = 1 if float(self.bar_source.store.row_mask[int(self.current_step)]) >= 0.5 else 0
+        except Exception:
+            market_open = 0
+
+        # --- position status (flat?) ---
+        try:
+            have_pos = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
+        except Exception:
+            have_pos = False
+        is_flat = not have_pos
+
+        # --- entries left ---
+        used = int(getattr(self, "_entries_used_today", 0))
+        max_e = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_e <= 0:
+            max_e = 1
+        entries_left = max(0, max_e - max(0, used))
+
+        # --- near_eod open block policy folded into can_open ---
+        sp = self.config.trading.session_policy
+        block_open = bool(sp.block_open_near_eod)
+        near_eod = False
+        if self.config.trading.intraday_mode and block_open:
+            try:
+                near_eod = bool(self._near_eod())
+            except Exception:
+                near_eod = False
+
+        # can_open / can_close (effective permission)
+        can_open = (market_open == 1) and is_flat and (entries_left > 0) and (not (self.config.trading.intraday_mode and block_open and near_eod))
+        can_close = (market_open == 1) and (not is_flat)
+
         # --- R_cash scale (1R in cash) ---
         # Use entry_price if in position else current_price as ref
         ref_price = getattr(self, "current_price", self._last_valid_price)
@@ -1023,6 +1058,12 @@ class CustomTradingEnv(gym.Env):
             initial_balance=D(self.config.trading.initial_balance),
             realized_today_cash=realized_today_cash,
             R_cash=R_cash,
+
+            # v2 gates
+            market_open=int(market_open),
+            can_open=1 if can_open else 0,
+            can_close=1 if can_close else 0,
+
             action_result_code=action_result_code,
         )
 

@@ -40,17 +40,24 @@ FEATURES_AGENT: List[str] = [
 
 
 # -----------------------------
-# OBS features (train-time, 8D)
+# OBS features (train-time, v2)
 # -----------------------------
 FEATURES_AGENT_OBS: List[str] = [
-    "obs_pos_side_t",            # {-1,0,+1} position side: short=-1, flat=0, long=+1 (no long+short simultaneously)
+    # ---- NEW gates (v2) ----
+    "obs_market_open_t",         # {0,1} 当前bar是否可交易（mask>=0.5）
+    "obs_can_open_t",            # {0,1} 当前状态是否允许开仓（flat + entries_left + market_open + not blocked）
+    "obs_can_close_t",           # {0,1} 当前状态是否允许平仓（have_pos + market_open）
+
+    # ---- existing normalized features ----
+    "obs_pos_side_t",            # {-1,0,+1} short=-1, flat=0, long=+1
     "obs_entries_left_frac_t",   # [0,1] remaining entries fraction for today
-    "obs_minutes_to_eod_frac_t", # [0,1] minutes to end-of-day liquidation fraction
+    "obs_minutes_to_eod_frac_t", # [0,1] minutes to EOD fraction
     "obs_holding_frac_t",        # [0,1] holding age fraction of DAY_LEN (flat=0)
-    "obs_upnl_R_t",              # clipped cash PnL in R units (R_cash defined by stop-loss distance)
+    "obs_upnl_R_t",              # clipped cash PnL in R units
     "obs_realized_today_R_t",    # clipped realized-today cash PnL in R units
     "obs_equity_frac_t",         # clipped (equity - B0)/B0
     "obs_drawdown_frac_t",       # clipped drawdown/B0
+
     "obs_action_result_t",       # 上一步 action 执行结果（ForexCode），归一化到[0,1]
 ]
 
@@ -89,6 +96,11 @@ class AgentFeatureInput:
     realized_today_cash: Decimal = D0         # realized_pnl_cum - day_start_realized_cum
     R_cash: Decimal = D0                      # 1R cash scale (derived from SL distance, passed from env)
 
+    # ---- NEW gates (v2) ----
+    market_open: int = 1          # 0/1
+    can_open: int = 0             # 0/1 (env computed)
+    can_close: int = 0            # 0/1 (env computed)
+
     # optional (kept for backward compat / future use)
     sigma_entry: Decimal = D0
     sl_ticks: Decimal = D0
@@ -96,7 +108,10 @@ class AgentFeatureInput:
     sl_price: Decimal = D0
     tp_price: Decimal = D0
     minutes_to_timeout: Decimal = D0
+
+    # action result
     action_result_code: int = 0   # ForexCode.value (0..N)
+
 
 def _clip_dec(x: Decimal, lo: Decimal, hi: Decimal) -> Decimal:
     if x < lo:
@@ -247,6 +262,10 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
     - equity_frac: clip((equity-B0)/B0, -1, 1)
     - drawdown_frac: clip(drawdown/B0, 0, 1)
     """
+    # ---- NEW gates (v2) ----
+    obs_market_open = Decimal(1) if int(getattr(inp, "market_open", 0)) == 1 else Decimal(0)
+    obs_can_open = Decimal(1) if int(getattr(inp, "can_open", 0)) == 1 else Decimal(0)
+    obs_can_close = Decimal(1) if int(getattr(inp, "can_close", 0)) == 1 else Decimal(0)
 
     # action_result normalized to [0,1] using ForexCode enum dynamically
     max_code = max(int(x.value) for x in ForexCode)  # robust even if enum grows
@@ -315,6 +334,12 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
         drawdown_frac = _clip_dec(drawdown / B0, Decimal("0"), Decimal("1"))
 
     return {
+        # v2 gates
+        "obs_market_open_t": obs_market_open,
+        "obs_can_open_t": obs_can_open,
+        "obs_can_close_t": obs_can_close,
+
+        # existing
         "obs_pos_side_t": pos_side,
         "obs_entries_left_frac_t": entries_left_frac,
         "obs_minutes_to_eod_frac_t": minutes_to_eod_frac,
@@ -334,5 +359,4 @@ def agent_feature_vector(feat: Dict[str, Decimal], feature_list: Optional[List[s
     """
     if feature_list is None:
         feature_list = FEATURES_AGENT
-    vec = np.array([decimal_to_float(feat.get(k, D0)) for k in feature_list], dtype=np.float32)
-    return vec
+    return np.array([decimal_to_float(feat.get(k, D0)) for k in feature_list], dtype=np.float32)
