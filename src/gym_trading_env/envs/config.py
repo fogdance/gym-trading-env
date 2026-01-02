@@ -183,6 +183,9 @@ class TradingParams:
     intraday_mode: bool = True
     """True: session end 相关逻辑启用（配合 policy）"""
 
+    invalid_action_punish: float = 0.0
+    """无效操作惩罚"""
+
     # -----------------------------
     # NEW: SessionPolicy (strong type)
     # -----------------------------

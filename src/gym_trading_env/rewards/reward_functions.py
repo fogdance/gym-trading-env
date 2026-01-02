@@ -335,7 +335,6 @@ class FuturesIntradayReward:
         w_close=0.10,
         w_stoploss=0.20,
         w_market_closed=0.05,
-        w_invalid_action=0.02,   # <<< NEW: 小惩罚
         clip=1.0,
         eps=Decimal("1e-6"),
     ):
@@ -347,9 +346,10 @@ class FuturesIntradayReward:
         self.w_close = float(w_close)
         self.w_stoploss = float(w_stoploss)
         self.w_market_closed = float(w_market_closed)
-        self.w_invalid_action = float(w_invalid_action)  # <<< NEW
         self.clip = float(clip)
         self.eps = eps
+
+        self.w_invalid_action = self.env.config.trading.invalid_action_punish
 
         self.prev_equity = None
         self.prev_dd_cash = None
