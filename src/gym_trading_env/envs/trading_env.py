@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from collections import deque
 from typing import Tuple
-import os
+import os, shutil
 from pathlib import Path
 
 from gym_trading_env.utils.rpc_protocol import TradeSignal
@@ -198,7 +198,26 @@ class CustomTradingEnv(gym.Env):
         log_level = getattr(logging, self.config.debug.log_level.upper())
         self.logger.setLevel(log_level)
 
-        self.logger.info(f"config_path (absolute): {Path(config_path).resolve()}")
+        abs_cfg = Path(config_path).expanduser().resolve()
+        self.logger.info(f"config_path (absolute): {abs_cfg}")
+
+        run_dir = os.environ.get("DREAMER_RUN_DIR")
+        if run_dir:
+            run_dir = Path(run_dir).expanduser().resolve()
+            run_dir.mkdir(parents=True, exist_ok=True)
+
+            # 自定义名字，避免跟 dreamer 的 config.yaml 混淆
+            dst = run_dir / f"env_{abs_cfg.name}"
+            try:
+                if not dst.exists():                # 避免多进程重复覆盖
+                    shutil.copy2(abs_cfg, dst)
+                    self.logger.info(f"Backed up env config -> {dst}")
+                else:
+                    self.logger.info(f"Env config already exists, skip: {dst}")
+            except Exception as e:
+                self.logger.warning(f"Failed to backup env config: {e}")
+        else:
+            self.logger.warning("DREAMER_RUN_DIR not set; skip env config backup.")
 
         # DAY_LEN 只依赖 is_future，提前定好
         self.DAY_LEN = 345 if self.config.trading.is_future else 1440
