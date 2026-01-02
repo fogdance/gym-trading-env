@@ -931,6 +931,200 @@ class CustomTradingEnv(gym.Env):
 
 
 
+    def get_oracle_snapshot(self) -> dict:
+        """
+        Oracle snapshot for integration tests.
+        - MUST be pure "data extraction": NO feature computation here.
+        - Keys are stable; tests should only depend on this dict.
+        """
+
+        # --------- meta ----------
+        i = int(getattr(self, "current_step", 0))
+        ts = None
+        try:
+            ts = self.bar_source.store.index[i]
+        except Exception:
+            ts = None
+
+        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
+        use_obs = (mode == "obs")
+
+        # --------- market window (same logic as _get_obs, but no nan_to_num side effects) ----------
+        end_i = i
+        start_i = end_i - int(self.window_size) + 1
+        X_all = self.bar_source.store.X_market_obs if use_obs else self.bar_source.store.X_market_raw
+
+        if start_i >= 0:
+            market_seq = X_all[start_i:end_i + 1, :].astype(np.float32, copy=False)
+            pad_len = 0
+        else:
+            pad_len = -start_i
+            window = X_all[0:end_i + 1, :].astype(np.float32, copy=False)
+            pad = np.zeros((pad_len, X_all.shape[1]), dtype=np.float32)
+            market_seq = np.concatenate([pad, window], axis=0)
+
+        # --------- positions ----------
+        pm = getattr(self, "position_manager", None)
+        if pm is None:
+            long_positions = []
+            short_positions = []
+        else:
+            long_positions = getattr(pm, "long_positions", [])
+            short_positions = getattr(pm, "short_positions", [])
+
+        def _pos_to_dict(p):
+            if p is None:
+                return None
+            if hasattr(p, "to_dict"):
+                return p.to_dict()
+            # fallback: minimal
+            return {
+                "size": str(getattr(p, "size", "")),
+                "entry_price": str(getattr(p, "entry_price", "")),
+                "initial_margin": str(getattr(p, "initial_margin", "")),
+                "open_step": int(getattr(p, "open_step", 0)),
+                "stop_loss_price": None if getattr(p, "stop_loss_price", None) is None else str(getattr(p, "stop_loss_price")),
+                "take_profit_price": None if getattr(p, "take_profit_price", None) is None else str(getattr(p, "take_profit_price")),
+            }
+
+        # --------- accounting ----------
+        ua = getattr(self, "user_accounts", None)
+        ba = getattr(self, "broker_accounts", None)
+
+        cash_balance = ua.cash_balance.get_balance() if ua is not None else Decimal("0")
+        used_margin  = ua.used_margin.get_balance() if ua is not None else Decimal("0")
+        realized_cum = ua.realized_pnl if ua is not None else Decimal("0")
+        unrealized   = ua.unrealized_pnl if ua is not None else Decimal("0")
+        fee_cum      = ba.fee_income.get_balance() if ba is not None else Decimal("0")
+
+        realized_step = getattr(self, "realized_step", Decimal("0"))
+        fee_step      = getattr(self, "fee_step", Decimal("0"))
+
+        # --------- gates / derived inputs (match _refresh_agent_state semantics) ----------
+        try:
+            market_open = 1 if float(self.bar_source.store.row_mask[i]) >= 0.5 else 0
+        except Exception:
+            market_open = 0
+
+        # minutes_to_eod: same as _refresh_agent_state
+        eod_idx = int(getattr(self, "_eod_idx", getattr(self, "end_idx", i + 1)))
+        minutes_to_eod = max(0, eod_idx - i)
+
+        # entries
+        entries_used_today = int(getattr(self, "_entries_used_today", 0))
+        max_entries_per_day = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries_per_day <= 0:
+            max_entries_per_day = 1
+
+        # is_flat
+        try:
+            have_pos = (ua.long_position > Decimal("0")) or (ua.short_position > Decimal("0"))
+        except Exception:
+            have_pos = False
+        is_flat = not have_pos
+
+        # near_eod gating
+        sp = self.config.trading.session_policy
+        block_open = bool(getattr(sp, "block_open_near_eod", False))
+        near_eod = False
+        if self.config.trading.intraday_mode and block_open:
+            try:
+                near_eod = bool(self._near_eod())
+            except Exception:
+                near_eod = False
+
+        entries_left = max(0, max_entries_per_day - max(0, entries_used_today))
+        can_open = (market_open == 1) and is_flat and (entries_left > 0) and (not (self.config.trading.intraday_mode and block_open and near_eod))
+        can_close = (market_open == 1) and (not is_flat)
+
+        # last action_result_code
+        ar = getattr(self, "action_result", None)
+        action_result_code = int(getattr(ar, "value", 0))
+
+        # current_price / lot_size
+        current_price = getattr(self, "current_price", getattr(self, "_last_valid_price", Decimal("0")))
+        lot_size = getattr(self.config.trading, "lot_size", Decimal("1"))
+
+        # prev_max_equity
+        prev_max_equity = getattr(self, "max_equity", Decimal(str(getattr(self.config.trading, "initial_balance", 0))))
+
+        # realized_today_cash / R_cash: reuse cached values from _refresh_agent_state if exists
+        day_start_realized = getattr(self, "_day_start_realized_cum", realized_cum)
+        realized_today_cash = realized_cum - day_start_realized
+        R_cash = getattr(self, "_R_cash_last", Decimal("0"))
+        if R_cash == Decimal("0"):
+            # fallback (kept simple; still “取数”优先)
+            R_cash = Decimal("1")
+
+        snap = {
+            "meta": {
+                "schema_version": 1,
+                "step": i,
+                "ts": ts,
+                "mode": mode,
+                "day_i": int(getattr(self, "_day_i", 0)),
+                "start_idx": int(getattr(self, "start_idx", 0)),
+                "end_idx": int(getattr(self, "end_idx", 0)),
+                "window_size": int(getattr(self, "window_size", 0)),
+                "day_len": int(getattr(self, "DAY_LEN", 0)),
+            },
+            "market": {
+                "market_seq": market_seq,     # np.float32, shape=(window_size, F)
+                "pad_len": int(pad_len),
+                "features": list(self._OBS_FEATURES_MARKET),  # stable names for spec mapping
+            },
+            "positions": {
+                "long": [ _pos_to_dict(p) for p in long_positions ],
+                "short": [ _pos_to_dict(p) for p in short_positions ],
+            },
+            "accounting": {
+                "cash_balance": cash_balance,
+                "used_margin": used_margin,
+                "realized_pnl_step": realized_step,
+                "realized_pnl_cum": realized_cum,
+                "unrealized_pnl": unrealized,
+                "fee_step": fee_step,
+                "fee_cum": fee_cum,
+                "initial_balance": Decimal(str(getattr(self.config.trading, "initial_balance", "0"))),
+            },
+            "agent_input": {
+                "current_step": i,
+                "current_price": current_price,
+                "lot_size": Decimal(str(lot_size)),
+                "prev_max_equity": prev_max_equity,
+
+                "entries_used_today": entries_used_today,
+                "max_entries_per_day": max_entries_per_day,
+                "minutes_to_eod": int(minutes_to_eod),
+                "day_len": int(getattr(self, "DAY_LEN", 0)),
+
+                "realized_today_cash": realized_today_cash,
+                "R_cash": R_cash,
+
+                "market_open": int(market_open),
+                "can_open": 1 if can_open else 0,
+                "can_close": 1 if can_close else 0,
+                "action_result_code": int(action_result_code),
+            },
+            "daily": {},
+        }
+
+        # optional daily extras (only extraction)
+        if getattr(self, "_use_daily_context", False):
+            snap["daily"]["daily_context"] = (
+                self.bar_source.store.daily_ctx_obs[int(getattr(self, "_day_i", 0))] if use_obs
+                else self.bar_source.store.daily_ctx_raw[int(getattr(self, "_day_i", 0))]
+            ).astype(np.float32, copy=False)
+
+        if getattr(self, "_use_daily_seq_7", False):
+            snap["daily"]["daily_seq_7"] = (
+                self.bar_source.store.daily_seq7_obs[int(getattr(self, "_day_i", 0))] if use_obs
+                else self.bar_source.store.daily_seq7_raw[int(getattr(self, "_day_i", 0))]
+            ).astype(np.float32, copy=False)
+
+        return snap
+
+
     def _get_info(self):
         """
         Retrieve information about the current state.
