@@ -542,7 +542,7 @@ class CustomTradingEnv(gym.Env):
 
         block_open = bool(sp.block_open_near_eod)
         force_flatten = bool(sp.force_flatten_eod)
-
+        forced_code = None
         if block_open and self.config.trading.intraday_mode:
             if self._near_eod():
                 if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
@@ -550,7 +550,7 @@ class CustomTradingEnv(gym.Env):
                     ts_now = self.bar_source.store.index[self.current_step]
                     self.logger.info(f"{ts_now} near_eod -> force {self.action} to HOLD")
                     self.action = Action.HOLD
-                    market_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
+                    forced_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
@@ -577,6 +577,9 @@ class CustomTradingEnv(gym.Env):
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
+        if forced_code is not None:
+            market_code = forced_code
+            
         # --- Execute action ---
         self.action_result = market_code
 
