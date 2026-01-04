@@ -1023,12 +1023,15 @@ class CustomTradingEnv(gym.Env):
         if max_entries_per_day <= 0:
             max_entries_per_day = 1
 
-        # is_flat
+        # --- have_long / have_short / is_flat ---
         try:
-            have_pos = (ua.long_position > Decimal("0")) or (ua.short_position > Decimal("0"))
+            have_long = bool(ua.long_position > Decimal("0"))
+            have_short = bool(ua.short_position > Decimal("0"))
         except Exception:
-            have_pos = False
-        is_flat = not have_pos
+            have_long = False
+            have_short = False
+
+        is_flat = not (have_long or have_short)
 
         # near_eod gating
         sp = self.config.trading.session_policy
@@ -1041,8 +1044,20 @@ class CustomTradingEnv(gym.Env):
                 near_eod = False
 
         entries_left = max(0, max_entries_per_day - max(0, entries_used_today))
-        can_open = (market_open == 1) and is_flat and (entries_left > 0) and (not (self.config.trading.intraday_mode and block_open and near_eod))
-        can_close = (market_open == 1) and (not is_flat)
+        # --- base open permission ---
+        base_can_open = (
+            (market_open == 1)
+            and is_flat
+            and (entries_left > 0)
+            and (not (self.config.trading.intraday_mode and block_open and near_eod))
+        )
+
+        can_long_open = 1 if base_can_open else 0
+        can_short_open = 1 if base_can_open else 0
+
+        # --- close permission: 按 side 拆开，避免 NO_POSITION_TO_CLOSE ---
+        can_long_close = 1 if ((market_open == 1) and have_long) else 0
+        can_short_close = 1 if ((market_open == 1) and have_short) else 0
 
         # last action_result_code
         ar = getattr(self, "action_result", None)
@@ -1109,8 +1124,10 @@ class CustomTradingEnv(gym.Env):
                 "R_cash": R_cash,
 
                 "market_open": int(market_open),
-                "can_open": 1 if can_open else 0,
-                "can_close": 1 if can_close else 0,
+                "can_long_open": int(can_long_open),
+                "can_short_open": int(can_short_open),
+                "can_long_close": int(can_long_close),
+                "can_short_close": int(can_short_close),
                 "action_result_code": int(action_result_code),
             },
             "daily": {},
@@ -1196,10 +1213,13 @@ class CustomTradingEnv(gym.Env):
 
         # --- position status (flat?) ---
         try:
-            have_pos = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
+            have_long = (self.user_accounts.long_position > D0)
+            have_short = (self.user_accounts.short_position > D0)
         except Exception:
-            have_pos = False
-        is_flat = not have_pos
+            have_long = False
+            have_short = False
+
+        is_flat = (not have_long) and (not have_short)
 
         # --- entries left ---
         used = int(getattr(self, "_entries_used_today", 0))
@@ -1217,10 +1237,13 @@ class CustomTradingEnv(gym.Env):
                 near_eod = bool(self._near_eod())
             except Exception:
                 near_eod = False
+        open_blocked = (self.config.trading.intraday_mode and block_open and near_eod)
 
-        # can_open / can_close (effective permission)
-        can_open = (market_open == 1) and is_flat and (entries_left > 0) and (not (self.config.trading.intraday_mode and block_open and near_eod))
-        can_close = (market_open == 1) and (not is_flat)
+        can_long_open  = (market_open == 1) and is_flat and (entries_left > 0) and (not open_blocked)
+        can_short_open = (market_open == 1) and is_flat and (entries_left > 0) and (not open_blocked)
+
+        can_long_close  = (market_open == 1) and have_long
+        can_short_close = (market_open == 1) and have_short
 
         # --- R_cash scale (1R in cash) ---
         # Use entry_price if in position else current_price as ref
@@ -1285,8 +1308,10 @@ class CustomTradingEnv(gym.Env):
 
             # v2 gates
             market_open=int(market_open),
-            can_open=1 if can_open else 0,
-            can_close=1 if can_close else 0,
+            can_long_open=1 if can_long_open else 0,
+            can_short_open=1 if can_short_open else 0,
+            can_long_close=1 if can_long_close else 0,
+            can_short_close=1 if can_short_close else 0,
 
             action_result_code=action_result_code,
         )

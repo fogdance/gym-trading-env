@@ -45,8 +45,10 @@ FEATURES_AGENT: List[str] = [
 FEATURES_AGENT_OBS: List[str] = [
     # ---- NEW gates (v2) ----
     "obs_market_open_t",         # {0,1} 当前bar是否可交易（mask>=0.5）
-    "obs_can_open_t",            # {0,1} 当前状态是否允许开仓（flat + entries_left + market_open + not blocked）
-    "obs_can_close_t",           # {0,1} 当前状态是否允许平仓（have_pos + market_open）
+    "obs_can_long_open_t",       # {0,1} 是否允许开多
+    "obs_can_short_open_t",      # {0,1} 是否允许开空
+    "obs_can_long_close_t",      # {0,1} 是否允许平多（有多 + market_open）
+    "obs_can_short_close_t",     # {0,1} 是否允许平空（有空 + market_open）
 
     # ---- existing normalized features ----
     "obs_pos_side_t",            # {-1,0,+1} short=-1, flat=0, long=+1
@@ -98,8 +100,10 @@ class AgentFeatureInput:
 
     # ---- NEW gates (v2) ----
     market_open: int = 1          # 0/1
-    can_open: int = 0             # 0/1 (env computed)
-    can_close: int = 0            # 0/1 (env computed)
+    can_long_open: int = 0
+    can_short_open: int = 0
+    can_long_close: int = 0
+    can_short_close: int = 0
 
     # optional (kept for backward compat / future use)
     sigma_entry: Decimal = D0
@@ -264,8 +268,10 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
     """
     # ---- NEW gates (v2) ----
     obs_market_open = Decimal(1) if int(getattr(inp, "market_open", 0)) == 1 else Decimal(0)
-    obs_can_open = Decimal(1) if int(getattr(inp, "can_open", 0)) == 1 else Decimal(0)
-    obs_can_close = Decimal(1) if int(getattr(inp, "can_close", 0)) == 1 else Decimal(0)
+    obs_can_long_open  = Decimal(1) if int(getattr(inp, "can_long_open", 0)) == 1 else Decimal(0)
+    obs_can_short_open = Decimal(1) if int(getattr(inp, "can_short_open", 0)) == 1 else Decimal(0)
+    obs_can_long_close = Decimal(1) if int(getattr(inp, "can_long_close", 0)) == 1 else Decimal(0)
+    obs_can_short_close= Decimal(1) if int(getattr(inp, "can_short_close", 0)) == 1 else Decimal(0)
 
     # action_result normalized to [0,1] using ForexCode enum dynamically
     max_code = max(int(x.value) for x in ForexCode)  # robust even if enum grows
@@ -336,8 +342,10 @@ def compute_agent_features_obs(inp: AgentFeatureInput, raw: Dict[str, Decimal]) 
     return {
         # v2 gates
         "obs_market_open_t": obs_market_open,
-        "obs_can_open_t": obs_can_open,
-        "obs_can_close_t": obs_can_close,
+        "obs_can_long_open_t": obs_can_long_open,
+        "obs_can_short_open_t": obs_can_short_open,
+        "obs_can_long_close_t": obs_can_long_close,
+        "obs_can_short_close_t": obs_can_short_close,
 
         # existing
         "obs_pos_side_t": pos_side,

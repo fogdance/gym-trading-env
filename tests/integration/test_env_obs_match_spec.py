@@ -170,8 +170,10 @@ def extract_agent_snapshot_from_env(env) -> AgentSnapshot:
         realized_today_cash=_to_decimal(ain["realized_today_cash"]),
         R_cash=_to_decimal(ain["R_cash"]),
         market_open=int(ain["market_open"]),
-        can_open=int(ain["can_open"]),
-        can_close=int(ain["can_close"]),
+        can_long_open=int(ain["can_long_open"]),
+        can_short_open=int(ain["can_short_open"]),
+        can_long_close=int(ain["can_long_close"]),
+        can_short_close=int(ain["can_short_close"]),
         action_result_code=int(ain["action_result_code"]),
         action_result_max_code=_max_code(),
     )

@@ -418,8 +418,10 @@ minutes_to_timeout_t
 列顺序：
 
 obs_market_open_t
-obs_can_open_t
-obs_can_close_t
+obs_can_long_open_t
+obs_can_short_open_t
+obs_can_long_close_t
+obs_can_short_close_t
 obs_pos_side_t
 obs_entries_left_frac_t
 obs_minutes_to_eod_frac_t
@@ -432,8 +434,10 @@ obs_action_result_t
 
 ### 规则
 - obs_market_open_t = 1 if market_open==1 else 0
-- obs_can_open_t    = 1 if can_open==1 else 0
-- obs_can_close_t   = 1 if can_close==1 else 0
+- obs_can_long_open_t = 1 if can_long_open==1 else 0
+- obs_can_short_open_t = 1 if can_short_open==1 else 0
+- obs_can_long_close_t = 1 if can_long_close==1 else 0
+- obs_can_short_close_t = 1 if can_short_close==1 else 0
 
 - obs_pos_side_t:
   - long only => +1

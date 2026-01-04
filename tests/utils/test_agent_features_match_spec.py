@@ -74,8 +74,10 @@ def _run_case(inp: AgentFeatureInput, *, title: str):
         realized_today_cash=Decimal(str(inp.realized_today_cash)),
         R_cash=Decimal(str(inp.R_cash)),
         market_open=int(inp.market_open),
-        can_open=int(inp.can_open),
-        can_close=int(inp.can_close),
+        can_long_open=int(inp.can_long_open),
+        can_short_open=int(inp.can_short_open),
+        can_long_close=int(inp.can_long_close),
+        can_short_close=int(inp.can_short_close),
         action_result_code=int(inp.action_result_code),
         action_result_max_code=_max_code(),
     )
@@ -131,8 +133,10 @@ def test_agent_features_match_spec_cases():
         realized_today_cash=D0,
         R_cash=D("100"),
         market_open=1,
-        can_open=1,
-        can_close=0,
+        can_long_open=1,
+        can_short_open=1,
+        can_long_close=0,
+        can_short_close=0,
         action_result_code=int(ForexCode.SUCCESS.value),
     )
     _run_case(inp, title="flat")
@@ -159,8 +163,10 @@ def test_agent_features_match_spec_cases():
         realized_today_cash=D0,
         R_cash=D("100"),
         market_open=1,
-        can_open=0,
-        can_close=1,
+        can_long_open=0,
+        can_short_open=0,
+        can_long_close=1,
+        can_short_close=0,
         action_result_code=int(ForexCode.SUCCESS.value),
     )
     _run_case(inp2, title="long1")
@@ -187,8 +193,10 @@ def test_agent_features_match_spec_cases():
         realized_today_cash=D("50"),
         R_cash=D("100"),
         market_open=1,
-        can_open=0,
-        can_close=1,
+        can_long_open=0,
+        can_short_open=0,
+        can_long_close=0,
+        can_short_close=1,
         action_result_code=int(ForexCode.SUCCESS.value),
     )
     _run_case(inp3, title="short_multi")

@@ -116,8 +116,11 @@ class AgentSnapshot:
     R_cash: Decimal = D0
 
     market_open: int = 1
-    can_open: int = 0
-    can_close: int = 0
+    can_long_open: int = 0
+    can_short_open: int = 0
+    can_long_close: int = 0
+    can_short_close: int = 0
+
 
     action_result_code: int = 0
     action_result_max_code: int = 1  # ForexCode.max(value)
@@ -147,8 +150,11 @@ FEATURES_AGENT: List[str] = [
 
 FEATURES_AGENT_OBS: List[str] = [
     "obs_market_open_t",
-    "obs_can_open_t",
-    "obs_can_close_t",
+    "obs_can_long_open_t",
+    "obs_can_short_open_t",
+    "obs_can_long_close_t",
+    "obs_can_short_close_t",
+
     "obs_pos_side_t",
     "obs_entries_left_frac_t",
     "obs_minutes_to_eod_frac_t",
@@ -216,8 +222,12 @@ def compute_agent_features_raw_spec(s: AgentSnapshot) -> Dict[str, Decimal]:
 
 def compute_agent_features_obs_spec(s: AgentSnapshot, raw: Dict[str, Decimal]) -> Dict[str, Decimal]:
     obs_market_open = Decimal(1) if int(s.market_open) == 1 else Decimal(0)
-    obs_can_open = Decimal(1) if int(s.can_open) == 1 else Decimal(0)
-    obs_can_close = Decimal(1) if int(s.can_close) == 1 else Decimal(0)
+
+    obs_can_long_open  = Decimal(1) if int(s.can_long_open) == 1 else Decimal(0)
+    obs_can_short_open = Decimal(1) if int(s.can_short_open) == 1 else Decimal(0)
+    obs_can_long_close = Decimal(1) if int(s.can_long_close) == 1 else Decimal(0)
+    obs_can_short_close= Decimal(1) if int(s.can_short_close) == 1 else Decimal(0)
+
 
     max_code = int(s.action_result_max_code)
     code = int(s.action_result_code)
@@ -273,8 +283,10 @@ def compute_agent_features_obs_spec(s: AgentSnapshot, raw: Dict[str, Decimal]) -
 
     return {
         "obs_market_open_t": obs_market_open,
-        "obs_can_open_t": obs_can_open,
-        "obs_can_close_t": obs_can_close,
+        "obs_can_long_open_t": obs_can_long_open,
+        "obs_can_short_open_t": obs_can_short_open,
+        "obs_can_long_close_t": obs_can_long_close,
+        "obs_can_short_close_t": obs_can_short_close,
         "obs_pos_side_t": pos_side,
         "obs_entries_left_frac_t": entries_left_frac,
         "obs_minutes_to_eod_frac_t": minutes_to_eod_frac,
