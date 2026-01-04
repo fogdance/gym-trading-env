@@ -57,6 +57,46 @@ This environment is designed specifically for Forex (foreign exchange) trading a
     ```bash
     python -m unittest tests.test_position_manager.TestPositionManager
     ```
+[x]窗口左pading
+[x] 节假日
+[x] 周五-周一
+[x] 无夜盘
+[x] 归一化
+[x] window_size，而不是返回345分时图
+[x] 默认带止损，可配置
+[x]训练数据
+[x]指标全部输出到html
+[x] live卡住
+[] live中间断掉，恢复持仓信息
+[x] 15:00收盘后，疯狂reset env
+[x] live加载ckpk后，好像还是乱开仓，使用train试试
+
+优化
+[x] obs，agent增加action的操作结果
+[-] obs剩余开仓次数, 已有
+[x] 日内高低波动幅度
+[x] 开盘价到当前价格的波动幅度
+[x] 备份dreamerv3，env共2份配置
+[] 窗口60,增加到120
+[] 模型参数50M，增加到100M
+[x] 没仓位去平仓
+    [x] 当前持仓的情况下还会去开仓
+[x] 加1T ssd
+[x] 期货品种焦煤换螺纹钢/甲醇
+
+[x] 蒙特卡洛
+[x] 限价->市价
+[x] market/agent全raw/obs单元测试，集成测试——正确性
+
+先把这 3 条曲线跑顺：
+log/env/episode_return_pct（越高越好）
+
+log/env/max_drawdown_pct（越低越好）
+
+log/env/profit_factor（>1 且稳定）
+for file in $(find  . -name "*.py"); do echo -e "\n\n### File: $file ###\n"; cat "$file"; done | xclip -sel clip
+for file in $(find  tests -name "*.py"); do echo -e "\n\n### File: $file ###\n"; cat "$file"; done | xclip -sel clip
+
 
 ## How to Use
 
