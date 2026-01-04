@@ -52,13 +52,20 @@ CORE_LOG_ENV_KEYS = [
     "current_drawdown_pct",
     "max_drawdown_pct",
     "trades_opened",
+    "trades_closed",
+    "total_trades",
+    "winning_trades",
+    "win_rate",
     "opens_per_1000_steps",
     "fee_total",
     "fee_drag_ratio",
     "profit_factor",
     "expectancy",
     "invalid_action",
+    "invalid_action_total",
+    "invalid_action_ratio",
 ]
+
 
 
 class CustomTradingEnv(gym.Env):
