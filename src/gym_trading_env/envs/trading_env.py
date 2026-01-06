@@ -650,15 +650,8 @@ class CustomTradingEnv(gym.Env):
 
         # ---------------------------------------------------------
         #   分界线：action 已经在 t 执行完了
-        #    live：现在立刻 RPC -> 然后等下一根K
         # ---------------------------------------------------------
-        if self._live_mode and self.action_result == ForexCode.SUCCESS:
-            self._rpc_send_after_execute(
-                ts=self.bar_source.store.index[self.current_step],
-                action=self.action,
-                result=self.action_result,
-                price=action_price,
-            )
+
 
         #
         # 推进到 t+1 → 设置 current_price → 先跑止损 → 再 update_unrealized → metrics.update
@@ -1457,6 +1450,13 @@ class CustomTradingEnv(gym.Env):
         self.record_trade(trade_record)
         self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=self.bar_source.store.index[self.current_step],
+                action=Action.LONG_OPEN,
+                result=ForexCode.SUCCESS,
+                price=ask_price,
+            )
         return ForexCode.SUCCESS
 
 
@@ -1540,6 +1540,14 @@ class CustomTradingEnv(gym.Env):
             },
         )
         self.record_trade(trade_record)
+
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=self.bar_source.store.index[self.current_step],
+                action=Action.LONG_CLOSE,
+                result=ForexCode.SUCCESS,
+                price=bid_price,
+            )
         return ForexCode.SUCCESS
 
    
@@ -1625,6 +1633,13 @@ class CustomTradingEnv(gym.Env):
         self.record_trade(trade_record)
         self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=self.bar_source.store.index[self.current_step],
+                action=Action.SHORT_OPEN,
+                result=ForexCode.SUCCESS,
+                price=bid_price,
+            )
         return ForexCode.SUCCESS
    
 
@@ -1706,6 +1721,14 @@ class CustomTradingEnv(gym.Env):
             },
         )
         self.record_trade(trade_record)
+
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=self.bar_source.store.index[self.current_step],
+                action=Action.SHORT_CLOSE,
+                result=ForexCode.SUCCESS,
+                price=ask_price,
+            )
         return ForexCode.SUCCESS
 
 
