@@ -324,6 +324,9 @@ class FuturesIntradayReward:
     - 主项：Δequity（含未实现）/ R_cash 归一化
     - 惩罚：手续费、回撤增量、临近EOD持仓、闭市乱操作、止损触发
     - NEW：无效操作小惩罚（如 flat 还 close / 有仓还 open / near_eod 禁开 等）
+    期货日内奖励（baseline）+ 解决乱点：
+    ✅ 方案B（主）：只罚“重复无效操作”（invalid streak 递增）
+    ✅ 方案A（兜底）：每次无效操作一个极小时间/操作成本（按 episode 步数归一化）
     """
     def __init__(
         self,
@@ -349,11 +352,60 @@ class FuturesIntradayReward:
         self.clip = float(clip)
         self.eps = eps
 
-        self.w_invalid_action = self.env.config.trading.invalid_action_punish
+        # 方案B：重复无效动作的基础惩罚强度
+        self.w_invalid_action = float(getattr(self.env.config.trading, "invalid_action_punish", 0.02))
 
+        # 方案A：每次无效动作的“时间/操作成本”，按 episode 步数均摊（不改经济账）
+        invalid_time_cost_total = float(getattr(self.env.config.trading, "invalid_time_cost_total", 0.2))
+        self.invalid_time_cost_total = max(0.0, invalid_time_cost_total)
+
+        # streak 上限
+        self.invalid_streak_cap = int(getattr(self.env.config.trading, "invalid_streak_cap", 10))
+        if self.invalid_streak_cap <= 0:
+            self.invalid_streak_cap = 10
+
+        # 内部状态
         self.prev_equity = None
         self.prev_dd_cash = None
         self.prev_stoploss_fired = 0
+        self.invalid_streak = 0  # 连续无效次数
+
+        # 每步 time cost：初始化时先算一次；如果拿不到 episode 步数，就用 DAY_LEN/345 兜底
+        self._invalid_time_cost_per_step = self._compute_invalid_time_cost_per_step()
+
+    def reset(self):
+        self.prev_equity = None
+        self.prev_dd_cash = None
+        self.prev_stoploss_fired = 0
+        self.invalid_streak = 0
+        self._invalid_time_cost_per_step = self._compute_invalid_time_cost_per_step()
+
+    def _compute_invalid_time_cost_per_step(self) -> float:
+        """
+        把 invalid_time_cost_total 均摊到 episode 步数上，避免“不同数据要调参”。
+        优先用 training.max_episode_steps / episode_length，其次 DAY_LEN。
+        """
+        steps = None
+        cfg = getattr(self.env, "config", None)
+        tr = getattr(cfg, "training", None) if cfg is not None else None
+
+        if tr is not None:
+            ms = int(getattr(tr, "max_episode_steps", 0) or 0)
+            if ms > 0:
+                steps = ms
+            else:
+                ep_len = getattr(tr, "episode_length", None)
+                if ep_len is not None:
+                    try:
+                        steps = int(ep_len)
+                    except Exception:
+                        steps = None
+
+        if steps is None:
+            steps = int(getattr(self.env, "DAY_LEN", 345) or 345)
+        steps = max(1, steps)
+
+        return float(self.invalid_time_cost_total) / float(steps)
 
     def _equity(self) -> Decimal:
         # 含未实现：用 user_accounts.equity()（你现在就是这样算风控/metrics 的）
@@ -369,41 +421,38 @@ class FuturesIntradayReward:
         # rc 可能是 float/np scalar
         return max(Decimal(str(rc)), self.eps)
 
-    def _is_invalid_action(self) -> bool:
-        """
-        根据 ForexCode 精确判断是否“无效操作”(invalid action)：
-        - SUCCESS: 不罚
-        - ERROR_MARKET_CLOSED: 由 r_mc 单独罚，避免叠加
-        - 其余 ERROR_*：均视为无效操作（如没仓位去平仓、持仓还开仓、资金不足、near_eod 禁开等）
-        """
+    def _action_code(self) -> int | None:
         ar = getattr(self.env, "action_result", None)
         if ar is None:
-            return False
-
-        # 统一成 int code（兼容 env.action_result 可能是 Enum 或 int）
+            return None
         try:
-            code = int(getattr(ar, "value", ar))
+            return int(getattr(ar, "value", ar))
         except Exception:
+            return None
+
+    def _invalid_weight(self, code: int) -> float:
+        """
+        可选：不同错误给不同权重（不改经济账，只是“控制成本” shaping）。
+        这里默认：保证金不足稍轻（0.5），其他 1.0。
+        """
+        if code == int(ForexCode.ERROR_NO_ENOUGH_MONEY.value):
+            return 0.5
+        return 1.0
+
+    def _is_invalid_action(self) -> bool:
+        code = self._action_code()
+        if code is None:
             return False
 
-        # SUCCESS 不罚
         if code == int(ForexCode.SUCCESS.value):
             return False
 
-        # market closed 单独罚，避免 double-penalty
+        # market closed 单独罚（r_mc），避免 double-penalty，也不计入 streak
         if code == int(ForexCode.ERROR_MARKET_CLOSED.value):
             return False
 
-        # 这些都算 invalid（你现在的全部非闭市错误）
-        invalid_codes = {
-            int(ForexCode.ERROR_HIT_MAX_POSITION.value),
-            int(ForexCode.ERROR_NO_POSITION_TO_CLOSE.value),
-            int(ForexCode.ERROR_NO_ENOUGH_MONEY.value),
-            int(ForexCode.ERROR_OPEN_POSITION.value),
-            int(ForexCode.ERROR_BLOCKED_NEAR_EOD.value),
-        }
-        return code in invalid_codes
-
+        # ✅ 其余全部 ERROR_* 都算 invalid
+        return True
 
     def __call__(self, obs=None):
         eq = self._equity()
@@ -418,13 +467,16 @@ class FuturesIntradayReward:
             self.prev_equity = eq
             self.prev_dd_cash = dd_cash
             self.prev_stoploss_fired = int(getattr(self.env, "stop_loss_fired", 0))
-            # 初始化不发奖惩
-            self.env._reward_debug = {
+            self.invalid_streak = 0
+            self._reward_debug = {
                 "pnl": 0.0, "fee": 0.0, "dd": 0.0, "eod": 0.0,
                 "close": 0.0, "sl": 0.0, "mkt_closed": 0.0,
-                "invalid_action": 0.0,  # <<< NEW
+                "invalid_time": 0.0,
+                "invalid_streak": 0.0,
+                "invalid_total": 0.0,
                 "total": 0.0
             }
+            self.env._reward_debug = self._reward_debug
             return 0.0
 
         scale = self._R_cash()
@@ -460,7 +512,7 @@ class FuturesIntradayReward:
 
         r_eod = 0.0
         if self.eod_grace > 0 and in_market and m2eod < self.eod_grace:
-            frac = float(self.eod_grace - m2eod) / float(self.eod_grace)  # 0..1
+            frac = float(self.eod_grace - m2eod) / float(self.eod_grace)
             r_eod = -self.w_eod * frac
 
         # --- 平仓事件小奖励（避免太大）---
@@ -486,8 +538,32 @@ class FuturesIntradayReward:
         if getattr(self.env, "action_result", None) == ForexCode.ERROR_MARKET_CLOSED:
             r_mc = -self.w_market_closed
 
-        # --- NEW: 无效操作小惩罚 ---
-        r_invalid = -self.w_invalid_action if self._is_invalid_action() else 0.0
+        # =========================================================
+        # ✅ 方案A + 方案B：无效动作惩罚（不改手续费/经济账）
+        #   A：每次无效动作极小 time cost（兜底）
+        #   B：只罚“重复无效”（streak>1 才开始加重）
+        # =========================================================
+        r_invalid_time = 0.0
+        r_invalid_streak = 0.0
+
+        code = self._action_code()
+        invalid = self._is_invalid_action()
+
+        if invalid:
+            self.invalid_streak += 1
+            s = min(self.invalid_streak, self.invalid_streak_cap)
+
+            # 方案A：每次无效都扣一点点（很轻）
+            r_invalid_time = -float(self._invalid_time_cost_per_step)
+
+            # 方案B：只罚重复（第1次不罚/极轻），第2次开始线性加重
+            # 你要更狠也可以改成 (s-1)^2
+            w = self._invalid_weight(int(code) if code is not None else 1)
+            r_invalid_streak = -self.w_invalid_action * float(max(0, s - 1)) * float(w)
+        else:
+            self.invalid_streak = 0
+
+        r_invalid = r_invalid_time + r_invalid_streak
 
         total = r_pnl + r_fee + r_dd + r_eod + r_close + r_sl + r_mc + r_invalid
         if total > self.clip:
@@ -495,7 +571,6 @@ class FuturesIntradayReward:
         elif total < -self.clip:
             total = -self.clip
 
-        # 给 TB/调试用（你后面可以塞进 log/env）
         self.env._reward_debug = {
             "pnl": float(r_pnl),
             "fee": float(r_fee),
@@ -504,7 +579,10 @@ class FuturesIntradayReward:
             "close": float(r_close),
             "sl": float(r_sl),
             "mkt_closed": float(r_mc),
-            "invalid_action": float(r_invalid),  # <<< NEW
+            "invalid_time": float(r_invalid_time),
+            "invalid_streak": float(r_invalid_streak),
+            "invalid_total": float(r_invalid),
+            "invalid_streak_len": int(self.invalid_streak),
             "total": float(total),
         }
 
@@ -514,7 +592,6 @@ class FuturesIntradayReward:
         self.prev_stoploss_fired = sl_now
 
         return float(total)
-
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
