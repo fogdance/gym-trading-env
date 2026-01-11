@@ -899,35 +899,123 @@ class CustomTradingEnv(gym.Env):
         except Exception as e:
             self.logger.error(f"failed to append live action log: {e}")
 
+
     def _load_actions_for_trading_day(self, trading_day: int):
         """
-        从 action logger 读取某个交易日的全部动作记录。
+        从 action logger 读取某个交易日的全部动作记录，并做 env 侧强过滤：
+        - trading_day 必须匹配（如果记录里有 trading_day 字段）
+        - step 必须落在 store 里该 trading_day 的范围内
+        - 若有 ts 字段，则必须与 store.index[step] 对齐（防止窗口漂移导致 step 映射错位）
         """
         if self._action_logger is None:
             return []
 
         symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
+
+        # 先算该 trading_day 在 store 里的 step 范围（硬约束）
         try:
-            return list(self._action_logger.load_for_day(symbol=symbol, trading_day=int(trading_day)))
+            td = int(trading_day)
+            day_sel = np.flatnonzero(self.bar_source.store.row_trading_day == td)
+            if day_sel.size == 0:
+                self.logger.warning(f"[LIVE replay] no rows in store for trading_day={td}, skip load actions")
+                return []
+            day_min_step = int(day_sel.min())
+            day_max_step = int(day_sel.max())
+        except Exception as e:
+            self.logger.error(f"[LIVE replay] failed to compute day range for trading_day={trading_day}: {e}")
+            return []
+
+        # 读取 logger
+        try:
+            raw = list(self._action_logger.load_for_day(symbol=symbol, trading_day=int(trading_day)))
         except Exception as e:
             self.logger.error(f"failed to load actions for trading_day={trading_day}: {e}")
             return []
+
+        if not raw:
+            return []
+
+        def _ts_matches(step_i: int, ts_str: str) -> bool:
+            try:
+                # 日志里 ts 是 ts_to_naive_str() 产物（本地时间 naive string）
+                ts_log = pd.Timestamp(ts_str)
+                ts_log = ts_log.tz_localize(DEFAULT_TZ)
+
+                ts_store = self.bar_source.store.index[int(step_i)]
+                # 允许 0~59 秒误差（字符串格式/对齐造成的小抖动）
+                return abs((ts_store - ts_log).total_seconds()) < 60
+            except Exception:
+                # ts 解析失败就不拿 ts 当约束（不因日志脏就直接全挂）
+                return True
+
+        filtered = []
+        for rec in raw:
+            try:
+                step_i = int(rec.get("step", -1))
+            except Exception:
+                continue
+
+            # step 范围硬过滤
+            if step_i < day_min_step or step_i > day_max_step:
+                continue
+
+            # trading_day 字段存在时必须匹配
+            if "trading_day" in rec:
+                try:
+                    if int(rec.get("trading_day")) != int(trading_day):
+                        continue
+                except Exception:
+                    continue
+
+            # ts 对齐过滤（如果有 ts）
+            ts_str = rec.get("ts", None)
+            if ts_str:
+                if not _ts_matches(step_i, ts_str):
+                    continue
+
+            filtered.append(rec)
+
+        if not filtered:
+            return []
+
+        # 同一个 step 多条记录 -> 保留最后一条（按 ts 或输入顺序）
+        # 先按 (step, ts) 排序，ts 为空时放最后
+        def _sort_key(r):
+            s = int(r.get("step", 0))
+            t = r.get("ts", "")
+            return (s, t)
+
+        filtered.sort(key=_sort_key)
+
+        dedup = {}
+        for r in filtered:
+            dedup[int(r.get("step", 0))] = r  # 覆盖 => 保留最后一条
+
+        # 返回按 step 升序的列表
+        return [dedup[k] for k in sorted(dedup.keys())]
+
 
     def _replay_from_action_log(self):
         """
         在 live reset 后，根据历史 action 序列重放一遍 env.step()，
         恢复到崩溃前的内部状态（position / ledger / metrics / agent_state / reward 内部状态等）。
+
+        重要：多日运行可能存在“非当日记录 / step 映射错位 / 重复 step”。
+        这里依赖 _load_actions_for_trading_day() 的强过滤与去重保证 replay 只吃当日有效轨迹。
         """
         td_int = yyyymmdd_int(self.bar_source._trading_date)
-        actions = self._load_actions_for_trading_day(td_int)
-        if not actions:
-            self.logger.info("[LIVE replay] no actions for today; skip replay.")
+        actions_sorted = self._load_actions_for_trading_day(td_int)
+
+        if not actions_sorted:
+            self.logger.info("[LIVE replay] no valid actions for today; skip replay.")
             return
 
-        # 只用 step 排序，保证顺序一致
-        actions_sorted = sorted(actions, key=lambda r: int(r.get("step", 0)))
+        self.logger.info(
+            f"[LIVE replay] start replay {len(actions_sorted)} actions, "
+            f"from step={int(actions_sorted[0].get('step', 0))}"
+        )
 
-        self.logger.info(f"[LIVE replay] start replay {len(actions_sorted)} actions, from step={actions_sorted[0]['step']}")
+        hold_idx = self.valid_actions.index(Action.HOLD)
 
         self._replaying = True
         try:
@@ -935,22 +1023,50 @@ class CustomTradingEnv(gym.Env):
                 target_step = int(rec.get("step", 0))
                 act_idx = int(rec.get("action", 0))
 
-                # 防御性：如果当前 step 落后于日志里的 step，用 HOLD 补齐（理论上不应该发生）
+                # action index 越界直接跳过（防脏数据）
+                if act_idx < 0 or act_idx >= len(self.valid_actions):
+                    self.logger.warning(f"[LIVE replay] skip invalid action index={act_idx} at step={target_step}")
+                    continue
+
+                # 如果日志 step 比当前还小（比如 reset 起点没按 first_step），无法回退，直接跳过
+                if int(self.current_step) > target_step:
+                    self.logger.warning(
+                        f"[LIVE replay] skip past action: current_step={int(self.current_step)} > target_step={target_step}"
+                    )
+                    continue
+
+                # 防御性：如果 current_step 落后，用 HOLD 补齐
                 while int(self.current_step) < target_step:
-                    self.step(self.valid_actions.index(Action.HOLD))
+                    _, _, term, trunc, _ = self.step(hold_idx)
+                    if term or trunc:
+                        self.logger.error(
+                            f"[LIVE replay] terminated/truncated while padding HOLD to target_step={target_step}, "
+                            f"current_step={int(self.current_step)} term={term} trunc={trunc}"
+                        )
+                        return
 
-                obs, rew, term, trunc, info = self.step(act_idx)
-
+                _, _, term, trunc, _ = self.step(act_idx)
                 if term or trunc:
                     self.logger.error(
                         f"[LIVE replay] env terminated/truncated during replay at "
-                        f"step={self.current_step}, term={term}, trunc={trunc}"
+                        f"step={int(self.current_step)}, term={term}, trunc={trunc}"
                     )
-                    break
+                    return
         finally:
             self._replaying = False
 
-        self.logger.info(f"[LIVE replay] finished at current_step={self.current_step}")
+        # 打印 replay 后的仓位状态
+        try:
+            ua = self.user_accounts
+            long_pos = getattr(ua, "long_position", None)
+            short_pos = getattr(ua, "short_position", None)
+            eq = getattr(ua, "equity", lambda: None)()
+            self.logger.info(
+                f"[LIVE replay] finished at current_step={int(self.current_step)} | "
+                f"long={long_pos}, short={short_pos}, equity={eq}"
+            )
+        except Exception as e:
+            self.logger.warning(f"[LIVE replay] finished but failed to log positions: {e}")
 
 
     def _sync_day_and_minute(self):
