@@ -183,8 +183,14 @@ class TradingParams:
     intraday_mode: bool = True
     """True: session end 相关逻辑启用（配合 policy）"""
 
-    invalid_action_punish: float = 0.0
-    """无效操作惩罚"""
+    invalid_action_punish: float = 0.0 # 0.02
+    """重复无效动作的基础惩罚强度"""
+
+    invalid_time_cost_total: float = 0.0 # 0.2
+    """每次无效动作的“时间/操作成本”，按 episode 步数均摊（不改经济账）"""
+
+    invalid_streak_cap = 10
+    """streak 上限"""
 
     # -----------------------------
     # NEW: SessionPolicy (strong type)
