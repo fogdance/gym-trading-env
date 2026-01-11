@@ -27,7 +27,7 @@ from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decima
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
-from gym_trading_env.envs.action import Action, ForexCode
+from gym_trading_env.envs.action import Action, ForexCode, JsonlActionLogger
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
@@ -184,7 +184,6 @@ class CustomTradingEnv(gym.Env):
 
 
 
-
     def _config(self, config_path):
         # Configuration management
         if config_path is None:
@@ -246,8 +245,34 @@ class CustomTradingEnv(gym.Env):
             EquityDeltaReward
         )
         self.reward_function = reward_class(self)
-        self._live_mode = getattr(self.config.trading, "live_mode", False)
 
+        # LIVE 模式 & replay 相关
+        self._live_mode = getattr(self.config.trading, "live_mode", False)
+        self._live_replay_on_reset = bool(getattr(self.config.trading, "live_replay_on_reset", False))
+        self._replaying = False
+        self._action_logger = None
+
+        # 默认 JSONL logger：优先 config.trading.live_action_log_dir，
+        # 否则用 DREAMER_RUN_DIR/live_actions 或 /tmp/live_actions
+        if self._live_mode:
+            base_dir = getattr(self.config.trading, "live_action_log_dir", None)
+            if base_dir is None:
+                run_dir_env = os.environ.get("DREAMER_RUN_DIR", None)
+                if run_dir_env:
+                    base_dir = Path(run_dir_env) / "live_actions"
+                else:
+                    base_dir = "/tmp/live_actions"
+            self._action_logger = JsonlActionLogger(base_dir=base_dir, logger=self.logger)
+
+    def set_action_logger(self, logger):
+        """
+        替换默认的 JSONL action logger；
+
+        logger 需要实现两个方法：
+          - append(rec: dict)
+          - load_for_day(symbol: str, trading_day: int) -> list[dict]
+        """
+        self._action_logger = logger
 
 
     def _data(self, df, config):
@@ -315,7 +340,7 @@ class CustomTradingEnv(gym.Env):
         Resets the environment to an initial state and returns an initial observation.
 
         Live mode:
-        - start_row MUST satisfy row_mask==1 (data exists).
+        - start_row MUST satisfy row_mask==1 (data exists).或来自 action 日志
         - if no bar yet for today's trading_day, block until first bar arrives.
         - default start_row = latest available bar for the trading_day.
         """
@@ -323,6 +348,9 @@ class CustomTradingEnv(gym.Env):
         super().reset(seed=seed)
         if seed is not None:
             self.np_random = np.random.default_rng(seed=seed)
+
+        # 每次 reset 都重置 replay 标记
+        self._replaying = False
 
         self.position_manager = PositionManager()
         self.broker_accounts = BrokerAccounts()
@@ -386,8 +414,20 @@ class CustomTradingEnv(gym.Env):
                 self.bar_source.wait_kline_block()
                 valid_day = day_sel[self.bar_source.store.row_mask[day_sel] >= 0.5]
 
-            # start from latest available bar (common live behavior)
-            start_row = int(valid_day.max())
+            # LIVE + replay: 尝试从 action 日志中找“第一条动作所在行”作为起点
+            if self._live_replay_on_reset and self._action_logger is not None:
+                actions = self._load_actions_for_trading_day(td_int)
+                if actions:
+                    first_step = min(int(r.get("step", 0)) for r in actions)
+                    start_row = first_step
+                    self.logger.info(f"[LIVE reset] replay enabled -> start_row from action log: {start_row}")
+                else:
+                    # 没有历史 action，从当天最后一根已有 bar 开始
+                    start_row = int(valid_day.min())
+                    self.logger.info(f"[LIVE reset] replay enabled but no actions; start_row={start_row} (last valid bar)")
+            else:
+                # 原有行为：从当天最后一根已有 bar 开始
+                start_row = int(valid_day.max())
 
         else:
             # backtest/train: your original anchor policy
@@ -483,6 +523,10 @@ class CustomTradingEnv(gym.Env):
 
         self._refresh_agent_state()
 
+        # NEW: live + replay => 在 reset 后立刻按历史 action 重放，恢复状态
+        if self._live_mode and self._live_replay_on_reset:
+            self._replay_from_action_log()
+
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
@@ -511,21 +555,22 @@ class CustomTradingEnv(gym.Env):
 
     def step(self, action):
         """
-        Executes one time step within the environment.
+        Executes one time step within the environment。
 
         Args:
-            action (int): The action to take (index into self.valid_actions).
+            action (int): The action to take (index into self.valid_actions)。
 
         Returns:
             Tuple: (observation, reward, terminated, truncated, info)
         """
-
 
         # gymnasium: stop stepping after either terminated OR truncated
         if self.terminated or self.truncated:
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
+        # 记录本次 step 开始时所处的行号（action 作用在这一 bar）
+        step_before = int(self.current_step)
 
         # Map discrete action index -> Action enum (MUST use valid_actions)
         try:
@@ -676,6 +721,16 @@ class CustomTradingEnv(gym.Env):
             obs = self._get_obs()
             info = self._get_info()
             reward = self.reward_function(obs)  # 或者给 0，但更推荐一致结算
+
+            # 在 episode 走到头时也记录一下最后一个 action
+            if self._live_mode and (not getattr(self, "_replaying", False)):
+                self._log_live_action(
+                    step=step_before,
+                    action_index=int(a),
+                    action_enum=self.action,
+                    action_result=self.action_result,
+                )
+
             return obs, reward, self.terminated, self.truncated, info
 
 
@@ -729,6 +784,15 @@ class CustomTradingEnv(gym.Env):
         if self.config.debug.debug_enabled and (self.truncated or self.terminated):
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
 
+        # 真实 live step 结束后，记录 action（replay 时不记）
+        if self._live_mode and (not getattr(self, "_replaying", False)):
+            self._log_live_action(
+                step=step_before,
+                action_index=int(a),
+                action_enum=self.action,
+                action_result=self.action_result,
+            )
+
         return obs, reward, self.terminated, self.truncated, info
 
     def _advance_next_step(self, *, live: bool) -> int | None:
@@ -755,13 +819,22 @@ class CustomTradingEnv(gym.Env):
         #  otherwise block until the next bar arrives (mask flips to 1)
         while float(self.bar_source.store.row_mask[next_i]) < 0.5:
 
-            self.bar_source.wait_kline_block()  # blocks until update/correction applied
+            self.bar_source.wait_kline_block(expect_eob=self.bar_source.store.index[next_i])  # blocks until update/correction applied
             # store is updated in-place, so row_mask will eventually change
 
         return next_i
 
 
     def _rpc_send_after_execute(self, ts, action, result, price):
+        # 只在 live 且非 replay 场景下真正发单
+        if not getattr(self, "_live_mode", False):
+            return
+        if getattr(self, "_replaying", False):
+            # 重放历史 action 时，不再发真实订单，只做本地状态恢复
+            return
+        if self._order_client is None:
+            return
+
         eob_naive_str = ts_to_naive_str(ts, tz=DEFAULT_TZ)
 
         symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
@@ -792,6 +865,93 @@ class CustomTradingEnv(gym.Env):
                 self.logger.warning(f"[RPC] signal rejected: {result['msg']} signal_id={sig.signal_id}")
             else:
                 self.logger.error(f"[RPC] send failed signal_id={sig.signal_id} reason={result.get('msg')} {result.get('error')}")
+
+
+    def _log_live_action(self, step: int, action_index: int, action_enum: Action, action_result: ForexCode):
+        """
+        live 模式下，每次真实 env.step() 结束时调用，写一条 JSONL 记录。
+        """
+        if self._action_logger is None:
+            return
+
+        try:
+            ts = self.bar_source.store.index[step]
+            ts_str = ts_to_naive_str(ts, tz=DEFAULT_TZ)
+            trading_day = int(self.bar_source.store.row_trading_day[step])
+        except Exception as e:
+            self.logger.error(f"failed to prepare live action log at step={step}: {e}")
+            return
+
+        symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
+
+        rec = {
+            "ts": ts_str,
+            "step": int(step),
+            "trading_day": int(trading_day),
+            "symbol": symbol,
+            "action": int(action_index),
+            "action_name": getattr(action_enum, "name", None),
+            "action_result": int(getattr(action_result, "value", -1)),
+        }
+
+        try:
+            self._action_logger.append(rec)
+        except Exception as e:
+            self.logger.error(f"failed to append live action log: {e}")
+
+    def _load_actions_for_trading_day(self, trading_day: int):
+        """
+        从 action logger 读取某个交易日的全部动作记录。
+        """
+        if self._action_logger is None:
+            return []
+
+        symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
+        try:
+            return list(self._action_logger.load_for_day(symbol=symbol, trading_day=int(trading_day)))
+        except Exception as e:
+            self.logger.error(f"failed to load actions for trading_day={trading_day}: {e}")
+            return []
+
+    def _replay_from_action_log(self):
+        """
+        在 live reset 后，根据历史 action 序列重放一遍 env.step()，
+        恢复到崩溃前的内部状态（position / ledger / metrics / agent_state / reward 内部状态等）。
+        """
+        td_int = yyyymmdd_int(self.bar_source._trading_date)
+        actions = self._load_actions_for_trading_day(td_int)
+        if not actions:
+            self.logger.info("[LIVE replay] no actions for today; skip replay.")
+            return
+
+        # 只用 step 排序，保证顺序一致
+        actions_sorted = sorted(actions, key=lambda r: int(r.get("step", 0)))
+
+        self.logger.info(f"[LIVE replay] start replay {len(actions_sorted)} actions, from step={actions_sorted[0]['step']}")
+
+        self._replaying = True
+        try:
+            for rec in actions_sorted:
+                target_step = int(rec.get("step", 0))
+                act_idx = int(rec.get("action", 0))
+
+                # 防御性：如果当前 step 落后于日志里的 step，用 HOLD 补齐（理论上不应该发生）
+                while int(self.current_step) < target_step:
+                    self.step(self.valid_actions.index(Action.HOLD))
+
+                obs, rew, term, trunc, info = self.step(act_idx)
+
+                if term or trunc:
+                    self.logger.error(
+                        f"[LIVE replay] env terminated/truncated during replay at "
+                        f"step={self.current_step}, term={term}, trunc={trunc}"
+                    )
+                    break
+        finally:
+            self._replaying = False
+
+        self.logger.info(f"[LIVE replay] finished at current_step={self.current_step}")
+
 
     def _sync_day_and_minute(self):
         new_day_i = int(self.bar_source.store.row_day_i[self.current_step])
@@ -1453,7 +1613,7 @@ class CustomTradingEnv(gym.Env):
         if self._live_mode:
             self._rpc_send_after_execute(
                 ts=self.bar_source.store.index[self.current_step],
-                action=Action.LONG_OPEN,
+                action=Action.LONG_OPEN0,
                 result=ForexCode.SUCCESS,
                 price=ask_price,
             )
@@ -1544,7 +1704,7 @@ class CustomTradingEnv(gym.Env):
         if self._live_mode:
             self._rpc_send_after_execute(
                 ts=self.bar_source.store.index[self.current_step],
-                action=Action.LONG_CLOSE,
+                action=Action.LONG_CLOSE0,
                 result=ForexCode.SUCCESS,
                 price=bid_price,
             )
@@ -1636,7 +1796,7 @@ class CustomTradingEnv(gym.Env):
         if self._live_mode:
             self._rpc_send_after_execute(
                 ts=self.bar_source.store.index[self.current_step],
-                action=Action.SHORT_OPEN,
+                action=Action.SHORT_OPEN0,
                 result=ForexCode.SUCCESS,
                 price=bid_price,
             )
@@ -1725,7 +1885,7 @@ class CustomTradingEnv(gym.Env):
         if self._live_mode:
             self._rpc_send_after_execute(
                 ts=self.bar_source.store.index[self.current_step],
-                action=Action.SHORT_CLOSE,
+                action=Action.SHORT_CLOSE0,
                 result=ForexCode.SUCCESS,
                 price=ask_price,
             )

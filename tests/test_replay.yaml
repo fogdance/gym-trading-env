@@ -1,0 +1,72 @@
+# src/gym_trading_env/config/default_config.yaml
+
+
+USDJPY: &USDJPY
+  currency_pair: "USDJPY"
+  initial_balance: 10000.0
+  trading_fee_per_lot: 3
+  is_round_turn: True
+  spread: 0.0002
+  leverage: 100
+  lot_size: 100000
+  trade_lot: 0.01
+  max_long_position: 0.02
+  max_short_position: 0.02
+  data_path: "USDJPY"
+  data_interval: "1m"
+
+DCE_JM2605: &JM
+  currency_pair: "JM2605"
+  initial_balance: 10000.0
+  trading_fee_per_lot: 3
+  is_round_turn: true
+  spread: 0.5
+  leverage: 10
+  lot_size: 60
+  trade_lot: 1
+  max_long_position: 1
+  max_short_position: 1
+  data_path: "DCE_JM2605"
+  future_symbol: "DCE.jm2605"
+  data_interval: "1m"
+  is_future: true
+  obs_feature_mode: "obs"
+  use_daily_context: true
+  use_daily_seq_7: true
+  live_mode: true
+  live_replay_on_reset: true
+  session_policy:
+    near_eod_bars: 2
+    block_open_near_eod: true
+    force_flatten_eod: true
+  trading_date: "2026-01-09"
+
+trading:
+  <<: *JM
+
+
+risk:
+  max_drawdown_ratio: 0.2
+  daily_lost_ratio: 0.02
+  risk_reward_ratio: 0
+
+training:
+  reward_function: "total_pnl_reward_function"
+  window_size: 60
+  max_episode_steps: 1000000
+  randomize_start: False
+  render_mode: "rgb_array"
+  start_clock: "future_night"
+  bar_source: "juejin"
+  episode_policy:
+    truncate_on_session_end: true   # MC false; 训练/实盘 true
+
+    
+visualization:
+  image_height: 96
+  image_width: 96
+  image_channels: 1
+
+debug:
+  log_level: INFO
+  debug_enabled: true
