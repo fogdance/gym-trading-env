@@ -180,6 +180,9 @@ class TradingParams:
     live_mode: bool = False
     """"实盘模式"""
 
+    live_replay_on_reset: bool = False
+    """"实盘模式下恢复agent状态"""
+
     intraday_mode: bool = True
     """True: session end 相关逻辑启用（配合 policy）"""
 
