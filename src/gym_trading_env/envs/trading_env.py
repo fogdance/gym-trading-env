@@ -27,7 +27,7 @@ from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decima
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
-from gym_trading_env.envs.action import Action, ForexCode, JsonlActionLogger
+from gym_trading_env.envs.action import Action, ForexCode, JsonlActionLogger, TargetPos
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
@@ -97,14 +97,8 @@ class CustomTradingEnv(gym.Env):
         if self.render_mode != "none" and self.render_mode not in self.metadata.get("render_modes", []):
             raise ValueError(f"Unsupported render_mode={self.render_mode}, must be one of {self.metadata.get('render_modes')}")
 
-        self.valid_actions = [
-            Action.HOLD,
-            Action.LONG_OPEN0,
-            Action.LONG_CLOSE0,
-            Action.SHORT_OPEN0,
-            Action.SHORT_CLOSE0
-        ]
-        self.action_space = spaces.Discrete(len(self.valid_actions))
+        self.valid_actions = [TargetPos.SHORT, TargetPos.FLAT, TargetPos.LONG]
+        self.action_space = spaces.Discrete(3)
 
         # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
         mode = getattr(self.config.trading, "obs_feature_mode", "raw")
@@ -551,6 +545,45 @@ class CustomTradingEnv(gym.Env):
         threshold = last_bar_idx - (near_eod_bars - 1)
         return int(self.current_step) >= int(threshold)
 
+    def _decode_target_action(self, action: int) -> TargetPos:
+        # ValueError 会带出非法动作，比 silent fallback 安全
+        return TargetPos(int(action))
+    
+    def _current_target(self) -> TargetPos:
+        ua = self.user_accounts  # step() 时必有
+        have_long = (ua.long_position > D0)
+        have_short = (ua.short_position > D0)
+
+        if have_long and have_short:
+            # 理论上你 intraday_single_position=True 不应该发生
+            # 这里建议直接报错，或者至少强制清仓
+            self.logger.error("Invariant broken: both long and short positions exist.")
+            # 方案A：直接报错（训练期最好）
+            # raise RuntimeError("both long and short positions exist")
+            # 方案B：容错：按 flat 处理 + 强制 flatten
+            self._force_flatten_if_any("INVARIANT_BOTH_SIDES")
+            return TargetPos.FLAT
+
+        if have_long:
+            return TargetPos.LONG
+        if have_short:
+            return TargetPos.SHORT
+        return TargetPos.FLAT
+    
+
+
+    def _plan_exec_action(self, cur: TargetPos, target: TargetPos) -> Action:
+        _PLAN = {
+            (TargetPos.FLAT, TargetPos.LONG):  Action.LONG_OPEN0,
+            (TargetPos.FLAT, TargetPos.SHORT): Action.SHORT_OPEN0,
+            (TargetPos.LONG, TargetPos.FLAT):  Action.LONG_CLOSE0,
+            (TargetPos.SHORT, TargetPos.FLAT): Action.SHORT_CLOSE0,
+            (TargetPos.LONG, TargetPos.SHORT): Action.LONG_CLOSE0,   # flip close-first
+            (TargetPos.SHORT, TargetPos.LONG): Action.SHORT_CLOSE0,  # flip close-first
+            }
+        if target == cur:
+            return Action.HOLD
+        return _PLAN[(cur, target)]
 
 
     def step(self, action):
@@ -577,8 +610,11 @@ class CustomTradingEnv(gym.Env):
             a = int(action)
             if a < 0 or a >= len(self.valid_actions):
                 raise ValueError(f"Action index out of range: {a}")
-            requested_action = self.valid_actions[a]
-            self.action = requested_action
+            target = self._decode_target_action(self.valid_actions[a])
+
+            cur = self._current_target()                  # TargetPos
+            self.action = self._plan_exec_action(cur, target)  # Action enum
+
         except Exception:
             self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
             self.terminated = True
@@ -839,7 +875,7 @@ class CustomTradingEnv(gym.Env):
 
         symbol = getattr(self.config.trading, "future_symbol", self.config.trading.currency_pair)
 
-        action_index = int(self.valid_actions.index(action))  # 0..len-1
+        action_index = int(getattr(action, "value"))
 
         sig = TradeSignal(
             signal_id=f"{symbol}|{eob_naive_str}|{action.name}",
@@ -890,6 +926,9 @@ class CustomTradingEnv(gym.Env):
             "trading_day": int(trading_day),
             "symbol": symbol,
             "action": int(action_index),
+            "target_name": TargetPos(action_index).name,  # 新增：agent target name
+            "exec_action": getattr(action_enum, "name", None),            # 新增：atomic action name
+            "exec_action_code": int(getattr(action_enum, "value", -1)),   # 新增：atomic action code
             "action_name": getattr(action_enum, "name", None),
             "action_result": int(getattr(action_result, "value", -1)),
         }
@@ -1015,7 +1054,7 @@ class CustomTradingEnv(gym.Env):
             f"from step={int(actions_sorted[0].get('step', 0))}"
         )
 
-        hold_idx = self.valid_actions.index(Action.HOLD)
+        hold_idx = int(TargetPos.FLAT)  # 1
 
         self._replaying = True
         try:

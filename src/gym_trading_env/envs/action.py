@@ -1,10 +1,19 @@
 # src/gym_trading_env/envs/action.py
 
-from enum import Enum
+from enum import Enum, IntEnum
 import json
 from pathlib import Path
 
-
+class TargetPos(IntEnum):
+    SHORT = 0
+    FLAT  = 1
+    LONG  = 2
+    @property
+    def sign(self) -> int:
+        # 仅用于少数需要 -1/0/+1 的地方
+        return {-1: -1, 0: 0, 1: 1}[self - TargetPos.FLAT]
+        # SHORT(0)->-1, FLAT(1)->0, LONG(2)->+1
+        
 class Action(Enum):
     HOLD = 0
     EMPTY = 1
