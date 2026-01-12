@@ -819,7 +819,7 @@ class CustomTradingEnv(gym.Env):
         #  otherwise block until the next bar arrives (mask flips to 1)
         while float(self.bar_source.store.row_mask[next_i]) < 0.5:
 
-            self.bar_source.wait_kline_block(expect_eob=self.bar_source.store.index[next_i])  # blocks until update/correction applied
+            self.bar_source.wait_kline_block()  # blocks until update/correction applied
             # store is updated in-place, so row_mask will eventually change
 
         return next_i
