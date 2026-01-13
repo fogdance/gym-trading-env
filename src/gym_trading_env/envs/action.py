@@ -13,7 +13,7 @@ class TargetPos(IntEnum):
         # 仅用于少数需要 -1/0/+1 的地方
         return {-1: -1, 0: 0, 1: 1}[self - TargetPos.FLAT]
         # SHORT(0)->-1, FLAT(1)->0, LONG(2)->+1
-        
+
 class Action(Enum):
     HOLD = 0
     EMPTY = 1
@@ -42,6 +42,7 @@ class ForexCode(Enum):
     ERROR_OPEN_POSITION = 4
     ERROR_MARKET_CLOSED = 5
     ERROR_BLOCKED_NEAR_EOD = 6
+    ERROR_HIT_DAY_MAX_OPEN = 7
 
 class JsonlActionLogger:
     """
