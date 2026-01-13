@@ -33,6 +33,7 @@ class ForexCode(Enum):
     ERROR_OPEN_POSITION = 4
     ERROR_MARKET_CLOSED = 5
     ERROR_BLOCKED_NEAR_EOD = 6
+    ERROR_HIT_DAY_MAX_OPEN = 7
 
 class JsonlActionLogger:
     """

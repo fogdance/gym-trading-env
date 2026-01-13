@@ -1659,7 +1659,7 @@ class CustomTradingEnv(gym.Env):
         max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
         if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
             self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
-            return ForexCode.ERROR_OPEN_POSITION
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
 
         ask_price = price + spread
         max_additional_long = self.config.trading.max_long_position - self.user_accounts.long_position
@@ -1842,7 +1842,7 @@ class CustomTradingEnv(gym.Env):
         max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
         if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
             self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
-            return ForexCode.ERROR_OPEN_POSITION
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
                 
         bid_price = price - spread
         max_additional_short = self.config.trading.max_short_position - self.user_accounts.short_position
