@@ -576,6 +576,7 @@ class JuejinBarSource(BaseBarSource):
                 df_market=new_df_market,
                 is_future=True,
                 # build_daily=None -> follow prev_store (your rebuild() already does this)
+                atr_period_days=int(getattr(prev_store, "atr_period_days", 14)),
             )
 
             # 5) atomic swap references (no external holders now)

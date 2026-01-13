@@ -381,6 +381,12 @@ class FuturesIntradayReward:
 
         self._invalid_time_cost_per_step = self._compute_invalid_time_cost_per_step()
 
+        # --- NEW: ATR-based close shaping ---
+        self.atr_takeprofit_ratio = float(getattr(self.env.config.trading, "atr_takeprofit_ratio", 0.70))
+        self.w_atr_close = float(getattr(self.env.config.trading, "w_atr_close", 0.10))  # 额外平仓奖励强度（很轻）
+        if self.atr_takeprofit_ratio < 0:
+            self.atr_takeprofit_ratio = 0.0
+
     def reset(self):
         self.prev_eq = None
         self.peak_eq = None
@@ -436,12 +442,19 @@ class FuturesIntradayReward:
             return None
 
     def _tanh_scaled(self, x: Decimal, scale: Decimal) -> float:
-        # 安全：Decimal -> float 的异常/溢出兜底
         try:
-            v = float(decimal_to_float(x / scale))
+            z = x / max(scale, self.eps)
+            v = decimal_to_float(z)
         except Exception:
             v = 1e6 if x > 0 else -1e6
-        return tanh(v)
+
+        # 防止 inf / 极端值让 tanh 过早饱和
+        if v > 20:
+            v = 20.0
+        elif v < -20:
+            v = -20.0
+        return tanh(float(v))
+
 
     # ========= 核心：shaped equity =========
     def _shaped_equity(self) -> Decimal:
@@ -556,6 +569,8 @@ class FuturesIntradayReward:
 
         # --- 平仓事件小奖励（用 _tanh_scaled 统一）---
         r_close = 0.0
+        r_atr_close = 0.0  # NEW
+
         lcp = getattr(self.env, "last_close_position", None)
         if lcp is not None and "pnl" in lcp:
             pnl = lcp["pnl"]
@@ -564,8 +579,31 @@ class FuturesIntradayReward:
                 r_close = self.w_close * self._tanh_scaled(pnl, scale)
             except Exception:
                 r_close = 0.0
+
+            # ===== NEW: 0.7 * ATR take-profit shaping (no lookahead) =====
+            try:
+                store = getattr(self.env, "store", None)
+                day_i = int(getattr(self.env, "_day_i", getattr(self.env, "day_i", -1)))
+                atr_arr = getattr(store, "daily_atr_price", None) if store is not None else None
+
+                if atr_arr is not None and 0 <= day_i < len(atr_arr):
+                    atr_price = float(atr_arr[day_i])  # price units, shift(1)
+                    if atr_price > 0:
+                        # 把 ATR(价格) -> 现金（按 1 手 lot_size）
+                        lot = float(getattr(self.env.config.trading, "lot_size", 1.0))
+                        atr_cash = Decimal(str(atr_price * lot))
+
+                        # 用“平仓时的这笔 pnl”判断是否达到阈值（最小侵入，不额外追踪峰值）
+                        thr = atr_cash * Decimal(str(self.atr_takeprofit_ratio))
+                        if pnl >= thr:
+                            # 给一个轻微额外奖励：tanh(pnl/scale) * w_atr_close
+                            r_atr_close = self.w_atr_close * self._tanh_scaled(pnl, scale)
+            except Exception:
+                r_atr_close = 0.0
+
             # 防止重复给奖
             self.env.last_close_position = None
+
 
         # --- 止损触发惩罚 ---
         sl_now = int(getattr(self.env, "stop_loss_fired", 0))
@@ -604,7 +642,7 @@ class FuturesIntradayReward:
 
         r_invalid = r_invalid_time + r_invalid_streak
 
-        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_sl + r_mc + r_invalid
+        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_atr_close + r_sl + r_mc + r_invalid
         if total > self.clip:
             total = self.clip
         elif total < -self.clip:
@@ -625,6 +663,7 @@ class FuturesIntradayReward:
             "invalid_streak_len": int(self.invalid_streak),
             "total": float(total),
             "alpha_unrealized": float(self.alpha_unrealized),
+            "r_atr_close": float(r_atr_close)
         }
 
         # 更新 prev

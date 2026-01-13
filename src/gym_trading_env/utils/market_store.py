@@ -13,7 +13,7 @@ from gym_trading_env.utils.market_features import (
 )
 from gym_trading_env.utils.daily_features import build_daily_context_and_seq, DAILY_SEQ_LEN
 from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ
-
+from gym_trading_env.utils.atr_util import compute_daily_atr_from_summary_talib
 
 def _day_key_default(val) -> str:
     """Normalize day_id to a canonical string.
@@ -95,6 +95,11 @@ class MarketStore:
     # helper for daily_features
     day_key_fn: Callable[[object], str]
 
+    atr_period_days: int
+
+    daily_atr_price: Optional[np.ndarray]       # float32 [num_days] (shift(1))
+
+
     # ------------------------------------------------------------------ #
     #   初次构建：从 df_raw / df_market 生成一个新的 MarketStore
     # ------------------------------------------------------------------ #
@@ -107,7 +112,9 @@ class MarketStore:
         tz: str = DEFAULT_TZ,
         day_key_fn: Callable[[object], str] = _day_key_default,
         build_daily: bool = True,
+        atr_period_days: int = 14,
     ) -> "MarketStore":
+
         if df_market is None or df_market.empty:
             raise ValueError("df_market is empty")
 
@@ -204,6 +211,9 @@ class MarketStore:
         # ---- daily extras ----
         daily_ctx_raw = daily_ctx_obs = None
         daily_seq7_raw = daily_seq7_obs = None
+
+        daily_atr_price = None
+
         if build_daily:
             ctx_raw, ctx_obs, seq_raw, seq_obs, _summary = build_daily_context_and_seq(
                 df_market,
@@ -217,10 +227,17 @@ class MarketStore:
             daily_seq7_raw = seq_raw.astype(np.float32, copy=False)
             daily_seq7_obs = seq_obs.astype(np.float32, copy=False)
 
-        # Make arrays contiguous (avoid surprises in downstream ops)
-        daily_X_raw = np.ascontiguousarray(daily_X_raw)
-        daily_X_obs = np.ascontiguousarray(daily_X_obs)
-        daily_mask = np.ascontiguousarray(daily_mask)
+
+            atr_s = compute_daily_atr_from_summary_talib(
+                _summary,
+                period=int(atr_period_days),
+                shift=1,
+            )
+            daily_atr_price = np.nan_to_num(
+                atr_s.to_numpy(dtype=np.float32),
+                nan=0.0, posinf=0.0, neginf=0.0
+            )
+
 
         # NEW: keep global matrices contiguous as well
         X_raw_all = np.ascontiguousarray(X_raw_all)
@@ -265,6 +282,9 @@ class MarketStore:
             daily_seq7_obs=daily_seq7_obs,
 
             day_key_fn=day_key_fn,
+
+            atr_period_days=int(atr_period_days),
+            daily_atr_price=daily_atr_price,
         )
 
     # ------------------------------------------------------------------ #
@@ -279,6 +299,7 @@ class MarketStore:
         df_market: pd.DataFrame,
         is_future: bool,
         build_daily: Optional[bool] = None,
+        atr_period_days: int = 14,
     ) -> "MarketStore":
         """
         使用与 prev_store 相同的 tz / day_key_fn / daily 开关，重新构建一个新的 MarketStore。
@@ -309,6 +330,7 @@ class MarketStore:
             tz=prev_store.tz,
             day_key_fn=prev_store.day_key_fn,
             build_daily=build_daily,
+            atr_period_days=atr_period_days,
         )
 
     def inplace_overwrite_day_from_df_market(self, day_i: int, df_market_day: pd.DataFrame) -> None:
