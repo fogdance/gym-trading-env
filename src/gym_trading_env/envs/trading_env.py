@@ -1176,15 +1176,6 @@ class CustomTradingEnv(gym.Env):
         """
         truncate_on_session_end = bool(self.config.training.episode_policy.truncate_on_session_end)
 
-        # --- 超过当天最大开仓次数，直接结束
-        if self.action_result == ForexCode.ERROR_HIT_DAY_MAX_OPEN:
-            self.logger.warning(
-                f"Reached max open. day_i={self._day_i} "
-            )
-            self._force_flatten_if_any("ERROR_HIT_DAY_MAX_OPEN")
-            self.terminated = False
-            self.truncated = True
-            return True
 
         # --- 1) Episode boundary: session end (optional) ---
         if truncate_on_session_end and self.config.trading.intraday_mode:
