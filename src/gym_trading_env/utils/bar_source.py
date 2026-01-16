@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Optional, Literal
 
-from datetime import datetime, time as dt_time, timedelta
+from datetime import datetime, date, time as dt_time, timedelta
 
 import pandas as pd
 import numpy as np
@@ -369,6 +369,15 @@ class JuejinBarSource(BaseBarSource):
             autocommit=True,
         )
 
+    def next_business_day(self, d: date) -> date:
+        # weekday: Mon=0 ... Sun=6
+        if d.weekday() == 5:   # Sat
+            return d + timedelta(days=2)
+        if d.weekday() == 6:   # Sun
+            return d + timedelta(days=1)
+        return d
+
+
     def _resolve_trading_date(self, conn, symbol: str) -> datetime.date:
         """
         Resolve trading_date.
@@ -389,8 +398,10 @@ class JuejinBarSource(BaseBarSource):
         now_local = pd.Timestamp.now(tz=DEFAULT_TZ)
         today = now_local.date()
 
-        # 你们定义 t1=15:01，所以 15:01 后默认目标切到“下一天”
-        target = today + timedelta(days=1) if now_local.time() >= dt_time(15, 1) else today
+        # 定义 t1=15:01，所以 15:01 后默认目标切到“下一天”
+        today = now_local.date()
+        base = today + timedelta(days=1) if now_local.time() >=  dt_time(15, 1) else today
+        target = self.next_business_day(base)
 
         with conn.cursor() as cursor:
             # 先找 >= target 的最小交易日（如果表里已提前写入，就能拿到真实 trading_date）
