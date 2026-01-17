@@ -339,7 +339,7 @@ denom = max(|I_yclose|, eps)
 obs_dI = clip(sign(dI)*log1p(|dI|/denom), [-LOG_CLIP, LOG_CLIP])，仅 valid 写入
 
 ### 量/持仓（heavy-tail->bounded）
-obs_V_t = clip((V/I*100), [0,2])
+obs_V_t = tanh(log1p(V)/5)
 obs_I_t = tanh(log1p(I)/5)
 
 ### 时间类

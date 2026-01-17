@@ -172,7 +172,7 @@ class CustomTradingEnv(gym.Env):
             save_intraday_html(
                 df_market=sub,
                 title=f"{self.config.trading.currency_pair} {idx_day[0] if len(idx_day) > 0 else ts_store}",
-                out_path=f"/tmp/{self.config.trading.currency_pair}/{self.config.trading.currency_pair}_{ts0_str}_day.html",
+                out_path=f"/tmp/{self.config.trading.currency_pair}/{self.config.trading.currency_pair}_{ts0_str}.html",
                 start_pos=0,
                 end_pos=self.DAY_LEN,
                 focus_ts=(idx_day[0] if len(idx_day) > 0 else ts_store),

@@ -248,23 +248,10 @@ def _add_obs_features_spec(df: pd.DataFrame) -> None:
     df["obs_bar_dir_t"] = pd.to_numeric(df.get("bar_dir_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
     V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
-
-    # x = V / I * 100  (I<=0 -> 0)
-    x = np.zeros_like(V, dtype=float)
-    vx = np.clip(V, 0.0, None)
-    oi_pos = (I > eps)
-
-    # only compute where valid & OI positive
-    idx = valid & oi_pos
-    x[idx] = (vx[idx] / np.maximum(I[idx], eps)) * 100.0
-
-    #  clip to [0, 2]
-    df["obs_V_t"] = np.clip(x, 0.0, 2.0).astype(float)
-
-    # keep obs_I_t as before
+    v = np.log1p(np.clip(V, 0.0, None))
     oi = np.log1p(np.clip(I, 0.0, None))
+    df["obs_V_t"] = np.tanh(v / 5.0).astype(float)
     df["obs_I_t"] = np.tanh(oi / 5.0).astype(float)
-
 
     df["obs_mask_t"] = m.astype(float)
     df["obs_weekday_sin_t"] = pd.to_numeric(df.get("weekday_sin_t", 0.0), errors="coerce").fillna(0.0).astype(float)
