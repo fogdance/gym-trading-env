@@ -516,9 +516,248 @@ class FuturesIntradayReward:
         return float(total)
 
 
+
+class FuturesIntradayRewardV3:
+    """
+    日内期货 reward（重新设计版，适配：345 step/day，固定1手，最多3次开仓，少交易高胜率）
+    - 主干：Δequity(含未实现) / scale  -> tanh(·)
+    - 成本：fee_step / scale（可开关，scale 有“成本下限”防 tanh 饱和）
+    - EOD：临近收盘仍持仓惩罚（随时间加速）
+    - 平仓闭环 shaping：偏好盈利平仓（胜率导向），亏损平仓额外惩罚
+    - 最大回撤：不做强 shaping（避免把开仓初期的正常浮动判死刑），只给“轻微”增量惩罚（可关）
+    """
+
+    def __init__(
+        self,
+        env,
+        # ----- instrument / cost -----
+        fee_per_side_cash=6.0,          # 你给的：双边固定6（默认按每边6算）
+        slippage_ticks=0.5,             # 固定滑点 0.5 tick
+        tick_size=0.5,                  # 最小变动 0.5
+        tick_value_cash=30.0,           # 变动价值 30（每 tick_size）
+        # ----- core weights -----
+        w_pnl=1.0,                      # Δequity 主项权重
+        w_fee=1.0,                      # 费用项权重（注意：不是 0.35 那种；因为我们改了尺度）
+        w_dd=0.10,                      # 回撤增量轻惩罚（建议很小，或设 0 关闭）
+        w_eod=0.30,                     # EOD 持仓惩罚
+        eod_grace_minutes=10,           # 与你原逻辑一致
+        # ----- close-event shaping (win-rate bias) -----
+        w_close_pnl=0.20,               # 平仓 PnL 的 tanh shaping 权重
+        w_close_win=0.05,               # 平仓盈利事件额外加分（小）
+        w_close_loss=0.08,              # 平仓亏损事件额外扣分（略大，胜率偏好）
+        # ----- toggles -----
+        subtract_fee_from_reward=True,  # 是否用 fee_step 显式扣成本（默认 True 最稳）
+        clip=1.0,
+        eps=Decimal("1e-6"),
+        # ----- scale control (关键：避免成本项 tanh 饱和杀探索) -----
+        min_scale_cash=None,            # 若 None：自动用“单边成本*4”和“tick_value*4”的较大者
+    ):
+        self.env = env
+        self.clip = float(clip)
+        self.eps = eps
+
+        # weights
+        self.w_pnl = float(w_pnl)
+        self.w_fee = float(w_fee)
+        self.w_dd = float(w_dd)
+        self.w_eod = float(w_eod)
+        self.eod_grace = int(eod_grace_minutes)
+
+        self.w_close_pnl = float(w_close_pnl)
+        self.w_close_win = float(w_close_win)
+        self.w_close_loss = float(w_close_loss)
+
+        self.subtract_fee_from_reward = bool(subtract_fee_from_reward)
+
+        # instrument cost
+        self.fee_per_side_cash = float(fee_per_side_cash)
+        self.slippage_ticks = float(slippage_ticks)
+        self.tick_size = float(tick_size)
+        self.tick_value_cash = float(tick_value_cash)
+
+        # 估算单边“摩擦成本”（手续费+滑点）
+        self.slippage_cash_per_side = self.slippage_ticks * self.tick_value_cash
+        self.friction_cash_per_side = self.fee_per_side_cash + self.slippage_cash_per_side
+
+        # scale 下限（关键）：防止 fee_step/scale 太大导致 tanh 饱和
+        if min_scale_cash is None:
+            # 经验：至少要比“单边摩擦成本”大几倍；也要不小于若干 tick_value
+            self.min_scale_cash = Decimal(str(max(self.friction_cash_per_side * 4.0, self.tick_value_cash * 4.0)))
+        else:
+            self.min_scale_cash = Decimal(str(float(min_scale_cash)))
+
+        # state
+        self.prev_equity = None
+        self.prev_dd_cash = None
+        self.prev_stoploss_fired = 0
+        self.prev_in_market = None
+
+    def _equity(self) -> Decimal:
+        return self.env.user_accounts.equity()
+
+    def _R_cash(self) -> Decimal:
+        rc = getattr(self.env, "_R_cash_last", None)
+        if rc is None:
+            return Decimal("1")
+        if isinstance(rc, Decimal):
+            return max(rc, self.eps)
+        return max(Decimal(str(rc)), self.eps)
+
+    def _scale(self) -> Decimal:
+        """
+        使用 env 的 R_cash，但强制一个“成本尺度下限”，避免 tanh 饱和导致不交易最优。
+        """
+        rc = self._R_cash()
+        return max(rc, self.min_scale_cash)
+
+    def _in_market(self) -> bool:
+        try:
+            return (self.env.user_accounts.long_position > D0) or (self.env.user_accounts.short_position > D0)
+        except Exception:
+            return False
+
+    def _minutes_to_eod(self) -> int:
+        m2eod = getattr(self.env, "_minutes_to_eod_last", None)
+        if m2eod is None:
+            eod_idx = int(getattr(self.env, "_eod_idx", getattr(self.env, "end_idx", self.env.current_step)))
+            m2eod = max(0, eod_idx - int(self.env.current_step))
+        return int(m2eod)
+
+    def __call__(self, obs=None):
+        eq = self._equity()
+
+        # dd_cash
+        peak = getattr(self.env, "max_equity", eq)
+        dd_cash = peak - eq
+        if dd_cash < D0:
+            dd_cash = D0
+
+        in_market = self._in_market()
+        m2eod = self._minutes_to_eod()
+
+        # detect close/open events by position state change
+        did_open = False
+        did_close = False
+        if self.prev_in_market is not None:
+            did_open = (not self.prev_in_market) and in_market
+            did_close = self.prev_in_market and (not in_market)
+
+        # init
+        if self.prev_equity is None:
+            self.prev_equity = eq
+            self.prev_dd_cash = dd_cash
+            self.prev_stoploss_fired = int(getattr(self.env, "stop_loss_fired", 0))
+            self.prev_in_market = in_market
+            self.env._reward_debug = {
+                "pnl_step": 0.0,
+                "fee_step": 0.0,
+                "dd_inc": 0.0,
+                "eod": 0.0,
+                "close_pnl": 0.0,
+                "close_winloss": 0.0,
+                "total": 0.0,
+                "scale": float(self._scale()),
+            }
+            return 0.0
+
+        scale = self._scale()
+
+        # --- 1) 主干：Δequity / scale ---
+        dE = eq - self.prev_equity
+        r_pnl_step = self.w_pnl * tanh(float(decimal_to_float(dE / scale)))
+
+        # --- 2) 成本：fee_step / scale ---
+        # 注意：你 env 里的 fee_income.get_balance() 看命名像“累计手续费”，fee_step 是增量。
+        # 如果 equity 已经是净值（已扣费），这里再扣会双扣。
+        # 但在不知道的情况下，默认扣掉更稳；你可以把 subtract_fee_from_reward=False 来测试。
+        fee = getattr(self.env, "fee_step", D0)
+        r_fee = 0.0
+        if self.subtract_fee_from_reward and fee > D0:
+            r_fee = -self.w_fee * tanh(float(decimal_to_float(fee / scale)))
+
+        # --- 3) 回撤增量：轻惩罚（可关）---
+        prev_dd = self.prev_dd_cash if self.prev_dd_cash is not None else dd_cash
+        dd_inc = dd_cash - prev_dd
+        if dd_inc < D0:
+            dd_inc = D0
+        r_dd = 0.0
+        if self.w_dd > 0 and dd_inc > D0:
+            r_dd = -self.w_dd * tanh(float(decimal_to_float(dd_inc / scale)))
+
+        # --- 4) EOD：临近收盘仍持仓惩罚（随时间加速） ---
+        r_eod = 0.0
+        if self.eod_grace > 0 and in_market and m2eod < self.eod_grace:
+            # 用二次加速：越接近收盘越痛，避免最后几分钟死扛
+            frac = float(self.eod_grace - m2eod) / float(self.eod_grace)  # 0..1
+            r_eod = -self.w_eod * (frac ** 2)
+
+        # --- 5) 平仓闭环 shaping（胜率偏好） ---
+        r_close_pnl = 0.0
+        r_close_winloss = 0.0
+
+        # 优先使用 env.last_close_position（你已有）
+        lcp = getattr(self.env, "last_close_position", None)
+        if lcp is not None and "pnl" in lcp:
+            pnl = lcp["pnl"]
+            try:
+                pnl = pnl if isinstance(pnl, Decimal) else Decimal(str(pnl))
+            except Exception:
+                pnl = None
+
+            if pnl is not None:
+                # 用 scale 归一化，给一个“闭环”强信号
+                r_close_pnl = self.w_close_pnl * tanh(float(decimal_to_float(pnl / scale)))
+
+                # 胜率偏好：盈利小奖，亏损稍大罚
+                if pnl > D0:
+                    r_close_winloss = self.w_close_win
+                elif pnl < D0:
+                    r_close_winloss = -self.w_close_loss
+
+            # 防止重复给
+            self.env.last_close_position = None
+        else:
+            # 若没提供 last_close_position，但确实发生了平仓事件，也不强行发奖惩（避免伪信号）
+            # 你也可以在 env 层保证 last_close_position 一定填充
+            pass
+
+        total = r_pnl_step + r_fee + r_dd + r_eod + r_close_pnl + r_close_winloss
+
+        # clip
+        if total > self.clip:
+            total = self.clip
+        elif total < -self.clip:
+            total = -self.clip
+
+        # debug
+        self.env._reward_debug = {
+            "pnl_step": float(r_pnl_step),
+            "fee_step": float(r_fee),
+            "dd_inc": float(r_dd),
+            "eod": float(r_eod),
+            "close_pnl": float(r_close_pnl),
+            "close_winloss": float(r_close_winloss),
+            "did_open": float(1.0 if did_open else 0.0),
+            "did_close": float(1.0 if did_close else 0.0),
+            "total": float(total),
+            "scale": float(scale),
+            "min_scale_cash": float(self.min_scale_cash),
+            "friction_per_side_cash": float(self.friction_cash_per_side),
+        }
+
+        # update prev
+        self.prev_equity = eq
+        self.prev_dd_cash = dd_cash
+        self.prev_stoploss_fired = int(getattr(self.env, "stop_loss_fired", 0))
+        self.prev_in_market = in_market
+
+        return float(total)
+
+
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
     'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,
     'futures_intraday_reward_function': FuturesIntradayReward,
+    'futures_intraday_reward_functionv3': FuturesIntradayRewardV3,
 }
