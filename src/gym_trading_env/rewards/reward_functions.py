@@ -624,7 +624,7 @@ class FuturesIntradayRewardV3:
         w_close_win=0.05,               # 平仓盈利事件额外加分（小）
         w_close_loss=0.08,              # 平仓亏损事件额外扣分（略大，胜率偏好）
         # ----- toggles -----
-        subtract_fee_from_reward=True,  # 是否用 fee_step 显式扣成本（默认 True 最稳）
+        subtract_fee_from_reward=False,  # 是否用 fee_step 显式扣成本
         clip=1.0,
         eps=Decimal("1e-6"),
         # ----- scale control (关键：避免成本项 tanh 饱和杀探索) -----
