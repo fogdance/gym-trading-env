@@ -20,6 +20,7 @@ from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
 from gym_trading_env.utils.time_contract import ensure_feature_tz_index
 from gym_trading_env.utils.time_contract import from_db_naive_dt, from_db_naive_series, to_db_naive_dt
 from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
+from gym_trading_env.utils.validate_juejin_minutes import validate_juejin_minutes_complete
 
 try:
     import pymysql
@@ -350,6 +351,7 @@ class JuejinBarSource(BaseBarSource):
             df["trading_day"] = td_series.astype(np.int32)
             
 
+            validate_juejin_minutes_complete(df, tz=DEFAULT_TZ, allow_full_missing_night=True)
             return df
 
     def _connect(self):
