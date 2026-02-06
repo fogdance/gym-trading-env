@@ -31,6 +31,9 @@ class Action(Enum):
     SHORT_CLOSE = 13
     POSITION_DOWN = 14
     POSITION_UP = 15
+    # 反手 (atomic flip): 平当前仓 + 开反向仓，单步完成
+    FLIP_LONG_TO_SHORT = 16  # 多翻空: 平多 + 开空
+    FLIP_SHORT_TO_LONG = 17  # 空翻多: 平空 + 开多
     
 
 # 添加错误码后，更新_is_invalid_action

@@ -578,8 +578,8 @@ class CustomTradingEnv(gym.Env):
             (TargetPos.FLAT, TargetPos.SHORT): Action.SHORT_OPEN0,
             (TargetPos.LONG, TargetPos.FLAT):  Action.LONG_CLOSE0,
             (TargetPos.SHORT, TargetPos.FLAT): Action.SHORT_CLOSE0,
-            (TargetPos.LONG, TargetPos.SHORT): Action.LONG_CLOSE0,   # flip close-first
-            (TargetPos.SHORT, TargetPos.LONG): Action.SHORT_CLOSE0,  # flip close-first
+            (TargetPos.LONG, TargetPos.SHORT): Action.FLIP_LONG_TO_SHORT,   # 反手: 多翻空 (atomic)
+            (TargetPos.SHORT, TargetPos.LONG): Action.FLIP_SHORT_TO_LONG,   # 反手: 空翻多 (atomic)
             }
         if target == cur:
             return Action.HOLD
@@ -633,8 +633,10 @@ class CustomTradingEnv(gym.Env):
         forced_code = None
         if block_open and self.config.trading.intraday_mode:
             if self._near_eod():
+                # 阻止所有开仓动作，包括反手 (反手 = 平仓 + 开仓，所以也要阻止)
                 if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
-                                        Action.LONG_OPEN1, Action.SHORT_OPEN1):
+                                        Action.LONG_OPEN1, Action.SHORT_OPEN1,
+                                        Action.FLIP_LONG_TO_SHORT, Action.FLIP_SHORT_TO_LONG):
                     ts_now = self.bar_source.store.index[self.current_step]
                     self.logger.info(f"{ts_now} near_eod -> force {self.action} to HOLD")
                     self.action = Action.HOLD
@@ -703,6 +705,10 @@ class CustomTradingEnv(gym.Env):
             self.action_result = self._short_open(action_price, self.config.trading.spread, slot=1)
         elif self.action == Action.SHORT_CLOSE1:
             self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
+        elif self.action == Action.FLIP_LONG_TO_SHORT:
+            self.action_result = self._flip_long_to_short(action_price, self.config.trading.spread)
+        elif self.action == Action.FLIP_SHORT_TO_LONG:
+            self.action_result = self._flip_short_to_long(action_price, self.config.trading.spread)
 
 
         # --- OPTIONAL: force flatten at EOD (default True) ---
@@ -2044,6 +2050,309 @@ class CustomTradingEnv(gym.Env):
                 result=ForexCode.SUCCESS,
                 price=ask_price,
             )
+        return ForexCode.SUCCESS
+
+
+    def _flip_long_to_short(self, price: Decimal, spread: Decimal) -> ForexCode:
+        """
+        反手: 多翻空 (atomic flip)
+        在单步内完成: 平多仓 + 开空仓
+        
+        执行顺序:
+        1. 检查是否有多仓可平
+        2. 预计算平仓释放的资金
+        3. 检查是否足够开空仓
+        4. 原子执行: 平多 + 开空
+        """
+        # 检查是否有多仓
+        if self.user_accounts.long_position <= D0:
+            self.logger.warning("FLIP_LONG_TO_SHORT: No long position to flip.")
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+        
+        # max_entries 检查 - 反手算一次新开仓
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            self.logger.warning("FLIP: hit max_entries_per_day, cannot flip.")
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+
+        bid_price = price - spread  # 平多用 bid
+        ask_price = price + spread  # 开空用... 实际上做空是 bid, 让我检查 _short_open
+        # 看 _short_open: bid_price = price - spread, 做空入场价是 bid
+        short_entry_price = price - spread  # 做空入场价
+
+        # 1. Quote 平多 (不修改状态)
+        try:
+            slot_i, q = self.position_manager.quote_close_long(
+                closing_price=bid_price,
+                lot_size=self.config.trading.lot_size,
+                slot=0,  # 使用 slot 0
+            )
+        except ValueError as e:
+            self.logger.warning(f"FLIP_LONG_TO_SHORT quote failed: {e}")
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+
+        close_fee = D0 if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
+
+        # 2. 计算开空需要的资金
+        position_size = min(self.config.trading.trade_lot, self.config.trading.max_short_position)
+        required_margin = (position_size * self.config.trading.lot_size * short_entry_price) / self.config.trading.leverage
+        open_fee = self.config.trading.trading_fee_per_lot * position_size
+
+        # 3. 检查资金是否足够 (平仓后释放的资金 + 当前可用)
+        # 平仓后现金增加: released_margin + pnl - close_fee
+        # 开仓需要: required_margin + open_fee
+        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        post_close_cash = current_free_margin + q.released_margin + q.pnl - close_fee
+        
+        if (required_margin + open_fee) > post_close_cash:
+            self.logger.warning(f"FLIP_LONG_TO_SHORT: Insufficient margin. Need {required_margin + open_fee}, have {post_close_cash}")
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        # 4. 计算止损止盈
+        sl = self._compute_stop_loss_price(short_entry_price, side="short")
+        tp = self._compute_take_profit_price(entry_exec_price=short_entry_price, sl_exec_price=sl, side="short")
+
+        new_position = Position(
+            size=position_size,
+            entry_price=short_entry_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+
+        # 5. 原子执行: 合并两个操作的 ledger entries
+        ts = self.bar_source.store.index[self.current_step]
+        
+        # 合并分录: 平多 + 开空
+        # 平多: user_margin -released, broker_pnl -pnl, broker_fee +close_fee, user_cash +(released+pnl-close_fee)
+        # 开空: user_cash -(required+open_fee), user_margin +required, broker_fee +open_fee
+        # 
+        # 净效果:
+        # user_margin: -released + required
+        # user_cash: +(released+pnl-close_fee) - (required+open_fee) = released + pnl - close_fee - required - open_fee
+        # broker_pnl: -pnl
+        # broker_fee: +close_fee + open_fee
+        
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="FLIP_LONG_TO_SHORT",
+            postings=[
+                Posting("user_margin", -q.released_margin + required_margin),
+                Posting("broker_pnl", -q.pnl),
+                Posting("broker_fee_income", close_fee + open_fee),
+                Posting("user_cash", q.released_margin + q.pnl - close_fee - required_margin - open_fee),
+            ],
+            meta={
+                "close_side": "long", "close_slot": slot_i, "close_price": str(bid_price), "close_pnl": str(q.pnl),
+                "open_side": "short", "open_slot": 0, "open_price": str(short_entry_price),
+            }
+        )
+
+        snap = self.ledger.snapshot()
+        try:
+            self._post_atomic(entry)
+            
+            # 先移除多仓
+            self.position_manager.commit_close_long(slot_i, quote=q)
+            self.user_accounts.realize_pnl(q.pnl)
+            
+            # 再添加空仓
+            self.position_manager.add_short_position(new_position, slot=0)
+            
+            self._assert_ledger_conservation()
+        except (LedgerError, ValueError) as e:
+            self.ledger.restore(snap)
+            self.logger.error(f"FLIP_LONG_TO_SHORT failed and rolled back: {e}")
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        # 记录交易
+        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+        
+        # 平仓记录
+        close_record = TradeRecord(
+            timestamp=ts,
+            operation_type="FLIP_CLOSE_LONG",
+            position_size=q.closed_size,
+            open_price=q.entry_price,
+            close_price=bid_price,
+            required_margin=D0,
+            fee=close_fee,
+            balance=self.user_accounts.cash_balance.get_balance(),
+            leverage=self.config.trading.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+            pnl=q.pnl,
+            closed_size=q.closed_size,
+            released_margin=q.released_margin,
+            meta={"side": "long", "slot": slot_i, "reason": "FLIP"},
+        )
+        self.record_trade(close_record)
+
+        # 开仓记录
+        open_record = TradeRecord(
+            timestamp=ts,
+            operation_type="FLIP_OPEN_SHORT",
+            position_size=position_size,
+            open_price=short_entry_price,
+            close_price=D0,
+            required_margin=required_margin,
+            fee=open_fee,
+            balance=self.user_accounts.cash_balance.get_balance(),
+            leverage=self.config.trading.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+        )
+        self.record_trade(open_record)
+        
+        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=ts,
+                action=Action.FLIP_LONG_TO_SHORT,
+                result=ForexCode.SUCCESS,
+                price=price,
+            )
+        
+        self.logger.info(f"FLIP_LONG_TO_SHORT success: closed long at {bid_price} (pnl={q.pnl}), opened short at {short_entry_price}")
+        return ForexCode.SUCCESS
+
+
+    def _flip_short_to_long(self, price: Decimal, spread: Decimal) -> ForexCode:
+        """
+        反手: 空翻多 (atomic flip)
+        在单步内完成: 平空仓 + 开多仓
+        """
+        # 检查是否有空仓
+        if self.user_accounts.short_position <= D0:
+            self.logger.warning("FLIP_SHORT_TO_LONG: No short position to flip.")
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+        
+        # max_entries 检查
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            self.logger.warning("FLIP: hit max_entries_per_day, cannot flip.")
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+
+        ask_price = price + spread  # 平空用 ask
+        long_entry_price = price + spread  # 做多入场价是 ask
+
+        # 1. Quote 平空
+        try:
+            slot_i, q = self.position_manager.quote_close_short(
+                closing_price=ask_price,
+                lot_size=self.config.trading.lot_size,
+                slot=0,
+            )
+        except ValueError as e:
+            self.logger.warning(f"FLIP_SHORT_TO_LONG quote failed: {e}")
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+
+        close_fee = D0 if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
+
+        # 2. 计算开多需要的资金
+        position_size = min(self.config.trading.trade_lot, self.config.trading.max_long_position)
+        required_margin = (position_size * self.config.trading.lot_size * long_entry_price) / self.config.trading.leverage
+        open_fee = self.config.trading.trading_fee_per_lot * position_size
+
+        # 3. 检查资金
+        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        post_close_cash = current_free_margin + q.released_margin + q.pnl - close_fee
+        
+        if (required_margin + open_fee) > post_close_cash:
+            self.logger.warning(f"FLIP_SHORT_TO_LONG: Insufficient margin. Need {required_margin + open_fee}, have {post_close_cash}")
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        # 4. 止损止盈
+        sl = self._compute_stop_loss_price(long_entry_price, side="long")
+        tp = self._compute_take_profit_price(entry_exec_price=long_entry_price, sl_exec_price=sl, side="long")
+
+        new_position = Position(
+            size=position_size,
+            entry_price=long_entry_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+
+        # 5. 原子执行
+        ts = self.bar_source.store.index[self.current_step]
+        
+        entry = JournalEntry(
+            timestamp=ts,
+            memo="FLIP_SHORT_TO_LONG",
+            postings=[
+                Posting("user_margin", -q.released_margin + required_margin),
+                Posting("broker_pnl", -q.pnl),
+                Posting("broker_fee_income", close_fee + open_fee),
+                Posting("user_cash", q.released_margin + q.pnl - close_fee - required_margin - open_fee),
+            ],
+            meta={
+                "close_side": "short", "close_slot": slot_i, "close_price": str(ask_price), "close_pnl": str(q.pnl),
+                "open_side": "long", "open_slot": 0, "open_price": str(long_entry_price),
+            }
+        )
+
+        snap = self.ledger.snapshot()
+        try:
+            self._post_atomic(entry)
+            
+            self.position_manager.commit_close_short(slot_i, quote=q)
+            self.user_accounts.realize_pnl(q.pnl)
+            
+            self.position_manager.add_long_position(new_position, slot=0)
+            
+            self._assert_ledger_conservation()
+        except (LedgerError, ValueError) as e:
+            self.ledger.restore(snap)
+            self.logger.error(f"FLIP_SHORT_TO_LONG failed and rolled back: {e}")
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+        
+        close_record = TradeRecord(
+            timestamp=ts,
+            operation_type="FLIP_CLOSE_SHORT",
+            position_size=q.closed_size,
+            open_price=q.entry_price,
+            close_price=ask_price,
+            required_margin=D0,
+            fee=close_fee,
+            balance=self.user_accounts.cash_balance.get_balance(),
+            leverage=self.config.trading.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+            pnl=q.pnl,
+            closed_size=q.closed_size,
+            released_margin=q.released_margin,
+            meta={"side": "short", "slot": slot_i, "reason": "FLIP"},
+        )
+        self.record_trade(close_record)
+
+        open_record = TradeRecord(
+            timestamp=ts,
+            operation_type="FLIP_OPEN_LONG",
+            position_size=position_size,
+            open_price=long_entry_price,
+            close_price=D0,
+            required_margin=required_margin,
+            fee=open_fee,
+            balance=self.user_accounts.cash_balance.get_balance(),
+            leverage=self.config.trading.leverage,
+            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+        )
+        self.record_trade(open_record)
+        
+        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=ts,
+                action=Action.FLIP_SHORT_TO_LONG,
+                result=ForexCode.SUCCESS,
+                price=price,
+            )
+        
+        self.logger.info(f"FLIP_SHORT_TO_LONG success: closed short at {ask_price} (pnl={q.pnl}), opened long at {long_entry_price}")
         return ForexCode.SUCCESS
 
 
