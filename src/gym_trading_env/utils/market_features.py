@@ -202,17 +202,38 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     # -----------------------------
     V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
 
-    # x = V / OI * 100  (if OI<=0 -> 0)
-    x = np.zeros_like(V, dtype=float)
-    oi_pos = (I > eps)
-    vx = np.clip(V, 0.0, None)
+    # -----------------------------
+    # volume surprise (keep spikes, reduce fingerprint)
+    # obs_V_t = clip(log1p(V / EMA_prev + eps), [0, VOL_CLIP]) * mask
+    # -----------------------------
+    V_s = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    V_valid = V_s.where(m > 0.0, np.nan)
 
-    # only compute where valid & OI positive
-    idx = valid & oi_pos
-    x[idx] = (vx[idx] / np.maximum(I[idx], eps)) * 100.0
+    # EMA within session (use only past -> shift(1))
+    # span=30 means ~30 minutes smoothing; tweak 20/30/60 as you like
+    sid = df.get("session_id", pd.Series(0, index=df.index)).astype(str)
+    ema = (
+        V_valid.groupby(sid)
+        .apply(lambda x: x.ewm(span=30, adjust=False, min_periods=5, ignore_na=True).mean())
+        .reset_index(level=0, drop=True)
+    )
+    ema_prev = ema.groupby(sid).shift(1)
 
-    # clip to [0, 12]
-    df["obs_V_t"] = np.clip(x, 0.0, 2.0).astype(float)
+    # fallback baseline for early minutes: expanding mean of past valid bars
+    exp_mean = (
+        V_valid.groupby(sid)
+        .expanding(min_periods=1).mean()
+        .reset_index(level=0, drop=True)
+    )
+    base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
+
+    eps_v = 1e-12
+    VOL_CLIP = 3.0  # 3 对应 e^(3)-1≈19x 的“放量倍率”，已经很夸张了
+    ratio = (V_s.to_numpy(dtype=float, copy=False) / (base.to_numpy(dtype=float, copy=False) + eps_v))
+    spike = np.log1p(np.clip(ratio, 0.0, None))
+
+    df["obs_V_t"] = (np.clip(spike, 0.0, VOL_CLIP) * m.to_numpy(dtype=float, copy=False)).astype(float)
+
 
     # keep obs_I_t as before (bounded, scale-free-ish)
     oi = np.log1p(np.clip(I, 0.0, None))
