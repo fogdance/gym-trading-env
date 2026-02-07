@@ -330,7 +330,7 @@ class FuturesIntradayReward:
         self,
         env,
         w_fee=0.35,
-        w_dd=0.30,
+        w_dd=0.0,
         w_eod=0.25,
         eod_grace_minutes=10,
         w_close=0.10,
@@ -624,11 +624,9 @@ class FuturesIntradayReward:
 
         r_invalid = r_invalid_time + r_invalid_streak
 
-        total = r_pnl + r_fee + r_dd + r_eod + r_close + r_atr_close + r_sl + r_mc + r_invalid
-        if total > self.clip:
-            total = self.clip
-        elif total < -self.clip:
-            total = -self.clip
+        raw_total = r_pnl + r_fee + r_dd + r_eod + r_close + r_atr_close + r_sl + r_mc + r_invalid
+        total = float(np.tanh(raw_total))   # 或 total = self.clip * np.tanh(raw_total / self.clip)
+
 
         self.env._reward_debug = {
             "pnl": float(r_pnl),
@@ -642,9 +640,10 @@ class FuturesIntradayReward:
             "invalid_streak": float(r_invalid_streak),
             "invalid_total": float(r_invalid),
             "invalid_streak_len": int(self.invalid_streak),
-            "total": float(total),
             "alpha_unrealized": float(self.alpha_unrealized),
             "r_atr_close": float(r_atr_close),
+            "raw_total": float(raw_total),
+            "total": float(total),
         }
 
         self.prev_eq = eq
