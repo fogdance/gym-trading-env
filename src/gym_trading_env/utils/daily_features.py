@@ -28,10 +28,15 @@ FEATURES_DAILY_CONTEXT_OBS: List[str] = [
     "obs_prev_low",
     "obs_prev_close",            # debug 对齐：恒 0
     "obs_prev_close_pdiff_1d",   # log(prev_close / prev2_close)
-    "obs_prev_volume",           # log1p(prev_volume)
-    "obs_prev_volume_pdiff_1d",  # signed log1p diff
-    "obs_prev_oi",               # log1p(prev_oi)
-    "obs_prev_oi_pdiff_1d",      # signed log1p diff
+
+    # IMPORTANT (updated):
+    # - obs_prev_volume:   log(prev_volume / ma20(volume))  (baseline uses data strictly before prev_day)
+    # - obs_prev_oi:       log(prev_oi / ma20(oi))          (baseline uses data strictly before prev_day)
+    "obs_prev_volume",
+    "obs_prev_volume_pdiff_1d",  # signed log1p diff (prev_vol - prev2_vol)
+
+    "obs_prev_oi",
+    "obs_prev_oi_pdiff_1d",      # signed log1p diff (prev_oi - prev2_oi)
 ]
 
 # daily_seq_7: 7 x 3
@@ -148,8 +153,9 @@ def build_daily_context_and_seq(
     ctx_raw = ctx[FEATURES_DAILY_CONTEXT].to_numpy(dtype=np.float32)
     ctx_raw = np.nan_to_num(ctx_raw, nan=0.0, posinf=0.0, neginf=0.0)
 
-    # ===== daily_context OBS（方式A）=====
+    # ===== daily_context OBS（更“相对量”，降低日期指纹）=====
     eps = 1e-12
+
     prev_close_np = prev["close"].to_numpy(dtype=float)
     prev2_close_np = prev2["close"].to_numpy(dtype=float)
 
@@ -162,21 +168,39 @@ def build_daily_context_and_seq(
     prev_oi_np = prev["oi"].to_numpy(dtype=float)
     prev2_oi_np = prev2["oi"].to_numpy(dtype=float)
 
+    # --- NEW: MA20 baseline for volume/oi, but strictly before prev_day ---
+    # For current day t:
+    #   prev_vol = volume[t-1]
+    #   baseline should be MA20 up to (t-2), not including (t-1),
+    #   otherwise ratio tends to ~1 and loses signal.
+    vol_ma20 = summary["volume"].rolling(window=20, min_periods=1).mean()
+    oi_ma20 = summary["oi"].rolling(window=20, min_periods=1).mean()
+
+    vol_base_np = vol_ma20.shift(2).to_numpy(dtype=float)  # up to t-2
+    oi_base_np = oi_ma20.shift(2).to_numpy(dtype=float)    # up to t-2
+
     obs_ctx = np.zeros((len(summary), len(FEATURES_DAILY_CONTEXT_OBS)), dtype=np.float32)
 
     # price-like => log ratio to prev_close
     obs_ctx[:, 0] = _safe_log_ratio(prev_high_np, prev_close_np, eps=eps).astype(np.float32)  # obs_prev_high
     obs_ctx[:, 1] = _safe_log_ratio(prev_low_np, prev_close_np, eps=eps).astype(np.float32)   # obs_prev_low
-    obs_ctx[:, 2] = 0.0                                                                      # obs_prev_close
+    obs_ctx[:, 2] = 0.0                                                                       # obs_prev_close
 
     # log(prev_close / prev2_close)
     obs_ctx[:, 3] = _safe_log_ratio(prev_close_np, prev2_close_np, eps=eps).astype(np.float32)
 
-    # volume / oi
-    obs_ctx[:, 4] = np.log1p(np.clip(prev_vol_np, 0.0, None)).astype(np.float32)
+    # UPDATED: volume / oi use relative ratio to MA20 baseline (dimensionless)
+    vol_ratio = _safe_log_ratio(prev_vol_np, vol_base_np, eps=eps)
+    oi_ratio = _safe_log_ratio(prev_oi_np, oi_base_np, eps=eps)
+
+    # Optional: clip to avoid rare huge spikes dominating
+    vol_ratio = np.clip(vol_ratio, -8.0, 8.0)
+    oi_ratio = np.clip(oi_ratio, -8.0, 8.0)
+
+    obs_ctx[:, 4] = vol_ratio.astype(np.float32)  # obs_prev_volume (now: log(vol_prev / ma20_before_prev))
     obs_ctx[:, 5] = _signed_log1p(prev_vol_np - prev2_vol_np).astype(np.float32)
 
-    obs_ctx[:, 6] = np.log1p(np.clip(prev_oi_np, 0.0, None)).astype(np.float32)
+    obs_ctx[:, 6] = oi_ratio.astype(np.float32)   # obs_prev_oi (now: log(oi_prev / ma20_before_prev))
     obs_ctx[:, 7] = _signed_log1p(prev_oi_np - prev2_oi_np).astype(np.float32)
 
     obs_ctx = np.nan_to_num(obs_ctx, nan=0.0, posinf=0.0, neginf=0.0)

@@ -307,6 +307,18 @@ class Metrics:
                 c["short_close_steps_success"] += 1
         elif "EMPTY" in aname:
             c["empty_steps"] += 1
+        elif "FLIP_LONG_TO_SHORT" in aname:
+            c["long_close_steps"] += 1
+            c["short_open_steps"] += 1
+            if action_success:
+                c["long_close_steps_success"] += 1
+                c["short_open_steps_success"] += 1
+        elif "FLIP_SHORT_TO_LONG" in aname:
+            c["short_close_steps"] += 1
+            c["long_open_steps"] += 1
+            if action_success:
+                c["short_close_steps_success"] += 1
+                c["long_open_steps_success"] += 1
 
         if invalid_action:
             c["invalid_steps"] += 1

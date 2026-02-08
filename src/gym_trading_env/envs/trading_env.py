@@ -728,10 +728,10 @@ class CustomTradingEnv(gym.Env):
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
         except Exception:
             in_market = False
-        invalid_action = ((self.action_result == ForexCode.ERROR_HIT_MAX_POSITION)
-                        or (self.action_result == ForexCode.ERROR_OPEN_POSITION)
-                        or (self.action_result == ForexCode.ERROR_NO_POSITION_TO_CLOSE)
-                        )
+        invalid_action = (
+            self.action_result not in (ForexCode.SUCCESS, ForexCode.ERROR_MARKET_CLOSED)
+        )
+
 
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market, invalid_action=invalid_action)
 
