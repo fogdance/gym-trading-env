@@ -28,6 +28,7 @@ from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode, JsonlActionLogger, TargetPos
+from gym_trading_env.envs.target_transition import TargetTransitionDecision, TargetTransitionTable
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
@@ -99,6 +100,9 @@ class CustomTradingEnv(gym.Env):
 
         self.valid_actions = [TargetPos.SHORT, TargetPos.FLAT, TargetPos.LONG]
         self.action_space = spaces.Discrete(3)
+        if not bool(getattr(self.config.trading, "intraday_single_position", True)):
+            raise ValueError(
+                "Target-position action masking requires intraday_single_position=True")
 
         # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
         mode = getattr(self.config.trading, "obs_feature_mode", "raw")
@@ -129,6 +133,7 @@ class CustomTradingEnv(gym.Env):
         obs_dict = {
             "market_seq": spaces.Box(low=-np.inf, high=np.inf, shape=(self.window_size, self._F_MARKET), dtype=np.float32),
             "agent_state": spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_AGENT,), dtype=np.float32),
+            "action_mask": spaces.Box(low=0.0, high=1.0, shape=(len(self.valid_actions),), dtype=np.float32),
         }
         if self._use_daily_context:
             obs_dict["daily_context"] = spaces.Box(low=-np.inf, high=np.inf, shape=(self._F_DAILY_CTX,), dtype=np.float32)
@@ -381,6 +386,18 @@ class CustomTradingEnv(gym.Env):
         self.df_window = None
         self.last_close_position = None
         self.action = None
+        self.requested_target = None
+        self.planned_action = None
+        self.executed_action = None
+        self.reject_code = ForexCode.SUCCESS
+        self._last_valid_action_cardinality = len(self.valid_actions)
+        self._last_chosen_action_index = -1
+        self._last_chosen_action_was_valid = True
+        self._last_action_rejected = False
+        self._last_execution_failed = False
+        self._legality_state_version = 0
+        self._target_transition_table = None
+        self._pending_transition_table = None
 
         reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
         self.reward_function = reward_class(self)
@@ -519,6 +536,7 @@ class CustomTradingEnv(gym.Env):
 
         # NEW: live + replay => 在 reset 后立刻按历史 action 重放，恢复状态
         if self._live_mode and self._live_replay_on_reset:
+            self._pending_transition_table = self._get_target_transition_table()
             self._replay_from_action_log()
 
         obs = self._get_obs()
@@ -555,14 +573,7 @@ class CustomTradingEnv(gym.Env):
         have_short = (ua.short_position > D0)
 
         if have_long and have_short:
-            # 理论上你 intraday_single_position=True 不应该发生
-            # 这里建议直接报错，或者至少强制清仓
-            self.logger.error("Invariant broken: both long and short positions exist.")
-            # 方案A：直接报错（训练期最好）
-            # raise RuntimeError("both long and short positions exist")
-            # 方案B：容错：按 flat 处理 + 强制 flatten
-            self._force_flatten_if_any("INVARIANT_BOTH_SIDES")
-            return TargetPos.FLAT
+            raise RuntimeError("Invariant broken: both long and short positions exist")
 
         if have_long:
             return TargetPos.LONG
@@ -585,6 +596,250 @@ class CustomTradingEnv(gym.Env):
             return Action.HOLD
         return _PLAN[(cur, target)]
 
+    def _action_price_and_market_open(self) -> tuple[Decimal, bool]:
+        market_open = float(self.bar_source.store.row_mask[self.current_step]) >= 0.5
+        if market_open:
+            return D(self.bar_source.store.row_C[self.current_step]), True
+        return self._last_valid_price, False
+
+    def _preflight_open(self, side: TargetPos, price: Decimal) -> ForexCode:
+        if bool(getattr(self.config.trading, "intraday_single_position", True)):
+            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
+                return ForexCode.ERROR_OPEN_POSITION
+
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+
+        if side == TargetPos.LONG:
+            exec_price = price + self.config.trading.spread
+            max_additional = self.config.trading.max_long_position - self.user_accounts.long_position
+        elif side == TargetPos.SHORT:
+            exec_price = price - self.config.trading.spread
+            max_additional = self.config.trading.max_short_position - self.user_accounts.short_position
+        else:
+            raise ValueError(f"Unsupported open side: {side}")
+
+        if max_additional <= D0:
+            return ForexCode.ERROR_HIT_MAX_POSITION
+
+        position_size = min(self.config.trading.trade_lot, max_additional)
+        required_margin = (
+            position_size * self.config.trading.lot_size * exec_price
+        ) / self.config.trading.leverage
+        fee = self.config.trading.trading_fee_per_lot * position_size
+        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        if (required_margin + fee) > free_margin:
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+        return ForexCode.SUCCESS
+
+    def _preflight_close(self, side: TargetPos, price: Decimal) -> ForexCode:
+        try:
+            if side == TargetPos.LONG:
+                if self.user_accounts.long_position <= D0:
+                    return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+                self.position_manager.quote_close_long(
+                    closing_price=price - self.config.trading.spread,
+                    lot_size=self.config.trading.lot_size,
+                    slot=0,
+                )
+            elif side == TargetPos.SHORT:
+                if self.user_accounts.short_position <= D0:
+                    return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+                self.position_manager.quote_close_short(
+                    closing_price=price + self.config.trading.spread,
+                    lot_size=self.config.trading.lot_size,
+                    slot=0,
+                )
+            else:
+                raise ValueError(f"Unsupported close side: {side}")
+        except ValueError:
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
+        return ForexCode.SUCCESS
+
+    def _preflight_flip(self, source: TargetPos, target: TargetPos, price: Decimal) -> ForexCode:
+        close_code = self._preflight_close(source, price)
+        if close_code != ForexCode.SUCCESS:
+            return close_code
+
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+
+        if target == TargetPos.LONG:
+            max_position = self.config.trading.max_long_position
+            entry_price = price + self.config.trading.spread
+            _, quote = self.position_manager.quote_close_short(
+                closing_price=price + self.config.trading.spread,
+                lot_size=self.config.trading.lot_size,
+                slot=0,
+            )
+        elif target == TargetPos.SHORT:
+            max_position = self.config.trading.max_short_position
+            entry_price = price - self.config.trading.spread
+            _, quote = self.position_manager.quote_close_long(
+                closing_price=price - self.config.trading.spread,
+                lot_size=self.config.trading.lot_size,
+                slot=0,
+            )
+        else:
+            raise ValueError(f"Unsupported flip target: {target}")
+
+        position_size = min(self.config.trading.trade_lot, max_position)
+        if position_size <= D0:
+            return ForexCode.ERROR_HIT_MAX_POSITION
+
+        close_fee = D0 if not self.config.trading.is_round_turn else (
+            self.config.trading.trading_fee_per_lot * quote.closed_size
+        )
+        required_margin = (
+            position_size * self.config.trading.lot_size * entry_price
+        ) / self.config.trading.leverage
+        open_fee = self.config.trading.trading_fee_per_lot * position_size
+        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        post_close_cash = current_free_margin + quote.released_margin + quote.pnl - close_fee
+        if (required_margin + open_fee) > post_close_cash:
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+        return ForexCode.SUCCESS
+
+    def _preflight_exec_action(self, action: Action, price: Decimal) -> ForexCode:
+        if action == Action.HOLD:
+            return ForexCode.SUCCESS
+        if action == Action.LONG_OPEN0:
+            return self._preflight_open(TargetPos.LONG, price)
+        if action == Action.SHORT_OPEN0:
+            return self._preflight_open(TargetPos.SHORT, price)
+        if action == Action.LONG_CLOSE0:
+            return self._preflight_close(TargetPos.LONG, price)
+        if action == Action.SHORT_CLOSE0:
+            return self._preflight_close(TargetPos.SHORT, price)
+        if action == Action.FLIP_LONG_TO_SHORT:
+            return self._preflight_flip(TargetPos.LONG, TargetPos.SHORT, price)
+        if action == Action.FLIP_SHORT_TO_LONG:
+            return self._preflight_flip(TargetPos.SHORT, TargetPos.LONG, price)
+        raise ValueError(f"Unsupported target transition action: {action}")
+
+    def _transition_state_key(self) -> tuple:
+        price, market_open = self._action_price_and_market_open()
+        position_key = lambda positions: tuple(
+            None if pos is None else (
+                pos.size,
+                pos.entry_price,
+                pos.initial_margin,
+                pos.open_step,
+                pos.stop_loss_price,
+                pos.take_profit_price,
+            )
+            for pos in positions
+        )
+        return (
+            int(self.current_step),
+            int(self._current_target()),
+            bool(market_open),
+            bool(self._near_eod()) if self.config.trading.intraday_mode else False,
+            int(getattr(self, "_entries_used_today", 0)),
+            position_key(self.position_manager.long_positions),
+            position_key(self.position_manager.short_positions),
+            self.user_accounts.cash_balance.get_balance(),
+            self.user_accounts.used_margin.get_balance(),
+            self.user_accounts.unrealized_pnl,
+            price,
+            self.config.trading.trade_lot,
+            self.config.trading.max_long_position,
+            self.config.trading.max_short_position,
+            self.config.trading.lot_size,
+            self.config.trading.leverage,
+            self.config.trading.trading_fee_per_lot,
+            self.config.trading.spread,
+            bool(self.config.trading.is_round_turn),
+            int(self.config.trading.max_entries_per_day),
+            bool(self.config.trading.session_policy.block_open_near_eod),
+        )
+
+    def _build_target_transition_table(self) -> TargetTransitionTable:
+        price, market_open = self._action_price_and_market_open()
+        current_target = self._current_target()
+        block_open = (
+            self.config.trading.intraday_mode
+            and bool(self.config.trading.session_policy.block_open_near_eod)
+            and self._near_eod()
+        )
+        open_actions = {
+            Action.LONG_OPEN0,
+            Action.SHORT_OPEN0,
+            Action.FLIP_LONG_TO_SHORT,
+            Action.FLIP_SHORT_TO_LONG,
+        }
+        decisions = []
+        for requested_index, requested_target in enumerate(self.valid_actions):
+            requested_target = TargetPos(requested_target)
+            planned_action = self._plan_exec_action(current_target, requested_target)
+            if planned_action == Action.HOLD:
+                result_code = ForexCode.SUCCESS
+                reason = "already_at_target"
+            elif not market_open:
+                result_code = ForexCode.ERROR_MARKET_CLOSED
+                reason = "market_closed"
+            elif block_open and planned_action in open_actions:
+                result_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
+                reason = "near_eod"
+            else:
+                result_code = self._preflight_exec_action(planned_action, price)
+                reason = "allowed" if result_code == ForexCode.SUCCESS else result_code.name.lower()
+            decisions.append(TargetTransitionDecision(
+                requested_index=requested_index,
+                current_target=current_target,
+                requested_target=requested_target,
+                planned_action=planned_action,
+                allowed=result_code == ForexCode.SUCCESS,
+                result_code=result_code,
+                reason=reason,
+            ))
+        return TargetTransitionTable(
+            state_version=int(self._legality_state_version),
+            state_key=self._transition_state_key(),
+            decisions=tuple(decisions),
+        )
+
+    def _get_target_transition_table(self) -> TargetTransitionTable:
+        state_key = self._transition_state_key()
+        table = getattr(self, "_target_transition_table", None)
+        if table is None or table.state_key != state_key:
+            if table is not None:
+                self._legality_state_version += 1
+            table = self._build_target_transition_table()
+            self._target_transition_table = table
+        return table
+
+    def _publish_target_transition_table(self) -> TargetTransitionTable:
+        table = self._get_target_transition_table()
+        self._pending_transition_table = table
+        return table
+
+    def _consume_target_transition_table(self) -> TargetTransitionTable:
+        table = self._pending_transition_table
+        if table is None:
+            raise RuntimeError(
+                "No published target transition table for step(); "
+                "reset() or consume the latest observation first")
+        state_key = self._transition_state_key()
+        if (
+            table.state_version != self._legality_state_version
+            or table.state_key != state_key
+        ):
+            raise RuntimeError(
+                "Stale target transition table: observation state changed before step(); "
+                f"published_version={table.state_version}, "
+                f"current_version={self._legality_state_version}")
+        self._pending_transition_table = None
+        return table
+
+    def _action_mask_from_table(self, table: TargetTransitionTable) -> np.ndarray:
+        mask = np.asarray([decision.allowed for decision in table.decisions], dtype=np.float32)
+        if not np.any(mask):
+            raise RuntimeError(f"No legal target action at step={self.current_step}")
+        return mask
+
 
     def step(self, action):
         """
@@ -605,58 +860,35 @@ class CustomTradingEnv(gym.Env):
         # 记录本次 step 开始时所处的行号（action 作用在这一 bar）
         step_before = int(self.current_step)
 
-        # Map discrete action index -> Action enum (MUST use valid_actions)
-        try:
-            a = int(action)
-            if a < 0 or a >= len(self.valid_actions):
-                raise ValueError(f"Action index out of range: {a}")
-            target = self._decode_target_action(self.valid_actions[a])
-
-            cur = self._current_target()                  # TargetPos
-            self.action = self._plan_exec_action(cur, target)  # Action enum
-
-        except Exception:
-            self.logger.error(f"Invalid action: {action}. Must be an int in [0, {len(self.valid_actions)-1}]")
-            self.terminated = True
-            self.truncated = False
-            info = self._get_info()
-            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+        # Map discrete action index -> the exact decision published in obs_t.
+        a = int(action)
+        if a < 0 or a >= len(self.valid_actions):
+            raise ValueError(f"Action index out of range: {a}")
+        transition_table = self._consume_target_transition_table()
+        decision = transition_table.for_index(a)
+        self._last_valid_action_cardinality = sum(
+            item.allowed for item in transition_table.decisions)
+        self._last_chosen_action_index = a
+        self._last_chosen_action_was_valid = decision.allowed
+        self._last_action_rejected = not decision.allowed
+        self._last_execution_failed = False
+        self.requested_target = decision.requested_target
+        self.planned_action = decision.planned_action
+        self.executed_action = decision.planned_action if decision.allowed else Action.HOLD
+        self.reject_code = ForexCode.SUCCESS if decision.allowed else decision.result_code
+        self.action = self.executed_action
 
         if self.config.debug.debug_enabled:
             # NEW: use store index (env runtime does not rely on df_market)
             self.logger.info(f"bob {self.bar_source.store.index[self.current_step]}, {action} -> {self.action}")
 
-        sp = self.config.trading.session_policy
-
-        block_open = bool(sp.block_open_near_eod)
-        force_flatten = bool(sp.force_flatten_eod)
-        forced_code = None
-        if block_open and self.config.trading.intraday_mode:
-            if self._near_eod():
-                # 阻止所有开仓动作，包括反手 (反手 = 平仓 + 开仓，所以也要阻止)
-                if self.action in (Action.LONG_OPEN0, Action.SHORT_OPEN0, Action.LONG_OPEN, Action.SHORT_OPEN,
-                                        Action.LONG_OPEN1, Action.SHORT_OPEN1,
-                                        Action.FLIP_LONG_TO_SHORT, Action.FLIP_SHORT_TO_LONG):
-                    ts_now = self.bar_source.store.index[self.current_step]
-                    self.logger.info(f"{ts_now} near_eod -> force {self.action} to HOLD")
-                    self.action = Action.HOLD
-                    forced_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
+        force_flatten = bool(self.config.trading.session_policy.force_flatten_eod)
 
         # --- Price / market-closed gate at CURRENT step (t) ---
         try:
-            # NEW: read mask/price from store
-            mask_now = float(self.bar_source.store.row_mask[self.current_step])
-            market_open = (mask_now >= 0.5)
-
+            action_price, market_open = self._action_price_and_market_open()
             if market_open:
-                action_price = D(self.bar_source.store.row_C[self.current_step])
                 self._last_valid_price = action_price
-                market_code = ForexCode.SUCCESS
-            else:
-                action_price = self._last_valid_price
-                # 若 agent 在闭市时尝试非 HOLD，则记为 market closed；否则仍算 SUCCESS
-                market_code = ForexCode.SUCCESS if (self.action == Action.HOLD) else ForexCode.ERROR_MARKET_CLOSED
-                self.action = Action.HOLD  # 强制不交易
         except Exception as e:
             self.logger.error(
                 f"Failed to read action price at step={self.current_step} "
@@ -667,13 +899,10 @@ class CustomTradingEnv(gym.Env):
             info = self._get_info()
             return self._get_obs(), 0.0, self.terminated, self.truncated, info
 
-        if forced_code is not None:
-            market_code = forced_code
-            
         # --- Execute action ---
-        self.action_result = market_code
+        self.action_result = decision.result_code
 
-        if self.action == Action.HOLD:
+        if not decision.allowed or self.action == Action.HOLD:
             pass
         elif self.action == Action.LONG_OPEN:
             self.action_result = self._long_open(action_price, self.config.trading.spread)
@@ -710,6 +939,11 @@ class CustomTradingEnv(gym.Env):
         elif self.action == Action.FLIP_SHORT_TO_LONG:
             self.action_result = self._flip_short_to_long(action_price, self.config.trading.spread)
 
+        if decision.allowed and self.action_result != ForexCode.SUCCESS:
+            self._last_execution_failed = True
+            self.reject_code = self.action_result
+            self.executed_action = Action.HOLD
+            self.action = Action.HOLD
 
         # --- OPTIONAL: force flatten at EOD (default True) ---
         if force_flatten and self.config.trading.intraday_mode:
@@ -728,9 +962,7 @@ class CustomTradingEnv(gym.Env):
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
         except Exception:
             in_market = False
-        invalid_action = (
-            self.action_result not in (ForexCode.SUCCESS, ForexCode.ERROR_MARKET_CLOSED)
-        )
+        invalid_action = self.action_result != ForexCode.SUCCESS
 
 
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market, invalid_action=invalid_action)
@@ -1347,31 +1579,14 @@ class CustomTradingEnv(gym.Env):
 
         is_flat = not (have_long or have_short)
 
-        # near_eod gating
-        sp = self.config.trading.session_policy
-        block_open = bool(getattr(sp, "block_open_near_eod", False))
-        near_eod = False
-        if self.config.trading.intraday_mode and block_open:
-            try:
-                near_eod = bool(self._near_eod())
-            except Exception:
-                near_eod = False
-
-        entries_left = max(0, max_entries_per_day - max(0, entries_used_today))
-        # --- base open permission ---
-        base_can_open = (
-            (market_open == 1)
-            and is_flat
-            and (entries_left > 0)
-            and (not (self.config.trading.intraday_mode and block_open and near_eod))
-        )
-
-        can_long_open = 1 if base_can_open else 0
-        can_short_open = 1 if base_can_open else 0
-
-        # --- close permission: 按 side 拆开，避免 NO_POSITION_TO_CLOSE ---
-        can_long_close = 1 if ((market_open == 1) and have_long) else 0
-        can_short_close = 1 if ((market_open == 1) and have_short) else 0
+        transition_table = self._get_target_transition_table()
+        short_allowed = transition_table.for_index(int(TargetPos.SHORT)).allowed
+        flat_allowed = transition_table.for_index(int(TargetPos.FLAT)).allowed
+        long_allowed = transition_table.for_index(int(TargetPos.LONG)).allowed
+        can_long_open = int(is_flat and long_allowed)
+        can_short_open = int(is_flat and short_allowed)
+        can_long_close = int(have_long and flat_allowed)
+        can_short_close = int(have_short and flat_allowed)
 
         # last action_result_code
         ar = getattr(self, "action_result", None)
@@ -1483,6 +1698,10 @@ class CustomTradingEnv(gym.Env):
             'short_position': self.user_accounts.short_position,
             'stop_loss_fired': self.stop_loss_fired,
             'take_profit_fired': self.take_profit_fired,
+            'requested_target': int(self.requested_target) if self.requested_target is not None else -1,
+            'planned_action': int(self.planned_action.value) if self.planned_action is not None else -1,
+            'executed_action': int(self.executed_action.value) if self.executed_action is not None else -1,
+            'reject_code': int(self.reject_code.value),
         }
 
 
@@ -1495,6 +1714,22 @@ class CustomTradingEnv(gym.Env):
 
 
         info[f'log/env/is_truncated'] = np.bool_(self.truncated)
+        diagnostics = {
+            'valid_action_cardinality': self._last_valid_action_cardinality,
+            'chosen_action_index': self._last_chosen_action_index,
+            'chosen_action_was_valid': int(self._last_chosen_action_was_valid),
+            'action_rejected': int(self._last_action_rejected),
+            'execution_failed': int(self._last_execution_failed),
+            'requested_target': (
+                int(self.requested_target) if self.requested_target is not None else -1),
+            'planned_action': (
+                int(self.planned_action.value) if self.planned_action is not None else -1),
+            'executed_action': (
+                int(self.executed_action.value) if self.executed_action is not None else -1),
+            'reject_code': int(self.reject_code.value),
+        }
+        for key, value in diagnostics.items():
+            info[f'log/env/{key}'] = np.asarray(value, dtype=np.float32).reshape(())
         return info
 
     def _calculate_equity(self) -> Decimal:
@@ -1535,29 +1770,15 @@ class CustomTradingEnv(gym.Env):
 
         is_flat = (not have_long) and (not have_short)
 
-        # --- entries left ---
-        used = int(getattr(self, "_entries_used_today", 0))
-        max_e = int(getattr(self.config.trading, "max_entries_per_day", 1))
-        if max_e <= 0:
-            max_e = 1
-        entries_left = max(0, max_e - max(0, used))
+        transition_table = self._get_target_transition_table()
+        short_allowed = transition_table.for_index(int(TargetPos.SHORT)).allowed
+        flat_allowed = transition_table.for_index(int(TargetPos.FLAT)).allowed
+        long_allowed = transition_table.for_index(int(TargetPos.LONG)).allowed
 
-        # --- near_eod open block policy folded into can_open ---
-        sp = self.config.trading.session_policy
-        block_open = bool(sp.block_open_near_eod)
-        near_eod = False
-        if self.config.trading.intraday_mode and block_open:
-            try:
-                near_eod = bool(self._near_eod())
-            except Exception:
-                near_eod = False
-        open_blocked = (self.config.trading.intraday_mode and block_open and near_eod)
-
-        can_long_open  = (market_open == 1) and is_flat and (entries_left > 0) and (not open_blocked)
-        can_short_open = (market_open == 1) and is_flat and (entries_left > 0) and (not open_blocked)
-
-        can_long_close  = (market_open == 1) and have_long
-        can_short_close = (market_open == 1) and have_short
+        can_long_open = is_flat and long_allowed
+        can_short_open = is_flat and short_allowed
+        can_long_close = have_long and flat_allowed
+        can_short_close = have_short and flat_allowed
 
         # --- R_cash scale (1R in cash) ---
         # Use entry_price if in position else current_price as ref
@@ -1683,6 +1904,32 @@ class CustomTradingEnv(gym.Env):
         """
         self.ledger.post(entry)
 
+    def _snapshot_execution_state(self) -> dict:
+        return {
+            "ledger_balances": self.ledger.snapshot(),
+            "ledger_entries_len": len(self.ledger.entries),
+            "long_positions": tuple(self.position_manager.long_positions),
+            "short_positions": tuple(self.position_manager.short_positions),
+            "closed_trade_profits": tuple(self.position_manager.closed_trade_profits),
+            "realized_pnl": self.user_accounts.realized_pnl,
+            "unrealized_pnl": self.user_accounts.unrealized_pnl,
+            "trade_history_len": len(self.trade_record_manager.trade_history),
+            "entries_used_today": int(getattr(self, "_entries_used_today", 0)),
+            "last_close_position": self.last_close_position,
+        }
+
+    def _restore_execution_state(self, snapshot: dict) -> None:
+        self.ledger.restore(snapshot["ledger_balances"])
+        del self.ledger.entries[snapshot["ledger_entries_len"]:]
+        self.position_manager.long_positions[:] = snapshot["long_positions"]
+        self.position_manager.short_positions[:] = snapshot["short_positions"]
+        self.position_manager.closed_trade_profits[:] = snapshot["closed_trade_profits"]
+        self.user_accounts.realized_pnl = snapshot["realized_pnl"]
+        self.user_accounts.unrealized_pnl = snapshot["unrealized_pnl"]
+        del self.trade_record_manager.trade_history[snapshot["trade_history_len"]:]
+        self._entries_used_today = snapshot["entries_used_today"]
+        self.last_close_position = snapshot["last_close_position"]
+
     def _assert_ledger_conservation(self):
         # 可选：debug 时确保系统内资金守恒
         if self.config.debug.debug_enabled:
@@ -1694,32 +1941,16 @@ class CustomTradingEnv(gym.Env):
         """
         Executes a LONG_OPEN action with manual rollback.
         """
-        # ---- intraday constraints ----
-        if bool(getattr(self.config.trading, "intraday_single_position", True)):
-            # already in any position => reject (no add, no simultaneous long/short)
-            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
-                self.logger.warning("Intraday rule: cannot open while already in position (no add / no flip).")
-                return ForexCode.ERROR_OPEN_POSITION
-
-        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
-        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
-            self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
-            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+        preflight = self._preflight_open(TargetPos.LONG, price)
+        if preflight != ForexCode.SUCCESS:
+            return preflight
 
         ask_price = price + spread
         max_additional_long = self.config.trading.max_long_position - self.user_accounts.long_position
-        if max_additional_long <= Decimal('0.0'):
-            self.logger.warning("Reached maximum long position limit.")
-            return ForexCode.ERROR_HIT_MAX_POSITION
 
         position_size = min(self.config.trading.trade_lot, max_additional_long)
         required_margin = (position_size * self.config.trading.lot_size * ask_price) / self.config.trading.leverage
         fee = self.config.trading.trading_fee_per_lot * position_size
-
-        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        if (required_margin + fee) > free_margin:
-            self.logger.warning("Insufficient free margin to execute LONG_OPEN.")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         sl = self._compute_stop_loss_price(ask_price, side="long")
         tp = self._compute_take_profit_price(entry_exec_price=ask_price, sl_exec_price=sl, side="long")
@@ -1746,30 +1977,29 @@ class CustomTradingEnv(gym.Env):
             meta={"side":"long","slot":slot,"price":str(ask_price)}
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             self._post_atomic(entry)
             self.position_manager.add_long_position(new_position, slot=slot)
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
+            trade_record = TradeRecord(
+                timestamp=ts,
+                operation_type=Action.LONG_OPEN.name,
+                position_size=position_size,
+                open_price=ask_price,
+                close_price=Decimal(0),
+                required_margin=required_margin,
+                fee=fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+            )
+            self.record_trade(trade_record)
+            self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+        except Exception as e:
+            self._restore_execution_state(snap)
             self.logger.warning(f"LONG_OPEN failed and rolled back: {e}")
             return ForexCode.ERROR_OPEN_POSITION if isinstance(e, ValueError) else ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        trade_record = TradeRecord(
-            timestamp=ts,
-            operation_type=Action.LONG_OPEN.name,
-            position_size=position_size,
-            open_price=ask_price,
-            close_price=Decimal(0),
-            required_margin=required_margin,
-            fee=fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        )
-        self.record_trade(trade_record)
-        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -1820,7 +2050,7 @@ class CustomTradingEnv(gym.Env):
             meta={"side": "long", "slot": slot_i, "close_price": str(bid_price), "pnl": str(q.pnl)}
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             # 2) ledger post
             self._post_atomic(entry)
@@ -1832,35 +2062,32 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.realize_pnl(q.pnl)
 
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
-            self.logger.error(f"LONG_CLOSE failed and rolled back (position NOT removed): {e}")
-            self.terminated = True
+            self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+            trade_record = TradeRecord(
+                timestamp=ts,
+                operation_type=Action.LONG_CLOSE.name,
+                position_size=q.closed_size,
+                open_price=q.entry_price,
+                close_price=bid_price,
+                required_margin=Decimal('0'),
+                fee=fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                pnl=q.pnl,
+                closed_size=q.closed_size,
+                released_margin=q.released_margin,
+                meta={
+                    "side": "long",
+                    "slot": slot_i,
+                    "reason": close_reason or "MANUAL",
+                },
+            )
+            self.record_trade(trade_record)
+        except Exception as e:
+            self._restore_execution_state(snap)
+            self.logger.error(f"LONG_CLOSE failed and rolled back: {e}")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
-
-        trade_record = TradeRecord(
-            timestamp=ts,
-            operation_type=Action.LONG_CLOSE.name,
-            position_size=q.closed_size,
-            open_price=q.entry_price,
-            close_price=bid_price,
-            required_margin=Decimal('0'),
-            fee=fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=q.pnl,
-            closed_size=q.closed_size,
-            released_margin=q.released_margin,
-            meta={
-                "side": "long",
-                "slot": slot_i,
-                "reason": close_reason or "MANUAL",
-            },
-        )
-        self.record_trade(trade_record)
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -1877,32 +2104,16 @@ class CustomTradingEnv(gym.Env):
         """
         Executes a SHORT_OPEN action with manual rollback.
         """
-        # ---- intraday constraints ----
-        if bool(getattr(self.config.trading, "intraday_single_position", True)):
-            # already in any position => reject (no add, no simultaneous long/short)
-            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
-                self.logger.warning("Intraday rule: cannot open while already in position (no add / no flip).")
-                return ForexCode.ERROR_OPEN_POSITION
-
-        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
-        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
-            self.logger.warning("Intraday rule: hit max_entries_per_day, cannot open new position.")
-            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+        preflight = self._preflight_open(TargetPos.SHORT, price)
+        if preflight != ForexCode.SUCCESS:
+            return preflight
                 
         bid_price = price - spread
         max_additional_short = self.config.trading.max_short_position - self.user_accounts.short_position
-        if max_additional_short <= Decimal('0.0'):
-            self.logger.warning("Reached maximum short position limit.")
-            return ForexCode.ERROR_HIT_MAX_POSITION
 
         position_size = min(self.config.trading.trade_lot, max_additional_short)
         required_margin = (position_size * self.config.trading.lot_size * bid_price) / self.config.trading.leverage
         fee = self.config.trading.trading_fee_per_lot * position_size
-
-        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        if (required_margin + fee) > free_margin:
-            self.logger.warning("Insufficient free margin to execute SHORT_OPEN.")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         sl = self._compute_stop_loss_price(bid_price, side="short")
         tp = self._compute_take_profit_price(entry_exec_price=bid_price, sl_exec_price=sl, side="short")
@@ -1929,30 +2140,29 @@ class CustomTradingEnv(gym.Env):
             meta={"side":"short","slot":slot,"price":str(bid_price)}
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             self._post_atomic(entry)
             self.position_manager.add_short_position(new_position, slot=slot)
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
+            trade_record = TradeRecord(
+                timestamp=ts,
+                operation_type=Action.SHORT_OPEN.name,
+                position_size=position_size,
+                open_price=bid_price,
+                close_price=Decimal(0),
+                required_margin=required_margin,
+                fee=fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+            )
+            self.record_trade(trade_record)
+            self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+        except Exception as e:
+            self._restore_execution_state(snap)
             self.logger.warning(f"SHORT_OPEN failed and rolled back: {e}")
             return ForexCode.ERROR_OPEN_POSITION if isinstance(e, ValueError) else ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        trade_record = TradeRecord(
-            timestamp=ts,
-            operation_type=Action.SHORT_OPEN.name,
-            position_size=position_size,
-            open_price=bid_price,
-            close_price=Decimal(0),
-            required_margin=required_margin,
-            fee=fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        )
-        self.record_trade(trade_record)
-        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -2002,7 +2212,7 @@ class CustomTradingEnv(gym.Env):
             meta={"side": "short", "slot": slot_i, "close_price": str(ask_price), "pnl": str(q.pnl)}
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             # 2) ledger post
             self._post_atomic(entry)
@@ -2013,35 +2223,32 @@ class CustomTradingEnv(gym.Env):
             self.user_accounts.realize_pnl(q.pnl)
 
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
-            self.logger.error(f"SHORT_CLOSE failed and rolled back (position NOT removed): {e}")
-            self.terminated = True
+            self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+            trade_record = TradeRecord(
+                timestamp=ts,
+                operation_type=Action.SHORT_CLOSE.name,
+                position_size=q.closed_size,
+                open_price=q.entry_price,
+                close_price=ask_price,
+                required_margin=Decimal('0'),
+                fee=fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                pnl=q.pnl,
+                closed_size=q.closed_size,
+                released_margin=q.released_margin,
+                meta={
+                    "side": "short",
+                    "slot": slot_i,
+                    "reason": close_reason or "MANUAL",
+                },
+            )
+            self.record_trade(trade_record)
+        except Exception as e:
+            self._restore_execution_state(snap)
+            self.logger.error(f"SHORT_CLOSE failed and rolled back: {e}")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
-
-        trade_record = TradeRecord(
-            timestamp=ts,
-            operation_type=Action.SHORT_CLOSE.name,
-            position_size=q.closed_size,
-            open_price=q.entry_price,
-            close_price=ask_price,
-            required_margin=Decimal('0'),
-            fee=fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=q.pnl,
-            closed_size=q.closed_size,
-            released_margin=q.released_margin,
-            meta={
-                "side": "short",
-                "slot": slot_i,
-                "reason": close_reason or "MANUAL",
-            },
-        )
-        self.record_trade(trade_record)
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -2064,16 +2271,9 @@ class CustomTradingEnv(gym.Env):
         3. 检查是否足够开空仓
         4. 原子执行: 平多 + 开空
         """
-        # 检查是否有多仓
-        if self.user_accounts.long_position <= D0:
-            self.logger.warning("FLIP_LONG_TO_SHORT: No long position to flip.")
-            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
-        
-        # max_entries 检查 - 反手算一次新开仓
-        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
-        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
-            self.logger.warning("FLIP: hit max_entries_per_day, cannot flip.")
-            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+        preflight = self._preflight_flip(TargetPos.LONG, TargetPos.SHORT, price)
+        if preflight != ForexCode.SUCCESS:
+            return preflight
 
         bid_price = price - spread  # 平多用 bid
         ask_price = price + spread  # 开空用... 实际上做空是 bid, 让我检查 _short_open
@@ -2097,16 +2297,6 @@ class CustomTradingEnv(gym.Env):
         position_size = min(self.config.trading.trade_lot, self.config.trading.max_short_position)
         required_margin = (position_size * self.config.trading.lot_size * short_entry_price) / self.config.trading.leverage
         open_fee = self.config.trading.trading_fee_per_lot * position_size
-
-        # 3. 检查资金是否足够 (平仓后释放的资金 + 当前可用)
-        # 平仓后现金增加: released_margin + pnl - close_fee
-        # 开仓需要: required_margin + open_fee
-        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        post_close_cash = current_free_margin + q.released_margin + q.pnl - close_fee
-        
-        if (required_margin + open_fee) > post_close_cash:
-            self.logger.warning(f"FLIP_LONG_TO_SHORT: Insufficient margin. Need {required_margin + open_fee}, have {post_close_cash}")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # 4. 计算止损止盈
         sl = self._compute_stop_loss_price(short_entry_price, side="short")
@@ -2149,7 +2339,7 @@ class CustomTradingEnv(gym.Env):
             }
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             self._post_atomic(entry)
             
@@ -2161,49 +2351,42 @@ class CustomTradingEnv(gym.Env):
             self.position_manager.add_short_position(new_position, slot=0)
             
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
+            self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+            close_record = TradeRecord(
+                timestamp=ts,
+                operation_type="FLIP_CLOSE_LONG",
+                position_size=q.closed_size,
+                open_price=q.entry_price,
+                close_price=bid_price,
+                required_margin=D0,
+                fee=close_fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                pnl=q.pnl,
+                closed_size=q.closed_size,
+                released_margin=q.released_margin,
+                meta={"side": "long", "slot": slot_i, "reason": "FLIP"},
+            )
+            self.record_trade(close_record)
+            open_record = TradeRecord(
+                timestamp=ts,
+                operation_type="FLIP_OPEN_SHORT",
+                position_size=position_size,
+                open_price=short_entry_price,
+                close_price=D0,
+                required_margin=required_margin,
+                fee=open_fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+            )
+            self.record_trade(open_record)
+            self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+        except Exception as e:
+            self._restore_execution_state(snap)
             self.logger.error(f"FLIP_LONG_TO_SHORT failed and rolled back: {e}")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        # 记录交易
-        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
-        
-        # 平仓记录
-        close_record = TradeRecord(
-            timestamp=ts,
-            operation_type="FLIP_CLOSE_LONG",
-            position_size=q.closed_size,
-            open_price=q.entry_price,
-            close_price=bid_price,
-            required_margin=D0,
-            fee=close_fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=q.pnl,
-            closed_size=q.closed_size,
-            released_margin=q.released_margin,
-            meta={"side": "long", "slot": slot_i, "reason": "FLIP"},
-        )
-        self.record_trade(close_record)
-
-        # 开仓记录
-        open_record = TradeRecord(
-            timestamp=ts,
-            operation_type="FLIP_OPEN_SHORT",
-            position_size=position_size,
-            open_price=short_entry_price,
-            close_price=D0,
-            required_margin=required_margin,
-            fee=open_fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-        )
-        self.record_trade(open_record)
-        
-        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -2222,16 +2405,9 @@ class CustomTradingEnv(gym.Env):
         反手: 空翻多 (atomic flip)
         在单步内完成: 平空仓 + 开多仓
         """
-        # 检查是否有空仓
-        if self.user_accounts.short_position <= D0:
-            self.logger.warning("FLIP_SHORT_TO_LONG: No short position to flip.")
-            return ForexCode.ERROR_NO_POSITION_TO_CLOSE
-        
-        # max_entries 检查
-        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
-        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
-            self.logger.warning("FLIP: hit max_entries_per_day, cannot flip.")
-            return ForexCode.ERROR_HIT_DAY_MAX_OPEN
+        preflight = self._preflight_flip(TargetPos.SHORT, TargetPos.LONG, price)
+        if preflight != ForexCode.SUCCESS:
+            return preflight
 
         ask_price = price + spread  # 平空用 ask
         long_entry_price = price + spread  # 做多入场价是 ask
@@ -2253,14 +2429,6 @@ class CustomTradingEnv(gym.Env):
         position_size = min(self.config.trading.trade_lot, self.config.trading.max_long_position)
         required_margin = (position_size * self.config.trading.lot_size * long_entry_price) / self.config.trading.leverage
         open_fee = self.config.trading.trading_fee_per_lot * position_size
-
-        # 3. 检查资金
-        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
-        post_close_cash = current_free_margin + q.released_margin + q.pnl - close_fee
-        
-        if (required_margin + open_fee) > post_close_cash:
-            self.logger.warning(f"FLIP_SHORT_TO_LONG: Insufficient margin. Need {required_margin + open_fee}, have {post_close_cash}")
-            return ForexCode.ERROR_NO_ENOUGH_MONEY
 
         # 4. 止损止盈
         sl = self._compute_stop_loss_price(long_entry_price, side="long")
@@ -2293,7 +2461,7 @@ class CustomTradingEnv(gym.Env):
             }
         )
 
-        snap = self.ledger.snapshot()
+        snap = self._snapshot_execution_state()
         try:
             self._post_atomic(entry)
             
@@ -2303,46 +2471,42 @@ class CustomTradingEnv(gym.Env):
             self.position_manager.add_long_position(new_position, slot=0)
             
             self._assert_ledger_conservation()
-        except (LedgerError, ValueError) as e:
-            self.ledger.restore(snap)
+            self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
+            close_record = TradeRecord(
+                timestamp=ts,
+                operation_type="FLIP_CLOSE_SHORT",
+                position_size=q.closed_size,
+                open_price=q.entry_price,
+                close_price=ask_price,
+                required_margin=D0,
+                fee=close_fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                pnl=q.pnl,
+                closed_size=q.closed_size,
+                released_margin=q.released_margin,
+                meta={"side": "short", "slot": slot_i, "reason": "FLIP"},
+            )
+            self.record_trade(close_record)
+            open_record = TradeRecord(
+                timestamp=ts,
+                operation_type="FLIP_OPEN_LONG",
+                position_size=position_size,
+                open_price=long_entry_price,
+                close_price=D0,
+                required_margin=required_margin,
+                fee=open_fee,
+                balance=self.user_accounts.cash_balance.get_balance(),
+                leverage=self.config.trading.leverage,
+                free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+            )
+            self.record_trade(open_record)
+            self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+        except Exception as e:
+            self._restore_execution_state(snap)
             self.logger.error(f"FLIP_SHORT_TO_LONG failed and rolled back: {e}")
             return ForexCode.ERROR_NO_ENOUGH_MONEY
-
-        self.last_close_position = {'pnl': q.pnl, 'margin': q.released_margin}
-        
-        close_record = TradeRecord(
-            timestamp=ts,
-            operation_type="FLIP_CLOSE_SHORT",
-            position_size=q.closed_size,
-            open_price=q.entry_price,
-            close_price=ask_price,
-            required_margin=D0,
-            fee=close_fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-            pnl=q.pnl,
-            closed_size=q.closed_size,
-            released_margin=q.released_margin,
-            meta={"side": "short", "slot": slot_i, "reason": "FLIP"},
-        )
-        self.record_trade(close_record)
-
-        open_record = TradeRecord(
-            timestamp=ts,
-            operation_type="FLIP_OPEN_LONG",
-            position_size=position_size,
-            open_price=long_entry_price,
-            close_price=D0,
-            required_margin=required_margin,
-            fee=open_fee,
-            balance=self.user_accounts.cash_balance.get_balance(),
-            leverage=self.config.trading.leverage,
-            free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
-        )
-        self.record_trade(open_record)
-        
-        self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
 
         if self._live_mode:
             self._rpc_send_after_execute(
@@ -2516,7 +2680,12 @@ class CustomTradingEnv(gym.Env):
             )
 
 
-        out = {"market_seq": market_seq, "agent_state": agent_state}
+        transition_table = self._publish_target_transition_table()
+        out = {
+            "market_seq": market_seq,
+            "agent_state": agent_state,
+            "action_mask": self._action_mask_from_table(transition_table),
+        }
 
         # daily_context / daily_seq_7：不再由 env 自己维护，改为 store 提供（语义不变）
         if self._use_daily_context:
@@ -2731,6 +2900,3 @@ class CustomTradingEnv(gym.Env):
         """
         self.logger.info("Environment closed.")
         pass
-
-
-
