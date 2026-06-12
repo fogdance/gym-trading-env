@@ -6,6 +6,7 @@
 - 交易环境仓库：`~/Documents/work/gym-trading-env`
 - DreamerV3 仓库：`~/Documents/work/dreamerv3`
 - 前置分析：`docs/invalid_action_technical_report.md`
+- 自动 warm-up 训练手册：`docs/action_mask_automatic_warmup_guide.md`
 - 当前阶段：开发阶段，不要求兼容旧 observation、replay、checkpoint 或训练结果
 - Phase 1A 范围：先验证非 EOD action-mask 主链路
 - Phase 1B 范围：纳入 `near_eod` 和 `market_closed` 动态可达性
@@ -899,56 +900,37 @@ losses["avail_prior"] = prior_avail.loss(obs["action_mask"] > 0.5)
 3. prior 指标连续多个报告窗口达到门槛后，再启用 masked imagination 的 policy/value loss；
 4. 启用后若 prior FPR 或 empty fallback 明显恶化，停止正式训练并诊断，不能继续积累错误 actor 更新。
 
-首版使用显式两阶段训练配置完成门禁，不在 JIT loss 内实现复杂动态开关：
+#### 6.4.1 自动 Warm-up 与正式训练硬门禁
+
+正常训练只启动一次。Runner 在同一个 Agent、optimizer、replay 和 logdir 内维护
+`warm-up -> formal` 状态机：
 
 ```text
-availability_warmup:
-  policy/value loss scale = 0
-
-masked_actor_training:
-  从同 schema warm-up checkpoint 继续
-  policy/value loss scale 恢复正常
+fresh run
+  -> actor/value/repval gate = 0
+  -> 训练 world model 与 avail_post/avail_prior
+  -> 连续报告窗口达到门槛
+  -> gate = 1，立即保存 checkpoint
+  -> 继续正式 masked actor 训练
 ```
 
-#### 6.4.1 固定 Availability 资产与正式启动硬门禁
+自动模式硬约束：
 
-Availability warm-up 达标后，将其目录作为不可缺失的正式训练启动资产。这里的
-“固定使用训练好的 availability”指固定正式训练的初始化资产，不是只冻结
-availability head 参数。
+1. fresh run 必须以 `agent.avail_actor_enabled=false` 启动，已开启 actor 时 fail fast；
+2. 每个 report 周期聚合该周期全部训练 update 的 availability 指标，连续窗口同时满足
+   post/prior accuracy、exact、prior FPR 和 imagination fallback 门槛后才允许切换；
+3. 单个评估窗口必须达到内部最小训练样本量；不足时跨周期继续累计，不能用小样本窗口
+   触发切换或正式训练退化停止；
+4. 切换状态和动态 gate 必须进入 checkpoint；
+5. 相同 logdir 恢复时必须恢复原阶段，formal checkpoint 不重新 warm-up；
+6. formal 期间继续训练 `avail_post/avail_prior`，并持续检查相同门槛；
+7. formal 连续多个报告窗口退化时 fail fast，不能继续积累 actor 更新；
+8. predicted hard mask 对 actor 始终 stop-gradient。
 
-只冻结 head 不可靠：head 的输入来自 encoder/RSSM latent；如果正式训练继续更新
-encoder/RSSM，而 head 不更新，latent 表示漂移后原 head 的预测质量无法保持。默认正式
-训练必须：
-
-1. 加载完整 Agent checkpoint，包括 encoder、RSSM、availability head、policy/value
-   和优化器状态；
-2. 继续训练 `avail_post` 和 `avail_prior` 监督损失，使 availability 与 latent 同步；
-3. 保持 predicted hard mask 对 actor stop-gradient；
-4. 使用新正式训练 logdir 和 replay，不覆盖 warm-up 资产目录。
-
-正式启动硬门禁：
-
-```text
-agent.avail_actor_enabled=true
-  -> action_mask_asset.required 必须为 true
-  -> 资产目录必须存在
-  -> 正式 profile 必须指定固定 checkpoint 名，禁止只跟随 latest
-  -> 固定 checkpoint 必须完整
-  -> 只使用 checkpoint step 之前的连续指标窗口验收
-  -> prior accuracy/exact/FPR 和 imagination fallback 必须通过
-  -> post accuracy/exact 必须通过
-  -> 任务与 Agent 参数结构必须兼容
-  -> run.from_checkpoint 必须为空或精确指向验收通过的 checkpoint
-  -> 任一条件失败则在训练启动前 fail fast
-```
-
-FNR 和 posterior FPR 继续记录为诊断指标，但不作为首版 actor 启动阻断指标。actor
-imagination 实际消费 prior mask，false positive 风险由 prior FPR 阻断；posterior
-路径主要用于监督和表示学习诊断。
-
-固定资产仍有版本边界。当前过夜资产是 `size1m`，因此只能启动同构 `size1m` 正式
-训练；不能加载到现有 `size50m` profile。后续若正式训练改用 `size50m`，必须先训练并
-验收对应的 `size50m` availability 资产。
+因此不同模型尺寸、batch、replay 或环境配置不再需要用户手工建立独立 availability
+资产。用户按最终正式配置启动一次，新配置会先在自身 replay 分布上自动 warm-up，再
+自动进入正式训练。详细运行方式见
+`docs/action_mask_automatic_warmup_guide.md`。
 
 ### 6.5 为什么预测 mask 不向 actor 反向传播
 
@@ -1286,7 +1268,7 @@ all imagined z
 | `dreamerv3/rssm.py` | 从 loss 路径返回与 `mask_t` 对齐的一步 prior feature |
 | `embodied/jax/outs.py` | 新增 `MaskedCategorical` |
 | `dreamerv3/configs.yaml` | availability head、threshold、gradient、loss scale |
-| warm-up / masked-actor 配置 | 两阶段控制 policy/value imagination 更新门禁 |
+| 自动 warm-up 配置与状态机 | 同进程动态控制 policy/value/repval 更新门禁 |
 | 活跃 train/eval 环境 YAML | Phase 1A 关闭 EOD；Phase 1B 开启 `block_open_near_eod`、保持 `force_flatten_eod=false` |
 
 #### 推荐新增测试
@@ -1319,8 +1301,7 @@ all imagined z
 2. 固定动作顺序 `[SHORT, FLAT, LONG]`。
 3. 固定闭市、开仓次数、资金不足和 near-EOD 语义，并准备 Phase 1A/1B 两套配置。
 4. 保存当前 Monte Carlo 和 invalid action 基线。
-5. warm-up 使用全新 logdir、replay、checkpoint；正式 actor 使用新的正式训练
-   logdir/replay，并从验收通过的同构 warm-up Agent checkpoint 初始化。
+5. 正式训练使用全新 logdir；同一进程和 replay 自动完成 warm-up 到 formal 的切换。
 
 #### 退出条件
 
@@ -1456,8 +1437,7 @@ all imagined z
 
 #### 工作
 
-1. 使用新正式训练 logdir/replay，从固定且验收通过的 availability warm-up Agent
-   checkpoint 初始化完整训练。
+1. 使用新正式训练 logdir 启动自动 warm-up；通过门禁后同进程自动进入 formal。
 2. 运行 Monte Carlo。
 3. 对比：
    - invalid/rejected action；

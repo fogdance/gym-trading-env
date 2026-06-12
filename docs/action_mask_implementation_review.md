@@ -5,6 +5,7 @@
 审查范围：
 
 - 设计方案：`docs/action_mask_full_chain_implementation_plan.md`
+- 自动 warm-up 训练手册：`docs/action_mask_automatic_warmup_guide.md`
 - 环境仓库：`gym-trading-env`，分支 `dev/action-mask-full-chain`
 - DreamerV3 仓库：`~/Documents/work/dreamerv3`，分支 `dev/action-mask-full-chain`
 - 动作空间保持 `[SHORT, FLAT, LONG]`
@@ -33,7 +34,7 @@
 1. `invalid_action` 与 reward invalid penalty 只由 `action_rejected` 驱动，`execution_failed` 不再污染 actor reward。
 2. true mask 使用 strict nonempty 模式；all-false 触发运行时错误，不允许 fallback。
 3. predicted mask 仍允许 argmax fallback，并继续记录 `img_fallback_rate`。
-4. availability warm-up 期间 `policy`、imagined `value` 和 replay `repval` loss 全部为零；masked actor profile 才重新开启。
+4. availability warm-up 期间 `policy`、imagined `value` 和 replay `repval` loss 全部为零；连续指标达标后同进程自动开启。
 5. 旧 contract suite 已迁移到 `[SHORT, FLAT, LONG]` target-position 请求语义。
 
 ### 当前优先级
@@ -57,18 +58,20 @@
 
 #### P1：正式训练准入，已关闭
 
-1. 正式 masked actor 训练必须从通过 availability gate 的完整 Agent checkpoint 启动。
-   - 不能只保存或冻结 availability head；head 依赖 RSSM latent，只冻结 head 而继续更新 encoder/RSSM 会造成输入表示漂移；
+1. `action_mask_formal` 已改为单次启动的自动 warm-up 状态机。
+   - fresh run 强制 actor/value/repval gate 为 0；
+   - 每个 report 周期聚合全部训练 update 的 availability 指标，连续窗口达标后同进程
+     将动态 gate 切为 1；
+   - 小于内部最小训练样本量的窗口不参与门禁判断，避免 `report_every` 或 batch 参数
+     改动重新引入小样本误触发；
+   - 切换点立即保存完整 checkpoint，model、optimizer、replay 和 logdir 均不重建；
+   - 自动模式若以 actor 已开启状态启动会 fail fast，不能绕过门禁。
+2. checkpoint 已覆盖阶段状态。
+   - warm-up checkpoint 恢复后继续累计连续通过窗口；
+   - formal checkpoint 恢复后直接保持 gate=1，不重新 warm-up；
    - 正式训练继续使用 `avail_post/avail_prior` 监督损失，保持 head 与 latent 同步；
    - actor loss 到 predicted hard mask 仍保持 stop-gradient。
-2. 已增加固定 availability 资产启动门禁。
-   - `agent.avail_actor_enabled=true` 时，`action_mask_asset.required` 必须为 true；
-   - 资产目录、最新完整 checkpoint、checkpoint step 前连续指标窗口、模型结构和任务不满足要求时，在创建训练环境前 fail fast；
-   - 正式 profile 必须钉死 checkpoint 名，不能跟随可变的 `latest` 指针静默换模型；
-   - `run.from_checkpoint` 为空时自动绑定到验收通过的 checkpoint；手工指定其他 checkpoint 会被拒绝；
-   - 直接追加 `masked_actor_training` 但未提供资产时无法启动。
-3. 已增加 `action_mask_formal` profile，固定使用
-   `/data/logdir/action-mask-overnight-20260611/ckpt/20260612T074327F248745`。
+3. formal 期间连续 availability report 退化会自动停止训练。
 4. Monte Carlo 继续作为收益和风险验收，不再作为 action-mask 技术链路的启动阻塞项。
 
 #### P2：进一步收敛和维护性
@@ -85,7 +88,7 @@
   - prior FPR `0.5499 -> 0.0015`；
   - prior FNR `0.9762 -> 0.0035`；
   - imagination fallback `0.1923 -> 0`。
-- 固定资产门禁按 checkpoint step 验收，而不是使用 checkpoint 之后的 metrics：
+- 历史固定资产实验按 checkpoint step 验收，而不是使用 checkpoint 之后的 metrics：
   - checkpoint：`20260612T074327F248745`，step `1,974,280`；
   - 验收窗口：step `1,966,020..1,974,180`；
   - prior accuracy 最差 `99.692%`；
@@ -121,8 +124,18 @@
   - 排除空 replay 首个小样本窗口后，prior FPR 最差 `0.137%`、prior exact 最低 `99.546%`、fallback 为 `0`；
   - `invalid_action_total=0`、`action_rejected=0`、`execution_failed=0`；
   - `chosen_action_was_valid=1`，且有非零交易。
+- 自动 warm-up 状态机 smoke：
+  - fresh run 打印 `Action-mask training phase: warm-up`；
+  - warm-up 时 policy/value/repval loss 为 0；
+  - report 达标后同进程切换，`train/avail/ready` 从 0 变为 1；
+  - 切换点 checkpoint 包含 Agent gate 和 `action_mask_warmup` 状态；
+  - 相同 logdir 重启打印 `Action-mask training phase: formal`，保留 replay 并继续正式训练。
+- 昨晚真实日志离线回放发现并关闭了单 report batch 误触发风险：
+  - 单个 report batch 会在 step `123,080` 过早形成连续通过；
+  - 改用 report 周期训练指标聚合后，首次连续通过约为 step `246,760`，此时聚合
+    prior accuracy/FPR 已稳定通过门槛。
 
-**当前结论：action-mask 技术链路和固定 availability 资产门禁已达到正式训练准入条件。可以启动正式 masked actor 训练；Monte Carlo 用于后续收益和风险验收。**
+**当前结论：action-mask 技术链路和自动 warm-up 门禁已达到正式训练准入条件。用户可使用 `action_mask_formal` 单次启动，程序自动 warm-up 并进入正式 masked actor 训练；Monte Carlo 用于后续收益和风险验收。**
 
 ## 1. 初次 Review 结论（历史）
 
@@ -285,13 +298,15 @@ Dreamer 的 `data/trading_stage1.yaml` 到 `trading_stage4.yaml` 配置了非零
 
 因此 warm-up 并未完全满足“暂停 policy/value imagination 参数更新”的要求，value 仍会受低质量 predicted-mask imagination 影响。
 
-同时默认值是 `avail_actor_enabled=False`，现有 `train.sh` 和 stage command 示例没有追加 `masked_actor_training`：
+同时，当时默认值是 `avail_actor_enabled=False`，现有 `train.sh` 和 stage command 示例
+没有自动切换机制：
 
 - `~/Documents/work/dreamerv3/dreamerv3/configs.yaml:122`
 - `~/Documents/work/dreamerv3/dreamerv3/configs.yaml:397-401`
 - `~/Documents/work/dreamerv3/train.sh:3-6`
 
-按现有命令运行会永久停留在 warm-up，actor 不会恢复训练。
+按当时命令运行会永久停留在 warm-up，actor 不会恢复训练。该历史问题现已由自动
+warm-up 状态机关闭。
 
 **必须修复：**
 
