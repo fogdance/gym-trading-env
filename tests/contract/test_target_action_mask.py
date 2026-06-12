@@ -135,16 +135,85 @@ def test_legal_request_executes_planned_action(env):
 
 def test_execution_failure_is_separate_from_action_rejection(env, monkeypatch):
     monkeypatch.setattr(
-        env, "_long_open",
-        lambda *args, **kwargs: ForexCode.ERROR_NO_ENOUGH_MONEY)
+        env, "_commit_target_execution_quote",
+        lambda quote: ForexCode.ERROR_NO_ENOUGH_MONEY)
 
     _, _, _, _, info = env.step(int(TargetPos.LONG))
 
     assert int(info["log/env/action_rejected"]) == 0
     assert int(info["log/env/execution_failed"]) == 1
+    assert int(info["log/env/invalid_action"]) == 0
     assert info["reject_code"] == ForexCode.ERROR_NO_ENOUGH_MONEY.value
     assert env.planned_action == Action.LONG_OPEN0
     assert env.executed_action == Action.HOLD
+
+
+def test_transition_quotes_are_execution_ready_and_side_effect_free(env):
+    before = env._snapshot_execution_state()
+
+    env._get_obs()
+    table = env._pending_transition_table
+
+    assert_execution_state_equal(env, before)
+    assert table.action_price == env._last_valid_price
+    for decision in table.decisions:
+        if decision.allowed and decision.planned_action != Action.HOLD:
+            assert decision.quote is not None
+            assert decision.quote.action == decision.planned_action
+            assert decision.quote.action_price == table.action_price
+            assert decision.quote.ledger_entry.postings
+        else:
+            assert decision.quote is None
+
+
+def test_step_commits_published_open_quote_without_requoting(env, monkeypatch):
+    env._get_obs()
+    quoted_step = env.current_step
+    decision = env._pending_transition_table.for_index(int(TargetPos.LONG))
+    quote = decision.quote
+    original_quote_target_execution = env._quote_target_execution
+
+    def reject_same_step_requote(action, price):
+        if env.current_step == quoted_step:
+            raise AssertionError("step() requoted the published transition")
+        return original_quote_target_execution(action, price)
+
+    monkeypatch.setattr(env, "_quote_target_execution", reject_same_step_requote)
+    monkeypatch.setattr(
+        env, "_long_open",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("step() called legacy open path")))
+
+    _, _, _, _, info = env.step(int(TargetPos.LONG))
+
+    assert int(info["log/env/execution_failed"]) == 0
+    assert env.position_manager.long_positions[0] is quote.open_position
+    assert env.ledger.entries[-1] is quote.ledger_entry
+
+
+def test_step_commits_published_flip_quote_without_requoting(env, monkeypatch):
+    env.step(int(TargetPos.LONG))
+    quoted_step = env.current_step
+    decision = env._pending_transition_table.for_index(int(TargetPos.SHORT))
+    quote = decision.quote
+    original_quote_close_long = env.position_manager.quote_close_long
+
+    def reject_same_step_requote(*args, **kwargs):
+        if env.current_step == quoted_step:
+            raise AssertionError("step() requoted the published close")
+        return original_quote_close_long(*args, **kwargs)
+
+    monkeypatch.setattr(env.position_manager, "quote_close_long", reject_same_step_requote)
+    monkeypatch.setattr(
+        env, "_flip_long_to_short",
+        lambda *args, **kwargs: (_ for _ in ()).throw(
+            AssertionError("step() called legacy flip path")))
+
+    _, _, _, _, info = env.step(int(TargetPos.SHORT))
+
+    assert int(info["log/env/execution_failed"]) == 0
+    assert env.position_manager.short_positions[0] is quote.open_position
+    assert env.ledger.entries[-1] is quote.ledger_entry
 
 
 def test_step_fails_fast_when_observation_transition_table_is_stale(env):
@@ -215,6 +284,47 @@ def test_flip_commit_failure_restores_complete_execution_state(env, monkeypatch)
         lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("forced flip failure")))
 
     code = env._flip_long_to_short(env._last_valid_price, env.config.trading.spread)
+
+    assert code == ForexCode.ERROR_NO_ENOUGH_MONEY
+    assert_execution_state_equal(env, before)
+
+
+def test_target_open_quote_commit_failure_restores_complete_execution_state(env, monkeypatch):
+    quote = env._pending_transition_table.for_index(int(TargetPos.LONG)).quote
+    before = env._snapshot_execution_state()
+    monkeypatch.setattr(
+        env.position_manager, "add_long_position",
+        lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("forced open failure")))
+
+    code = env._commit_target_execution_quote(quote)
+
+    assert code == ForexCode.ERROR_OPEN_POSITION
+    assert_execution_state_equal(env, before)
+
+
+def test_target_close_quote_commit_failure_restores_complete_execution_state(env, monkeypatch):
+    env.step(int(TargetPos.LONG))
+    quote = env._pending_transition_table.for_index(int(TargetPos.FLAT)).quote
+    before = env._snapshot_execution_state()
+    monkeypatch.setattr(
+        env.user_accounts, "realize_pnl",
+        lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("forced pnl failure")))
+
+    code = env._commit_target_execution_quote(quote)
+
+    assert code == ForexCode.ERROR_NO_ENOUGH_MONEY
+    assert_execution_state_equal(env, before)
+
+
+def test_target_flip_quote_commit_failure_restores_complete_execution_state(env, monkeypatch):
+    env.step(int(TargetPos.LONG))
+    quote = env._pending_transition_table.for_index(int(TargetPos.SHORT)).quote
+    before = env._snapshot_execution_state()
+    monkeypatch.setattr(
+        env.position_manager, "add_short_position",
+        lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("forced flip failure")))
+
+    code = env._commit_target_execution_quote(quote)
 
     assert code == ForexCode.ERROR_NO_ENOUGH_MONEY
     assert_execution_state_equal(env, before)

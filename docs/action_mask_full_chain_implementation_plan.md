@@ -910,6 +910,46 @@ masked_actor_training:
   policy/value loss scale 恢复正常
 ```
 
+#### 6.4.1 固定 Availability 资产与正式启动硬门禁
+
+Availability warm-up 达标后，将其目录作为不可缺失的正式训练启动资产。这里的
+“固定使用训练好的 availability”指固定正式训练的初始化资产，不是只冻结
+availability head 参数。
+
+只冻结 head 不可靠：head 的输入来自 encoder/RSSM latent；如果正式训练继续更新
+encoder/RSSM，而 head 不更新，latent 表示漂移后原 head 的预测质量无法保持。默认正式
+训练必须：
+
+1. 加载完整 Agent checkpoint，包括 encoder、RSSM、availability head、policy/value
+   和优化器状态；
+2. 继续训练 `avail_post` 和 `avail_prior` 监督损失，使 availability 与 latent 同步；
+3. 保持 predicted hard mask 对 actor stop-gradient；
+4. 使用新正式训练 logdir 和 replay，不覆盖 warm-up 资产目录。
+
+正式启动硬门禁：
+
+```text
+agent.avail_actor_enabled=true
+  -> action_mask_asset.required 必须为 true
+  -> 资产目录必须存在
+  -> 正式 profile 必须指定固定 checkpoint 名，禁止只跟随 latest
+  -> 固定 checkpoint 必须完整
+  -> 只使用 checkpoint step 之前的连续指标窗口验收
+  -> prior accuracy/exact/FPR 和 imagination fallback 必须通过
+  -> post accuracy/exact 必须通过
+  -> 任务与 Agent 参数结构必须兼容
+  -> run.from_checkpoint 必须为空或精确指向验收通过的 checkpoint
+  -> 任一条件失败则在训练启动前 fail fast
+```
+
+FNR 和 posterior FPR 继续记录为诊断指标，但不作为首版 actor 启动阻断指标。actor
+imagination 实际消费 prior mask，false positive 风险由 prior FPR 阻断；posterior
+路径主要用于监督和表示学习诊断。
+
+固定资产仍有版本边界。当前过夜资产是 `size1m`，因此只能启动同构 `size1m` 正式
+训练；不能加载到现有 `size50m` profile。后续若正式训练改用 `size50m`，必须先训练并
+验收对应的 `size50m` availability 资产。
+
 ### 6.5 为什么预测 mask 不向 actor 反向传播
 
 如果 actor loss 可以修改 mask head，actor 有可能通过降低某个动作的“可用概率”来逃避不利动作，而不是学习正确策略。
@@ -1279,7 +1319,8 @@ all imagined z
 2. 固定动作顺序 `[SHORT, FLAT, LONG]`。
 3. 固定闭市、开仓次数、资金不足和 near-EOD 语义，并准备 Phase 1A/1B 两套配置。
 4. 保存当前 Monte Carlo 和 invalid action 基线。
-5. 新训练使用全新 logdir、replay、checkpoint。
+5. warm-up 使用全新 logdir、replay、checkpoint；正式 actor 使用新的正式训练
+   logdir/replay，并从验收通过的同构 warm-up Agent checkpoint 初始化。
 
 #### 退出条件
 
@@ -1415,7 +1456,8 @@ all imagined z
 
 #### 工作
 
-1. 使用全新 checkpoint/replay 完整训练。
+1. 使用新正式训练 logdir/replay，从固定且验收通过的 availability warm-up Agent
+   checkpoint 初始化完整训练。
 2. 运行 Monte Carlo。
 3. 对比：
    - invalid/rejected action；

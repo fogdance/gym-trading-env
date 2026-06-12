@@ -10,7 +10,121 @@
 - 动作空间保持 `[SHORT, FLAT, LONG]`
 - 外部 RPC/broker 不进入本次可靠性结论
 
-## 1. Review 结论
+## 0. 2026-06-12 二次 Review 复核
+
+本节是对 2026-06-11 初次实现 Review 的后续复核。下文原始 findings 保留作为修复历史；当前状态以本节为准。
+
+### 已关闭的原 P0
+
+1. **完整 transaction rollback 已实现并通过故障注入测试。**
+   - snapshot/restore 覆盖 ledger balances、ledger entry length、position slots、closed trade profits、realized/unrealized PnL、trade history、entries counter 和 last close state；
+   - open、close、flip commit 中途失败后完整恢复；
+   - `tests/contract/test_target_action_mask.py` 覆盖 open/close/flip 故障注入。
+2. **`obs_t.action_mask` 对应 table 已由 `step(action_t)` 原样消费。**
+   - `_get_obs()` 发布 `_pending_transition_table`；
+   - `step()` consume table，不静默重算；
+   - state version/state key 不一致直接 fail fast；
+   - stale-table 专项测试已通过。
+
+因此，初次 Review 中 P0-1 和 P0-2 的复现结论已不再适用于当前实现。
+
+### 二次 Review 后已补修
+
+1. `invalid_action` 与 reward invalid penalty 只由 `action_rejected` 驱动，`execution_failed` 不再污染 actor reward。
+2. true mask 使用 strict nonempty 模式；all-false 触发运行时错误，不允许 fallback。
+3. predicted mask 仍允许 argmax fallback，并继续记录 `img_fallback_rate`。
+4. availability warm-up 期间 `policy`、imagined `value` 和 replay `repval` loss 全部为零；masked actor profile 才重新开启。
+5. 旧 contract suite 已迁移到 `[SHORT, FLAT, LONG]` target-position 请求语义。
+
+### 当前优先级
+
+优先级按“是否阻塞 masked actor、错误后果、自动化可验证性”确定。
+
+#### P0：结构正确性，已关闭
+
+1. **Execution-ready quote 已进入 target-position 主链路。**
+   - allowed、非 HOLD decision 必须携带 quote；
+   - quote 固定 action price、position、margin、fee、close quote 和 journal entry；
+   - `step()` 只 commit observation 发布的 quote，不再调用 legacy open/close/flip 路径重新报价；
+   - quote 构造无副作用，open/close/flip commit 故障完整回滚。
+2. **Dreamer 核心时序和梯度契约已有自动化测试。**
+   - Driver -> Replay 的 `action_mask_t/action_t` 对齐与 terminal dummy action；
+   - `_apply_replay_context()` 只 shift action，不 shift mask；
+   - RSSM prior 不读取当前 observation，reset 后不携带前 episode 历史；
+   - RSSM imagination 使用当前 latent 选择动作，不使用 next latent；
+   - actor hard mask 到 availability logits 梯度为零；
+   - prior availability loss 到 availability head 和 RSSM dynamics 梯度非零。
+
+#### P1：正式训练准入，已关闭
+
+1. 正式 masked actor 训练必须从通过 availability gate 的完整 Agent checkpoint 启动。
+   - 不能只保存或冻结 availability head；head 依赖 RSSM latent，只冻结 head 而继续更新 encoder/RSSM 会造成输入表示漂移；
+   - 正式训练继续使用 `avail_post/avail_prior` 监督损失，保持 head 与 latent 同步；
+   - actor loss 到 predicted hard mask 仍保持 stop-gradient。
+2. 已增加固定 availability 资产启动门禁。
+   - `agent.avail_actor_enabled=true` 时，`action_mask_asset.required` 必须为 true；
+   - 资产目录、最新完整 checkpoint、checkpoint step 前连续指标窗口、模型结构和任务不满足要求时，在创建训练环境前 fail fast；
+   - 正式 profile 必须钉死 checkpoint 名，不能跟随可变的 `latest` 指针静默换模型；
+   - `run.from_checkpoint` 为空时自动绑定到验收通过的 checkpoint；手工指定其他 checkpoint 会被拒绝；
+   - 直接追加 `masked_actor_training` 但未提供资产时无法启动。
+3. 已增加 `action_mask_formal` profile，固定使用
+   `/data/logdir/action-mask-overnight-20260611/ckpt/20260612T074327F248745`。
+4. Monte Carlo 继续作为收益和风险验收，不再作为 action-mask 技术链路的启动阻塞项。
+
+#### P2：进一步收敛和维护性
+
+1. 将 stop-loss/take-profit/EOD 等内部执行路径逐步迁移到相同 quote/commit 基础设施。
+2. 增加完整 Agent loss 参数树级梯度测试和 `replay_context > 0` 边界测试。
+3. 清理不再由 target-position 主链路使用的 legacy preflight dispatcher。
+
+### 最新验证
+
+- availability warm-up 过夜结果：
+  - prior accuracy `0.3036 -> 0.9978`；
+  - prior exact accuracy `0.0053 -> 0.9948`；
+  - prior FPR `0.5499 -> 0.0015`；
+  - prior FNR `0.9762 -> 0.0035`；
+  - imagination fallback `0.1923 -> 0`。
+- 固定资产门禁按 checkpoint step 验收，而不是使用 checkpoint 之后的 metrics：
+  - checkpoint：`20260612T074327F248745`，step `1,974,280`；
+  - 验收窗口：step `1,966,020..1,974,180`；
+  - prior accuracy 最差 `99.692%`；
+  - prior exact accuracy 最差 `99.324%`；
+  - prior FPR 最差 `0.253%`，低于 `0.5%` 阻断门槛；
+  - imagination fallback 最差 `0`。
+- 环境统计：
+  - `invalid_action_total = 0`；
+  - `action_rejected = 0`；
+  - `execution_failed = 0`；
+  - `chosen_action_was_valid = 1`；
+  - 存在非零交易，排除永远 FLAT 的伪修复。
+- 2026-06-12 warm-up smoke 明确观察到：
+  - `train/loss/policy = 0`；
+  - `train/loss/value = 0`；
+  - `train/loss/repval = 0`。
+- execution-ready quote 修复后：
+  - 环境专项和回归测试 `42 passed`；
+  - quote 无副作用、同 step 不重新报价、open/close/flip 回滚均通过。
+- Dreamer action-mask 契约测试：
+  - 基础 masked distribution 与 strict/fallback 测试；
+  - replay/prior/imagination/gradient 契约；
+  - 合计 `10 passed`。
+- fresh 400-step masked actor smoke：
+  - `train/avail/ready = 1`，policy/value/repval 均实际启用；
+  - `img_fallback_rate = 0`；
+  - `invalid_action_total = 0`、`action_rejected = 0`、`execution_failed = 0`；
+  - `chosen_action_was_valid = 1`，且存在非零交易；
+  - 因为是未 warm-up 新模型，最近 5 个窗口未达到 availability 阈值，gate 正确返回 BLOCKED。
+- 从固定资产启动的 5,000-step masked actor continuation smoke：
+  - 完整 checkpoint 加载、shape 校验、JIT 编译和训练通过；
+  - policy/value/repval loss 均非零；
+  - 排除空 replay 首个小样本窗口后，prior FPR 最差 `0.137%`、prior exact 最低 `99.546%`、fallback 为 `0`；
+  - `invalid_action_total=0`、`action_rejected=0`、`execution_failed=0`；
+  - `chosen_action_was_valid=1`，且有非零交易。
+
+**当前结论：action-mask 技术链路和固定 availability 资产门禁已达到正式训练准入条件。可以启动正式 masked actor 训练；Monte Carlo 用于后续收益和风险验收。**
+
+## 1. 初次 Review 结论（历史）
 
 **结论：暂不通过正式 masked actor 训练准入。**
 

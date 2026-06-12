@@ -25,14 +25,25 @@ class _Cfg:
 
 
 class _UserAccounts:
+    unrealized_pnl = Decimal("0")
+
     def equity(self) -> Decimal:
         return Decimal("10000")
+
+
+class _Ledger:
+    def balances(self):
+        return {
+            "user_cash": Decimal("10000"),
+            "user_margin": Decimal("0"),
+        }
 
 
 class _FakeEnv:
     def __init__(self):
         self.config = _Cfg()
         self.user_accounts = _UserAccounts()
+        self.ledger = _Ledger()
 
         # reward 里会访问这些字段（给默认即可）
         self.max_equity = Decimal("10000")
@@ -48,6 +59,7 @@ class _FakeEnv:
         self._R_cash_last = Decimal("100")  # scale 不为 0
 
         self.action_result = ForexCode.SUCCESS  # 默认
+        self._last_action_rejected = False
 
 
 def _init_reward(env: _FakeEnv):
@@ -71,6 +83,7 @@ def test_invalid_first_time_only_pays_time_cost_not_streak():
     r = _init_reward(env)
 
     env.action_result = ForexCode.ERROR_NO_POSITION_TO_CLOSE
+    env._last_action_rejected = True
     out = r()
 
     dbg = env._reward_debug
@@ -86,6 +99,7 @@ def test_invalid_repeated_increases_streak_penalty_linearly():
     r = _init_reward(env)
 
     env.action_result = ForexCode.ERROR_NO_POSITION_TO_CLOSE
+    env._last_action_rejected = True
     r()  # streak=1
     r()  # streak=2
     dbg2 = env._reward_debug
@@ -103,11 +117,13 @@ def test_success_resets_invalid_streak():
     r = _init_reward(env)
 
     env.action_result = ForexCode.ERROR_NO_POSITION_TO_CLOSE
+    env._last_action_rejected = True
     r()
     r()
     assert env._reward_debug["invalid_streak_len"] == 2
 
     env.action_result = ForexCode.SUCCESS
+    env._last_action_rejected = False
     r()
     assert env._reward_debug["invalid_streak_len"] == 0
     assert env._reward_debug["invalid_total"] == 0.0
@@ -119,12 +135,14 @@ def test_market_closed_not_counted_as_invalid_and_not_in_streak():
 
     # 先让 streak=2
     env.action_result = ForexCode.ERROR_NO_POSITION_TO_CLOSE
+    env._last_action_rejected = True
     r()
     r()
     assert env._reward_debug["invalid_streak_len"] == 2
 
     # market closed：应该走 mkt_closed，不走 invalid，也不改变 streak（实现里 invalid=False -> streak reset）
     env.action_result = ForexCode.ERROR_MARKET_CLOSED
+    env._last_action_rejected = False
     r()
     dbg = env._reward_debug
     assert dbg["invalid_total"] == 0.0
@@ -133,12 +151,26 @@ def test_market_closed_not_counted_as_invalid_and_not_in_streak():
     assert dbg["invalid_streak_len"] == 0
 
 
+def test_execution_failure_does_not_penalize_actor():
+    env = _FakeEnv()
+    r = _init_reward(env)
+
+    env.action_result = ForexCode.ERROR_NO_ENOUGH_MONEY
+    env._last_action_rejected = False
+    r()
+
+    dbg = env._reward_debug
+    assert dbg["invalid_streak_len"] == 0
+    assert dbg["invalid_total"] == 0.0
+
+
 def test_streak_capped():
     env = _FakeEnv()
     env.config.trading.invalid_streak_cap = 3
     r = _init_reward(env)
 
     env.action_result = ForexCode.ERROR_NO_POSITION_TO_CLOSE
+    env._last_action_rejected = True
     r()  # s=1
     r()  # s=2 -> -0.02*1
     r()  # s=3 -> -0.02*2

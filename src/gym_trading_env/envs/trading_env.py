@@ -28,7 +28,11 @@ from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
 from gym_trading_env.envs.trade_record_manager import TradeRecordManager
 from gym_trading_env.envs.action import Action, ForexCode, JsonlActionLogger, TargetPos
-from gym_trading_env.envs.target_transition import TargetTransitionDecision, TargetTransitionTable
+from gym_trading_env.envs.target_transition import (
+    TargetExecutionQuote,
+    TargetTransitionDecision,
+    TargetTransitionTable,
+)
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
 from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS
@@ -719,8 +723,301 @@ class CustomTradingEnv(gym.Env):
             return self._preflight_flip(TargetPos.SHORT, TargetPos.LONG, price)
         raise ValueError(f"Unsupported target transition action: {action}")
 
-    def _transition_state_key(self) -> tuple:
-        price, market_open = self._action_price_and_market_open()
+    def _quote_target_open(
+        self,
+        action: Action,
+        side: TargetPos,
+        price: Decimal,
+        slot: int = 0,
+    ) -> tuple[ForexCode, TargetExecutionQuote | None]:
+        if bool(getattr(self.config.trading, "intraday_single_position", True)):
+            if (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0):
+                return ForexCode.ERROR_OPEN_POSITION, None
+
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN, None
+
+        if side == TargetPos.LONG:
+            exec_price = price + self.config.trading.spread
+            max_additional = self.config.trading.max_long_position - self.user_accounts.long_position
+            memo = "LONG_OPEN"
+            side_name = "long"
+        elif side == TargetPos.SHORT:
+            exec_price = price - self.config.trading.spread
+            max_additional = self.config.trading.max_short_position - self.user_accounts.short_position
+            memo = "SHORT_OPEN"
+            side_name = "short"
+        else:
+            raise ValueError(f"Unsupported target open side: {side}")
+
+        if max_additional <= D0:
+            return ForexCode.ERROR_HIT_MAX_POSITION, None
+
+        position_size = min(self.config.trading.trade_lot, max_additional)
+        required_margin = (
+            position_size * self.config.trading.lot_size * exec_price
+        ) / self.config.trading.leverage
+        fee = self.config.trading.trading_fee_per_lot * position_size
+        free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        if (required_margin + fee) > free_margin:
+            return ForexCode.ERROR_NO_ENOUGH_MONEY, None
+
+        sl = self._compute_stop_loss_price(exec_price, side=side_name)
+        tp = self._compute_take_profit_price(
+            entry_exec_price=exec_price,
+            sl_exec_price=sl,
+            side=side_name,
+        )
+        position = Position(
+            size=position_size,
+            entry_price=exec_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+        ts = self.bar_source.store.index[self.current_step]
+        entry = JournalEntry(
+            timestamp=ts,
+            memo=memo,
+            postings=[
+                Posting("user_cash", -(required_margin + fee)),
+                Posting("user_margin", +required_margin),
+                Posting("broker_fee_income", +fee),
+            ],
+            meta={"side": side_name, "slot": slot, "price": str(exec_price)},
+        )
+        entry.validate()
+        return ForexCode.SUCCESS, TargetExecutionQuote(
+            action=action,
+            action_price=price,
+            timestamp=ts,
+            ledger_entry=entry,
+            exec_price=exec_price,
+            rpc_price=exec_price,
+            open_side=side,
+            open_slot=slot,
+            open_position=position,
+            open_fee=fee,
+        )
+
+    def _quote_target_close(
+        self,
+        action: Action,
+        side: TargetPos,
+        price: Decimal,
+        slot: int = 0,
+    ) -> tuple[ForexCode, TargetExecutionQuote | None]:
+        if side == TargetPos.LONG:
+            if self.user_accounts.long_position <= D0:
+                return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+            exec_price = price - self.config.trading.spread
+            quote_fn = self.position_manager.quote_close_long
+            memo = "LONG_CLOSE"
+            side_name = "long"
+        elif side == TargetPos.SHORT:
+            if self.user_accounts.short_position <= D0:
+                return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+            exec_price = price + self.config.trading.spread
+            quote_fn = self.position_manager.quote_close_short
+            memo = "SHORT_CLOSE"
+            side_name = "short"
+        else:
+            raise ValueError(f"Unsupported target close side: {side}")
+
+        try:
+            slot_i, close_quote = quote_fn(
+                closing_price=exec_price,
+                lot_size=self.config.trading.lot_size,
+                slot=slot,
+            )
+        except ValueError:
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+
+        close_fee = D0 if not self.config.trading.is_round_turn else (
+            self.config.trading.trading_fee_per_lot * close_quote.closed_size
+        )
+        ts = self.bar_source.store.index[self.current_step]
+        entry = JournalEntry(
+            timestamp=ts,
+            memo=memo,
+            postings=[
+                Posting("user_margin", -close_quote.released_margin),
+                Posting("broker_pnl", -close_quote.pnl),
+                Posting("broker_fee_income", +close_fee),
+                Posting(
+                    "user_cash",
+                    +(close_quote.released_margin + close_quote.pnl - close_fee),
+                ),
+            ],
+            meta={
+                "side": side_name,
+                "slot": slot_i,
+                "close_price": str(exec_price),
+                "pnl": str(close_quote.pnl),
+            },
+        )
+        entry.validate()
+        return ForexCode.SUCCESS, TargetExecutionQuote(
+            action=action,
+            action_price=price,
+            timestamp=ts,
+            ledger_entry=entry,
+            exec_price=exec_price,
+            rpc_price=exec_price,
+            close_side=side,
+            close_slot=slot_i,
+            close_quote=close_quote,
+            close_fee=close_fee,
+        )
+
+    def _quote_target_flip(
+        self,
+        action: Action,
+        source: TargetPos,
+        target: TargetPos,
+        price: Decimal,
+    ) -> tuple[ForexCode, TargetExecutionQuote | None]:
+        max_entries = int(getattr(self.config.trading, "max_entries_per_day", 1))
+        if max_entries > 0 and int(getattr(self, "_entries_used_today", 0)) >= max_entries:
+            return ForexCode.ERROR_HIT_DAY_MAX_OPEN, None
+
+        if source == TargetPos.LONG and target == TargetPos.SHORT:
+            if self.user_accounts.long_position <= D0:
+                return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+            exec_price = price - self.config.trading.spread
+            quote_fn = self.position_manager.quote_close_long
+            max_position = self.config.trading.max_short_position
+            close_name = "long"
+            open_name = "short"
+            memo = "FLIP_LONG_TO_SHORT"
+        elif source == TargetPos.SHORT and target == TargetPos.LONG:
+            if self.user_accounts.short_position <= D0:
+                return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+            exec_price = price + self.config.trading.spread
+            quote_fn = self.position_manager.quote_close_short
+            max_position = self.config.trading.max_long_position
+            close_name = "short"
+            open_name = "long"
+            memo = "FLIP_SHORT_TO_LONG"
+        else:
+            raise ValueError(f"Unsupported target flip: {source} -> {target}")
+
+        try:
+            close_slot, close_quote = quote_fn(
+                closing_price=exec_price,
+                lot_size=self.config.trading.lot_size,
+                slot=0,
+            )
+        except ValueError:
+            return ForexCode.ERROR_NO_POSITION_TO_CLOSE, None
+
+        position_size = min(self.config.trading.trade_lot, max_position)
+        if position_size <= D0:
+            return ForexCode.ERROR_HIT_MAX_POSITION, None
+
+        close_fee = D0 if not self.config.trading.is_round_turn else (
+            self.config.trading.trading_fee_per_lot * close_quote.closed_size
+        )
+        required_margin = (
+            position_size * self.config.trading.lot_size * exec_price
+        ) / self.config.trading.leverage
+        open_fee = self.config.trading.trading_fee_per_lot * position_size
+        current_free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+        post_close_cash = (
+            current_free_margin + close_quote.released_margin + close_quote.pnl - close_fee
+        )
+        if (required_margin + open_fee) > post_close_cash:
+            return ForexCode.ERROR_NO_ENOUGH_MONEY, None
+
+        sl = self._compute_stop_loss_price(exec_price, side=open_name)
+        tp = self._compute_take_profit_price(
+            entry_exec_price=exec_price,
+            sl_exec_price=sl,
+            side=open_name,
+        )
+        position = Position(
+            size=position_size,
+            entry_price=exec_price,
+            initial_margin=required_margin,
+            open_step=self.current_step,
+            stop_loss_price=sl,
+            take_profit_price=tp,
+        )
+        ts = self.bar_source.store.index[self.current_step]
+        entry = JournalEntry(
+            timestamp=ts,
+            memo=memo,
+            postings=[
+                Posting("user_margin", -close_quote.released_margin + required_margin),
+                Posting("broker_pnl", -close_quote.pnl),
+                Posting("broker_fee_income", close_fee + open_fee),
+                Posting(
+                    "user_cash",
+                    close_quote.released_margin
+                    + close_quote.pnl
+                    - close_fee
+                    - required_margin
+                    - open_fee,
+                ),
+            ],
+            meta={
+                "close_side": close_name,
+                "close_slot": close_slot,
+                "close_price": str(exec_price),
+                "close_pnl": str(close_quote.pnl),
+                "open_side": open_name,
+                "open_slot": 0,
+                "open_price": str(exec_price),
+            },
+        )
+        entry.validate()
+        return ForexCode.SUCCESS, TargetExecutionQuote(
+            action=action,
+            action_price=price,
+            timestamp=ts,
+            ledger_entry=entry,
+            exec_price=exec_price,
+            rpc_price=price,
+            open_side=target,
+            open_slot=0,
+            open_position=position,
+            open_fee=open_fee,
+            close_side=source,
+            close_slot=close_slot,
+            close_quote=close_quote,
+            close_fee=close_fee,
+        )
+
+    def _quote_target_execution(
+        self,
+        action: Action,
+        price: Decimal,
+    ) -> tuple[ForexCode, TargetExecutionQuote | None]:
+        if action == Action.HOLD:
+            return ForexCode.SUCCESS, None
+        if action == Action.LONG_OPEN0:
+            return self._quote_target_open(action, TargetPos.LONG, price)
+        if action == Action.SHORT_OPEN0:
+            return self._quote_target_open(action, TargetPos.SHORT, price)
+        if action == Action.LONG_CLOSE0:
+            return self._quote_target_close(action, TargetPos.LONG, price)
+        if action == Action.SHORT_CLOSE0:
+            return self._quote_target_close(action, TargetPos.SHORT, price)
+        if action == Action.FLIP_LONG_TO_SHORT:
+            return self._quote_target_flip(action, TargetPos.LONG, TargetPos.SHORT, price)
+        if action == Action.FLIP_SHORT_TO_LONG:
+            return self._quote_target_flip(action, TargetPos.SHORT, TargetPos.LONG, price)
+        raise ValueError(f"Unsupported target transition action: {action}")
+
+    def _transition_state_key(
+        self,
+        price: Decimal | None = None,
+        market_open: bool | None = None,
+    ) -> tuple:
+        if price is None or market_open is None:
+            price, market_open = self._action_price_and_market_open()
         position_key = lambda positions: tuple(
             None if pos is None else (
                 pos.size,
@@ -756,8 +1053,12 @@ class CustomTradingEnv(gym.Env):
             bool(self.config.trading.session_policy.block_open_near_eod),
         )
 
-    def _build_target_transition_table(self) -> TargetTransitionTable:
-        price, market_open = self._action_price_and_market_open()
+    def _build_target_transition_table(
+        self,
+        price: Decimal,
+        market_open: bool,
+        state_key: tuple,
+    ) -> TargetTransitionTable:
         current_target = self._current_target()
         block_open = (
             self.config.trading.intraday_mode
@@ -774,6 +1075,7 @@ class CustomTradingEnv(gym.Env):
         for requested_index, requested_target in enumerate(self.valid_actions):
             requested_target = TargetPos(requested_target)
             planned_action = self._plan_exec_action(current_target, requested_target)
+            quote = None
             if planned_action == Action.HOLD:
                 result_code = ForexCode.SUCCESS
                 reason = "already_at_target"
@@ -784,7 +1086,7 @@ class CustomTradingEnv(gym.Env):
                 result_code = ForexCode.ERROR_BLOCKED_NEAR_EOD
                 reason = "near_eod"
             else:
-                result_code = self._preflight_exec_action(planned_action, price)
+                result_code, quote = self._quote_target_execution(planned_action, price)
                 reason = "allowed" if result_code == ForexCode.SUCCESS else result_code.name.lower()
             decisions.append(TargetTransitionDecision(
                 requested_index=requested_index,
@@ -794,20 +1096,24 @@ class CustomTradingEnv(gym.Env):
                 allowed=result_code == ForexCode.SUCCESS,
                 result_code=result_code,
                 reason=reason,
+                quote=quote,
             ))
         return TargetTransitionTable(
             state_version=int(self._legality_state_version),
-            state_key=self._transition_state_key(),
+            state_key=state_key,
+            action_price=price,
+            market_open=market_open,
             decisions=tuple(decisions),
         )
 
     def _get_target_transition_table(self) -> TargetTransitionTable:
-        state_key = self._transition_state_key()
+        price, market_open = self._action_price_and_market_open()
+        state_key = self._transition_state_key(price, market_open)
         table = getattr(self, "_target_transition_table", None)
         if table is None or table.state_key != state_key:
             if table is not None:
                 self._legality_state_version += 1
-            table = self._build_target_transition_table()
+            table = self._build_target_transition_table(price, market_open, state_key)
             self._target_transition_table = table
         return table
 
@@ -884,60 +1190,20 @@ class CustomTradingEnv(gym.Env):
 
         force_flatten = bool(self.config.trading.session_policy.force_flatten_eod)
 
-        # --- Price / market-closed gate at CURRENT step (t) ---
-        try:
-            action_price, market_open = self._action_price_and_market_open()
-            if market_open:
-                self._last_valid_price = action_price
-        except Exception as e:
-            self.logger.error(
-                f"Failed to read action price at step={self.current_step} "
-                f"(len={int(self.bar_source.store.n_rows)}): {e}"
-            )
-            self.terminated = True
-            self.truncated = False
-            info = self._get_info()
-            return self._get_obs(), 0.0, self.terminated, self.truncated, info
+        action_price = transition_table.action_price
+        if transition_table.market_open:
+            self._last_valid_price = action_price
 
         # --- Execute action ---
         self.action_result = decision.result_code
 
         if not decision.allowed or self.action == Action.HOLD:
             pass
-        elif self.action == Action.LONG_OPEN:
-            self.action_result = self._long_open(action_price, self.config.trading.spread)
-        elif self.action == Action.LONG_CLOSE:
-            self.action_result = self._long_close(action_price, self.config.trading.spread)
-        elif self.action == Action.SHORT_OPEN:
-            self.action_result = self._short_open(action_price, self.config.trading.spread)
-        elif self.action == Action.SHORT_CLOSE:
-            self.action_result = self._short_close(action_price, self.config.trading.spread)
-        elif self.action == Action.POSITION_UP:
-            self.action_result = self._position_up(action_price, self.config.trading.spread)
-        elif self.action == Action.POSITION_DOWN:
-            self.action_result = self._position_down(action_price, self.config.trading.spread)
-        elif self.action == Action.EMPTY:
-            self.action_result = self._empty_position(action_price, self.config.trading.spread)
-        elif self.action == Action.LONG_OPEN0:
-            self.action_result = self._long_open(action_price, self.config.trading.spread, slot=0)
-        elif self.action == Action.LONG_CLOSE0:
-            self.action_result = self._long_close(action_price, self.config.trading.spread, slot=0)
-        elif self.action == Action.SHORT_OPEN0:
-            self.action_result = self._short_open(action_price, self.config.trading.spread, slot=0)
-        elif self.action == Action.SHORT_CLOSE0:
-            self.action_result = self._short_close(action_price, self.config.trading.spread, slot=0)
-        elif self.action == Action.LONG_OPEN1:
-            self.action_result = self._long_open(action_price, self.config.trading.spread, slot=1)
-        elif self.action == Action.LONG_CLOSE1:
-            self.action_result = self._long_close(action_price, self.config.trading.spread, slot=1)
-        elif self.action == Action.SHORT_OPEN1:
-            self.action_result = self._short_open(action_price, self.config.trading.spread, slot=1)
-        elif self.action == Action.SHORT_CLOSE1:
-            self.action_result = self._short_close(action_price, self.config.trading.spread, slot=1)
-        elif self.action == Action.FLIP_LONG_TO_SHORT:
-            self.action_result = self._flip_long_to_short(action_price, self.config.trading.spread)
-        elif self.action == Action.FLIP_SHORT_TO_LONG:
-            self.action_result = self._flip_short_to_long(action_price, self.config.trading.spread)
+        else:
+            if decision.quote is None:
+                raise RuntimeError(
+                    f"Allowed target transition has no execution quote: {decision}")
+            self.action_result = self._commit_target_execution_quote(decision.quote)
 
         if decision.allowed and self.action_result != ForexCode.SUCCESS:
             self._last_execution_failed = True
@@ -962,7 +1228,7 @@ class CustomTradingEnv(gym.Env):
             in_market = (self.user_accounts.long_position > D0) or (self.user_accounts.short_position > D0)
         except Exception:
             in_market = False
-        invalid_action = self.action_result != ForexCode.SUCCESS
+        invalid_action = self._last_action_rejected
 
 
         self.metrics.on_step(self.action, self.action_result == ForexCode.SUCCESS, in_market=in_market, invalid_action=invalid_action)
@@ -1929,6 +2195,171 @@ class CustomTradingEnv(gym.Env):
         del self.trade_record_manager.trade_history[snapshot["trade_history_len"]:]
         self._entries_used_today = snapshot["entries_used_today"]
         self.last_close_position = snapshot["last_close_position"]
+
+    def _commit_target_execution_quote(self, quote: TargetExecutionQuote) -> ForexCode:
+        open_actions = {Action.LONG_OPEN0, Action.SHORT_OPEN0}
+        close_actions = {Action.LONG_CLOSE0, Action.SHORT_CLOSE0}
+        flip_actions = {Action.FLIP_LONG_TO_SHORT, Action.FLIP_SHORT_TO_LONG}
+        if quote.action not in open_actions | close_actions | flip_actions:
+            raise ValueError(f"Unsupported target execution quote action: {quote.action}")
+
+        snap = self._snapshot_execution_state()
+        try:
+            self._post_atomic(quote.ledger_entry)
+
+            if quote.action in open_actions:
+                if quote.open_position is None or quote.open_side is None:
+                    raise RuntimeError("Open execution quote is incomplete")
+                if quote.open_side == TargetPos.LONG:
+                    self.position_manager.add_long_position(
+                        quote.open_position, slot=quote.open_slot)
+                else:
+                    self.position_manager.add_short_position(
+                        quote.open_position, slot=quote.open_slot)
+                self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+                self._assert_ledger_conservation()
+                operation_type = (
+                    Action.LONG_OPEN.name
+                    if quote.open_side == TargetPos.LONG
+                    else Action.SHORT_OPEN.name
+                )
+                self.record_trade(TradeRecord(
+                    timestamp=quote.timestamp,
+                    operation_type=operation_type,
+                    position_size=quote.open_position.size,
+                    open_price=quote.exec_price,
+                    close_price=D0,
+                    required_margin=quote.open_position.initial_margin,
+                    fee=quote.open_fee,
+                    balance=self.user_accounts.cash_balance.get_balance(),
+                    leverage=self.config.trading.leverage,
+                    free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                ))
+
+            elif quote.action in close_actions:
+                if (
+                    quote.close_quote is None
+                    or quote.close_side is None
+                    or quote.close_slot is None
+                ):
+                    raise RuntimeError("Close execution quote is incomplete")
+                if quote.close_side == TargetPos.LONG:
+                    self.position_manager.commit_close_long(
+                        quote.close_slot, quote=quote.close_quote)
+                else:
+                    self.position_manager.commit_close_short(
+                        quote.close_slot, quote=quote.close_quote)
+                self.user_accounts.realize_pnl(quote.close_quote.pnl)
+                self._assert_ledger_conservation()
+                self.last_close_position = {
+                    "pnl": quote.close_quote.pnl,
+                    "margin": quote.close_quote.released_margin,
+                }
+                operation_type = (
+                    Action.LONG_CLOSE.name
+                    if quote.close_side == TargetPos.LONG
+                    else Action.SHORT_CLOSE.name
+                )
+                self.record_trade(TradeRecord(
+                    timestamp=quote.timestamp,
+                    operation_type=operation_type,
+                    position_size=quote.close_quote.closed_size,
+                    open_price=quote.close_quote.entry_price,
+                    close_price=quote.exec_price,
+                    required_margin=D0,
+                    fee=quote.close_fee,
+                    balance=self.user_accounts.cash_balance.get_balance(),
+                    leverage=self.config.trading.leverage,
+                    free_margin=self._calculate_equity() - self.user_accounts.used_margin.get_balance(),
+                    pnl=quote.close_quote.pnl,
+                    closed_size=quote.close_quote.closed_size,
+                    released_margin=quote.close_quote.released_margin,
+                    meta={
+                        "side": "long" if quote.close_side == TargetPos.LONG else "short",
+                        "slot": quote.close_slot,
+                        "reason": "MANUAL",
+                    },
+                ))
+
+            else:
+                if (
+                    quote.close_quote is None
+                    or quote.close_side is None
+                    or quote.close_slot is None
+                    or quote.open_position is None
+                    or quote.open_side is None
+                ):
+                    raise RuntimeError("Flip execution quote is incomplete")
+                if quote.close_side == TargetPos.LONG:
+                    self.position_manager.commit_close_long(
+                        quote.close_slot, quote=quote.close_quote)
+                else:
+                    self.position_manager.commit_close_short(
+                        quote.close_slot, quote=quote.close_quote)
+                self.user_accounts.realize_pnl(quote.close_quote.pnl)
+                if quote.open_side == TargetPos.LONG:
+                    self.position_manager.add_long_position(
+                        quote.open_position, slot=quote.open_slot)
+                else:
+                    self.position_manager.add_short_position(
+                        quote.open_position, slot=quote.open_slot)
+                self._entries_used_today = int(getattr(self, "_entries_used_today", 0)) + 1
+                self._assert_ledger_conservation()
+                self.last_close_position = {
+                    "pnl": quote.close_quote.pnl,
+                    "margin": quote.close_quote.released_margin,
+                }
+                close_name = "LONG" if quote.close_side == TargetPos.LONG else "SHORT"
+                open_name = "LONG" if quote.open_side == TargetPos.LONG else "SHORT"
+                balance = self.user_accounts.cash_balance.get_balance()
+                free_margin = self._calculate_equity() - self.user_accounts.used_margin.get_balance()
+                self.record_trade(TradeRecord(
+                    timestamp=quote.timestamp,
+                    operation_type=f"FLIP_CLOSE_{close_name}",
+                    position_size=quote.close_quote.closed_size,
+                    open_price=quote.close_quote.entry_price,
+                    close_price=quote.exec_price,
+                    required_margin=D0,
+                    fee=quote.close_fee,
+                    balance=balance,
+                    leverage=self.config.trading.leverage,
+                    free_margin=free_margin,
+                    pnl=quote.close_quote.pnl,
+                    closed_size=quote.close_quote.closed_size,
+                    released_margin=quote.close_quote.released_margin,
+                    meta={
+                        "side": close_name.lower(),
+                        "slot": quote.close_slot,
+                        "reason": "FLIP",
+                    },
+                ))
+                self.record_trade(TradeRecord(
+                    timestamp=quote.timestamp,
+                    operation_type=f"FLIP_OPEN_{open_name}",
+                    position_size=quote.open_position.size,
+                    open_price=quote.exec_price,
+                    close_price=D0,
+                    required_margin=quote.open_position.initial_margin,
+                    fee=quote.open_fee,
+                    balance=balance,
+                    leverage=self.config.trading.leverage,
+                    free_margin=free_margin,
+                ))
+        except Exception as e:
+            self._restore_execution_state(snap)
+            self.logger.error(f"{quote.action.name} quote commit failed and rolled back: {e}")
+            if quote.action in open_actions and isinstance(e, ValueError):
+                return ForexCode.ERROR_OPEN_POSITION
+            return ForexCode.ERROR_NO_ENOUGH_MONEY
+
+        if self._live_mode:
+            self._rpc_send_after_execute(
+                ts=quote.timestamp,
+                action=quote.action,
+                result=ForexCode.SUCCESS,
+                price=quote.rpc_price,
+            )
+        return ForexCode.SUCCESS
 
     def _assert_ledger_conservation(self):
         # 可选：debug 时确保系统内资金守恒

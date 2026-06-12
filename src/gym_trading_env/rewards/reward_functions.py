@@ -472,18 +472,7 @@ class FuturesIntradayReward:
         return 1.0
 
     def _is_invalid_action(self) -> bool:
-        code = self._action_code()
-        if code is None:
-            return False
-
-        if code == int(ForexCode.SUCCESS.value):
-            return False
-
-        # market closed 单独罚（r_mc），避免 double-penalty，也不计入 streak
-        if code == int(ForexCode.ERROR_MARKET_CLOSED.value):
-            return False
-
-        return True
+        return bool(getattr(self.env, "_last_action_rejected", False))
 
     def __call__(self, obs=None):
         eq = self._shaped_equity()
