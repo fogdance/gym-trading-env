@@ -1,6 +1,6 @@
 # Dreamer 入场能力隔离验证实施方案
 
-日期：2026-06-13
+日期：2026-06-14
 
 状态：Phase 0 - Phase 3 已实现并完成首轮验证
 
@@ -965,7 +965,7 @@ Entry-only Dreamer 是否复现监督模型优势？
 
 ## 18. Phase 0 - Phase 3 实施状态
 
-日期：2026-06-13
+日期：2026-06-14
 
 当前分支：`feat/entry-capability-evaluator`
 
@@ -975,7 +975,8 @@ Entry-only Dreamer 是否复现监督模型优势？
 Phase 0：冻结 entry_eval_jm_v1 实验配置和数据契约
 Phase 1：Counterfactual Entry Evaluator
 Phase 2：Opportunity、oracle 和基线报告
-Phase 3：Ridge window-summary 监督入场基线、时间特征消融和非重叠策略报告
+Phase 3：XGBoost Q_long/Q_short 监督入场基线、Ridge 辅助诊断、时间特征消融和
+非重叠策略报告
 ```
 
 未实现：
@@ -990,28 +991,63 @@ ATR 或其他新 observation
 实现入口：
 
 ```bash
-/home/v/miniconda3/envs/forex/bin/python tools/run_entry_capability.py \
+/home/v/miniconda3/envs/forex/bin/python tools/report_entry_capability.py \
   --config configs/entry_eval_jm_v1.yaml \
   --output artifacts/entry_eval/entry_eval_jm_v1
 ```
 
-开发 smoke 可追加 `--skip-sensitivity`；正式报告不得追加该参数。
+`forex` 环境用于运行测试和计算。该环境已安装 `xgboost`，但没有 parquet engine；
+工具会在写入/读取 parquet artifact 时调用带 `pyarrow` 的 `/home/v/miniconda3/bin/python`
+做边界转换。开发 smoke 可追加 `--skip-sensitivity`；正式报告不得追加该参数。
+
+分阶段入口：
+
+```bash
+/home/v/miniconda3/envs/forex/bin/python tools/build_entry_dataset.py \
+  --config configs/entry_eval_jm_v1.yaml \
+  --output artifacts/entry_eval/entry_eval_jm_v1
+
+/home/v/miniconda3/envs/forex/bin/python tools/train_entry_baseline.py \
+  --config configs/entry_eval_jm_v1.yaml \
+  --input artifacts/entry_eval/entry_eval_jm_v1
+```
 
 主要输出：
 
 ```text
-candidates.csv
-features.npz
+manifest.json
+config.yaml
+split_manifest.json
+candidates.parquet
+outcomes.parquet
+baseline_predictions.parquet
+strategy_trades.parquet
 opportunity_report.json
+model_report.json
+strategy_report.json
+report.md
+ridge_model_report.json
+ridge_baseline_predictions.parquet
+ridge_strategy_trades.parquet
+flat_features.npz
+split_oracle_report.json
+xgboost_window_summary_report.json
+xgboost_window_summary_predictions.parquet
+xgboost_window_summary_trades.parquet
+xgboost_flattened_report.json
+xgboost_flattened_predictions.parquet
+xgboost_flattened_trades.parquet
+```
+
+调试辅助输出：
+
+```text
+features.npz
+candidates.csv
 oracle_trades.csv
 baseline_predictions.csv
-model_report.json
 strategy_trades.csv
-strategy_report.json
 parameter_sensitivity.csv
-split_manifest.json
-manifest.json
-report.md
 ```
 
 当前 JM2601 canonical 实测结论：
@@ -1022,19 +1058,53 @@ report.md
 受约束 oracle：366 笔，expectancy 442.69，Gate 1 PASS
 27/27 固定退出参数组合的受约束 oracle 净收益为正
 Ridge window-summary 非重叠样本外策略：54 笔，net PnL -4014，expectancy -74.33
-Ridge Gate 2：FAIL
+XGBoost Q 回归非重叠样本外策略：74 笔，net PnL -7944，expectancy -107.35
+XGBoost flattened 60x18 策略：103 笔，net PnL -9798，expectancy -95.13
+XGBoost Gate 2：FAIL
 Gate 3：BLOCKED_BY_GATE2
 ```
 
-这里的 `Ridge FAIL` 只表示当前冻结的 Ridge window-summary 监督基线没有通过 Gate 2。
-该基线输入是 `60x18 market_seq` 的 `latest / mean / std / delta` 汇总，不能解释为完整
-时序 observation 或所有监督模型必然失败。按照本方案门禁，当前不允许进入
-Entry-only Dreamer。
+当前结论比首轮 Ridge 更强：在同一份 dataset、outcome、split、成本和固定退出规则下，
+XGBoost Q_long/Q_short 回归也没有证明样本外入场筛选能力。负相关审计没有发现方向、
+action id、best_direction、threshold 或 outcome 标签对齐错误。
+
+关键诊断：
+
+```text
+XGBoost daily-bootstrap expectancy 95% CI：[-169.45, -41.91]
+Top 5% selective entry：50 笔，net PnL -1410，expectancy -28.20
+Top 10% selective entry：73 笔，net PnL -5658，expectancy -77.51
+Top 20% selective entry：97 笔，net PnL -8472，expectancy -87.34
+score decile spearman：-0.7452
+matched-random mean net PnL：-4503.3
+oracle profit_factor：inf，profit_factor_status=no_losing_trades
+alignment audit：PASS
+action mapping audit：PASS
+flattened 60x18 score decile spearman：-0.4474
+inverted-score sanity：22 笔，net PnL -72，expectancy -3.27，仅用于排错
+bottom 5% / 10% / 20% selective entry：expectancy 全部为负
+```
+
+因此当前 18 维 observation 在两种编码下都暂未证明具备样本外入场筛选能力：
+
+```text
+window-summary：FAIL
+flattened 60x18：FAIL
+small temporal model：未实现，当前审计不扩大到新模型类型
+```
+
+按照门禁，当前不允许进入 Entry-only Dreamer。下一步应进入单特征 ablation，定位到底是
+observation 信息不足、特征口径不对，还是固定退出规则本身与可学信号不匹配。
 
 验证命令：
 
 ```bash
 /home/v/miniconda3/envs/forex/bin/python -m pytest tests/unit -q
 /home/v/miniconda3/envs/forex/bin/python -m pytest \
-  tests/integration/test_entry_evaluator_ledger_parity.py -q
+  tests/unit/test_entry_outcome.py \
+  tests/unit/test_entry_cost_parity.py \
+  tests/unit/test_entry_intrabar_collision.py \
+  tests/unit/test_entry_causality.py \
+  tests/unit/test_entry_split_purge.py \
+  tests/integration/test_entry_evaluator_env_parity.py -q
 ```

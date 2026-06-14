@@ -492,12 +492,39 @@ def summarize_market_window(window: np.ndarray) -> np.ndarray:
     return np.concatenate([latest, mean, std, delta]).astype(np.float32)
 
 
+def flatten_market_window(window: np.ndarray) -> np.ndarray:
+    return np.asarray(window, dtype=np.float32).reshape(-1)
+
+
 def feature_names() -> list[str]:
     return [
         f"{agg}:{name}"
         for agg in ("latest", "mean", "std", "delta")
         for name in FEATURES_MARKET_OBS
     ]
+
+
+def flattened_feature_names(window_size: int) -> list[str]:
+    names = []
+    for offset in range(int(window_size)):
+        rel = offset - int(window_size) + 1
+        for feature in FEATURES_MARKET_OBS:
+            names.append(f"t{rel}:{feature}")
+    return names
+
+
+def build_flattened_entry_features(
+    market: pd.DataFrame,
+    candidates: pd.DataFrame,
+    config: EntryEvalConfig,
+) -> tuple[np.ndarray, list[str]]:
+    X_all = market[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32)
+    rows = candidates["decision_row"].to_numpy(dtype=np.int64)
+    features = [
+        flatten_market_window(_market_window(X_all, int(row), config.data.window_size))
+        for row in rows
+    ]
+    return np.asarray(features, dtype=np.float32), flattened_feature_names(config.data.window_size)
 
 
 def build_entry_dataset(
