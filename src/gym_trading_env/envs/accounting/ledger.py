@@ -87,14 +87,17 @@ class Ledger:
 
     def post(self, entry: JournalEntry) -> None:
         entry.validate()
-        # apply all postings; if any fails -> raise, caller uses snapshot/restore
+        # Keep Ledger atomic for direct callers; env-level transactions still use
+        # broader snapshots because position state and trade records also mutate.
         for p in entry.postings:
             if p.account not in self._accounts:
                 raise LedgerError(f"Unknown account: {p.account}")
+        snap = self.snapshot()
         try:
             for p in entry.postings:
                 self._accounts[p.account].apply(p.amount)
         except Exception as e:
+            self.restore(snap)
             raise LedgerError(f"Failed to post entry '{entry.memo}': {e}") from e
 
         self.entries.append(entry)

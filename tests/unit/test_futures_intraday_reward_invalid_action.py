@@ -1,5 +1,6 @@
 import pytest
 from decimal import Decimal
+from types import SimpleNamespace
 
 pytestmark = pytest.mark.unit
 
@@ -11,6 +12,9 @@ class _CfgTrading:
     invalid_action_punish = 0.02
     invalid_time_cost_total = 0.2
     invalid_streak_cap = 10
+    atr_takeprofit_ratio = 0.70
+    w_atr_close = 0.10
+    lot_size = Decimal("1")
 
 
 class _CfgTraining:
@@ -44,6 +48,9 @@ class _FakeEnv:
         self.config = _Cfg()
         self.user_accounts = _UserAccounts()
         self.ledger = _Ledger()
+        self.bar_source = SimpleNamespace(
+            store=SimpleNamespace(daily_atr_price=[100.0])
+        )
 
         # reward 里会访问这些字段（给默认即可）
         self.max_equity = Decimal("10000")
@@ -54,6 +61,7 @@ class _FakeEnv:
         self.current_step = 0
         self.end_idx = 0
         self._eod_idx = 0
+        self._day_i = 0
 
         self._minutes_to_eod_last = 100
         self._R_cash_last = Decimal("100")  # scale 不为 0
@@ -180,3 +188,15 @@ def test_streak_capped():
     assert dbg["invalid_streak_len"] >= 4  # 记录的原始 streak 还在增长（如果你保留原值）
     # 但惩罚部分使用 min(streak, cap)
     assert dbg["invalid_streak"] == pytest.approx(-0.02 * 2, abs=1e-12)
+
+
+def test_atr_close_shaping_reads_bar_source_store():
+    env = _FakeEnv()
+    r = _init_reward(env)
+
+    env.last_close_position = {"pnl": Decimal("100")}
+    out = r()
+
+    dbg = env._reward_debug
+    assert dbg["r_atr_close"] > 0.0
+    assert out > dbg["close"]

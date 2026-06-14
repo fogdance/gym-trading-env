@@ -30,6 +30,34 @@ def _make_ledger(cash: Decimal, margin: Decimal):
     return ledger, user_cash, user_margin, broker_fee_income, broker_pnl
 
 
+def test_ledger_post_is_atomic_when_later_posting_fails():
+    ledger, user_cash, user_margin, broker_fee_income, broker_pnl = _make_ledger(
+        cash=Decimal("100"),
+        margin=Decimal("0"),
+    )
+
+    entry = JournalEntry(
+        timestamp="t0",
+        memo="PARTIAL_POSTING_SHOULD_ROLL_BACK",
+        postings=[
+            Posting("user_cash", Decimal("50")),
+            Posting("user_margin", Decimal("-200")),
+            Posting("broker_pnl", Decimal("150")),
+        ],
+    )
+
+    try:
+        ledger.post(entry)
+        assert False, "ledger.post should have raised"
+    except LedgerError:
+        pass
+
+    assert user_cash.get_balance() == Decimal("100")
+    assert user_margin.get_balance() == Decimal("0")
+    assert broker_pnl.get_balance() == Decimal("0")
+    assert ledger.entries == []
+
+
 def test_quote_close_long_does_not_mutate_position():
     pm = PositionManager(long_slots=1, short_slots=1)
     p = Position(size=D("1"), entry_price=D("100"), initial_margin=D("200"), open_step=0)
@@ -211,5 +239,4 @@ def test_atomic_close_short_success_removes_position_and_records_pnl():
     assert user_margin.get_balance() == D("0")
     assert user_cash.get_balance() == D("190")
     assert broker_pnl.get_balance() == D("10")
-
 

@@ -564,6 +564,9 @@ class FuturesIntradayReward:
             # --- NEW: 0.7 * ATR take-profit shaping (no lookahead) ---
             try:
                 store = getattr(self.env, "store", None)
+                if store is None:
+                    bar_source = getattr(self.env, "bar_source", None)
+                    store = getattr(bar_source, "store", None) if bar_source is not None else None
                 day_i = int(getattr(self.env, "_day_i", getattr(self.env, "day_i", -1)))
                 atr_arr = getattr(store, "daily_atr_price", None) if store is not None else None
 
