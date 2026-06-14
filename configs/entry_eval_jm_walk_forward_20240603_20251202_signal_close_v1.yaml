@@ -1,0 +1,47 @@
+version: entry_eval_jm_walk_forward_20240603_20251202_signal_close_v1
+
+data:
+  path: /home/v/Documents/work/dreamerv3/data/18M_DCE_JM2601_1m.csv
+  timezone: Asia/Shanghai
+  product: DCE.JM
+  contract: JM2601_WALK_FORWARD_20240603_20251202
+  window_size: 60
+  observation_mode: obs
+
+product:
+  initial_balance: 10000.0
+  tick_size: 0.5
+  spread: 0.5
+  trading_fee_per_lot: 3.0
+  is_round_turn: true
+  leverage: 10.0
+  lot_size: 60.0
+  trade_lot: 1.0
+  max_entries_per_day: 3
+
+entry_evaluator:
+  execution_timing: signal_on_close_plus_spread
+  entry_delay_bars: 0
+  signal_on_close_safety_filters: true
+  near_eod_bars: 2
+  stop_distance_price: 5.0
+  stop_distance_ticks: 10
+  take_profit_rr: 1.5
+  max_hold_bars: 60
+  max_hold_unit: valid_1m_bars
+  allow_entry_across_break: false
+  force_flatten_eod: true
+  intrabar_collision: stop_first
+
+experiment:
+  random_seed: 20260614
+  ridge_alpha: 10.0
+  threshold_quantiles: [0.50, 0.70, 0.80, 0.90, 0.95]
+  random_baseline_runs: 100
+  bootstrap_runs: 2000
+
+sensitivity:
+  stop_distance_ticks: [6, 10, 16]
+  take_profit_rr: [1.0, 1.5, 2.0]
+  max_hold_bars: [15, 30, 60]
+  cost_multipliers: [1.0, 1.5, 2.0]

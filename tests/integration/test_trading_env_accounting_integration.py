@@ -52,7 +52,7 @@ def test_open_close_updates_ledger_balances():
         p.write_text(yaml.safe_dump(cfg, sort_keys=False), encoding="utf-8")
 
         env = CustomTradingEnv(df=df, config_path=str(p))
-        # action mapping: [HOLD, LONG_OPEN0, LONG_CLOSE0, SHORT_OPEN0, SHORT_CLOSE0]
+        # Action.* here is a scenario label; step_wrapper maps it to target index [SHORT, FLAT, LONG].
         obs, reward, term, trunc, info = step_wrapper(env, Action.LONG_OPEN0)  # LONG_OPEN0
         # 开仓后：现金减少(保证金+手续费)，保证金账户增加，broker_fee_income 增加
         b1 = env.ledger.balances()

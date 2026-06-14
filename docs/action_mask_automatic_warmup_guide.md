@@ -12,7 +12,7 @@ cd ~/Documents/work/dreamerv3
 
 python -m dreamerv3.main \
   --configs action_mask_formal \
-  --logdir /data/logdir/action-mask-formal-<run-name>
+  --logdir /data/logdir/action-mask-formal-202606122100
 ```
 
 程序会在同一个进程、同一个 Agent、同一个 replay 和同一个 logdir 中自动完成：

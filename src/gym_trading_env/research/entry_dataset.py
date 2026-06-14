@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -16,6 +17,8 @@ from .entry_evaluator import (
     EntryEvalConfig,
     build_flattened_entry_features,
     build_entry_dataset,
+    build_evaluation_context,
+    candidate_filter_audit,
     load_entry_eval_config,
     load_market_frames,
 )
@@ -71,9 +74,12 @@ def write_parquet(df: pd.DataFrame, path: str | Path) -> None:
         df.to_parquet(path, index=False)
         return
 
-    bridge = Path("/home/v/miniconda3/bin/python")
-    if not bridge.exists():
-        bridge = Path(sys.executable)
+    csv = path.with_suffix(".csv")
+    bridge_env = os.environ.get("PARQUET_BRIDGE_PYTHON", "")
+    if not bridge_env:
+        df.to_csv(csv, index=False)
+        return
+    bridge = Path(bridge_env)
     tmp = path.with_suffix(path.suffix + ".tmp.csv")
     df.to_csv(tmp, index=False)
     try:
@@ -102,9 +108,14 @@ def read_parquet(path: str | Path) -> pd.DataFrame:
     ):
         return pd.read_parquet(path)
 
-    bridge = Path("/home/v/miniconda3/bin/python")
-    if not bridge.exists():
-        bridge = Path(sys.executable)
+    csv = path.with_suffix(".csv")
+    if csv.exists():
+        return pd.read_csv(csv)
+    bridge_env = os.environ.get("PARQUET_BRIDGE_PYTHON", "")
+    if not bridge_env:
+        raise RuntimeError(
+            f"Cannot read {path}: no parquet engine and no CSV sidecar {csv}")
+    bridge = Path(bridge_env)
     tmp = path.with_suffix(path.suffix + ".tmp.csv")
     try:
         subprocess.run(
@@ -169,6 +180,8 @@ def build_dataset_artifacts(
 
     config = load_entry_eval_config(config_path)
     _, market = load_market_frames(config)
+    context = build_evaluation_context(market)
+    filter_audit = candidate_filter_audit(market, config, context=context)
     candidates, X, names = build_entry_dataset(market, config)
     candidates = add_diagnostic_context(candidates, X, names)
     X_flat, flat_names = build_flattened_entry_features(market, candidates, config)
@@ -200,6 +213,7 @@ def build_dataset_artifacts(
         "feature_count": int(X.shape[1]),
         "flat_feature_transform": "flattened_60x18_market_seq",
         "flat_feature_count": int(X_flat.shape[1]),
+        "candidate_filter_audit": filter_audit,
     }
     write_json(out / "manifest.json", manifest)
     return config, candidates, X, names, manifest

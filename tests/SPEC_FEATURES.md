@@ -339,7 +339,15 @@ denom = max(|I_yclose|, eps)
 obs_dI = clip(sign(dI)*log1p(|dI|/denom), [-LOG_CLIP, LOG_CLIP])，仅 valid 写入
 
 ### 量/持仓（heavy-tail->bounded）
-obs_V_t = clip((V/I*100), [0,2])
+obs_V_t = clip(log1p(V_t / past_volume_baseline_t), [0,3]) * mask_t
+
+`past_volume_baseline_t` 只使用同一 `session_id` 内当前 bar 之前的有效成交量：
+
+- 先用有效成交量的 EMA(span=30, min_periods=5)，再 `shift(1)`，确保不看当前成交量；
+- 早期 EMA 不足时，使用 expanding mean 的 `shift(1)`；
+- 仍无历史有效成交量时 baseline 为 0，计算时分母加 `eps=1e-12`；
+- `mask_t=0` 的分钟不进入 baseline，最终 `obs_V_t` 也置 0。
+
 obs_I_t = tanh(log1p(I)/5)
 
 ### 时间类

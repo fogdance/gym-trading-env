@@ -267,7 +267,7 @@ def test_market_not_affected_by_action():
     obs_h, _ = env_hold.reset(seed=777)
     obs_a, _ = env_act.reset(seed=777)
 
-    # 一个简单脚本：开仓->持有->平仓（需要你们 env.valid_actions 保持一致 index）
+    # 一个简单脚本：Action.* 是场景标签，action_to_index 映射到目标仓位 index。
     script = [Action.LONG_OPEN0, Action.HOLD, Action.HOLD, Action.LONG_CLOSE0, Action.HOLD, Action.HOLD]  # LONG_OPEN0, HOLD..., LONG_CLOSE0...
 
     for k, a in enumerate(script):

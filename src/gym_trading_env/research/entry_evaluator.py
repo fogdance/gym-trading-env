@@ -14,6 +14,7 @@ from gym_trading_env.utils.time_contract import ensure_feature_tz_index
 
 
 Direction = Literal["LONG", "SHORT"]
+ExecutionTiming = Literal["canonical_next_open", "signal_on_close_plus_spread"]
 SEGMENT_STARTS = np.asarray([0, 120, 195, 255], dtype=np.int32)
 SEGMENT_ENDS = np.asarray([120, 195, 255, 345], dtype=np.int32)
 
@@ -58,10 +59,17 @@ class EvaluatorConfig:
     allow_entry_across_break: bool
     force_flatten_eod: bool
     intrabar_collision: str
+    execution_timing: ExecutionTiming = "canonical_next_open"
+    signal_on_close_safety_filters: bool = True
+    near_eod_bars: int = 2
 
     def validate(self, product: ProductConfig) -> None:
-        if self.entry_delay_bars != 1:
-            raise ValueError("entry_delay_bars=1 is the only supported canonical mode")
+        if self.execution_timing not in ("canonical_next_open", "signal_on_close_plus_spread"):
+            raise ValueError(f"unsupported execution_timing: {self.execution_timing}")
+        if self.execution_timing == "canonical_next_open" and self.entry_delay_bars != 1:
+            raise ValueError("entry_delay_bars=1 is required for canonical_next_open")
+        if self.execution_timing == "signal_on_close_plus_spread" and self.entry_delay_bars != 0:
+            raise ValueError("entry_delay_bars=0 is required for signal_on_close_plus_spread")
         if self.stop_distance_price <= 0 or self.stop_distance_ticks <= 0:
             raise ValueError("stop distance must be > 0")
         expected = self.stop_distance_ticks * product.tick_size
@@ -79,6 +87,8 @@ class EvaluatorConfig:
             raise ValueError("intrabar_collision must be stop_first")
         if not self.force_flatten_eod:
             raise ValueError("force_flatten_eod must be true for entry capability evaluation")
+        if self.near_eod_bars < 0:
+            raise ValueError("near_eod_bars must be >= 0")
 
 
 @dataclass(frozen=True)
@@ -193,6 +203,14 @@ class EvaluationContext:
     lows: np.ndarray
 
 
+@dataclass(frozen=True)
+class EntryPlan:
+    entry_row: int
+    entry_reference: float
+    first_management_row: int
+    crosses_break: bool
+
+
 def load_entry_eval_config(path: str | Path) -> EntryEvalConfig:
     raw = yaml.safe_load(Path(path).read_text()) or {}
     exp = dict(raw.get("experiment", {}) or {})
@@ -290,6 +308,78 @@ def _can_open_one_lot(entry_reference: float, config: EntryEvalConfig) -> bool:
     return max(long_required, short_required) <= product.initial_balance
 
 
+def _near_eod_row(row: int, context: EvaluationContext, config: EntryEvalConfig) -> bool:
+    bars = int(config.entry_evaluator.near_eod_bars)
+    if bars <= 0:
+        return False
+    day = int(context.days[int(row)])
+    valid_rows = context.valid_rows_by_day.get(day)
+    if valid_rows is None or valid_rows.size == 0:
+        return True
+    pos = int(np.searchsorted(valid_rows, int(row), side="left"))
+    if pos >= valid_rows.size or int(valid_rows[pos]) != int(row):
+        return True
+    return pos >= max(0, int(valid_rows.size) - bars)
+
+
+def _entry_plan(
+    market: pd.DataFrame,
+    decision_row: int,
+    config: EntryEvalConfig,
+    context: EvaluationContext,
+    *,
+    apply_safety_filters: bool = True,
+) -> EntryPlan:
+    if not context.mask[decision_row]:
+        raise ValueError("decision row must be a valid market bar")
+
+    rules = config.entry_evaluator
+    timing = rules.execution_timing
+    next_row = int(context.next_valid[decision_row])
+
+    if timing == "canonical_next_open":
+        entry_row = next_row
+        if entry_row < 0:
+            raise ValueError("decision row has no next valid bar in the same trading day")
+        crosses_break = bool(
+            context.segments[decision_row] != context.segments[entry_row]
+            or entry_row != decision_row + 1
+        )
+        if crosses_break and not rules.allow_entry_across_break:
+            raise ValueError("entry crosses a trading break")
+        entry_ref = float(context.opens[entry_row])
+        first_management_row = entry_row
+    elif timing == "signal_on_close_plus_spread":
+        entry_row = int(decision_row)
+        if next_row < 0:
+            raise ValueError("signal-on-close entry has no following valid management bar")
+        crosses_break = bool(
+            context.segments[decision_row] != context.segments[next_row]
+            or next_row != decision_row + 1
+        )
+        if apply_safety_filters and rules.signal_on_close_safety_filters:
+            if crosses_break:
+                raise ValueError("signal-on-close entry has no immediate tradable continuation")
+            if _near_eod_row(decision_row, context, config):
+                raise ValueError("signal-on-close entry is too near EOD")
+        entry_ref = float(context.closes[entry_row])
+        first_management_row = next_row
+    else:
+        raise ValueError(f"unsupported execution_timing: {timing}")
+
+    if not np.isfinite(entry_ref):
+        raise ValueError("entry reference price is not finite")
+    if not _can_open_one_lot(entry_ref, config):
+        raise ValueError("flat canonical account cannot open one lot")
+
+    return EntryPlan(
+        entry_row=int(entry_row),
+        entry_reference=float(entry_ref),
+        first_management_row=int(first_management_row),
+        crosses_break=bool(crosses_break),
+    )
+
+
 def candidate_rows(
     market: pd.DataFrame,
     config: EntryEvalConfig,
@@ -300,22 +390,81 @@ def candidate_rows(
 
     rows = []
     for row in np.flatnonzero(context.mask):
-        entry_row = int(context.next_valid[row])
-        if entry_row < 0:
-            continue
-        if not config.entry_evaluator.allow_entry_across_break:
-            if context.segments[row] != context.segments[entry_row]:
-                continue
-            # A missing/invalid slot inside a segment is also not a canonical next-open entry.
-            if entry_row != row + 1:
-                continue
-        entry_open = float(context.opens[entry_row])
-        if not np.isfinite(entry_open):
-            continue
-        if not _can_open_one_lot(entry_open, config):
+        try:
+            _entry_plan(market, int(row), config, context)
+        except ValueError:
             continue
         rows.append(int(row))
     return np.asarray(rows, dtype=np.int64)
+
+
+def candidate_filter_audit(
+    market: pd.DataFrame,
+    config: EntryEvalConfig,
+    *,
+    context: EvaluationContext | None = None,
+) -> dict:
+    context = context or build_evaluation_context(market)
+    counts: dict[str, int] = {
+        "valid_market_rows": int(np.count_nonzero(context.mask)),
+        "accepted": 0,
+        "no_next_valid_same_day": 0,
+        "cross_break_or_no_immediate_continuation": 0,
+        "near_eod": 0,
+        "nonfinite_entry_reference": 0,
+        "insufficient_margin": 0,
+        "other_rejected": 0,
+    }
+    for row in np.flatnonzero(context.mask):
+        next_row = int(context.next_valid[row])
+        if next_row < 0:
+            counts["no_next_valid_same_day"] += 1
+            continue
+        if config.entry_evaluator.execution_timing == "signal_on_close_plus_spread":
+            crosses_break = bool(
+                context.segments[row] != context.segments[next_row]
+                or next_row != row + 1
+            )
+            if (
+                config.entry_evaluator.signal_on_close_safety_filters
+                and crosses_break
+            ):
+                counts["cross_break_or_no_immediate_continuation"] += 1
+                continue
+            if (
+                config.entry_evaluator.signal_on_close_safety_filters
+                and _near_eod_row(int(row), context, config)
+            ):
+                counts["near_eod"] += 1
+                continue
+            entry_ref = float(context.closes[int(row)])
+        else:
+            crosses_break = bool(
+                context.segments[row] != context.segments[next_row]
+                or next_row != row + 1
+            )
+            if crosses_break and not config.entry_evaluator.allow_entry_across_break:
+                counts["cross_break_or_no_immediate_continuation"] += 1
+                continue
+            entry_ref = float(context.opens[next_row])
+        if not np.isfinite(entry_ref):
+            counts["nonfinite_entry_reference"] += 1
+            continue
+        if not _can_open_one_lot(entry_ref, config):
+            counts["insufficient_margin"] += 1
+            continue
+        try:
+            _entry_plan(market, int(row), config, context)
+        except ValueError:
+            counts["other_rejected"] += 1
+            continue
+        counts["accepted"] += 1
+    counts["rejected_total"] = (
+        counts["valid_market_rows"] - counts["accepted"])
+    counts["execution_timing"] = config.entry_evaluator.execution_timing
+    counts["signal_on_close_safety_filters"] = bool(
+        config.entry_evaluator.signal_on_close_safety_filters)
+    return counts
 
 
 def _exit_prices(
@@ -339,26 +488,12 @@ def evaluate_entry(
     if direction not in ("LONG", "SHORT"):
         raise ValueError(f"unsupported direction: {direction}")
     context = context or build_evaluation_context(market)
-    if not context.mask[decision_row]:
-        raise ValueError("decision row must be a valid market bar")
 
     day = int(context.days[decision_row])
     valid_rows = context.valid_rows_by_day[day]
-    entry_row = int(context.next_valid[decision_row])
-    if entry_row < 0:
-        raise ValueError("decision row has no next valid bar in the same trading day")
-    crosses_break = bool(
-        context.segments[decision_row] != context.segments[entry_row]
-        or entry_row != decision_row + 1
-    )
-    if crosses_break and not config.entry_evaluator.allow_entry_across_break:
-        raise ValueError("entry crosses a trading break")
-
-    entry_ref = float(context.opens[entry_row])
-    if not np.isfinite(entry_ref):
-        raise ValueError("entry open is not finite")
-    if not _can_open_one_lot(entry_ref, config):
-        raise ValueError("flat canonical account cannot open one lot")
+    plan = _entry_plan(market, int(decision_row), config, context)
+    entry_row = plan.entry_row
+    entry_ref = plan.entry_reference
 
     product = config.product
     rules = config.entry_evaluator
@@ -375,10 +510,10 @@ def evaluate_entry(
         stop_exec = entry_exec + distance
         target_exec = entry_exec - distance * rules.take_profit_rr
 
-    first = int(np.searchsorted(valid_rows, entry_row, side="left"))
+    first = int(np.searchsorted(valid_rows, plan.first_management_row, side="left"))
     day_rows = valid_rows[first:]
     if day_rows.size == 0:
-        raise ValueError("entry row is not valid")
+        raise ValueError("entry has no valid management rows")
 
     exit_row = int(day_rows[-1])
     exit_reason = "EOD"
@@ -441,7 +576,11 @@ def evaluate_entry(
     return EntryOutcome(
         outcome_version="entry_outcome_v1",
         dataset_version=config.version,
-        exit_policy_version="fixed_barrier_v1",
+        exit_policy_version=(
+            "fixed_barrier_signal_on_close_v1"
+            if rules.execution_timing == "signal_on_close_plus_spread"
+            else "fixed_barrier_v1"
+        ),
         product=config.data.product,
         contract=config.data.contract,
         candidate_id=int(candidate_id),
@@ -461,7 +600,7 @@ def evaluate_entry(
         exit_execution_price=float(exit_exec),
         exit_reason=exit_reason,
         holding_bars=int(processed),
-        entry_crosses_break=crosses_break,
+        entry_crosses_break=plan.crosses_break,
         gross_pnl=float(gross_pnl),
         spread_cost=float(spread_cost),
         fee_cost=float(fee_cost),

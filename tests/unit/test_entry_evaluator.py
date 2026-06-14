@@ -137,6 +137,49 @@ def test_next_open_stop_first_and_costs_match_environment_position_math():
     assert float(quote.pnl - Decimal("6")) == outcome.net_pnl
 
 
+def test_signal_on_close_enters_on_decision_close_and_manages_from_next_bar():
+    market = _market(
+        opens=[99.0, 100.0, 100.0],
+        highs=[100.0, 109.0, 100.0],
+        lows=[98.0, 95.0, 99.0],
+        closes=[100.0, 100.0, 100.0],
+        minutes=(120, 121, 122),
+    )
+    outcome = evaluate_entry(
+        market,
+        0,
+        "LONG",
+        _config(entry_delay_bars=0, execution_timing="signal_on_close_plus_spread"),
+    )
+
+    assert outcome.entry_row == 0
+    assert outcome.entry_reference_price == 100.0
+    assert outcome.entry_execution_price == 100.5
+    assert outcome.exit_row == 1
+    assert outcome.stop_target_collision
+    assert outcome.exit_reason == "STOP"
+
+
+def test_signal_on_close_safety_filters_reject_break_boundary_but_diagnostic_allows_it():
+    market = _market(
+        minutes=(118, 119, 120, 121, 122),
+        mask=(1, 1, 1, 0, 1),
+    )
+    formal = _config(
+        entry_delay_bars=0,
+        execution_timing="signal_on_close_plus_spread",
+        signal_on_close_safety_filters=True,
+    )
+    diagnostic = _config(
+        entry_delay_bars=0,
+        execution_timing="signal_on_close_plus_spread",
+        signal_on_close_safety_filters=False,
+    )
+
+    assert candidate_rows(market, formal).tolist() == [0]
+    assert candidate_rows(market, diagnostic).tolist() == [0, 1, 2]
+
+
 def test_max_hold_counts_only_valid_bars_and_eod_never_crosses_day():
     market = _market(
         minutes=(120, 121, 122, 123, 124, 125),
@@ -197,4 +240,3 @@ def test_dataset_build_is_deterministic():
     pd.testing.assert_frame_equal(first, second)
     np.testing.assert_array_equal(X_first, X_second)
     assert names_first == names_second
-
