@@ -91,7 +91,8 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     v2 口径：
       - 价格类：log-ratio: clip(log(x / ref_close), [-LOG_CLIP, LOG_CLIP])
       - 差值类：signed-log: clip(sign(z)*log1p(|z|/ref_close), [-LOG_CLIP, LOG_CLIP])
-      - 量：obs_V_t = clip((V/I*100), [0,2])；持仓：log1p 后 tanh squash
+      - 量：obs_V_t = clip(log1p(V / past_volume_baseline), [0,3]) * mask；
+        baseline 为同 session 内只看过去的 EMA/expanding mean；持仓：log1p 后 tanh squash
       - dI：sign(dI)*log1p(|dI|/max(|I_yclose|, eps))（更稳，不依赖合约量级）
       - obs_pct_chg_from_ref_t：使用 log(C/ref_close)（保留旧列名）
       - NEW obs_range_t：clip(log1p((H-L)/ref_close), [0, LOG_CLIP])
@@ -212,19 +213,13 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     # EMA within session (use only past -> shift(1))
     # span=30 means ~30 minutes smoothing; tweak 20/30/60 as you like
     sid = df.get("session_id", pd.Series(0, index=df.index)).astype(str)
-    ema = (
-        V_valid.groupby(sid)
-        .apply(lambda x: x.ewm(span=30, adjust=False, min_periods=5, ignore_na=True).mean())
-        .reset_index(level=0, drop=True)
+    ema = V_valid.groupby(sid).transform(
+        lambda x: x.ewm(span=30, adjust=False, min_periods=5, ignore_na=True).mean()
     )
     ema_prev = ema.groupby(sid).shift(1)
 
     # fallback baseline for early minutes: expanding mean of past valid bars
-    exp_mean = (
-        V_valid.groupby(sid)
-        .expanding(min_periods=1).mean()
-        .reset_index(level=0, drop=True)
-    )
+    exp_mean = V_valid.groupby(sid).transform(lambda x: x.expanding(min_periods=1).mean())
     base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
 
     eps_v = 1e-12

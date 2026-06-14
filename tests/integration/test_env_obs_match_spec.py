@@ -24,6 +24,7 @@ from tests.utils.assertions import assert_array_allclose_with_diff
 from gym_trading_env.envs.trading_env import CustomTradingEnv
 from gym_trading_env.envs.action import ForexCode
 from gym_trading_env.envs.position import Position
+from gym_trading_env.utils.trade_util import action_to_index
 
 
 def _max_code():
@@ -102,7 +103,7 @@ def _warmup_skip_first_day_and_flush_window(env, obs):
     if "day_i" not in meta or "step" not in meta:
         # 兜底：strict_345 futures，直接走 345 + win-1（侵入性最低）
         for _ in range(345 + win - 1):
-            obs, *_ = env.step(0)
+            obs, *_ = env.step(action_to_index(env, Action.HOLD))
         return obs
 
     # 1) 找到 day_i==1 的起点 step（第二个交易日开始的那一根）
@@ -114,7 +115,7 @@ def _warmup_skip_first_day_and_flush_window(env, obs):
         if int(meta["day_i"]) >= 1:
             day1_start = int(meta["step"])
             break
-        obs, *_ = env.step(0)
+        obs, *_ = env.step(action_to_index(env, Action.HOLD))
         guard += 1
         if guard > 10000:
             raise RuntimeError("warmup guard exceeded while seeking day_i>=1")
@@ -126,7 +127,7 @@ def _warmup_skip_first_day_and_flush_window(env, obs):
         cur = int(snap["meta"]["step"])
         if cur >= target:
             break
-        obs, *_ = env.step(0)
+        obs, *_ = env.step(action_to_index(env, Action.HOLD))
 
     return obs
 
@@ -251,7 +252,7 @@ def test_env_obs_match_spec(mode):
         )
 
         # action：这里用 HOLD
-        obs, *_ = env.step(0)
+        obs, *_ = env.step(action_to_index(env, Action.HOLD))
 
 
 @pytest.mark.integration
@@ -276,5 +277,5 @@ def test_market_not_affected_by_action():
         # agent_state 可以不同（且应当不同），但至少 shape 一致
         assert obs_h["agent_state"].shape == obs_a["agent_state"].shape
 
-        obs_h, *_ = env_hold.step(Action.HOLD)  # HOLD
-        obs_a, *_ = env_act.step(a)
+        obs_h, *_ = env_hold.step(action_to_index(env_hold, Action.HOLD))
+        obs_a, *_ = env_act.step(action_to_index(env_act, a))

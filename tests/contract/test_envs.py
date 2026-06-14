@@ -9,6 +9,7 @@ import pytest
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.decimal_util import D, D0, decimal_to_float
+from gym_trading_env.utils.trade_util import action_to_index
 
 pytestmark = pytest.mark.unit
 
@@ -59,9 +60,10 @@ def fee_per_side(env) -> Decimal:
 
 def action_idx(env, act: Action) -> int:
     """
-    Dreamer 离散动作契约：step() 喂的是 0..N-1 的类别 id（也就是 valid_actions 的 index）
+    Current action space is target positions [SHORT, FLAT, LONG].
+    Legacy Action values are mapped to the equivalent target index for contract tests.
     """
-    return int(env.valid_actions.index(act))
+    return int(action_to_index(env, act))
 
 
 def step_by_action(env, act: Action):

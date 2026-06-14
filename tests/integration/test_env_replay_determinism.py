@@ -11,11 +11,26 @@ from gym_trading_env.utils.trade_util import step_wrapper
 pytestmark = pytest.mark.integration
 
 
+def _is_db_unavailable(exc: BaseException) -> bool:
+    text = str(exc)
+    if "Can't connect to MySQL server" in text:
+        return True
+    original = getattr(exc, "original_exception", None)
+    if isinstance(original, (OSError, PermissionError)):
+        return True
+    return False
+
+
 def _make_env(config_path: Path) -> CustomTradingEnv:
     """
     构造 env，数据源走 juejin（由 config 决定），不注入 df。
     """
-    env = CustomTradingEnv(df=None, config_path=str(config_path))
+    try:
+        env = CustomTradingEnv(df=None, config_path=str(config_path))
+    except Exception as exc:
+        if _is_db_unavailable(exc):
+            pytest.skip(f"External MySQL data source is unavailable: {exc}")
+        raise
 
     # 测试里不要随机起点，方便比较
     if hasattr(env.config.training, "randomize_start"):

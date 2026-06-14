@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
+from gym_trading_env.utils.trade_util import action_to_index
 
 pytestmark = pytest.mark.unit
 
@@ -21,8 +22,8 @@ def make_one_day_df(start="2020-01-01 21:01:00", periods=DAY_MINUTES):
 
 
 def aidx(env: CustomTradingEnv, act: Action) -> int:
-    """DreamerV3 离散动作：喂给 env.step 的是 valid_actions 的 index（0..N-1）。"""
-    return env.valid_actions.index(act)
+    """DreamerV3 receives the target-position action index."""
+    return action_to_index(env, act)
 
 
 def expected_market_seq(env: CustomTradingEnv, end_i: int) -> np.ndarray:

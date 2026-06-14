@@ -137,6 +137,67 @@
 
 **当前结论：action-mask 技术链路和自动 warm-up 门禁已达到正式训练准入条件。用户可使用 `action_mask_formal` 单次启动，程序自动 warm-up 并进入正式 masked actor 训练；Monte Carlo 用于后续收益和风险验收。**
 
+## 0.1 Contract Migration 固化
+
+日期：2026-06-14
+
+当前正式契约以 action-mask 链路为准，旧执行动作 API 不再是 agent/env 对外动作空间。
+
+### Env Action Contract
+
+```text
+action_space = Discrete(3)
+valid_actions = [TargetPos.SHORT, TargetPos.FLAT, TargetPos.LONG]
+action_mask order = [SHORT, FLAT, LONG]
+step(action) 接收 target-position index
+```
+
+因此：
+
+```text
+step(0) == 请求 SHORT
+step(1) == 请求 FLAT
+step(2) == 请求 LONG
+```
+
+旧的 `Action.HOLD`、`Action.LONG_OPEN0`、`Action.LONG_CLOSE0`、`Action.SHORT_OPEN0`、
+`Action.SHORT_CLOSE0`、`Action.FLIP_*` 仍用于内部 execution/journal/ledger 语义，但
+不再是 `env.action_space`、`env.valid_actions` 或 `action_mask` 的索引。
+
+### HOLD Contract
+
+当前没有独立的外部 HOLD action。HOLD 的定义是：
+
+```text
+请求当前目标仓位 == HOLD
+```
+
+例如：
+
+```text
+当前 FLAT，请求 FLAT -> planned_action = HOLD
+当前 LONG，请求 LONG -> planned_action = HOLD
+当前 SHORT，请求 SHORT -> planned_action = HOLD
+```
+
+Contract 测试如需表达旧执行动作场景，必须先将 legacy `Action.*` 映射到当前 target
+position index。`Action.*` 在这些测试里只能作为 scenario label，不代表 env 对外动作
+契约。
+
+### Observation Contract: `obs_V_t`
+
+`obs_V_t` 以当前生产代码口径为准：
+
+```text
+obs_V_t = clip(log1p(V_t / past_volume_baseline_t), 0, 3) * mask_t
+```
+
+其中 `past_volume_baseline_t` 是同一 `session_id` 内只使用过去有效 bar 的
+EMA/expanding mean fallback。旧口径 `clip(V / I * 100, 0, 2)` 不再是契约。
+
+测试 oracle 必须与上述生产口径一致；如果未来再次修改 `obs_V_t`，需要同时修改
+production、oracle 和本节契约说明。
+
 ## 1. 初次 Review 结论（历史）
 
 **结论：暂不通过正式 masked actor 训练准入。**

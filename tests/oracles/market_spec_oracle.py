@@ -247,19 +247,19 @@ def _add_obs_features_spec(df: pd.DataFrame) -> None:
     df["obs_cmp_C_vs_cumVWAP_t"] = pd.to_numeric(df.get("cmp_C_vs_cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float)
     df["obs_bar_dir_t"] = pd.to_numeric(df.get("bar_dir_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
-    V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    V_s = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    V_valid = V_s.where(m > 0.0, np.nan)
+    sid = df.get("session_id", pd.Series(0, index=df.index)).astype(str)
+    ema = V_valid.groupby(sid).transform(
+        lambda x: x.ewm(span=30, adjust=False, min_periods=5, ignore_na=True).mean()
+    )
+    ema_prev = ema.groupby(sid).shift(1)
+    exp_mean = V_valid.groupby(sid).transform(lambda x: x.expanding(min_periods=1).mean())
+    base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
 
-    # x = V / I * 100  (I<=0 -> 0)
-    x = np.zeros_like(V, dtype=float)
-    vx = np.clip(V, 0.0, None)
-    oi_pos = (I > eps)
-
-    # only compute where valid & OI positive
-    idx = valid & oi_pos
-    x[idx] = (vx[idx] / np.maximum(I[idx], eps)) * 100.0
-
-    #  clip to [0, 2]
-    df["obs_V_t"] = np.clip(x, 0.0, 2.0).astype(float)
+    ratio = V_s.to_numpy(dtype=float, copy=False) / (base.to_numpy(dtype=float, copy=False) + eps)
+    spike = np.log1p(np.clip(ratio, 0.0, None))
+    df["obs_V_t"] = (np.clip(spike, 0.0, 3.0) * m.to_numpy(dtype=float, copy=False)).astype(float)
 
     # keep obs_I_t as before
     oi = np.log1p(np.clip(I, 0.0, None))

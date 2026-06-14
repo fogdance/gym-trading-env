@@ -13,7 +13,12 @@ def calc_unrealized_pnl(current_price: Decimal,  pos: Position, lot_size: Decima
     else:
         return (pos.entry_price - current_price) * pos.size * lot_size
 
-def _act_i(env, a: Action) -> int:
+def action_to_index(env, a) -> int:
+    """Map legacy execution actions or target positions to the current action index."""
+    if isinstance(a, int):
+        return int(a)
+    if isinstance(a, TargetPos):
+        return env.valid_actions.index(a)
     if a in env.valid_actions:
         return env.valid_actions.index(a)
     if a == Action.HOLD:
@@ -36,5 +41,10 @@ def _act_i(env, a: Action) -> int:
         raise ValueError(f"Action cannot be represented as a target position: {a}")
     return env.valid_actions.index(target)
 
+
+def _act_i(env, a: Action) -> int:
+    return action_to_index(env, a)
+
+
 def step_wrapper(env, a: Action):
-    return env.step(_act_i(env, a))
+    return env.step(action_to_index(env, a))
