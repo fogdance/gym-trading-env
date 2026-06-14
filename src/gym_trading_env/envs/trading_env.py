@@ -543,6 +543,9 @@ class CustomTradingEnv(gym.Env):
             self._pending_transition_table = self._get_target_transition_table()
             self._replay_from_action_log()
 
+        self._reset_render_history()
+        self._record_render_equity()
+
         obs = self._get_obs()
         info = self._get_info()
         return obs, info
@@ -1271,6 +1274,7 @@ class CustomTradingEnv(gym.Env):
                     action_result=self.action_result,
                 )
 
+            self._record_render_equity()
             return obs, reward, self.terminated, self.truncated, info
 
 
@@ -1333,6 +1337,7 @@ class CustomTradingEnv(gym.Env):
                 action_result=self.action_result,
             )
 
+        self._record_render_equity()
         return obs, reward, self.terminated, self.truncated, info
 
     def _advance_next_step(self, *, live: bool) -> int | None:
@@ -3286,8 +3291,167 @@ class CustomTradingEnv(gym.Env):
             return None
 
 
+    def _render_history_maxlen(self) -> int:
+        try:
+            max_steps = int(getattr(self.config.training, "max_episode_steps", 0) or 0)
+        except Exception:
+            max_steps = 0
+        if max_steps <= 0:
+            return 2000
+        return min(max(max_steps + 2, 256), 5000)
+
+    def _reset_render_history(self):
+        self._render_equity_history = deque(maxlen=self._render_history_maxlen())
+        self._render_last_recorded_step = None
+
+    def _render_position_sign(self) -> int:
+        try:
+            if self.user_accounts.long_position > D0:
+                return 1
+            if self.user_accounts.short_position > D0:
+                return -1
+        except Exception:
+            pass
+        return 0
+
+    def _record_render_equity(self):
+        if not hasattr(self, "_render_equity_history"):
+            self._reset_render_history()
+
+        step = int(getattr(self, "current_step", 0))
+        equity = number_to_float(self._calculate_equity())
+        realized = number_to_float(getattr(self.user_accounts, "realized_pnl", D0))
+        position = self._render_position_sign()
+        point = (step, equity, realized, position)
+
+        if self._render_last_recorded_step == step and len(self._render_equity_history) > 0:
+            self._render_equity_history[-1] = point
+            return
+
+        self._render_equity_history.append(point)
+        self._render_last_recorded_step = step
+
+    def _render_image_size(self) -> tuple[int, int]:
+        vis = getattr(self.config, "visualization", None)
+        height = int(getattr(vis, "image_height", 96) or 96)
+        width = int(getattr(vis, "image_width", 128) or 128)
+        return max(height, 48), max(width, 64)
+
+    @staticmethod
+    def _draw_line_rgb(img: np.ndarray, x0: int, y0: int, x1: int, y1: int, color):
+        h, w = img.shape[:2]
+        steps = max(abs(int(x1) - int(x0)), abs(int(y1) - int(y0)), 1) + 1
+        xs = np.rint(np.linspace(x0, x1, steps)).astype(np.int32)
+        ys = np.rint(np.linspace(y0, y1, steps)).astype(np.int32)
+        valid = (xs >= 0) & (xs < w) & (ys >= 0) & (ys < h)
+        img[ys[valid], xs[valid]] = np.asarray(color, dtype=np.uint8)
+
+    @staticmethod
+    def _draw_hline_rgb(img: np.ndarray, y: int, x0: int, x1: int, color):
+        h, w = img.shape[:2]
+        y = int(np.clip(y, 0, h - 1))
+        xa = int(np.clip(min(x0, x1), 0, w - 1))
+        xb = int(np.clip(max(x0, x1), 0, w - 1))
+        img[y, xa:xb + 1] = np.asarray(color, dtype=np.uint8)
+
+    @staticmethod
+    def _draw_rect_rgb(img: np.ndarray, x0: int, y0: int, x1: int, y1: int, color):
+        h, w = img.shape[:2]
+        xa = int(np.clip(min(x0, x1), 0, w - 1))
+        xb = int(np.clip(max(x0, x1), 0, w - 1))
+        ya = int(np.clip(min(y0, y1), 0, h - 1))
+        yb = int(np.clip(max(y0, y1), 0, h - 1))
+        img[ya:yb + 1, xa:xb + 1] = np.asarray(color, dtype=np.uint8)
+
+    def _render_equity_curve_rgb(self) -> np.ndarray:
+        self._record_render_equity()
+
+        height, width = self._render_image_size()
+        img = np.zeros((height, width, 3), dtype=np.uint8)
+        img[:, :] = np.array([14, 18, 24], dtype=np.uint8)
+
+        plot_left = 6
+        plot_right = width - 5
+        plot_top = 5
+        plot_bottom = height - 11
+        stripe_top = height - 7
+        stripe_bottom = height - 3
+
+        # Grid and border.
+        for frac in (0.25, 0.5, 0.75):
+            y = int(round(plot_top + frac * (plot_bottom - plot_top)))
+            self._draw_hline_rgb(img, y, plot_left, plot_right, (32, 38, 46))
+        self._draw_line_rgb(img, plot_left, plot_top, plot_right, plot_top, (42, 50, 58))
+        self._draw_line_rgb(img, plot_left, plot_bottom, plot_right, plot_bottom, (42, 50, 58))
+        self._draw_line_rgb(img, plot_left, plot_top, plot_left, plot_bottom, (42, 50, 58))
+        self._draw_line_rgb(img, plot_right, plot_top, plot_right, plot_bottom, (42, 50, 58))
+
+        hist = np.asarray(list(self._render_equity_history), dtype=np.float64)
+        if hist.size == 0:
+            return img
+
+        equities = hist[:, 1]
+        positions = hist[:, 3]
+        initial_equity = number_to_float(D(getattr(self.config.trading, "initial_balance", 0)))
+        finite_equities = equities[np.isfinite(equities)]
+        if finite_equities.size == 0:
+            finite_equities = np.asarray([initial_equity], dtype=np.float64)
+
+        ymin = float(min(np.min(finite_equities), initial_equity))
+        ymax = float(max(np.max(finite_equities), initial_equity))
+        if abs(ymax - ymin) < 1e-9:
+            pad = max(abs(initial_equity) * 0.001, 1.0)
+            ymin -= pad
+            ymax += pad
+        else:
+            pad = (ymax - ymin) * 0.08
+            ymin -= pad
+            ymax += pad
+
+        def y_of(value: float) -> int:
+            ratio = (float(value) - ymin) / (ymax - ymin)
+            ratio = float(np.clip(ratio, 0.0, 1.0))
+            return int(round(plot_bottom - ratio * (plot_bottom - plot_top)))
+
+        baseline_y = y_of(initial_equity)
+        self._draw_hline_rgb(img, baseline_y, plot_left, plot_right, (86, 92, 102))
+
+        n = len(equities)
+        if n == 1:
+            xs = np.asarray([plot_left], dtype=np.int32)
+        else:
+            xs = np.rint(np.linspace(plot_left, plot_right, n)).astype(np.int32)
+        ys = np.asarray([y_of(v) for v in equities], dtype=np.int32)
+
+        curve_color = (78, 211, 111) if equities[-1] >= initial_equity else (235, 83, 83)
+        for i in range(1, n):
+            self._draw_line_rgb(img, int(xs[i - 1]), int(ys[i - 1]), int(xs[i]), int(ys[i]), curve_color)
+
+        # Make the newest point visible even on tiny TensorBoard thumbnails.
+        self._draw_rect_rgb(img, int(xs[-1]) - 1, int(ys[-1]) - 1, int(xs[-1]) + 1, int(ys[-1]) + 1, (255, 185, 64))
+
+        # Position stripe: long=green, short=red, flat=gray.
+        for i, pos in enumerate(positions):
+            x0 = int(xs[i])
+            x1 = int(xs[i + 1]) if i + 1 < n else int(xs[i])
+            if pos > 0:
+                color = (32, 160, 88)
+            elif pos < 0:
+                color = (190, 62, 62)
+            else:
+                color = (64, 70, 78)
+            self._draw_rect_rgb(img, x0, stripe_top, max(x0, x1), stripe_bottom, color)
+
+        pnl = equities[-1] - initial_equity
+        pnl_color = (78, 211, 111) if pnl >= 0 else (235, 83, 83)
+        self._draw_rect_rgb(img, width - 8, 2, width - 4, 6, pnl_color)
+
+        return img
+
 
     def render(self):
+        if self.render_mode == "rgb_array":
+            return self._render_equity_curve_rgb()
         if self.render_mode != "human":
             return None
         if self.current_step % 200 != 0:
