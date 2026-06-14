@@ -1389,6 +1389,7 @@ class CustomTradingEnv(gym.Env):
             action_name=action.name,
             volume=int(getattr(self.config.trading, "trade_lot", 1)),
             price=float(price),
+            action_result=int(getattr(result, "value", -1)),
             meta={
                 "result": int(getattr(result, "value", -1)),
                 "equity": float(self._calculate_equity()),
