@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -48,6 +49,78 @@ def _json_default(value):
 
 def _write_json(path: Path, value) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, default=_json_default))
+
+
+def _file_sha256(path: Path) -> str | None:
+    if not path.exists():
+        return None
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _read_run_config(run_logdir: Path) -> dict:
+    path = run_logdir / "config.yaml"
+    if not path.exists():
+        return {}
+    try:
+        import ruamel.yaml as yaml
+        data = yaml.YAML(typ="safe").load(path.read_text())
+        return data or {}
+    except Exception:
+        return {}
+
+
+def _read_retention_metadata(run_logdir: Path) -> dict:
+    path = run_logdir / "ckpt_retained" / "retention_manifest.json"
+    if not path.exists():
+        return {}
+    try:
+        return dict((json.loads(path.read_text()) or {}).get("metadata") or {})
+    except Exception:
+        return {}
+
+
+def _seed_metadata(
+    paths: "AuditPaths",
+    *,
+    matched_random_seed: int,
+) -> dict:
+    run_config = _read_run_config(paths.run_logdir)
+    config_protocol = dict(run_config.get("seed_protocol") or {})
+    retention_protocol = _read_retention_metadata(paths.run_logdir)
+    if config_protocol and retention_protocol:
+        for key, value in retention_protocol.items():
+            if key in config_protocol and config_protocol[key] != value:
+                raise ValueError(
+                    f"Seed protocol mismatch for {key}: "
+                    f"config={config_protocol[key]!r} retention={value!r}")
+    protocol = config_protocol or retention_protocol
+    if not protocol:
+        raise ValueError(
+            "Dreamer run is missing seed_protocol in config.yaml and "
+            f"ckpt_retained/retention_manifest.json: {paths.run_logdir}")
+    protocol_random_seed = protocol.get("matched_random_seed")
+    if (
+        protocol_random_seed is not None
+        and int(protocol_random_seed) != int(matched_random_seed)
+    ):
+        raise ValueError(
+            "Seed protocol mismatch for matched_random_seed: "
+            f"metadata={protocol_random_seed!r} cli={matched_random_seed!r}")
+    return {
+        "experiment_seed": protocol.get("experiment_seed", run_config.get("experiment_seed")),
+        "dreamer_seed": protocol.get("dreamer_seed", run_config.get("seed")),
+        "train_env_seed": protocol.get("train_env_seed"),
+        "replay_seed": protocol.get("replay_seed"),
+        "eval_env_seed": protocol.get("eval_env_seed"),
+        "matched_random_seed": int(matched_random_seed),
+        "seed_protocol": protocol,
+        "source": {
+            "run_config": str(paths.run_logdir / "config.yaml"),
+            "retention_manifest": str(
+                paths.run_logdir / "ckpt_retained" / "retention_manifest.json"),
+            "matched_random_seed": "audit CLI --matched-random-seed",
+        },
+    }
 
 
 def _read_latest_checkpoint(path: Path) -> Path:
@@ -935,7 +1008,7 @@ def summarize(
     actual_trades: pd.DataFrame,
     *,
     random_runs: int,
-    seed: int,
+    matched_random_seed: int,
 ) -> dict:
     candidates, role_by_day, all_days = _prepare_candidates(paths.entry_eval_dir)
     days_by_role = _days_by_role(all_days, role_by_day)
@@ -993,7 +1066,7 @@ def summarize(
         candidates,
         dreamer_fixed_strategy,
         runs=random_runs,
-        seed=seed,
+        seed=matched_random_seed,
         max_entries_per_day=max_entries,
     )
     random_strategies = _attach_roles_to_runs(random_strategies, role_by_day)
@@ -1002,12 +1075,15 @@ def summarize(
         all_days=all_days,
         initial_balance=initial_balance,
     )
+    random_summary["seed"] = int(matched_random_seed)
     random_by_split = _random_summary_by_split(
         random_strategies,
         all_days=all_days,
         role_by_day=role_by_day,
         initial_balance=initial_balance,
     )
+    for item in random_by_split.values():
+        item["seed"] = int(matched_random_seed)
     collect_modes = (
         sorted(str(x) for x in episodes.get("collect_mode", pd.Series(dtype=object)).dropna().unique())
         if not episodes.empty
@@ -1023,16 +1099,20 @@ def summarize(
         )
     )
 
+    split_manifest_path = paths.entry_eval_dir / "split_manifest.json"
     reports = {
         "checkpoint": str(paths.checkpoint),
         "run_logdir": str(paths.run_logdir),
         "env_config_path": str(paths.env_config_path) if paths.env_config_path is not None else None,
+        "seed_protocol": _seed_metadata(
+            paths, matched_random_seed=int(matched_random_seed)),
         "entry_eval": {
             "dir": str(paths.entry_eval_dir),
             "version": entry_eval_manifest.get("version"),
             "execution_timing": entry_evaluator_config.get("execution_timing", "canonical_next_open"),
             "entry_evaluator": entry_evaluator_config,
             "candidate_filter_audit": entry_eval_manifest.get("candidate_filter_audit", {}),
+            "split_manifest_hash": _file_sha256(split_manifest_path),
         },
         "limitations": {
             "available_checkpoints": "latest_only",
@@ -1248,6 +1328,16 @@ def _write_markdown(path: Path, summary: dict) -> None:
         f"- Entry-eval dir: `{summary.get('entry_eval', {}).get('dir')}`",
         f"- Entry-eval version: `{summary.get('entry_eval', {}).get('version')}`",
         f"- Entry-eval execution timing: `{summary.get('entry_eval', {}).get('execution_timing')}`",
+        f"- Split manifest hash: `{summary.get('entry_eval', {}).get('split_manifest_hash')}`",
+        "",
+        "## Seed Protocol",
+        "",
+        f"- Experiment seed: `{summary.get('seed_protocol', {}).get('experiment_seed')}`",
+        f"- Dreamer/JAX seed: `{summary.get('seed_protocol', {}).get('dreamer_seed')}`",
+        f"- Train env seed: `{summary.get('seed_protocol', {}).get('train_env_seed')}`",
+        f"- Replay seed: `{summary.get('seed_protocol', {}).get('replay_seed')}`",
+        f"- Eval env seed: `{summary.get('seed_protocol', {}).get('eval_env_seed')}`",
+        f"- Matched-random seed: `{summary.get('seed_protocol', {}).get('matched_random_seed')}`",
         "",
         "## Limitations",
         "",
@@ -1495,7 +1585,7 @@ def main(argv=None) -> int:
     parser.add_argument("--episodes", type=int, default=32)
     parser.add_argument("--max-steps", type=int, default=200000)
     parser.add_argument("--random-runs", type=int, default=100)
-    parser.add_argument("--seed", type=int, default=20260614)
+    parser.add_argument("--matched-random-seed", type=int, default=20260615)
     parser.add_argument("--jax-platform", choices=["cpu", "cuda"], default=None)
     parser.add_argument("--collect", action="store_true", help="Run Dreamer eval to collect fresh episodes.")
     parser.add_argument(
@@ -1555,7 +1645,7 @@ def main(argv=None) -> int:
         episodes,
         trades,
         random_runs=args.random_runs,
-        seed=args.seed,
+        matched_random_seed=args.matched_random_seed,
     )
     print(json.dumps({
         "output_dir": str(paths.output_dir),
