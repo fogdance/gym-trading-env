@@ -1085,12 +1085,7 @@ class FuturesIntradayMTMRiskReward(RewardAuditMixin):
         # v2-risk hard contract: unrealized PnL is fully included.
         self.alpha_unrealized = 1.0
 
-        debug = self.default_reward_debug()
-        debug.update({
-            "alpha_unrealized": 1.0,
-            "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
-        })
-        self._set_reward_debug(debug)
+        self._set_reward_debug(self._initial_debug())
 
     def reward_audit_disabled_components(self) -> tuple[str, ...]:
         """
@@ -1117,12 +1112,26 @@ class FuturesIntradayMTMRiskReward(RewardAuditMixin):
         self.loss_steps = 0
         self.invalid_streak = 0
 
+        self._set_reward_debug(self._initial_debug())
+
+    def _initial_debug(self) -> dict[str, float]:
         debug = self.default_reward_debug()
         debug.update({
             "alpha_unrealized": 1.0,
             "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
+            "risk_dd": 0.0,
+            "risk_adverse": 0.0,
+            "risk_loss_time": 0.0,
+            "drawdown_cash": 0.0,
+            "drawdown_inc_cash": 0.0,
+            "adverse_cash": 0.0,
+            "adverse_inc_cash": 0.0,
+            "loss_steps": 0.0,
+            "w_dd": float(self.w_dd),
+            "w_adverse": float(self.w_adverse),
+            "w_loss_time": float(self.w_loss_time),
         })
-        self._set_reward_debug(debug)
+        return debug
 
     def _to_decimal(self, value, default=D0) -> Decimal:
         if value is None:

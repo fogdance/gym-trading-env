@@ -42,6 +42,20 @@ V2_DISABLED = [
     "r_atr_close",
 ]
 
+V2_EXTRA_KEYS = [
+    "risk_dd",
+    "risk_adverse",
+    "risk_loss_time",
+    "drawdown_cash",
+    "drawdown_inc_cash",
+    "adverse_cash",
+    "adverse_inc_cash",
+    "loss_steps",
+    "w_dd",
+    "w_adverse",
+    "w_loss_time",
+]
+
 
 def _config_with_reward(tmp_path, reward_name):
     data = yaml.safe_load(BASE_CONFIG.read_text())
@@ -118,7 +132,9 @@ def test_env_info_logs_v2_risk_reward_components_and_extra_keys(tmp_path, env_cw
     )
     env = CustomTradingEnv(config_path=str(config))
     try:
-        obs, _ = env.reset(seed=20260617)
+        obs, reset_info = env.reset(seed=20260617)
+        for key in V2_EXTRA_KEYS:
+            assert f"log/env/reward/{key}" in reset_info
         _, reward, info = _step_n(env, obs)
 
         assert isinstance(env.reward_function, RewardAuditMixin)
@@ -138,6 +154,13 @@ def test_env_info_logs_v2_risk_reward_components_and_extra_keys(tmp_path, env_cw
             "loss_steps",
         ]:
             assert f"log/env/reward/{key}" in info
+        reset_reward_keys = {
+            key for key in reset_info if key.startswith("log/env/reward/")
+        }
+        step_reward_keys = {
+            key for key in info if key.startswith("log/env/reward/")
+        }
+        assert step_reward_keys == reset_reward_keys
         assert float(info["log/env/reward/total"]) == pytest.approx(float(reward))
         for key in V2_DISABLED:
             assert float(info[f"log/env/reward/{key}"]) == pytest.approx(0.0), key

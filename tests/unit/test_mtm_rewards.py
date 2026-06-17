@@ -44,6 +44,20 @@ V2_DISABLED = {
     "r_atr_close",
 }
 
+V2_EXTRA_KEYS = {
+    "risk_dd",
+    "risk_adverse",
+    "risk_loss_time",
+    "drawdown_cash",
+    "drawdown_inc_cash",
+    "adverse_cash",
+    "adverse_inc_cash",
+    "loss_steps",
+    "w_dd",
+    "w_adverse",
+    "w_loss_time",
+}
+
 
 class _Ledger:
     def __init__(self, cash="10000", margin="0"):
@@ -228,6 +242,38 @@ def test_v2_first_call_and_favorable_movement_have_no_risk_penalty():
     assert debug["dd"] == pytest.approx(0.0)
     assert debug["risk_adverse"] == pytest.approx(0.0)
     assert debug["risk_loss_time"] == pytest.approx(0.0)
+
+
+def test_v2_audit_key_set_is_stable_across_reset_and_steps():
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayMTMRiskReward(env)
+
+    init_debug = validate_reward_audit(
+        reward_fn,
+        reward_name="FuturesIntradayMTMRiskReward",
+        returned_reward=None,
+    )
+    assert V2_EXTRA_KEYS.issubset(init_debug)
+    init_keys = set(init_debug)
+
+    reward_fn.reset()
+    reset_debug = validate_reward_audit(
+        reward_fn,
+        reward_name="FuturesIntradayMTMRiskReward",
+        returned_reward=None,
+    )
+    assert set(reset_debug) == init_keys
+
+    reward = reward_fn()
+    first_debug = _validate(reward_fn, reward)
+    assert set(first_debug) == init_keys
+
+    env.user_accounts.long_position = Decimal("1")
+    env.user_accounts.unrealized_pnl = Decimal("-20")
+    reward = reward_fn()
+    step_debug = _validate(reward_fn, reward)
+    assert set(step_debug) == init_keys
+    assert step_debug["adverse_cash"] > 0
 
 
 def test_v2_drawdown_increment_creates_negative_risk_dd():
