@@ -1,0 +1,3 @@
+action,alpha_unrealized,close,dd,delta_equity,eod,equity,fee,fee_cash_debug,invalid_action_debug,invalid_streak,invalid_streak_len,invalid_time,invalid_total,mkt_closed,mtm_equity,pnl,position_long,position_short,prev_mtm_equity,r_atr_close,raw_total,reward,scale_cash,sl,step,total
+2,1.0,0.0,0.0,0.0,0.0,99277.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,99277.0,0.0,1.0,0.0,99277.0,0.0,0.0,0.0,100.0,0.0,1,0.0
+1,1.0,0.0,0.0,-33.0,0.0,99244.0,0.0,3.0,0.0,0.0,0.0,0.0,0.0,0.0,99244.0,-0.31852077690277086,0.0,0.0,99277.0,0.0,-0.33,-0.31852077690277086,100.0,0.0,2,-0.31852077690277086

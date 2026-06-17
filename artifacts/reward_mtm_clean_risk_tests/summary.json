@@ -1,0 +1,52 @@
+{
+  "scripted": {
+    "futures_intraday_mtm_clean_reward_function": {
+      "reward_name": "futures_intraday_mtm_clean_reward_function",
+      "steps": 2,
+      "trades": 1,
+      "missing_last_step_keys": [],
+      "has_trade_attribution": true
+    },
+    "futures_intraday_mtm_risk_reward_function": {
+      "reward_name": "futures_intraday_mtm_risk_reward_function",
+      "steps": 2,
+      "trades": 1,
+      "missing_last_step_keys": [],
+      "has_trade_attribution": true
+    }
+  },
+  "metrics": {
+    "futures_intraday_mtm_clean_reward_function": {
+      "reward_name": "futures_intraday_mtm_clean_reward_function",
+      "logdir": "/tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137",
+      "returncode": 0,
+      "metrics_rows": 77,
+      "missing_metric_keys": [],
+      "mandatory_metric_keys_present": true,
+      "zero_disabled_metric_sums": {
+        "close": true,
+        "r_atr_close": true,
+        "dd": true,
+        "eod": true,
+        "invalid_total": true
+      },
+      "stdout_tail": "ain/avail/prior_fpr 0.56 / train/avail/ready 0 / train/loss/agent_state 7.35 / train/loss/avail_post 1.96 / train/loss/avail_prior 2.09 / train/loss/con 0.73 / train/loss/dyn 1 / train/loss/market_seq 672.74 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 57.24 / fps/train 457.92\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/metrics.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/scores.jsonl\n\n--------------------[Agent Step 750]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 2.17 / train/avail/img_fallback_rate 0 / train/avail/post_accuracy 0.61 / train/avail/post_cardinality 2.17 / train/avail/post_exact_accuracy 0 / train/avail/post_fnr 0 / train/avail/post_fpr 0.59 / train/avail/prior_accuracy 0.6 / train/avail/prior_cardinality 2.2 / train/avail/prior_exact_accuracy 0.03 / train/avail/prior_fnr 0 / train/avail/prior_fpr 0.6 / train/avail/ready 0 / train/loss/agent_state 7.37 / train/loss/avail_post 1.92 / train/loss/avail_prior 2.08 / train/loss/con 0.71 / train/loss/dyn 1 / train/loss/market_seq 646.17 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 48.51 / fps/train 388.1\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/metrics.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/scores.jsonl\n\n--------------------[Agent Step 760]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 2.16 / train/avail/img_fallback_rate 0 / train/avail/post_accuracy 0.64 / train/avail/post_cardinality 2.11 / train/avail/post_exact_accuracy 0.03 / train/avail/post_fnr 0.06 / train/avail/post_fpr 0.55 / train/avail/prior_accuracy 0.63 / train/avail/prior_cardinality 2.15 / train/avail/prior_exact_accuracy 0.03 / train/avail/prior_fnr 0.06 / train/avail/prior_fpr 0.58 / train/avail/ready 0 / train/loss/agent_state 8.43 / train/loss/avail_post 1.95 / train/loss/avail_prior 2.1 / train/loss/con 0.72 / train/loss/dyn 1 / train/loss/market_seq 664.99 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 47.83 / fps/train 382.62\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/scores.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-clean-reward-function-20260617-163137/metrics.jsonl\n"
+    },
+    "futures_intraday_mtm_risk_reward_function": {
+      "reward_name": "futures_intraday_mtm_risk_reward_function",
+      "logdir": "/tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224",
+      "returncode": 0,
+      "metrics_rows": 77,
+      "missing_metric_keys": [],
+      "mandatory_metric_keys_present": true,
+      "zero_disabled_metric_sums": {
+        "close": true,
+        "r_atr_close": true,
+        "eod": true,
+        "invalid_total": true
+      },
+      "stdout_tail": "1 / train/avail/prior_fpr 0.56 / train/avail/ready 0 / train/loss/agent_state 7.35 / train/loss/avail_post 1.96 / train/loss/avail_prior 2.09 / train/loss/con 0.73 / train/loss/dyn 1 / train/loss/market_seq 672.74 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 58.1 / fps/train 464.77\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/metrics.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/scores.jsonl\n\n--------------------[Agent Step 750]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 2.17 / train/avail/img_fallback_rate 0 / train/avail/post_accuracy 0.61 / train/avail/post_cardinality 2.17 / train/avail/post_exact_accuracy 0 / train/avail/post_fnr 0 / train/avail/post_fpr 0.59 / train/avail/prior_accuracy 0.6 / train/avail/prior_cardinality 2.2 / train/avail/prior_exact_accuracy 0.03 / train/avail/prior_fnr 0 / train/avail/prior_fpr 0.6 / train/avail/ready 0 / train/loss/agent_state 7.37 / train/loss/avail_post 1.92 / train/loss/avail_prior 2.08 / train/loss/con 0.71 / train/loss/dyn 1 / train/loss/market_seq 646.17 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 55.91 / fps/train 447.27\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/metrics.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/scores.jsonl\n\n--------------------[Agent Step 760]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 2.16 / train/avail/img_fallback_rate 0 / train/avail/post_accuracy 0.64 / train/avail/post_cardinality 2.11 / train/avail/post_exact_accuracy 0.03 / train/avail/post_fnr 0.06 / train/avail/post_fpr 0.55 / train/avail/prior_accuracy 0.63 / train/avail/prior_cardinality 2.15 / train/avail/prior_exact_accuracy 0.03 / train/avail/prior_fnr 0.06 / train/avail/prior_fpr 0.58 / train/avail/ready 0 / train/loss/agent_state 8.43 / train/loss/avail_post 1.95 / train/loss/avail_prior 2.1 / train/loss/con 0.72 / train/loss/dyn 1 / train/loss/market_seq 664.99 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 49.47 / fps/train 395.76\n\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/scores.jsonl\nWriting metrics: /tmp/reward-mtm-smoke-futures-intraday-mtm-risk-reward-function-20260617-163224/metrics.jsonl\n"
+    }
+  },
+  "classification": "REWARD_TEST_PASS"
+}

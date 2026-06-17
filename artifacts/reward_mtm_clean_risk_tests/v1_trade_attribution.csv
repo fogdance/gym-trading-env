@@ -1,0 +1,2 @@
+actual_net_pnl,atr_close_reward_sum,close_reward_sum,dd_reward_sum,direction,entry_timestamp,exit_reason,exit_timestamp,hold_bars,pnl_reward_sum,reward_sum_during_trade,trade_id
+-750.0,0.0,0.0,0.0,long,2024-06-03T21:01:00+08:00,MANUAL,2024-06-03T21:02:00+08:00,2,-0.31852077690277086,-0.31852077690277086,0

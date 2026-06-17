@@ -1,9 +1,5 @@
-# Walk-forward pilot fold 1 training environment.
-# Same trading contract as action-mask-formal-202606122100; data_path is
-# restricted to train dates only: 2024-06-03 through 2025-07-31.
-
-XAUUSD: &XAUUSD
-  currency_pair: "XAUUSD"
+XAUUSD:
+  currency_pair: XAUUSD
   initial_balance: 1000.0
   trading_fee_per_lot: 6
   is_round_turn: false
@@ -13,17 +9,16 @@ XAUUSD: &XAUUSD
   trade_lot: 0.01
   max_long_position: 0.05
   max_short_position: 0.05
-  data_path: "XAUUSD"
-  data_interval: "1m"
+  data_path: XAUUSD
+  data_interval: 1m
   down_thresh_5m: -0.0001
   up_thresh_5m: 0.0001
   down_thresh_15m: -0.00015
   up_thresh_15m: 0.00015
   down_thresh_1h: -0.00025
   up_thresh_1h: 0.00025
-
-EURUSD: &EURUSD
-  currency_pair: "EURUSD"
+EURUSD:
+  currency_pair: EURUSD
   initial_balance: 1000.0
   trading_fee_per_lot: 3
   is_round_turn: true
@@ -33,17 +28,16 @@ EURUSD: &EURUSD
   trade_lot: 0.01
   max_long_position: 0.02
   max_short_position: 0.02
-  data_path: "EURUSD"
-  data_interval: "5m"
+  data_path: EURUSD
+  data_interval: 5m
   down_thresh_5m: -0.0001
   up_thresh_5m: 0.0001
   down_thresh_15m: -0.00015
   up_thresh_15m: 0.00015
   down_thresh_1h: -0.00025
   up_thresh_1h: 0.00025
-
-DCE_JM2601: &JM
-  currency_pair: "JM2601"
+DCE_JM2601:
+  currency_pair: JM2601
   initial_balance: 10000.0
   trading_fee_per_lot: 3
   is_round_turn: true
@@ -53,8 +47,8 @@ DCE_JM2601: &JM
   trade_lot: 1
   max_long_position: 1
   max_short_position: 1
-  data_path: "JM_WF1_TRAIN_20240603_20250731"
-  data_interval: "1m"
+  data_path: JM_WF1_TRAIN_20240603_20250731
+  data_interval: 1m
   stop_loss_enabled: false
   stop_loss_mode: abs
   stop_loss_value: 5
@@ -62,18 +56,17 @@ DCE_JM2601: &JM
   take_profit_mode: rr
   take_profit_rr: 1.5
   is_future: true
-  obs_feature_mode: "obs"
+  obs_feature_mode: obs
   use_daily_context: false
   use_daily_seq_7: false
   invalid_action_punish: 0.001
-  future_symbol: "DCE.jm2601"
-  session_policy:
+  future_symbol: DCE.jm2601
+  session_policy: &id001
     near_eod_bars: 2
     block_open_near_eod: true
     force_flatten_eod: false
-
-SHFE_RB: &RB
-  currency_pair: "SHFE_RB"
+SHFE_RB:
+  currency_pair: SHFE_RB
   initial_balance: 10000.0
   trading_fee_per_lot: 3
   is_round_turn: true
@@ -83,8 +76,8 @@ SHFE_RB: &RB
   trade_lot: 1
   max_long_position: 1
   max_short_position: 1
-  data_path: "SHFE_RB"
-  data_interval: "1m"
+  data_path: SHFE_RB
+  data_interval: 1m
   stop_loss_enabled: false
   stop_loss_mode: pct
   stop_loss_value: 0.02
@@ -92,36 +85,58 @@ SHFE_RB: &RB
   take_profit_mode: rr
   take_profit_rr: 1.5
   is_future: true
-  obs_feature_mode: "obs"
+  obs_feature_mode: obs
   use_daily_context: false
   use_daily_seq_7: false
-  future_symbol: "SHFE.RB"
+  future_symbol: SHFE.RB
   session_policy:
     near_eod_bars: 2
     block_open_near_eod: true
     force_flatten_eod: false
-
 trading:
-  <<: *JM
-
+  currency_pair: JM2601
+  initial_balance: 100000.0
+  trading_fee_per_lot: 3
+  is_round_turn: true
+  spread: 0.5
+  leverage: 10
+  lot_size: 60
+  trade_lot: 1
+  max_long_position: 1
+  max_short_position: 1
+  data_path: JM_WF1_TRAIN_20240603_20250731
+  data_interval: 1m
+  stop_loss_enabled: false
+  stop_loss_mode: abs
+  stop_loss_value: 5
+  take_profit_enabled: false
+  take_profit_mode: rr
+  take_profit_rr: 1.5
+  is_future: true
+  obs_feature_mode: obs
+  use_daily_context: false
+  use_daily_seq_7: false
+  invalid_action_punish: 0.001
+  future_symbol: DCE.jm2601
+  session_policy: *id001
 risk:
   max_drawdown_ratio: 0.5
   daily_lost_ratio: 0.3
   risk_reward_ratio: 1
   risk_reward_ratio_enable: false
-
 training:
-  reward_function: "futures_intraday_mtm_risk_reward_function"
+  reward_function: futures_intraday_mtm_risk_reward_function
   window_size: 60
   max_episode_steps: 345
-  randomize_start: true
-  render_mode: "none"
-  start_clock: "future_night"
-  bar_source: "csv"
+  randomize_start: false
+  render_mode: none
+  start_clock: future_night
+  bar_source: csv
   episode_policy:
     truncate_on_session_end: true
-
 visualization:
   image_width: 128
   image_height: 48
   image_channels: 1
+debug:
+  log_level: ERROR

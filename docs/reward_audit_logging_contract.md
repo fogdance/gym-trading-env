@@ -51,7 +51,7 @@ Mandatory episode keys:
 
 ## V1 Clean Note
 
-`futures_intraday_mtm_clean_reward_function` is not implemented in the current repository. This pass hardens the interface it must implement. A new reward must inherit `RewardAuditMixin`, update its audit snapshot on every `__call__`, and declare any disabled components. Disabled shaping components (`close`, `r_atr_close`, `dd`, `eod`, `invalid_total`) are present from reset and default to zero until a reward function writes non-zero values.
+`futures_intraday_mtm_clean_reward_function` and `futures_intraday_mtm_risk_reward_function` implement this interface. A new reward must inherit `RewardAuditMixin`, update its audit snapshot on every `__call__`, and declare any disabled components. Disabled shaping components (`close`, `r_atr_close`, `dd`, `eod`, `invalid_total`) are present from reset and default to zero until a reward function writes non-zero values.
 
 ## Outputs
 

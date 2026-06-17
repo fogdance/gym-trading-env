@@ -111,7 +111,7 @@ risk:
   risk_reward_ratio_enable: false
 
 training:
-  reward_function: "futures_intraday_reward_function"
+  reward_function: "futures_intraday_mtm_risk_reward_function"
   window_size: 60
   max_episode_steps: 345
   randomize_start: true

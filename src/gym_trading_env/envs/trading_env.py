@@ -2068,7 +2068,8 @@ class CustomTradingEnv(gym.Env):
             info[f'log/env/{key}'] = np.asarray(value, dtype=np.float32).reshape(())
         reward_debug = getattr(self, "_reward_debug", None)
         if isinstance(reward_debug, dict):
-            for key in REWARD_DEBUG_KEYS:
+            extra_keys = sorted(k for k in reward_debug.keys() if k not in REWARD_DEBUG_KEYS)
+            for key in list(REWARD_DEBUG_KEYS) + extra_keys:
                 value = reward_debug.get(key, 0.0)
                 if isinstance(value, (bool, np.bool_)):
                     vv = float(value)

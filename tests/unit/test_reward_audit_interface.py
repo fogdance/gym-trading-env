@@ -37,6 +37,22 @@ class _MismatchedTotalReward(RewardAuditMixin):
         self._set_reward_debug(debug)
 
 
+class _ExtraDebugReward(RewardAuditMixin):
+    def __init__(self):
+        debug = self.default_reward_debug()
+        debug["raw_total"] = 0.25
+        debug["total"] = 0.25
+        debug["risk_dd"] = -0.1
+        self._set_reward_debug(debug)
+
+
+class _BadExtraDebugReward(RewardAuditMixin):
+    def reward_audit_debug(self):
+        debug = self.default_reward_debug()
+        debug["bad_extra"] = "not_numeric"
+        return debug
+
+
 def test_reward_audit_interface_accepts_valid_snapshot():
     debug = validate_reward_audit(
         _GoodReward(),
@@ -72,4 +88,23 @@ def test_reward_audit_interface_rejects_total_mismatch():
             _MismatchedTotalReward(),
             reward_name="mismatch_reward",
             returned_reward=0.2,
+        )
+
+
+def test_reward_audit_interface_preserves_numeric_extra_keys():
+    debug = validate_reward_audit(
+        _ExtraDebugReward(),
+        reward_name="extra_reward",
+        returned_reward=0.25,
+    )
+
+    assert debug["risk_dd"] == pytest.approx(-0.1)
+
+
+def test_reward_audit_interface_rejects_non_numeric_extra_keys():
+    with pytest.raises(RewardAuditError, match="bad_extra"):
+        validate_reward_audit(
+            _BadExtraDebugReward(),
+            reward_name="bad_extra_reward",
+            returned_reward=0.0,
         )

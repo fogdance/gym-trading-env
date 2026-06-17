@@ -4,7 +4,7 @@ import math
 from collections.abc import Mapping
 from typing import Any
 
-from gym_trading_env.utils.decimal_util import number_to_float
+from decimal import Decimal
 
 
 REWARD_AUDIT_SCHEMA_VERSION = "reward_audit_v1"
@@ -88,6 +88,16 @@ class RewardAuditMixin:
             env._reward_debug = normalized
 
 
+def _audit_float(value: Any) -> float:
+    if value is None:
+        raise TypeError("None is not a numeric reward audit value")
+    if isinstance(value, str):
+        raise TypeError("str is not a numeric reward audit value")
+    if isinstance(value, Decimal):
+        return float(value)
+    return float(value)
+
+
 def normalize_reward_debug(debug: Mapping[str, Any]) -> dict[str, float]:
     if not isinstance(debug, Mapping):
         raise RewardAuditError(
@@ -101,7 +111,7 @@ def normalize_reward_debug(debug: Mapping[str, Any]) -> dict[str, float]:
     for key in REWARD_DEBUG_KEYS:
         value = debug[key]
         try:
-            converted = float(number_to_float(value))
+            converted = _audit_float(value)
         except Exception as exc:
             raise RewardAuditError(
                 f"reward audit key {key!r} is not numeric: {value!r}") from exc
@@ -112,6 +122,22 @@ def normalize_reward_debug(debug: Mapping[str, Any]) -> dict[str, float]:
 
     # Keep streak length integral after normalization for human-facing logs.
     normalized["invalid_streak_len"] = float(int(normalized["invalid_streak_len"]))
+
+    for key, value in debug.items():
+        if key in normalized:
+            continue
+        if not isinstance(key, str):
+            raise RewardAuditError(f"reward audit extra key must be str, got {key!r}")
+        try:
+            converted = _audit_float(value)
+        except Exception as exc:
+            raise RewardAuditError(
+                f"reward audit extra key {key!r} is not numeric: {value!r}") from exc
+        if not math.isfinite(converted):
+            raise RewardAuditError(
+                f"reward audit extra key {key!r} must be finite, got {converted!r}")
+        normalized[key] = converted
+
     return normalized
 
 
@@ -150,7 +176,7 @@ def validate_reward_audit(
                 f"match returned reward {expected}")
 
     disabled = set(reward_function.reward_audit_disabled_components())
-    unknown_disabled = [key for key in disabled if key not in REWARD_DEBUG_KEYS]
+    unknown_disabled = [key for key in disabled if key not in debug]
     if unknown_disabled:
         raise RewardAuditError(
             f"Reward function {reward_name!r} declares unknown disabled audit "

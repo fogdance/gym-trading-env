@@ -704,10 +704,694 @@ class FuturesIntradayReward(RewardAuditMixin):
 
         return float(total)
 
+class FuturesIntradayMTMCleanReward(RewardAuditMixin):
+    """
+    v1-clean: Pure mark-to-market equity delta reward.
+
+    Objective:
+      reward is driven only by the change in real MTM equity.
+
+    MTM equity:
+      equity = user_cash + user_margin + unrealized_pnl
+
+    Reward:
+      raw_reward = (equity_t - equity_{t-1}) / R_cash
+      reward = clip * tanh(raw_reward / clip)
+
+    Intentional removals compared with FuturesIntradayReward:
+      - no close-position bonus
+      - no ATR take-profit shaping
+      - no explicit drawdown penalty
+      - no explicit EOD penalty
+      - no explicit stop-loss penalty
+      - no explicit invalid-action penalty
+      - no explicit market-closed penalty
+      - no explicit fee penalty
+
+    Fees are already reflected by ledger cash changes.
+    Spread/slippage is reflected through execution price and unrealized/realized PnL.
+
+    Audit contract:
+      - all REWARD_DEBUG_KEYS are present and numeric;
+      - debug["total"] equals returned reward;
+      - disabled reward components are present but exactly zero.
+    """
+
+    def __init__(
+        self,
+        env,
+        clip=1.0,
+        eps=Decimal("1e-6"),
+        precision=8,
+        fallback_scale_cash=None,
+        fail_if_missing_scale=False,
+    ):
+        self.env = env
+        self.clip = float(clip)
+        self.eps = eps
+        self.precision = int(precision)
+        self.fail_if_missing_scale = bool(fail_if_missing_scale)
+
+        if self.clip <= 0:
+            self.clip = 1.0
+
+        if fallback_scale_cash is None:
+            fallback_scale_cash = getattr(
+                getattr(self.env.config, "trading", object()),
+                "reward_scale_cash_fallback",
+                "1.0",
+            )
+        self.fallback_scale_cash = self._to_decimal(fallback_scale_cash, Decimal("1.0"))
+
+        self.prev_equity = None
+        self.prev_timestamp = None
+        self.invalid_streak = 0
+
+        # v1-clean hard contract: unrealized PnL is fully included.
+        self.alpha_unrealized = 1.0
+
+        # Initialize a valid all-numeric audit snapshot immediately.
+        debug = self.default_reward_debug()
+        debug.update({
+            "alpha_unrealized": 1.0,
+            "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
+        })
+        self._set_reward_debug(debug)
+
+    def reward_audit_disabled_components(self) -> tuple[str, ...]:
+        """
+        These components are intentionally disabled in v1-clean.
+        They must remain exactly zero, or validate_reward_audit() should fail.
+        """
+        return (
+            "fee",
+            "dd",
+            "eod",
+            "close",
+            "sl",
+            "mkt_closed",
+            "invalid_time",
+            "invalid_streak",
+            "invalid_total",
+            "r_atr_close",
+        )
+
+    def reset(self):
+        self.prev_equity = None
+        self.prev_timestamp = None
+        self.invalid_streak = 0
+
+        debug = self.default_reward_debug()
+        debug.update({
+            "alpha_unrealized": 1.0,
+            "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
+        })
+        self._set_reward_debug(debug)
+
+    def _to_decimal(self, value, default=D0) -> Decimal:
+        if value is None:
+            return default
+        if isinstance(value, Decimal):
+            return value
+        try:
+            if isinstance(value, float) and not np.isfinite(value):
+                return default
+        except Exception:
+            pass
+        try:
+            return Decimal(str(value))
+        except Exception:
+            return default
+
+    def _ledger_balance(self, key: str) -> Decimal:
+        try:
+            balances = self.env.ledger.balances()
+            return self._to_decimal(balances.get(key, D0), D0)
+        except Exception:
+            return D0
+
+    def _unrealized_pnl(self) -> Decimal:
+        upnl = getattr(self.env.user_accounts, "unrealized_pnl", D0)
+        return self._to_decimal(upnl, D0)
+
+    def _mtm_equity(self) -> Decimal:
+        """
+        Full mark-to-market equity.
+
+        cash + margin avoids creating a fake reward drop when cash is moved
+        into margin on position open.
+        """
+        cash = self._ledger_balance("user_cash")
+        margin = self._ledger_balance("user_margin")
+        unrealized = self._unrealized_pnl()
+        return cash + margin + unrealized
+
+    def _scale_cash(self) -> Decimal:
+        """
+        Prefer env._R_cash_last because FuturesIntradayReward already uses it
+        as the per-trade risk cash scale.
+        """
+        rc = getattr(self.env, "_R_cash_last", None)
+        rc = self._to_decimal(rc, None)
+
+        if rc is not None and rc > self.eps:
+            return rc
+
+        cfg_scale = getattr(
+            getattr(self.env.config, "trading", object()),
+            "reward_scale_cash",
+            None,
+        )
+        cfg_scale = self._to_decimal(cfg_scale, None)
+        if cfg_scale is not None and cfg_scale > self.eps:
+            return cfg_scale
+
+        if self.fallback_scale_cash is not None and self.fallback_scale_cash > self.eps:
+            return self.fallback_scale_cash
+
+        if self.fail_if_missing_scale:
+            raise RuntimeError(
+                "FuturesIntradayMTMCleanReward cannot resolve reward scale. "
+                "Expected env._R_cash_last or config.trading.reward_scale_cash."
+            )
+
+        return Decimal("1.0")
+
+    def _safe_ratio_float(self, x: Decimal, scale: Decimal) -> float:
+        try:
+            z = x / max(scale, self.eps)
+            v = decimal_to_float(z, precision=self.precision)
+        except Exception:
+            v = 1e6 if x > D0 else -1e6
+
+        if v > 20.0:
+            return 20.0
+        if v < -20.0:
+            return -20.0
+        return float(v)
+
+    def _squash(self, raw: float) -> float:
+        """
+        Single bounded transform. No double tanh.
+        """
+        z = raw / self.clip
+        if z > 20.0:
+            z = 20.0
+        elif z < -20.0:
+            z = -20.0
+        return float(self.clip * np.tanh(z))
+
+    def _fee_cash_debug(self) -> Decimal:
+        fee = getattr(self.env, "fee_step", D0)
+        return self._to_decimal(fee, D0)
+
+    def __call__(self, obs=None):
+        equity = self._mtm_equity()
+        scale = self._scale_cash()
+
+        if self.prev_equity is None:
+            self.prev_equity = equity
+
+            debug = self.default_reward_debug()
+            debug.update({
+                "pnl": 0.0,
+                "fee": 0.0,
+                "dd": 0.0,
+                "eod": 0.0,
+                "close": 0.0,
+                "sl": 0.0,
+                "mkt_closed": 0.0,
+                "invalid_time": 0.0,
+                "invalid_streak": 0.0,
+                "invalid_total": 0.0,
+                "invalid_streak_len": 0.0,
+                "invalid_action_debug": 0.0,
+                "alpha_unrealized": 1.0,
+                "r_atr_close": 0.0,
+                "mtm_equity": float(decimal_to_float(equity, precision=6)),
+                "prev_mtm_equity": float(decimal_to_float(equity, precision=6)),
+                "delta_equity": 0.0,
+                "scale_cash": float(decimal_to_float(scale, precision=6)),
+                "fee_cash_debug": 0.0,
+                "raw_total": 0.0,
+                "total": 0.0,
+            })
+            self._set_reward_debug(debug)
+            return 0.0
+
+        delta_equity = equity - self.prev_equity
+
+        raw = self._safe_ratio_float(delta_equity, scale)
+        total = self._squash(raw)
+
+        invalid = bool(getattr(self.env, "_last_action_rejected", False))
+        if invalid:
+            self.invalid_streak += 1
+        else:
+            self.invalid_streak = 0
+
+        fee = self._fee_cash_debug()
+
+        debug = self.default_reward_debug()
+        debug.update({
+            # Main component. This is the only non-zero reward component.
+            # For audit, pnl equals returned reward, not pre-squash raw.
+            "pnl": float(total),
+
+            # Intentionally disabled reward components.
+            "fee": 0.0,
+            "dd": 0.0,
+            "eod": 0.0,
+            "close": 0.0,
+            "sl": 0.0,
+            "mkt_closed": 0.0,
+            "invalid_time": 0.0,
+            "invalid_streak": 0.0,
+            "invalid_total": 0.0,
+            "r_atr_close": 0.0,
+
+            # Debug-only numeric fields.
+            "invalid_streak_len": float(int(self.invalid_streak)),
+            "invalid_action_debug": float(1.0 if invalid else 0.0),
+            "alpha_unrealized": 1.0,
+            "mtm_equity": float(decimal_to_float(equity, precision=6)),
+            "prev_mtm_equity": float(decimal_to_float(self.prev_equity, precision=6)),
+            "delta_equity": float(decimal_to_float(delta_equity, precision=6)),
+            "scale_cash": float(decimal_to_float(scale, precision=6)),
+            "fee_cash_debug": float(decimal_to_float(fee, precision=6)),
+            "raw_total": float(raw),
+            "total": float(total),
+        })
+
+        self._set_reward_debug(debug)
+
+        self.prev_equity = equity
+
+        return float(total)
+
+class FuturesIntradayMTMRiskReward(RewardAuditMixin):
+    """
+    v2-risk: Pure MTM equity delta reward + auditable risk penalties.
+
+    Objective:
+      reward is primarily driven by real MTM equity delta, with small
+      explicit penalties for drawdown expansion and holding losing positions.
+
+    MTM equity:
+      equity = user_cash + user_margin + unrealized_pnl
+
+    Main reward:
+      r_pnl = (equity_t - equity_{t-1}) / R_cash
+
+    Risk penalties:
+      r_dd:
+        account-level drawdown increment penalty.
+
+      r_adverse:
+        position-level adverse unrealized PnL increment penalty.
+
+      r_loss_time:
+        small per-step penalty while an open position is underwater.
+
+    Intentional removals compared with FuturesIntradayReward:
+      - no close-position bonus
+      - no ATR take-profit shaping
+      - no EOD shaping
+      - no stop-loss shaping
+      - no invalid-action shaping
+      - no market-closed shaping
+      - no explicit fee penalty
+
+    Fees are already reflected by ledger cash changes.
+    Spread/slippage is reflected through execution price and unrealized/realized PnL.
+
+    Audit contract:
+      - all REWARD_DEBUG_KEYS are present and numeric;
+      - debug["total"] equals returned reward;
+      - disabled reward components are present but exactly zero;
+      - risk penalty is reported through debug["dd"] and extra numeric debug keys.
+    """
+
+    def __init__(
+        self,
+        env,
+        clip=1.0,
+        eps=Decimal("1e-6"),
+        precision=8,
+        fallback_scale_cash=None,
+        fail_if_missing_scale=False,
+        w_dd=None,
+        w_adverse=None,
+        w_loss_time=None,
+    ):
+        self.env = env
+        self.clip = float(clip)
+        self.eps = eps
+        self.precision = int(precision)
+        self.fail_if_missing_scale = bool(fail_if_missing_scale)
+
+        if self.clip <= 0:
+            self.clip = 1.0
+
+        trading_cfg = getattr(self.env.config, "trading", object())
+
+        if fallback_scale_cash is None:
+            fallback_scale_cash = getattr(
+                trading_cfg,
+                "reward_scale_cash_fallback",
+                "1.0",
+            )
+        self.fallback_scale_cash = self._to_decimal(fallback_scale_cash, Decimal("1.0"))
+
+        # Keep defaults deliberately small. This reward should remain MTM-first.
+        if w_dd is None:
+            w_dd = getattr(trading_cfg, "reward_v2_w_dd", 0.05)
+        if w_adverse is None:
+            w_adverse = getattr(trading_cfg, "reward_v2_w_adverse", 0.05)
+        if w_loss_time is None:
+            w_loss_time = getattr(trading_cfg, "reward_v2_w_loss_time", 0.001)
+
+        self.w_dd = max(0.0, float(w_dd))
+        self.w_adverse = max(0.0, float(w_adverse))
+        self.w_loss_time = max(0.0, float(w_loss_time))
+
+        self.prev_equity = None
+        self.peak_equity = None
+        self.prev_dd_cash = D0
+        self.prev_adverse_cash = D0
+        self.loss_steps = 0
+        self.invalid_streak = 0
+
+        # v2-risk hard contract: unrealized PnL is fully included.
+        self.alpha_unrealized = 1.0
+
+        debug = self.default_reward_debug()
+        debug.update({
+            "alpha_unrealized": 1.0,
+            "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
+        })
+        self._set_reward_debug(debug)
+
+    def reward_audit_disabled_components(self) -> tuple[str, ...]:
+        """
+        These components are intentionally disabled in v2-risk.
+        The dd key is NOT disabled because it carries the risk penalty.
+        """
+        return (
+            "fee",
+            "eod",
+            "close",
+            "sl",
+            "mkt_closed",
+            "invalid_time",
+            "invalid_streak",
+            "invalid_total",
+            "r_atr_close",
+        )
+
+    def reset(self):
+        self.prev_equity = None
+        self.peak_equity = None
+        self.prev_dd_cash = D0
+        self.prev_adverse_cash = D0
+        self.loss_steps = 0
+        self.invalid_streak = 0
+
+        debug = self.default_reward_debug()
+        debug.update({
+            "alpha_unrealized": 1.0,
+            "scale_cash": float(decimal_to_float(self._scale_cash(), precision=6)),
+        })
+        self._set_reward_debug(debug)
+
+    def _to_decimal(self, value, default=D0) -> Decimal:
+        if value is None:
+            return default
+        if isinstance(value, Decimal):
+            return value
+        try:
+            if isinstance(value, float) and not np.isfinite(value):
+                return default
+        except Exception:
+            pass
+        try:
+            return Decimal(str(value))
+        except Exception:
+            return default
+
+    def _ledger_balance(self, key: str) -> Decimal:
+        try:
+            balances = self.env.ledger.balances()
+            return self._to_decimal(balances.get(key, D0), D0)
+        except Exception:
+            return D0
+
+    def _unrealized_pnl(self) -> Decimal:
+        upnl = getattr(self.env.user_accounts, "unrealized_pnl", D0)
+        return self._to_decimal(upnl, D0)
+
+    def _mtm_equity(self) -> Decimal:
+        """
+        Full mark-to-market equity.
+
+        cash + margin avoids a fake reward drop when cash is moved into margin.
+        """
+        cash = self._ledger_balance("user_cash")
+        margin = self._ledger_balance("user_margin")
+        unrealized = self._unrealized_pnl()
+        return cash + margin + unrealized
+
+    def _scale_cash(self) -> Decimal:
+        rc = getattr(self.env, "_R_cash_last", None)
+        rc = self._to_decimal(rc, None)
+
+        if rc is not None and rc > self.eps:
+            return rc
+
+        cfg_scale = getattr(
+            getattr(self.env.config, "trading", object()),
+            "reward_scale_cash",
+            None,
+        )
+        cfg_scale = self._to_decimal(cfg_scale, None)
+        if cfg_scale is not None and cfg_scale > self.eps:
+            return cfg_scale
+
+        if self.fallback_scale_cash is not None and self.fallback_scale_cash > self.eps:
+            return self.fallback_scale_cash
+
+        if self.fail_if_missing_scale:
+            raise RuntimeError(
+                "FuturesIntradayMTMRiskReward cannot resolve reward scale. "
+                "Expected env._R_cash_last or config.trading.reward_scale_cash."
+            )
+
+        return Decimal("1.0")
+
+    def _safe_ratio_float(self, x: Decimal, scale: Decimal) -> float:
+        try:
+            z = x / max(scale, self.eps)
+            v = decimal_to_float(z, precision=self.precision)
+        except Exception:
+            v = 1e6 if x > D0 else -1e6
+
+        if v > 20.0:
+            return 20.0
+        if v < -20.0:
+            return -20.0
+        return float(v)
+
+    def _tanh_scaled(self, x: Decimal, scale: Decimal) -> float:
+        raw = self._safe_ratio_float(x, scale)
+        return float(np.tanh(raw))
+
+    def _squash(self, raw_total: float) -> float:
+        z = raw_total / self.clip
+        if z > 20.0:
+            z = 20.0
+        elif z < -20.0:
+            z = -20.0
+        return float(self.clip * np.tanh(z))
+
+    def _fee_cash_debug(self) -> Decimal:
+        fee = getattr(self.env, "fee_step", D0)
+        return self._to_decimal(fee, D0)
+
+    def _in_market(self) -> bool:
+        try:
+            return (
+                self.env.user_accounts.long_position > D0
+                or self.env.user_accounts.short_position > D0
+            )
+        except Exception:
+            return False
+
+    def __call__(self, obs=None):
+        equity = self._mtm_equity()
+        scale = self._scale_cash()
+        unrealized = self._unrealized_pnl()
+        in_market = self._in_market()
+
+        if self.prev_equity is None:
+            self.prev_equity = equity
+            self.peak_equity = equity
+            self.prev_dd_cash = D0
+            self.prev_adverse_cash = max(D0, -unrealized)
+            self.loss_steps = 0
+            self.invalid_streak = 0
+
+            debug = self.default_reward_debug()
+            debug.update({
+                "pnl": 0.0,
+                "fee": 0.0,
+                "dd": 0.0,
+                "eod": 0.0,
+                "close": 0.0,
+                "sl": 0.0,
+                "mkt_closed": 0.0,
+                "invalid_time": 0.0,
+                "invalid_streak": 0.0,
+                "invalid_total": 0.0,
+                "invalid_streak_len": 0.0,
+                "invalid_action_debug": 0.0,
+                "alpha_unrealized": 1.0,
+                "r_atr_close": 0.0,
+                "mtm_equity": float(decimal_to_float(equity, precision=6)),
+                "prev_mtm_equity": float(decimal_to_float(equity, precision=6)),
+                "delta_equity": 0.0,
+                "scale_cash": float(decimal_to_float(scale, precision=6)),
+                "fee_cash_debug": 0.0,
+                "raw_total": 0.0,
+                "total": 0.0,
+
+                # Extra numeric audit fields.
+                "risk_dd": 0.0,
+                "risk_adverse": 0.0,
+                "risk_loss_time": 0.0,
+                "drawdown_cash": 0.0,
+                "drawdown_inc_cash": 0.0,
+                "adverse_cash": float(decimal_to_float(self.prev_adverse_cash, precision=6)),
+                "adverse_inc_cash": 0.0,
+                "loss_steps": 0.0,
+                "w_dd": float(self.w_dd),
+                "w_adverse": float(self.w_adverse),
+                "w_loss_time": float(self.w_loss_time),
+            })
+            self._set_reward_debug(debug)
+            return 0.0
+
+        # Main MTM delta component.
+        delta_equity = equity - self.prev_equity
+        r_pnl = self._safe_ratio_float(delta_equity, scale)
+
+        # Account-level drawdown increment.
+        if self.peak_equity is None:
+            self.peak_equity = equity
+        if equity > self.peak_equity:
+            self.peak_equity = equity
+
+        dd_cash = self.peak_equity - equity
+        if dd_cash < D0:
+            dd_cash = D0
+
+        dd_inc_cash = dd_cash - self.prev_dd_cash
+        if dd_inc_cash < D0:
+            dd_inc_cash = D0
+
+        # Avoid double-counting fee as drawdown risk.
+        fee = self._fee_cash_debug()
+        dd_inc_eff = dd_inc_cash
+        if fee > D0:
+            dd_inc_eff = dd_inc_eff - fee
+            if dd_inc_eff < D0:
+                dd_inc_eff = D0
+
+        r_dd = 0.0
+        if dd_inc_eff > D0 and self.w_dd > 0:
+            r_dd = -self.w_dd * self._tanh_scaled(dd_inc_eff, scale)
+
+        # Position-level adverse excursion increment.
+        adverse_cash = max(D0, -unrealized) if in_market else D0
+        adverse_inc_cash = adverse_cash - self.prev_adverse_cash
+        if adverse_inc_cash < D0:
+            adverse_inc_cash = D0
+
+        r_adverse = 0.0
+        if adverse_inc_cash > D0 and self.w_adverse > 0:
+            r_adverse = -self.w_adverse * self._tanh_scaled(adverse_inc_cash, scale)
+
+        # Time penalty while holding a losing position.
+        r_loss_time = 0.0
+        if in_market and unrealized < D0:
+            self.loss_steps += 1
+            if self.w_loss_time > 0:
+                r_loss_time = -self.w_loss_time * self._tanh_scaled(-unrealized, scale)
+        else:
+            self.loss_steps = 0
+
+        # v2-risk maps all explicit risk penalties to the standard dd audit key.
+        r_risk_total = float(r_dd + r_adverse + r_loss_time)
+
+        invalid = bool(getattr(self.env, "_last_action_rejected", False))
+        if invalid:
+            self.invalid_streak += 1
+        else:
+            self.invalid_streak = 0
+
+        raw_total = float(r_pnl + r_risk_total)
+        total = self._squash(raw_total)
+
+        debug = self.default_reward_debug()
+        debug.update({
+            "pnl": float(r_pnl),
+            "fee": 0.0,
+            "dd": float(r_risk_total),
+            "eod": 0.0,
+            "close": 0.0,
+            "sl": 0.0,
+            "mkt_closed": 0.0,
+            "invalid_time": 0.0,
+            "invalid_streak": 0.0,
+            "invalid_total": 0.0,
+            "invalid_streak_len": float(int(self.invalid_streak)),
+            "invalid_action_debug": float(1.0 if invalid else 0.0),
+            "alpha_unrealized": 1.0,
+            "r_atr_close": 0.0,
+            "mtm_equity": float(decimal_to_float(equity, precision=6)),
+            "prev_mtm_equity": float(decimal_to_float(self.prev_equity, precision=6)),
+            "delta_equity": float(decimal_to_float(delta_equity, precision=6)),
+            "scale_cash": float(decimal_to_float(scale, precision=6)),
+            "fee_cash_debug": float(decimal_to_float(fee, precision=6)),
+            "raw_total": float(raw_total),
+            "total": float(total),
+
+            # Extra numeric audit fields.
+            "risk_dd": float(r_dd),
+            "risk_adverse": float(r_adverse),
+            "risk_loss_time": float(r_loss_time),
+            "drawdown_cash": float(decimal_to_float(dd_cash, precision=6)),
+            "drawdown_inc_cash": float(decimal_to_float(dd_inc_cash, precision=6)),
+            "adverse_cash": float(decimal_to_float(adverse_cash, precision=6)),
+            "adverse_inc_cash": float(decimal_to_float(adverse_inc_cash, precision=6)),
+            "loss_steps": float(int(self.loss_steps)),
+            "w_dd": float(self.w_dd),
+            "w_adverse": float(self.w_adverse),
+            "w_loss_time": float(self.w_loss_time),
+        })
+
+        self._set_reward_debug(debug)
+
+        self.prev_equity = equity
+        self.prev_dd_cash = dd_cash
+        self.prev_adverse_cash = adverse_cash
+
+        return float(total)
 
 reward_classes = {
     'current_balance_reward_function': CurrentBalanceReward,
     'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,
     'futures_intraday_reward_function': FuturesIntradayReward,
+    'futures_intraday_mtm_clean_reward_function': FuturesIntradayMTMCleanReward,
+    'futures_intraday_mtm_risk_reward_function': FuturesIntradayMTMRiskReward,
 }
