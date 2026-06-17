@@ -1,0 +1,4 @@
+actual_net_pnl,atr_close_reward_sum,close_reward_sum,dd_reward_sum,direction,entry_timestamp,exit_reason,exit_timestamp,hold_bars,mae,mfe,pnl_reward_sum,reward_sum_during_trade,trade_id
+-60.0,0.0,-0.09999877116507956,0.0,long,,MANUAL,2025-07-15T21:02:00+08:00,2,,,-0.9998645517007605,-0.8004499217824319,0
+30.0,0.0,0.09950547536867305,0.0,short,,MANUAL,2025-07-15T21:32:00+08:00,2,,,0.6996948412265267,0.5683025265079251,1
+-30.0,0.0,-0.09950547536867305,0.0,long,,MANUAL,2025-07-15T22:02:00+08:00,2,,,-1.288595572550733,-1.082684947326128,2

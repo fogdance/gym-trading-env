@@ -23,6 +23,11 @@ from gym_trading_env.envs.broker_accounts import BrokerAccounts
 from gym_trading_env.envs.position_manager import PositionManager
 from gym_trading_env.envs.metrics import Metrics
 from gym_trading_env.rewards.reward_functions import EquityDeltaReward, reward_classes
+from gym_trading_env.rewards.reward_audit import (
+    REWARD_DEBUG_KEYS,
+    REWARD_EPISODE_AUDIT_KEYS,
+    validate_reward_audit,
+)
 from gym_trading_env.utils.decimal_util import decimal_to_float, float_to_decimal
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
 from gym_trading_env.envs.trade_record import TradeRecord
@@ -70,8 +75,6 @@ CORE_LOG_ENV_KEYS = [
     "invalid_action_total",
     "invalid_action_ratio",
 ]
-
-
 
 class CustomTradingEnv(gym.Env):
     metadata = {'render_modes': ['human', 'rgb_array']}
@@ -248,6 +251,7 @@ class CustomTradingEnv(gym.Env):
             EquityDeltaReward
         )
         self.reward_function = reward_class(self)
+        self._init_reward_debug()
 
         # LIVE 模式 & replay 相关
         self._live_mode = getattr(self.config.trading, "live_mode", False)
@@ -405,6 +409,7 @@ class CustomTradingEnv(gym.Env):
 
         reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
         self.reward_function = reward_class(self)
+        self._init_reward_debug()
 
         df_len = int(self.bar_source.store.n_rows)
         episode_len = self.config.training.episode_length
@@ -1262,8 +1267,9 @@ class CustomTradingEnv(gym.Env):
             self.truncated = True
 
             obs = self._get_obs()
-            info = self._get_info()
             reward = self.reward_function(obs)  # 或者给 0，但更推荐一致结算
+            self._update_reward_audit_state(reward)
+            info = self._get_info()
 
             # 在 episode 走到头时也记录一下最后一个 action
             if self._live_mode and (not getattr(self, "_replaying", False)):
@@ -1320,10 +1326,11 @@ class CustomTradingEnv(gym.Env):
 
         # Construct observation & info
         obs = self._get_obs()
-        info = self._get_info()
 
         # Calculate reward
         reward = self.reward_function(obs)
+        self._update_reward_audit_state(reward)
+        info = self._get_info()
 
         if self.config.debug.debug_enabled and (self.truncated or self.terminated):
             self.trade_record_manager.dump_to_json(f"output/trade_records_{self.current_step}.json")
@@ -1950,6 +1957,63 @@ class CustomTradingEnv(gym.Env):
         return snap
 
 
+    def _init_reward_debug(self):
+        reward_fn = getattr(self, "reward_function", None)
+        reward_name = getattr(getattr(self, "config", None), "training", None)
+        reward_name = getattr(reward_name, "reward_function", "<unset>")
+        self._reward_debug = validate_reward_audit(
+            reward_fn,
+            reward_name=reward_name,
+            returned_reward=None,
+        )
+        self._reward_episode_sums = {key: 0.0 for key in REWARD_EPISODE_AUDIT_KEYS}
+
+
+    def _update_reward_audit_state(self, reward):
+        reward_name = getattr(getattr(self, "config", None), "training", None)
+        reward_name = getattr(reward_name, "reward_function", "<unset>")
+        reward_debug = validate_reward_audit(
+            self.reward_function,
+            reward_name=reward_name,
+            returned_reward=reward,
+        )
+        self._reward_debug = reward_debug
+
+        sums = getattr(self, "_reward_episode_sums", None)
+        if not isinstance(sums, dict):
+            sums = {key: 0.0 for key in REWARD_EPISODE_AUDIT_KEYS}
+            self._reward_episode_sums = sums
+
+        def add(key, value):
+            try:
+                sums[key] = float(sums.get(key, 0.0)) + float(value)
+            except Exception:
+                sums[key] = float(sums.get(key, 0.0))
+
+        add("reward_total", reward)
+        add("reward_pnl_sum", reward_debug.get("pnl", 0.0))
+        add("reward_close_sum", reward_debug.get("close", 0.0))
+        add("reward_atr_close_sum", reward_debug.get("r_atr_close", 0.0))
+        add("reward_dd_sum", reward_debug.get("dd", 0.0))
+        add("reward_eod_sum", reward_debug.get("eod", 0.0))
+        add("reward_invalid_sum", reward_debug.get("invalid_total", 0.0))
+
+        try:
+            initial = number_to_float(self.config.trading.initial_balance)
+            equity = number_to_float(self._calculate_equity())
+            sums["actual_net_pnl"] = float(equity - initial)
+            sums["final_equity"] = float(equity)
+        except Exception:
+            pass
+        try:
+            metrics = self.metrics.get_metrics()
+            sums["max_floating_drawdown"] = float(
+                number_to_float(metrics.get("max_drawdown", 0.0)))
+            sums["trade_count"] = float(number_to_float(metrics.get("total_trades", 0.0)))
+        except Exception:
+            pass
+
+
     def _get_info(self):
         """
         Retrieve information about the current state.
@@ -2002,6 +2066,28 @@ class CustomTradingEnv(gym.Env):
         }
         for key, value in diagnostics.items():
             info[f'log/env/{key}'] = np.asarray(value, dtype=np.float32).reshape(())
+        reward_debug = getattr(self, "_reward_debug", None)
+        if isinstance(reward_debug, dict):
+            for key in REWARD_DEBUG_KEYS:
+                value = reward_debug.get(key, 0.0)
+                if isinstance(value, (bool, np.bool_)):
+                    vv = float(value)
+                else:
+                    try:
+                        vv = number_to_float(value)
+                    except Exception:
+                        continue
+                info[f'log/env/reward/{key}'] = np.asarray(vv, dtype=np.float32).reshape(())
+        episode_sums = getattr(self, "_reward_episode_sums", None)
+        if isinstance(episode_sums, dict):
+            emit_episode = bool(self.terminated or self.truncated)
+            for key in REWARD_EPISODE_AUDIT_KEYS:
+                value = episode_sums.get(key, 0.0) if emit_episode else 0.0
+                try:
+                    vv = number_to_float(value)
+                except Exception:
+                    vv = 0.0
+                info[f'log/env/reward_episode/{key}'] = np.asarray(vv, dtype=np.float32).reshape(())
         return info
 
     def _calculate_equity(self) -> Decimal:

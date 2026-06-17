@@ -9,13 +9,14 @@ import numpy as np
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money
 
 from gym_trading_env.utils.trade_util import calc_unrealized_pnl
+from gym_trading_env.rewards.reward_audit import RewardAuditMixin
 
 from math import tanh
 from gym_trading_env.utils.decimal_util import D, D0, decimal_to_float
 from decimal import Decimal
 
 
-class EquityDeltaReward:
+class EquityDeltaReward(RewardAuditMixin):
     """
     复式记账版：
     equity = user_cash + user_margin + unrealized_pnl(投影)
@@ -31,6 +32,7 @@ class EquityDeltaReward:
         self.include_unrealized = include_unrealized
         self.eps = eps
         self.previous_equity = None
+        self._set_reward_debug(self.default_reward_debug())
 
     def _equity(self) -> Decimal:
         b = self.env.ledger.balances()  # Dict[str, Decimal]
@@ -49,6 +51,13 @@ class EquityDeltaReward:
 
         if self.previous_equity is None:
             self.previous_equity = equity
+            debug = self.default_reward_debug()
+            debug.update({
+                "mtm_equity": decimal_to_float(equity),
+                "prev_mtm_equity": decimal_to_float(equity),
+                "scale_cash": decimal_to_float(max(abs(equity), self.eps)),
+            })
+            self._set_reward_debug(debug)
             return 0.0
 
         delta = equity - self.previous_equity
@@ -59,19 +68,42 @@ class EquityDeltaReward:
         else:
             reward = delta
 
+        reward_f = float(decimal_to_float(reward, precision=self.precision))
+        debug = self.default_reward_debug()
+        debug.update({
+            "pnl": reward_f,
+            "mtm_equity": decimal_to_float(equity),
+            "prev_mtm_equity": decimal_to_float(self.previous_equity),
+            "delta_equity": decimal_to_float(delta),
+            "scale_cash": decimal_to_float(max(abs(self.previous_equity), self.eps)),
+            "raw_total": reward_f,
+            "total": reward_f,
+        })
+        self._set_reward_debug(debug)
         self.previous_equity = equity
-        return float(decimal_to_float(reward, precision=self.precision))
+        return reward_f
 
 
-class CurrentBalanceReward:
+class CurrentBalanceReward(RewardAuditMixin):
     """复式记账版：返回当前现金(user_cash)"""
     def __init__(self, env, precision=2):
         self.env = env
         self.precision = precision
+        self._set_reward_debug(self.default_reward_debug())
 
     def __call__(self, obs=None):
         cash = self.env.ledger.balances().get("user_cash", Decimal("0"))
-        return float(decimal_to_float(cash, precision=self.precision))
+        reward = float(decimal_to_float(cash, precision=self.precision))
+        debug = self.default_reward_debug()
+        debug.update({
+            "pnl": reward,
+            "mtm_equity": reward,
+            "prev_mtm_equity": reward,
+            "raw_total": reward,
+            "total": reward,
+        })
+        self._set_reward_debug(debug)
+        return reward
 
 
 class CloseReward:
@@ -90,7 +122,7 @@ class CloseReward:
         reward = sign * log1p(abs(float(pnl) / float(margin)))  # log1p(abs(pnl / margin))
         return min(max(reward, self.min_reward), self.max_reward)
 
-class FastCarRacingReward:
+class FastCarRacingReward(RewardAuditMixin):
     def __init__(self, env, config=None):
         self.env = env
         self.lower_limit = -2.0
@@ -109,11 +141,16 @@ class FastCarRacingReward:
             EventReward(env, repeated=self.config['event']['repeated'], max_profit_reward=self.config['event']['max_profit_reward'], max_loss_penalty=self.config['event']['max_loss_penalty']),
             TerminationReward(env, self.config['termination']['limit']),
         ]
+        self._set_reward_debug(self.default_reward_debug())
 
     def __call__(self, obs=None):
         reward = sum([fn(obs) for fn in self.rewards])
         self.env.last_close_position = None
-        return max(self.lower_limit, min(self.upper_limit, reward))
+        reward = max(self.lower_limit, min(self.upper_limit, reward))
+        debug = self.default_reward_debug()
+        debug.update({"raw_total": reward, "total": reward})
+        self._set_reward_debug(debug)
+        return reward
 
 
 
@@ -184,7 +221,7 @@ class TerminationReward:
     
 
 
-class NoviceModeReward:
+class NoviceModeReward(RewardAuditMixin):
     def __init__(self, env):
         self.env = env
         self.lower_limit = -0.5
@@ -198,6 +235,7 @@ class NoviceModeReward:
             NoviceModeInactionPenalty(env),
         ]
         self.episode_trades = 0
+        self._set_reward_debug(self.default_reward_debug())
 
     def __call__(self, obs=None):
         self.step_count += 1
@@ -209,7 +247,11 @@ class NoviceModeReward:
                 reward += 0.2
             self.episode_trades = 0
         self.env.last_close_position = None
-        return max(self.lower_limit, min(self.upper_limit, reward))
+        reward = max(self.lower_limit, min(self.upper_limit, reward))
+        debug = self.default_reward_debug()
+        debug.update({"raw_total": reward, "total": reward})
+        self._set_reward_debug(debug)
+        return reward
 
 class NoviceModeActionReward:
     def __init__(self, env):
@@ -318,7 +360,7 @@ class NoviceModeInactionPenalty:
             self.empty_steps = 0
         return 0.0
             
-class FuturesIntradayReward:
+class FuturesIntradayReward(RewardAuditMixin):
     """
     期货日内奖励（推荐 baseline）：
     - 主项：Δequity（含未实现打折）/ R_cash 归一化
@@ -380,6 +422,9 @@ class FuturesIntradayReward:
         self.w_atr_close = float(getattr(self.env.config.trading, "w_atr_close", 0.10))
         if self.atr_takeprofit_ratio < 0:
             self.atr_takeprofit_ratio = 0.0
+        debug = self.default_reward_debug()
+        debug["alpha_unrealized"] = float(self.alpha_unrealized)
+        self._set_reward_debug(debug)
 
     def reset(self):
         self.prev_eq = None
@@ -488,11 +533,19 @@ class FuturesIntradayReward:
                 "pnl": 0.0, "fee": 0.0, "dd": 0.0, "eod": 0.0,
                 "close": 0.0, "sl": 0.0, "mkt_closed": 0.0,
                 "invalid_time": 0.0, "invalid_streak": 0.0, "invalid_total": 0.0,
+                "invalid_streak_len": 0,
+                "invalid_action_debug": 0.0,
                 "total": 0.0,
                 "alpha_unrealized": float(self.alpha_unrealized),
                 "r_atr_close": 0.0,
+                "mtm_equity": decimal_to_float(eq),
+                "prev_mtm_equity": decimal_to_float(eq),
+                "delta_equity": 0.0,
+                "scale_cash": decimal_to_float(self._R_cash()),
+                "fee_cash_debug": 0.0,
+                "raw_total": 0.0,
             }
-            self.env._reward_debug = self._reward_debug
+            self._set_reward_debug(self._reward_debug)
             return 0.0
 
         scale = self._R_cash()
@@ -632,11 +685,18 @@ class FuturesIntradayReward:
             "invalid_streak": float(r_invalid_streak),
             "invalid_total": float(r_invalid),
             "invalid_streak_len": int(self.invalid_streak),
+            "invalid_action_debug": float(1.0 if invalid else 0.0),
             "alpha_unrealized": float(self.alpha_unrealized),
             "r_atr_close": float(r_atr_close),
+            "mtm_equity": float(decimal_to_float(eq)),
+            "prev_mtm_equity": float(decimal_to_float(self.prev_eq)),
+            "delta_equity": float(decimal_to_float(dE)),
+            "scale_cash": float(decimal_to_float(scale)),
+            "fee_cash_debug": float(decimal_to_float(fee)),
             "raw_total": float(raw_total),
             "total": float(total),
         }
+        self._set_reward_debug(self.env._reward_debug)
 
         self.prev_eq = eq
         self.prev_dd_cash = dd_cash

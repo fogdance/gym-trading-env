@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "env_scripted": {
+    "scripted_steps": 180,
+    "scripted_trades": 3,
+    "reset_reward_key_count": 21,
+    "mandatory_reward_keys_present_on_reset": true,
+    "missing_reset_reward_keys": [],
+    "disabled_component_zero_on_reset": {
+      "close": true,
+      "r_atr_close": true,
+      "dd": true,
+      "eod": true,
+      "invalid_total": true
+    }
+  },
+  "dreamer_metrics": {
+    "logdir": "/tmp/reward-logging-dreamer-smoke-20260617-155822",
+    "returncode": 0,
+    "metrics_rows": 77,
+    "stdout_tail": "/avail/prior_fnr 0.65 / train/avail/prior_fpr 0.36 / train/avail/ready 0 / train/loss/agent_state 12.51 / train/loss/avail_post 2.26 / train/loss/avail_prior 2.2 / train/loss/con 0.56 / train/loss/dyn 1 / train/loss/market_seq 716 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 48.23 / fps/train 385.83\n\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/metrics.jsonl\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/scores.jsonl\n\n--------------------[Agent Step 740]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 1.34 / train/avail/img_fallback_rate 0.33 / train/avail/post_accuracy 0.64 / train/avail/post_cardinality 0.96 / train/avail/post_exact_accuracy 0.25 / train/avail/post_fnr 0.56 / train/avail/post_fpr 0.26 / train/avail/prior_accuracy 0.56 / train/avail/prior_cardinality 0.86 / train/avail/prior_exact_accuracy 0.16 / train/avail/prior_fnr 0.73 / train/avail/prior_fpr 0.29 / train/avail/ready 0 / train/loss/agent_state 12.47 / train/loss/avail_post 2.09 / train/loss/avail_prior 2.23 / train/loss/con 0.53 / train/loss/dyn 1 / train/loss/market_seq 731.18 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 55.7 / fps/train 445.56\n\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/metrics.jsonl\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/scores.jsonl\n\n--------------------[Agent Step 750]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 1.33 / train/avail/img_fallback_rate 0.34 / train/avail/post_accuracy 0.56 / train/avail/post_cardinality 1 / train/avail/post_exact_accuracy 0.2 / train/avail/post_fnr 0.66 / train/avail/post_fpr 0.33 / train/avail/prior_accuracy 0.57 / train/avail/prior_cardinality 1.08 / train/avail/prior_exact_accuracy 0.14 / train/avail/prior_fnr 0.61 / train/avail/prior_fpr 0.34 / train/avail/ready 0 / train/loss/agent_state 11.58 / train/loss/avail_post 2.2 / train/loss/avail_prior 2.13 / train/loss/con 0.52 / train/loss/dyn 1 / train/loss/market_seq 730.08 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 46.9 / fps/train 375.21\n\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/scores.jsonl\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/metrics.jsonl\n\n--------------------[Agent Step 760]--------------------\nMetrics filtered by: 'score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/'\ntrain/avail/img_action_invalid_rate 0 / train/avail/img_cardinality 1.31 / train/avail/img_fallback_rate 0.37 / train/avail/post_accuracy 0.55 / train/avail/post_cardinality 1.04 / train/avail/post_exact_accuracy 0.23 / train/avail/post_fnr 0.65 / train/avail/post_fpr 0.34 / train/avail/prior_accuracy 0.56 / train/avail/prior_cardinality 1.06 / train/avail/prior_exact_accuracy 0.11 / train/avail/prior_fnr 0.62 / train/avail/prior_fpr 0.34 / train/avail/ready 0 / train/loss/agent_state 11.89 / train/loss/avail_post 2.17 / train/loss/avail_prior 2.16 / train/loss/con 0.52 / train/loss/dyn 1 / train/loss/market_seq 702.85 / train/loss/policy 0 / train/loss/rep 1 / train/loss/repval 0 / train/loss/rew 1.61 / train/loss/value 0 / replay/replay_ratio 8.8 / fps/policy 45.88 / fps/train 367.03\n\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/scores.jsonl\nWriting metrics: /tmp/reward-logging-dreamer-smoke-20260617-155822/metrics.jsonl\n",
+    "mandatory_metric_keys_present": true,
+    "missing_mandatory_metric_keys": [],
+    "episode_metric_keys_present": true,
+    "missing_episode_metric_keys": []
+  }
+}
