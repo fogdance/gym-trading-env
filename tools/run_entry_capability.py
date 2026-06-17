@@ -26,6 +26,17 @@ def main() -> None:
         action="store_true",
         help="Build candidates/features/outcomes/split/manifest and stop before baselines/models.",
     )
+    parser.add_argument(
+        "--resume",
+        action="store_true",
+        help="Reuse existing dataset artifacts if config/data hashes match.",
+    )
+    parser.add_argument(
+        "--force-stage",
+        choices=("none", "dataset", "models", "all"),
+        default="none",
+        help="Force rebuilding a pipeline stage. 'models' reuses dataset and reruns downstream stages.",
+    )
     parser.add_argument("--skip-sensitivity", action="store_true")
     args = parser.parse_args()
 
@@ -34,6 +45,8 @@ def main() -> None:
         output=args.output,
         dataset_only=bool(args.dataset_only),
         skip_sensitivity=bool(args.skip_sensitivity),
+        resume=bool(args.resume),
+        force_stage=str(args.force_stage),
     )
     print(json.dumps(result, ensure_ascii=False, indent=2, default=json_default))
 

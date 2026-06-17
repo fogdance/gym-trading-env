@@ -30,7 +30,7 @@ from gym_trading_env.research.entry_analysis import (
     strategy_metrics,
     summarize_random_runs,
 )
-from gym_trading_env.research.entry_dataset import outcomes_from_candidates, write_parquet
+from gym_trading_env.research.entry_dataset import outcomes_from_candidates, read_parquet, write_parquet
 from gym_trading_env.research.entry_evaluator import (
     build_entry_dataset,
     build_flattened_entry_features,
@@ -40,6 +40,10 @@ from gym_trading_env.research.entry_evaluator import (
 
 
 StageLogger = Callable[[str], None]
+
+
+class PipelineArtifactError(RuntimeError):
+    pass
 
 
 @dataclass
@@ -103,6 +107,17 @@ def write_npz_atomic(path: str | Path, **arrays) -> None:
     os.replace(tmp, path)
 
 
+def read_table_artifact(output: str | Path, stem: str) -> pd.DataFrame:
+    out = Path(output)
+    parquet = out / f"{stem}.parquet"
+    csv = out / f"{stem}.csv"
+    if parquet.exists():
+        return read_parquet(parquet)
+    if csv.exists():
+        return pd.read_csv(csv)
+    raise PipelineArtifactError(f"Missing {stem} artifact in {out}")
+
+
 def file_hash(path: str | Path) -> str:
     h = hashlib.sha256()
     with Path(path).open("rb") as f:
@@ -136,6 +151,35 @@ def write_pipeline_status(
     if extra:
         payload.update(extra)
     write_json_atomic(Path(output) / "pipeline_status.json", payload)
+
+
+def _read_json(path: str | Path) -> dict:
+    return json.loads(Path(path).read_text())
+
+
+def _validate_manifest_identity(manifest: dict, config_path: Path, config) -> None:
+    expected_config = file_hash(config_path)
+    expected_data = file_hash(Path(config.data.path))
+    if manifest.get("config_sha256") != expected_config:
+        raise PipelineArtifactError(
+            "Existing entry dataset config hash mismatch; rebuild with --force-stage dataset.")
+    if manifest.get("data_sha256") != expected_data:
+        raise PipelineArtifactError(
+            "Existing entry dataset raw data hash mismatch; rebuild with --force-stage dataset.")
+
+
+def _has_dataset_artifacts(output: str | Path) -> bool:
+    out = Path(output)
+    has_candidates = (out / "candidates.parquet").exists() or (out / "candidates.csv").exists()
+    has_outcomes = (out / "outcomes.parquet").exists() or (out / "outcomes.csv").exists()
+    return all([
+        (out / "manifest.json").exists(),
+        (out / "features.npz").exists(),
+        (out / "flat_features.npz").exists(),
+        (out / "split_manifest.json").exists(),
+        has_candidates,
+        has_outcomes,
+    ])
 
 
 def _build_dataset_manifest(
@@ -225,6 +269,63 @@ def build_dataset_stage(
         last_completed_stage="dataset_ready",
         extra={
             "manifest_stage": "dataset_ready",
+            "candidates": int(len(candidates)),
+            "outcomes": int(len(outcomes)),
+        },
+    )
+    return stage
+
+
+def load_dataset_stage(
+    config_path: str | Path,
+    output: str | Path,
+    *,
+    emit: StageLogger = stage_log,
+) -> DatasetStage:
+    config_path = Path(config_path)
+    output = Path(output)
+    manifest_path = output / "manifest.json"
+    if not manifest_path.exists():
+        raise PipelineArtifactError(f"Missing manifest.json in {output}")
+
+    write_pipeline_status(output, stage="load_dataset_artifacts", state="running")
+    emit(f"loading dataset artifacts from {output}")
+    config = load_entry_eval_config(config_path)
+    _, market = load_market_frames(config)
+    manifest = _read_json(manifest_path)
+    _validate_manifest_identity(manifest, config_path, config)
+
+    candidates = read_table_artifact(output, "candidates")
+    outcomes = read_table_artifact(output, "outcomes")
+    features_npz = np.load(output / "features.npz", allow_pickle=True)
+    flat_npz = np.load(output / "flat_features.npz", allow_pickle=True)
+    features = features_npz["X"]
+    feature_names = [str(x) for x in features_npz["feature_names"].tolist()]
+    flat_features = flat_npz["X"]
+    flat_feature_names = [str(x) for x in flat_npz["feature_names"].tolist()]
+    folds = json.loads((output / "split_manifest.json").read_text())
+
+    stage = DatasetStage(
+        config_path=config_path,
+        output=output,
+        config=config,
+        market=market,
+        candidates=candidates,
+        features=features,
+        feature_names=feature_names,
+        flat_features=flat_features,
+        flat_feature_names=flat_feature_names,
+        outcomes=outcomes,
+        folds=folds,
+        manifest=manifest,
+    )
+    write_pipeline_status(
+        output,
+        stage="load_dataset_artifacts",
+        state="completed",
+        last_completed_stage="dataset_ready",
+        extra={
+            "manifest_stage": manifest.get("manifest_stage"),
             "candidates": int(len(candidates)),
             "outcomes": int(len(outcomes)),
         },
@@ -790,13 +891,27 @@ def run_entry_capability_pipeline(
     output: str | Path,
     dataset_only: bool = False,
     skip_sensitivity: bool = False,
+    resume: bool = False,
+    force_stage: str = "none",
     emit: StageLogger = stage_log,
 ) -> dict:
-    stage = build_dataset_stage(config_path, output, emit=emit)
+    force_stage = str(force_stage)
+    if force_stage not in {"none", "dataset", "models", "all"}:
+        raise ValueError(f"Unsupported force_stage: {force_stage}")
+
+    if force_stage in {"dataset", "all"}:
+        stage = build_dataset_stage(config_path, output, emit=emit)
+    elif resume or force_stage == "models":
+        if _has_dataset_artifacts(output):
+            stage = load_dataset_stage(config_path, output, emit=emit)
+        else:
+            stage = build_dataset_stage(config_path, output, emit=emit)
+    else:
+        stage = build_dataset_stage(config_path, output, emit=emit)
     if dataset_only:
         result = {
             "output": str(stage.output),
-            "manifest_stage": "dataset_ready",
+            "manifest_stage": str(stage.manifest.get("manifest_stage", "dataset_ready")),
             "candidates": int(len(stage.candidates)),
             "outcomes": int(len(stage.outcomes)),
             "feature_count": int(stage.features.shape[1]),

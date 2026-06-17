@@ -68,48 +68,60 @@ def simulate_strategy(
     *,
     max_entries_per_day: int,
 ) -> pd.DataFrame:
-    work = candidates.copy()
-    work["action"] = np.asarray(list(actions), dtype=object)
-    work["score"] = np.asarray(list(scores), dtype=float)
-    work = work.sort_values(["decision_row", "candidate_id"]).reset_index(drop=True)
+    actions_arr = np.asarray(list(actions), dtype=object)
+    scores_arr = np.asarray(list(scores), dtype=float)
+    if len(actions_arr) != len(candidates) or len(scores_arr) != len(candidates):
+        raise ValueError("actions and scores must match candidates length")
+
+    decision_rows = candidates["decision_row"].to_numpy()
+    candidate_ids = candidates["candidate_id"].to_numpy()
+    order = np.lexsort((candidate_ids, decision_rows))
+    columns = {name: candidates[name].to_numpy() for name in candidates.columns}
+
+    def value(name: str, pos: int, default=None):
+        arr = columns.get(name)
+        if arr is None:
+            return default
+        return arr[pos]
 
     trades = []
     active_exit_row = -1
     day_entries: dict[int, int] = {}
-    for row in work.itertuples(index=False):
-        action = str(row.action)
+    for pos in order:
+        pos = int(pos)
+        action = str(actions_arr[pos])
         if action == "FLAT":
             continue
-        if int(row.decision_row) <= active_exit_row:
+        if int(value("decision_row", pos)) <= active_exit_row:
             continue
-        day = int(row.trading_day)
+        day = int(value("trading_day", pos))
         if day_entries.get(day, 0) >= int(max_entries_per_day):
             continue
 
         prefix = action.lower()
-        exit_row = int(getattr(row, f"{prefix}_exit_row"))
+        exit_row = int(value(f"{prefix}_exit_row", pos))
         trade = {
-            "candidate_id": int(row.candidate_id),
-            "contract": getattr(row, "contract", None),
-            "month": getattr(row, "month", None),
-            "session_phase": getattr(row, "session_phase", None),
+            "candidate_id": int(value("candidate_id", pos)),
+            "contract": value("contract", pos),
+            "month": value("month", pos),
+            "session_phase": value("session_phase", pos),
             "trading_day": day,
-            "decision_row": int(row.decision_row),
-            "decision_timestamp": row.decision_timestamp,
+            "decision_row": int(value("decision_row", pos)),
+            "decision_timestamp": value("decision_timestamp", pos),
             "direction": action,
-            "score": float(row.score),
-            "entry_row": int(getattr(row, f"{prefix}_entry_row")),
-            "entry_timestamp": getattr(row, f"{prefix}_entry_timestamp"),
+            "score": float(scores_arr[pos]),
+            "entry_row": int(value(f"{prefix}_entry_row", pos)),
+            "entry_timestamp": value(f"{prefix}_entry_timestamp", pos),
             "exit_row": exit_row,
-            "exit_timestamp": getattr(row, f"{prefix}_exit_timestamp"),
-            "exit_reason": getattr(row, f"{prefix}_exit_reason"),
-            "holding_bars": int(getattr(row, f"{prefix}_holding_bars")),
-            "gross_pnl": float(getattr(row, f"{prefix}_gross_pnl")),
-            "spread_cost": float(getattr(row, f"{prefix}_spread_cost")),
-            "fee_cost": float(getattr(row, f"{prefix}_fee_cost")),
-            "net_pnl": float(getattr(row, f"{prefix}_net_pnl")),
-            "mfe_gross": float(getattr(row, f"{prefix}_mfe_gross")),
-            "mae_gross": float(getattr(row, f"{prefix}_mae_gross")),
+            "exit_timestamp": value(f"{prefix}_exit_timestamp", pos),
+            "exit_reason": value(f"{prefix}_exit_reason", pos),
+            "holding_bars": int(value(f"{prefix}_holding_bars", pos)),
+            "gross_pnl": float(value(f"{prefix}_gross_pnl", pos)),
+            "spread_cost": float(value(f"{prefix}_spread_cost", pos)),
+            "fee_cost": float(value(f"{prefix}_fee_cost", pos)),
+            "net_pnl": float(value(f"{prefix}_net_pnl", pos)),
+            "mfe_gross": float(value(f"{prefix}_mfe_gross", pos)),
+            "mae_gross": float(value(f"{prefix}_mae_gross", pos)),
         }
         trades.append(trade)
         active_exit_row = exit_row
@@ -378,12 +390,17 @@ def matched_random_strategies(
     seed: int,
 ) -> list[pd.DataFrame]:
     target_by_day = target_trades.groupby("trading_day").size().to_dict()
+    day_values = candidates["trading_day"].to_numpy()
+    day_rows_by_day = {
+        day: candidates.iloc[np.flatnonzero(day_values == day)].copy().reset_index(drop=True)
+        for day in target_by_day
+    }
     out = []
     for run in range(int(runs)):
         rng = np.random.default_rng(int(seed) + run)
         parts = []
         for day, target in target_by_day.items():
-            day_rows = candidates[candidates["trading_day"] == day].copy().reset_index(drop=True)
+            day_rows = day_rows_by_day[day]
             if day_rows.empty:
                 continue
             target = min(int(target), int(max_entries_per_day))
