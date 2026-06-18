@@ -1,7 +1,9 @@
-version: entry_eval_jm_walk_forward_20240603_20251202_signal_close_v1
+# Template only. tools/build_walk_forward_split.py owns the concrete version,
+# data.path, and walk_forward.split_manifest_path fields.
+version: TEMPLATE_SET_BY_BUILD_WALK_FORWARD_SPLIT
 
 data:
-  path: /home/v/Documents/work/dreamerv3/data/18M_DCE_JM2601_1m.csv
+  path: TEMPLATE_RAW_CSV_PATH_SET_BY_BUILD_WALK_FORWARD_SPLIT
   timezone: Asia/Shanghai
   product: DCE.JM
   contract: JM2601_WALK_FORWARD_20240603_20251202

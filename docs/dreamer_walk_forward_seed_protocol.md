@@ -114,19 +114,21 @@ seed_a:
 
 ```bash
 cd /home/v/Documents/work/dreamerv3
+CONTRACT_ROOT=/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202
 
 /home/v/miniconda3/envs/dreamerv3/bin/python dreamerv3/main.py \
   --configs action_mask_formal \
   --logdir /data/logdir/action-mask-wf1-ms-seed-a-20260615 \
-  --env.gymnasium.config_path /home/v/Documents/work/gym-trading-env/configs/env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml \
+  --env.gymnasium.config_path "$CONTRACT_ROOT/configs/env/jm_walk_forward_20240603_20251202_train.yaml" \
   --experiment_seed 101 \
   --dreamer.seed 101 \
   --env.train_seed 101101 \
   --env.eval_seed 0 \
   --replay.seed 101202 \
   --audit.matched_random_seed 20260615 \
-  --audit.entry_eval_version entry_eval_jm_walk_forward_20240603_20251202_signal_close_v1 \
-  --audit.split_manifest_hash eb0f7073d35afd4b76f73eddcbf11cf24539287f502ec7e83726d48343ff598e \
+  --audit.entry_eval_version jm_walk_forward_20240603_20251202 \
+  --audit.entry_eval_config "$CONTRACT_ROOT/configs/entry_eval/jm_walk_forward_20240603_20251202_signal_close.yaml" \
+  --audit.split_manifest_hash 9de809fa1aae612a4aeef453110dee10d7d4fb8f8e1c49c2c9474ddffec388ee \
   --audit.execution_timing signal_on_close_plus_spread
 ```
 
@@ -155,13 +157,15 @@ seed_c:
 checkpoint audit 只接受 matched-random 专用 seed：
 
 ```bash
+CONTRACT_ROOT=/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202
+
 /home/v/miniconda3/envs/dreamerv3/bin/python tools/dreamer_checkpoint_audit.py \
   --dreamer-root /home/v/Documents/work/dreamerv3 \
   --run-logdir /data/logdir/action-mask-wf1-ms-seed-a-20260615 \
   --checkpoint /data/logdir/action-mask-wf1-ms-seed-a-20260615/ckpt_retained/step_000000900000 \
-  --entry-eval-dir artifacts/entry_eval/entry_eval_jm_walk_forward_20240603_20251202_signal_close_v1 \
-  --env-config-path configs/env_trading_stage1_jm_walk_forward_full_20240603_20251202.yaml \
-  --output-dir artifacts/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_a_900k_validation_signal_close \
+  --entry-eval-dir "$CONTRACT_ROOT/artifacts/entry_eval/jm_walk_forward_20240603_20251202" \
+  --env-config-path "$CONTRACT_ROOT/configs/env/jm_walk_forward_20240603_20251202_full.yaml" \
+  --output-dir /data/logdir/audits/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_a_900k_validation_signal_close \
   --collect \
   --collect-mode per_day \
   --roles validation \
@@ -179,10 +183,10 @@ checkpoint audit 只接受 matched-random 专用 seed：
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python tools/report_dreamer_multiseed_repeatability.py \
   --experiment-name action-mask-wf1-multiseed-20260615 \
-  --output-dir artifacts/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615 \
-  --seed-report seed_a=artifacts/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_a_selected_test_signal_close/summary.json \
-  --seed-report seed_b=artifacts/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_b_selected_test_signal_close/summary.json \
-  --seed-report seed_c=artifacts/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_c_selected_test_signal_close/summary.json
+  --output-dir /data/logdir/audits/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615 \
+  --seed-report seed_a=/data/logdir/audits/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_a_selected_test_signal_close/summary.json \
+  --seed-report seed_b=/data/logdir/audits/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_b_selected_test_signal_close/summary.json \
+  --seed-report seed_c=/data/logdir/audits/dreamer_walk_forward_multiseed/action-mask-wf1-multiseed-20260615/seed_c_selected_test_signal_close/summary.json
 ```
 
 输出：

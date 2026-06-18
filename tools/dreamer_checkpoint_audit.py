@@ -1575,8 +1575,8 @@ def main(argv=None) -> int:
     parser.add_argument("--dreamer-root", default="/home/v/Documents/work/dreamerv3")
     parser.add_argument("--run-logdir", default="/data/logdir/action-mask-formal-202606131200")
     parser.add_argument("--checkpoint", default="/data/logdir/action-mask-formal-202606131200/ckpt/latest")
-    parser.add_argument("--entry-eval-dir", default="artifacts/entry_eval/entry_eval_jm_v1")
-    parser.add_argument("--output-dir", default="artifacts/dreamer_checkpoint_audit/action-mask-formal-202606131200_latest")
+    parser.add_argument("--entry-eval-dir", required=True)
+    parser.add_argument("--output-dir", required=True)
     parser.add_argument(
         "--env-config-path",
         default=None,

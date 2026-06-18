@@ -14,7 +14,13 @@ pytestmark = pytest.mark.unit
 
 ROOT = Path(__file__).resolve().parents[2]
 DREAMER_ROOT = Path("/home/v/Documents/work/dreamerv3")
-BASE_CONFIG = ROOT / "configs" / "env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml"
+BASE_CONFIG = Path(
+    os.environ.get(
+        "GYM_TRADING_TEST_ENV_CONFIG",
+        "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+        "configs/env/jm_walk_forward_20240603_20251202_train.yaml",
+    )
+)
 
 
 V1_DISABLED = [
@@ -58,6 +64,8 @@ V2_EXTRA_KEYS = [
 
 
 def _config_with_reward(tmp_path, reward_name):
+    if not BASE_CONFIG.exists():
+        pytest.skip(f"external test env config is unavailable: {BASE_CONFIG}")
     data = yaml.safe_load(BASE_CONFIG.read_text())
     data["training"]["reward_function"] = reward_name
     data["training"]["randomize_start"] = False

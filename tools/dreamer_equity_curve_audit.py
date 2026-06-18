@@ -749,15 +749,15 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--attribution-dir",
-        default="artifacts/dreamer_checkpoint_audit/action-mask-formal-202606122100_latest_perday_signal_close",
+        required=True,
     )
     parser.add_argument(
         "--entry-eval-config",
-        default="configs/entry_eval_jm_dreamer6m_2024_signal_close_v1.yaml",
+        required=True,
     )
     parser.add_argument(
         "--output-dir",
-        default="artifacts/dreamer_equity_curve_audit/action-mask-formal-202606122100_latest_perday_signal_close",
+        required=True,
     )
     parser.add_argument("--meaningful-adverse-ticks", type=float, default=5.0)
     args = parser.parse_args(argv)

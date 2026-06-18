@@ -17,11 +17,19 @@ pytestmark = pytest.mark.unit
 
 ROOT = Path(__file__).resolve().parents[2]
 DREAMER_ROOT = Path("/home/v/Documents/work/dreamerv3")
-CONFIG = ROOT / "configs" / "env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml"
+CONFIG = Path(
+    os.environ.get(
+        "GYM_TRADING_TEST_ENV_CONFIG",
+        "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+        "configs/env/jm_walk_forward_20240603_20251202_train.yaml",
+    )
+)
 
 
 @pytest.fixture
 def reward_env():
+    if not CONFIG.exists():
+        pytest.skip(f"external test env config is unavailable: {CONFIG}")
     previous_cwd = Path.cwd()
     env = None
     try:

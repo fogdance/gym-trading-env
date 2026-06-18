@@ -23,16 +23,18 @@ from gym_trading_env.research.entry_evaluator import (
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CONFIG_PATH = REPO_ROOT / "configs/entry_eval_jm_dreamer6m_2024_signal_close_v1.yaml"
-ENV_CONFIG = Path("/home/v/Documents/work/dreamerv3/data/trading_stage1.yaml")
+CONTRACT_ROOT = Path(os.environ.get(
+    "GYM_TRADING_TEST_CONTRACT_ROOT",
+    "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202",
+))
+CONFIG_PATH = CONTRACT_ROOT / "configs/entry_eval/jm_walk_forward_20240603_20251202_signal_close.yaml"
+ENV_CONFIG = CONTRACT_ROOT / "configs/env/jm_walk_forward_20240603_20251202_full.yaml"
 DREAMER_ROOT = Path("/home/v/Documents/work/dreamerv3")
 
 
 def _require_data():
     if not CONFIG_PATH.exists() or not ENV_CONFIG.exists():
-        pytest.skip("Dreamer JM signal-on-close parity data is unavailable")
-    if not (DREAMER_ROOT / "data/6M_DCE_JM2601_1m.csv").exists():
-        pytest.skip("Dreamer 6M JM data is unavailable")
+        pytest.skip(f"external JM signal-on-close contract is unavailable: {CONTRACT_ROOT}")
 
 
 def _reset_to_row(env: CustomTradingEnv, row: int):

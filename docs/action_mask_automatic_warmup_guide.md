@@ -132,7 +132,7 @@ action_mask_formal:
     train_ratio: 64
     envs: 16
     report_every: 300
-  env.gymnasium.config_path: data/trading_stage1.yaml
+  env.gymnasium.config_path: /data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/configs/env/jm_walk_forward_20240603_20251202_train.yaml
   action_mask_warmup.enabled: True
   agent.avail_actor_enabled: False
 ```

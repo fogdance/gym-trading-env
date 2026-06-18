@@ -822,7 +822,7 @@ reward、world model 和 actor 训练，不继续添加更多指标掩盖问题�
 建议新增：
 
 ```text
-configs/entry_eval_jm_v1.yaml
+/data/logdir/trading_contracts/<contract>/configs/entry_eval/<contract>_signal_close.yaml
 src/gym_trading_env/research/entry_outcome.py
 src/gym_trading_env/research/entry_evaluator.py
 src/gym_trading_env/research/entry_dataset.py
@@ -841,7 +841,7 @@ tests/integration/test_entry_evaluator_env_parity.py
 输出目录结构：
 
 ```text
-artifacts/entry_eval/<dataset_version>/
+/data/logdir/trading_contracts/<contract>/artifacts/entry_eval/<contract>/
   manifest.json
   config.yaml
   split_manifest.json
@@ -988,12 +988,20 @@ ATR 或其他新 observation
 智能退出或 Position Manager
 ```
 
+Phase 4 后，正式实现入口不再使用仓库内 `configs/entry_eval_*.yaml`
+和仓库内 `artifacts/entry_eval/*`。必须先生成或复用外部 experiment
+contract，例如：
+
+```bash
+CONTRACT_ROOT=/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202
+```
+
 实现入口：
 
 ```bash
 /home/v/miniconda3/envs/forex/bin/python tools/report_entry_capability.py \
-  --config configs/entry_eval_jm_v1.yaml \
-  --output artifacts/entry_eval/entry_eval_jm_v1
+  --config "$CONTRACT_ROOT/configs/entry_eval/jm_walk_forward_20240603_20251202_signal_close.yaml" \
+  --output "$CONTRACT_ROOT/artifacts/entry_eval/jm_walk_forward_20240603_20251202"
 ```
 
 `forex` 环境用于运行测试和计算。该环境已安装 `xgboost`，但没有 parquet engine；
@@ -1004,12 +1012,12 @@ ATR 或其他新 observation
 
 ```bash
 /home/v/miniconda3/envs/forex/bin/python tools/build_entry_dataset.py \
-  --config configs/entry_eval_jm_v1.yaml \
-  --output artifacts/entry_eval/entry_eval_jm_v1
+  --config "$CONTRACT_ROOT/configs/entry_eval/jm_walk_forward_20240603_20251202_signal_close.yaml" \
+  --output "$CONTRACT_ROOT/artifacts/entry_eval/jm_walk_forward_20240603_20251202"
 
 /home/v/miniconda3/envs/forex/bin/python tools/train_entry_baseline.py \
-  --config configs/entry_eval_jm_v1.yaml \
-  --input artifacts/entry_eval/entry_eval_jm_v1
+  --config "$CONTRACT_ROOT/configs/entry_eval/jm_walk_forward_20240603_20251202_signal_close.yaml" \
+  --input "$CONTRACT_ROOT/artifacts/entry_eval/jm_walk_forward_20240603_20251202"
 ```
 
 主要输出：

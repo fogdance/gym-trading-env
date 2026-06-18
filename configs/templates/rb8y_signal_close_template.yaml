@@ -1,7 +1,9 @@
-version: entry_eval_rb8y_walk_forward_20171225_20251202_signal_close_v1
+# Template only. tools/build_walk_forward_split.py owns the concrete version,
+# data.path, and walk_forward.split_manifest_path fields.
+version: TEMPLATE_SET_BY_BUILD_WALK_FORWARD_SPLIT
 
 data:
-  path: /home/v/Documents/work/dreamerv3/data/8Y_SHFE_RB_1m.csv
+  path: TEMPLATE_RAW_CSV_PATH_SET_BY_BUILD_WALK_FORWARD_SPLIT
   timezone: Asia/Shanghai
   product: SHFE.RB
   contract: RB_8Y_WALK_FORWARD_20171225_20251202

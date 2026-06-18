@@ -21,11 +21,18 @@ from gym_trading_env.envs.trading_env import CustomTradingEnv
 from gym_trading_env.rewards.reward_audit import REWARD_DEBUG_KEYS
 
 
-OUT = ROOT / "artifacts" / "reward_mtm_clean_risk_tests"
+OUT = Path(os.environ.get(
+    "GYM_TRADING_REWARD_MTM_SMOKE_OUT",
+    "/data/logdir/audits/reward_mtm_clean_risk_tests",
+))
 DOC = ROOT / "docs" / "reward_mtm_clean_risk_test_report.md"
 DREAMER_ROOT = Path("/home/v/Documents/work/dreamerv3")
 DREAMER_PYTHON = Path("/home/v/miniconda3/envs/dreamerv3/bin/python")
-BASE_CONFIG = ROOT / "configs" / "env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml"
+BASE_CONFIG = Path(os.environ.get(
+    "GYM_TRADING_REWARD_SMOKE_CONFIG",
+    "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+    "configs/env/jm_walk_forward_20240603_20251202_train.yaml",
+))
 
 V1_REWARD = "futures_intraday_mtm_clean_reward_function"
 V2_REWARD = "futures_intraday_mtm_risk_reward_function"

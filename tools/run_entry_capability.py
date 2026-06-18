@@ -19,8 +19,8 @@ from gym_trading_env.research.entry_pipeline import (  # noqa: E402
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="configs/entry_eval_jm_v1.yaml")
-    parser.add_argument("--output", default="artifacts/entry_eval/entry_eval_jm_v1")
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--output", required=True)
     parser.add_argument(
         "--dataset-only",
         action="store_true",

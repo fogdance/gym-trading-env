@@ -546,7 +546,7 @@ def main(argv=None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--config-path",
-        default="/home/v/Documents/work/dreamerv3/data/trading_stage1.yaml",
+        required=True,
     )
     parser.add_argument(
         "--runtime-cwd",
@@ -558,7 +558,7 @@ def main(argv=None) -> int:
     )
     parser.add_argument(
         "--entry-eval-dir",
-        default="artifacts/entry_eval/entry_eval_jm_dreamer6m_2024_v1",
+        required=True,
     )
     parser.add_argument(
         "--output",

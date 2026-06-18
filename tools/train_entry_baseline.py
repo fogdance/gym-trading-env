@@ -13,7 +13,6 @@ for path in (ROOT, SRC):
 
 from gym_trading_env.research.entry_analysis import (
     add_diagnostic_context,
-    make_walk_forward_folds,
     run_ridge_walk_forward,
     run_xgboost_walk_forward,
 )
@@ -25,12 +24,13 @@ from gym_trading_env.research.entry_dataset import (
     json_default,
 )
 from gym_trading_env.research.entry_evaluator import load_entry_eval_config
+from gym_trading_env.research.walk_forward_split_builder import load_required_split_manifest
 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="configs/entry_eval_jm_v1.yaml")
-    parser.add_argument("--input", default="artifacts/entry_eval/entry_eval_jm_v1")
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--input", required=True)
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
@@ -40,7 +40,7 @@ def main() -> None:
     candidates, X, names = load_dataset_artifacts(args.input)
     candidates = add_diagnostic_context(candidates, X, names)
     X_flat, flat_names = load_flattened_dataset_artifacts(args.input)
-    folds = make_walk_forward_folds(candidates["trading_day"].unique())
+    folds = load_required_split_manifest(args.config)
     ridge_report, ridge_trades, ridge_predictions = run_ridge_walk_forward(
         candidates,
         X,

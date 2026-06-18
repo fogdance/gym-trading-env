@@ -206,11 +206,14 @@ agent.avail_actor_enabled = false
 
 ### 6.1 训练与评估没有真正的数据隔离
 
-`action_mask_formal` 当前默认使用：
+旧版 `action_mask_formal` 曾默认使用 Dreamer 仓库内的 `data/trading_stage1.yaml`
+作为训练 env config。该 repo-local 入口已废弃。
+
+Phase 4 后，正式 trading 运行必须显式传入外部 contract 的 train-only env
+config，例如：
 
 ```text
-script: train
-env.gymnasium.config_path: data/trading_stage1.yaml
+env.gymnasium.config_path: /data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/configs/env/jm_walk_forward_20240603_20251202_train.yaml
 ```
 
 `script: train` 只创建训练环境。虽然配置中存在 `eval_envs`，但该运行入口不会自动创建独立时间范围的评估环境。

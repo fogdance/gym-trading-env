@@ -16,8 +16,8 @@ from gym_trading_env.research.entry_dataset import build_dataset_artifacts, json
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="configs/entry_eval_jm_v1.yaml")
-    parser.add_argument("--output", default="artifacts/entry_eval/entry_eval_jm_v1")
+    parser.add_argument("--config", required=True)
+    parser.add_argument("--output", required=True)
     args = parser.parse_args()
 
     _, candidates, _, _, manifest = build_dataset_artifacts(args.config, args.output)

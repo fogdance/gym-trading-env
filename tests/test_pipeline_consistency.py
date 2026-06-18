@@ -208,7 +208,11 @@ def compare_features(df_csv: pd.DataFrame, df_juejin: pd.DataFrame, tol: float =
 
 
 if __name__ == "__main__":
-    csv_path = "/home/v/Documents/work/dreamerv3/data/8Y_DCE_JM2601_1m.csv"
+    csv_path = os.environ.get(
+        "GYM_TRADING_PIPELINE_CONSISTENCY_CSV",
+        "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+        "data/raw/jm2601_18m_1m.csv",
+    )
     
     print(f"Loading CSV: {csv_path}")
     df_raw = load_csv_data(csv_path, nrows=5000)

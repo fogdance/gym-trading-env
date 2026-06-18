@@ -22,7 +22,10 @@ from gym_trading_env.rewards.reward_audit import (
 )
 
 
-OUT = ROOT / "artifacts" / "reward_logging_smoke" / "current"
+OUT = Path(os.environ.get(
+    "GYM_TRADING_REWARD_LOGGING_SMOKE_OUT",
+    "/data/logdir/audits/reward_logging_smoke/current",
+))
 DOC = ROOT / "docs" / "reward_audit_logging_contract.md"
 DREAMER_ROOT = Path("/home/v/Documents/work/dreamerv3")
 DREAMER_PYTHON = Path("/home/v/miniconda3/envs/dreamerv3/bin/python")
@@ -74,7 +77,11 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
 
 def run_env_scripted_smoke() -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
-    config = ROOT / "configs/env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml"
+    config = Path(os.environ.get(
+        "GYM_TRADING_REWARD_SMOKE_CONFIG",
+        "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+        "configs/env/jm_walk_forward_20240603_20251202_train.yaml",
+    ))
     prev_cwd = Path.cwd()
     env = None
     rows: list[dict[str, Any]] = []
@@ -200,7 +207,11 @@ def run_dreamer_metrics_smoke() -> dict[str, Any]:
         "--run.report_every", "0",
         "--run.log_every", "-1",
         "--env.gymnasium.config_path",
-        str(ROOT / "configs/env_trading_stage1_jm_walk_forward_train_20240603_20250731.yaml"),
+        str(Path(os.environ.get(
+            "GYM_TRADING_REWARD_SMOKE_CONFIG",
+            "/data/logdir/trading_contracts/jm_walk_forward_20240603_20251202/"
+            "configs/env/jm_walk_forward_20240603_20251202_train.yaml",
+        ))),
         "--experiment_seed", "911",
         "--dreamer.seed", "911",
         "--env.train_seed", "911101",

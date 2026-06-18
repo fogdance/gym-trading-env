@@ -1,5 +1,5 @@
-# RB 8Y walk-forward training environment.
-# Training data is restricted to 2017-12-25 through 2024-12-31 15:00.
+# Template only. tools/build_walk_forward_split.py owns the concrete
+# trading.data_path field for train/full generated env configs.
 
 trading:
   currency_pair: "SHFE_RB"
@@ -12,7 +12,7 @@ trading:
   trade_lot: 1
   max_long_position: 1
   max_short_position: 1
-  data_path: "RB_8Y_WF_TRAIN_20171225_20241231"
+  data_path: "TEMPLATE_DATA_PATH_SET_BY_BUILD_WALK_FORWARD_SPLIT"
   data_interval: "1m"
   stop_loss_enabled: false
   stop_loss_mode: pct
