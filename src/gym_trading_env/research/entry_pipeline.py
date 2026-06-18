@@ -19,7 +19,6 @@ from gym_trading_env.research.entry_analysis import (
     add_diagnostic_context,
     constrained_oracle,
     fixed_direction_strategy,
-    make_walk_forward_folds,
     matched_random_strategies,
     random_action_strategies,
     run_ridge_walk_forward,
@@ -37,6 +36,7 @@ from gym_trading_env.research.entry_evaluator import (
     load_entry_eval_config,
     load_market_frames,
 )
+from gym_trading_env.research.walk_forward_split_builder import load_required_split_manifest
 
 
 StageLogger = Callable[[str], None]
@@ -234,7 +234,7 @@ def build_dataset_stage(
     candidates = add_diagnostic_context(candidates, features, feature_names)
     flat_features, flat_feature_names = build_flattened_entry_features(market, candidates, config)
     outcomes = outcomes_from_candidates(candidates)
-    folds = make_walk_forward_folds(candidates["trading_day"].unique())
+    folds = load_required_split_manifest(config_path)
 
     manifest = _build_dataset_manifest(
         config_path,

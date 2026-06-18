@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .entry_analysis import add_diagnostic_context, make_walk_forward_folds
+from .entry_analysis import add_diagnostic_context
 from .entry_evaluator import (
     EntryEvalConfig,
     build_flattened_entry_features,
@@ -22,6 +22,7 @@ from .entry_evaluator import (
     load_entry_eval_config,
     load_market_frames,
 )
+from .walk_forward_split_builder import load_required_split_manifest
 
 
 def json_default(value):
@@ -186,7 +187,7 @@ def build_dataset_artifacts(
     candidates = add_diagnostic_context(candidates, X, names)
     X_flat, flat_names = build_flattened_entry_features(market, candidates, config)
     outcomes = outcomes_from_candidates(candidates)
-    folds = make_walk_forward_folds(candidates["trading_day"].unique())
+    folds = load_required_split_manifest(config_path)
 
     shutil.copyfile(config_path, out / "config.yaml")
     write_parquet(candidates, out / "candidates.parquet")

@@ -1,6 +1,7 @@
 # src/gym_trading_env/utils/data_processing.py
 
 import os
+from pathlib import Path
 import pandas as pd
 from gym_trading_env.utils.data_downloader import ForexDataDownloader
 import logging
@@ -18,11 +19,6 @@ def load_data(symbol: str, interval: str, proxy: str = None) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame containing the K-line data.
     """
-    data_dir = 'data'
-    os.makedirs(data_dir, exist_ok=True)
-    filename = f"{symbol}_{interval}.csv"
-    filepath = os.path.join(data_dir, filename)
-
     logger = logging.getLogger(__name__)
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -30,6 +26,21 @@ def load_data(symbol: str, interval: str, proxy: str = None) -> pd.DataFrame:
     if not logger.handlers:
         logger.addHandler(handler)
     logger.setLevel(logging.INFO)
+
+    explicit_path = Path(str(symbol)).expanduser()
+    if explicit_path.suffix.lower() == ".csv" or explicit_path.exists():
+        filepath = explicit_path
+        if not filepath.is_absolute():
+            filepath = Path.cwd() / filepath
+        logger.info(f"Loading explicit data file from {filepath}, exist {filepath.exists()}")
+        if not filepath.exists():
+            raise FileNotFoundError(f"explicit data file does not exist: {filepath}")
+        return pd.read_csv(filepath, index_col=0, parse_dates=True)
+
+    data_dir = 'data'
+    os.makedirs(data_dir, exist_ok=True)
+    filename = f"{symbol}_{interval}.csv"
+    filepath = os.path.join(data_dir, filename)
 
     logger.info(f"Loading existing data from {filepath}, exist {os.path.exists(filepath)}")
     if os.path.exists(filepath):

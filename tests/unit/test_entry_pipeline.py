@@ -21,11 +21,27 @@ class FakeConfig(SimpleNamespace):
         return convert(self)
 
 
+def write_fake_entry_eval_config(config_path: Path) -> Path:
+    split_path = config_path.with_name("split_manifest.json")
+    split_path.write_text(json.dumps([{
+        "name": "fake_fold",
+        "train_days": [20250101, 20250102, 20250103],
+        "validation_days": [20250104, 20250105],
+        "test_days": [20250106, 20250107],
+    }]))
+    config_path.write_text(
+        "version: fake\n"
+        "walk_forward:\n"
+        f"  split_manifest_path: {split_path}\n"
+    )
+    return split_path
+
+
 def test_dataset_only_writes_dataset_ready_manifest_and_status(tmp_path, monkeypatch):
     config_path = tmp_path / "entry_eval.yaml"
     data_path = tmp_path / "market.csv"
     output = tmp_path / "out"
-    config_path.write_text("version: fake\n")
+    write_fake_entry_eval_config(config_path)
     data_path.write_text("timestamp,close\n")
 
     config = FakeConfig(
@@ -96,7 +112,7 @@ def test_resume_reuses_dataset_artifacts_when_hashes_match(tmp_path, monkeypatch
     config_path = tmp_path / "entry_eval.yaml"
     data_path = tmp_path / "market.csv"
     output = tmp_path / "out"
-    config_path.write_text("version: fake\n")
+    write_fake_entry_eval_config(config_path)
     data_path.write_text("timestamp,close\n")
 
     config = FakeConfig(
@@ -169,7 +185,7 @@ def test_resume_fails_fast_on_config_hash_mismatch(tmp_path, monkeypatch):
     config_path = tmp_path / "entry_eval.yaml"
     data_path = tmp_path / "market.csv"
     output = tmp_path / "out"
-    config_path.write_text("version: fake\n")
+    write_fake_entry_eval_config(config_path)
     data_path.write_text("timestamp,close\n")
 
     config = FakeConfig(
