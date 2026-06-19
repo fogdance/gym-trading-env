@@ -5,6 +5,7 @@ import pytest
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.trade_util import action_to_index
+from gym_trading_env.utils.market_features import FEATURES_RISK_CONTEXT
 
 pytestmark = pytest.mark.unit
 
@@ -70,6 +71,28 @@ def test_obs_shapes_dtypes_and_episode_len_is_one_day():
     assert agent.dtype == np.float32
     assert np.isfinite(market).all()
     assert np.isfinite(agent).all()
+    assert "risk_context" not in obs
+
+    env.close()
+
+
+def test_obs_mode_includes_risk_context(tmp_path):
+    cfg_path = tmp_path / "test_obs.yaml"
+    cfg_text = open("tests/test.yaml", "r", encoding="utf-8").read()
+    cfg_text = cfg_text.replace("trading:\n  <<: *JM\n", 'trading:\n  <<: *JM\n  obs_feature_mode: "obs"\n')
+    cfg_path.write_text(cfg_text, encoding="utf-8")
+
+    df = make_one_day_df()
+    env = CustomTradingEnv(df=df, config_path=str(cfg_path))
+    env.config.training.randomize_start = False
+    env.config.training.start_clock = "future_night"
+
+    obs, _ = env.reset()
+    assert "risk_context" in obs
+    assert obs["risk_context"].shape == (len(FEATURES_RISK_CONTEXT),)
+    assert obs["risk_context"].dtype == np.float32
+    assert np.isfinite(obs["risk_context"]).all()
+    assert env.observation_space["risk_context"].shape == (len(FEATURES_RISK_CONTEXT),)
 
     env.close()
 

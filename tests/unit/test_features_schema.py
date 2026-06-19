@@ -1,6 +1,11 @@
 # tests/unit/test_features_schema.py
 import pytest
-from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, build_market_features
+from gym_trading_env.utils.market_features import (
+    FEATURES_MARKET,
+    FEATURES_MARKET_OBS,
+    FEATURES_RISK_CONTEXT,
+    build_market_features,
+)
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
@@ -74,6 +79,22 @@ def test_features_market_obs_schema():
         "obs_weekday_cos_t",
     }
     assert removed.isdisjoint(set(FEATURES_MARKET_OBS))
+
+
+def test_features_risk_context_schema():
+    expected = [
+        "atr_1m_30_price_frac",
+        "atr_1m_60_price_frac",
+        "atr_1m_30_rolling_percentile",
+        "atr_1m_60_rolling_percentile",
+        "current_bar_range_atr_30",
+        "intraday_volatility_percentile",
+        "atr_ready_flag",
+    ]
+    assert FEATURES_RISK_CONTEXT == expected
+    _assert_unique(FEATURES_RISK_CONTEXT, "FEATURES_RISK_CONTEXT")
+    assert all("train_percentile" not in name for name in FEATURES_RISK_CONTEXT)
+
 
 def test_features_agent_schema():
     assert isinstance(FEATURES_AGENT, list)

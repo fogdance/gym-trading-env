@@ -58,6 +58,16 @@ FEATURES_MARKET_OBS: List[str] = [
     "dyn5m_macd_ready_flag",
 ]
 
+FEATURES_RISK_CONTEXT: List[str] = [
+    "atr_1m_30_price_frac",
+    "atr_1m_60_price_frac",
+    "atr_1m_30_rolling_percentile",
+    "atr_1m_60_rolling_percentile",
+    "current_bar_range_atr_30",
+    "intraday_volatility_percentile",
+    "atr_ready_flag",
+]
+
 FEATURES_MARKET: List[str] = [
     "C_t",
     "V_t",
@@ -85,7 +95,13 @@ FEATURES_MARKET: List[str] = [
 ]
 
 AUX_MARKET_COLS = ["H_t", "L_t"]
-REQUIRED_MARKET_COLS = ["day_id", "session_id", "trading_day"] + AUX_MARKET_COLS + FEATURES_MARKET + FEATURES_MARKET_OBS
+REQUIRED_MARKET_COLS = (
+    ["day_id", "session_id", "trading_day"]
+    + AUX_MARKET_COLS
+    + FEATURES_MARKET
+    + FEATURES_MARKET_OBS
+    + FEATURES_RISK_CONTEXT
+)
 
 SEGMENTS: List[Tuple[str, str]] = [
     ("21:00", "23:00"),
@@ -453,7 +469,38 @@ def _add_obs_features_spec(df: pd.DataFrame) -> None:
         np.abs(H - prev_close),
         np.abs(L - prev_close),
     ])
-    atr30 = pd.Series(np.where(valid, tr, np.nan), index=df.index).rolling(30, min_periods=30).mean().fillna(0.0).to_numpy(dtype=float)
+    tr_valid = pd.Series(np.where(valid, tr, np.nan), index=df.index)
+    atr30 = tr_valid.rolling(30, min_periods=30).mean().fillna(0.0).to_numpy(dtype=float)
+    atr60 = tr_valid.rolling(60, min_periods=60).mean().fillna(0.0).to_numpy(dtype=float)
+    valid_count = pd.Series(valid.astype(float), index=df.index)
+    atr30_ready = valid_count.rolling(30, min_periods=1).sum().to_numpy(dtype=float) >= 30.0
+    atr60_ready = valid_count.rolling(60, min_periods=1).sum().to_numpy(dtype=float) >= 60.0
+    atr_ready = (valid & atr30_ready & atr60_ready).astype(float)
+
+    atr30_frac = np.zeros_like(atr30, dtype=float)
+    atr60_frac = np.zeros_like(atr60, dtype=float)
+    price_ok = valid & (C > eps)
+    atr30_frac[price_ok & atr30_ready] = atr30[price_ok & atr30_ready] / C[price_ok & atr30_ready]
+    atr60_frac[price_ok & atr60_ready] = atr60[price_ok & atr60_ready] / C[price_ok & atr60_ready]
+    df["atr_1m_30_price_frac"] = np.clip(atr30_frac, 0.0, 1.0) * mask_np
+    df["atr_1m_60_price_frac"] = np.clip(atr60_frac, 0.0, 1.0) * mask_np
+    df["atr_1m_30_rolling_percentile"] = _rolling_percentile_causal_spec(
+        df["atr_1m_30_price_frac"].to_numpy(dtype=float),
+        window=240,
+        min_periods=30,
+    ) * mask_np
+    df["atr_1m_60_rolling_percentile"] = _rolling_percentile_causal_spec(
+        df["atr_1m_60_price_frac"].to_numpy(dtype=float),
+        window=240,
+        min_periods=30,
+    ) * mask_np
+    range_over_atr = np.zeros_like(atr30, dtype=float)
+    range_ok = valid & atr30_ready
+    range_over_atr[range_ok] = np.maximum(H[range_ok] - L[range_ok], 0.0) / np.maximum(atr30[range_ok], eps)
+    df["current_bar_range_atr_30"] = np.clip(range_over_atr, 0.0, 20.0) * mask_np
+    df["intraday_volatility_percentile"] = df["vol_rolling_percentile"].to_numpy(dtype=float) * mask_np
+    df["atr_ready_flag"] = atr_ready
+
     denom_macd = np.maximum(atr30, np.maximum(ref_safe * 1e-6, eps))
     macd, signal, hist, macd_ready = _dynamic_5m_macd_spec(C, valid)
     hist_delta = np.zeros_like(hist)
@@ -502,6 +549,16 @@ def _add_obs_features_spec(df: pd.DataFrame) -> None:
             df[col] = 0.0
         if col not in no_mask:
             df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0).astype(float) * m
+        df[col] = (
+            pd.to_numeric(df[col], errors="coerce")
+            .replace([np.inf, -np.inf], np.nan)
+            .fillna(0.0)
+            .astype(float)
+        )
+
+    for col in FEATURES_RISK_CONTEXT:
+        if col not in df.columns:
+            df[col] = 0.0
         df[col] = (
             pd.to_numeric(df[col], errors="coerce")
             .replace([np.inf, -np.inf], np.nan)
@@ -683,6 +740,10 @@ def build_market_features_spec(
     # obs
     _add_obs_features_spec(X)
     for col in FEATURES_MARKET_OBS:
+        if col not in X.columns:
+            X[col] = 0.0
+        X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
+    for col in FEATURES_RISK_CONTEXT:
         if col not in X.columns:
             X[col] = 0.0
         X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)

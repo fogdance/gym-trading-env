@@ -2,8 +2,8 @@
 
 本文件是测试契约。测试 oracle 必须按本文公式独立计算，不能直接引用生产实现。
 
-当前阶段只修改 `market_seq` 的正式 OBS 字段；`FEATURES_MARKET`、`agent_state`、`action_mask`
-契约保持不变。
+当前阶段修改正式 OBS 的 `market_seq` 与 `risk_context`；`FEATURES_MARKET`、`agent_state`、
+`action_mask` 契约保持不变。
 
 ## Common Rules
 
@@ -385,6 +385,72 @@ Ready flag：
 ```text
 dyn5m_macd_ready_flag = 1 if completed_5m_bar_count >= 35 else 0
 ```
+
+## Risk Context (`FEATURES_RISK_CONTEXT`)
+
+`risk_context` 是 obs 模式下的当前行风险尺度向量，不是时间窗口。字段顺序固定：
+
+```text
+atr_1m_30_price_frac
+atr_1m_60_price_frac
+atr_1m_30_rolling_percentile
+atr_1m_60_rolling_percentile
+current_bar_range_atr_30
+intraday_volatility_percentile
+atr_ready_flag
+```
+
+该向量只使用当前行 `t` 和历史行 `<= t`。它不使用 train-fitted percentile。
+字段名不得包含 `train_percentile`，除非未来引入显式 split-aware fit artifact。
+
+True range：
+
+```text
+prev_close_t = C_{t-1}, first row uses C_t
+TR_t = max(H_t - L_t, abs(H_t - prev_close_t), abs(L_t - prev_close_t))
+TR_t is NaN for invalid rows before rolling calculation
+```
+
+ATR：
+
+```text
+atr_1m_30_t = rolling_mean(TR, window=30, min_periods=30), missing -> 0
+atr_1m_60_t = rolling_mean(TR, window=60, min_periods=60), missing -> 0
+atr_1m_30_ready_t = rolling_sum(valid_t, window=30, min_periods=1) >= 30
+atr_1m_60_ready_t = rolling_sum(valid_t, window=60, min_periods=1) >= 60
+
+atr_1m_30_price_frac =
+  clip(atr_1m_30_t / C_t, 0, 1) if valid_t and C_t > eps and atr_1m_30_ready_t else 0
+
+atr_1m_60_price_frac =
+  clip(atr_1m_60_t / C_t, 0, 1) if valid_t and C_t > eps and atr_1m_60_ready_t else 0
+```
+
+Percentile and range fields：
+
+```text
+atr_1m_30_rolling_percentile =
+  causal_rolling_percentile(atr_1m_30_price_frac, 240, 30) * mask_t
+
+atr_1m_60_rolling_percentile =
+  causal_rolling_percentile(atr_1m_60_price_frac, 240, 30) * mask_t
+
+current_bar_range_atr_30 =
+  clip((H_t - L_t) / max(atr_1m_30_t, eps), 0, 20)
+  if valid_t and atr_1m_30_ready_t else 0
+
+intraday_volatility_percentile =
+  vol_rolling_percentile * mask_t
+```
+
+Ready flag：
+
+```text
+atr_ready_flag =
+  1 if valid_t and atr_1m_30_ready_t and atr_1m_60_ready_t else 0
+```
+
+所有 `risk_context` 字段必须 finite。invalid row 或 warmup 不足时输出 `0`。
 
 ## Agent RAW (`FEATURES_AGENT`)
 
