@@ -13,24 +13,49 @@ from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ensure_inde
 # Market-side features (sequence) - OBS (normalized)
 # -----------------------------
 FEATURES_MARKET_OBS: List[str] = [
-    "obs_V_t",
-    "obs_I_t",
+    "volume_surprise_logratio_floor",
+    "volume_surprise_rolling_percentile",
+    "volume_impulse_recent",
+    "volume_impulse_slope_3",
+    "volume_impulse_slope_5",
+    "volume_impulse_ready_flag",
+    "oi_rel_yclose_log",
+    "oi_rel_session_open_log",
+    "oi_delta_rolling_z",
+    "oi_rolling_percentile",
+    "oi_delta_slope_3",
+    "oi_delta_slope_5",
+    "oi_price_confirm_short_continuous",
+    "oi_price_confirm_long_continuous",
+    "oi_impulse_ready_flag",
     "obs_cumVWAP_t",
+    "obs_cumVWAP_t_rolling_percentile",
     "obs_dC_minus_cumVWAP_t",
     "obs_cmp_C_vs_cumVWAP_t",
     "obs_session_high_t",
+    "obs_session_high_t_rolling_percentile",
     "obs_session_low_t",
-    "obs_range_t",             # NEW: log1p((H-L)/ref_close), clipped, masked
-    "obs_open_drift_t",        # NEW: log(C/session_open), clipped, masked (direction kept)
+    "obs_range_t",
+    "obs_range_t_rolling_percentile",
+    "obs_open_drift_t",
     "obs_bar_dir_t",
     "obs_minute_index_t",
-    "obs_session_phase_t",     # NEW: 0/1 phase indicator (futures: night/day)
-    "obs_volatility_t",        # NEW: rolling volatility proxy (bounded)
-    "obs_dI_from_yclose_t",    # NEW stable scaling (ratio to I_yclose)
-    "obs_pct_chg_from_ref_t",  # NEW: log-ratio(C/ref_close), clipped (keep old name)
+    "obs_session_phase_t",
+    "vol_rolling_percentile",
+    "obs_dI_from_yclose_t",
+    "obs_pct_chg_from_ref_t",
+    "obs_pct_chg_from_ref_t_rolling_percentile",
     "obs_mask_t",
-    "obs_weekday_sin_t",
-    "obs_weekday_cos_t",
+    "dyn5m_macd_line_norm",
+    "dyn5m_macd_signal_norm",
+    "dyn5m_macd_hist_norm",
+    "dyn5m_macd_hist_delta",
+    "dyn5m_macd_distance_norm",
+    "dyn5m_macd_hist_slope_3",
+    "dyn5m_macd_hist_slope_5",
+    "dyn5m_macd_cross_age_frac",
+    "dyn5m_macd_cross_dir",
+    "dyn5m_macd_ready_flag",
 ]
 
 # -----------------------------
@@ -84,51 +109,118 @@ def _weekday_cyc_from_sid(session_id: pd.Series) -> pd.DataFrame:
     )
 
 
+def _rolling_percentile_causal(values: np.ndarray, window: int = 240, min_periods: int = 30) -> np.ndarray:
+    vals = np.asarray(values, dtype=float)
+    out = np.zeros_like(vals, dtype=float)
+    for i in range(len(vals)):
+        start = max(0, i - int(window) + 1)
+        hist = vals[start:i + 1]
+        hist = hist[np.isfinite(hist)]
+        if hist.size < int(min_periods) or not np.isfinite(vals[i]):
+            continue
+        out[i] = 2.0 * (np.sum(hist <= vals[i]) / float(hist.size)) - 1.0
+    return np.clip(out, -1.0, 1.0)
+
+
+def _rolling_slope(values: np.ndarray, window: int) -> np.ndarray:
+    vals = np.asarray(values, dtype=float)
+    out = np.zeros_like(vals, dtype=float)
+    if int(window) <= 1:
+        return out
+    x = np.arange(int(window), dtype=float)
+    x -= x.mean()
+    denom = float(np.sum(x * x))
+    for i in range(len(vals)):
+        if i + 1 < int(window):
+            continue
+        y = vals[i - int(window) + 1:i + 1]
+        if np.all(np.isfinite(y)):
+            out[i] = float(np.sum(x * (y - y.mean())) / denom) if denom > 0 else 0.0
+    return out
+
+
+def _ema_next(prev: Optional[float], value: float, span: int) -> float:
+    if prev is None:
+        return float(value)
+    alpha = 2.0 / (float(span) + 1.0)
+    return float(prev + alpha * (float(value) - prev))
+
+
+def _dynamic_5m_macd(close: np.ndarray, valid: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    n = len(close)
+    macd = np.zeros(n, dtype=float)
+    signal = np.zeros(n, dtype=float)
+    hist = np.zeros(n, dtype=float)
+    ready = np.zeros(n, dtype=float)
+
+    fast_completed: Optional[float] = None
+    slow_completed: Optional[float] = None
+    signal_completed: Optional[float] = None
+    completed_5m = 0
+    valid_ordinal = -1
+    last_valid_close = 0.0
+
+    for i in range(n):
+        if not bool(valid[i]):
+            if i > 0:
+                macd[i] = macd[i - 1]
+                signal[i] = signal[i - 1]
+                hist[i] = hist[i - 1]
+                ready[i] = ready[i - 1]
+            continue
+
+        valid_ordinal += 1
+        if valid_ordinal > 0 and valid_ordinal % 5 == 0:
+            fast_completed = _ema_next(fast_completed, last_valid_close, 12)
+            slow_completed = _ema_next(slow_completed, last_valid_close, 26)
+            completed_macd = float(fast_completed - slow_completed)
+            signal_completed = _ema_next(signal_completed, completed_macd, 9)
+            completed_5m += 1
+
+        c = float(close[i])
+        fast_dyn = _ema_next(fast_completed, c, 12)
+        slow_dyn = _ema_next(slow_completed, c, 26)
+        macd_dyn = float(fast_dyn - slow_dyn)
+        signal_dyn = _ema_next(signal_completed, macd_dyn, 9)
+        macd[i] = macd_dyn
+        signal[i] = signal_dyn
+        hist[i] = macd_dyn - signal_dyn
+        ready[i] = 1.0 if completed_5m >= 35 else 0.0
+        last_valid_close = c
+
+    return macd, signal, hist, ready
+
+
 def _add_obs_features_inplace(df: pd.DataFrame) -> None:
-    """
-    基于 raw FEATURES_MARKET 生成 obs_ 归一化特征列（写回 df）。
-
-    v2 口径：
-      - 价格类：log-ratio: clip(log(x / ref_close), [-LOG_CLIP, LOG_CLIP])
-      - 差值类：signed-log: clip(sign(z)*log1p(|z|/ref_close), [-LOG_CLIP, LOG_CLIP])
-      - 量：obs_V_t = clip(log1p(V / past_volume_baseline), [0,3]) * mask；
-        baseline 为同 session 内只看过去的 EMA/expanding mean；持仓：log1p 后 tanh squash
-      - dI：sign(dI)*log1p(|dI|/max(|I_yclose|, eps))（更稳，不依赖合约量级）
-      - obs_pct_chg_from_ref_t：使用 log(C/ref_close)（保留旧列名）
-      - NEW obs_range_t：clip(log1p((H-L)/ref_close), [0, LOG_CLIP])
-      - NEW obs_open_drift_t：clip(log(C/session_open), [-LOG_CLIP, LOG_CLIP])
-      - time/weekday/phase：保留（不乘 mask）
-      - 其余 obs 特征：乘 mask（无效分钟置 0）
-    """
+    """Generate the formal v2 market_seq fields from raw market features."""
     eps = 1e-12
-
-    # --- mask ---
     m = df.get("mask_t", pd.Series(1.0, index=df.index)).astype(float)
     valid = (m.to_numpy(dtype=float, copy=False) > 0.0)
+    mask_np = m.to_numpy(dtype=float, copy=False)
+    sid = df.get("session_id", pd.Series(0, index=df.index)).astype(str)
 
-    # --- ref_close safe ---
-    C = pd.to_numeric(df.get("C_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    C_s = pd.to_numeric(df.get("C_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    C = C_s.to_numpy(dtype=float, copy=False)
     ref = pd.to_numeric(df.get("ref_close_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     ref_safe = np.where(ref > eps, ref, np.where(C > eps, C, eps))
-
-    # tight clip to keep obs stable
-    _LOG_CLIP = 1.0
+    H = pd.to_numeric(df.get("H_t", C_s), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    L = pd.to_numeric(df.get("L_t", C_s), errors="coerce").fillna(0.0).astype(float).to_numpy()
+    V_s = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    I_s = pd.to_numeric(df.get("I_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    I = I_s.to_numpy(dtype=float, copy=False)
 
     def _log_ratio(x: np.ndarray) -> np.ndarray:
         x_safe = np.where(x > eps, x, eps)
         out = np.zeros_like(x_safe, dtype=float)
         out[valid] = np.log(x_safe[valid] / ref_safe[valid])
-        return np.clip(out, -_LOG_CLIP, _LOG_CLIP)
+        return np.clip(out, -1.0, 1.0)
 
     def _signed_log1p_ratio(z: np.ndarray) -> np.ndarray:
         out = np.zeros_like(z, dtype=float)
         ratio = np.abs(z) / np.maximum(ref_safe, eps)
         out[valid] = np.sign(z[valid]) * np.log1p(ratio[valid])
-        return np.clip(out, -_LOG_CLIP, _LOG_CLIP)
+        return np.clip(out, -1.0, 1.0)
 
-    # -----------------------------
-    # price-like (log-ratio)
-    # -----------------------------
     cumVWAP = pd.to_numeric(df.get("cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     df["obs_cumVWAP_t"] = _log_ratio(cumVWAP)
 
@@ -137,14 +229,8 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     df["obs_session_high_t"] = _log_ratio(sh)
     df["obs_session_low_t"] = _log_ratio(sl)
 
-    # pct_chg_from_ref -> log(C/ref_close), keep old name
     df["obs_pct_chg_from_ref_t"] = _log_ratio(C)
 
-    # -----------------------------
-    # NEW: intraday range (non-negative)
-    # range_frac_t raw = (H-L)/ref_close
-    # obs_range_t = clip(log1p(range_frac), [0, LOG_CLIP])
-    # -----------------------------
     if "range_frac_t" in df.columns:
         rf = pd.to_numeric(df["range_frac_t"], errors="coerce").fillna(0.0).astype(float).to_numpy()
     else:
@@ -153,19 +239,11 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     obs_range = np.zeros_like(rf, dtype=float)
     rf_pos = np.clip(rf, 0.0, None)
     obs_range[valid] = np.log1p(rf_pos[valid])
-    df["obs_range_t"] = np.clip(obs_range, 0.0, _LOG_CLIP)
+    df["obs_range_t"] = np.clip(obs_range, 0.0, 1.0)
 
-    # -----------------------------
-    # delta-like (signed log)
-    # -----------------------------
     dC = pd.to_numeric(df.get("dC_minus_cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     df["obs_dC_minus_cumVWAP_t"] = _signed_log1p_ratio(dC)
 
-    # -----------------------------
-    # dI stable scaling: sign(dI)*log1p(|dI|/max(|I_yclose|, eps))
-    # where I_yclose = I_t - dI_from_yclose_t
-    # -----------------------------
-    I = pd.to_numeric(df.get("I_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     dI = pd.to_numeric(df.get("dI_from_yclose_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
     I_yclose = I - dI
     denom = np.maximum(np.abs(I_yclose), eps)
@@ -173,13 +251,8 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     out_dI = np.zeros_like(dI, dtype=float)
     ratio_I = np.abs(dI) / denom
     out_dI[valid] = np.sign(dI[valid]) * np.log1p(ratio_I[valid])
-    df["obs_dI_from_yclose_t"] = np.clip(out_dI, -_LOG_CLIP, _LOG_CLIP)
+    df["obs_dI_from_yclose_t"] = np.clip(out_dI, -1.0, 1.0)
 
-    # -----------------------------
-    # NEW: open -> current drift (direction kept)
-    # open_drift_t raw = log(C/session_open)
-    # obs_open_drift_t = clip(open_drift_t, [-LOG_CLIP, LOG_CLIP])
-    # -----------------------------
     if "open_drift_t" in df.columns:
         od = pd.to_numeric(df["open_drift_t"], errors="coerce").fillna(0.0).astype(float).to_numpy()
     else:
@@ -188,59 +261,74 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
         od = np.zeros_like(C, dtype=float)
         od[valid] = np.log(np.where(C > eps, C, eps)[valid] / so_safe[valid])
 
-    df["obs_open_drift_t"] = np.clip(od, -_LOG_CLIP, _LOG_CLIP)
+    df["obs_open_drift_t"] = np.clip(od, -1.0, 1.0)
 
-    # -----------------------------
-    # discrete
-    # -----------------------------
     df["obs_cmp_C_vs_cumVWAP_t"] = (
         pd.to_numeric(df.get("cmp_C_vs_cumVWAP_t", 0.0), errors="coerce").fillna(0.0).astype(float)
     )
     df["obs_bar_dir_t"] = pd.to_numeric(df.get("bar_dir_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
-    # -----------------------------
-    # volume / open interest -> bounded (LN(1 + V/OI*100) clipped to [0, 1])
-    # -----------------------------
-    V = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float).to_numpy()
-
-    # -----------------------------
-    # volume surprise (keep spikes, reduce fingerprint)
-    # obs_V_t = clip(log1p(V / EMA_prev + eps), [0, VOL_CLIP]) * mask
-    # -----------------------------
-    V_s = pd.to_numeric(df.get("V_t", 0.0), errors="coerce").fillna(0.0).astype(float)
     V_valid = V_s.where(m > 0.0, np.nan)
-
-    # EMA within session (use only past -> shift(1))
-    # span=30 means ~30 minutes smoothing; tweak 20/30/60 as you like
-    sid = df.get("session_id", pd.Series(0, index=df.index)).astype(str)
     ema = V_valid.groupby(sid).transform(
         lambda x: x.ewm(span=30, adjust=False, min_periods=5, ignore_na=True).mean()
     )
     ema_prev = ema.groupby(sid).shift(1)
-
-    # fallback baseline for early minutes: expanding mean of past valid bars
     exp_mean = V_valid.groupby(sid).transform(lambda x: x.expanding(min_periods=1).mean())
     base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
+    volume_ratio = (V_s.to_numpy(dtype=float, copy=False) + 1.0) / (np.maximum(base.to_numpy(dtype=float, copy=False), 1.0) + 1.0)
+    volume_surprise = np.clip(np.log(np.maximum(volume_ratio, eps)), -5.0, 5.0) * mask_np
+    df["volume_surprise_logratio_floor"] = volume_surprise
+    df["volume_surprise_rolling_percentile"] = _rolling_percentile_causal(volume_surprise, window=240, min_periods=30)
+    df["volume_impulse_recent"] = pd.Series(volume_surprise, index=df.index).rolling(5, min_periods=1).mean().fillna(0.0).to_numpy(dtype=float)
+    df["volume_impulse_slope_3"] = _rolling_slope(volume_surprise, 3)
+    df["volume_impulse_slope_5"] = _rolling_slope(volume_surprise, 5)
+    ready30 = pd.Series(valid.astype(float), index=df.index).rolling(30, min_periods=1).sum().to_numpy(dtype=float)
+    df["volume_impulse_ready_flag"] = (ready30 >= 30.0).astype(float)
 
-    eps_v = 1e-12
-    VOL_CLIP = 3.0  # 3 对应 e^(3)-1≈19x 的“放量倍率”，已经很夸张了
-    ratio = (V_s.to_numpy(dtype=float, copy=False) / (base.to_numpy(dtype=float, copy=False) + eps_v))
-    spike = np.log1p(np.clip(ratio, 0.0, None))
+    rel_yclose = np.zeros_like(I, dtype=float)
+    rel_yclose[valid] = np.sign(I[valid] - I_yclose[valid]) * np.log1p(
+        np.abs(I[valid] - I_yclose[valid]) / np.maximum(np.abs(I_yclose[valid]), eps)
+    )
+    df["oi_rel_yclose_log"] = np.clip(rel_yclose, -5.0, 5.0)
 
-    df["obs_V_t"] = (np.clip(spike, 0.0, VOL_CLIP) * m.to_numpy(dtype=float, copy=False)).astype(float)
+    first_oi = I_s.where(m > 0.0, np.nan).groupby(sid).transform("first").fillna(I_s).to_numpy(dtype=float, copy=False)
+    rel_open = np.zeros_like(I, dtype=float)
+    rel_open[valid] = np.sign(I[valid] - first_oi[valid]) * np.log1p(
+        np.abs(I[valid] - first_oi[valid]) / np.maximum(np.abs(first_oi[valid]), eps)
+    )
+    df["oi_rel_session_open_log"] = np.clip(rel_open, -5.0, 5.0)
 
+    oi_delta = I_s.diff().fillna(0.0).where(m > 0.0, 0.0)
+    oi_mean = oi_delta.rolling(240, min_periods=30).mean().shift(1)
+    oi_std = oi_delta.rolling(240, min_periods=30).std(ddof=0).shift(1).replace(0.0, np.nan)
+    oi_z = ((oi_delta - oi_mean) / oi_std).replace([np.inf, -np.inf], np.nan).fillna(0.0).to_numpy(dtype=float)
+    oi_z = np.clip(oi_z, -5.0, 5.0) * mask_np
+    df["oi_delta_rolling_z"] = oi_z
+    df["oi_rolling_percentile"] = _rolling_percentile_causal(oi_z, window=240, min_periods=30)
+    df["oi_delta_slope_3"] = _rolling_slope(oi_z, 3)
+    df["oi_delta_slope_5"] = _rolling_slope(oi_z, 5)
 
-    # keep obs_I_t as before (bounded, scale-free-ish)
-    oi = np.log1p(np.clip(I, 0.0, None))
-    df["obs_I_t"] = np.tanh(oi / 5.0).astype(float)
+    prev5 = pd.Series(C, index=df.index).shift(5).to_numpy(dtype=float)
+    logret5 = np.zeros_like(C, dtype=float)
+    ok5 = valid & np.isfinite(prev5) & (prev5 > eps) & (C > eps)
+    logret5[ok5] = np.log(C[ok5] / prev5[ok5])
+    df["oi_price_confirm_short_continuous"] = np.clip(np.maximum(-logret5, 0.0) * np.maximum(oi_z, 0.0), 0.0, 5.0)
+    df["oi_price_confirm_long_continuous"] = np.clip(np.maximum(logret5, 0.0) * np.maximum(oi_z, 0.0), 0.0, 5.0)
+    df["oi_impulse_ready_flag"] = (ready30 >= 30.0).astype(float)
 
+    for src, dst in [
+        ("obs_cumVWAP_t", "obs_cumVWAP_t_rolling_percentile"),
+        ("obs_session_high_t", "obs_session_high_t_rolling_percentile"),
+        ("obs_range_t", "obs_range_t_rolling_percentile"),
+        ("obs_pct_chg_from_ref_t", "obs_pct_chg_from_ref_t_rolling_percentile"),
+    ]:
+        df[dst] = _rolling_percentile_causal(
+            pd.to_numeric(df[src], errors="coerce").fillna(0.0).to_numpy(dtype=float),
+            window=240,
+            min_periods=30,
+        )
 
-    # -----------------------------
-    # time / weekday
-    # -----------------------------
     df["obs_mask_t"] = m.astype(float)
-    df["obs_weekday_sin_t"] = pd.to_numeric(df.get("weekday_sin_t", 0.0), errors="coerce").fillna(0.0).astype(float)
-    df["obs_weekday_cos_t"] = pd.to_numeric(df.get("weekday_cos_t", 0.0), errors="coerce").fillna(0.0).astype(float)
 
     mi = pd.to_numeric(df.get("minute_index_t", 0.0), errors="coerce").fillna(0.0).astype(float)
     if "day_id" in df.columns:
@@ -250,11 +338,6 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     denom_mi = pd.to_numeric(denom_mi, errors="coerce").fillna(1.0).astype(float).clip(lower=1.0)
     df["obs_minute_index_t"] = (mi / denom_mi).clip(0.0, 1.0).astype(float)
 
-    # -----------------------------
-    # NEW: session_phase
-    # futures 345: night=0..119, day=120..344
-    # for non-futures / longer sessions: set 0 (avoid injecting fake structure)
-    # -----------------------------
     mi_np = mi.to_numpy(dtype=float, copy=False)
     mi_max = float(np.nanmax(mi_np)) if len(mi_np) else 0.0
     if mi_max <= 400.0:
@@ -262,56 +345,76 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     else:
         df["obs_session_phase_t"] = 0.0
 
-    # -----------------------------
-    # NEW: volatility proxy (rolling std of log returns, bounded)
-    # -----------------------------
-    VOL_WIN = 30          # 30 minutes
-    VOL_MINP = 5
-    VOL_SCALE = 0.01      # tanh(std / scale) -> [0,1); adjust if needed
-
-    C_s = pd.to_numeric(df.get("C_t", 0.0), errors="coerce").astype(float)
     C_valid = C_s.where(m > 0.0, np.nan)
+    prev = C_valid.shift(1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        logret = np.log(C_valid / prev)
+    logret = logret.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    raw_vol = logret.rolling(window=30, min_periods=5).std().fillna(0.0).clip(lower=0.0).to_numpy(dtype=float)
+    df["vol_rolling_percentile"] = _rolling_percentile_causal(raw_vol, window=240, min_periods=30)
 
-    if "session_id" in df.columns:
-        sid = df["session_id"]
-        prev = C_valid.groupby(sid).shift(1)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            logret = np.log(C_valid / prev)
-        logret = logret.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-        vol = (
-            logret.groupby(sid)
-            .rolling(window=VOL_WIN, min_periods=VOL_MINP)
-            .std()
-            .reset_index(level=0, drop=True)
-            .fillna(0.0)
-        )
-    else:
-        prev = C_valid.shift(1)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            logret = np.log(C_valid / prev)
-        logret = logret.replace([np.inf, -np.inf], np.nan).fillna(0.0)
-        vol = logret.rolling(window=VOL_WIN, min_periods=VOL_MINP).std().fillna(0.0)
+    prev_close = np.roll(C, 1)
+    prev_close[0] = C[0] if len(C) else 0.0
+    tr = np.maximum.reduce([
+        np.maximum(H - L, 0.0),
+        np.abs(H - prev_close),
+        np.abs(L - prev_close),
+    ])
+    atr30 = pd.Series(np.where(valid, tr, np.nan), index=df.index).rolling(30, min_periods=30).mean().fillna(0.0).to_numpy(dtype=float)
+    denom_macd = np.maximum(atr30, np.maximum(ref_safe * 1e-6, eps))
+    macd, signal, hist, macd_ready = _dynamic_5m_macd(C, valid)
+    hist_delta = np.zeros_like(hist)
+    hist_delta[1:] = hist[1:] - hist[:-1]
+    hist_slope3 = _rolling_slope(hist, 3)
+    hist_slope5 = _rolling_slope(hist, 5)
+    dist = macd - signal
+    sign = np.sign(dist)
+    cross_age = np.zeros_like(sign, dtype=float)
+    last_cross_valid_ordinal = 0
+    valid_age_ordinal = -1
+    prev_sign = 0.0
+    for i, sgn in enumerate(sign):
+        if not bool(valid[i]):
+            if i > 0:
+                cross_age[i] = cross_age[i - 1]
+            continue
+        valid_age_ordinal += 1
+        if sgn != 0 and prev_sign != 0 and sgn != prev_sign:
+            last_cross_valid_ordinal = valid_age_ordinal
+        if sgn != 0:
+            prev_sign = sgn
+        cross_age[i] = min(max(valid_age_ordinal - last_cross_valid_ordinal, 0) / 120.0, 1.0)
 
-    vol = pd.to_numeric(vol, errors="coerce").fillna(0.0).astype(float).clip(lower=0.0)
-    df["obs_volatility_t"] = np.tanh(vol / max(VOL_SCALE, 1e-12)).astype(float)
+    df["dyn5m_macd_line_norm"] = np.clip(macd / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_signal_norm"] = np.clip(signal / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_hist_norm"] = np.clip(hist / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_hist_delta"] = np.clip(hist_delta / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_distance_norm"] = np.clip(dist / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_hist_slope_3"] = np.clip(hist_slope3 / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_hist_slope_5"] = np.clip(hist_slope5 / denom_macd, -5.0, 5.0)
+    df["dyn5m_macd_cross_age_frac"] = cross_age
+    df["dyn5m_macd_cross_dir"] = sign
+    df["dyn5m_macd_ready_flag"] = macd_ready
 
-    # -----------------------------
-    # apply mask to obs features except:
-    #   - obs_mask_t
-    #   - clock-like: minute_index/weekday/session_phase
-    # -----------------------------
-    _NO_MASK = {
+    no_mask = {
+        "volume_impulse_ready_flag",
+        "oi_impulse_ready_flag",
         "obs_mask_t",
         "obs_minute_index_t",
-        "obs_weekday_sin_t",
-        "obs_weekday_cos_t",
         "obs_session_phase_t",
+        "dyn5m_macd_ready_flag",
     }
     for col in FEATURES_MARKET_OBS:
-        if col in _NO_MASK:
-            continue
-        if col in df.columns:
-            df[col] = (pd.to_numeric(df[col], errors="coerce").fillna(0.0).astype(float) * m).astype(float)
+        if col not in df.columns:
+            df[col] = 0.0
+        if col not in no_mask:
+            df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0.0).astype(float) * m
+        df[col] = (
+            pd.to_numeric(df[col], errors="coerce")
+            .replace([np.inf, -np.inf], np.nan)
+            .fillna(0.0)
+            .astype(float)
+        )
 
 
 # -----------------------------

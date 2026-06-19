@@ -188,7 +188,7 @@ def test_env_obs_match_spec(mode):
     df = bundle.df_1m
 
     # 2) Spec market full table（oracle）
-    df_market_full = build_market_features_spec(df, tz=bundle.tz, df_prev_session=bundle.df_prev_session)
+    df_market_full = build_market_features_spec(df, tz=bundle.tz)
 
     # 3) 跑真实 env
     env = CustomTradingEnv(df=df, config_path="tests/test.yaml")

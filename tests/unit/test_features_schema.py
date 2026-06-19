@@ -1,6 +1,6 @@
 # tests/unit/test_features_schema.py
 import pytest
-from gym_trading_env.utils.market_features import FEATURES_MARKET, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, build_market_features
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
 
 pytestmark = pytest.mark.unit
@@ -16,6 +16,64 @@ def test_features_market_schema():
     assert FEATURES_MARKET[0] == "C_t"
     assert FEATURES_MARKET[-1] == "weekday_cos_t"
     assert "mask_t" in FEATURES_MARKET
+
+
+def test_features_market_obs_schema():
+    expected = [
+        "volume_surprise_logratio_floor",
+        "volume_surprise_rolling_percentile",
+        "volume_impulse_recent",
+        "volume_impulse_slope_3",
+        "volume_impulse_slope_5",
+        "volume_impulse_ready_flag",
+        "oi_rel_yclose_log",
+        "oi_rel_session_open_log",
+        "oi_delta_rolling_z",
+        "oi_rolling_percentile",
+        "oi_delta_slope_3",
+        "oi_delta_slope_5",
+        "oi_price_confirm_short_continuous",
+        "oi_price_confirm_long_continuous",
+        "oi_impulse_ready_flag",
+        "obs_cumVWAP_t",
+        "obs_cumVWAP_t_rolling_percentile",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_cmp_C_vs_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_high_t_rolling_percentile",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_range_t_rolling_percentile",
+        "obs_open_drift_t",
+        "obs_bar_dir_t",
+        "obs_minute_index_t",
+        "obs_session_phase_t",
+        "vol_rolling_percentile",
+        "obs_dI_from_yclose_t",
+        "obs_pct_chg_from_ref_t",
+        "obs_pct_chg_from_ref_t_rolling_percentile",
+        "obs_mask_t",
+        "dyn5m_macd_line_norm",
+        "dyn5m_macd_signal_norm",
+        "dyn5m_macd_hist_norm",
+        "dyn5m_macd_hist_delta",
+        "dyn5m_macd_distance_norm",
+        "dyn5m_macd_hist_slope_3",
+        "dyn5m_macd_hist_slope_5",
+        "dyn5m_macd_cross_age_frac",
+        "dyn5m_macd_cross_dir",
+        "dyn5m_macd_ready_flag",
+    ]
+    assert FEATURES_MARKET_OBS == expected
+    _assert_unique(FEATURES_MARKET_OBS, "FEATURES_MARKET_OBS")
+    removed = {
+        "obs_V_t",
+        "obs_I_t",
+        "obs_volatility_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t",
+    }
+    assert removed.isdisjoint(set(FEATURES_MARKET_OBS))
 
 def test_features_agent_schema():
     assert isinstance(FEATURES_AGENT, list)
