@@ -113,7 +113,9 @@ class CustomTradingEnv(gym.Env):
 
         # ---- NEW: choose obs feature columns by config (default raw for backward compat) ----
         mode = getattr(self.config.trading, "obs_feature_mode", "raw")
-        if mode == "obs":
+        self._obs_feature_mode = str(mode)
+        self._use_obs_features = (self._obs_feature_mode == "obs")
+        if self._use_obs_features:
             self._OBS_FEATURES_MARKET = FEATURES_MARKET_OBS
             self._OBS_FEATURES_AGENT = FEATURES_AGENT_OBS
         else:
@@ -122,7 +124,7 @@ class CustomTradingEnv(gym.Env):
 
         self._F_MARKET = len(self._OBS_FEATURES_MARKET)
         self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
-        self._use_risk_context = (mode == "obs")
+        self._use_risk_context = self._use_obs_features
         self._F_RISK = len(FEATURES_RISK_CONTEXT)
 
         # ---- sanity: store day_len should match env DAY_LEN policy ----
@@ -1782,8 +1784,7 @@ class CustomTradingEnv(gym.Env):
         except Exception:
             ts = None
 
-        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
-        use_obs = (mode == "obs")
+        use_obs = bool(getattr(self, "_use_obs_features", False))
 
         # --------- market window (same logic as _get_obs, but no nan_to_num side effects) ----------
         end_i = i
@@ -1895,7 +1896,7 @@ class CustomTradingEnv(gym.Env):
                 "schema_version": 1,
                 "step": i,
                 "ts": ts,
-                "mode": mode,
+                "mode": getattr(self, "_obs_feature_mode", "raw"),
                 "day_i": int(getattr(self, "_day_i", 0)),
                 "start_idx": int(getattr(self, "start_idx", 0)),
                 "end_idx": int(getattr(self, "end_idx", 0)),
@@ -2236,8 +2237,7 @@ class CustomTradingEnv(gym.Env):
         self._agent_raw_debug = {k: float(decimal_to_float(raw.get(k, D0))) for k in FEATURES_AGENT}
         self._agent_obs_debug = {k: float(decimal_to_float(obs.get(k, D0))) for k in FEATURES_AGENT_OBS}
 
-        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
-        self._agent_state_vec = self._agent_state_obs_vec if mode == "obs" else self._agent_state_raw_vec
+        self._agent_state_vec = self._agent_state_obs_vec if self._use_obs_features else self._agent_state_raw_vec
 
 
 
@@ -3169,8 +3169,7 @@ class CustomTradingEnv(gym.Env):
         end_i = int(self.current_step)
         start_i = end_i - self.window_size + 1
 
-        mode = getattr(self.config.trading, "obs_feature_mode", "raw")
-        use_obs = (mode == "obs")
+        use_obs = bool(getattr(self, "_use_obs_features", False))
 
         # NEW: 从 store 取底层数组（行序与 df_market 完全对齐）
         X_all = self.bar_source.store.X_market_obs if use_obs else self.bar_source.store.X_market_raw  # shape=(n_rows, F)

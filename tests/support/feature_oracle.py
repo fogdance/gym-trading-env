@@ -90,7 +90,7 @@ class FeatureOracle:
         """
         对齐 env._refresh_agent_state 的计算路径（但不依赖 env 内部缓存向量）：
         - 直接用 AgentFeatureInput + compute_agent_features_raw/obs 计算
-        - 根据 config.trading.obs_feature_mode 选择 raw/obs 版本
+        - 根据 env 初始化时冻结的 obs mode 选择 raw/obs 版本
         """
         prev_max = getattr(env, "max_equity", D(getattr(env.config.trading, "initial_balance", 0)))
         eod_idx = int(getattr(env, "_eod_idx", env.end_idx))
@@ -146,8 +146,7 @@ class FeatureOracle:
         raw = compute_agent_features_raw(inp)
         obs = compute_agent_features_obs(inp, raw)
 
-        mode = getattr(env.config.trading, "obs_feature_mode", "raw")
-        use_obs = (mode == "obs")
+        use_obs = bool(getattr(env, "_use_obs_features", getattr(env.config.trading, "obs_feature_mode", "raw") == "obs"))
 
         if use_obs:
             vec = agent_feature_vector(obs, FEATURES_AGENT_OBS).astype(np.float32, copy=False)
@@ -163,8 +162,8 @@ class FeatureOracle:
 
     @staticmethod
     def assert_agent_columnwise(env, actual: np.ndarray, expected: np.ndarray):
-        mode = getattr(env.config.trading, "obs_feature_mode", "raw")
-        names = FEATURES_AGENT_OBS if mode == "obs" else FEATURES_AGENT
+        use_obs = bool(getattr(env, "_use_obs_features", getattr(env.config.trading, "obs_feature_mode", "raw") == "obs"))
+        names = FEATURES_AGENT_OBS if use_obs else FEATURES_AGENT
 
         assert actual.shape == expected.shape == (len(names),)
         a = actual.astype(np.float64)

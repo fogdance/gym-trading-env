@@ -27,6 +27,14 @@ def aidx(env: CustomTradingEnv, act: Action) -> int:
     return action_to_index(env, act)
 
 
+def make_obs_config(tmp_path):
+    cfg_path = tmp_path / "test_obs.yaml"
+    cfg_text = open("tests/test.yaml", "r", encoding="utf-8").read()
+    cfg_text = cfg_text.replace("trading:\n  <<: *JM\n", 'trading:\n  <<: *JM\n  obs_feature_mode: "obs"\n')
+    cfg_path.write_text(cfg_text, encoding="utf-8")
+    return str(cfg_path)
+
+
 def expected_market_seq(env: CustomTradingEnv, end_i: int) -> np.ndarray:
     """
     完全复刻 env._get_obs() 的 market_seq 逻辑：
@@ -77,13 +85,8 @@ def test_obs_shapes_dtypes_and_episode_len_is_one_day():
 
 
 def test_obs_mode_includes_risk_context(tmp_path):
-    cfg_path = tmp_path / "test_obs.yaml"
-    cfg_text = open("tests/test.yaml", "r", encoding="utf-8").read()
-    cfg_text = cfg_text.replace("trading:\n  <<: *JM\n", 'trading:\n  <<: *JM\n  obs_feature_mode: "obs"\n')
-    cfg_path.write_text(cfg_text, encoding="utf-8")
-
     df = make_one_day_df()
-    env = CustomTradingEnv(df=df, config_path=str(cfg_path))
+    env = CustomTradingEnv(df=df, config_path=make_obs_config(tmp_path))
     env.config.training.randomize_start = False
     env.config.training.start_clock = "future_night"
 
@@ -95,6 +98,28 @@ def test_obs_mode_includes_risk_context(tmp_path):
     assert env.observation_space["risk_context"].shape == (len(FEATURES_RISK_CONTEXT),)
 
     env.close()
+
+
+def test_obs_mode_is_frozen_after_env_init(tmp_path):
+    df = make_one_day_df()
+
+    raw_env = CustomTradingEnv(df=df, config_path="tests/test.yaml")
+    raw_obs, _ = raw_env.reset()
+    assert "risk_context" not in raw_obs
+    raw_env.config.trading.obs_feature_mode = "obs"
+    raw_obs_after, _ = raw_env.reset()
+    assert "risk_context" not in raw_obs_after
+    assert raw_obs_after["market_seq"].shape == raw_env.observation_space["market_seq"].shape
+    raw_env.close()
+
+    obs_env = CustomTradingEnv(df=df, config_path=make_obs_config(tmp_path))
+    obs, _ = obs_env.reset()
+    assert "risk_context" in obs
+    obs_env.config.trading.obs_feature_mode = "raw"
+    obs_after, _ = obs_env.reset()
+    assert "risk_context" in obs_after
+    assert obs_after["risk_context"].shape == obs_env.observation_space["risk_context"].shape
+    obs_env.close()
 
 
 def test_reset_starts_at_minute0_and_obs_is_left_padded():

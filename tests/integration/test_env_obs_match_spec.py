@@ -28,6 +28,19 @@ from gym_trading_env.envs.position import Position
 from gym_trading_env.utils.trade_util import action_to_index
 
 
+def _config_path_for_mode(tmp_path, mode: str) -> str:
+    if mode == "raw":
+        return "tests/test.yaml"
+    if mode != "obs":
+        raise ValueError(f"unsupported obs mode: {mode}")
+
+    cfg_path = tmp_path / "test_obs.yaml"
+    cfg_text = open("tests/test.yaml", "r", encoding="utf-8").read()
+    cfg_text = cfg_text.replace("trading:\n  <<: *JM\n", 'trading:\n  <<: *JM\n  obs_feature_mode: "obs"\n')
+    cfg_path.write_text(cfg_text, encoding="utf-8")
+    return str(cfg_path)
+
+
 def _max_code():
     return max(int(x.value) for x in ForexCode)
 
@@ -183,7 +196,7 @@ def extract_agent_snapshot_from_env(env) -> AgentSnapshot:
 
 @pytest.mark.integration
 @pytest.mark.parametrize("mode", ["raw", "obs"])
-def test_env_obs_match_spec(mode):
+def test_env_obs_match_spec(mode, tmp_path):
     # 1) 固定数据
     bundle = MarketDataFactory.make_futures_bundle(num_days=9)
     df = bundle.df_1m
@@ -191,12 +204,9 @@ def test_env_obs_match_spec(mode):
     # 2) Spec market full table（oracle）
     df_market_full = build_market_features_spec(df, tz=bundle.tz)
 
-    # 3) 跑真实 env
-    env = CustomTradingEnv(df=df, config_path="tests/test.yaml")
-
-    # 强制切 mode（兜底）
-    if hasattr(env, "config") and hasattr(env.config, "trading"):
-        setattr(env.config.trading, "obs_feature_mode", mode)
+    # 3) 跑真实 env。obs_feature_mode 必须在 env 初始化前进入 config，
+    # observation_space 和实际 observation 结构都以初始化时冻结的模式为准。
+    env = CustomTradingEnv(df=df, config_path=_config_path_for_mode(tmp_path, mode))
 
     _allow_cross_day_episode_for_test(env)
 
