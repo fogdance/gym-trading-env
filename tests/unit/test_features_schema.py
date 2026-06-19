@@ -4,6 +4,7 @@ from gym_trading_env.utils.market_features import (
     FEATURES_MARKET,
     FEATURES_MARKET_OBS,
     FEATURES_RISK_CONTEXT,
+    FEATURES_HTF_CONTEXT,
     build_market_features,
 )
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
@@ -94,6 +95,34 @@ def test_features_risk_context_schema():
     assert FEATURES_RISK_CONTEXT == expected
     _assert_unique(FEATURES_RISK_CONTEXT, "FEATURES_RISK_CONTEXT")
     assert all("train_percentile" not in name for name in FEATURES_RISK_CONTEXT)
+
+
+def test_features_htf_context_schema():
+    expected = [
+        "daily_ret_1",
+        "daily_ret_3",
+        "daily_ret_5",
+        "daily_slope_5",
+        "daily_slope_10",
+        "daily_close_pos_in_range_5",
+        "daily_close_pos_in_range_10",
+        "daily_range_rolling_percentile",
+        "daily_ready_flag",
+        "h1_ret_1",
+        "h1_ret_3",
+        "h1_ret_6",
+        "h1_ret_12",
+        "h1_slope_6",
+        "h1_slope_12",
+        "h1_close_pos_in_range_6",
+        "h1_close_pos_in_range_12",
+        "h1_range_rolling_percentile",
+        "last_completed_h1_age_frac",
+        "h1_ready_flag",
+    ]
+    assert FEATURES_HTF_CONTEXT == expected
+    _assert_unique(FEATURES_HTF_CONTEXT, "FEATURES_HTF_CONTEXT")
+    assert all("train_percentile" not in name for name in FEATURES_HTF_CONTEXT)
 
 
 def test_features_agent_schema():

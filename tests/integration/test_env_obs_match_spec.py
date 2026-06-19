@@ -10,6 +10,7 @@ from tests.oracles.market_spec_oracle import (
     FEATURES_MARKET,
     FEATURES_MARKET_OBS,
     FEATURES_RISK_CONTEXT,
+    FEATURES_HTF_CONTEXT,
     window_slice_spec_by_cols,
 )
 from tests.oracles.agent_spec_oracle import (
@@ -226,6 +227,7 @@ def test_env_obs_match_spec(mode, tmp_path):
         got_mkt = obs["market_seq"]
         got_agent = obs["agent_state"]
         got_risk = obs.get("risk_context")
+        got_htf = obs.get("htf_context")
 
         exp_mkt = window_slice_spec_by_cols(
             df_market_full,
@@ -273,8 +275,19 @@ def test_env_obs_match_spec(mode, tmp_path):
                 rtol=1e-6,
                 atol=1e-6,
             )
+            exp_htf = df_market_full.iloc[cur_i][FEATURES_HTF_CONTEXT].to_numpy(dtype=np.float32)
+            assert got_htf is not None
+            assert_array_allclose_with_diff(
+                got_htf.reshape(1, -1),
+                exp_htf.reshape(1, -1),
+                col_labels=FEATURES_HTF_CONTEXT,
+                prefix=f"[mode={mode} step={step_k} cur_i={cur_i} htf_context]",
+                rtol=1e-6,
+                atol=1e-6,
+            )
         else:
             assert got_risk is None
+            assert got_htf is None
 
         # action：这里用 HOLD
         obs, *_ = env.step(action_to_index(env, Action.HOLD))

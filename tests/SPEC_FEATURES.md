@@ -2,7 +2,7 @@
 
 本文件是测试契约。测试 oracle 必须按本文公式独立计算，不能直接引用生产实现。
 
-当前阶段修改正式 OBS 的 `market_seq` 与 `risk_context`；`FEATURES_MARKET`、`agent_state`、
+当前阶段修改正式 OBS 的 `market_seq`、`risk_context` 与 `htf_context`；`FEATURES_MARKET`、`agent_state`、
 `action_mask` 契约保持不变。
 
 ## Common Rules
@@ -451,6 +451,173 @@ atr_ready_flag =
 ```
 
 所有 `risk_context` 字段必须 finite。invalid row 或 warmup 不足时输出 `0`。
+
+## HTF Context (`FEATURES_HTF_CONTEXT`)
+
+`htf_context` 是 obs 模式下的当前行高周期上下文向量，不是时间窗口。字段顺序固定：
+
+```text
+daily_ret_1
+daily_ret_3
+daily_ret_5
+daily_slope_5
+daily_slope_10
+daily_close_pos_in_range_5
+daily_close_pos_in_range_10
+daily_range_rolling_percentile
+daily_ready_flag
+h1_ret_1
+h1_ret_3
+h1_ret_6
+h1_ret_12
+h1_slope_6
+h1_slope_12
+h1_close_pos_in_range_6
+h1_close_pos_in_range_12
+h1_range_rolling_percentile
+last_completed_h1_age_frac
+h1_ready_flag
+```
+
+该向量只使用当前行 `t` 和历史行 `<= t`。它不使用 train-fitted percentile。
+字段名不得包含 `train_percentile`，除非未来引入显式 split-aware fit artifact。
+
+### Completed Daily Context
+
+Daily context 只使用当前 `day_id` 之前已经完成的交易日。当前交易日的完整日线
+high/low/close 不得参与当前日任意行的 `daily_*` 字段。
+
+日线聚合：
+
+```text
+for each day_id d:
+  daily_close_d = last valid C_t in day d
+  daily_high_d = max valid H_t in day d
+  daily_low_d = min valid L_t in day d
+  daily_range_d = max(daily_high_d - daily_low_d, 0)
+```
+
+对当前行 `t`：
+
+```text
+current_day = day_id_t
+last = current_day - 1
+```
+
+如果 `last < 0`、当前行 invalid、或所需历史不足，相关字段输出 `0`。
+
+收益率：
+
+```text
+daily_ret_N =
+  log(daily_close_last / daily_close_{last-N})
+  if last-N >= 0 and both closes are finite and > eps else 0
+```
+
+斜率：
+
+```text
+daily_slope_N = rolling_slope(log(daily_close), N) at index last
+```
+
+若 `last + 1 < N` 或窗口内存在非 finite 值，输出 `0`。
+
+区间位置：
+
+```text
+daily_close_pos_in_range_N =
+  clip(2 * (daily_close_last - min(daily_low_{last-N+1:last})) /
+       max(max(daily_high_{last-N+1:last}) - min(daily_low_{last-N+1:last}), eps) - 1,
+       -1, 1)
+```
+
+若历史不足，输出 `0`。
+
+日线 range percentile：
+
+```text
+daily_range_rolling_percentile =
+  causal_rolling_percentile(daily_range, window=240, min_periods=10) at index last
+```
+
+Ready flag：
+
+```text
+daily_ready_flag =
+  1 if valid_t and there are at least 10 completed prior trading days with valid daily close else 0
+```
+
+### Completed H1 Context
+
+H1 context 使用有效 1m bar 的顺序构造，不按自然时间跨休市重采样。
+
+```text
+valid_rows = all rows with mask_t > 0 in chronological order
+every 60 valid rows form one completed h1 bar
+h1_close_h = close of the 60th valid row in h1 bar h
+h1_high_h = max high over those 60 valid rows
+h1_low_h = min low over those 60 valid rows
+h1_end_row_h = row index of the 60th valid row
+```
+
+对当前行 `t`：
+
+```text
+h = last completed h1 bar with h1_end_row_h <= t
+```
+
+当前未完成 H1 bar 不进入 `h1_*` 字段。如果没有 completed H1 bar、当前行 invalid、或所需历史不足，
+相关字段输出 `0`。
+
+收益率：
+
+```text
+h1_ret_N =
+  log(h1_close_h / h1_close_{h-N})
+  if h-N >= 0 and both closes are finite and > eps else 0
+```
+
+斜率：
+
+```text
+h1_slope_N = rolling_slope(log(h1_close), N) at index h
+```
+
+若 `h + 1 < N` 或窗口内存在非 finite 值，输出 `0`。
+
+区间位置：
+
+```text
+h1_close_pos_in_range_N =
+  clip(2 * (h1_close_h - min(h1_low_{h-N+1:h})) /
+       max(max(h1_high_{h-N+1:h}) - min(h1_low_{h-N+1:h}), eps) - 1,
+       -1, 1)
+```
+
+若历史不足，输出 `0`。
+
+H1 range percentile：
+
+```text
+h1_range_rolling_percentile =
+  causal_rolling_percentile(h1_range, window=240, min_periods=12) at index h
+```
+
+Age：
+
+```text
+last_completed_h1_age_frac =
+  clip(valid_1m_bars_since_h1_end_row_h / 60, 0, 1)
+```
+
+Ready flag：
+
+```text
+h1_ready_flag =
+  1 if valid_t and at least 12 completed h1 bars are available at t else 0
+```
+
+所有 `htf_context` 字段必须 finite。invalid row 或 warmup 不足时输出 `0`。
 
 ## Agent RAW (`FEATURES_AGENT`)
 

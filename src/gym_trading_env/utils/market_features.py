@@ -72,6 +72,32 @@ FEATURES_RISK_CONTEXT: List[str] = [
 ]
 
 # -----------------------------
+# Higher-timeframe context features - OBS (normalized, current row only)
+# -----------------------------
+FEATURES_HTF_CONTEXT: List[str] = [
+    "daily_ret_1",
+    "daily_ret_3",
+    "daily_ret_5",
+    "daily_slope_5",
+    "daily_slope_10",
+    "daily_close_pos_in_range_5",
+    "daily_close_pos_in_range_10",
+    "daily_range_rolling_percentile",
+    "daily_ready_flag",
+    "h1_ret_1",
+    "h1_ret_3",
+    "h1_ret_6",
+    "h1_ret_12",
+    "h1_slope_6",
+    "h1_slope_12",
+    "h1_close_pos_in_range_6",
+    "h1_close_pos_in_range_12",
+    "h1_range_rolling_percentile",
+    "last_completed_h1_age_frac",
+    "h1_ready_flag",
+]
+
+# -----------------------------
 # Market-side features (sequence) - RAW
 # -----------------------------
 FEATURES_MARKET: List[str] = [
@@ -110,6 +136,7 @@ REQUIRED_MARKET_COLS = (
     + FEATURES_MARKET
     + FEATURES_MARKET_OBS
     + FEATURES_RISK_CONTEXT
+    + FEATURES_HTF_CONTEXT
 )
 
 
@@ -210,7 +237,168 @@ def _dynamic_5m_macd(close: np.ndarray, valid: np.ndarray) -> tuple[np.ndarray, 
     return macd, signal, hist, ready
 
 
-def _add_obs_features_inplace(df: pd.DataFrame) -> None:
+def _range_position(close: float, lows: np.ndarray, highs: np.ndarray, eps: float = 1e-12) -> float:
+    lo = float(np.nanmin(lows)) if lows.size else np.nan
+    hi = float(np.nanmax(highs)) if highs.size else np.nan
+    if not (np.isfinite(close) and np.isfinite(lo) and np.isfinite(hi)):
+        return 0.0
+    denom = max(hi - lo, eps)
+    return float(np.clip(2.0 * (close - lo) / denom - 1.0, -1.0, 1.0))
+
+
+def _build_htf_context_frame(
+    df: pd.DataFrame,
+    *,
+    close: np.ndarray,
+    high: np.ndarray,
+    low: np.ndarray,
+    valid: np.ndarray,
+    mask: np.ndarray,
+    eps: float = 1e-12,
+) -> pd.DataFrame:
+    n = len(df)
+    out = np.zeros((n, len(FEATURES_HTF_CONTEXT)), dtype=float)
+    col = {name: i for i, name in enumerate(FEATURES_HTF_CONTEXT)}
+
+    # Daily context: only completed trading days strictly before the current day.
+    if "day_id" in df.columns and n:
+        day_values = df["day_id"].to_numpy(copy=False)
+        day_order = pd.Index(pd.unique(day_values))
+        daily_src = pd.DataFrame(
+            {
+                "day_id": day_values,
+                "close": close,
+                "high": high,
+                "low": low,
+                "valid": valid.astype(bool),
+            },
+            index=df.index,
+        )
+        daily_valid = daily_src[daily_src["valid"]]
+        if not daily_valid.empty:
+            grouped = daily_valid.groupby("day_id", sort=False)
+            summary = pd.DataFrame(
+                {
+                    "close": grouped["close"].last(),
+                    "high": grouped["high"].max(),
+                    "low": grouped["low"].min(),
+                }
+            ).reindex(day_order)
+            d_close = summary["close"].to_numpy(dtype=float)
+            d_high = summary["high"].to_numpy(dtype=float)
+            d_low = summary["low"].to_numpy(dtype=float)
+            d_range = np.maximum(d_high - d_low, 0.0)
+            d_log_close = np.log(np.maximum(d_close, eps))
+            d_slope5 = _rolling_slope(d_log_close, 5)
+            d_slope10 = _rolling_slope(d_log_close, 10)
+            d_range_pct = _rolling_percentile_causal(d_range, window=240, min_periods=10)
+            d_ready = np.isfinite(d_close) & (d_close > eps)
+            day_to_i = {day: i for i, day in enumerate(day_order)}
+            day_i = np.array([day_to_i.get(day, -1) for day in day_values], dtype=int)
+
+            for i in range(n):
+                di = int(day_i[i])
+                if di <= 0 or not bool(valid[i]):
+                    continue
+                last = di - 1
+                last_close = d_close[last]
+                if not np.isfinite(last_close) or last_close <= eps:
+                    continue
+                for lookback, name in [(1, "daily_ret_1"), (3, "daily_ret_3"), (5, "daily_ret_5")]:
+                    ref_i = last - lookback
+                    if ref_i >= 0 and np.isfinite(d_close[ref_i]) and d_close[ref_i] > eps:
+                        out[i, col[name]] = np.log(last_close / d_close[ref_i])
+                out[i, col["daily_slope_5"]] = d_slope5[last] if last >= 4 else 0.0
+                out[i, col["daily_slope_10"]] = d_slope10[last] if last >= 9 else 0.0
+                if last >= 4:
+                    out[i, col["daily_close_pos_in_range_5"]] = _range_position(
+                        last_close,
+                        d_low[last - 4:last + 1],
+                        d_high[last - 4:last + 1],
+                        eps=eps,
+                    )
+                if last >= 9:
+                    out[i, col["daily_close_pos_in_range_10"]] = _range_position(
+                        last_close,
+                        d_low[last - 9:last + 1],
+                        d_high[last - 9:last + 1],
+                        eps=eps,
+                )
+                out[i, col["daily_range_rolling_percentile"]] = d_range_pct[last] if last >= 0 else 0.0
+                out[i, col["daily_ready_flag"]] = 1.0 if int(np.sum(d_ready[:di])) >= 10 else 0.0
+
+    # H1 context: completed 60-valid-minute bars in valid 1m sequence order.
+    valid_rows = np.flatnonzero(valid)
+    completed_h1 = int(valid_rows.size // 60)
+    if completed_h1 > 0:
+        h1_close = np.zeros(completed_h1, dtype=float)
+        h1_high = np.zeros(completed_h1, dtype=float)
+        h1_low = np.zeros(completed_h1, dtype=float)
+        h1_end_row = np.zeros(completed_h1, dtype=int)
+        for h in range(completed_h1):
+            rows = valid_rows[h * 60:(h + 1) * 60]
+            h1_close[h] = float(close[rows[-1]])
+            h1_high[h] = float(np.nanmax(high[rows]))
+            h1_low[h] = float(np.nanmin(low[rows]))
+            h1_end_row[h] = int(rows[-1])
+        h1_log_close = np.log(np.maximum(h1_close, eps))
+        h1_slope6 = _rolling_slope(h1_log_close, 6)
+        h1_slope12 = _rolling_slope(h1_log_close, 12)
+        h1_range_pct = _rolling_percentile_causal(
+            np.maximum(h1_high - h1_low, 0.0),
+            window=240,
+            min_periods=12,
+        )
+        h1_last_by_row = np.searchsorted(h1_end_row, np.arange(n), side="right") - 1
+        valid_ord_by_row = np.full(n, -1, dtype=int)
+        valid_ord_by_row[valid_rows] = np.arange(valid_rows.size, dtype=int)
+        valid_ord_by_row = np.maximum.accumulate(valid_ord_by_row)
+        for i in range(n):
+            if not bool(valid[i]):
+                continue
+            h = int(h1_last_by_row[i])
+            if h < 0:
+                continue
+            last_close = h1_close[h]
+            if not np.isfinite(last_close) or last_close <= eps:
+                continue
+            for lookback, name in [(1, "h1_ret_1"), (3, "h1_ret_3"), (6, "h1_ret_6"), (12, "h1_ret_12")]:
+                ref_i = h - lookback
+                if ref_i >= 0 and np.isfinite(h1_close[ref_i]) and h1_close[ref_i] > eps:
+                    out[i, col[name]] = np.log(last_close / h1_close[ref_i])
+            out[i, col["h1_slope_6"]] = h1_slope6[h] if h >= 5 else 0.0
+            out[i, col["h1_slope_12"]] = h1_slope12[h] if h >= 11 else 0.0
+            if h >= 5:
+                out[i, col["h1_close_pos_in_range_6"]] = _range_position(
+                    last_close,
+                    h1_low[h - 5:h + 1],
+                    h1_high[h - 5:h + 1],
+                    eps=eps,
+                )
+            if h >= 11:
+                out[i, col["h1_close_pos_in_range_12"]] = _range_position(
+                    last_close,
+                    h1_low[h - 11:h + 1],
+                    h1_high[h - 11:h + 1],
+                    eps=eps,
+                )
+            out[i, col["h1_range_rolling_percentile"]] = h1_range_pct[h]
+            end_valid_ord = (h + 1) * 60 - 1
+            out[i, col["last_completed_h1_age_frac"]] = float(
+                np.clip(max(valid_ord_by_row[i] - end_valid_ord, 0) / 60.0, 0.0, 1.0)
+            )
+            out[i, col["h1_ready_flag"]] = 1.0 if (h + 1) >= 12 else 0.0
+
+    out *= mask.reshape(-1, 1)
+    out = np.nan_to_num(out, nan=0.0, posinf=0.0, neginf=0.0)
+    return pd.DataFrame(
+        out.astype(float, copy=False),
+        index=df.index,
+        columns=FEATURES_HTF_CONTEXT,
+    )
+
+
+def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     """Generate the formal v2 market_seq fields from raw market features."""
     eps = 1e-12
     m = df.get("mask_t", pd.Series(1.0, index=df.index)).astype(float)
@@ -446,6 +634,9 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
     df["dyn5m_macd_cross_dir"] = sign
     df["dyn5m_macd_ready_flag"] = macd_ready
 
+    htf_context = _build_htf_context_frame(df, close=C, high=H, low=L, valid=valid, mask=mask_np, eps=eps)
+    df = pd.concat([df, htf_context], axis=1)
+
     no_mask = {
         "volume_impulse_ready_flag",
         "oi_impulse_ready_flag",
@@ -475,6 +666,18 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> None:
             .fillna(0.0)
             .astype(float)
         )
+
+    for col in FEATURES_HTF_CONTEXT:
+        if col not in df.columns:
+            df[col] = 0.0
+        df[col] = (
+            pd.to_numeric(df[col], errors="coerce")
+            .replace([np.inf, -np.inf], np.nan)
+            .fillna(0.0)
+            .astype(float)
+        )
+
+    return df
 
 
 # -----------------------------
@@ -622,10 +825,12 @@ def _build_market_fx(df_1m: pd.DataFrame, tz: str = "Asia/Singapore", rollover_h
         df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
 
     # obs
-    _add_obs_features_inplace(df)
+    df = _add_obs_features_inplace(df)
     for col in FEATURES_MARKET_OBS:
         df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
     for col in FEATURES_RISK_CONTEXT:
+        df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
+    for col in FEATURES_HTF_CONTEXT:
         df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
 
     return df[REQUIRED_MARKET_COLS]
@@ -830,12 +1035,16 @@ def _build_market_future(
         X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
 
     # obs
-    _add_obs_features_inplace(X)
+    X = _add_obs_features_inplace(X)
     for col in FEATURES_MARKET_OBS:
         if col not in X.columns:
             X[col] = 0.0
         X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
     for col in FEATURES_RISK_CONTEXT:
+        if col not in X.columns:
+            X[col] = 0.0
+        X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
+    for col in FEATURES_HTF_CONTEXT:
         if col not in X.columns:
             X[col] = 0.0
         X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
