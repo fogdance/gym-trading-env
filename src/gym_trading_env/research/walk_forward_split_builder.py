@@ -187,6 +187,7 @@ def _build_entry_eval_config(template: dict, *, split_name: str, raw_path: Path,
     out["version"] = split_name
     out["data"] = dict(out.get("data", {}) or {})
     out["data"]["path"] = str(raw_path.resolve())
+    out["data"]["contract"] = split_name
     out["walk_forward"] = dict(out.get("walk_forward", {}) or {})
     out["walk_forward"]["split_manifest_path"] = str(split_path.resolve())
     return out

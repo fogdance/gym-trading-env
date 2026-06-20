@@ -130,7 +130,7 @@ def test_build_walk_forward_split_assets_are_chronological_and_train_only(tmp_pa
     entry_eval = yaml.safe_load(Path(summary["entry_eval_config"]).read_text())
     assert entry_eval["version"] == "test_split_v1"
     assert entry_eval["data"]["path"] == str(raw_copy.resolve())
-    assert entry_eval["data"]["contract"] == "TEST_CONTRACT"
+    assert entry_eval["data"]["contract"] == "test_split_v1"
     assert entry_eval["walk_forward"]["split_manifest_path"] == str(split_manifest.resolve())
 
     train_env = yaml.safe_load(Path(summary["train_env_config"]).read_text())

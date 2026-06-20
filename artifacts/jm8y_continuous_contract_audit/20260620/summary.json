@@ -1,0 +1,37 @@
+{
+  "product": "JM",
+  "raw_csv": "/home/v/Documents/work/dreamerv3/data/8Y_DCE_JM2601_1m.csv",
+  "raw_contract_columns": [],
+  "symbol_metadata_available": false,
+  "main_continuous_confirmed": true,
+  "classification": "USER_CONFIRMED_MAIN_CONTINUOUS_CONTRACT",
+  "trading_days": 1921,
+  "date_start": 20180102,
+  "date_end": 20251202,
+  "candidate_roll_risk_days": 41,
+  "low_valid_ratio_days": 136,
+  "max_abs_open_gap_pct": 0.17903733693207377,
+  "max_abs_oi_gap_pct": 1.1756425535742394,
+  "max_volume_ratio": 4.162347108419428,
+  "min_volume_ratio": 0.3071361207167557,
+  "thresholds": {
+    "price_gap_pct": 0.03,
+    "oi_gap_pct": 0.2,
+    "volume_ratio_hi": 4.0,
+    "volume_ratio_lo": 0.25,
+    "robust_z": 8.0,
+    "low_valid_ratio": 0.8,
+    "large_calendar_gap_days": 5
+  },
+  "phase_totals": {
+    "night_rows": 214400,
+    "day_rows": 431988,
+    "other_rows": 0
+  },
+  "outputs": {
+    "daily_contract_audit": "artifacts/jm8y_continuous_contract_audit/20260620/daily_contract_audit.csv",
+    "roll_gap_distribution": "artifacts/jm8y_continuous_contract_audit/20260620/roll_gap_distribution.csv",
+    "roll_event_table": "artifacts/jm8y_continuous_contract_audit/20260620/roll_event_table.csv",
+    "summary": "artifacts/jm8y_continuous_contract_audit/20260620/summary.json"
+  }
+}
