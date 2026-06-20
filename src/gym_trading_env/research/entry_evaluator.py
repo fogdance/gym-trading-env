@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 import yaml
 
-from gym_trading_env.utils.market_features import FEATURES_MARKET_OBS, build_market_features
+from gym_trading_env.utils.market_features import FEATURES_MARKET_OBS_OUTPUT, build_market_features
 from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
 from gym_trading_env.utils.time_contract import ensure_feature_tz_index
 
@@ -639,7 +639,7 @@ def feature_names() -> list[str]:
     return [
         f"{agg}:{name}"
         for agg in ("latest", "mean", "std", "delta")
-        for name in FEATURES_MARKET_OBS
+        for name in FEATURES_MARKET_OBS_OUTPUT
     ]
 
 
@@ -647,7 +647,7 @@ def flattened_feature_names(window_size: int) -> list[str]:
     names = []
     for offset in range(int(window_size)):
         rel = offset - int(window_size) + 1
-        for feature in FEATURES_MARKET_OBS:
+        for feature in FEATURES_MARKET_OBS_OUTPUT:
             names.append(f"t{rel}:{feature}")
     return names
 
@@ -657,7 +657,7 @@ def build_flattened_entry_features(
     candidates: pd.DataFrame,
     config: EntryEvalConfig,
 ) -> tuple[np.ndarray, list[str]]:
-    X_all = market[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32)
+    X_all = market[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
     rows = candidates["decision_row"].to_numpy(dtype=np.int64)
     features = [
         flatten_market_window(_market_window(X_all, int(row), config.data.window_size))
@@ -672,7 +672,7 @@ def build_entry_dataset(
 ) -> tuple[pd.DataFrame, np.ndarray, list[str]]:
     context = build_evaluation_context(market)
     rows = candidate_rows(market, config, context=context)
-    X_all = market[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32)
+    X_all = market[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
     records = []
     features = []
 

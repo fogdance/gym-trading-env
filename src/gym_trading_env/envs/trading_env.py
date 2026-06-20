@@ -40,7 +40,13 @@ from gym_trading_env.envs.target_transition import (
 )
 from gym_trading_env.envs.config import TradingConfig
 from gym_trading_env.utils.decimal_util import D, D0, D1, D100, quantize_money, number_to_float
-from gym_trading_env.utils.market_features import FEATURES_MARKET, FEATURES_MARKET_OBS, FEATURES_RISK_CONTEXT, FEATURES_HTF_CONTEXT
+from gym_trading_env.utils.market_features import (
+    FEATURES_MARKET,
+    FEATURES_MARKET_OBS,
+    FEATURES_MARKET_OBS_OUTPUT,
+    FEATURES_RISK_CONTEXT_OUTPUT,
+    FEATURES_HTF_CONTEXT_OUTPUT,
+)
 from gym_trading_env.utils.bar_source import CsvBarSource, JuejinBarSource
 from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ts_to_naive_str, yyyymmdd_int
 from gym_trading_env.utils.plot_intraday import save_intraday_html
@@ -116,7 +122,7 @@ class CustomTradingEnv(gym.Env):
         self._obs_feature_mode = str(mode)
         self._use_obs_features = (self._obs_feature_mode == "obs")
         if self._use_obs_features:
-            self._OBS_FEATURES_MARKET = FEATURES_MARKET_OBS
+            self._OBS_FEATURES_MARKET = FEATURES_MARKET_OBS_OUTPUT
             self._OBS_FEATURES_AGENT = FEATURES_AGENT_OBS
         else:
             self._OBS_FEATURES_MARKET = FEATURES_MARKET  # default = old behavior
@@ -124,10 +130,10 @@ class CustomTradingEnv(gym.Env):
 
         self._F_MARKET = len(self._OBS_FEATURES_MARKET)
         self._F_AGENT  = len(self._OBS_FEATURES_AGENT)
-        self._use_risk_context = self._use_obs_features
-        self._F_RISK = len(FEATURES_RISK_CONTEXT)
-        self._use_htf_context = self._use_obs_features
-        self._F_HTF = len(FEATURES_HTF_CONTEXT)
+        self._use_risk_context = self._use_obs_features and bool(FEATURES_RISK_CONTEXT_OUTPUT)
+        self._F_RISK = len(FEATURES_RISK_CONTEXT_OUTPUT) if self._use_risk_context else 0
+        self._use_htf_context = self._use_obs_features and bool(FEATURES_HTF_CONTEXT_OUTPUT)
+        self._F_HTF = len(FEATURES_HTF_CONTEXT_OUTPUT) if self._use_htf_context else 0
 
         # ---- sanity: store day_len should match env DAY_LEN policy ----
         if int(getattr(self.bar_source.store, "day_len", self.DAY_LEN)) != int(self.DAY_LEN):
@@ -1949,15 +1955,16 @@ class CustomTradingEnv(gym.Env):
             },
             "daily": {},
         }
-        if use_obs:
+        if use_obs and self._use_risk_context:
             snap["market"]["risk_context"] = (
                 self.bar_source.store.X_risk_context[i, :].astype(np.float32, copy=False)
             )
-            snap["market"]["risk_context_features"] = list(FEATURES_RISK_CONTEXT)
+            snap["market"]["risk_context_features"] = list(FEATURES_RISK_CONTEXT_OUTPUT)
+        if use_obs and self._use_htf_context:
             snap["market"]["htf_context"] = (
                 self.bar_source.store.X_htf_context[i, :].astype(np.float32, copy=False)
             )
-            snap["market"]["htf_context_features"] = list(FEATURES_HTF_CONTEXT)
+            snap["market"]["htf_context_features"] = list(FEATURES_HTF_CONTEXT_OUTPUT)
 
         # optional daily extras (only extraction)
         if getattr(self, "_use_daily_context", False):
@@ -3226,8 +3233,9 @@ class CustomTradingEnv(gym.Env):
             "agent_state": agent_state,
             "action_mask": self._action_mask_from_table(transition_table),
         }
-        if use_obs:
+        if use_obs and self._use_risk_context:
             out["risk_context"] = self.bar_source.store.X_risk_context[end_i, :].astype(np.float32, copy=False)
+        if use_obs and self._use_htf_context:
             out["htf_context"] = self.bar_source.store.X_htf_context[end_i, :].astype(np.float32, copy=False)
 
         # daily_context / daily_seq_7：不再由 env 自己维护，改为 store 提供（语义不变）

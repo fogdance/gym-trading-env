@@ -58,6 +58,12 @@ FEATURES_MARKET_OBS: List[str] = [
     "dyn5m_macd_ready_flag",
 ]
 
+# Full compute lists above are the feature contract for store construction and
+# formula audits. Only *_OUTPUT lists below define what the agent actually sees.
+# To crop obs for faster experiments, edit *_OUTPUT only; do not remove compute
+# columns unless the feature is being deleted from the contract.
+FEATURES_MARKET_OBS_OUTPUT: List[str] = list(FEATURES_MARKET_OBS)
+
 # -----------------------------
 # Risk context features - OBS (normalized, current row only)
 # -----------------------------
@@ -70,6 +76,8 @@ FEATURES_RISK_CONTEXT: List[str] = [
     "intraday_volatility_percentile",
     "atr_ready_flag",
 ]
+
+FEATURES_RISK_CONTEXT_OUTPUT: List[str] = list(FEATURES_RISK_CONTEXT)
 
 # -----------------------------
 # Higher-timeframe context features - OBS (normalized, current row only)
@@ -96,6 +104,33 @@ FEATURES_HTF_CONTEXT: List[str] = [
     "last_completed_h1_age_frac",
     "h1_ready_flag",
 ]
+
+FEATURES_HTF_CONTEXT_OUTPUT: List[str] = list(FEATURES_HTF_CONTEXT)
+
+
+def _assert_output_subset(output: List[str], compute: List[str], name: str) -> None:
+    duplicates = [x for x in output if output.count(x) > 1]
+    if duplicates:
+        raise ValueError(f"{name} contains duplicate output features: {sorted(set(duplicates))}")
+    missing = [x for x in output if x not in compute]
+    if missing:
+        raise ValueError(f"{name} references features not present in compute contract: {missing}")
+
+
+def validate_obs_output_features() -> None:
+    _assert_output_subset(FEATURES_MARKET_OBS_OUTPUT, FEATURES_MARKET_OBS, "FEATURES_MARKET_OBS_OUTPUT")
+    _assert_output_subset(FEATURES_RISK_CONTEXT_OUTPUT, FEATURES_RISK_CONTEXT, "FEATURES_RISK_CONTEXT_OUTPUT")
+    _assert_output_subset(FEATURES_HTF_CONTEXT_OUTPUT, FEATURES_HTF_CONTEXT, "FEATURES_HTF_CONTEXT_OUTPUT")
+
+
+OBS_OUTPUT_FEATURES_BY_KEY = {
+    "market_seq": FEATURES_MARKET_OBS_OUTPUT,
+    "risk_context": FEATURES_RISK_CONTEXT_OUTPUT,
+    "htf_context": FEATURES_HTF_CONTEXT_OUTPUT,
+}
+
+
+validate_obs_output_features()
 
 # -----------------------------
 # Market-side features (sequence) - RAW

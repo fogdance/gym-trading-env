@@ -9,9 +9,9 @@ import pandas as pd
 
 from gym_trading_env.utils.market_features import (
     FEATURES_MARKET,
-    FEATURES_MARKET_OBS,
-    FEATURES_RISK_CONTEXT,
-    FEATURES_HTF_CONTEXT,
+    FEATURES_MARKET_OBS_OUTPUT,
+    FEATURES_RISK_CONTEXT_OUTPUT,
+    FEATURES_HTF_CONTEXT_OUTPUT,
 )
 from gym_trading_env.utils.daily_features import build_daily_context_and_seq, DAILY_SEQ_LEN
 from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ
@@ -76,9 +76,9 @@ class MarketStore:
 
     # NEW: global feature matrices (aligned with df_market row order)
     X_market_raw: np.ndarray      # float32 [n_rows, F_raw]  (FEATURES_MARKET)
-    X_market_obs: np.ndarray      # float32 [n_rows, F_obs]  (FEATURES_MARKET_OBS)
-    X_risk_context: np.ndarray    # float32 [n_rows, F_risk] (FEATURES_RISK_CONTEXT)
-    X_htf_context: np.ndarray     # float32 [n_rows, F_htf]  (FEATURES_HTF_CONTEXT)
+    X_market_obs: np.ndarray      # float32 [n_rows, F_obs]  (FEATURES_MARKET_OBS_OUTPUT)
+    X_risk_context: np.ndarray    # float32 [n_rows, F_risk] (FEATURES_RISK_CONTEXT_OUTPUT)
+    X_htf_context: np.ndarray     # float32 [n_rows, F_htf]  (FEATURES_HTF_CONTEXT_OUTPUT)
 
     # day structures
     days: np.ndarray              # object [num_days]
@@ -180,7 +180,7 @@ class MarketStore:
 
         # ---- daily tensors ----
         F_raw = len(FEATURES_MARKET)
-        F_obs = len(FEATURES_MARKET_OBS)
+        F_obs = len(FEATURES_MARKET_OBS_OUTPUT)
 
         num_days = int(len(days))
         daily_mask = np.zeros((num_days, day_len), dtype=np.float32)
@@ -188,9 +188,9 @@ class MarketStore:
         daily_X_obs = np.zeros((num_days, day_len, F_obs), dtype=np.float32)
 
         X_raw_all = df_market[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=True)
-        X_obs_all = df_market[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32, copy=True)
-        X_risk_all = df_market[FEATURES_RISK_CONTEXT].to_numpy(dtype=np.float32, copy=True)
-        X_htf_all = df_market[FEATURES_HTF_CONTEXT].to_numpy(dtype=np.float32, copy=True)
+        X_obs_all = df_market[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32, copy=True)
+        X_risk_all = df_market[FEATURES_RISK_CONTEXT_OUTPUT].to_numpy(dtype=np.float32, copy=True)
+        X_htf_all = df_market[FEATURES_HTF_CONTEXT_OUTPUT].to_numpy(dtype=np.float32, copy=True)
 
         # Fill per-day blocks
         for di, (s, e) in enumerate(day_ranges):
@@ -372,9 +372,9 @@ class MarketStore:
 
         # --- global feature matrices ---
         self.X_market_raw[s:e, :] = df_market_day[FEATURES_MARKET].to_numpy(dtype=np.float32, copy=False)
-        self.X_market_obs[s:e, :] = df_market_day[FEATURES_MARKET_OBS].to_numpy(dtype=np.float32, copy=False)
-        self.X_risk_context[s:e, :] = df_market_day[FEATURES_RISK_CONTEXT].to_numpy(dtype=np.float32, copy=False)
-        self.X_htf_context[s:e, :] = df_market_day[FEATURES_HTF_CONTEXT].to_numpy(dtype=np.float32, copy=False)
+        self.X_market_obs[s:e, :] = df_market_day[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32, copy=False)
+        self.X_risk_context[s:e, :] = df_market_day[FEATURES_RISK_CONTEXT_OUTPUT].to_numpy(dtype=np.float32, copy=False)
+        self.X_htf_context[s:e, :] = df_market_day[FEATURES_HTF_CONTEXT_OUTPUT].to_numpy(dtype=np.float32, copy=False)
 
         # --- daily tensors (futures strict reshape is safe) ---
         self.daily_mask[di, :] = self.row_mask[s:e]
