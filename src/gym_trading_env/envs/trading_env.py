@@ -1276,6 +1276,7 @@ class CustomTradingEnv(gym.Env):
             obs = self._get_obs()
             reward = self.reward_function(obs)  # 或者给 0，但更推荐一致结算
             self._update_reward_audit_state(reward)
+            self._end_reward_episode(reward)
             info = self._get_info()
 
             # 在 episode 走到头时也记录一下最后一个 action
@@ -1337,6 +1338,7 @@ class CustomTradingEnv(gym.Env):
         # Calculate reward
         reward = self.reward_function(obs)
         self._update_reward_audit_state(reward)
+        self._end_reward_episode(reward)
         info = self._get_info()
 
         if self.config.debug.debug_enabled and (self.truncated or self.terminated):
@@ -1987,12 +1989,43 @@ class CustomTradingEnv(gym.Env):
     def _start_reward_episode(self) -> None:
         self.reward_function = self._make_reward_function()
         self._reset_reward_episode_sums()
+        self._reward_episode_ended = False
         self.reward_function.on_episode_start(self._reward_lifecycle_context())
         self._reward_debug = validate_reward_audit(
             self.reward_function,
             reward_name=self._reward_name(),
             returned_reward=None,
         )
+
+    def _end_reward_episode(self, reward) -> None:
+        if getattr(self, "_reward_episode_ended", False):
+            return
+        if not (self.terminated or self.truncated):
+            return
+
+        reward_debug = dict(getattr(self, "_reward_debug", {}) or {})
+        context = self._reward_lifecycle_context()
+        context.update(
+            {
+                "terminated": bool(self.terminated),
+                "truncated": bool(self.truncated),
+                "reward": reward,
+                "reward_debug": reward_debug,
+                "reward_episode_sums": dict(getattr(self, "_reward_episode_sums", {}) or {}),
+            }
+        )
+        try:
+            self.reward_function.on_episode_end(context)
+            validate_reward_audit(
+                self.reward_function,
+                reward_name=self._reward_name(),
+                returned_reward=reward,
+            )
+        finally:
+            # End hooks are bookkeeping-only here; terminal info must keep the
+            # transition reward debug produced by __call__.
+            self.reward_function._set_reward_debug(reward_debug)
+        self._reward_episode_ended = True
 
     def _reward_lifecycle_context(self) -> dict[str, object]:
         current_price = getattr(self, "current_price", getattr(self, "_last_valid_price", D0))
