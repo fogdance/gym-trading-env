@@ -63,12 +63,14 @@ V2_EXTRA_KEYS = [
 ]
 
 
-def _config_with_reward(tmp_path, reward_name):
+def _config_with_reward(tmp_path, reward_name, *, reward_scale_cash=None):
     if not BASE_CONFIG.exists():
         pytest.skip(f"external test env config is unavailable: {BASE_CONFIG}")
     data = yaml.safe_load(BASE_CONFIG.read_text())
     data["training"]["reward_function"] = reward_name
     data["training"]["randomize_start"] = False
+    if reward_scale_cash is not None:
+        data["trading"]["reward_scale_cash"] = reward_scale_cash
     path = tmp_path / f"{reward_name}.yaml"
     path.write_text(yaml.safe_dump(data, sort_keys=False))
     return path
@@ -172,5 +174,30 @@ def test_env_info_logs_v2_risk_reward_components_and_extra_keys(tmp_path, env_cw
         assert float(info["log/env/reward/total"]) == pytest.approx(float(reward))
         for key in V2_DISABLED:
             assert float(info[f"log/env/reward/{key}"]) == pytest.approx(0.0), key
+    finally:
+        env.close()
+
+
+def test_env_primes_pnl_aligned_reward_after_account_reset(tmp_path, env_cwd):
+    config = _config_with_reward(
+        tmp_path,
+        "futures_intraday_pnl_aligned_reward_function",
+        reward_scale_cash=100,
+    )
+    env = CustomTradingEnv(config_path=str(config))
+    try:
+        obs, reset_info = env.reset(seed=20260617)
+
+        assert isinstance(env.reward_function, RewardAuditMixin)
+        assert env.reward_function.previous_equity is not None
+        assert env.reward_function.initial_equity == env.reward_function.previous_equity
+        assert "log/env/reward/total" in reset_info
+        assert float(reset_info["log/env/reward/total"]) == pytest.approx(0.0)
+        assert float(reset_info["log/env/reward/scale_cash"]) == pytest.approx(100.0)
+
+        obs, reward, terminated, truncated, info = env.step(_valid_action(obs))
+
+        assert np.isfinite(float(reward))
+        assert float(info["log/env/reward/total"]) == pytest.approx(float(reward))
     finally:
         env.close()

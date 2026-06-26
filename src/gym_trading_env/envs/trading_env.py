@@ -261,14 +261,6 @@ class CustomTradingEnv(gym.Env):
         self.window_size = ws
         self.config.training.window_size = ws 
 
-        # Training-specific
-        reward_class = reward_classes.get(
-            self.config.training.reward_function,
-            EquityDeltaReward
-        )
-        self.reward_function = reward_class(self)
-        self._init_reward_debug()
-
         # LIVE 模式 & replay 相关
         self._live_mode = getattr(self.config.trading, "live_mode", False)
         self._live_replay_on_reset = bool(getattr(self.config.trading, "live_replay_on_reset", False))
@@ -423,10 +415,6 @@ class CustomTradingEnv(gym.Env):
         self._target_transition_table = None
         self._pending_transition_table = None
 
-        reward_class = reward_classes.get(self.config.training.reward_function, EquityDeltaReward)
-        self.reward_function = reward_class(self)
-        self._init_reward_debug()
-
         df_len = int(self.bar_source.store.n_rows)
         episode_len = self.config.training.episode_length
 
@@ -560,7 +548,7 @@ class CustomTradingEnv(gym.Env):
 
         self._refresh_agent_state()
 
-        self.reward_function.on_episode_start(self._reward_lifecycle_context())
+        self._start_reward_episode()
 
         # NEW: live + replay => 在 reset 后立刻按历史 action 重放，恢复状态
         if self._live_mode and self._live_replay_on_reset:
@@ -1985,16 +1973,26 @@ class CustomTradingEnv(gym.Env):
         return snap
 
 
-    def _init_reward_debug(self):
-        reward_fn = getattr(self, "reward_function", None)
+    def _reward_name(self) -> str:
         reward_name = getattr(getattr(self, "config", None), "training", None)
-        reward_name = getattr(reward_name, "reward_function", "<unset>")
+        return getattr(reward_name, "reward_function", "<unset>")
+
+    def _make_reward_function(self):
+        reward_class = reward_classes.get(self._reward_name(), EquityDeltaReward)
+        return reward_class(self)
+
+    def _reset_reward_episode_sums(self) -> None:
+        self._reward_episode_sums = {key: 0.0 for key in REWARD_EPISODE_AUDIT_KEYS}
+
+    def _start_reward_episode(self) -> None:
+        self.reward_function = self._make_reward_function()
+        self._reset_reward_episode_sums()
+        self.reward_function.on_episode_start(self._reward_lifecycle_context())
         self._reward_debug = validate_reward_audit(
-            reward_fn,
-            reward_name=reward_name,
+            self.reward_function,
+            reward_name=self._reward_name(),
             returned_reward=None,
         )
-        self._reward_episode_sums = {key: 0.0 for key in REWARD_EPISODE_AUDIT_KEYS}
 
     def _reward_lifecycle_context(self) -> dict[str, object]:
         current_price = getattr(self, "current_price", getattr(self, "_last_valid_price", D0))
@@ -2015,11 +2013,9 @@ class CustomTradingEnv(gym.Env):
 
 
     def _update_reward_audit_state(self, reward):
-        reward_name = getattr(getattr(self, "config", None), "training", None)
-        reward_name = getattr(reward_name, "reward_function", "<unset>")
         reward_debug = validate_reward_audit(
             self.reward_function,
-            reward_name=reward_name,
+            reward_name=self._reward_name(),
             returned_reward=reward,
         )
         self._reward_debug = reward_debug

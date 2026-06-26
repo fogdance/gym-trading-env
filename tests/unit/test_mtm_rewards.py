@@ -147,6 +147,21 @@ def test_pnl_aligned_reward_requires_fixed_scale_and_env_reset_priming():
         reward_fn()
 
 
+def test_pnl_aligned_constructor_only_requires_config():
+    env = SimpleNamespace(
+        config=SimpleNamespace(
+            trading=SimpleNamespace(reward_scale_cash=Decimal("100"))
+        )
+    )
+
+    reward_fn = FuturesIntradayPnLAlignedReward(env)
+
+    assert reward_fn.fixed_scale_cash == Decimal("100")
+    assert reward_fn.previous_equity is None
+    with pytest.raises(RuntimeError, match="not primed"):
+        reward_fn()
+
+
 def test_episode_start_lifecycle_is_noop_for_existing_rewards():
     env = _FakeEnv()
     equity_delta = EquityDeltaReward(env)
