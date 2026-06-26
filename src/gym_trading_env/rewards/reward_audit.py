@@ -64,6 +64,18 @@ class RewardAuditMixin:
     audit_schema_version = REWARD_AUDIT_SCHEMA_VERSION
     audit_required_keys = tuple(REWARD_DEBUG_KEYS)
 
+    def on_episode_start(self, context: Mapping[str, Any]) -> None:
+        """
+        Episode lifecycle hook called after env accounting, indexes and reward
+        scale state have been initialized. Default is no-op to preserve legacy
+        reward first-call behavior.
+        """
+        return None
+
+    def on_episode_end(self, context: Mapping[str, Any]) -> None:
+        """Optional lifecycle hook for terminal-only reward bookkeeping."""
+        return None
+
     def default_reward_debug(self) -> dict[str, float]:
         return {key: 0.0 for key in REWARD_DEBUG_KEYS}
 

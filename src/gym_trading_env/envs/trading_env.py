@@ -556,8 +556,11 @@ class CustomTradingEnv(gym.Env):
 
         # NEW: last valid price from store (not df_market)
         self._last_valid_price = D(self.bar_source.store.row_C[self.current_step])
+        self.current_price = self._last_valid_price
 
         self._refresh_agent_state()
+
+        self.reward_function.on_episode_start(self._reward_lifecycle_context())
 
         # NEW: live + replay => 在 reset 后立刻按历史 action 重放，恢复状态
         if self._live_mode and self._live_replay_on_reset:
@@ -1992,6 +1995,23 @@ class CustomTradingEnv(gym.Env):
             returned_reward=None,
         )
         self._reward_episode_sums = {key: 0.0 for key in REWARD_EPISODE_AUDIT_KEYS}
+
+    def _reward_lifecycle_context(self) -> dict[str, object]:
+        current_price = getattr(self, "current_price", getattr(self, "_last_valid_price", D0))
+        return {
+            "initial_equity": D(self.config.trading.initial_balance),
+            "mtm_equity": self._calculate_equity(),
+            "current_step": int(getattr(self, "current_step", 0)),
+            "start_idx": int(getattr(self, "start_idx", 0)),
+            "end_idx": int(getattr(self, "end_idx", 0)),
+            "current_price": current_price,
+            "r_cash": getattr(self, "_R_cash_last", D0),
+            "live_replay": bool(
+                getattr(self, "_live_mode", False)
+                and getattr(self, "_live_replay_on_reset", False)
+            ),
+            "replaying": bool(getattr(self, "_replaying", False)),
+        }
 
 
     def _update_reward_audit_state(self, reward):

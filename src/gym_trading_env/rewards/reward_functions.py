@@ -1396,7 +1396,195 @@ class FuturesIntradayMTMRiskReward(RewardAuditMixin):
 
         return float(total)
 
+
+class FuturesIntradayPnLAlignedReward(RewardAuditMixin):
+    """
+    Profit-aligned reward.
+
+    With a fixed positive episode scale and only rounding drift:
+
+        sum(reward_t)
+        ~= (final_mtm_equity - initial_mtm_equity) / scale
+
+    If the episode starts and ends flat:
+
+        sum(reward_t) ~= actual_net_pnl / scale
+
+    No tanh, clipping, close bonus, ATR bonus, or risk shaping.
+    """
+
+    def __init__(
+        self,
+        env,
+        *,
+        scale_cash=None,
+        eps=Decimal("1e-6"),
+        precision=10,
+    ):
+        self.env = env
+        self.eps = eps
+        self.precision = int(precision)
+
+        configured_scale = scale_cash
+        if configured_scale is None:
+            configured_scale = getattr(
+                getattr(env.config, "trading", object()),
+                "reward_scale_cash",
+                None,
+            )
+
+        if configured_scale is None:
+            raise ValueError(
+                "FuturesIntradayPnLAlignedReward requires a fixed "
+                "config.trading.reward_scale_cash."
+            )
+
+        self.fixed_scale_cash = self._to_decimal(configured_scale)
+        if self.fixed_scale_cash <= self.eps:
+            raise ValueError(
+                f"reward_scale_cash must be positive, got {self.fixed_scale_cash}"
+            )
+
+        self.previous_equity = None
+        self.initial_equity = None
+        self.cumulative_delta_equity = D0
+
+        self._set_reward_debug(self._initial_debug())
+
+    def on_episode_start(self, context) -> None:
+        equity = self._to_decimal(context.get("mtm_equity"), None)
+        if equity is None:
+            equity = self._mtm_equity()
+        self._prime(equity)
+
+    def reward_audit_disabled_components(self) -> tuple[str, ...]:
+        return (
+            "fee",
+            "dd",
+            "eod",
+            "close",
+            "sl",
+            "mkt_closed",
+            "invalid_time",
+            "invalid_streak",
+            "invalid_total",
+            "r_atr_close",
+        )
+
+    def _to_decimal(self, value, default=D0) -> Decimal:
+        if value is None:
+            return default
+        if isinstance(value, Decimal):
+            return value
+        try:
+            converted = Decimal(str(value))
+        except Exception:
+            return default
+        return converted if converted.is_finite() else default
+
+    def _ledger_balance(self, key: str) -> Decimal:
+        balances = self.env.ledger.balances()
+        return self._to_decimal(balances.get(key, D0))
+
+    def _mtm_equity(self) -> Decimal:
+        cash = self._ledger_balance("user_cash")
+        margin = self._ledger_balance("user_margin")
+        unrealized = self._to_decimal(
+            getattr(self.env.user_accounts, "unrealized_pnl", D0)
+        )
+        return cash + margin + unrealized
+
+    def _initial_debug(self) -> dict[str, float]:
+        debug = self.default_reward_debug()
+        debug.update({
+            "alpha_unrealized": 1.0,
+            "scale_cash": float(self.fixed_scale_cash),
+        })
+        return debug
+
+    def _prime(self, equity: Decimal) -> None:
+        self.previous_equity = equity
+        self.initial_equity = equity
+        self.cumulative_delta_equity = D0
+
+        debug = self._initial_debug()
+        debug.update({
+            "mtm_equity": float(equity),
+            "prev_mtm_equity": float(equity),
+        })
+        self._set_reward_debug(debug)
+
+    def reset(self) -> None:
+        """
+        Backward-compatible manual reset. Env lifecycle calls
+        on_episode_start(context) instead.
+        """
+        self._prime(self._mtm_equity())
+
+    def __call__(self, obs=None) -> float:
+        if self.previous_equity is None:
+            raise RuntimeError(
+                "PnL-aligned reward was not primed. Call "
+                "reward.on_episode_start(context) after account reset and "
+                "before the first env action."
+            )
+
+        equity = self._mtm_equity()
+        delta_equity = equity - self.previous_equity
+        self.cumulative_delta_equity += delta_equity
+
+        reward_decimal = delta_equity / self.fixed_scale_cash
+        reward = float(
+            decimal_to_float(reward_decimal, precision=self.precision)
+        )
+
+        if not np.isfinite(reward):
+            raise RuntimeError(
+                f"Non-finite PnL-aligned reward: {reward!r}"
+            )
+
+        fee = self._to_decimal(getattr(self.env, "fee_step", D0))
+        invalid = bool(getattr(self.env, "_last_action_rejected", False))
+
+        debug = self.default_reward_debug()
+        debug.update({
+            # Only reward-producing component.
+            "pnl": reward,
+            "raw_total": reward,
+            "total": reward,
+
+            # Full MTM accounting.
+            "alpha_unrealized": 1.0,
+            "mtm_equity": float(equity),
+            "prev_mtm_equity": float(self.previous_equity),
+            "delta_equity": float(delta_equity),
+            "scale_cash": float(self.fixed_scale_cash),
+
+            # Diagnostic only; fee is already included in equity.
+            "fee": 0.0,
+            "fee_cash_debug": float(fee),
+            "invalid_action_debug": float(invalid),
+
+            # Explicitly disabled shaping.
+            "dd": 0.0,
+            "eod": 0.0,
+            "close": 0.0,
+            "sl": 0.0,
+            "mkt_closed": 0.0,
+            "invalid_time": 0.0,
+            "invalid_streak": 0.0,
+            "invalid_total": 0.0,
+            "invalid_streak_len": 0.0,
+            "r_atr_close": 0.0,
+        })
+        self._set_reward_debug(debug)
+
+        self.previous_equity = equity
+        return reward
+
+
 reward_classes = {
+    "futures_intraday_pnl_aligned_reward_function": FuturesIntradayPnLAlignedReward,
     'current_balance_reward_function': CurrentBalanceReward,
     'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,

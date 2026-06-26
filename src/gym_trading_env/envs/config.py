@@ -19,7 +19,7 @@ def _to_decimal(value):
 TRADING_DECIMAL_KEYS = {
     "initial_balance", "trading_fee_per_lot", "spread", "leverage", "lot_size",
     "trade_lot", "max_long_position", "max_short_position",
-    "stop_loss_value", "take_profit_rr",
+    "stop_loss_value", "take_profit_rr", "reward_scale_cash",
 }
 RISK_DECIMAL_KEYS = {"risk_reward_ratio"}
 
@@ -191,6 +191,9 @@ class TradingParams:
 
     invalid_time_cost_total: float = 0.0 # 0.2
     """每次无效动作的“时间/操作成本”，按 episode 步数均摊（不改经济账）"""
+
+    reward_scale_cash: Optional[Decimal] = None
+    """Fixed cash scale for PnL-aligned reward functions."""
 
     invalid_streak_cap = 10
     """streak 上限"""

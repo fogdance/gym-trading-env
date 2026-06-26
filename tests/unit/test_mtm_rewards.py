@@ -10,8 +10,10 @@ from gym_trading_env.rewards.reward_audit import (
     validate_reward_audit,
 )
 from gym_trading_env.rewards.reward_functions import (
+    EquityDeltaReward,
     FuturesIntradayMTMCleanReward,
     FuturesIntradayMTMRiskReward,
+    FuturesIntradayPnLAlignedReward,
     reward_classes,
 )
 
@@ -82,6 +84,7 @@ class _FakeEnv:
         self.config = SimpleNamespace(
             trading=SimpleNamespace(
                 reward_scale_cash_fallback="10",
+                reward_scale_cash=Decimal("100"),
                 reward_v2_w_dd=0.05,
                 reward_v2_w_adverse=0.05,
                 reward_v2_w_loss_time=0.001,
@@ -117,6 +120,7 @@ def _assert_schema(debug):
 def test_mtm_reward_imports_and_registration():
     assert issubclass(FuturesIntradayMTMCleanReward, RewardAuditMixin)
     assert issubclass(FuturesIntradayMTMRiskReward, RewardAuditMixin)
+    assert issubclass(FuturesIntradayPnLAlignedReward, RewardAuditMixin)
     assert (
         reward_classes["futures_intraday_mtm_clean_reward_function"]
         is FuturesIntradayMTMCleanReward
@@ -124,6 +128,124 @@ def test_mtm_reward_imports_and_registration():
     assert (
         reward_classes["futures_intraday_mtm_risk_reward_function"]
         is FuturesIntradayMTMRiskReward
+    )
+    assert (
+        reward_classes["futures_intraday_pnl_aligned_reward_function"]
+        is FuturesIntradayPnLAlignedReward
+    )
+
+
+def test_pnl_aligned_reward_requires_fixed_scale_and_env_reset_priming():
+    env = _FakeEnv()
+    env.config.trading.reward_scale_cash = None
+    with pytest.raises(ValueError, match="reward_scale_cash"):
+        FuturesIntradayPnLAlignedReward(env)
+
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayPnLAlignedReward(env)
+    with pytest.raises(RuntimeError, match="not primed"):
+        reward_fn()
+
+
+def test_episode_start_lifecycle_is_noop_for_existing_rewards():
+    env = _FakeEnv()
+    equity_delta = EquityDeltaReward(env)
+    clean = FuturesIntradayMTMCleanReward(env)
+    risk = FuturesIntradayMTMRiskReward(env)
+
+    context = {"mtm_equity": Decimal("9999")}
+    equity_delta.on_episode_start(context)
+    clean.on_episode_start(context)
+    risk.on_episode_start(context)
+
+    assert equity_delta.previous_equity is None
+    assert clean.prev_equity is None
+    assert risk.prev_equity is None
+
+
+def test_pnl_aligned_episode_start_primes_from_context():
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayPnLAlignedReward(env)
+    reward_fn.on_episode_start({"mtm_equity": Decimal("12345")})
+
+    assert reward_fn.initial_equity == Decimal("12345")
+    assert reward_fn.previous_equity == Decimal("12345")
+    debug = validate_reward_audit(
+        reward_fn,
+        reward_name="FuturesIntradayPnLAlignedReward",
+        returned_reward=None,
+    )
+    assert debug["mtm_equity"] == pytest.approx(12345.0)
+    assert debug["prev_mtm_equity"] == pytest.approx(12345.0)
+
+
+def test_pnl_aligned_reward_audit_schema_after_reset():
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayPnLAlignedReward(env)
+    reward_fn.reset()
+
+    debug = validate_reward_audit(
+        reward_fn,
+        reward_name="FuturesIntradayPnLAlignedReward",
+        returned_reward=None,
+    )
+    _assert_schema(debug)
+    assert debug["mtm_equity"] == pytest.approx(10000.0)
+    assert debug["prev_mtm_equity"] == pytest.approx(10000.0)
+    assert debug["scale_cash"] == pytest.approx(100.0)
+    assert reward_fn.initial_equity == Decimal("10000")
+    assert reward_fn.cumulative_delta_equity == Decimal("0")
+
+    for key in V1_DISABLED:
+        assert debug[key] == pytest.approx(0.0), key
+
+
+def test_pnl_aligned_reward_tracks_mtm_delta_without_shaping():
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayPnLAlignedReward(env)
+    reward_fn.reset()
+
+    env.ledger.cash = Decimal("9897")
+    env.ledger.margin = Decimal("100")
+    env.user_accounts.unrealized_pnl = Decimal("-2")
+    env.fee_step = Decimal("3")
+    reward = reward_fn()
+    debug = _validate(reward_fn, reward)
+
+    assert reward == pytest.approx(-0.05)
+    assert debug["pnl"] == pytest.approx(reward)
+    assert debug["raw_total"] == pytest.approx(reward)
+    assert debug["total"] == pytest.approx(reward)
+    assert debug["delta_equity"] == pytest.approx(-5.0)
+    assert debug["fee"] == pytest.approx(0.0)
+    assert debug["fee_cash_debug"] == pytest.approx(3.0)
+    for key in V1_DISABLED:
+        assert debug[key] == pytest.approx(0.0), key
+
+
+def test_pnl_aligned_reward_sum_matches_equity_delta_with_rounding_tolerance():
+    env = _FakeEnv()
+    reward_fn = FuturesIntradayPnLAlignedReward(env, precision=10)
+    reward_fn.reset()
+
+    states = [
+        ("9999.99999999999", "0", "0"),
+        ("9997", "100", "-1.23456789012"),
+        ("10006", "0", "0.00000000001"),
+    ]
+    rewards = []
+    for cash, margin, unrealized in states:
+        env.ledger.cash = Decimal(cash)
+        env.ledger.margin = Decimal(margin)
+        env.user_accounts.unrealized_pnl = Decimal(unrealized)
+        rewards.append(reward_fn())
+
+    exact = (
+        reward_fn._mtm_equity() - reward_fn.initial_equity
+    ) / reward_fn.fixed_scale_cash
+    assert sum(rewards) == pytest.approx(float(exact), abs=5e-10)
+    assert reward_fn.cumulative_delta_equity == (
+        reward_fn._mtm_equity() - reward_fn.initial_equity
     )
 
 
