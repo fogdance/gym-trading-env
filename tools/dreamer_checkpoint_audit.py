@@ -190,6 +190,13 @@ def _timestamp_text(value) -> str | None:
     return str(value)
 
 
+def _obs_float(obs: dict, key: str) -> float:
+    try:
+        return float(_scalar(obs.get(key), np.nan))
+    except Exception:
+        return float("nan")
+
+
 def _zero_action(act_space: dict) -> dict:
     acts = {k: np.zeros(v.shape, v.dtype) for k, v in act_space.items()}
     acts["reset"] = np.asarray(True)
@@ -982,6 +989,20 @@ def collect_dreamer_episodes(
                     "trades_opened": float(_scalar(obs.get("log/env/trades_opened"), np.nan)),
                     "trades_closed": float(_scalar(obs.get("log/env/trades_closed"), np.nan)),
                     "profit_factor": _scalar(obs.get("log/env/profit_factor"), None),
+                    "action_rejected": _obs_float(obs, "log/env/action_rejected"),
+                    "execution_failed": _obs_float(obs, "log/env/execution_failed"),
+                    "invalid_action_total": _obs_float(obs, "log/env/invalid_action_total"),
+                    "reward_episode_total": _obs_float(obs, "log/env/reward_episode/reward_total"),
+                    "reward_episode_pnl_sum": _obs_float(obs, "log/env/reward_episode/reward_pnl_sum"),
+                    "reward_episode_close_sum": _obs_float(obs, "log/env/reward_episode/reward_close_sum"),
+                    "reward_episode_atr_close_sum": _obs_float(obs, "log/env/reward_episode/reward_atr_close_sum"),
+                    "reward_episode_dd_sum": _obs_float(obs, "log/env/reward_episode/reward_dd_sum"),
+                    "reward_episode_eod_sum": _obs_float(obs, "log/env/reward_episode/reward_eod_sum"),
+                    "reward_episode_invalid_sum": _obs_float(obs, "log/env/reward_episode/reward_invalid_sum"),
+                    "reward_episode_actual_net_pnl": _obs_float(obs, "log/env/reward_episode/actual_net_pnl"),
+                    "reward_episode_final_equity": _obs_float(obs, "log/env/reward_episode/final_equity"),
+                    "reward_episode_max_floating_drawdown": _obs_float(obs, "log/env/reward_episode/max_floating_drawdown"),
+                    "reward_episode_trade_count": _obs_float(obs, "log/env/reward_episode/trade_count"),
                 }
                 episode_rows.append(episode_meta)
                 trade_rows.extend(_records_to_trades(
