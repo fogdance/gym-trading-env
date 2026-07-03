@@ -1592,7 +1592,11 @@ def collect_dreamer_episodes(
     checkpoint_label: str | None = None,
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if collect_mode == "sampled" and int(episodes) <= 0:
-        return pd.DataFrame(), pd.DataFrame()
+        return (
+            pd.DataFrame(),
+            pd.DataFrame(),
+            pd.DataFrame(columns=STEP_REWARD_COMPONENT_COLUMNS),
+        )
     sys.path.insert(0, str(paths.dreamer_root))
     os.chdir(paths.dreamer_root)
     os.environ.setdefault("MPLCONFIGDIR", "/tmp/matplotlib")

@@ -125,9 +125,10 @@ def enrich_would_have(label: str, trades: pd.DataFrame, steps: pd.DataFrame) -> 
             mae_cash = min(gross, 0.0)
 
         actual_pnl = safe_float(trade.get("actual_net_pnl"), 0.0)
+        realized_pnl = safe_float(trade.get("actual_gross_pnl"), actual_pnl)
         mfe_r = mfe_cash / scale_cash if scale_cash > 0 else 0.0
-        capture = actual_pnl / mfe_cash if mfe_cash > 1e-12 else 0.0
-        giveback = max(mfe_cash - max(actual_pnl, 0.0), 0.0) if mfe_r >= 1.0 else 0.0
+        capture = realized_pnl / mfe_cash if mfe_cash > 1e-12 else 0.0
+        giveback = max(mfe_cash - max(realized_pnl, 0.0), 0.0) if mfe_r >= 1.0 else 0.0
         rows.append(
             {
                 "would_have_scale_cash": scale_cash,

@@ -2,8 +2,10 @@ import pandas as pd
 
 from tools.dreamer_checkpoint_audit import (
     PROFIT_LOCK_DEBUG_FIELDS,
+    STEP_REWARD_COMPONENT_COLUMNS,
     _ensure_step_reward_schema,
     build_profit_lock_trade_rollup,
+    collect_dreamer_episodes,
 )
 
 
@@ -102,3 +104,22 @@ def test_session_end_close_is_eod_and_forced_reason():
     row = rollup.iloc[0]
     assert row["eod_flag"] == "EOD"
     assert row["forced_close_reason"] == "TRUNCATE_SESSION_END"
+
+
+def test_collect_sampled_zero_episodes_returns_step_frame():
+    episodes, trades, steps = collect_dreamer_episodes(
+        None,
+        episodes=0,
+        max_steps=0,
+        jax_platform=None,
+        collect_mode="sampled",
+        role_by_day={},
+        roles=set(),
+        start_clock=None,
+        export_step_reward_components=True,
+    )
+
+    assert episodes.empty
+    assert trades.empty
+    assert steps.empty
+    assert list(steps.columns) == STEP_REWARD_COMPONENT_COLUMNS
