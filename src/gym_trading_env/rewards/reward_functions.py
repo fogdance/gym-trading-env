@@ -704,6 +704,505 @@ class FuturesIntradayReward(RewardAuditMixin):
 
         return float(total)
 
+
+PROFIT_LOCK_DEBUG_KEYS = [
+    "profit_lock_enabled",
+    "profit_lock_active",
+    "profit_lock_trigger_R",
+    "profit_lock_mfe_cash",
+    "profit_lock_mfe_R",
+    "profit_lock_mae_cash",
+    "profit_lock_unrealized_cash",
+    "profit_lock_giveback_cash",
+    "profit_lock_allowed_giveback_cash",
+    "profit_lock_excess_giveback_cash",
+    "profit_lock_excess_giveback_inc_cash",
+    "profit_lock_capture_ratio",
+    "profit_lock_lost_mfe_fired",
+    "profit_lock_bars",
+    "profit_lock_scale_cash",
+    "profit_lock_scale_source_code",
+    "profit_lock_atr_price",
+    "profit_lock_atr_ratio",
+    "profit_lock_tick_cash",
+    "r_profit_giveback",
+    "r_lost_mfe",
+    "r_lock_close",
+    "r_profit_lock_total",
+    "r_old_raw_total",
+    "r_raw_total_with_profit_lock",
+]
+
+
+class FuturesIntradayRewardProfitLock(FuturesIntradayReward):
+    """
+    Old intraday reward plus a small profit-lock overlay.
+
+    The base FuturesIntradayReward path remains responsible for entry/close/EOD
+    shaping. This class snapshots close events before the base reward consumes
+    them, then applies a bounded overlay only after a trade has reached a
+    configurable MFE threshold.
+    """
+
+    def __init__(self, env, *args, **kwargs):
+        super().__init__(env, *args, **kwargs)
+
+        trading = getattr(getattr(self.env, "config", None), "trading", None)
+        self.reward_profit_lock_enabled = self._cfg_bool(
+            getattr(trading, "reward_profit_lock_enabled", True)
+        )
+        self.reward_profit_lock_trigger_R = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_trigger_R", 1.0)),
+        )
+        self.reward_profit_lock_scale_mode = str(
+            getattr(trading, "reward_profit_lock_scale_mode", "daily_atr_ratio")
+        )
+        self.reward_profit_lock_atr_ratio = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_atr_ratio", 0.55)),
+        )
+        self.reward_profit_lock_allowed_giveback_ratio = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_allowed_giveback_ratio", 0.50)),
+        )
+        self.reward_profit_lock_min_capture_ratio = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_min_capture_ratio", 0.50)),
+        )
+        self.reward_profit_lock_w_giveback = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_w_giveback", 0.05)),
+        )
+        self.reward_profit_lock_w_lost_mfe = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_w_lost_mfe", 0.10)),
+        )
+        self.reward_profit_lock_w_lock_close = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_w_lock_close", 0.05)),
+        )
+        self.reward_profit_lock_max_overlay_abs = max(
+            0.0,
+            float(getattr(trading, "reward_profit_lock_max_overlay_abs", 0.20)),
+        )
+        self.reward_profit_lock_incremental_giveback = self._cfg_bool(
+            getattr(trading, "reward_profit_lock_incremental_giveback", True)
+        )
+        self.reward_profit_lock_lost_mfe_one_shot = self._cfg_bool(
+            getattr(trading, "reward_profit_lock_lost_mfe_one_shot", True)
+        )
+
+        self._reset_profit_lock_tracking()
+        self._set_reward_debug(
+            self._with_profit_lock_debug(
+                self.reward_audit_debug(),
+                self._profit_lock_zero_debug(),
+            )
+        )
+
+    @staticmethod
+    def _cfg_bool(value) -> bool:
+        if isinstance(value, str):
+            return value.strip().lower() not in {"0", "false", "no", "off"}
+        return bool(value)
+
+    def reset(self):
+        super().reset()
+        self._reset_profit_lock_tracking()
+        debug = self.default_reward_debug()
+        debug["alpha_unrealized"] = float(self.alpha_unrealized)
+        self._set_reward_debug(
+            self._with_profit_lock_debug(debug, self._profit_lock_zero_debug())
+        )
+
+    def on_episode_start(self, context):
+        self.reset()
+
+    def _reset_profit_lock_tracking(self):
+        self.trade_active = False
+        self.trade_side = 0
+        self.trade_mfe_cash = D0
+        self.trade_mae_cash = D0
+        self.trade_prev_excess_giveback_cash = D0
+        self.trade_profit_lock_active = False
+        self.trade_lost_mfe_fired = False
+        self.trade_bars = 0
+
+    def _profit_lock_zero_debug(self) -> dict[str, float]:
+        debug = {key: 0.0 for key in PROFIT_LOCK_DEBUG_KEYS}
+        if getattr(self, "reward_profit_lock_enabled", False):
+            debug["profit_lock_enabled"] = 1.0
+            debug["profit_lock_trigger_R"] = float(self.reward_profit_lock_trigger_R)
+        return debug
+
+    def _with_profit_lock_debug(
+        self,
+        base_debug,
+        profit_lock_debug: dict[str, float],
+    ) -> dict[str, float]:
+        debug = dict(base_debug)
+        debug.update(self._profit_lock_zero_debug())
+        debug.update(profit_lock_debug)
+        return debug
+
+    def _to_decimal(self, value) -> Decimal:
+        if isinstance(value, Decimal):
+            return value
+        try:
+            return Decimal(str(value))
+        except Exception:
+            return D0
+
+    def _lot_cash_multiplier(self) -> Decimal:
+        trading = getattr(getattr(self.env, "config", None), "trading", None)
+        lot_size = self._to_decimal(getattr(trading, "lot_size", D1))
+        trade_lot = self._to_decimal(getattr(trading, "trade_lot", D1))
+        return max(lot_size, D0) * max(trade_lot, D0)
+
+    def _profit_lock_tick_cash(self) -> Decimal:
+        trading = getattr(getattr(self.env, "config", None), "trading", None)
+        tick = self._to_decimal(getattr(trading, "tick_size", None))
+        if tick <= D0:
+            tick = self._to_decimal(getattr(trading, "spread", D0))
+        if tick <= D0:
+            return D0
+        return tick * self._lot_cash_multiplier()
+
+    def _daily_atr_price(self) -> Decimal:
+        store = getattr(self.env, "store", None)
+        if store is None:
+            bar_source = getattr(self.env, "bar_source", None)
+            store = getattr(bar_source, "store", None) if bar_source is not None else None
+        day_i = int(getattr(self.env, "_day_i", getattr(self.env, "day_i", -1)))
+        atr_arr = getattr(store, "daily_atr_price", None) if store is not None else None
+        if atr_arr is None or day_i < 0:
+            return D0
+        try:
+            if day_i >= len(atr_arr):
+                return D0
+            atr_price = self._to_decimal(atr_arr[day_i])
+        except Exception:
+            return D0
+        return max(atr_price, D0)
+
+    def _stop_loss_scale_cash(self) -> Decimal:
+        trading = getattr(getattr(self.env, "config", None), "trading", None)
+        mode = str(getattr(trading, "stop_loss_mode", "pct"))
+        stop_value = self._to_decimal(getattr(trading, "stop_loss_value", D0))
+        if stop_value <= D0:
+            return D0
+        if mode == "pct":
+            ref_price = self._to_decimal(
+                getattr(self.env, "current_price", getattr(self.env, "_last_valid_price", D0))
+            )
+            stop_distance = ref_price * stop_value
+        else:
+            stop_distance = stop_value
+        if stop_distance <= D0:
+            return D0
+        return stop_distance * self._lot_cash_multiplier()
+
+    def _profit_lock_scale(self) -> tuple[Decimal, dict[str, Decimal]]:
+        atr_price = self._daily_atr_price()
+        atr_ratio = Decimal(str(self.reward_profit_lock_atr_ratio))
+        lot_cash = self._lot_cash_multiplier()
+        tick_cash = self._profit_lock_tick_cash()
+
+        scale = D0
+        source_code = Decimal("0")
+        mode = self.reward_profit_lock_scale_mode.strip().lower()
+        if mode in {"daily_atr_ratio", "atr", "atr_ratio"}:
+            scale = atr_price * lot_cash * atr_ratio
+            if scale > self.eps:
+                source_code = Decimal("1")
+
+        if scale <= self.eps:
+            stop_scale = self._stop_loss_scale_cash()
+            if stop_scale > self.eps:
+                scale = stop_scale
+                source_code = Decimal("2")
+
+        if scale <= self.eps:
+            scale = max(self._R_cash(), self.eps)
+            source_code = Decimal("3")
+
+        return scale, {
+            "source_code": source_code,
+            "atr_price": atr_price,
+            "atr_ratio": atr_ratio,
+            "tick_cash": tick_cash,
+        }
+
+    def _position_side(self) -> int:
+        accounts = getattr(self.env, "user_accounts", None)
+        long_pos = self._to_decimal(getattr(accounts, "long_position", D0))
+        short_pos = self._to_decimal(getattr(accounts, "short_position", D0))
+        if long_pos > D0:
+            return 1
+        if short_pos > D0:
+            return -1
+        return 0
+
+    def _unrealized_cash(self) -> Decimal:
+        accounts = getattr(self.env, "user_accounts", None)
+        return self._to_decimal(getattr(accounts, "unrealized_pnl", D0))
+
+    def _snapshot_close_event(self):
+        lcp = getattr(self.env, "last_close_position", None)
+        if isinstance(lcp, dict):
+            return dict(lcp)
+        return None
+
+    def _start_profit_lock_trade(self, side: int):
+        self.trade_active = True
+        self.trade_side = int(side)
+        self.trade_mfe_cash = D0
+        self.trade_mae_cash = D0
+        self.trade_prev_excess_giveback_cash = D0
+        self.trade_profit_lock_active = False
+        self.trade_lost_mfe_fired = False
+        self.trade_bars = 0
+
+    def _update_trade_extremes(self, unrealized_cash: Decimal):
+        if unrealized_cash > self.trade_mfe_cash:
+            self.trade_mfe_cash = unrealized_cash
+        if unrealized_cash < self.trade_mae_cash:
+            self.trade_mae_cash = unrealized_cash
+        self.trade_bars += 1
+
+    def _mfe_active(self, mfe_cash: Decimal, scale: Decimal) -> bool:
+        trigger_cash = Decimal(str(self.reward_profit_lock_trigger_R)) * max(scale, self.eps)
+        return bool(mfe_cash >= trigger_cash)
+
+    def _profit_lock_state_debug(
+        self,
+        *,
+        scale: Decimal,
+        unrealized_cash: Decimal,
+        giveback_cash: Decimal = D0,
+        allowed_giveback_cash: Decimal = D0,
+        excess_giveback_cash: Decimal = D0,
+        excess_giveback_inc_cash: Decimal = D0,
+        capture_ratio: float = 0.0,
+        r_profit_giveback: float = 0.0,
+        r_lost_mfe: float = 0.0,
+        r_lock_close: float = 0.0,
+        r_profit_lock_total: float = 0.0,
+        r_old_raw_total: float = 0.0,
+        r_raw_total_with_profit_lock: float = 0.0,
+        scale_meta: dict[str, Decimal] | None = None,
+        active_override: bool | None = None,
+        mfe_cash_override: Decimal | None = None,
+        mae_cash_override: Decimal | None = None,
+        bars_override: int | None = None,
+        lost_mfe_fired_override: bool | None = None,
+    ) -> dict[str, float]:
+        mfe_cash = self.trade_mfe_cash if mfe_cash_override is None else mfe_cash_override
+        mae_cash = self.trade_mae_cash if mae_cash_override is None else mae_cash_override
+        bars = self.trade_bars if bars_override is None else bars_override
+        active = self.trade_profit_lock_active if active_override is None else active_override
+        lost_fired = (
+            self.trade_lost_mfe_fired
+            if lost_mfe_fired_override is None
+            else lost_mfe_fired_override
+        )
+        mfe_R = Decimal("0")
+        try:
+            mfe_R = mfe_cash / max(scale, self.eps)
+        except Exception:
+            mfe_R = Decimal("0")
+        scale_meta = scale_meta or {}
+        source_code = scale_meta.get("source_code", D0)
+        atr_price = scale_meta.get("atr_price", D0)
+        atr_ratio = scale_meta.get(
+            "atr_ratio",
+            Decimal(str(self.reward_profit_lock_atr_ratio)),
+        )
+        tick_cash = scale_meta.get("tick_cash", D0)
+
+        return {
+            "profit_lock_enabled": 1.0 if self.reward_profit_lock_enabled else 0.0,
+            "profit_lock_active": 1.0 if active else 0.0,
+            "profit_lock_trigger_R": float(self.reward_profit_lock_trigger_R),
+            "profit_lock_mfe_cash": float(decimal_to_float(mfe_cash)),
+            "profit_lock_mfe_R": float(mfe_R),
+            "profit_lock_mae_cash": float(decimal_to_float(mae_cash)),
+            "profit_lock_unrealized_cash": float(decimal_to_float(unrealized_cash)),
+            "profit_lock_giveback_cash": float(decimal_to_float(giveback_cash)),
+            "profit_lock_allowed_giveback_cash": float(decimal_to_float(allowed_giveback_cash)),
+            "profit_lock_excess_giveback_cash": float(decimal_to_float(excess_giveback_cash)),
+            "profit_lock_excess_giveback_inc_cash": float(decimal_to_float(excess_giveback_inc_cash)),
+            "profit_lock_capture_ratio": float(capture_ratio),
+            "profit_lock_lost_mfe_fired": 1.0 if lost_fired else 0.0,
+            "profit_lock_bars": float(int(bars)),
+            "profit_lock_scale_cash": float(decimal_to_float(scale)),
+            "profit_lock_scale_source_code": float(decimal_to_float(source_code)),
+            "profit_lock_atr_price": float(decimal_to_float(atr_price)),
+            "profit_lock_atr_ratio": float(atr_ratio),
+            "profit_lock_tick_cash": float(decimal_to_float(tick_cash)),
+            "r_profit_giveback": float(r_profit_giveback),
+            "r_lost_mfe": float(r_lost_mfe),
+            "r_lock_close": float(r_lock_close),
+            "r_profit_lock_total": float(r_profit_lock_total),
+            "r_old_raw_total": float(r_old_raw_total),
+            "r_raw_total_with_profit_lock": float(r_raw_total_with_profit_lock),
+        }
+
+    def _compute_profit_lock_overlay(self, close_event) -> tuple[float, dict[str, float]]:
+        scale, scale_meta = self._profit_lock_scale()
+        current_side = self._position_side()
+        current_unrealized = self._unrealized_cash()
+
+        closed_mfe_cash = self.trade_mfe_cash
+        closed_mae_cash = self.trade_mae_cash
+        closed_bars = self.trade_bars
+        closed_lost_mfe_fired = self.trade_lost_mfe_fired
+        close_lost_mfe_fired = closed_lost_mfe_fired
+        close_active = self._mfe_active(closed_mfe_cash, scale) if self.trade_active else False
+
+        r_profit_giveback = 0.0
+        r_lost_mfe = 0.0
+        r_lock_close = 0.0
+        capture_ratio = 0.0
+        if close_event is not None and self.trade_active:
+            realized_pnl = self._to_decimal(close_event.get("pnl", D0))
+            denom = max(closed_mfe_cash, self.eps)
+            capture_ratio = float(realized_pnl / denom) if denom > D0 else 0.0
+            if (
+                close_active
+                and realized_pnl > D0
+                and capture_ratio >= self.reward_profit_lock_min_capture_ratio
+            ):
+                r_lock_close = (
+                    self.reward_profit_lock_w_lock_close
+                    * self._tanh_scaled(realized_pnl, scale)
+                )
+            elif close_active and realized_pnl <= D0:
+                if self.reward_profit_lock_lost_mfe_one_shot:
+                    if not closed_lost_mfe_fired:
+                        r_lost_mfe = -self.reward_profit_lock_w_lost_mfe
+                        close_lost_mfe_fired = True
+                else:
+                    r_lost_mfe = (
+                        -self.reward_profit_lock_w_lost_mfe
+                        * self._tanh_scaled(abs(realized_pnl), scale)
+                    )
+                    close_lost_mfe_fired = True
+            self._reset_profit_lock_tracking()
+
+        if current_side == 0:
+            if close_event is None and self.trade_active:
+                self._reset_profit_lock_tracking()
+        else:
+            if (not self.trade_active) or self.trade_side != current_side:
+                self._start_profit_lock_trade(current_side)
+            self._update_trade_extremes(current_unrealized)
+            self.trade_profit_lock_active = self._mfe_active(self.trade_mfe_cash, scale)
+
+        giveback_cash = D0
+        allowed_giveback_cash = D0
+        excess_giveback_cash = D0
+        excess_giveback_inc_cash = D0
+
+        if self.trade_active and self.trade_profit_lock_active:
+            current_positive_pnl = max(current_unrealized, D0)
+            giveback_cash = max(self.trade_mfe_cash - current_positive_pnl, D0)
+            allowed_giveback_cash = (
+                Decimal(str(self.reward_profit_lock_allowed_giveback_ratio))
+                * self.trade_mfe_cash
+            )
+            excess_giveback_cash = max(giveback_cash - allowed_giveback_cash, D0)
+            if self.reward_profit_lock_incremental_giveback:
+                excess_giveback_inc_cash = max(
+                    excess_giveback_cash - self.trade_prev_excess_giveback_cash,
+                    D0,
+                )
+            else:
+                excess_giveback_inc_cash = excess_giveback_cash
+            if excess_giveback_inc_cash > D0:
+                r_profit_giveback = (
+                    -self.reward_profit_lock_w_giveback
+                    * self._tanh_scaled(excess_giveback_inc_cash, scale)
+                )
+            self.trade_prev_excess_giveback_cash = excess_giveback_cash
+
+            if current_unrealized <= D0:
+                if self.reward_profit_lock_lost_mfe_one_shot:
+                    if not self.trade_lost_mfe_fired:
+                        r_lost_mfe = -self.reward_profit_lock_w_lost_mfe
+                        self.trade_lost_mfe_fired = True
+                else:
+                    r_lost_mfe = (
+                        -self.reward_profit_lock_w_lost_mfe
+                        * self._tanh_scaled(abs(current_unrealized), scale)
+                    )
+
+        overlay = r_profit_giveback + r_lost_mfe + r_lock_close
+        overlay = float(np.clip(
+            overlay,
+            -self.reward_profit_lock_max_overlay_abs,
+            self.reward_profit_lock_max_overlay_abs,
+        ))
+
+        if close_event is not None:
+            debug = self._profit_lock_state_debug(
+                scale=scale,
+                unrealized_cash=current_unrealized,
+                capture_ratio=capture_ratio,
+                r_lock_close=r_lock_close,
+                r_lost_mfe=r_lost_mfe,
+                r_profit_lock_total=overlay,
+                scale_meta=scale_meta,
+                active_override=close_active,
+                mfe_cash_override=closed_mfe_cash,
+                mae_cash_override=closed_mae_cash,
+                bars_override=closed_bars,
+                lost_mfe_fired_override=close_lost_mfe_fired,
+            )
+        else:
+            debug = self._profit_lock_state_debug(
+                scale=scale,
+                unrealized_cash=current_unrealized,
+                giveback_cash=giveback_cash,
+                allowed_giveback_cash=allowed_giveback_cash,
+                excess_giveback_cash=excess_giveback_cash,
+                excess_giveback_inc_cash=excess_giveback_inc_cash,
+                r_profit_giveback=r_profit_giveback,
+                r_lost_mfe=r_lost_mfe,
+                r_profit_lock_total=overlay,
+                scale_meta=scale_meta,
+            )
+        return overlay, debug
+
+    def __call__(self, obs=None):
+        close_event = self._snapshot_close_event()
+        old_total = super().__call__(obs)
+        old_debug = dict(self.reward_audit_debug())
+
+        if not self.reward_profit_lock_enabled:
+            self._set_reward_debug(
+                self._with_profit_lock_debug(old_debug, self._profit_lock_zero_debug())
+            )
+            return float(old_total)
+
+        overlay, profit_lock_debug = self._compute_profit_lock_overlay(close_event)
+
+        old_raw_total = float(old_debug.get("raw_total", 0.0))
+        raw_total = old_raw_total + float(overlay)
+        total = float(np.tanh(raw_total))
+
+        profit_lock_debug["r_profit_lock_total"] = float(overlay)
+        profit_lock_debug["r_old_raw_total"] = float(old_raw_total)
+        profit_lock_debug["r_raw_total_with_profit_lock"] = float(raw_total)
+
+        debug = dict(old_debug)
+        debug["raw_total"] = float(raw_total)
+        debug["total"] = float(total)
+        self._set_reward_debug(self._with_profit_lock_debug(debug, profit_lock_debug))
+        return total
+
+
 class FuturesIntradayMTMCleanReward(RewardAuditMixin):
     """
     v1-clean: Pure mark-to-market equity delta reward.
@@ -1589,6 +2088,7 @@ reward_classes = {
     'total_pnl_reward_function': EquityDeltaReward,
     'fast_car_racing_likely_reward_function': NoviceModeReward,
     'futures_intraday_reward_function': FuturesIntradayReward,
+    'futures_intraday_reward_profit_lock_function': FuturesIntradayRewardProfitLock,
     'futures_intraday_mtm_clean_reward_function': FuturesIntradayMTMCleanReward,
     'futures_intraday_mtm_risk_reward_function': FuturesIntradayMTMRiskReward,
 }
