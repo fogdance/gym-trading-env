@@ -72,6 +72,7 @@ def test_profit_lock_trade_rollup_flags_big_mfe_loss():
     rollup = build_profit_lock_trade_rollup(_rows(True), _trades())
 
     row = rollup.iloc[0]
+    assert row["capture_ratio"] == -594.0 / 3600.0
     assert bool(row["big_mfe_ge_1R"]) is True
     assert bool(row["big_mfe_to_loss"]) is True
     assert bool(row["profit_lock_was_active"]) is True

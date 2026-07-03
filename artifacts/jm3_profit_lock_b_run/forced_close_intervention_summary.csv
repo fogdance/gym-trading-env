@@ -1,0 +1,4 @@
+checkpoint_label,forced_close_reason,trades,actual_pnl
+step_000000300000,MARGIN_CALL,3,-8418.0
+step_000000500000,MARGIN_CALL,1,-3036.0
+step_000000700000,TRUNCATE_SESSION_END,2,-162.0

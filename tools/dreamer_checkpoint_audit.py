@@ -943,11 +943,7 @@ def build_profit_lock_trade_rollup(
         mae_cash = _safe_float(in_trade["profit_lock_mae_cash"].min(), 0.0) if not in_trade.empty else 0.0
         giveback_cash = _safe_float(in_trade["profit_lock_giveback_cash"].max(), 0.0) if not in_trade.empty else 0.0
         max_excess = _safe_float(in_trade["profit_lock_excess_giveback_cash"].max(), 0.0) if not in_trade.empty else 0.0
-        capture = _safe_float(in_trade["profit_lock_capture_ratio"].replace(0.0, np.nan).dropna().iloc[-1], np.nan) if (
-            not in_trade.empty and not in_trade["profit_lock_capture_ratio"].replace(0.0, np.nan).dropna().empty
-        ) else float("nan")
-        if not np.isfinite(capture):
-            capture = actual_pnl / max(mfe_cash, EPS) if mfe_cash > EPS else 0.0
+        capture = realized_pnl / max(mfe_cash, EPS) if mfe_cash > EPS else 0.0
         active_count = int((in_trade["profit_lock_active"] > 0.5).sum()) if not in_trade.empty else 0
         sum_r_profit_giveback = _safe_float(in_trade["r_profit_giveback"].sum(), 0.0) if not in_trade.empty else 0.0
         sum_r_lost_mfe = _safe_float(in_trade["r_lost_mfe"].sum(), 0.0) if not in_trade.empty else 0.0
