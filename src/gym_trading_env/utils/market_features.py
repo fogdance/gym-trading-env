@@ -62,7 +62,26 @@ FEATURES_MARKET_OBS: List[str] = [
 # formula audits. Only *_OUTPUT lists below define what the agent actually sees.
 # To crop obs for faster experiments, edit *_OUTPUT only; do not remove compute
 # columns unless the feature is being deleted from the contract.
-FEATURES_MARKET_OBS_OUTPUT: List[str] = list(FEATURES_MARKET_OBS)
+FEATURES_MARKET_OBS_OUTPUT: List[str] = [
+    "volume_surprise_logratio_floor",
+    "volume_surprise_rolling_percentile",
+    "oi_rel_yclose_log",
+    "oi_rolling_percentile",
+    "obs_cumVWAP_t",
+    "obs_dC_minus_cumVWAP_t",
+    "obs_cmp_C_vs_cumVWAP_t",
+    "obs_session_high_t",
+    "obs_session_low_t",
+    "obs_range_t",
+    "obs_open_drift_t",
+    "obs_bar_dir_t",
+    "obs_minute_index_t",
+    "obs_session_phase_t",
+    "vol_rolling_percentile",
+    "obs_dI_from_yclose_t",
+    "obs_pct_chg_from_ref_t",
+    "obs_mask_t",
+]
 
 # -----------------------------
 # Risk context features - OBS (normalized, current row only)
@@ -77,7 +96,7 @@ FEATURES_RISK_CONTEXT: List[str] = [
     "atr_ready_flag",
 ]
 
-FEATURES_RISK_CONTEXT_OUTPUT: List[str] = list(FEATURES_RISK_CONTEXT)
+FEATURES_RISK_CONTEXT_OUTPUT: List[str] = []
 
 # -----------------------------
 # Higher-timeframe context features - OBS (normalized, current row only)
@@ -105,7 +124,7 @@ FEATURES_HTF_CONTEXT: List[str] = [
     "h1_ready_flag",
 ]
 
-FEATURES_HTF_CONTEXT_OUTPUT: List[str] = list(FEATURES_HTF_CONTEXT)
+FEATURES_HTF_CONTEXT_OUTPUT: List[str] = []
 
 
 def _assert_output_subset(output: List[str], compute: List[str], name: str) -> None:
