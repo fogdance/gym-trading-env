@@ -14,6 +14,7 @@ from typing import Any, Iterable
 
 import numpy as np
 import pandas as pd
+from pandas.errors import EmptyDataError
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -31,6 +32,127 @@ class AuditPaths:
     entry_eval_dir: Path
     output_dir: Path
     env_config_path: Path | None = None
+
+
+PROFIT_LOCK_DEBUG_FIELDS = [
+    "profit_lock_enabled",
+    "profit_lock_active",
+    "profit_lock_trigger_R",
+    "profit_lock_mfe_cash",
+    "profit_lock_mfe_R",
+    "profit_lock_mae_cash",
+    "profit_lock_unrealized_cash",
+    "profit_lock_giveback_cash",
+    "profit_lock_allowed_giveback_cash",
+    "profit_lock_excess_giveback_cash",
+    "profit_lock_excess_giveback_inc_cash",
+    "profit_lock_capture_ratio",
+    "profit_lock_lost_mfe_fired",
+    "profit_lock_bars",
+    "profit_lock_scale_cash",
+    "profit_lock_scale_source_code",
+    "profit_lock_atr_price",
+    "profit_lock_atr_ratio",
+    "profit_lock_tick_cash",
+    "r_profit_giveback",
+    "r_lost_mfe",
+    "r_lock_close",
+    "r_profit_lock_total",
+    "r_old_raw_total",
+    "r_raw_total_with_profit_lock",
+]
+
+STEP_REWARD_COMPONENT_COLUMNS = [
+    "checkpoint_label",
+    "episode_id",
+    "trading_day",
+    "timestamp",
+    "step_index",
+    "requested_action",
+    "selected_action",
+    "executed_action",
+    "action_mask_short",
+    "action_mask_flat",
+    "action_mask_long",
+    "action_rejected",
+    "reject_code",
+    "execution_failed",
+    "position_side",
+    "user_cash",
+    "user_margin",
+    "unrealized_pnl",
+    "mtm_equity",
+    "prev_mtm_equity",
+    "delta_equity",
+    "reward_total",
+    "raw_total",
+    "pnl",
+    "close",
+    "r_atr_close",
+    "eod",
+    "sl",
+    "invalid_total",
+    "scale_cash",
+    "fee_cash_debug",
+    "close_reason",
+    "forced_close_reason",
+    "is_last",
+    "is_terminal",
+    "source_reward_has_profit_lock",
+    *PROFIT_LOCK_DEBUG_FIELDS,
+]
+
+PROFIT_LOCK_TRADE_ROLLUP_COLUMNS = [
+    "checkpoint_label",
+    "trade_id",
+    "episode_id",
+    "trading_day",
+    "direction",
+    "entry_time",
+    "exit_time",
+    "entry_price",
+    "exit_price",
+    "actual_pnl",
+    "fixed_exit_pnl",
+    "exit_holding_delta",
+    "hold_bars",
+    "close_reason",
+    "forced_close_reason",
+    "mfe_cash",
+    "mfe_R",
+    "mae_cash",
+    "realized_pnl",
+    "capture_ratio",
+    "giveback_cash",
+    "max_excess_giveback_cash",
+    "big_mfe_ge_1R",
+    "big_mfe_ge_2R",
+    "big_mfe_ge_3R",
+    "big_mfe_to_loss",
+    "big_mfe_low_capture",
+    "profit_lock_active_step_count",
+    "profit_lock_was_active",
+    "lost_mfe_fired",
+    "lock_close_rewarded",
+    "giveback_penalty_fired",
+    "sum_r_profit_giveback",
+    "sum_r_lost_mfe",
+    "sum_r_lock_close",
+    "sum_r_profit_lock_total",
+    "sum_abs_r_profit_lock_total",
+    "sum_abs_old_raw_total",
+    "overlay_abs_share",
+    "overlay_clip_proxy",
+    "reward_sign_changed_by_overlay",
+    "month",
+    "trade_ordinal_day",
+    "trade_ordinal_episode",
+    "mfe_bucket",
+    "eod_flag",
+]
+
+PROFIT_LOCK_OVERLAY_CLIP_ABS_DEFAULT = 0.20
+EPS = 1e-12
 
 
 def _json_default(value):
@@ -150,6 +272,13 @@ def _read_table(base: Path, stem: str) -> pd.DataFrame:
     raise FileNotFoundError(f"Missing {stem}.parquet or {stem}.csv under {base}")
 
 
+def _read_csv_or_empty(path: Path, columns: list[str] | None = None) -> pd.DataFrame:
+    try:
+        return pd.read_csv(path)
+    except (FileNotFoundError, EmptyDataError):
+        return pd.DataFrame(columns=columns or [])
+
+
 def _to_timestamp(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series, utc=True, errors="coerce").dt.tz_convert("Asia/Shanghai")
 
@@ -195,6 +324,190 @@ def _obs_float(obs: dict, key: str) -> float:
         return float(_scalar(obs.get(key), np.nan))
     except Exception:
         return float("nan")
+
+
+def _safe_float(value, default: float = 0.0) -> float:
+    try:
+        out = float(value)
+    except Exception:
+        return float(default)
+    if not np.isfinite(out):
+        return float(default)
+    return out
+
+
+def _obs_float_default(obs: dict, key: str, default: float = 0.0) -> float:
+    return _safe_float(_scalar(obs.get(key), default), default=default)
+
+
+def _record_to_dict(record) -> dict:
+    if hasattr(record, "to_dict"):
+        return record.to_dict()
+    if isinstance(record, dict):
+        return dict(record)
+    return {}
+
+
+def _action_mask_from_table(base_env) -> tuple[float, float, float]:
+    table = getattr(base_env, "_pending_transition_table", None)
+    if table is None:
+        return (0.0, 0.0, 0.0)
+    values = []
+    decisions = getattr(table, "decisions", [])
+    for idx in range(3):
+        try:
+            decision = table.for_index(idx)
+        except Exception:
+            decision = decisions[idx] if idx < len(decisions) else None
+        values.append(1.0 if bool(getattr(decision, "allowed", False)) else 0.0)
+    return tuple(values)  # type: ignore[return-value]
+
+
+def _position_side_name(base_env) -> str:
+    accounts = getattr(base_env, "user_accounts", None)
+    long_pos = _safe_float(getattr(accounts, "long_position", 0.0), default=0.0)
+    short_pos = _safe_float(getattr(accounts, "short_position", 0.0), default=0.0)
+    if long_pos > 0:
+        return "LONG"
+    if short_pos > 0:
+        return "SHORT"
+    return "FLAT"
+
+
+def _account_value(obj, attr: str, default: float = 0.0) -> float:
+    value = getattr(obj, attr, default)
+    if hasattr(value, "get_balance"):
+        value = value.get_balance()
+    return _safe_float(value, default=default)
+
+
+def _account_snapshot(base_env) -> dict[str, float]:
+    accounts = getattr(base_env, "user_accounts", None)
+    try:
+        equity = base_env._calculate_equity()
+    except Exception:
+        equity = 0.0
+    return {
+        "user_cash": _account_value(accounts, "cash_balance", 0.0),
+        "user_margin": _account_value(accounts, "used_margin", 0.0),
+        "unrealized_pnl": _account_value(accounts, "unrealized_pnl", 0.0),
+        "mtm_equity": _safe_float(equity, default=0.0),
+    }
+
+
+def _close_reasons_from_records(records: list[dict]) -> list[str]:
+    reasons = []
+    for rec in records:
+        operation = str(rec.get("operation_type", ""))
+        if not _is_close(operation):
+            continue
+        meta = rec.get("meta", {}) or {}
+        reason = str(meta.get("reason") or operation)
+        if reason:
+            reasons.append(reason)
+    return reasons
+
+
+def _forced_close_reason(reason: str) -> str:
+    upper = str(reason or "").upper()
+    forced_tokens = (
+        "EOD",
+        "FORCE",
+        "FORCED",
+        "STOP_LOSS",
+        "TAKE_PROFIT",
+        "DAILY_STOP",
+        "MARGIN",
+        "MARKET_CLOSE",
+        "SESSION_END",
+        "TRUNCATE",
+    )
+    return str(reason or "") if any(token in upper for token in forced_tokens) else ""
+
+
+def _current_timestamp(base_env) -> str:
+    try:
+        row = int(getattr(base_env, "current_step", 0))
+        return str(base_env.bar_source.store.index[row])
+    except Exception:
+        return ""
+
+
+def _current_trading_day(base_env) -> int:
+    try:
+        row = int(getattr(base_env, "current_step", 0))
+        return int(base_env.bar_source.store.row_trading_day[row])
+    except Exception:
+        return -1
+
+
+def _step_reward_component_row(
+    *,
+    checkpoint_label: str,
+    episode_id: int,
+    step_index: int,
+    base_env,
+    obs: dict,
+    action_meta: dict,
+    action_mask: tuple[float, float, float],
+    new_records: list[dict],
+) -> dict:
+    close_reasons = _close_reasons_from_records(new_records)
+    close_reason = "|".join(close_reasons)
+    account = _account_snapshot(base_env)
+    row = {
+        "checkpoint_label": checkpoint_label,
+        "episode_id": int(episode_id),
+        "trading_day": _current_trading_day(base_env),
+        "timestamp": _current_timestamp(base_env),
+        "step_index": int(step_index),
+        "requested_action": action_meta.get("requested_target") or "",
+        "selected_action": int(action_meta.get("requested_action_index", -1)),
+        "executed_action": _obs_float_default(obs, "log/env/executed_action", -1.0),
+        "action_mask_short": float(action_mask[0]),
+        "action_mask_flat": float(action_mask[1]),
+        "action_mask_long": float(action_mask[2]),
+        "action_rejected": _obs_float_default(obs, "log/env/action_rejected", 0.0),
+        "reject_code": _obs_float_default(obs, "log/env/reject_code", 0.0),
+        "execution_failed": _obs_float_default(obs, "log/env/execution_failed", 0.0),
+        "position_side": _position_side_name(base_env),
+        "user_cash": account["user_cash"],
+        "user_margin": account["user_margin"],
+        "unrealized_pnl": account["unrealized_pnl"],
+        "mtm_equity": _obs_float_default(obs, "log/env/reward/mtm_equity", account["mtm_equity"]),
+        "prev_mtm_equity": _obs_float_default(obs, "log/env/reward/prev_mtm_equity", 0.0),
+        "delta_equity": _obs_float_default(obs, "log/env/reward/delta_equity", 0.0),
+        "reward_total": _obs_float_default(obs, "reward", 0.0),
+        "raw_total": _obs_float_default(obs, "log/env/reward/raw_total", 0.0),
+        "pnl": _obs_float_default(obs, "log/env/reward/pnl", 0.0),
+        "close": _obs_float_default(obs, "log/env/reward/close", 0.0),
+        "r_atr_close": _obs_float_default(obs, "log/env/reward/r_atr_close", 0.0),
+        "eod": _obs_float_default(obs, "log/env/reward/eod", 0.0),
+        "sl": _obs_float_default(obs, "log/env/reward/sl", 0.0),
+        "invalid_total": _obs_float_default(obs, "log/env/reward/invalid_total", 0.0),
+        "scale_cash": _obs_float_default(obs, "log/env/reward/scale_cash", 0.0),
+        "fee_cash_debug": _obs_float_default(obs, "log/env/reward/fee_cash_debug", 0.0),
+        "close_reason": close_reason,
+        "forced_close_reason": "|".join(x for x in (_forced_close_reason(r) for r in close_reasons) if x),
+        "is_last": bool(_scalar(obs.get("is_last"), False)),
+        "is_terminal": bool(getattr(base_env, "terminated", False) or getattr(base_env, "truncated", False)),
+    }
+    source_has_profit_lock = any(f"log/env/reward/{key}" in obs for key in PROFIT_LOCK_DEBUG_FIELDS)
+    row["source_reward_has_profit_lock"] = bool(source_has_profit_lock)
+    for key in PROFIT_LOCK_DEBUG_FIELDS:
+        value = _obs_float_default(obs, f"log/env/reward/{key}", 0.0)
+        if source_has_profit_lock and not np.isfinite(value):
+            raise ValueError(f"Non-finite profit-lock reward field {key}: {value!r}")
+        row[key] = value
+    return {key: row.get(key, 0.0) for key in STEP_REWARD_COMPONENT_COLUMNS}
+
+
+def _checkpoint_label(checkpoint: Path) -> str:
+    name = checkpoint.name
+    parent = checkpoint.parent.name
+    if parent == "ckpt_retained":
+        return name
+    return name or str(checkpoint)
 
 
 def _zero_action(act_space: dict) -> dict:
@@ -511,6 +824,419 @@ def _group_metrics_by_split_role(
             pnl_col=pnl_col,
         )
     return out
+
+
+def _ensure_step_reward_schema(step_rows: pd.DataFrame) -> pd.DataFrame:
+    out = step_rows.copy()
+    for col in STEP_REWARD_COMPONENT_COLUMNS:
+        if col not in out.columns:
+            if col in {"checkpoint_label", "timestamp", "requested_action", "position_side", "close_reason", "forced_close_reason"}:
+                out[col] = ""
+            elif col in {"is_last", "is_terminal", "source_reward_has_profit_lock"}:
+                out[col] = False
+            else:
+                out[col] = 0.0
+    for col in PROFIT_LOCK_DEBUG_FIELDS:
+        out[col] = pd.to_numeric(out[col], errors="coerce").fillna(0.0)
+    numeric_cols = [
+        col for col in STEP_REWARD_COMPONENT_COLUMNS
+        if col not in {
+            "checkpoint_label",
+            "timestamp",
+            "requested_action",
+            "position_side",
+            "close_reason",
+            "forced_close_reason",
+            "is_last",
+            "is_terminal",
+            "source_reward_has_profit_lock",
+        }
+    ]
+    for col in numeric_cols:
+        out[col] = pd.to_numeric(out[col], errors="coerce").fillna(0.0)
+    out["source_reward_has_profit_lock"] = out["source_reward_has_profit_lock"].astype(bool)
+    return out[STEP_REWARD_COMPONENT_COLUMNS].copy()
+
+
+def _to_utc_timestamp(value) -> pd.Timestamp:
+    ts = pd.to_datetime(value, utc=True, errors="coerce")
+    return ts
+
+
+def _mfe_bucket(value: float) -> str:
+    value = _safe_float(value, default=0.0)
+    if value < 1.0:
+        return "<1R"
+    if value < 2.0:
+        return "1R-2R"
+    if value < 3.0:
+        return "2R-3R"
+    return ">=3R"
+
+
+def _eod_flag(reason: str) -> str:
+    text = str(reason or "").upper()
+    eod_tokens = ("EOD", "SESSION_END", "TRUNCATE_SESSION_END")
+    return "EOD" if any(token in text for token in eod_tokens) else "NON_EOD"
+
+
+def _attach_fixed_exit(trades: pd.DataFrame, fixed_exit: pd.DataFrame | None) -> pd.DataFrame:
+    out = trades.copy()
+    if "fixed_exit_pnl" not in out.columns:
+        out["fixed_exit_pnl"] = np.nan
+    if "exit_holding_delta" not in out.columns:
+        out["exit_holding_delta"] = np.nan
+    if fixed_exit is None or fixed_exit.empty:
+        return out
+    keys = [col for col in ["episode_id", "entry_timestamp", "direction"] if col in out.columns and col in fixed_exit.columns]
+    if not keys:
+        return out
+    cols = keys + [
+        col for col in ["fixed_net_pnl", "exit_holding_delta_pnl"]
+        if col in fixed_exit.columns
+    ]
+    right = fixed_exit[cols].drop_duplicates(keys).copy()
+    out = out.merge(right, on=keys, how="left", suffixes=("", "_fixed_join"))
+    if "fixed_net_pnl" in out.columns:
+        out["fixed_exit_pnl"] = out["fixed_net_pnl"].combine_first(out["fixed_exit_pnl"])
+    if "exit_holding_delta_pnl" in out.columns:
+        out["exit_holding_delta"] = out["exit_holding_delta_pnl"].combine_first(out["exit_holding_delta"])
+    return out
+
+
+def build_profit_lock_trade_rollup(
+    step_rows: pd.DataFrame,
+    trades: pd.DataFrame,
+    fixed_exit: pd.DataFrame | None = None,
+    *,
+    overlay_clip_abs: float = PROFIT_LOCK_OVERLAY_CLIP_ABS_DEFAULT,
+) -> pd.DataFrame:
+    steps = _ensure_step_reward_schema(step_rows)
+    if trades.empty:
+        return pd.DataFrame(columns=PROFIT_LOCK_TRADE_ROLLUP_COLUMNS)
+    trades_work = _attach_fixed_exit(trades, fixed_exit)
+    steps = steps.copy()
+    steps["_timestamp_ts"] = pd.to_datetime(steps["timestamp"], utc=True, errors="coerce")
+    rows = []
+    ordinal_day: dict[tuple[str, int], int] = {}
+    ordinal_episode: dict[tuple[str, int], int] = {}
+    for idx, trade in trades_work.reset_index(drop=True).iterrows():
+        checkpoint = str(trade.get("checkpoint_label") or "")
+        if not checkpoint and not steps.empty:
+            checkpoint = str(steps["checkpoint_label"].dropna().iloc[0])
+        episode_id = int(_safe_float(trade.get("episode_id", -1), -1))
+        trading_day = int(_safe_float(trade.get("trading_day", trade.get("start_trading_day", -1)), -1))
+        entry_time = trade.get("entry_timestamp", trade.get("entry_time", ""))
+        exit_time = trade.get("exit_timestamp", trade.get("exit_time", ""))
+        entry_ts = _to_utc_timestamp(entry_time)
+        exit_ts = _to_utc_timestamp(exit_time)
+        in_trade = steps[steps["episode_id"].astype(int) == episode_id].copy()
+        if pd.notna(entry_ts):
+            in_trade = in_trade[in_trade["_timestamp_ts"] >= entry_ts]
+        if pd.notna(exit_ts):
+            in_trade = in_trade[in_trade["_timestamp_ts"] <= exit_ts]
+
+        actual_pnl = _safe_float(trade.get("actual_net_pnl", trade.get("actual_pnl", 0.0)), 0.0)
+        realized_pnl = _safe_float(trade.get("actual_gross_pnl", actual_pnl), actual_pnl)
+        mfe_cash = _safe_float(in_trade["profit_lock_mfe_cash"].max(), 0.0) if not in_trade.empty else 0.0
+        mfe_r = _safe_float(in_trade["profit_lock_mfe_R"].max(), 0.0) if not in_trade.empty else 0.0
+        mae_cash = _safe_float(in_trade["profit_lock_mae_cash"].min(), 0.0) if not in_trade.empty else 0.0
+        giveback_cash = _safe_float(in_trade["profit_lock_giveback_cash"].max(), 0.0) if not in_trade.empty else 0.0
+        max_excess = _safe_float(in_trade["profit_lock_excess_giveback_cash"].max(), 0.0) if not in_trade.empty else 0.0
+        capture = _safe_float(in_trade["profit_lock_capture_ratio"].replace(0.0, np.nan).dropna().iloc[-1], np.nan) if (
+            not in_trade.empty and not in_trade["profit_lock_capture_ratio"].replace(0.0, np.nan).dropna().empty
+        ) else float("nan")
+        if not np.isfinite(capture):
+            capture = actual_pnl / max(mfe_cash, EPS) if mfe_cash > EPS else 0.0
+        active_count = int((in_trade["profit_lock_active"] > 0.5).sum()) if not in_trade.empty else 0
+        sum_r_profit_giveback = _safe_float(in_trade["r_profit_giveback"].sum(), 0.0) if not in_trade.empty else 0.0
+        sum_r_lost_mfe = _safe_float(in_trade["r_lost_mfe"].sum(), 0.0) if not in_trade.empty else 0.0
+        sum_r_lock_close = _safe_float(in_trade["r_lock_close"].sum(), 0.0) if not in_trade.empty else 0.0
+        sum_overlay = _safe_float(in_trade["r_profit_lock_total"].sum(), 0.0) if not in_trade.empty else 0.0
+        sum_abs_overlay = _safe_float(in_trade["r_profit_lock_total"].abs().sum(), 0.0) if not in_trade.empty else 0.0
+        source_has_profit_lock = (
+            bool(in_trade["source_reward_has_profit_lock"].astype(bool).any())
+            if not in_trade.empty
+            else False
+        )
+        old_raw_series = (
+            in_trade["r_old_raw_total"]
+            if source_has_profit_lock
+            else in_trade["raw_total"]
+        )
+        sum_abs_old_raw = _safe_float(old_raw_series.abs().sum(), 0.0) if not in_trade.empty else 0.0
+        overlay_share = sum_abs_overlay / max(sum_abs_old_raw, EPS)
+        if not in_trade.empty and source_has_profit_lock:
+            old_sign = np.sign(np.tanh(old_raw_series.to_numpy(dtype=float)))
+            new_sign = np.sign(in_trade["reward_total"].to_numpy(dtype=float))
+            sign_changed = bool(np.any(old_sign != new_sign))
+            clip_proxy = bool((in_trade["r_profit_lock_total"].abs() >= float(overlay_clip_abs) - 1e-9).any())
+        else:
+            sign_changed = False
+            clip_proxy = False
+        close_reason = str(trade.get("exit_reason", trade.get("close_reason", "")) or "")
+        forced_reason = _forced_close_reason(close_reason)
+        day_key = (checkpoint, trading_day)
+        episode_key = (checkpoint, episode_id)
+        ordinal_day[day_key] = ordinal_day.get(day_key, 0) + 1
+        ordinal_episode[episode_key] = ordinal_episode.get(episode_key, 0) + 1
+        big_1 = bool(mfe_r >= 1.0)
+        row = {
+            "checkpoint_label": checkpoint,
+            "trade_id": int(idx),
+            "episode_id": episode_id,
+            "trading_day": trading_day,
+            "direction": str(trade.get("direction", "")),
+            "entry_time": entry_time,
+            "exit_time": exit_time,
+            "entry_price": _safe_float(trade.get("entry_price", np.nan), np.nan),
+            "exit_price": _safe_float(trade.get("exit_price", np.nan), np.nan),
+            "actual_pnl": actual_pnl,
+            "fixed_exit_pnl": _safe_float(trade.get("fixed_exit_pnl", np.nan), np.nan),
+            "exit_holding_delta": _safe_float(trade.get("exit_holding_delta", np.nan), np.nan),
+            "hold_bars": int(len(in_trade)),
+            "close_reason": close_reason,
+            "forced_close_reason": forced_reason,
+            "mfe_cash": mfe_cash,
+            "mfe_R": mfe_r,
+            "mae_cash": mae_cash,
+            "realized_pnl": realized_pnl,
+            "capture_ratio": capture,
+            "giveback_cash": giveback_cash,
+            "max_excess_giveback_cash": max_excess,
+            "big_mfe_ge_1R": big_1,
+            "big_mfe_ge_2R": bool(mfe_r >= 2.0),
+            "big_mfe_ge_3R": bool(mfe_r >= 3.0),
+            "big_mfe_to_loss": bool(big_1 and actual_pnl <= 0.0),
+            "big_mfe_low_capture": bool(big_1 and capture < 0.5),
+            "profit_lock_active_step_count": active_count,
+            "profit_lock_was_active": bool(active_count > 0),
+            "lost_mfe_fired": bool((not in_trade.empty) and ((in_trade["profit_lock_lost_mfe_fired"] > 0.5).any() or (in_trade["r_lost_mfe"] < 0.0).any())),
+            "lock_close_rewarded": bool((not in_trade.empty) and (in_trade["r_lock_close"] > 0.0).any()),
+            "giveback_penalty_fired": bool((not in_trade.empty) and (in_trade["r_profit_giveback"] < 0.0).any()),
+            "sum_r_profit_giveback": sum_r_profit_giveback,
+            "sum_r_lost_mfe": sum_r_lost_mfe,
+            "sum_r_lock_close": sum_r_lock_close,
+            "sum_r_profit_lock_total": sum_overlay,
+            "sum_abs_r_profit_lock_total": sum_abs_overlay,
+            "sum_abs_old_raw_total": sum_abs_old_raw,
+            "overlay_abs_share": overlay_share,
+            "overlay_clip_proxy": clip_proxy,
+            "reward_sign_changed_by_overlay": sign_changed,
+            "month": _month_from_day(trading_day) if trading_day > 0 else -1,
+            "trade_ordinal_day": ordinal_day[day_key],
+            "trade_ordinal_episode": ordinal_episode[episode_key],
+            "mfe_bucket": _mfe_bucket(mfe_r),
+            "eod_flag": _eod_flag(close_reason),
+        }
+        rows.append(row)
+    return pd.DataFrame.from_records(rows, columns=PROFIT_LOCK_TRADE_ROLLUP_COLUMNS)
+
+
+def _summary_groups(df: pd.DataFrame) -> list[tuple[str, list[str]]]:
+    return [
+        ("checkpoint", ["checkpoint_label"]),
+        ("checkpoint_month", ["checkpoint_label", "month"]),
+        ("checkpoint_direction", ["checkpoint_label", "direction"]),
+        ("checkpoint_trade_ordinal", ["checkpoint_label", "trade_ordinal_day"]),
+        ("checkpoint_close_reason", ["checkpoint_label", "close_reason"]),
+        ("checkpoint_mfe_bucket", ["checkpoint_label", "mfe_bucket"]),
+        ("checkpoint_profit_lock_active", ["checkpoint_label", "profit_lock_was_active"]),
+        ("checkpoint_eod_flag", ["checkpoint_label", "eod_flag"]),
+    ]
+
+
+def _group_value(row, cols: list[str]) -> str:
+    return "|".join(f"{col}={row[col]}" for col in cols)
+
+
+def _empty_summary(columns: list[str]) -> pd.DataFrame:
+    return pd.DataFrame(columns=["breakdown", "group_value", *columns])
+
+
+def _profit_lock_component_summary(rollup: pd.DataFrame) -> pd.DataFrame:
+    metric_cols = [
+        "trades",
+        "profit_lock_active_trades",
+        "sum_r_profit_giveback",
+        "sum_r_lost_mfe",
+        "sum_r_lock_close",
+        "sum_r_profit_lock_total",
+        "sum_abs_r_profit_lock_total",
+        "overlay_nonzero_trade_ratio",
+    ]
+    if rollup.empty:
+        return _empty_summary(metric_cols)
+    rows = []
+    for breakdown, cols in _summary_groups(rollup):
+        grouped = rollup.groupby(cols, dropna=False)
+        for keys, part in grouped:
+            key_values = keys if isinstance(keys, tuple) else (keys,)
+            row = {col: key_values[idx] for idx, col in enumerate(cols)}
+            rows.append({
+                "breakdown": breakdown,
+                "group_value": _group_value(row, cols),
+                "trades": int(len(part)),
+                "profit_lock_active_trades": int(part["profit_lock_was_active"].sum()),
+                "sum_r_profit_giveback": float(part["sum_r_profit_giveback"].sum()),
+                "sum_r_lost_mfe": float(part["sum_r_lost_mfe"].sum()),
+                "sum_r_lock_close": float(part["sum_r_lock_close"].sum()),
+                "sum_r_profit_lock_total": float(part["sum_r_profit_lock_total"].sum()),
+                "sum_abs_r_profit_lock_total": float(part["sum_abs_r_profit_lock_total"].sum()),
+                "overlay_nonzero_trade_ratio": float((part["sum_abs_r_profit_lock_total"] > 0.0).mean()),
+            })
+    return pd.DataFrame.from_records(rows)
+
+
+def _trade_mfe_capture_summary(rollup: pd.DataFrame) -> pd.DataFrame:
+    metric_cols = [
+        "trades",
+        "mfe_ge_1R",
+        "mfe_ge_2R",
+        "mfe_ge_3R",
+        "big_mfe_to_loss",
+        "big_mfe_low_capture",
+        "mean_mfe_R",
+        "median_mfe_R",
+        "mean_capture_ratio_mfe_ge_1R",
+        "mean_giveback_cash_mfe_ge_1R",
+        "mean_hold_bars_mfe_ge_1R",
+    ]
+    if rollup.empty:
+        return _empty_summary(metric_cols)
+    rows = []
+    for breakdown, cols in _summary_groups(rollup):
+        for keys, part in rollup.groupby(cols, dropna=False):
+            key_values = keys if isinstance(keys, tuple) else (keys,)
+            row = {col: key_values[idx] for idx, col in enumerate(cols)}
+            big = part[part["big_mfe_ge_1R"] == True]
+            rows.append({
+                "breakdown": breakdown,
+                "group_value": _group_value(row, cols),
+                "trades": int(len(part)),
+                "mfe_ge_1R": int(part["big_mfe_ge_1R"].sum()),
+                "mfe_ge_2R": int(part["big_mfe_ge_2R"].sum()),
+                "mfe_ge_3R": int(part["big_mfe_ge_3R"].sum()),
+                "big_mfe_to_loss": int(part["big_mfe_to_loss"].sum()),
+                "big_mfe_low_capture": int(part["big_mfe_low_capture"].sum()),
+                "mean_mfe_R": float(part["mfe_R"].mean()) if len(part) else np.nan,
+                "median_mfe_R": float(part["mfe_R"].median()) if len(part) else np.nan,
+                "mean_capture_ratio_mfe_ge_1R": float(big["capture_ratio"].mean()) if len(big) else np.nan,
+                "mean_giveback_cash_mfe_ge_1R": float(big["giveback_cash"].mean()) if len(big) else np.nan,
+                "mean_hold_bars_mfe_ge_1R": float(big["hold_bars"].mean()) if len(big) else np.nan,
+            })
+    return pd.DataFrame.from_records(rows)
+
+
+def _mfe_bucket_breakdown(rollup: pd.DataFrame) -> pd.DataFrame:
+    if rollup.empty:
+        return pd.DataFrame(columns=["checkpoint_label", "mfe_bucket", "trades", "actual_pnl", "mean_capture_ratio", "mean_hold_bars"])
+    grouped = rollup.groupby(["checkpoint_label", "mfe_bucket"], dropna=False)
+    rows = []
+    for keys, part in grouped:
+        checkpoint, bucket = keys
+        rows.append({
+            "checkpoint_label": checkpoint,
+            "mfe_bucket": bucket,
+            "trades": int(len(part)),
+            "actual_pnl": float(part["actual_pnl"].sum()),
+            "mean_capture_ratio": float(part["capture_ratio"].mean()) if len(part) else np.nan,
+            "mean_hold_bars": float(part["hold_bars"].mean()) if len(part) else np.nan,
+            "big_mfe_to_loss": int(part["big_mfe_to_loss"].sum()),
+        })
+    return pd.DataFrame.from_records(rows)
+
+
+def _close_reason_breakdown(rollup: pd.DataFrame) -> pd.DataFrame:
+    if rollup.empty:
+        return pd.DataFrame(columns=["checkpoint_label", "close_reason", "eod_flag", "trades", "actual_pnl", "mean_mfe_R", "profit_lock_active_trades"])
+    rows = []
+    grouped = rollup.groupby(["checkpoint_label", "close_reason", "eod_flag"], dropna=False)
+    for keys, part in grouped:
+        checkpoint, reason, eod_flag = keys
+        rows.append({
+            "checkpoint_label": checkpoint,
+            "close_reason": reason,
+            "eod_flag": eod_flag,
+            "trades": int(len(part)),
+            "actual_pnl": float(part["actual_pnl"].sum()),
+            "mean_mfe_R": float(part["mfe_R"].mean()) if len(part) else np.nan,
+            "profit_lock_active_trades": int(part["profit_lock_was_active"].sum()),
+        })
+    return pd.DataFrame.from_records(rows)
+
+
+def _overlay_dominance_summary(rollup: pd.DataFrame, steps: pd.DataFrame) -> pd.DataFrame:
+    cols = [
+        "checkpoint_label",
+        "trades",
+        "steps",
+        "sum_abs_r_profit_lock_total",
+        "sum_abs_old_raw_total",
+        "overlay_abs_share",
+        "overlay_nonzero_step_ratio",
+        "overlay_nonzero_trade_ratio",
+        "overlay_clip_proxy_count",
+        "reward_sign_changed_trade_count",
+    ]
+    if rollup.empty:
+        return pd.DataFrame(columns=cols)
+    steps = _ensure_step_reward_schema(steps)
+    rows = []
+    for checkpoint, part in rollup.groupby("checkpoint_label", dropna=False):
+        step_part = steps[steps["checkpoint_label"].astype(str) == str(checkpoint)]
+        sum_abs_overlay = float(part["sum_abs_r_profit_lock_total"].sum())
+        sum_abs_old = float(part["sum_abs_old_raw_total"].sum())
+        rows.append({
+            "checkpoint_label": checkpoint,
+            "trades": int(len(part)),
+            "steps": int(len(step_part)),
+            "sum_abs_r_profit_lock_total": sum_abs_overlay,
+            "sum_abs_old_raw_total": sum_abs_old,
+            "overlay_abs_share": sum_abs_overlay / max(sum_abs_old, EPS),
+            "overlay_nonzero_step_ratio": float((step_part["r_profit_lock_total"].abs() > 0.0).mean()) if len(step_part) else 0.0,
+            "overlay_nonzero_trade_ratio": float((part["sum_abs_r_profit_lock_total"] > 0.0).mean()) if len(part) else 0.0,
+            "overlay_clip_proxy_count": int(part["overlay_clip_proxy"].sum()),
+            "reward_sign_changed_trade_count": int(part["reward_sign_changed_by_overlay"].sum()),
+        })
+    return pd.DataFrame.from_records(rows, columns=cols)
+
+
+def build_profit_lock_ab_summary_tables(
+    step_rows: pd.DataFrame,
+    rollup: pd.DataFrame,
+) -> dict[str, pd.DataFrame]:
+    steps = _ensure_step_reward_schema(step_rows)
+    return {
+        "profit_lock_component_summary": _profit_lock_component_summary(rollup),
+        "trade_mfe_capture_summary": _trade_mfe_capture_summary(rollup),
+        "mfe_bucket_breakdown": _mfe_bucket_breakdown(rollup),
+        "close_reason_breakdown": _close_reason_breakdown(rollup),
+        "overlay_dominance_summary": _overlay_dominance_summary(rollup, steps),
+    }
+
+
+def write_profit_lock_ab_audit_outputs(
+    output_dir: Path,
+    step_rows: pd.DataFrame,
+    trades: pd.DataFrame,
+    fixed_exit: pd.DataFrame | None = None,
+) -> dict[str, str]:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    steps = _ensure_step_reward_schema(step_rows)
+    rollup = build_profit_lock_trade_rollup(steps, trades, fixed_exit)
+    tables = build_profit_lock_ab_summary_tables(steps, rollup)
+    paths = {
+        "step_reward_components": str(output_dir / "step_reward_components.csv"),
+        "profit_lock_trade_rollup": str(output_dir / "profit_lock_trade_rollup.csv"),
+    }
+    steps.to_csv(output_dir / "step_reward_components.csv", index=False)
+    rollup.to_csv(output_dir / "profit_lock_trade_rollup.csv", index=False)
+    for stem, table in tables.items():
+        path = output_dir / f"{stem}.csv"
+        table.to_csv(path, index=False)
+        paths[stem] = str(path)
+    return paths
 
 
 def _prepare_candidates(entry_eval_dir: Path) -> tuple[pd.DataFrame, dict[int, str], list[int]]:
@@ -866,7 +1592,9 @@ def collect_dreamer_episodes(
     role_by_day: dict[int, str],
     roles: set[str],
     start_clock: str | None,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
+    export_step_reward_components: bool = False,
+    checkpoint_label: str | None = None,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     if collect_mode == "sampled" and int(episodes) <= 0:
         return pd.DataFrame(), pd.DataFrame()
     sys.path.insert(0, str(paths.dreamer_root))
@@ -933,6 +1661,7 @@ def collect_dreamer_episodes(
 
     episode_rows = []
     trade_rows = []
+    step_reward_rows = []
     completed = 0
     steps = 0
     current_episode_id = -1
@@ -940,13 +1669,20 @@ def collect_dreamer_episodes(
     current_score = 0.0
     current_length = 0
     record_meta_by_index: dict[int, dict] = {}
+    checkpoint_label = checkpoint_label or _checkpoint_label(paths.checkpoint)
     try:
         while completed < int(target_episodes) and steps < int(max_steps):
             action_meta = _decision_meta_before_step(base_env, action)
+            action_mask = _action_mask_from_table(base_env)
             before_records = len(getattr(base_env.trade_record_manager, "trade_history", []))
             obs = env.step(action)
             steps += 1
             after_records = len(getattr(base_env.trade_record_manager, "trade_history", []))
+            trade_history = getattr(base_env.trade_record_manager, "trade_history", [])
+            new_records = [
+                _record_to_dict(rec)
+                for rec in trade_history[before_records:after_records]
+            ]
             if action_meta and after_records > before_records:
                 for rec_idx in range(before_records, after_records):
                     record_meta_by_index[int(rec_idx)] = dict(action_meta)
@@ -968,6 +1704,17 @@ def collect_dreamer_episodes(
             else:
                 current_length += 1
                 current_score += float(_scalar(obs.get("reward"), 0.0) or 0.0)
+                if export_step_reward_components:
+                    step_reward_rows.append(_step_reward_component_row(
+                        checkpoint_label=checkpoint_label,
+                        episode_id=current_episode_id,
+                        step_index=current_length,
+                        base_env=base_env,
+                        obs=obs,
+                        action_meta=action_meta,
+                        action_mask=action_mask,
+                        new_records=new_records,
+                    ))
 
             policy_obs = _batch_obs(obs, agent.obs_space)
             carry, next_action, _ = agent.policy(carry, policy_obs, mode="eval")
@@ -1020,7 +1767,11 @@ def collect_dreamer_episodes(
     finally:
         env.close()
 
-    return pd.DataFrame.from_records(episode_rows), pd.DataFrame.from_records(trade_rows)
+    return (
+        pd.DataFrame.from_records(episode_rows),
+        pd.DataFrame.from_records(trade_rows),
+        pd.DataFrame.from_records(step_reward_rows, columns=STEP_REWARD_COMPONENT_COLUMNS),
+    )
 
 
 def summarize(
@@ -1625,6 +2376,15 @@ def main(argv=None) -> int:
         default=None,
         help="Start clock for --collect-mode per_day; defaults to the checkpoint env config start_clock.",
     )
+    parser.add_argument(
+        "--export-step-reward-components",
+        action="store_true",
+        help=(
+            "During collection, write step_reward_components.csv and profit-lock A/B "
+            "summary tables. If collection is skipped, an existing step_reward_components.csv "
+            "is reused."
+        ),
+    )
     args = parser.parse_args(argv)
 
     checkpoint = _read_latest_checkpoint(Path(args.checkpoint))
@@ -1645,8 +2405,9 @@ def main(argv=None) -> int:
 
     episode_path = paths.output_dir / "dreamer_episodes.csv"
     trade_path = paths.output_dir / "dreamer_actual_trades.csv"
+    step_reward_path = paths.output_dir / "step_reward_components.csv"
     if args.collect or not (episode_path.exists() and trade_path.exists()):
-        episodes, trades = collect_dreamer_episodes(
+        episodes, trades, step_rewards = collect_dreamer_episodes(
             paths,
             episodes=args.episodes,
             max_steps=args.max_steps,
@@ -1655,12 +2416,20 @@ def main(argv=None) -> int:
             role_by_day=role_by_day,
             roles=roles,
             start_clock=args.start_clock,
+            export_step_reward_components=args.export_step_reward_components,
         )
         episodes.to_csv(episode_path, index=False)
         trades.to_csv(trade_path, index=False)
+        if args.export_step_reward_components:
+            step_rewards.to_csv(step_reward_path, index=False)
     else:
-        episodes = pd.read_csv(episode_path)
-        trades = pd.read_csv(trade_path)
+        episodes = _read_csv_or_empty(episode_path)
+        trades = _read_csv_or_empty(trade_path)
+        step_rewards = (
+            _read_csv_or_empty(step_reward_path, columns=STEP_REWARD_COMPONENT_COLUMNS)
+            if step_reward_path.exists()
+            else pd.DataFrame(columns=STEP_REWARD_COMPONENT_COLUMNS)
+        )
     summary = summarize(
         paths,
         episodes,
@@ -1668,6 +2437,29 @@ def main(argv=None) -> int:
         random_runs=args.random_runs,
         matched_random_seed=args.matched_random_seed,
     )
+    profit_lock_outputs = {}
+    if args.export_step_reward_components:
+        if step_rewards.empty and not step_reward_path.exists():
+            raise FileNotFoundError(
+                "--export-step-reward-components requires collection or an existing "
+                f"{step_reward_path}")
+        if step_rewards.empty and step_reward_path.exists():
+            step_rewards = _read_csv_or_empty(
+                step_reward_path,
+                columns=STEP_REWARD_COMPONENT_COLUMNS,
+            )
+        fixed_candidate_path = paths.output_dir / "dreamer_fixed_exit_candidate_join.csv"
+        fixed_candidate = (
+            _read_csv_or_empty(fixed_candidate_path)
+            if fixed_candidate_path.exists()
+            else pd.DataFrame()
+        )
+        profit_lock_outputs = write_profit_lock_ab_audit_outputs(
+            paths.output_dir,
+            step_rewards,
+            trades,
+            fixed_candidate,
+        )
     print(json.dumps({
         "output_dir": str(paths.output_dir),
         "episodes": summary["episodes"],
@@ -1677,6 +2469,7 @@ def main(argv=None) -> int:
         "matched_random": summary["matched_random_fixed_exit"],
         "fixed_exit_executable": summary["dreamer_entry_fixed_exit_executable_nonoverlap"]["metrics"],
         "oracle": summary["constrained_oracle_fixed_exit"],
+        "profit_lock_ab_outputs": profit_lock_outputs,
     }, ensure_ascii=False, indent=2, default=_json_default))
     return 0
 
