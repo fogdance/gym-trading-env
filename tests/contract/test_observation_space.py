@@ -5,7 +5,7 @@ import pytest
 
 from gym_trading_env.envs.trading_env import CustomTradingEnv, Action
 from gym_trading_env.utils.trade_util import action_to_index
-from gym_trading_env.utils.market_features import FEATURES_RISK_CONTEXT, FEATURES_HTF_CONTEXT
+from gym_trading_env.utils.market_features import FEATURES_RISK_CONTEXT_OUTPUT, FEATURES_HTF_CONTEXT_OUTPUT
 
 pytestmark = pytest.mark.unit
 
@@ -85,23 +85,31 @@ def test_obs_shapes_dtypes_and_episode_len_is_one_day():
     env.close()
 
 
-def test_obs_mode_includes_context_vectors(tmp_path):
+def test_obs_mode_respects_context_output_lists(tmp_path):
     df = make_one_day_df()
     env = CustomTradingEnv(df=df, config_path=make_obs_config(tmp_path))
     env.config.training.randomize_start = False
     env.config.training.start_clock = "future_night"
 
     obs, _ = env.reset()
-    assert "risk_context" in obs
-    assert obs["risk_context"].shape == (len(FEATURES_RISK_CONTEXT),)
-    assert obs["risk_context"].dtype == np.float32
-    assert np.isfinite(obs["risk_context"]).all()
-    assert env.observation_space["risk_context"].shape == (len(FEATURES_RISK_CONTEXT),)
-    assert "htf_context" in obs
-    assert obs["htf_context"].shape == (len(FEATURES_HTF_CONTEXT),)
-    assert obs["htf_context"].dtype == np.float32
-    assert np.isfinite(obs["htf_context"]).all()
-    assert env.observation_space["htf_context"].shape == (len(FEATURES_HTF_CONTEXT),)
+    if FEATURES_RISK_CONTEXT_OUTPUT:
+        assert "risk_context" in obs
+        assert obs["risk_context"].shape == (len(FEATURES_RISK_CONTEXT_OUTPUT),)
+        assert obs["risk_context"].dtype == np.float32
+        assert np.isfinite(obs["risk_context"]).all()
+        assert env.observation_space["risk_context"].shape == (len(FEATURES_RISK_CONTEXT_OUTPUT),)
+    else:
+        assert "risk_context" not in obs
+        assert "risk_context" not in env.observation_space
+    if FEATURES_HTF_CONTEXT_OUTPUT:
+        assert "htf_context" in obs
+        assert obs["htf_context"].shape == (len(FEATURES_HTF_CONTEXT_OUTPUT),)
+        assert obs["htf_context"].dtype == np.float32
+        assert np.isfinite(obs["htf_context"]).all()
+        assert env.observation_space["htf_context"].shape == (len(FEATURES_HTF_CONTEXT_OUTPUT),)
+    else:
+        assert "htf_context" not in obs
+        assert "htf_context" not in env.observation_space
 
     env.close()
 
@@ -122,14 +130,16 @@ def test_obs_mode_is_frozen_after_env_init(tmp_path):
 
     obs_env = CustomTradingEnv(df=df, config_path=make_obs_config(tmp_path))
     obs, _ = obs_env.reset()
-    assert "risk_context" in obs
-    assert "htf_context" in obs
+    assert ("risk_context" in obs) == bool(FEATURES_RISK_CONTEXT_OUTPUT)
+    assert ("htf_context" in obs) == bool(FEATURES_HTF_CONTEXT_OUTPUT)
     obs_env.config.trading.obs_feature_mode = "raw"
     obs_after, _ = obs_env.reset()
-    assert "risk_context" in obs_after
-    assert "htf_context" in obs_after
-    assert obs_after["risk_context"].shape == obs_env.observation_space["risk_context"].shape
-    assert obs_after["htf_context"].shape == obs_env.observation_space["htf_context"].shape
+    assert ("risk_context" in obs_after) == bool(FEATURES_RISK_CONTEXT_OUTPUT)
+    assert ("htf_context" in obs_after) == bool(FEATURES_HTF_CONTEXT_OUTPUT)
+    if FEATURES_RISK_CONTEXT_OUTPUT:
+        assert obs_after["risk_context"].shape == obs_env.observation_space["risk_context"].shape
+    if FEATURES_HTF_CONTEXT_OUTPUT:
+        assert obs_after["htf_context"].shape == obs_env.observation_space["htf_context"].shape
     obs_env.close()
 
 

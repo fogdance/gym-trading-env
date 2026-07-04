@@ -8,9 +8,9 @@ from tests.factories.market_data_factory import MarketDataFactory
 from tests.oracles.market_spec_oracle import (
     build_market_features_spec,
     FEATURES_MARKET,
-    FEATURES_MARKET_OBS,
-    FEATURES_RISK_CONTEXT,
-    FEATURES_HTF_CONTEXT,
+    FEATURES_MARKET_OBS_OUTPUT,
+    FEATURES_RISK_CONTEXT_OUTPUT,
+    FEATURES_HTF_CONTEXT_OUTPUT,
     window_slice_spec_by_cols,
 )
 from tests.oracles.agent_spec_oracle import (
@@ -215,7 +215,7 @@ def test_env_obs_match_spec(mode, tmp_path):
     obs, _ = env.reset(seed=123)
     obs = _warmup_skip_first_day_and_flush_window(env, obs)
 
-    market_cols = FEATURES_MARKET_OBS if mode == "obs" else FEATURES_MARKET
+    market_cols = FEATURES_MARKET_OBS_OUTPUT if mode == "obs" else FEATURES_MARKET
     agent_cols = FEATURES_AGENT_OBS if mode == "obs" else FEATURES_AGENT
 
     steps_to_check = 30
@@ -265,26 +265,32 @@ def test_env_obs_match_spec(mode, tmp_path):
             atol=1e-6,
         )
         if mode == "obs":
-            exp_risk = df_market_full.iloc[cur_i][FEATURES_RISK_CONTEXT].to_numpy(dtype=np.float32)
-            assert got_risk is not None
-            assert_array_allclose_with_diff(
-                got_risk.reshape(1, -1),
-                exp_risk.reshape(1, -1),
-                col_labels=FEATURES_RISK_CONTEXT,
-                prefix=f"[mode={mode} step={step_k} cur_i={cur_i} risk_context]",
-                rtol=1e-6,
-                atol=1e-6,
-            )
-            exp_htf = df_market_full.iloc[cur_i][FEATURES_HTF_CONTEXT].to_numpy(dtype=np.float32)
-            assert got_htf is not None
-            assert_array_allclose_with_diff(
-                got_htf.reshape(1, -1),
-                exp_htf.reshape(1, -1),
-                col_labels=FEATURES_HTF_CONTEXT,
-                prefix=f"[mode={mode} step={step_k} cur_i={cur_i} htf_context]",
-                rtol=1e-6,
-                atol=1e-6,
-            )
+            if FEATURES_RISK_CONTEXT_OUTPUT:
+                exp_risk = df_market_full.iloc[cur_i][FEATURES_RISK_CONTEXT_OUTPUT].to_numpy(dtype=np.float32)
+                assert got_risk is not None
+                assert_array_allclose_with_diff(
+                    got_risk.reshape(1, -1),
+                    exp_risk.reshape(1, -1),
+                    col_labels=FEATURES_RISK_CONTEXT_OUTPUT,
+                    prefix=f"[mode={mode} step={step_k} cur_i={cur_i} risk_context]",
+                    rtol=1e-6,
+                    atol=1e-6,
+                )
+            else:
+                assert got_risk is None
+            if FEATURES_HTF_CONTEXT_OUTPUT:
+                exp_htf = df_market_full.iloc[cur_i][FEATURES_HTF_CONTEXT_OUTPUT].to_numpy(dtype=np.float32)
+                assert got_htf is not None
+                assert_array_allclose_with_diff(
+                    got_htf.reshape(1, -1),
+                    exp_htf.reshape(1, -1),
+                    col_labels=FEATURES_HTF_CONTEXT_OUTPUT,
+                    prefix=f"[mode={mode} step={step_k} cur_i={cur_i} htf_context]",
+                    rtol=1e-6,
+                    atol=1e-6,
+                )
+            else:
+                assert got_htf is None
         else:
             assert got_risk is None
             assert got_htf is None

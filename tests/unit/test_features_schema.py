@@ -3,8 +3,11 @@ import pytest
 from gym_trading_env.utils.market_features import (
     FEATURES_MARKET,
     FEATURES_MARKET_OBS,
+    FEATURES_MARKET_OBS_OUTPUT,
     FEATURES_RISK_CONTEXT,
+    FEATURES_RISK_CONTEXT_OUTPUT,
     FEATURES_HTF_CONTEXT,
+    FEATURES_HTF_CONTEXT_OUTPUT,
     build_market_features,
 )
 from gym_trading_env.utils.agent_features import FEATURES_AGENT
@@ -26,6 +29,8 @@ def test_features_market_schema():
 
 def test_features_market_obs_schema():
     expected = [
+        "obs_V_t",
+        "obs_I_t",
         "volume_surprise_logratio_floor",
         "volume_surprise_rolling_percentile",
         "volume_impulse_recent",
@@ -54,11 +59,14 @@ def test_features_market_obs_schema():
         "obs_bar_dir_t",
         "obs_minute_index_t",
         "obs_session_phase_t",
+        "obs_volatility_t",
         "vol_rolling_percentile",
         "obs_dI_from_yclose_t",
         "obs_pct_chg_from_ref_t",
         "obs_pct_chg_from_ref_t_rolling_percentile",
         "obs_mask_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t",
         "dyn5m_macd_line_norm",
         "dyn5m_macd_signal_norm",
         "dyn5m_macd_hist_norm",
@@ -72,14 +80,40 @@ def test_features_market_obs_schema():
     ]
     assert FEATURES_MARKET_OBS == expected
     _assert_unique(FEATURES_MARKET_OBS, "FEATURES_MARKET_OBS")
-    removed = {
+    restored = {
         "obs_V_t",
         "obs_I_t",
         "obs_volatility_t",
         "obs_weekday_sin_t",
         "obs_weekday_cos_t",
     }
-    assert removed.isdisjoint(set(FEATURES_MARKET_OBS))
+    assert restored.issubset(set(FEATURES_MARKET_OBS))
+
+
+def test_features_market_obs_output_schema():
+    expected = [
+        "obs_V_t",
+        "obs_I_t",
+        "obs_cumVWAP_t",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_cmp_C_vs_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_open_drift_t",
+        "obs_bar_dir_t",
+        "obs_minute_index_t",
+        "obs_session_phase_t",
+        "obs_volatility_t",
+        "obs_dI_from_yclose_t",
+        "obs_pct_chg_from_ref_t",
+        "obs_mask_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t",
+    ]
+    assert FEATURES_MARKET_OBS_OUTPUT == expected
+    _assert_unique(FEATURES_MARKET_OBS_OUTPUT, "FEATURES_MARKET_OBS_OUTPUT")
+    assert set(FEATURES_MARKET_OBS_OUTPUT).issubset(set(FEATURES_MARKET_OBS))
 
 
 def test_features_risk_context_schema():
@@ -94,6 +128,7 @@ def test_features_risk_context_schema():
     ]
     assert FEATURES_RISK_CONTEXT == expected
     _assert_unique(FEATURES_RISK_CONTEXT, "FEATURES_RISK_CONTEXT")
+    assert FEATURES_RISK_CONTEXT_OUTPUT == []
     assert all("train_percentile" not in name for name in FEATURES_RISK_CONTEXT)
 
 
@@ -122,6 +157,7 @@ def test_features_htf_context_schema():
     ]
     assert FEATURES_HTF_CONTEXT == expected
     _assert_unique(FEATURES_HTF_CONTEXT, "FEATURES_HTF_CONTEXT")
+    assert FEATURES_HTF_CONTEXT_OUTPUT == []
     assert all("train_percentile" not in name for name in FEATURES_HTF_CONTEXT)
 
 

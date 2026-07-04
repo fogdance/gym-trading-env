@@ -13,6 +13,8 @@ from gym_trading_env.utils.timebase import FEATURE_TZ as DEFAULT_TZ, ensure_inde
 # Market-side features (sequence) - OBS (normalized)
 # -----------------------------
 FEATURES_MARKET_OBS: List[str] = [
+    "obs_V_t",
+    "obs_I_t",
     "volume_surprise_logratio_floor",
     "volume_surprise_rolling_percentile",
     "volume_impulse_recent",
@@ -41,11 +43,14 @@ FEATURES_MARKET_OBS: List[str] = [
     "obs_bar_dir_t",
     "obs_minute_index_t",
     "obs_session_phase_t",
+    "obs_volatility_t",
     "vol_rolling_percentile",
     "obs_dI_from_yclose_t",
     "obs_pct_chg_from_ref_t",
     "obs_pct_chg_from_ref_t_rolling_percentile",
     "obs_mask_t",
+    "obs_weekday_sin_t",
+    "obs_weekday_cos_t",
     "dyn5m_macd_line_norm",
     "dyn5m_macd_signal_norm",
     "dyn5m_macd_hist_norm",
@@ -63,10 +68,8 @@ FEATURES_MARKET_OBS: List[str] = [
 # To crop obs for faster experiments, edit *_OUTPUT only; do not remove compute
 # columns unless the feature is being deleted from the contract.
 FEATURES_MARKET_OBS_OUTPUT: List[str] = [
-    "volume_surprise_logratio_floor",
-    "volume_surprise_rolling_percentile",
-    "oi_rel_yclose_log",
-    "oi_rolling_percentile",
+    "obs_V_t",
+    "obs_I_t",
     "obs_cumVWAP_t",
     "obs_dC_minus_cumVWAP_t",
     "obs_cmp_C_vs_cumVWAP_t",
@@ -77,10 +80,12 @@ FEATURES_MARKET_OBS_OUTPUT: List[str] = [
     "obs_bar_dir_t",
     "obs_minute_index_t",
     "obs_session_phase_t",
-    "vol_rolling_percentile",
+    "obs_volatility_t",
     "obs_dI_from_yclose_t",
     "obs_pct_chg_from_ref_t",
     "obs_mask_t",
+    "obs_weekday_sin_t",
+    "obs_weekday_cos_t",
 ]
 
 # -----------------------------
@@ -538,6 +543,9 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
     volume_ratio = (V_s.to_numpy(dtype=float, copy=False) + 1.0) / (np.maximum(base.to_numpy(dtype=float, copy=False), 1.0) + 1.0)
     volume_surprise = np.clip(np.log(np.maximum(volume_ratio, eps)), -5.0, 5.0) * mask_np
+    old_volume_ratio = V_s.to_numpy(dtype=float, copy=False) / (base.to_numpy(dtype=float, copy=False) + eps)
+    old_volume_spike = np.log1p(np.clip(old_volume_ratio, 0.0, None))
+    df["obs_V_t"] = np.clip(old_volume_spike, 0.0, 3.0) * mask_np
     df["volume_surprise_logratio_floor"] = volume_surprise
     df["volume_surprise_rolling_percentile"] = _rolling_percentile_causal(volume_surprise, window=240, min_periods=30)
     df["volume_impulse_recent"] = pd.Series(volume_surprise, index=df.index).rolling(5, min_periods=1).mean().fillna(0.0).to_numpy(dtype=float)
@@ -550,6 +558,7 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     rel_yclose[valid] = np.sign(I[valid] - I_yclose[valid]) * np.log1p(
         np.abs(I[valid] - I_yclose[valid]) / np.maximum(np.abs(I_yclose[valid]), eps)
     )
+    df["obs_I_t"] = np.tanh(np.log1p(np.clip(I, 0.0, None)) / 5.0).astype(float)
     df["oi_rel_yclose_log"] = np.clip(rel_yclose, -5.0, 5.0)
 
     first_oi = I_s.where(m > 0.0, np.nan).groupby(sid).transform("first").fillna(I_s).to_numpy(dtype=float, copy=False)
@@ -606,6 +615,9 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     else:
         df["obs_session_phase_t"] = 0.0
 
+    df["obs_weekday_sin_t"] = pd.to_numeric(df.get("weekday_sin_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+    df["obs_weekday_cos_t"] = pd.to_numeric(df.get("weekday_cos_t", 0.0), errors="coerce").fillna(0.0).astype(float)
+
     C_valid = C_s.where(m > 0.0, np.nan)
     prev = C_valid.shift(1)
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -613,6 +625,20 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     logret = logret.replace([np.inf, -np.inf], np.nan).fillna(0.0)
     raw_vol = logret.rolling(window=30, min_periods=5).std().fillna(0.0).clip(lower=0.0).to_numpy(dtype=float)
     df["vol_rolling_percentile"] = _rolling_percentile_causal(raw_vol, window=240, min_periods=30)
+
+    prev_by_session = C_valid.groupby(sid).shift(1)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        old_logret = np.log(C_valid / prev_by_session)
+    old_logret = old_logret.replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    old_vol = (
+        old_logret.groupby(sid)
+        .rolling(window=30, min_periods=5)
+        .std()
+        .reset_index(level=0, drop=True)
+        .fillna(0.0)
+    )
+    old_vol = pd.to_numeric(old_vol, errors="coerce").fillna(0.0).astype(float).clip(lower=0.0)
+    df["obs_volatility_t"] = np.tanh(old_vol / 0.01).astype(float)
 
     prev_close = np.roll(C, 1)
     prev_close[0] = C[0] if len(C) else 0.0
@@ -697,6 +723,8 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
         "obs_mask_t",
         "obs_minute_index_t",
         "obs_session_phase_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t",
         "dyn5m_macd_ready_flag",
     }
     for col in FEATURES_MARKET_OBS:

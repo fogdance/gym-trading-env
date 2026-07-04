@@ -25,6 +25,8 @@ oi_impulse_ready_flag
 obs_mask_t
 obs_minute_index_t
 obs_session_phase_t
+obs_weekday_sin_t
+obs_weekday_cos_t
 dyn5m_macd_ready_flag
 ```
 
@@ -99,9 +101,12 @@ session high/low、ref close、session open、dI_from_yclose 等既有契约生�
 
 ## Market OBS (`FEATURES_MARKET_OBS`)
 
-正式 `market_seq` 字段顺序如下：
+Full compute contract 字段顺序如下。当前 runtime 不一定全部输出给 agent；
+agent 实际看到的字段由 `FEATURES_MARKET_OBS_OUTPUT` 决定。
 
 ```text
+obs_V_t
+obs_I_t
 volume_surprise_logratio_floor
 volume_surprise_rolling_percentile
 volume_impulse_recent
@@ -130,11 +135,14 @@ obs_open_drift_t
 obs_bar_dir_t
 obs_minute_index_t
 obs_session_phase_t
+obs_volatility_t
 vol_rolling_percentile
 obs_dI_from_yclose_t
 obs_pct_chg_from_ref_t
 obs_pct_chg_from_ref_t_rolling_percentile
 obs_mask_t
+obs_weekday_sin_t
+obs_weekday_cos_t
 dyn5m_macd_line_norm
 dyn5m_macd_signal_norm
 dyn5m_macd_hist_norm
@@ -147,12 +155,25 @@ dyn5m_macd_cross_dir
 dyn5m_macd_ready_flag
 ```
 
-旧字段不再进入正式 `market_seq`：
+当前 compact runtime `market_seq` 输出字段顺序如下：
 
 ```text
 obs_V_t
 obs_I_t
+obs_cumVWAP_t
+obs_dC_minus_cumVWAP_t
+obs_cmp_C_vs_cumVWAP_t
+obs_session_high_t
+obs_session_low_t
+obs_range_t
+obs_open_drift_t
+obs_bar_dir_t
+obs_minute_index_t
+obs_session_phase_t
 obs_volatility_t
+obs_dI_from_yclose_t
+obs_pct_chg_from_ref_t
+obs_mask_t
 obs_weekday_sin_t
 obs_weekday_cos_t
 ```
@@ -209,6 +230,10 @@ obs_minute_index_t =
 
 obs_session_phase_t =
   1 if max(minute_index_t) <= 400 and minute_index_t >= 120 else 0
+
+obs_weekday_sin_t = weekday_sin_t
+
+obs_weekday_cos_t = weekday_cos_t
 ```
 
 ### Volume Features
@@ -232,6 +257,9 @@ base_t = 0 if still missing
 字段：
 
 ```text
+obs_V_t =
+  clip(log1p(max(V_t / (base_t + eps), 0)), 0, 3) * mask_t
+
 volume_surprise_logratio_floor =
   clip(log(max((V_t + 1) / (max(base_t, 1) + 1), eps)), -5, 5) * mask_t
 
@@ -259,6 +287,9 @@ I_yclose_t = I_t - dI_from_yclose_t
 obs_dI_from_yclose_t =
   clip(sign(dI_from_yclose_t) * log1p(abs(dI_from_yclose_t) / max(abs(I_yclose_t), eps)), -1, 1)
   if valid_t else 0
+
+obs_I_t =
+  tanh(log1p(max(I_t, 0)) / 5)
 
 oi_rel_yclose_log =
   clip(sign(I_t - I_yclose_t) * log1p(abs(I_t - I_yclose_t) / max(abs(I_yclose_t), eps)), -5, 5)
@@ -317,6 +348,15 @@ raw_vol_t = rolling_std(logret, window=30, min_periods=5), missing -> 0, lower c
 
 vol_rolling_percentile =
   causal_rolling_percentile(raw_vol_t, 240, 30)
+
+old_logret_t =
+  log(C_valid_t / previous row C_valid within same session), with NaN/Inf -> 0
+
+old_vol_t =
+  rolling_std(old_logret, window=30, min_periods=5) within same session, missing -> 0, lower clipped at 0
+
+obs_volatility_t =
+  tanh(old_vol_t / 0.01)
 ```
 
 ### Dynamic 5m MACD Features
