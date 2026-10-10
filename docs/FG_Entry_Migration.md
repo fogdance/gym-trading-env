@@ -12,7 +12,7 @@ FG 开发已回到两个原仓库，均在 `feat/fg-entry-v1.1` 分支直接修�
 切换分支前已保存包括未跟踪文件的 Git stash，没有覆盖或丢弃原修改：
 
 - 环境旧分支 `feat/reward-profit-lock-atr`：`eda711b90e67f3e343bb707d051682456c5dbb69`。
-- Dreamer 旧分支 `dev/action-mask-full-chain`：`c8acbcef6e74c6482da7f2c2746ef90473be6d87`。
+- Dreamer 旧分支 `dev/action-mask-full-chain`：`ef0211d6d6e0470a23df7d58fc60e4a9e1b25ebe`。
 
 旧 `1.yaml`、`fg.txt` 亦在环境备份中。运行时统一使用 `configs/fg_entry_v1/fg.yaml`，不依赖上述旧输入文件。
 
@@ -31,3 +31,7 @@ Dreamer smoke 脚本默认寻找同级 `gym-trading-env`；可用 `FG_ENV_ROOT` 
 - 当前冻结训练清单通过 `validate_fg_entry` 完整性、路径和生命周期准入检查。
 - smoke 脚本通过 `bash -n`；两仓库 diff 无空白错误。
 - 本次没有启动正式训练或 smoke 训练；当前九维仓位 Obs 的 GPU 训练 smoke 尚未重跑。
+
+## 2026-10-10 备份范围修正
+
+按用户要求，Dreamer 迁移 stash 排除 `data/XAUUSD.txt`、`d3.tar.bz2`、`data/XAUUSD_1m.csv-2020-2024`，其余 17 个未跟踪文件和另两条 stash 保留。旧 stash 独占且无引用的对象已移除，Git 对象释放约 98 MiB；新 stash 标识已更新于上文。Dreamer 新增这些数据文件及根目录 `*.tar.bz2` 的忽略规则，不删除外部文件或现有备份压缩包。
