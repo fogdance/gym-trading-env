@@ -38,10 +38,3 @@
 ## 当前 345 分钟数据入口
 
 当前数据集使用 `artifacts/fg_entry_v1/dataset_v3_345_audited`，基于 `artifacts/fg_entry_v1/main_export_345_audited`。按用户要求保留早期交易日，仅在导出阶段截掉 23:01～23:30，23:00 保留。此前 dataset_v2_main_split 等产物仅作历史审计；统一配置已更新，其旧哈希不能用于当前训练准入。切分日期保持不变，未启动训练。详细修复及日志见 [FG_Entry_Minute_Clock_Fix.md](FG_Entry_Minute_Clock_Fix.md)。
-
-
-## 2026-10-10 当前分组：完整合约均衡划分
-
-用户停止旧日期切分训练，确认跨年份、交割月份及方向均衡分组，并补充 FG809=SHORT。唯一配置为 `configs/fg_entry_v1/fg.yaml`，当前数据入口为 `artifacts/fg_entry_v1/dataset_v4_contract_groups`：14 个完整训练、4 个完整验证、5 个完整测试，另加 FG605 删失测试。训练每轮无放回打散合约，chunk 保留账户与当前合约，检查点保存并恢复抽样器状态。三组均覆盖 LONG/SHORT 和 01/05/09。
-
-环境 38 项及 Dreamer/Driver 7 项回归通过；全部真实输入哈希与训练准入通过。名单、数量、复现与限制见 [FG_Entry_Dataset_Split.md](FG_Entry_Dataset_Split.md)。评审工具实施方案已同步新分组，工具本身仍待实现。生成数据不提交；旧运行与检查点保留。本次未启动训练，新实验不能恢复旧 logdir/replay/模型权重。

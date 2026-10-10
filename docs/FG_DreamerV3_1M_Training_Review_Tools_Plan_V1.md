@@ -31,9 +31,9 @@
 | Env 原仓库 | `/home/v/Documents/work/gym-trading-env` |
 | Dreamer 原仓库 | `/home/v/Documents/work/dreamerv3` |
 | 两仓库开发分支 | `feat/fg-entry-v1.1` |
-| 已停止旧运行目录 | `/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/train_345_seed0_20261010_160106` |
+| 本次运行目录 | `/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/train_345_seed0_20261010_160106` |
 | effective config | 上述目录的 `config.yaml` |
-| 旧运行冻结数据集 | `/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/dataset_v3_345_audited` |
+| 当前冻结数据集 | `/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/dataset_v3_345_audited` |
 | 数据 manifest hash | `e244dc0abfe3914f754544f13b1bf71a21f5281d467c73d02ac0331e16f2cad6` |
 | experiment seed / Dreamer seed | 0 / 0 |
 | 训练目标 | 1000000 个环境步，不是百万次梯度更新 |
@@ -41,7 +41,7 @@
 | 指定步数 checkpoint 保留 | `enabled=false, steps=[0]` |
 | 本次训练 seed 数 | 1；不据此宣称训练稳定性 |
 
-以下为已停止旧运行的历史切分（不再作为新实验的准入规则）：
+实际切分：
 
 | 角色 | 首交易日 | 末交易日 | 交易日数 | 分钟记录数 |
 | --- | --- | --- | --- | --- |
@@ -54,26 +54,6 @@
 本次冻结 TEST 的方向全部为 SHORT，不能由其结果推断 LONG 泛化。
 
 文档制定时读取的 Env HEAD 为 `ff6299e5e11f7277bbfd7b4f03c61202d533e0f9`，Dreamer HEAD 为 `557f12b828ef09e938cfb225c0e90ccf3e01162c`。**这是读取时版本，不自动等同于训练进程启动时版本。** 若没有启动日志或其他版本证据，运行时 Git 版本标为 `NOT_RECORDED`，同时保留本次读取版本及差异。
-
-## 2.1 当前实验改为完整合约分组
-
-用户已停止旧训练，并确认跨年份、交割月份和人工方向均衡分组。当前配置位于 `configs/fg_entry_v1/fg.yaml::data.split`，模式为 `contract_groups`，数据入口为 `artifacts/fg_entry_v1/dataset_v4_contract_groups`。当前没有新训练运行，不能把旧训练的 checkpoint、replay、曲线或指标作为新分组结果。
-
-| 角色 | 完整合约 | 删失合约 | 分钟记录数 | LONG / SHORT 合约 |
-| --- | --- | --- | --- | --- |
-| TRAIN | 14 | 0 | 387527 | 5 / 9 |
-| VALIDATION | 4 | 0 | 98085 | 2 / 2 |
-| TEST | 5 | 1 | 146563 | 2 / 4 |
-
-逐合约名单、分组方法和限制见 [FG_Entry_Dataset_Split.md](FG_Entry_Dataset_Split.md)。FG809 已由用户补充为 SHORT，不再排除。FG605 的未完成持仓按删失区段报告，不能凭数据截止假设完成止盈。
-
-实施评审工具时必须按以下规则使用清单：
-
-1. 每个合约全部分钟只属于一个角色；按冻结合约名单验证互斥与记录完整性，不能再用 `max(TRAIN date) < min(VALIDATION date)` 作为新模式验收条件。旧日期模式仍保留旧规则。
-2. TRAIN 每轮无放回打散完整合约顺序，合约内部按时间推进。抽样器和真实账户一起保存和恢复。验证、测试以及 Always/Random/Rule/Dreamer 对照使用相同固定合约名单和价格顺序。
-3. VALIDATION 用于模型与检查点选择，TEST 在规则、检查点和统计口径冻结后评估；不能根据收益重排合约。新分组是未见合约检验，不能宣传为严格未来时段检验。
-4. 每份报告记录 manifest hash、完整角色名单和抽样种子；逐合约记录 G5 等实际值，先完整列出，再按交割月、人工方向和时期汇总。训练、验证、完整测试与删失测试必须可追溯，禁止跨角色聚合掩盖结果。
-5. 第 16 节中的旧运行命令仅为历史示例；新实验改用新 manifest、selector 和新的 `/data/logdir` 子目录。旧金融检查点不能迁入新分组，不能以旧 replay 暖启动。本文的工具仍待实施，本次只完成数据分组及训练抽样支持。
 
 ## 3. 实现位置及职责
 

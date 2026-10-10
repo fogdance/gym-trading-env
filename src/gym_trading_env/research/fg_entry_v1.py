@@ -225,25 +225,8 @@ def split_main_contract_days(frames, split):
     return roles
 
 
-def split_contract_groups(frames, split):
-    """Assign whole main contracts to explicit, disjoint frozen roles."""
-    groups = split['contracts']
-    if set(groups) != {'train', 'validation', 'test', 'excluded'}:
-        raise ValueError('FG contract groups require train/validation/test/excluded')
-    assigned = [contract for contracts in groups.values() for contract in contracts]
-    if len(assigned) != len(set(assigned)) or set(assigned) != set(frames):
-        raise ValueError('FG contract groups must cover every exported contract exactly once')
-    if not all(groups[role] for role in ('train', 'validation', 'test')):
-        raise ValueError('FG split requires three nonempty roles')
-    order = split.get('training_order', {})
-    if order.get('mode') != 'shuffle_each_epoch' or not isinstance(order.get('seed'), int):
-        raise ValueError('FG contract groups require a frozen shuffle seed')
-    return {role: sorted({int(day) for contract in groups[role] for day in frames[contract]._day})
-            for role in ('train', 'validation', 'test')}
-
-
 def build_contract(export_manifest, direction_path, contract_paths, template_path, output):
-    """Freeze whole contracts or legacy trading-day splits without inventing labels."""
+    """Split by real trading day; never invent labels, costs or contract deadlines."""
     direction_raw=read_yaml(direction_path)
     unified='directions' in direction_raw
     directions=DirectionSchedule(direction_raw['directions'] if unified else direction_raw)
@@ -274,10 +257,8 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
         frames[item["contract"]]=frame.sort_values("Date")
         exits[item["contract"]]=item.get("main_exit_at",derived_exits.get(item["contract"]))
     days=sorted({int(d) for frame in frames.values() for d in frame._day})
-    grouped=unified and direction_raw['data']['split']['mode']=='contract_groups'
     if unified:
-        split=direction_raw['data']['split']
-        role_days=split_contract_groups(frames,split) if grouped else split_main_contract_days(frames,split)
+        role_days=split_main_contract_days(frames,direction_raw['data']['split'])
     else:
         a,b=int(len(days)*.6),int(len(days)*.8)
         if not 0<a<b<len(days):
@@ -292,8 +273,6 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
         direction_copy.write_text(Path(direction_path).read_text())
     records=[]
     for contract,frame in frames.items():
-        if grouped and contract in split['contracts']['excluded']:
-            continue
         if contract not in configs:
             raise ValueError(f"Missing effective contract metadata: {contract}")
         _,meta=configs[contract]
@@ -301,8 +280,6 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
         meta_copy=output/f"{contract.replace('.', '_')}_contract.yaml"
         meta_copy.write_text(yaml.safe_dump(meta))
         for role,selected_days in role_days.items():
-            if grouped and contract not in split['contracts'][role]:
-                continue
             part=frame[frame._day.isin(selected_days)].drop(columns="_day")
             if part.empty:
                 continue
@@ -313,8 +290,6 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
             label_count=sum(directions.at(contract,t, str(day))!="NO_TRADE" for t,day in zip(actual,part.trading_date))
             main_exit=timestamp(exits[contract]) if exits[contract] else None
             lifecycle=first<=terms.liquidate<=last or main_exit is not None and first<=main_exit<=last
-            if grouped and (not coverage or not label_count or role=='train' and not lifecycle):
-                raise ValueError(f'Invalid grouped FG lifecycle: {contract} role={role}')
             csv=output/f"{contract.replace('.', '_')}_{role}_1m.csv"
             part.to_csv(csv,index=False)
             template=read_yaml(template_path)
@@ -334,17 +309,11 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
                 contract_sha256=file_hash(meta_copy),rows=len(part),first_timestamp=str(first),last_timestamp=str(last),
                 calendar_complete=coverage,direction_rows=label_count,complete_lifecycle=lifecycle,
                 eligible_for_training=role=="train" and coverage and label_count>0 and lifecycle))
-    manifest=dict(schema=2 if grouped else 1,product="FG",fill_model="minute_close_confirm_v1",reward="60/(60+T_minutes)",
+    manifest=dict(schema=1,product="FG",fill_model="minute_close_confirm_v1",reward="60/(60+T_minutes)",
                   direction_path=str(direction_copy),direction_sha256=file_hash(direction_copy),
                   roles=role_days,files=records)
     if unified:
         manifest['split']=direction_raw['data']['split']
-    if grouped:
-        manifest['excluded_contracts']=[dict(contract=c,reason='no_manual_direction',rows=len(frames[c]))
-            for c in split['contracts']['excluded']]
-        if any(directions.at(c,t,str(day))!='NO_TRADE' for c in split['contracts']['excluded']
-               for t,day in zip(frames[c].Date,frames[c].trading_date)):
-            raise ValueError('Excluded contract has manual direction; review the split')
     manifest["content_hash"]=fingerprint(manifest)
     write_json(output/"manifest.json",manifest)
     selector=dict(strategy_mode="entry_dataset",role="train",manifest_path=str(output/"manifest.json"))
