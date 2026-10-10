@@ -12,12 +12,13 @@ from run_fg_abcd import command,transfer_receipt
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v1/smoke_v2')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
+    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v2_sequential/smoke')
     args=parser.parse_args()
     root=Path(args.logdir)
     if root.exists():
         raise FileExistsError('Use a new smoke directory; existing results are preserved')
-    manifest=json.loads(Path('artifacts/fg_abcd_v1/v1/experiment_manifest.json').read_text())
+    manifest=json.loads(Path(args.manifest).read_text())
     instance=next(r for r in manifest['instances'] if r['budget']=='pilot' and r['method']=='C')
     instance=dict(instance,phases=[dict(p) for p in instance['phases']])
     source,target=instance['phases']

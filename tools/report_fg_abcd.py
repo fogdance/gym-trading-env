@@ -9,7 +9,7 @@ from gym_trading_env.envs.entry_contract import fingerprint
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v1/experiment_manifest.json')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
     args=parser.parse_args()
     path=Path(args.manifest)
     manifest=json.loads(path.read_text());digest=manifest.pop('content_hash')

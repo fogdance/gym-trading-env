@@ -123,3 +123,43 @@ def test_matched_workers_spawn_independent_real_accounts(tmp_path):
     assert [r['seed'] for r in results]==[0,1]
     assert all(r['ADD_fill']==2 and r['open_lots_at_end']==6 for r in results)
     assert all(r['total_reward']==0 and r['net_equity_change']<0 for r in results)
+
+
+def test_sequential_dataset_refuses_to_discard_unfilled_terminal_loss(tmp_path,monkeypatch):
+    source=make_env(tmp_path,[(1000,1000,1000,1000),(1000,1000,990,990),
+                              (990,990,980,980)],main_exit='2026-01-05 09:33')
+    source._raw.iloc[-1,source._raw.columns.get_loc('Volume')]=0
+    from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+    monkeypatch.setattr('gym_trading_env.envs.entry_dataset_env.FixedDirectionEntryEnv',
+        lambda config_path:FixedDirectionEntryEnv(config_path=config_path,df=source._raw.copy()))
+    manifest=dict(product='FG',files=[dict(role='train',eligible_for_training=True,
+                                         env_config=str(tmp_path/'env.yaml'))])
+    manifest['content_hash']=fingerprint(manifest)
+    path=tmp_path/'manifest.json';path.write_text(json.dumps(manifest))
+    selector=tmp_path/'selector.yaml';selector.write_text(yaml.safe_dump(dict(
+        strategy_mode='entry_dataset',role='train',manifest_path=str(path))))
+    dataset=FGEntryDatasetEnv(selector);dataset.reset()
+    dataset.step(1);dataset.step(0)
+    assert dataset.env.status=='MAIN_ROLL' and dataset.env.net_lots==3
+    assert dataset.step(0)[3] and dataset.env.status=='DATA_END'
+    before=dataset.export_state()
+    with pytest.raises(RuntimeError,match='unfinished account'):
+        dataset.reset()
+    assert dataset.export_state()==before
+    assert dataset.env.total_reward==0 and dataset.env._get_info()['account_net_pnl']<0
+    dataset.close()
+
+
+def test_sequential_coverage_counts_early_exit_prefixes_without_claiming_full_passes():
+    from tools.run_fg_abcd import account_progress
+    records=[dict(contract='one',rows=101),dict(contract='two',rows=51)]
+    state=dict(schema=1,index=0,completed=[
+        dict(contract='one',advanced_bars=20),dict(contract='two',advanced_bars=50)],
+        account=dict(contract='one',current_step=10))
+    one,two=account_progress(state,records)
+    assert one['advanced_bars']==30 and one['full_passes']==0
+    assert one['prefix_counts']=={20:1,10:1} and one['saved_account']
+    assert two['advanced_bars']==50 and two['full_passes']==1 and not two['saved_account']
+    state['completed'][0].pop('advanced_bars')
+    with pytest.raises(ValueError,match='actual coverage counters'):
+        account_progress(state,records)

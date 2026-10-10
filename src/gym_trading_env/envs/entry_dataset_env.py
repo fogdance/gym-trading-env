@@ -55,7 +55,8 @@ class FGEntryDatasetEnv(gym.Env):
                 self._rotate()
             return self.env.reset(seed=seed)
         if self.env.terminated:
-            self.completed.append(dict(contract=self.env.contract,metrics=self.env._get_info()))
+            self.completed.append(dict(contract=self.env.contract,metrics=self.env._get_info(),
+                                       advanced_bars=self.env.current_step))
             self.env.close()
             self.index=(self.index+1)%len(self.paths)
             self.env=FixedDirectionEntryEnv(config_path=self.paths[self.index])

@@ -18,9 +18,9 @@ def checkpoint(root):
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v1/smoke_v2')
+    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v2_sequential/smoke')
     parser.add_argument('--before')
-    parser.add_argument('--output',default='artifacts/fg_abcd_v1/v1/smoke_audit.json')
+    parser.add_argument('--output',default='artifacts/fg_abcd_v1/v2_sequential/smoke_audit.json')
     args=parser.parse_args()
     source=checkpoint(Path(args.logdir)/'pretrain')
     target=checkpoint(Path(args.logdir)/'recent')
@@ -35,9 +35,12 @@ def main():
     assert source['agent']['counters']['updates']==target['agent']['counters']['updates']
     assert source['action_mask_warmup']==target['action_mask_warmup']
     assert old['index']==current['index']
-    old_accounts={int(k):v for k,v in old['accounts'].items()}
+    assert old['schema']==current['schema']==recent['schema']
+    old_accounts=({int(k):v for k,v in old['accounts'].items()} if old['schema']==2
+                  else {old['index']:old['account']})
+    current_accounts=current['accounts'] if current['schema']==2 else {current['index']:current['account']}
     for i,account in old_accounts.items():
-        restored=current['accounts'][i]
+        restored=current_accounts[i]
         if i!=old['index']:
             assert account==restored
         else:
@@ -45,7 +48,8 @@ def main():
             assert restored['account_sequence']==account['account_sequence']
             assert restored['fills'][:len(account['fills'])]==account['fills']
             assert restored['ledger_entries'][:len(account['ledger_entries'])]==account['ledger_entries']
-    assert sum(recent['advanced'])==919
+    recent_advanced=sum(recent['advanced']) if recent['schema']==2 else recent['account']['current_step']
+    assert recent_advanced==919
     assert recent['manifest_hash']!=current['manifest_hash']
     assert recent['completed']==[]
     # Recent is below Replay's learning threshold: exact optimizer/model equality proves transfer.
@@ -55,7 +59,7 @@ def main():
         gpu_updates=source['agent']['counters']['updates'],full_agent_optimizer_exact_match=True,
         optimizer_variables=sum('opt/' in k for k in source['agent']['params']),
         inactive_accounts_preserved=True,current_account_resume_forward_only=True,
-        warmup_gate_preserved=True,new_recent_accounts=True,recent_advanced_bars=sum(recent['advanced']),
+        warmup_gate_preserved=True,new_recent_accounts=True,recent_advanced_bars=recent_advanced,
         policy_learning_claim=False)
     write_json(args.output,result)
     print(json.dumps(result,indent=2))

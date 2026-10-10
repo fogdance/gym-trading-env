@@ -22,6 +22,9 @@ def choose_contracts(records, cutoff, months=None):
 def build_abcd(config_path):
     config_path=Path(config_path).resolve()
     cfg=read_yaml(config_path)
+    mode=cfg.get('scheduler',{}).get('mode','sequential')
+    if mode not in ('sequential','least_progress'):
+        raise ValueError('Unknown ABC training order')
     output=Path(cfg['output']).resolve()
     if output.exists():
         raise FileExistsError('Refusing to overwrite an ABC experiment')
@@ -89,7 +92,7 @@ def build_abcd(config_path):
             raise ValueError('Validation overlaps train cutoff')
         datasets={}
         for label,months in [('all',None),('recent',cfg['recent_months'])]:
-            train=choose_contracts(records,fold['cutoff'],months)
+            train=sorted(choose_contracts(records,fold['cutoff'],months),key=lambda r:r['first_timestamp'])
             if not train or not any(r['direction_rows']>0 for r in train):
                 raise ValueError('Empty whole-lifecycle training set')
             destination=output/fold['validation'].split('.')[-1]/label
@@ -107,8 +110,10 @@ def build_abcd(config_path):
             manifest_path=destination/'manifest.json'
             write_json(manifest_path,manifest)
             selector=destination/'train_dataset.yaml'
-            selector.write_text(yaml.safe_dump(dict(strategy_mode='entry_dataset',role='train',
-                manifest_path=str(manifest_path),scheduler=cfg['scheduler'])))
+            selector_config=dict(strategy_mode='entry_dataset',role='train',manifest_path=str(manifest_path))
+            if mode=='least_progress':
+                selector_config['scheduler']=cfg['scheduler']
+            selector.write_text(yaml.safe_dump(selector_config))
             datasets[label]=dict(manifest=str(manifest_path),selector=str(selector),content_hash=manifest['content_hash'])
             coverage.append('| '+ ' | '.join(map(str,[fold['validation'],label,len(train),sum(r['rows'] for r in train),
                 sum(r['trading_days'] for r in train),*[sum(r['direction_counts'][d] for r in train) for d in ('LONG','SHORT','NO_TRADE')]]))+' |')
@@ -127,7 +132,7 @@ def build_abcd(config_path):
                         phases=[dict(phase=p,dataset=datasets[d],steps=n,logdir=str(Path(cfg['log_root'])/fold['validation'].split('.')[-1]/budget/method/str(seed)/p)) for p,d,n in phases]))
     result=dict(schema=1,config=str(config_path),config_sha256=file_hash(config_path),
         export_manifest_sha256=file_hash(cfg['export_manifest']),folds=folds,instances=instances,
-        blind_price_access=False,conditional_direction_only=True)
+        blind_price_access=False,conditional_direction_only=True,training_order=mode)
     result['content_hash']=fingerprint(result)
     write_json(output/'experiment_manifest.json',result)
     (output/'coverage.md').write_text('\n'.join(coverage)+'\n\nObserved-clock calendar; not independently exchange-verified. Validation FG409 is SHORT only.\n')

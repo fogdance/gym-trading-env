@@ -18,9 +18,11 @@ export PYTHONDONTWRITEBYTECODE=1
 python tools/build_fg_abcd.py --config configs/fg_entry_v1/abcd_comparison.yaml
 ```
 
-当前 v1 已生成；再次执行会拒绝覆盖。需要独立新版本时更改实验输出版本并保留旧清单，不删除旧产物。
+当前 v2_sequential 已生成；再次执行会拒绝覆盖。需要独立新版本时更改实验输出版本并保留旧清单，不删除旧产物。
 
 ## 先导准备与启动
+
+先导与正式均采用按完整合约时间顺序推进；当前停止状态下，本轮只准备配置，不执行以下训练启动命令。旧 v1 轮转 checkpoint 不恢复到顺序模式，新版从新路径开始。
 
 先查看冻结命令，不训练：
 
@@ -28,13 +30,13 @@ python tools/build_fg_abcd.py --config configs/fg_entry_v1/abcd_comparison.yaml
 python tools/run_fg_abcd.py --budget pilot
 ```
 
-P0～P3 验收通过后，执行 FG409、seed0 的 A100k、B100k、C70k+30k，日志统一在 `/data/logdir/fg_abcd_v1/v1/FG409/pilot/`：
+P0～P3 验收通过后，执行 FG409、seed0 的 A100k、B100k、C70k+30k，日志统一在 `/data/logdir/fg_abcd_v1/v2_sequential/FG409/pilot/`：
 
 ```bash
 python tools/run_fg_abcd.py --budget pilot --execute
 ```
 
-也可通过 `--method A`、`--method B` 或 `--method C` 单独执行。GPU 不可用时停止；不退回 CPU。程序记录真实参数变化、gate、账户 bank、数据覆盖、代码 SHA 和运行元数据。
+也可通过 `--method A`、`--method B` 或 `--method C` 单独执行。GPU 不可用时停止；不退回 CPU。程序记录真实参数变化、gate、当前账户、顺序访问记录、数据覆盖、代码 SHA 和运行元数据。
 
 Actor gate 尚未开启或没有有效参数更新时不宣称政策学习成功，不自动放宽 gate 或修改 Reward。通过学习审计后才运行正式 checkpoint 评估和 30-seed 配额随机诊断。独立账户随机回放采用进程并行，worker 不运行模型。
 
@@ -44,8 +46,8 @@ Actor gate 尚未开启或没有有效参数更新时不宣称政策学习成功
 
 ```bash
 python tools/evaluate_fg_abcd.py \
-  --env-config artifacts/fg_abcd_v1/v1/contracts/CZCE_FG409_env.yaml \
-  --output artifacts/fg_abcd_v1/v1/new_baseline_review
+  --env-config artifacts/fg_abcd_v1/v2_sequential/contracts/CZCE_FG409_env.yaml \
+  --output artifacts/fg_abcd_v1/v2_sequential/new_baseline_review
 ```
 
 评估已通过 gate 的模型时再传 `--model-config RUN/config.yaml --checkpoint RUN/ckpt/CHECKPOINT_FOLDER`。输出必须是新目录；默认 4 个 matched-random worker、30 个 seeds。
@@ -70,12 +72,12 @@ python tools/run_fg_abcd.py --budget formal --fold FG409 --seed 0 --method C --c
 ## TensorBoard
 
 ```bash
-tensorboard --host 0.0.0.0 --logdir /data/logdir/fg_abcd_v1/v1
+tensorboard --host 0.0.0.0 --logdir /data/logdir/fg_abcd_v1/v2_sequential
 ```
 
 ## 进度与验收报告
 
-本批先导已经启动，不要重复执行启动命令。只刷新报告、不启动训练：
+旧 v1 先导已按用户指令停止；v2_sequential 尚未启动。只刷新报告、不启动训练：
 
 ```bash
 python tools/watch_fg_abcd.py --once

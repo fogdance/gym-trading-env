@@ -341,6 +341,12 @@ def test_dataset_switches_only_after_real_exit_and_restores_chunk(tmp_path):
     assert right.env.net_lots==0 and right.env.status=='MAIN_ROLL'
     right.reset()
     assert right.index==1 and right.env.net_lots==0 and len(right.completed)==1
+    assert right.completed[0]['advanced_bars']==4
+    from tools.run_fg_abcd import account_progress
+    progress=account_progress(right.export_state(),[dict(contract=right.env.contract,rows=5)])
+    assert progress[0]['advanced_bars']==4 and progress[0]['full_passes']==1
+    with pytest.raises(ValueError,match='checkpoint mismatch'):
+        right.import_state(dict(schema=2))
 
 
 def test_zero_duration_db_metadata_is_mark_only_never_fills_or_rewards(tmp_path):

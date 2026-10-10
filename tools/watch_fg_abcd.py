@@ -14,7 +14,7 @@ def publish(path):
     manifest=json.loads(path.read_text());digest=manifest.pop('content_hash')
     if fingerprint(manifest)!=digest:
         raise ValueError('Manifest changed')
-    rows=[];done=True;failed=False
+    rows=[];done=True;failed=False;stopped=False
     for instance in manifest['instances']:
         if instance['budget']!='pilot':
             continue
@@ -24,6 +24,7 @@ def publish(path):
             meta=json.loads(filename.read_text()) if filename.exists() else dict(status='NOT_RUN')
             stages.append(meta)
             failed|=meta['status']=='FAILED'
+            stopped|=meta['status']=='STOPPED_BY_USER'
             done&=meta['status']=='COMPLETED_BUDGET'
         audit=stages[-1].get('learning_audit',{})
         evaluation=path.parent/'pilot_evaluation'/instance['method']/str(instance['seed'])/'comparison.json'
@@ -38,7 +39,7 @@ def publish(path):
         rows.append(dict(method=instance['method'],seed=instance['seed'],status=status,
                          learning_audit=audit,validation=result,stages=stages))
     write_json(path.parent/'pilot_comparison.json',dict(manifest_hash=digest,results=rows,
-        complete=done,failed=failed,formal_status='NOT_RUN',verdict='NO_GENERAL_SUPERIORITY_CLAIM_FROM_SINGLE_SEED'))
+        complete=done,failed=failed,stopped_by_user=stopped,formal_status='NOT_RUN',verdict='NO_GENERAL_SUPERIORITY_CLAIM_FROM_SINGLE_SEED'))
     lines=['# Pilot A/B/C comparison','','Single seed engineering pilot; final blind Test remains sealed.','',
         '| Method | Status | Reward/day | TP batches | Open lots | Max floating loss | Equity change |',
         '|---|---|---:|---:|---:|---:|---:|']
@@ -48,12 +49,12 @@ def publish(path):
         lines.append('| '+ ' | '.join(map(str,[row['method'],row['status'],*values]))+' |')
     lines.append('\nFailed or unverified policy learning is not a timing-performance result. Matched-random partial matches and market correlation prevent unconditional superiority claims.')
     (path.parent/'comparison.md').write_text('\n'.join(lines)+'\n')
-    return done or failed
+    return done or failed or stopped
 
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v1/experiment_manifest.json')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
     parser.add_argument('--interval',type=int,default=60)
     parser.add_argument('--once',action='store_true')
     args=parser.parse_args()

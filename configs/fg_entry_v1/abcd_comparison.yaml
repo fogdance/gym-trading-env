@@ -1,7 +1,7 @@
 schema: 1
 master_config: configs/fg_entry_v1/fg.yaml
 export_manifest: artifacts/fg_entry_v1/main_export_345_audited/export_manifest.json
-output: artifacts/fg_abcd_v1/v1
+output: artifacts/fg_abcd_v1/v2_sequential
 blind_start: '2024-08-20'
 blind_end_inclusive: '2026-10-09'
 recent_months: 24
@@ -10,8 +10,8 @@ folds:
   - {cutoff: '2022-12-09', validation: CZCE.FG305}
   - {cutoff: '2023-12-07', validation: CZCE.FG405}
   - {cutoff: '2024-04-08', validation: CZCE.FG409}
-scheduler: {mode: least_progress, chunk_bars: 1024}
+scheduler: {mode: sequential}
 pilot: {fold: CZCE.FG409, seeds: [0], steps: 100000, pretrain_steps: 70000, recent_steps: 30000}
 formal: {seeds: [0, 1, 2], steps: 1000000, pretrain_steps: 700000, recent_steps: 300000, status: NOT_RUN}
 evaluation: {random_probability: 0.5, matched_seeds: 30, minute_bin: 60}
-log_root: /data/logdir/fg_abcd_v1/v1
+log_root: /data/logdir/fg_abcd_v1/v2_sequential
