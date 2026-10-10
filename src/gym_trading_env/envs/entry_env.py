@@ -39,9 +39,30 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError("Explicit strategy_mode=entry_only is required")
         self.entry_config = raw["entry"]
         self.contract = self.entry_config["contract"]
-        self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
-        self.terms = ContractTerms(read_yaml(resolve_path(config_path, self.entry_config["contract_config"])), self.contract)
-        self.config_hash = fingerprint({"env": raw, "direction": self.directions.hash, "contract": self.terms.hash})
+        self.strategy_path=None
+        if self.entry_config.get('strategy_config'):
+            self.strategy_path=resolve_path(config_path,self.entry_config['strategy_config'])
+            master=read_yaml(self.strategy_path)
+            if (master['product']!='FG' or master['reward']!={'formula':'60/(60+T_minutes)',
+                    'complete_quantity':3,'take_profit_points':5} or master['expiry']['mode']!='main_qualification'):
+                raise ValueError('Unified FG configuration changes the frozen business contract')
+            for key,value in master['environment']['trading'].items():
+                if raw['trading'].get(key)!=value:
+                    raise ValueError(f'Stale derived FG snapshot: trading.{key}; rebuild from fg.yaml')
+            if raw['entry'].get('chunk_steps')!=master['environment']['entry']['chunk_steps']:
+                raise ValueError('Stale derived FG chunk configuration')
+            self.directions=DirectionSchedule(master['directions'])
+        else:
+            master=None
+            self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
+        terms_raw=read_yaml(resolve_path(config_path, self.entry_config["contract_config"]))
+        if master is not None:
+            terms_raw['lot_size']=master['costs']['lot_size']
+            for period in terms_raw['terms']:
+                period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
+                    'close_today_fee','spread','slippage')})
+        self.terms = ContractTerms(terms_raw, self.contract)
+        self.config_hash = fingerprint({"env": raw, "strategy":master,"direction": self.directions.hash, "contract": self.terms.hash})
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -54,10 +75,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         tr.stop_loss_enabled = False
         tr.take_profit_enabled = True
         tr.lot_size = self.terms.multiplier
+        self.main_exit_at = timestamp(self.entry_config["main_exit_at"]) if self.entry_config.get("main_exit_at") else None
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
         self._load_market(df)
+        if self.main_exit_at is not None and self.main_exit_at not in self._raw.index:
+            raise ValueError("Main roll exit must be an actual old-contract minute")
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Dict({
             "market_seq": spaces.Box(-np.inf, np.inf, (self.window_size, self._features.shape[1]), np.float32),
@@ -97,15 +121,23 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         for time in raw.index:
             self.terms.at(time - pd.Timedelta(minutes=1))
             self.terms.at(time)
-        mapping = source.store.index.get_indexer(raw.index)
-        if (mapping < 0).any():
-            raise ValueError("Existing market feature clock cannot represent these FG timestamps")
-        self._features = source.store.X_market_obs[mapping].astype(np.float32)
+        if 'trading_date' in raw:
+            from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
+            features=build_market_features(raw,is_future=True,real_futures_clock=True)
+            self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
+        else:
+            mapping = source.store.index.get_indexer(raw.index)
+            if (mapping < 0).any():
+                raise ValueError("Existing market feature clock cannot represent these FG timestamps")
+            self._features = source.store.X_market_obs[mapping].astype(np.float32)
         self._raw = raw
         self.bar_source = SimpleNamespace(store=SimpleNamespace(index=raw.index, n_rows=len(raw)))
         self.bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if "bob" in raw else raw.index - pd.Timedelta(minutes=1)
-        if not (self.bobs + pd.Timedelta(minutes=1) == raw.index).all():
-            raise ValueError("Minute bob/eob must be exactly one minute apart")
+        durations=raw.index-self.bobs
+        self.valid_fill_clock=np.asarray(durations==pd.Timedelta(minutes=1))
+        if not ((durations==pd.Timedelta(minutes=1)) | (durations==pd.Timedelta(0))).all():
+            raise ValueError("Unsupported minute bob/eob interval")
+        # Existing DB contains zero-duration metadata rows: mark-only, never fills.
 
     @property
     def net_lots(self):
@@ -171,10 +203,21 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def _required_margin(self, price, time):
         return self.net_lots * self.terms.multiplier * Decimal(str(price)) * self.terms.at(time)["margin_rate"]
 
+    def direction_at(self, time, row_index=None):
+        if self.directions.date_basis == "trading_date":
+            row = self._raw.iloc[self.current_step if row_index is None else row_index]
+            if "trading_date" not in row:
+                raise ValueError("Manual direction dates require DB trading_date")
+            day = str(row.trading_date)
+            if len(day) == 8 and day.isdigit():
+                day = pd.to_datetime(day, format="%Y%m%d")
+            return self.directions.at(self.contract, time, day)
+        return self.directions.at(self.contract, time)
+
     def _can_add(self):
         time = self._raw.index[self.current_step]
-        direction = self.directions.at(self.contract, time)
-        if self.status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open:
+        direction = self.direction_at(time)
+        if self.status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
             return False
         self._set_terms(time)
         price = self._price(self._raw.iloc[self.current_step].Close, direction, time, opening=True)
@@ -183,7 +226,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def _get_obs(self):
         i = self.current_step
         time = self._raw.index[i]
-        direction = self.directions.at(self.contract, time)
+        direction = self.direction_at(time)
         held, positions = self._positions()
         start = max(0, i - self.window_size + 1)
         market = self._features[start:i + 1]
@@ -213,11 +256,15 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self._initialized and not self.terminated:
             if self.status == "CHUNK_END":
                 self.status, self.truncated, self.chunk_count = "ACTIVE", False, 0
+            elif self.current_step == 0 and not self.entries and not self.fills:
+                pass
             else:
                 raise RuntimeError("Reset would discard an unfinished account; continue or restore it")
             return self._get_obs(), self._get_info()
         if self._initialized:
-            self.completed_accounts.append(self.export_state())
+            completed = self.export_state()
+            completed["completed_accounts"] = []
+            self.completed_accounts.append(completed)
         self.account_sequence += 1
         self._initialize_accounts(allow_negative_cash=True)
         self.last_close_position = None
@@ -322,7 +369,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if cal_i >= len(self.terms.calendar) or self.terms.calendar[cal_i] != next_time:
             self.status, self.truncated = "DATA_GAP", True
             return self._get_obs(), 0.0, False, True, self._get_info()
-        side = self.directions.at(self.contract, self._raw.index[old])
+        side = self.direction_at(self._raw.index[old], old)
         self.current_step += 1
         self.episode_step_count += 1
         self.chunk_count += 1
@@ -335,8 +382,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if action == 1:
             if not allowed:
                 self.reject_reason = "MASKED_ADD"
-            elif (self.directions.at(self.contract, bob) != side or bob >= self.terms.last_open):
+            elif (self.direction_at(bob) != side or bob >= self.terms.last_open):
                 self.reject_reason = "DIRECTION_OR_DEADLINE_CHANGED"
+            elif not self.valid_fill_clock[self.current_step]:
+                self.reject_reason = "UNVERIFIED_BAR_TIME"
             elif row.Volume < 3:
                 self.reject_reason = "INSUFFICIENT_BAR_VOLUME"
             elif self._calculate_equity() < self._required_margin(row.Open, bob):
@@ -353,12 +402,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._mark(adverse, time)
         if self.net_lots and self._calculate_equity() < self._required_margin(adverse, time):
             self.pending_reason = "MARGIN_CALL"
+        if self.main_exit_at is not None and time >= self.main_exit_at and not self.pending_reason:
+            self.pending_reason = "MAIN_ROLL"
         if time >= self.terms.liquidate and not self.pending_reason:
             self.pending_reason = "CONTRACT_EXPIRY"
         # With OHLC, liquidity and intrabar order cannot be proven. Risk wins.
         self._sample_equity(sample_time=time, intrabar=True)
         events = []
-        remaining_volume = Decimal(str(row.Volume)) - opened_quantity
+        remaining_volume = Decimal(str(row.Volume)) - opened_quantity if self.valid_fill_clock[self.current_step] else Decimal(0)
         for entry_id, item in list(self.entries.items()):
             positions = self.position_manager.long_positions if item["side"] == "LONG" else self.position_manager.short_positions
             pos = positions[item["slot"]]
@@ -366,7 +417,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 continue
             reason = self.pending_reason
             if reason:
-                raw_exit = row.Low if item["side"] == "LONG" else row.High
+                raw_exit = row.Close if reason == "MAIN_ROLL" else (row.Low if item["side"] == "LONG" else row.High)
                 price = self._price(raw_exit, item["side"], time)
             else:
                 # New TP can only use the known post-entry close, never that bar's extreme.
@@ -478,7 +529,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def continue_data(self, df):
         """Append/backfill unprocessed data without changing already observed history."""
         state = self.export_state()
-        old = (self._raw, self._features, self.bar_source, self.bobs)
+        old = (self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock)
         try:
             self._load_market(df)
             self.import_state(state)
@@ -487,7 +538,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.status, self.truncated = "ACTIVE", False
             return self._get_obs(), self._get_info()
         except Exception:
-            self._raw, self._features, self.bar_source, self.bobs = old
+            self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock = old
             self.import_state(state)
             raise
 

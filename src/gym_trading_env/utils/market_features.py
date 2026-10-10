@@ -773,6 +773,7 @@ def build_market_features(
     is_future: bool = False,
     limit_up_pct: Optional[float] = None,
     limit_down_pct: Optional[float] = None,
+    real_futures_clock: bool = False,
 ):
     need_cols = {"Open", "High", "Low", "Close"}
     if not need_cols.issubset(df_1m.columns):
@@ -781,7 +782,7 @@ def build_market_features(
     _ = ensure_index_tz_strict(df_1m.index, target_tz=tz)  # only validate
 
     if is_future:
-        return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct)
+        return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct, real_futures_clock)
     else:
         return _build_market_fx(df_1m, tz, rollover_hour_local)
 
@@ -927,9 +928,19 @@ def _build_market_future(
     df_prev_session: Optional[pd.DataFrame] = None,
     limit_up_pct: Optional[float] = None,
     limit_down_pct: Optional[float] = None,
+    real_futures_clock: bool = False,
 ):
-    # 1) strict 345 alignment
-    base = strict_reindex_futures_345(df_1m, tz=tz)
+    # Default keeps the historical 345-minute contract.
+    if real_futures_clock:
+        if 'trading_date' not in df_1m:
+            raise ValueError('Real futures clock requires DB trading_date')
+        day=pd.to_datetime(df_1m.trading_date.astype(str),format='mixed').dt.strftime('%Y%m%d')
+        sid=pd.Series(day.to_numpy(),index=df_1m.index)
+        base=dict(aligned=df_1m,mask=pd.Series(1,index=df_1m.index),session_id=sid,
+            minute_index=sid.groupby(sid,sort=False).cumcount(),
+            day_id=pd.Series(pd.factorize(sid,sort=False)[0],index=df_1m.index))
+    else:
+        base = strict_reindex_futures_345(df_1m, tz=tz)
     X = base["aligned"].copy()
     mask_t = base["mask"].astype(int)
     session_id = base["session_id"]

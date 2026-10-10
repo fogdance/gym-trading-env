@@ -12,3 +12,8 @@ register(
     entry_point='gym_trading_env.envs.entry_env:FixedDirectionEntryEnv',
     kwargs={'config_path': None},
 )
+
+register(
+    id='FGEntryDatasetEnv-v0',
+    entry_point='gym_trading_env.envs.entry_dataset_env:FGEntryDatasetEnv',
+)

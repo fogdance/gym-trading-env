@@ -35,11 +35,33 @@ def is_fg(contract):
     return bool(re.fullmatch(r"CZCE\.FG\d{3,4}", contract))
 
 
+def read_direction_text(path):
+    """Manual fg.txt dates are inclusive trading dates, not midnight timestamps."""
+    import csv
+    raw={"timezone":"Asia/Shanghai", "intervals":[], "date_basis":"trading_date"}
+    for number, row in enumerate(csv.reader(Path(path).read_text(encoding="utf-8").splitlines()), 1):
+        if not row or not any(v.strip() for v in row):
+            continue
+        if len(row)!=4:
+            raise ValueError(f"Direction line {number}: expected contract,start,end,direction")
+        symbol,start,end,side=(v.strip() for v in row)
+        contract="CZCE."+symbol.upper()
+        a,b=timestamp(start),timestamp(end)+pd.Timedelta(days=1)
+        if not is_fg(contract) or a>=b or side not in ("LONG","SHORT"):
+            raise ValueError(f"Invalid direction line {number}")
+        raw["intervals"].append(dict(contract=contract,start=str(a),end=str(b),direction=side))
+    DirectionSchedule(raw)
+    return raw
+
+
 class DirectionSchedule:
     def __init__(self, raw):
         if raw.get("timezone") != "Asia/Shanghai":
             raise ValueError("Direction timezone must be Asia/Shanghai")
         self.hash = fingerprint(raw)
+        self.date_basis = raw.get("date_basis", "timestamp")
+        if self.date_basis not in ("timestamp", "trading_date"):
+            raise ValueError("Invalid direction date basis")
         self.intervals = []
         for item in raw.get("intervals", []):
             contract = item["contract"]
@@ -53,7 +75,11 @@ class DirectionSchedule:
             if prev[0] == current[0] and prev[2] > current[1]:
                 raise ValueError("Overlapping direction intervals")
 
-    def at(self, contract, time):
+    def at(self, contract, time, trading_date=None):
+        if self.date_basis == "trading_date":
+            if trading_date is None:
+                raise ValueError("Direction lookup requires DB trading_date")
+            time = trading_date
         time = timestamp(time)
         for symbol, start, end, side in self.intervals:
             if symbol == contract and start <= time < end:

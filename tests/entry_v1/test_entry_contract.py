@@ -13,7 +13,7 @@ from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
 
 def make_env(tmp_path, prices=None, side="LONG", chunk=0, intervals=None,
              margin_rate=.1, fees=0, spread=0, liquidation="2026-01-06 15:00:00",
-             times=None, calendar=None):
+             times=None, calendar=None, main_exit=None, zero_duration_indices=()):
     prices = prices or [(1000, 1000, 1000, 1000)]*8
     if side == "SHORT":
         prices = [(2000-o, 2000-l, 2000-h, 2000-c) for o,h,l,c in prices]
@@ -21,6 +21,8 @@ def make_env(tmp_path, prices=None, side="LONG", chunk=0, intervals=None,
     df = pd.DataFrame(prices, columns=["Open", "High", "Low", "Close"], index=idx)
     df["Volume"], df["OpenInterest"] = 100, 1000
     df["bob"] = df.index - pd.Timedelta(minutes=1)
+    for i in zero_duration_indices:
+        df.loc[df.index[i],"bob"]=df.index[i]
     directions = dict(timezone="Asia/Shanghai", intervals=intervals if intervals is not None else [
         dict(contract="CZCE.FG2701", start="2026-01-05", end="2026-01-07", direction=side)])
     meta = dict(contract="CZCE.FG2701", tick_size=1, lot_size=20,
@@ -36,6 +38,8 @@ def make_env(tmp_path, prices=None, side="LONG", chunk=0, intervals=None,
                                initial_balance=300000, trade_lot=3, max_long_position=6, max_short_position=6,
                                obs_feature_mode="obs", live_mode=False, data_tz="Asia/Shanghai"),
                   training=dict(window_size=60), debug=dict(log_level="CRITICAL"))
+    if main_exit:
+        config["entry"]["main_exit_at"]=main_exit
     path=tmp_path/"env.yaml"
     path.write_text(yaml.safe_dump(config))
     return FixedDirectionEntryEnv(df=df, config_path=str(path))
@@ -220,3 +224,104 @@ def test_mixed_partial_exit_is_not_a_tp_and_fill_volume_is_not_reused(tmp_path):
     scarce=make_env(tmp_path,[(1000,1000,1000,1000),(1000,1006,1000,1006)])
     scarce._raw.loc[scarce._raw.index[1],"Volume"]=3
     assert scarce.step(1)[1]==0 and scarce.net_lots==3 # entry consumes all simulated bar volume
+
+
+def test_main_roll_closes_old_contract_loss_without_reward(tmp_path):
+    env=make_env(tmp_path,[(1000,1000,1000,1000),(1000,1000,1000,1000),(990,990,990,990)],fees=2, main_exit="2026-01-05 09:33")
+    env.step(1)
+    _,reward,terminated,truncated,_=env.step(0)
+    assert terminated and not truncated and reward==0
+    assert env.status=='MAIN_ROLL' and env.net_lots==0
+    assert env.attributions[0]['reason']=='MAIN_ROLL'
+    assert Decimal(env.attributions[0]['exit_price'])==990
+    assert env._get_info()['account_net_pnl']==-612
+    assert env.ledger.total_balance()==300000
+
+
+def test_initial_gym_reset_preserves_initialized_account(tmp_path):
+    env=make_env(tmp_path)
+    before=env.export_state()
+    env.reset(seed=42)
+    assert env.account_sequence==before['account_sequence']
+    assert env.net_lots==0 and env.current_step==0
+
+
+def test_three_baselines_share_audited_reward_and_financial_output(tmp_path):
+    from gym_trading_env.research.fg_entry_v1 import run_policy
+    env=make_env(tmp_path,[(1000,1000,1000,1000)]*8,chunk=2,main_exit='2026-01-05 09:38')
+    market=tmp_path/'market.csv'
+    env._raw.to_csv(market,index_label='Date')
+    path=tmp_path/'env.yaml'
+    config=yaml.safe_load(path.read_text());config['trading']['data_path']=str(market)
+    path.write_text(yaml.safe_dump(config))
+    for strategy in ('always_add','random_add','rule_add'):
+        output=tmp_path/strategy
+        result=run_policy(path,output,strategy=strategy,seed=0)
+        assert result['tp_count']==0 and result['cumulative_speed_reward']==0
+        assert result['unfinished_entries']==0 and Decimal(result['ledger_total'])==300000
+        assert (output/'fills.csv').exists() and (output/'account_state.json').exists()
+
+
+def test_dataset_switches_only_after_real_exit_and_restores_chunk(tmp_path):
+    from gym_trading_env.envs.entry_contract import fingerprint
+    from gym_trading_env.envs.entry_dataset_env import FGEntryDatasetEnv
+    configs=[]
+    for name in ('one','two'):
+        folder=tmp_path/name;folder.mkdir()
+        engine=make_env(folder,[(1000,1000,1000,1000)]*5,chunk=1,main_exit='2026-01-05 09:35')
+        market=folder/'market.csv';engine._raw.to_csv(market,index_label='Date')
+        config=yaml.safe_load((folder/'env.yaml').read_text());config['trading']['data_path']=str(market)
+        (folder/'env.yaml').write_text(yaml.safe_dump(config));configs.append(str(folder/'env.yaml'))
+    manifest=dict(product='FG',files=[dict(role='train',eligible_for_training=True,env_config=p) for p in configs])
+    manifest['content_hash']=fingerprint(manifest)
+    mp=tmp_path/'manifest.json';mp.write_text(json.dumps(manifest))
+    selector=tmp_path/'dataset.yaml';selector.write_text(yaml.safe_dump(dict(strategy_mode='entry_dataset',role='train',manifest_path=str(mp))))
+    left=FGEntryDatasetEnv(selector);left.reset(seed=0);left.step(1)
+    assert left.index==0 and left.env.net_lots==3
+    state=left.export_state()
+    right=FGEntryDatasetEnv(selector);right.reset(options={'resume':state});right.reset()
+    assert right.index==0 and right.env.net_lots==3
+    while not right.env.terminated:
+        right.step(0)
+        if right.env.truncated:
+            right.reset()
+    assert right.env.net_lots==0 and right.env.status=='MAIN_ROLL'
+    right.reset()
+    assert right.index==1 and right.env.net_lots==0 and len(right.completed)==1
+
+
+def test_zero_duration_db_metadata_is_mark_only_never_fills_or_rewards(tmp_path):
+    env=make_env(tmp_path,[(1000,1000,1000,1000),(1000,1000,1000,1000),
+        (1000,1008,1000,1008),(1000,1008,1000,1008)],zero_duration_indices=(1,2))
+    _,reward,_,_,info=env.step(1)
+    assert env.net_lots==0 and reward==0 and info['reject_reason']=='UNVERIFIED_BAR_TIME'
+    # Simulate an already committed position; the zero-duration bar must not TP it.
+    env._open_entry('LONG',1000,env._raw.index[1])
+    _,reward,_,_,_=env.step(0)
+    assert env.net_lots==3 and reward==0
+    _,reward,_,_,_=env.step(0)
+    assert env.net_lots==0 and reward==60/62
+
+
+def test_unified_fg_configuration_is_the_only_direction_and_cost_source(tmp_path):
+    env=make_env(tmp_path)
+    config=yaml.safe_load((tmp_path/'env.yaml').read_text())
+    directions=yaml.safe_load((tmp_path/'directions.yaml').read_text())
+    directions['intervals'][0]['direction']='SHORT'
+    master=dict(product='FG',directions=directions,
+        costs=dict(lot_size=20,margin_rate=.1,open_fee=3,close_fee=3,close_today_fee=3,spread=1,slippage=0),
+        reward=dict(formula='60/(60+T_minutes)',complete_quantity=3,take_profit_points=5),
+        expiry=dict(mode='main_qualification'),environment=config)
+    mp=tmp_path/'fg.yaml';mp.write_text(yaml.safe_dump(master))
+    config['entry'].pop('direction_config');config['entry']['strategy_config']=str(mp)
+    cp=tmp_path/'central_env.yaml';cp.write_text(yaml.safe_dump(config))
+    (tmp_path/'directions.yaml').unlink()
+    central=FixedDirectionEntryEnv(df=env._raw,config_path=cp)
+    assert central.direction_at(central._raw.index[0])=='SHORT'
+    assert central.terms.at(central._raw.index[0])['open_fee']==3
+    central.step(1)
+    assert central.user_accounts.short_position==3
+    master['reward']['formula']='1'
+    mp.write_text(yaml.safe_dump(master))
+    with pytest.raises(ValueError,match='business contract'):
+        FixedDirectionEntryEnv(df=env._raw,config_path=cp)
