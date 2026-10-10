@@ -23,3 +23,8 @@
 ## GPU 小步 smoke 已验收
 
 用户仅授权少量 GPU smoke，禁止 CPU 与正式训练。重启后恢复持久工作树和数据，主程序完成 20＋10 步、7 次更新；损失有限，账户与账本连续。修复 GPU carry 的显式保存/恢复传输和短任务最终金融检查点落盘。GPU 相关回归 14 项通过；详见 Dreamer 工作树 docs/FG_Entry_GPU_Smoke_Acceptance.md。正式批量显存和长期训练尚未验收，不能据此声称择时能力。
+
+
+## 2026-10-10 原目录迁移
+
+两个原仓库已直接切到 `feat/fg-entry-v1.1`，旧独立工作树移除。当前数据集使用 `artifacts/fg_entry_v1/dataset_v1`。目录、备份及验证详见 [FG_Entry_Migration.md](FG_Entry_Migration.md)。迁移验证完成，未启动训练。
