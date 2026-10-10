@@ -1,0 +1,109 @@
+"""Human directions and effective contract terms; never infer direction from prices."""
+from __future__ import annotations
+
+from decimal import Decimal
+import hashlib
+import json
+from pathlib import Path
+import pandas as pd
+import yaml
+
+
+def timestamp(value):
+    ts = pd.Timestamp(value)
+    if pd.isna(ts):
+        raise ValueError("Missing timestamp")
+    return ts.tz_localize("Asia/Shanghai") if ts.tz is None else ts.tz_convert("Asia/Shanghai")
+
+
+def fingerprint(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, default=str).encode()).hexdigest()
+
+
+def read_yaml(path):
+    with Path(path).open(encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
+def resolve_path(base, value):
+    p = Path(value).expanduser()
+    return p.resolve() if p.is_absolute() else (Path(base).parent / p).resolve()
+
+
+def is_fg(contract):
+    import re
+    return bool(re.fullmatch(r"CZCE\.FG\d{3,4}", contract))
+
+
+class DirectionSchedule:
+    def __init__(self, raw):
+        if raw.get("timezone") != "Asia/Shanghai":
+            raise ValueError("Direction timezone must be Asia/Shanghai")
+        self.hash = fingerprint(raw)
+        self.intervals = []
+        for item in raw.get("intervals", []):
+            contract = item["contract"]
+            start, end = timestamp(item["start"]), timestamp(item["end"])
+            direction = item["direction"]
+            if not is_fg(contract) or start >= end or direction not in ("LONG", "SHORT"):
+                raise ValueError("Invalid FG direction interval")
+            self.intervals.append((contract, start, end, direction))
+        self.intervals.sort(key=lambda x: (x[0], x[1]))
+        for prev, current in zip(self.intervals, self.intervals[1:]):
+            if prev[0] == current[0] and prev[2] > current[1]:
+                raise ValueError("Overlapping direction intervals")
+
+    def at(self, contract, time):
+        time = timestamp(time)
+        for symbol, start, end, side in self.intervals:
+            if symbol == contract and start <= time < end:
+                return side
+        return "NO_TRADE"
+
+
+class ContractTerms:
+    """Explicit effective costs, deadlines and actual dated trading sessions."""
+    def __init__(self, raw, contract):
+        if raw.get("contract") != contract or not is_fg(contract):
+            raise ValueError("Contract metadata must match the real FG contract")
+        self.hash = fingerprint(raw)
+        self.tick = Decimal(str(raw["tick_size"]))
+        self.multiplier = Decimal(str(raw["lot_size"]))
+        if not self.tick.is_finite() or self.tick <= 0 or Decimal(5) % self.tick:
+            raise ValueError("Five points must be exactly representable by tick_size")
+        if not self.multiplier.is_finite() or self.multiplier <= 0:
+            raise ValueError("Invalid contract multiplier")
+        self.last_open = timestamp(raw["last_open_at"])
+        self.liquidate = timestamp(raw["liquidate_at"])
+        if self.last_open > self.liquidate:
+            raise ValueError("Opening cutoff exceeds liquidation deadline")
+        self.periods = []
+        for item in raw["terms"]:
+            start, end = timestamp(item["start"]), timestamp(item["end"])
+            numbers = {k: Decimal(str(item[k])) for k in
+                       ("margin_rate", "open_fee", "close_fee", "spread", "slippage")}
+            numbers["close_today_fee"] = Decimal(str(item.get("close_today_fee", item["close_fee"])))
+            if start >= end or any(not v.is_finite() or v < 0 for v in numbers.values()):
+                raise ValueError("Invalid effective contract terms")
+            if not 0 < numbers["margin_rate"] <= 1:
+                raise ValueError("Invalid margin rate")
+            self.periods.append((start, end, numbers))
+        self.periods.sort(key=lambda x: x[0])
+        if any(a[1] > b[0] for a, b in zip(self.periods, self.periods[1:])):
+            raise ValueError("Overlapping contract terms")
+        minutes = []
+        sessions = sorted((timestamp(s["start"]), timestamp(s["end"])) for s in raw["sessions"])
+        for a, b in sessions:
+            if a >= b or a.second or b.second or a.microsecond or b.microsecond:
+                raise ValueError("Invalid minute session")
+            minutes.extend(pd.date_range(a + pd.Timedelta(minutes=1), b, freq="min"))
+        self.calendar = pd.DatetimeIndex(minutes)
+        if not len(self.calendar) or self.calendar.has_duplicates:
+            raise ValueError("Trading calendar is empty or overlaps")
+
+    def at(self, time):
+        time = timestamp(time)
+        for start, end, terms in self.periods:
+            if start <= time < end:
+                return terms
+        raise ValueError(f"No effective contract terms at {time}")

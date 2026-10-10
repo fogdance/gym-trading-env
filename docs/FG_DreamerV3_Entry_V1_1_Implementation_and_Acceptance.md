@@ -52,3 +52,22 @@ checkpoint 保存经济状态、游标、订单、去重、随机状态及配置
 - 尚未 DB 导出、没有用户维护的方向区间和正式有效成本/到期参数。禁止凭空填入。
 
 后续每阶段在本节追加准确命令、结果、提交及未验证项。
+
+### 阶段 0/1 — 已验证
+
+- 干净基线：环境32项通过(5.65s)，Dreamer15项通过(1.55s)。
+- 环境19项专项回归及34项既有账户/Mask回归：53 passed (12.29s)。命令：
+  `PYTHONPATH=src python -m pytest -p no:cacheprovider tests/entry_v1
+  tests/unit/test_position_manager.py tests/unit/test_ledger_basic.py
+  tests/unit/test_atomic_close_p0.py tests/contract/test_target_action_mask.py
+  tests/unit/test_episode_policy_multiday.py tests/contract/test_bookkeeping_conservation.py
+  tests/integration/test_trading_env_accounting_integration.py`。
+- 已复用既有账户初始化和原子开平仓，仅增加可选fill_time与quantity参数；
+  旧默认行为保持。部分平仓替换剩余Position对象，避免污染原子回滚快照。
+- 一分钟模拟默认3手整笔开仓；部分退出按实量记账、累计完成才领奖。
+  不实现实盘订单连接器及部分开仓回报适配。
+- 真实DB只读查询已成功：fut_bar_1m_v2有bob/eob/symbol/trading_date；
+  目标2027年1月合约的DB名称为CZCE.FG701，51889根，2026-01-19至2026-10-09。
+  CZCE.FG609有75317根，2025-09-15至2026-09-14。
+  连续标识CZCE.FG/CZCE.FG00/FG01等不允许作为真实交易合约导出。
+- 当前未输入人工方向区间，不把行情推导出的多空方向当人工标签。

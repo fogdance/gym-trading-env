@@ -350,6 +350,37 @@ class CustomTradingEnv(gym.Env):
         """
         self.trade_record_manager.record_trade(trade_record)
 
+    def _initialize_accounts(self, *, allow_negative_cash=False):
+        """Initialize the existing shared accounting engine; legacy cash stays strict."""
+        self.position_manager = PositionManager()
+        self.broker_accounts = BrokerAccounts()
+        self.trade_record_manager = TradeRecordManager()
+
+        self.ledger = Ledger()
+
+        # 1) 创建“真钱账户”（唯一一份）
+        user_cash_acct = Account(Decimal(str(self.config.trading.initial_balance)))
+        user_margin_acct = Account(Decimal("0.0"))
+
+        # 2) 先注册进 Ledger（Ledger 以后会操作这些账户）
+        self.ledger.register("user_cash", user_cash_acct, strict_nonnegative=not allow_negative_cash)
+        self.ledger.register("user_margin", user_margin_acct, strict_nonnegative=True)
+        self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
+        self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
+
+        # 3) UserAccounts 只引用这些账户（读余额、算 equity、存 pnl 投影）
+        self.user_accounts = UserAccounts(
+            ledger=self.ledger,
+            position_manager=self.position_manager,
+            cash_account=user_cash_acct,
+            margin_account=user_margin_acct,
+            initial_balance=self.config.trading.initial_balance,
+        )
+
+        self._ledger_total0 = self.ledger.total_balance()
+        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
+
+
     def reset(self, seed=None, options=None):
         """
         Resets the environment to an initial state and returns an initial observation.
@@ -367,33 +398,7 @@ class CustomTradingEnv(gym.Env):
         # 每次 reset 都重置 replay 标记
         self._replaying = False
 
-        self.position_manager = PositionManager()
-        self.broker_accounts = BrokerAccounts()
-        self.trade_record_manager = TradeRecordManager()
-
-        self.ledger = Ledger()
-
-        # 1) 创建“真钱账户”（唯一一份）
-        user_cash_acct = Account(Decimal(str(self.config.trading.initial_balance)))
-        user_margin_acct = Account(Decimal("0.0"))
-
-        # 2) 先注册进 Ledger（Ledger 以后会操作这些账户）
-        self.ledger.register("user_cash", user_cash_acct, strict_nonnegative=True)
-        self.ledger.register("user_margin", user_margin_acct, strict_nonnegative=True)
-        self.ledger.register("broker_fee_income", self.broker_accounts.fee_income, strict_nonnegative=False)
-        self.ledger.register("broker_pnl", self.broker_accounts.broker_pnl, strict_nonnegative=False)
-
-        # 3) UserAccounts 只引用这些账户（读余额、算 equity、存 pnl 投影）
-        self.user_accounts = UserAccounts(
-            ledger=self.ledger,
-            position_manager=self.position_manager,
-            cash_account=user_cash_acct,
-            margin_account=user_margin_acct,
-            initial_balance=self.config.trading.initial_balance,
-        )
-
-        self._ledger_total0 = self.ledger.total_balance()
-        self.metrics = Metrics(self.user_accounts, self.trade_record_manager)
+        self._initialize_accounts()
 
         # --- Housekeeping ---
         self.terminated = False
@@ -2534,7 +2539,7 @@ class CustomTradingEnv(gym.Env):
             if now != self._ledger_total0:
                 raise RuntimeError(f"Ledger conservation broken: {now} != {self._ledger_total0}")
 
-    def _long_open(self, price: Decimal, spread: Decimal, slot: int = None):
+    def _long_open(self, price: Decimal, spread: Decimal, slot: int = None, *, fill_time=None):
         """
         Executes a LONG_OPEN action with manual rollback.
         """
@@ -2562,7 +2567,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.bar_source.store.index[self.current_step]
+        ts = fill_time if fill_time is not None else self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_OPEN",
@@ -2608,7 +2613,7 @@ class CustomTradingEnv(gym.Env):
         return ForexCode.SUCCESS
 
 
-    def _long_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
+    def _long_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None, *, fill_time=None, quantity=None):
         """
         Executes a LONG_CLOSE action atomically:
         1) quote (no mutation)
@@ -2626,6 +2631,7 @@ class CustomTradingEnv(gym.Env):
                 closing_price=bid_price,
                 lot_size=self.config.trading.lot_size,
                 slot=slot,
+                quantity=quantity,
             )
         except ValueError as e:
             self.logger.warning(f"Error quoting long close: {e}")
@@ -2634,7 +2640,7 @@ class CustomTradingEnv(gym.Env):
         # fee: round-turn means charge on close as well
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
 
-        ts = self.bar_source.store.index[self.current_step]
+        ts = fill_time if fill_time is not None else self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="LONG_CLOSE",
@@ -2697,7 +2703,7 @@ class CustomTradingEnv(gym.Env):
 
    
 
-    def _short_open(self, price: Decimal, spread: Decimal, slot: int = None):
+    def _short_open(self, price: Decimal, spread: Decimal, slot: int = None, *, fill_time=None):
         """
         Executes a SHORT_OPEN action with manual rollback.
         """
@@ -2725,7 +2731,7 @@ class CustomTradingEnv(gym.Env):
         )
 
 
-        ts = self.bar_source.store.index[self.current_step]
+        ts = fill_time if fill_time is not None else self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_OPEN",
@@ -2771,7 +2777,7 @@ class CustomTradingEnv(gym.Env):
         return ForexCode.SUCCESS
    
 
-    def _short_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None):
+    def _short_close(self, price: Decimal, spread: Decimal, slot: int = None, close_reason: str | None = None, *, fill_time=None, quantity=None):
         """
         Executes a SHORT_CLOSE action atomically:
         1) quote (no mutation)
@@ -2789,6 +2795,7 @@ class CustomTradingEnv(gym.Env):
                 closing_price=ask_price,
                 lot_size=self.config.trading.lot_size,
                 slot=slot,
+                quantity=quantity,
             )
         except ValueError as e:
             self.logger.warning(f"Error quoting short close: {e}")
@@ -2796,7 +2803,7 @@ class CustomTradingEnv(gym.Env):
 
         fee = Decimal('0') if not self.config.trading.is_round_turn else (self.config.trading.trading_fee_per_lot * q.closed_size)
 
-        ts = self.bar_source.store.index[self.current_step]
+        ts = fill_time if fill_time is not None else self.bar_source.store.index[self.current_step]
         entry = JournalEntry(
             timestamp=ts,
             memo="SHORT_CLOSE",

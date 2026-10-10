@@ -308,7 +308,8 @@ class PositionManager:
         self,
         closing_price: Decimal,
         lot_size: Decimal,
-        slot: Optional[int] = None
+        slot: Optional[int] = None,
+        quantity: Optional[Decimal] = None
     ) -> Tuple[int, CloseQuote]:
         """
         Compute close results for a long position WITHOUT modifying state.
@@ -317,11 +318,14 @@ class PositionManager:
             (slot_index, CloseQuote)
         """
         slot_i, pos = self.peek_long(slot)
-        pnl = (closing_price - pos.entry_price) * pos.size * lot_size
+        size = pos.size if quantity is None else Decimal(str(quantity))
+        if size <= 0 or size > pos.size:
+            raise ValueError("Close quantity must be positive and no greater than the position")
+        pnl = (closing_price - pos.entry_price) * size * lot_size
         q = CloseQuote(
             pnl=pnl,
-            released_margin=pos.initial_margin,
-            closed_size=pos.size,
+            released_margin=pos.initial_margin * size / pos.size,
+            closed_size=size,
             entry_price=pos.entry_price,
         )
         return slot_i, q
@@ -330,17 +334,21 @@ class PositionManager:
         self,
         closing_price: Decimal,
         lot_size: Decimal,
-        slot: Optional[int] = None
+        slot: Optional[int] = None,
+        quantity: Optional[Decimal] = None
     ) -> Tuple[int, CloseQuote]:
         """
         Compute close results for a short position WITHOUT modifying state.
         """
         slot_i, pos = self.peek_short(slot)
-        pnl = (pos.entry_price - closing_price) * pos.size * lot_size
+        size = pos.size if quantity is None else Decimal(str(quantity))
+        if size <= 0 or size > pos.size:
+            raise ValueError("Close quantity must be positive and no greater than the position")
+        pnl = (pos.entry_price - closing_price) * size * lot_size
         q = CloseQuote(
             pnl=pnl,
-            released_margin=pos.initial_margin,
-            closed_size=pos.size,
+            released_margin=pos.initial_margin * size / pos.size,
+            closed_size=size,
             entry_price=pos.entry_price,
         )
         return slot_i, q
@@ -350,7 +358,17 @@ class PositionManager:
         Commit the close by removing the position from the slot.
         Should be called ONLY after external accounting (Ledger) succeeds.
         """
-        self.pop_long(slot)
+        _, pos = self.peek_long(slot)
+        if quote is not None and quote.closed_size < pos.size:
+            if quote.closed_size <= 0 or quote.released_margin != pos.initial_margin * quote.closed_size / pos.size:
+                raise ValueError("Invalid partial close quote")
+            # Replace rather than mutate so existing transaction snapshots remain valid.
+            self.long_positions[slot] = Position(
+                pos.size - quote.closed_size, pos.entry_price,
+                pos.initial_margin - quote.released_margin, pos.open_step,
+                pos.stop_loss_price, pos.take_profit_price)
+        else:
+            self.pop_long(slot)
         if quote is not None:
             self.closed_trade_profits.append(quote.pnl)
 
@@ -358,6 +376,16 @@ class PositionManager:
         """
         Commit the close by removing the position from the slot.
         """
-        self.pop_short(slot)
+        _, pos = self.peek_short(slot)
+        if quote is not None and quote.closed_size < pos.size:
+            if quote.closed_size <= 0 or quote.released_margin != pos.initial_margin * quote.closed_size / pos.size:
+                raise ValueError("Invalid partial close quote")
+            # Replace rather than mutate so existing transaction snapshots remain valid.
+            self.short_positions[slot] = Position(
+                pos.size - quote.closed_size, pos.entry_price,
+                pos.initial_margin - quote.released_margin, pos.open_step,
+                pos.stop_loss_price, pos.take_profit_price)
+        else:
+            self.pop_short(slot)
         if quote is not None:
             self.closed_trade_profits.append(quote.pnl)
