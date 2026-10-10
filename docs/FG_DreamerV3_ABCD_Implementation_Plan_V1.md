@@ -1,6 +1,6 @@
 # FG A/B/C 对照实施计划与开发核对表 V1
 
-日期：2026-10-10。状态：先导与正式默认已改为顺序训练，旧 v1 已停止，新 v3_shared_prefix 已准备但未启动；结果以开发日志和实际运行产物为准。
+日期：2026-10-10。状态：先导与正式默认已改为顺序训练，旧 v1 已停止，新 v3_shared_prefix GPU smoke 已通过，先导后台运行，正式未启动；结果以开发日志和实际运行产物为准。
 
 更新：用户已停止 v1 轮转先导；先导和正式默认改为 `v3_shared_prefix` 顺序训练。旧轮转 smoke 通过不代表新版本已启动或已完成 GPU 验收；新版本本轮只准备，全部 NOT_RUN。
 
@@ -91,8 +91,8 @@ Matched random 使用独立闭环账户，seeds 0～29。以 Dreamer 的实际�
 | P0 | 单一实验配置、完整合约生成器、哈希清单、覆盖报告 | 四 fold、12 方法配置；无盲测价格与跨界 Reward | 已验收，52 个先导/正式阶段配置通过准入 |
 | P1 | 顺序恢复、C 迁移、实际推进量报告 | 浮亏保留、轨迹恢复一致、近期 Replay 无历史污染 | 顺序与完整快照回归通过；C 来源身份新增绑定；新版 GPU 迁移待 P3 实测 |
 | P2 | 统一评估与 30-seed 闭环匹配 | 分母一致、三手 Reward 对账、6 手限制、失败/删失不丢失 | 工具及回归通过，完整验证三基线已运行；模型匹配结果待 P4 |
-| P3 | GPU smoke，不超过 2048 交互 | 正式结构/batch 可运行；checkpoint 恢复与 C 迁移成功 | v3_shared_prefix GPU smoke 正在验收；旧版 PASS 不作为新版通过证据 |
-| P4 | FG409 seed0 A/B/C 100k | Actor/Critic 有有限非零参数变化，实际更新、评估与 gate 记录 | v1 A STOPPED_BY_USER；新版 A/B/C NOT_RUN |
+| P3 | GPU smoke，不超过 2048 交互 | 正式结构/batch 可运行；checkpoint 恢复与 C 迁移成功 | v3_shared_prefix PASS：2040交互、3次GPU更新、完整恢复与C迁移逐数组验收 |
+| P4 | FG409 seed0 A/B/C 100k | Actor/Critic 有有限非零参数变化，实际更新、评估与 gate 记录 | v1 A STOPPED_BY_USER；新版 A RUNNING，B/C 等待后台顺序执行 |
 | P5 | 36 个正式 1M 实例与命令 | 配置校验、路径独立、启动边界明确 | 36 组正式配置与共享分支命令已准备；由用户显式 --execute 启动，训练 NOT_RUN |
 
 P2 必须完成后才能启动 P4。GPU smoke 不代替择时效果验证；无学习或 gate 失败时报告实际原因，不擅自增加预算或修改业务。每阶段自查 diff、运行相关最小测试，并提交结果说明。
@@ -119,7 +119,7 @@ D 本批仅准备设计，不运行。后续按每次主力资格退出推进，
 
 实施中输出 `assumptions.md`、`coverage.md`、`train_config_matrix.md`、`metric_contract.md`、`pilot_results.md`、`comparison.md` 和可直接执行的命令。未执行实例统一 NOT_RUN。观察事实与模型预测假设分别陈述。
 
-最新实施明细见 [Checkpoint 复用计划及证据](FG_DreamerV3_ABCD_Checkpoint_Reuse_Plan_V1.md)。v3 模型训练及 GPU smoke 均 NOT_RUN；旧 v1/v2 smoke 只属于历史证据。
+最新实施明细见 [Checkpoint 复用计划及证据](FG_DreamerV3_ABCD_Checkpoint_Reuse_Plan_V1.md)。v3 GPU smoke PASS、先导 RUNNING、正式 NOT_RUN；旧 v1/v2 smoke 只属于历史证据。
 
 ## 11. 2026-10-11 重新梳理后的执行清单
 

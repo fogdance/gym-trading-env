@@ -49,6 +49,8 @@ def main():
                     observed.get('updates','NOT_VERIFIED'),observed.get('actor_gate_enabled','NOT_VERIFIED'),status]))+' |')
     (path.parent/'train_config_matrix.md').write_text('\n'.join(matrix)+'\n')
     (path.parent/'pilot_results.md').write_text('\n'.join(pilot)+'\n')
+    smoke_path=path.parent/'smoke_audit.json'
+    smoke_status=json.loads(smoke_path.read_text()).get('status','UNKNOWN') if smoke_path.exists() else 'NOT_RUN'
     assumptions=['# Frozen ABC assumptions','',
         '- Human directions: conditional_direction_only; ex-ante availability not established.',
         '- Main qualification exit is not physical delivery expiry; advance announcement not established.',
@@ -60,7 +62,7 @@ def main():
         '- Formal templates are NOT_RUN unless a later explicit launch is recorded.',
         '- Training steps count reset observations; actual advanced bars are separately audited.',
         '- A/C share an identical protected prefix; compare their same-seed results as paired observations.',
-        '- Full checkpoints use fixed 5000-step reports and 10000-step saves; GPU smoke remains pending.',
+        f'- Full checkpoints use fixed 5000-step reports and 10000-step saves; observed GPU smoke: {smoke_status}.',
         '- Market uncertainty cannot be inferred from matched-random seed variability.',
         '', 'Manifest: '+digest]
     (path.parent/'assumptions.md').write_text('\n'.join(assumptions)+'\n')

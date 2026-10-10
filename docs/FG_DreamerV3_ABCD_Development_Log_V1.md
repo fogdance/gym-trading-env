@@ -1,6 +1,6 @@
 # FG ABC 开发记录 V1
 
-最新状态：v3_shared_prefix 已完成代码与非模型准备验收，所有模型训练保持停止；下方 v1/v2 内容为历史记录。详见 FG_DreamerV3_ABCD_Checkpoint_Reuse_Plan_V1.md。
+最新状态：v3_shared_prefix 完整 GPU smoke 已通过，FG409 seed0 A/B/C 先导后台运行，正式训练由用户启动；下方 v1/v2 内容为历史记录。详见 FG_DreamerV3_ABCD_Checkpoint_Reuse_Plan_V1.md。
 
 日期：2026-10-10。开发分支：两个原仓库均为 `feat/fg-abcd-comparison-v1`。
 
@@ -114,3 +114,9 @@ Gate 检查固定 5000 步，保存固定 10000 步，关键节点精确停止�
 后台验收已于 00:07 启动，PID 334485，日志 `/data/logdir/fg_abcd_v1/v3_shared_prefix/acceptance.log`。`tools/continue_fg_abcd_acceptance.py` 仅包含先导启动路径：等 smoke 完成→检查完整快照→A/B/C 先导→按真实 Gate 决定模型评估→刷新状态；失败保留产物并停止，无正式自动启动和自动重训。监督器独立会话运行，关闭对话不会依赖当前终端存活。
 
 实时结果见生成的 `artifacts/fg_abcd_v1/v3_shared_prefix/acceptance_status.json`、`acceptance_progress.md`、`pilot_results.md` 与 `comparison.md`。新增启动边界回归与相关测试 11 项通过。补齐运行开始阶段记录及实时指标进度读取，避免新版运行时显示 NOT_RUN。普通真实 GPU 恢复已经观察到 1110→1120，C 920 步仍在运行，P3 尚不能标记完成。
+
+### P3 新版实测 PASS（2026-10-11 00:08）
+
+实际完整快照审计：2040 交互、3 次 GPU 更新、182 个优化器变量；源 1110→1120 完整恢复，C 近期 920 交互 / 919 行情推进，模型与优化器逐数组一致，warm-up Gate 一致，新近期账户成立，源账本前缀保留。完整结果在生成目录 `smoke_audit.json`，模型使用 cuda:0。短 smoke 未启用 Actor Gate，不能声称策略学习成功。
+
+监督器已自动启动 P4，A 的独立阶段记录 status=RUNNING，预算100000，resume_step=0；先导 C 将读取 A70K，不重复预训练。B/C 尚待 A 与评估阶段结束后执行，正式所有实例 NOT_RUN。本次 P0/P1/P3 工程准备已完成，P4 学习/评估和 P5 用户正式运行仍未完成。
