@@ -136,3 +136,5 @@ D 本批仅准备设计，不运行。后续按每次主力资格退出推进，
 | D 与最终比较 | D 仅设计；正式运行结束后再填写比较，未执行结果保持 NOT_RUN |
 
 可重复准备审计：`PYTHONPATH=/home/v/Documents/work/dreamerv3:src:. python tools/audit_fg_abcd_ready.py`。该工具不创建模型；C 的实际父节点在生成迁移凭据及启动时校验，准备阶段不声称已经校验不存在的节点。
+
+无人值守执行已安排：`tools/continue_fg_abcd_acceptance.py` 只允许 smoke 审计和先导预算，不包含正式训练启动。实际阶段状态由生成目录中的 `acceptance_status.json` 与 `pilot_comparison.json` 记录，不把计划中的未来结果填写为已完成。后台每 30 秒刷新报告；失败保留日志和 Checkpoint。

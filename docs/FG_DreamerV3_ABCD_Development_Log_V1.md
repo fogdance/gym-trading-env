@@ -110,3 +110,7 @@ Gate 检查固定 5000 步，保存固定 10000 步，关键节点精确停止�
 用户明确正式训练自行启动，其他阶段允许继续。P0/P1/P2 的工具准备与非神经网络测试不代替 P3/P4 运行验收；实施计划第 11 节列出完整剩余清单。C 源节点身份原来未区分 70K/700K，现绑定显式源步数与迁移凭据哈希，错误分支拒绝。正式 runner 解锁用户显式 --execute，本轮不调用正式训练。
 
 相关 62 项测试通过，两个仓库 diff --check 通过；准备审计 52 阶段、37 唯一线路通过。GPU smoke 目录 `/data/logdir/fg_abcd_v1/v3_shared_prefix/smoke_full_v1`，实际观察 Policy/Train 均 cuda:0；当前仍在运行，不能作为 PASS。生成产物不提交。
+
+后台验收已于 00:07 启动，PID 334485，日志 `/data/logdir/fg_abcd_v1/v3_shared_prefix/acceptance.log`。`tools/continue_fg_abcd_acceptance.py` 仅包含先导启动路径：等 smoke 完成→检查完整快照→A/B/C 先导→按真实 Gate 决定模型评估→刷新状态；失败保留产物并停止，无正式自动启动和自动重训。监督器独立会话运行，关闭对话不会依赖当前终端存活。
+
+实时结果见生成的 `artifacts/fg_abcd_v1/v3_shared_prefix/acceptance_status.json`、`acceptance_progress.md`、`pilot_results.md` 与 `comparison.md`。新增启动边界回归与相关测试 11 项通过。补齐运行开始阶段记录及实时指标进度读取，避免新版运行时显示 NOT_RUN。普通真实 GPU 恢复已经观察到 1110→1120，C 920 步仍在运行，P3 尚不能标记完成。

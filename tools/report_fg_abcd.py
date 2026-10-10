@@ -38,13 +38,13 @@ def main():
                 observed=record.get('learning_audit',{}) if phase.get('full_checkpoint') else json.loads(audit.read_text()) if audit.exists() else {}
                 logged_step=step
                 metrics=root/'metrics.jsonl'
-                if metrics.exists() and not phase.get('full_checkpoint'):
+                if metrics.exists():
                     for line in metrics.read_text().splitlines():
                         try:
                             record=json.loads(line)
                         except json.JSONDecodeError:
                             continue  # A live writer may have an incomplete final line.
-                        logged_step=max(logged_step,int(record.get('step',0)))
+                        logged_step=max(logged_step,min(phase['steps'],int(record.get('step',0))))
                 pilot.append('| '+ ' | '.join(map(str,[instance['method'],phase['phase'],phase['steps'],step,logged_step,
                     observed.get('updates','NOT_VERIFIED'),observed.get('actor_gate_enabled','NOT_VERIFIED'),status]))+' |')
     (path.parent/'train_config_matrix.md').write_text('\n'.join(matrix)+'\n')

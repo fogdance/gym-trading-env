@@ -218,6 +218,7 @@ def run_phase(instance,phase,dreamer_root,environment,manifest_hash):
     if point is None:
         root.mkdir(parents=True,exist_ok=True)
         write_json(root/'launch_metadata.json',metadata)
+        write_json(phase_record_path(instance,phase),metadata)
         try:
             with (root/'launch.log').open('a') as log:
                 subprocess.run(cmd,cwd=dreamer_root,env=environment,stdout=log,stderr=subprocess.STDOUT,check=True)
