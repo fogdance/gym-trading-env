@@ -128,6 +128,10 @@ data:
   excluded_contracts:
   - CZCE.FG805
   quality: user_confirmed_complete
+  split:
+    mode: main_contract_boundaries
+    train_end_inclusive: '2022-12-09'
+    validation_end_inclusive: '2024-08-19'
 expiry:
   mode: main_qualification
   exit: old_contract_last_executable_close

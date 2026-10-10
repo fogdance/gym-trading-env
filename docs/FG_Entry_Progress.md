@@ -28,3 +28,8 @@
 ## 2026-10-10 原目录迁移
 
 两个原仓库已直接切到 `feat/fg-entry-v1.1`，旧独立工作树移除。当前数据集使用 `artifacts/fg_entry_v1/dataset_v1`。目录、备份及验证详见 [FG_Entry_Migration.md](FG_Entry_Migration.md)。迁移验证完成，未启动训练。
+
+
+## 按主力合约边界切分
+
+当前数据集入口改为 `artifacts/fg_entry_v1/dataset_v2_main_split`；训练截止 2022-12-09，验证截止 2024-08-19，测试截止 2025-12-31。FG301 完整进入训练，FG409 完整进入验证；构建器拒绝合约中途切分。旧冻结数据集保留为历史记录，未启动训练。

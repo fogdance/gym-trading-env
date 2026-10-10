@@ -18,7 +18,7 @@ FG 开发已回到两个原仓库，均在 `feat/fg-entry-v1.1` 分支直接修�
 
 ## 数据及历史运行
 
-已有主力导出保留在 `artifacts/fg_entry_v1/recovered_main_export`，没有重新访问数据库导出。基于该导出重新生成的当前冻结数据集为 `artifacts/fg_entry_v1/dataset_v1`，其中配置和清单均指向原仓库。
+已有主力导出保留在 `artifacts/fg_entry_v1/recovered_main_export`，没有重新访问数据库导出。基于该导出重新生成的迁移当时冻结数据集为 `artifacts/fg_entry_v1/dataset_v1`，其中配置和清单均指向原仓库。
 
 旧 `recovered_dataset` 和 GPU smoke 产物保留用于历史审计；其中旧工作树路径及旧观察结构不代表当前运行配置，不能直接作为当前数据集或恢复检查点使用。
 
@@ -35,3 +35,7 @@ Dreamer smoke 脚本默认寻找同级 `gym-trading-env`；可用 `FG_ENV_ROOT` 
 ## 2026-10-10 备份范围修正
 
 按用户要求，Dreamer 迁移 stash 排除 `data/XAUUSD.txt`、`d3.tar.bz2`、`data/XAUUSD_1m.csv-2020-2024`，其余 17 个未跟踪文件和另两条 stash 保留。旧 stash 独占且无引用的对象已移除，Git 对象释放约 98 MiB；新 stash 标识已更新于上文。Dreamer 新增这些数据文件及根目录 `*.tar.bz2` 的忽略规则，不删除外部文件或现有备份压缩包。
+
+## 当前数据集入口（按主力边界切分）
+
+当前使用 `artifacts/fg_entry_v1/dataset_v2_main_split`，切分日期统一维护于 `configs/fg_entry_v1/fg.yaml` 的 `data.split`。旧 `dataset_v1` 保留用于历史审计；其统一配置哈希已过时，不能用于当前训练准入或恢复。详见 [FG_Entry_Dataset_Split.md](FG_Entry_Dataset_Split.md)。

@@ -148,6 +148,27 @@ def prepare_main_contracts(export_manifest, costs, output):
     return paths
 
 
+def split_main_contract_days(frames, split):
+    """Keep each main run in one role; boundaries use DB trading dates."""
+    if split.get('mode') != 'main_contract_boundaries':
+        raise ValueError('FG split requires main_contract_boundaries')
+    a, b = (int(pd.Timestamp(split[key]).strftime('%Y%m%d'))
+            for key in ('train_end_inclusive', 'validation_end_inclusive'))
+    days = sorted({int(day) for frame in frames.values() for day in frame._day})
+    if not a < b or a not in days or b not in days:
+        raise ValueError('FG split boundaries must be ascending exported trading days')
+    roles = dict(train=[d for d in days if d <= a],
+                 validation=[d for d in days if a < d <= b],
+                 test=[d for d in days if d > b])
+    if not all(roles.values()):
+        raise ValueError('FG split requires three nonempty roles')
+    for contract, frame in frames.items():
+        first, last = int(frame._day.min()), int(frame._day.max())
+        if any(first <= boundary < last for boundary in (a, b)):
+            raise ValueError(f'FG split cuts main-contract lifecycle: {contract}')
+    return roles
+
+
 def build_contract(export_manifest, direction_path, contract_paths, template_path, output):
     """Split by real trading day; never invent labels, costs or contract deadlines."""
     direction_raw=read_yaml(direction_path)
@@ -180,10 +201,13 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
         frames[item["contract"]]=frame.sort_values("Date")
         exits[item["contract"]]=item.get("main_exit_at",derived_exits.get(item["contract"]))
     days=sorted({int(d) for frame in frames.values() for d in frame._day})
-    a,b=int(len(days)*.6),int(len(days)*.8)
-    if not 0<a<b<len(days):
-        raise ValueError("Not enough trading days for 60/20/20 chronological splits")
-    role_days={"train":days[:a],"validation":days[a:b],"test":days[b:]}
+    if unified:
+        role_days=split_main_contract_days(frames,direction_raw['data']['split'])
+    else:
+        a,b=int(len(days)*.6),int(len(days)*.8)
+        if not 0<a<b<len(days):
+            raise ValueError("Not enough trading days for 60/20/20 chronological splits")
+        role_days={"train":days[:a],"validation":days[a:b],"test":days[b:]}
     output=Path(output).resolve()
     if (output/"manifest.json").exists():
         raise FileExistsError("Refusing to overwrite a frozen FG dataset")
@@ -232,6 +256,8 @@ def build_contract(export_manifest, direction_path, contract_paths, template_pat
     manifest=dict(schema=1,product="FG",fill_model="minute_close_confirm_v1",reward="60/(60+T_minutes)",
                   direction_path=str(direction_copy),direction_sha256=file_hash(direction_copy),
                   roles=role_days,files=records)
+    if unified:
+        manifest['split']=direction_raw['data']['split']
     manifest["content_hash"]=fingerprint(manifest)
     write_json(output/"manifest.json",manifest)
     selector=dict(strategy_mode="entry_dataset",role="train",manifest_path=str(output/"manifest.json"))

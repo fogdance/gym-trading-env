@@ -5,6 +5,22 @@ from gym_trading_env.envs.entry_contract import read_direction_text, DirectionSc
 from gym_trading_env.research.fg_entry_v1 import export_fg
 
 
+def test_fg_split_keeps_main_lifecycles_and_rejects_mid_contract_boundaries():
+    from gym_trading_env.research.fg_entry_v1 import split_main_contract_days
+    frames={name:pd.DataFrame({'_day':days}) for name,days in (
+        ('FG301',[20221208,20221209]),
+        ('FG409',[20221212,20240819]),
+        ('FG501',[20240820,20240821]))}
+    config=dict(mode='main_contract_boundaries',train_end_inclusive='2022-12-09',
+                validation_end_inclusive='2024-08-19')
+    assert split_main_contract_days(frames,config)==dict(
+        train=[20221208,20221209],validation=[20221212,20240819],test=[20240820,20240821])
+    with pytest.raises(ValueError,match='cuts main-contract lifecycle'):
+        split_main_contract_days(frames,dict(config,train_end_inclusive='2022-12-08'))
+    with pytest.raises(ValueError,match='ascending exported trading days'):
+        split_main_contract_days(frames,dict(config,validation_end_inclusive='2024-08-18'))
+
+
 def test_manual_direction_uses_inclusive_trading_dates(tmp_path):
     text=tmp_path/'fg.txt'
     text.write_text('fg501,2024-01-16,2025-01-15,SHORT\n')
