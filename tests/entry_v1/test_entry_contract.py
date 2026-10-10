@@ -7,7 +7,7 @@ import pytest
 import yaml
 
 from gym_trading_env.envs.entry_contract import DirectionSchedule, timestamp
-from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv, POSITION_OBS_FIELDS
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
 
 
@@ -43,6 +43,59 @@ def make_env(tmp_path, prices=None, side="LONG", chunk=0, intervals=None,
     path=tmp_path/"env.yaml"
     path.write_text(yaml.safe_dump(config))
     return FixedDirectionEntryEnv(df=df, config_path=str(path))
+
+
+@pytest.mark.parametrize("side", ["LONG", "SHORT"])
+def test_final_nine_position_fields_use_filled_quantity_distance_and_natural_age(tmp_path, side):
+    prices = [(900,900,900,900),(900,900,890,890)] if side == "LONG" else [
+        (1100,1100,1100,1100),(1100,1100,1090,1090)]
+    env=make_env(tmp_path,prices,side)
+    empty=env._get_obs()
+    assert set(empty)=={"market_seq","position_state","action_mask"}
+    assert empty["market_seq"].shape==(60,18)
+    assert POSITION_OBS_FIELDS==("direction","position_ratio","pending_ratio",
+        "pos1_size","pos1_tp_distance","pos1_holding_age",
+        "pos2_size","pos2_tp_distance","pos2_holding_age")
+    assert empty["position_state"].shape==(9,)
+    np.testing.assert_array_equal(empty["position_state"][1:],np.zeros(8))
+    obs,reward,*_=env.step(1)
+    expected_direction=1 if side=="LONG" else -1
+    np.testing.assert_allclose(obs["position_state"],
+        [expected_direction,.5,0,1,3,np.log1p(1)/np.log1p(43200),0,0,0])
+    assert reward==0 and env.observation_space.contains(obs)
+    # A mark beyond the target does not imply a committed TP or Reward.
+    env._mark(910 if side=="LONG" else 890,env._raw.index[env.current_step])
+    assert env._get_obs()["position_state"][4]==-1
+    assert env.total_reward==0 and not env.reward_events
+
+
+def test_position_projection_identity_survives_partial_exit_reentry_and_resume(tmp_path):
+    env=make_env(tmp_path)
+    env.step(1);env.step(1)
+    first,second=list(env.entries)
+    assert env.entries[first]["obs_slot"]==0 and env.entries[second]["obs_slot"]==1
+    env.settle_exit(first,1000,env._raw.index[env.current_step],"MAIN_ROLL",quantity=1)
+    partial=env._get_obs()["position_state"]
+    np.testing.assert_allclose(partial[[1,3,6]],[5/6,2/3,1])
+    env.settle_exit(first,1000,env._raw.index[env.current_step],"MAIN_ROLL",quantity=2)
+    remaining=env._get_obs()["position_state"]
+    np.testing.assert_array_equal(remaining[3:6],np.zeros(3))
+    assert remaining[6]==1 and env.entries[second]["obs_slot"]==1
+    env.step(1)
+    newest=list(env.entries)[-1]
+    assert env.entries[newest]["obs_slot"]==0 and env.entries[second]["obs_slot"]==1
+    state=env.export_state();before=env._get_obs()["position_state"].copy()
+    env.reset(options={"resume":state})
+    np.testing.assert_array_equal(env._get_obs()["position_state"],before)
+
+
+def test_position_age_beyond_thirty_days_is_not_clipped(tmp_path):
+    env=make_env(tmp_path)
+    env.step(1)
+    item=next(iter(env.entries.values()))
+    item["entry_time"]=str(env._raw.index[env.current_step]-pd.Timedelta(days=40))
+    assert env._get_obs()["position_state"][5]==pytest.approx(np.log1p(57600)/np.log1p(43200))
+    assert env._get_obs()["position_state"][5]>1 and env.net_lots==3
 
 
 @pytest.mark.parametrize("side", ["LONG", "SHORT"])

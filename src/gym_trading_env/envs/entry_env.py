@@ -26,6 +26,13 @@ from gym_trading_env.utils.bar_source import CsvBarSource
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
 
 
+POSITION_OBS_FIELDS = (
+    "direction", "position_ratio", "pending_ratio",
+    "pos1_size", "pos1_tp_distance", "pos1_holding_age",
+    "pos2_size", "pos2_tp_distance", "pos2_holding_age",
+)
+
+
 class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
@@ -62,7 +69,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
                     'close_today_fee','spread','slippage')})
         self.terms = ContractTerms(terms_raw, self.contract)
-        self.config_hash = fingerprint({"env": raw, "strategy":master,"direction": self.directions.hash, "contract": self.terms.hash})
+        self.config_hash = fingerprint({"env": raw, "strategy":master,"direction": self.directions.hash,
+                                        "contract": self.terms.hash, "position_obs": POSITION_OBS_FIELDS})
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -80,13 +88,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
         self._load_market(df)
+        if self.window_size != 60 or self._features.shape[1] != 18:
+            raise ValueError("FG entry market observation requires exactly (60, 18)")
         if self.main_exit_at is not None and self.main_exit_at not in self._raw.index:
             raise ValueError("Main roll exit must be an actual old-contract minute")
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Dict({
             "market_seq": spaces.Box(-np.inf, np.inf, (self.window_size, self._features.shape[1]), np.float32),
-            "agent_state": spaces.Box(-np.inf, np.inf, (4,), np.float32),
-            "entry_state": spaces.Box(-np.inf, np.inf, (2, 4), np.float32),
+            "position_state": spaces.Box(-np.inf, np.inf, (9,), np.float32),
             "action_mask": spaces.Box(0, 1, (2,), np.float32),
         })
         self.completed_accounts = []
@@ -227,25 +236,36 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         i = self.current_step
         time = self._raw.index[i]
         direction = self.direction_at(time)
-        held, positions = self._positions()
         start = max(0, i - self.window_size + 1)
         market = self._features[start:i + 1]
         market = np.pad(market, ((self.window_size-len(market), 0), (0, 0)))
-        entries = np.zeros((2, 4), np.float32)
-        for j, item in enumerate(sorted(self.entries.values(), key=lambda x: x["entry_time"])):
+        position = np.zeros(9, np.float32)
+        position[0] = {"SHORT": -1, "NO_TRADE": 0, "LONG": 1}[direction]
+        # Opens commit atomically or are rejected; there is no resting opening order.
+        position[2] = 0.0
+        held_quantity = Decimal(0)
+        for item in self.entries.values():
+            positions = self.position_manager.long_positions if item["side"] == "LONG" else self.position_manager.short_positions
             pos = positions[item["slot"]]
+            if pos is None:
+                raise RuntimeError("Entry identity has no actual PositionManager position")
+            held_quantity += pos.size
             age = (time - timestamp(item["entry_time"])).total_seconds() / 60
-            sign = 1 if held == "LONG" else -1
+            if age < 0:
+                raise RuntimeError("Position observation precedes the actual entry fill")
+            sign = 1 if item["side"] == "LONG" else -1
             distance = sign * (pos.take_profit_price - self.current_price)
-            entries[j] = [age, float(distance), float(pos.size), float(item["exit_pending"])]
+            offset = 3 + 3 * item["obs_slot"]
+            position[offset:offset+3] = [float(pos.size / 3), float(distance / 5),
+                                       np.log1p(age) / np.log1p(43200)]
+        position[1] = float(held_quantity / 6)
+        if held_quantity != self.net_lots:
+            raise RuntimeError("PositionManager/account quantities lack a matching entry identity")
         mask = np.array([1, self._can_add()], np.float32)
         self._published_mask = mask.copy()
         return {
             "market_seq": np.nan_to_num(market).astype(np.float32),
-            "agent_state": np.array([{"SHORT": -1, "NO_TRADE": 0, "LONG": 1}[direction],
-                                     (1 if held == "LONG" else -1) if self.net_lots else 0,
-                                     float(self.net_lots), float(6 - 3*len(self.entries))], np.float32),
-            "entry_state": entries, "action_mask": mask,
+            "position_state": position, "action_mask": mask,
         }
 
     def reset(self, seed=None, options=None):
@@ -298,7 +318,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             return code
         self.entry_sequence += 1
         entry_id = f"{self.contract}:{self.account_sequence}:{self.entry_sequence}"
+        used_obs_slots = {entry["obs_slot"] for entry in self.entries.values()}
+        obs_slot = next(i for i in range(2) if i not in used_obs_slots)
         item = dict(entry_id=entry_id, side=side, slot=slot, entry_time=str(time),
+                    obs_slot=obs_slot,
                     entry_price=str(execution), closed_quantity="0", exit_notional="0",
                     exit_pending=False, trading_day=self._trading_day(time), all_tp=True)
         self.entries[entry_id] = item

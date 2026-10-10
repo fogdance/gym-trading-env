@@ -95,3 +95,7 @@ Synthetic CPU 真实训练链路：2 次参数更新、49 个有限标量指标�
 ## 2026-10-10：成交量观测公式更新
 
 按用户要求，obs_V_t 改为 tanh(log1p(clip(V, 0, None)) / 5.0)，直接使用当前分钟成交量。同步生产实现、测试 oracle 与特征契约文档。新增回归验证负量裁剪、零量、相同当前量不受历史影响和大成交量；与全表 oracle、FG 实际分钟时钟因果性验证合计 3 项通过。git diff --check 通过。本阶段未运行训练。
+
+## 2026-10-10：最终 9 维仓位观测
+
+按用户最后修订删除 expiry_remaining，最终输出 market_seq(60,18)、position_state(9)、action_mask(2)。真实 PositionManager 数量、目标执行价、实际成交时间映射到 9 字段；使用 entry_id 固定的观测投影索引，部分退出和再入场不交换仍在持有的另一批。原同步开仓没有待成交队列，pending_ratio=0，不能把剩余额度伪装为挂单。年龄按 log1p(T)/log1p(43200) 缩放且不截断，距离按有向 TP 点差/5，可为负而不计奖励。36 项环境/特征回归、6 项 GPU 环境下的 Dreamer/Gym 及检查点回归通过，git diff --check 通过。本阶段不训练；A2 评分差异作为后续专项测试，不承诺评分独立。详见 docs/FG_Entry_Observation_V1.md。
