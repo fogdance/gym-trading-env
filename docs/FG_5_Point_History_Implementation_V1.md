@@ -1,6 +1,6 @@
 # FG 5 点止盈历史行为研究：实施设计 V1
 
-日期：2026-10-10。阶段一实施交付；事件引擎和大规模统计尚未执行。
+日期：2026-10-10。阶段一审计、阶段二事件引擎及并行执行已实施；汇总统计与条件分析仍待实施。
 
 ## 1. 边界与配置
 
@@ -89,3 +89,28 @@ python -m pytest tests/entry_v1/test_fg_history_study.py -q
 ```
 
 审计输出 `artifacts/fg_history_study/v1/`。它不属于正式训练数据目录，不覆盖现有导出、训练日志或 checkpoint。详细实测结果见 `FG_5_Point_History_Data_Audit_V1.md`。
+
+## 11. 阶段二实现与并行操作
+
+事件查询位于 `fg_history_events.py`，并行调度位于 `fg_history_parallel.py`。每个任务是一个真实合约、一个 train/validation 分区和一种成交口径。任务内部 LONG/SHORT 分别独立查询；区间树支持首次阈值穿越与 MAE 查询，单次 O(log n)、存储 O(n)，不逐候选扫描全部未来。
+
+默认 4 个进程，spawn 启动，每进程原生计算线程为 1；`--workers` 允许 1–8。这是离线研究计算，不是 CPU 模型训练。输出逐行写入压缩文件，避免把所有合约、模式或数百万事件同时保存在内存。任务不跨真实合约共享价格或仓位。
+
+```bash
+# 已激活 conda dreamerv3，位于项目根目录
+PYTHONPATH=src python tools/fg_history_study.py events --workers 4
+# 单合约试运行 / 单进程复核
+PYTHONPATH=src python tools/fg_history_study.py events --workers 1 --contracts CZCE.FG809
+# 仅计算既有验证区间
+PYTHONPATH=src python tools/fg_history_study.py events --workers 4 --roles validation
+```
+
+CLI 没有解封盲测标签的开关；即使底层 API 请求 test/blind，也会拒绝。过滤分区发生在构造特征和区间查询之前。被截断夜盘审计只读取 bob、trading_date、symbol，禁止读取其价格。主力终局由真实 next_main_contract 和区间内 main_exit_at 共同确认，文件结束不会自动被视为到期。
+
+运行目录是 `artifacts/fg_history_study/v1/events/<signature>/`。signature 包含研究配置、主配置、导出清单、事件引擎、并行调度及现有特征代码哈希；代码或规则变动生成新目录，不覆盖旧版本结果。目录下有 plan.json、每任务 events.csv.gz / rejected.csv.gz / complete.json、汇总 summary.json。完整任务输出先写 .tmp 再原子替换，完成清单最后提交。全局文件锁防止相同运行并发覆盖。
+
+重复相同命令可续跑：完整任务需校验输出 SHA256 后跳过；未完成任务重算；已完成文件被改动则报错，不静默接受。`summary.json` 标明所选角色与合约，单合约试运行不能冒充全量研究。哈希目录中的历史性能试运行保留但不自动合并为最新数据集。
+
+19 项针对性回归通过，包含：LONG/SHORT 1/2/5 分钟与现有 Env 的 Reward、成交价和单笔净损益核对；入场极值与 Close 区分；换主力与保证金风控优先；缺记录和历史截断删失；自然时间跨休市、跨年份；一/五交易日收盘口径；三手成交量限制；零时长拒绝；末分钟无法平仓单独标记；小样本朴素扫描核对；spawn 与串行 CSV 内容一致；续跑与输出篡改检测；训练标签不读下一分区；拒绝盲测计算。
+
+成交对照属于常数成本、初始余额 300000、单笔三手的孤立探针；不承诺复现多次加仓后的真实组合风控。primary touch 允许低成交量分钟出现 OHLC 触价，但不称为退出成交；conservative 对照要求足量。account_net_pnl 是该探针模拟退出后的损益，不可将重叠探针净损益相加当成可执行策略收益。

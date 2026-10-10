@@ -12,3 +12,8 @@ bootstrap_replicates: 1000
 training_windows_months: [12, 24, 36, all]
 event_source: current_345_only
 day_horizons: trading_day_close
+parallel:
+  workers: 4
+  start_method: spawn
+  native_threads_per_worker: 1
+execution_modes: [touch_spread, conservative_spread, touch_zero_spread]
