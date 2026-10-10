@@ -1,6 +1,6 @@
 # FG ABC 开发记录 V1
 
-最新状态：v3_shared_prefix 完整 GPU smoke 已通过，FG409 seed0 A/B/C 先导已评估，正式训练由用户启动；下方 v1/v2 内容为历史记录。详见 FG_DreamerV3_ABCD_Checkpoint_Reuse_Plan_V1.md。
+最新状态：旧 v3_shared_prefix 完整 GPU smoke 与先导已完成；2026-10-11 ADD Gate P0 补丁经评审订正，新协议尚未做模型验收，旧完整 Checkpoint 身份不能直接恢复。正式训练由用户启动。详见 FG_DreamerV3_ADD_Gate_P0_Review_and_Fix_V1.md；下方记录按日期保留。
 
 日期：2026-10-10。开发分支：两个原仓库均为 `feat/fg-abcd-comparison-v1`。
 
@@ -134,3 +134,13 @@ Gate 检查固定 5000 步，保存固定 10000 步，关键节点精确停止�
 P4 的实际结果已经完成：A/B100K、C复用A70K再训练30K，三模型均通过Gate并完成验证。A在验证上与Always ADD一致；B/C全程WAIT，因此工程验收通过，但额外择时能力尚未证明。正式仍由用户启动。
 
 兼容性实测：先导及正式命令解析后，A/B 100K 节点的完整身份均与当前代码/配置一致（四项 PASS），此次研究/编排修复不会使已有 Checkpoint 失效。
+
+## 2026-10-11：ADD Gate P0 补丁评审与订正
+
+上述身份兼容结论只针对32e8393评估编排修复。随后用户应用的 ADD 专项 Gate 补丁改变了 learning/code_hash，旧 A100K 身份校验实际拒绝，不能沿用前一结论。
+
+保留 ADD 专属 posterior/prior TP与positives计数、跨批次求和和FG专用开关。确认并修复：真实Agent首次异步返回空metrics导致KeyError；已开启Gate在ADD标签不足时错误累加退化而误停。两项回归先失败后通过；整体指标实际退化仍停止；不开启ADD专项检查时旧样本计数行为保持。
+
+相关30项非模型回归通过，CUDA实测两批ADD计数合计positives=5、TP=3、recall=.6。新状态指标add_support_sufficient可区分无证据与不合格。0.80/16仍是待诊断校准的实验门槛，未当作已证明充分的标准。没有新训练，旧模型、账户与日志未改写。
+
+详细代码、根因、失败/通过证据与身份边界见 FG_DreamerV3_ADD_Gate_P0_Review_and_Fix_V1.md。已有模型学习诊断仍在准备与推理接口核对阶段，不能预填真实模型结论。
