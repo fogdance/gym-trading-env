@@ -356,6 +356,46 @@ def test_zero_duration_db_metadata_is_mark_only_never_fills_or_rewards(tmp_path)
     assert env.net_lots==0 and reward==60/62
 
 
+def test_dataset_shuffles_whole_epochs_and_resumes_sampler_without_clearing_positions(tmp_path):
+    from gym_trading_env.envs.entry_contract import fingerprint
+    from gym_trading_env.envs.entry_dataset_env import FGEntryDatasetEnv
+    configs=[]
+    for name in ('one','two','three'):
+        folder=tmp_path/name;folder.mkdir()
+        engine=make_env(folder,[(1000,1000,1000,1000)]*5,chunk=1,main_exit='2026-01-05 09:35')
+        market=folder/'market.csv';engine._raw.to_csv(market,index_label='Date')
+        config=yaml.safe_load((folder/'env.yaml').read_text());config['trading']['data_path']=str(market)
+        (folder/'env.yaml').write_text(yaml.safe_dump(config));configs.append(str(folder/'env.yaml'))
+        engine.close()
+    manifest=dict(product='FG',split=dict(training_order=dict(mode='shuffle_each_epoch',seed=0)),
+        files=[dict(role='train',eligible_for_training=True,env_config=p) for p in configs])
+    manifest['content_hash']=fingerprint(manifest)
+    mp=tmp_path/'manifest.json';mp.write_text(json.dumps(manifest))
+    selector=tmp_path/'dataset.yaml';selector.write_text(yaml.safe_dump(dict(
+        strategy_mode='entry_dataset',role='train',manifest_path=str(mp))))
+    left=FGEntryDatasetEnv(selector);left.reset(seed=0)
+    assert left.order==[2,0,1]
+    left.step(1);left.reset(seed=99)
+    assert left.index==2 and left.env.net_lots==3 and left.cursor==0
+    state=left.export_state();right=FGEntryDatasetEnv(selector)
+    right.reset(options={'resume':state})
+    assert right.env.net_lots==3 and right.order==left.order
+    visited=[]
+    for _ in range(6):
+        visited.append(left.index)
+        while not left.env.terminated:
+            a=left.step(0);b=right.step(0)
+            assert a[1:4]==b[1:4]
+            if left.env.truncated:
+                left.reset();right.reset()
+        assert left.env.net_lots==right.env.net_lots==0
+        left.reset();right.reset()
+        assert left.export_state()['rng_state']==right.export_state()['rng_state']
+        assert (left.index,left.order,left.cursor,left.epoch)==(right.index,right.order,right.cursor,right.epoch)
+    assert visited[:3]==[2,0,1] and sorted(visited[3:])==[0,1,2] and left.epoch==2
+    left.close();right.close()
+
+
 def test_unified_fg_configuration_is_the_only_direction_and_cost_source(tmp_path):
     env=make_env(tmp_path)
     config=yaml.safe_load((tmp_path/'env.yaml').read_text())

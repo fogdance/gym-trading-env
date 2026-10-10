@@ -5,6 +5,23 @@ from gym_trading_env.envs.entry_contract import read_direction_text, DirectionSc
 from gym_trading_env.research.fg_entry_v1 import export_fg
 
 
+def test_contract_groups_are_whole_disjoint_and_not_chronological():
+    from gym_trading_env.research.fg_entry_v1 import split_contract_groups
+    frames={c:pd.DataFrame({'_day':days}) for c,days in (
+        ('FG901',[20180901,20180902]),('FG001',[20190901,20190902]),
+        ('FG101',[20200901,20200902]),('FG201',[20210901,20210902]))}
+    split=dict(mode='contract_groups',training_order=dict(mode='shuffle_each_epoch',seed=0),
+        contracts=dict(train=['FG901','FG201'],validation=['FG101'],test=['FG001'],excluded=[]))
+    assert split_contract_groups(frames,split)==dict(train=[20180901,20180902,20210901,20210902],
+        validation=[20200901,20200902],test=[20190901,20190902])
+    split['contracts']['test'].append('FG201')
+    with pytest.raises(ValueError,match='exactly once'):
+        split_contract_groups(frames,split)
+    split['contracts']['test']=['UNKNOWN']
+    with pytest.raises(ValueError,match='exactly once'):
+        split_contract_groups(frames,split)
+
+
 def test_fg_split_keeps_main_lifecycles_and_rejects_mid_contract_boundaries():
     from gym_trading_env.research.fg_entry_v1 import split_main_contract_days
     frames={name:pd.DataFrame({'_day':days}) for name,days in (

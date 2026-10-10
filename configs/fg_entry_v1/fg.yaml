@@ -1,4 +1,4 @@
-# 唯一人工维护的 FG 配置。方向区间含首尾交易日；派生快照不得手工修改。
+# 唯一人工维护的 FG 配置。方向区间的 end 为不包含的边界；派生快照不得手工修改。
 schema: 1
 product: FG
 market_clock:
@@ -112,6 +112,10 @@ directions:
     direction: LONG
     end: '2018-01-16 00:00:00+08:00'
     start: '2017-01-16 00:00:00+08:00'
+  - contract: CZCE.FG809
+    direction: SHORT
+    start: '2018-04-11 00:00:00+08:00'
+    end: '2018-08-09 00:00:00+08:00'
   timezone: Asia/Shanghai
 costs:
   source_path: /home/v/Documents/work/gym-trading-env/1.yaml
@@ -133,9 +137,40 @@ data:
   - CZCE.FG805
   quality: user_confirmed_complete
   split:
-    mode: main_contract_boundaries
-    train_end_inclusive: '2022-12-09'
-    validation_end_inclusive: '2024-08-19'
+    mode: contract_groups
+    selection_seed: 0
+    training_order:
+      mode: shuffle_each_epoch
+      seed: 0
+    contracts:
+      train:
+      - CZCE.FG809
+      - CZCE.FG901
+      - CZCE.FG905
+      - CZCE.FG909
+      - CZCE.FG001
+      - CZCE.FG105
+      - CZCE.FG201
+      - CZCE.FG205
+      - CZCE.FG309
+      - CZCE.FG401
+      - CZCE.FG405
+      - CZCE.FG409
+      - CZCE.FG509
+      - CZCE.FG601
+      validation:
+      - CZCE.FG005
+      - CZCE.FG109
+      - CZCE.FG305
+      - CZCE.FG501
+      test:
+      - CZCE.FG009
+      - CZCE.FG101
+      - CZCE.FG209
+      - CZCE.FG301
+      - CZCE.FG505
+      - CZCE.FG605
+      excluded: []
 expiry:
   mode: main_qualification
   exit: old_contract_last_executable_close
