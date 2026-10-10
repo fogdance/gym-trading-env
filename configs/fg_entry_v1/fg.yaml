@@ -121,7 +121,7 @@ costs:
   spread: 1.0
   slippage: 0.0
 data:
-  start: '2017-01-01'
+  start: '2018-04-10'
   end_inclusive: '2025-12-31'
   main_only: true
   provider: JUEJIN
