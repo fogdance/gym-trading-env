@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
-from gym_trading_env.envs.entry_contract import DirectionSchedule, fingerprint, read_yaml, timestamp
+from gym_trading_env.envs.entry_contract import DirectionSchedule, fingerprint, is_fg, read_yaml, timestamp
 from .entry_pipeline import file_hash
 from .fg_entry_v1 import prepare_main_contracts, write_json
 
@@ -29,6 +29,8 @@ def build_abcd(config_path):
     raw=read_yaml(master)
     schedule=DirectionSchedule(raw['directions'])
     source=json.loads(Path(cfg['export_manifest']).read_text())
+    if source.get('product')!='FG' or not source.get('main_only'):
+        raise ValueError('ABC requires an FG real-main-contract export')
     blind=timestamp(cfg['blind_start'])
     selected=[]
     # Filter by metadata BEFORE opening files. Blind identity is not blind price.
@@ -39,6 +41,8 @@ def build_abcd(config_path):
             continue
         if item['contract'] in raw['data']['excluded_contracts']:
             continue
+        if not is_fg(item['contract']):
+            raise ValueError('Non-FG contract in development source')
         selected.append(item)
     names=[r['contract'] for r in selected]
     if len(set(names)) != len(names):
@@ -86,11 +90,11 @@ def build_abcd(config_path):
         datasets={}
         for label,months in [('all',None),('recent',cfg['recent_months'])]:
             train=choose_contracts(records,fold['cutoff'],months)
-            if not train:
+            if not train or not any(r['direction_rows']>0 for r in train):
                 raise ValueError('Empty whole-lifecycle training set')
             destination=output/fold['validation'].split('.')[-1]/label
             destination.mkdir(parents=True)
-            files=[dict(r,role='train',eligible_for_training=True) for r in train]
+            files=[dict(r,role='train',eligible_for_training=r['direction_rows']>0) for r in train]
             files.append(dict(val,role='validation',eligible_for_training=False))
             roles=dict(train=sorted({d for r in train for d in days_by_contract[r['contract']]}),
                        validation=days_by_contract[val['contract']],test=[int(cfg['blind_start'].replace('-',''))])

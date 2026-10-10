@@ -1,4 +1,5 @@
-"""Formal-size GPU smoke: 1050 pretrain interactions + 990 recent = 2040."""
+"""Formal-size GPU smoke: 1120 pretrain interactions + 920 recent = 2040."""
+import argparse
 import json
 import os
 from pathlib import Path
@@ -9,15 +10,18 @@ from run_fg_abcd import command,transfer_receipt
 
 
 def main():
-    root=Path('/data/logdir/fg_abcd_v1/v1/smoke')
+    parser=argparse.ArgumentParser(__doc__)
+    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v1/smoke_v2')
+    args=parser.parse_args()
+    root=Path(args.logdir)
     if root.exists():
         raise FileExistsError('Use a new smoke directory; existing results are preserved')
     manifest=json.loads(Path('artifacts/fg_abcd_v1/v1/experiment_manifest.json').read_text())
     instance=next(r for r in manifest['instances'] if r['budget']=='pilot' and r['method']=='C')
     instance=dict(instance,phases=[dict(p) for p in instance['phases']])
     source,target=instance['phases']
-    source.update(logdir=str(root/'pretrain'),steps=1050)
-    target.update(logdir=str(root/'recent'),steps=990)
+    source.update(logdir=str(root/'pretrain'),steps=1120)
+    target.update(logdir=str(root/'recent'),steps=920)
     dreamer='/home/v/Documents/work/dreamerv3'
     env=dict(os.environ,JAX_PLATFORMS='cuda',PYTHONDONTWRITEBYTECODE='1',
         MPLCONFIGDIR='/tmp/fg-matplotlib',PYTHONPATH=dreamer+':'+str(Path(__file__).resolve().parents[1]/'src'),
@@ -28,7 +32,7 @@ def main():
         with (folder/'launch.log').open('a') as log:
             subprocess.run(command(instance,phase,dreamer,transfer),cwd=dreamer,env=env,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
-    run(dict(source,steps=1040))
+    run(dict(source,steps=1110))
     run(source)  # Same-logdir full checkpoint resume, only ten more interactions.
     receipt=transfer_receipt(instance,source,target)
     run(target,receipt)

@@ -39,11 +39,53 @@ def transfer_receipt(instance, source, target):
     return str(path)
 
 
+def training_coverage(phase):
+    import pandas as pd
+    from gym_trading_env.envs.entry_contract import DirectionSchedule,read_yaml,timestamp
+    root=Path(phase['logdir'])
+    checkpoint=root/'ckpt'/(root/'ckpt/latest').read_text().strip()
+    driver=pickle.loads((checkpoint/'driver.pkl').read_bytes())
+    state=driver['envs'][0]['env']
+    if state['schema']!=2:
+        raise ValueError('Pilot did not save the complete scheduler bank')
+    manifest=json.loads(Path(phase['dataset']['manifest']).read_text())
+    records=[r for r in manifest['files'] if r['role']=='train' and r['eligible_for_training']]
+    schedule=DirectionSchedule(read_yaml(manifest['direction_path'])['directions'])
+    coverage=[]
+    for i,row in enumerate(records):
+        advanced=state['advanced'][i]
+        frame=pd.read_csv(row['path'])
+        cycle,prefix=divmod(advanced,len(frame)-1)
+        groups={}
+        for part,weight in ((frame.iloc[1:],cycle),(frame.iloc[1:prefix+1],1)):
+            if not weight:
+                continue
+            for _,bar in part.iterrows():
+                year=str(pd.Timestamp(str(bar.trading_date)).year) if not str(bar.trading_date).isdigit() else str(bar.trading_date)[:4]
+                direction=schedule.at(row['contract'],timestamp(bar.Date),str(bar.trading_date))
+                key=f'{year}/{direction}'
+                groups[key]=groups.get(key,0)+weight
+        coverage.append(dict(contract=row['contract'],advanced_bars=advanced,full_passes=cycle,
+            current_prefix_bars=prefix,year_direction_bars=groups,visited=advanced>0,
+            saved_account=i in state['accounts'] or str(i) in state['accounts']))
+    audit=json.loads((root/'learning_audit.json').read_text())
+    result=dict(driver_interactions=phase['steps'],actual_advanced_bars=sum(state['advanced']),
+        contracts=coverage,visited_contracts=sum(r['visited'] for r in coverage),
+        learning_updates=audit['updates'],training_samples=audit['updates']*16*64,
+        replay_sample_to_advanced_bar_ratio=audit['updates']*16*64/max(1,sum(state['advanced'])),
+        accounting='Independent per-contract training accounts; not pooled-investor performance')
+    write_json(root/'training_coverage.json',result)
+    return result
+
+
 def main():
     parser=argparse.ArgumentParser(__doc__)
     parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v1/experiment_manifest.json')
     parser.add_argument('--budget',choices=['pilot','formal'],default='pilot')
     parser.add_argument('--method',choices=['A','B','C','all'],default='all')
+    parser.add_argument('--fold')
+    parser.add_argument('--seed',type=int)
+    parser.add_argument('--create-transfer',action='store_true')
     parser.add_argument('--execute',action='store_true')
     parser.add_argument('--dreamer-root',default='/home/v/Documents/work/dreamerv3')
     args=parser.parse_args()
@@ -54,6 +96,12 @@ def main():
     if fingerprint(manifest)!=digest:
         raise ValueError('Experiment manifest changed')
     selected=[r for r in manifest['instances'] if r['budget']==args.budget and args.method in (r['method'],'all')]
+    selected=[r for r in selected if (args.fold is None or args.fold in (r['fold'],r['fold'].split('.')[-1]))
+              and (args.seed is None or args.seed==r['seed'])]
+    if not selected:
+        raise ValueError('No matching frozen experiment instances')
+    if args.create_transfer and (len(selected)!=1 or selected[0]['method']!='C' or args.execute):
+        raise ValueError('Receipt preparation requires one C instance and no training execution')
     env=dict(os.environ,JAX_PLATFORMS='cuda',PYTHONDONTWRITEBYTECODE='1',
         MPLCONFIGDIR='/tmp/fg-matplotlib',PYTHONPATH=args.dreamer_root+':'+str(Path(__file__).resolve().parents[1]/'src'),
         JAX_COMPILATION_CACHE_DIR='/data/logdir/fg_abcd_v1/jax_cache')
@@ -67,14 +115,44 @@ def main():
                 if args.execute:
                     transfer=transfer_receipt(instance,source,phase)
                 else:
-                    transfer=str(Path(source['logdir'])/'c_transfer_receipt.json')
+                    transfer=(transfer_receipt(instance,source,phase) if args.create_transfer else
+                              str(Path(source['logdir'])/'c_transfer_receipt.json'))
             cmd=command(instance,phase,args.dreamer_root,transfer)
             print(shlex.join(cmd),flush=True)
             if args.execute:
                 root=Path(phase['logdir']);root.mkdir(parents=True,exist_ok=True)
-                with (root/'launch.log').open('a') as log:
-                    subprocess.run(cmd,cwd=args.dreamer_root,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+                metadata=dict(instance=instance,phase=phase,transfer_receipt=transfer,
+                    code_sha={name:subprocess.check_output(['git','rev-parse','HEAD'],cwd=directory,text=True).strip()
+                              for name,directory in [('env',Path(__file__).resolve().parents[1]),('dreamer',args.dreamer_root)]},
+                    experiment_manifest_hash=digest,status='RUNNING')
+                write_json(root/'launch_metadata.json',metadata)
+                try:
+                    with (root/'launch.log').open('a') as log:
+                        subprocess.run(cmd,cwd=args.dreamer_root,env=env,stdout=log,stderr=subprocess.STDOUT,check=True)
+                except subprocess.CalledProcessError as error:
+                    metadata.update(status='FAILED',returncode=error.returncode,log=str(root/'launch.log'))
+                    write_json(root/'launch_metadata.json',metadata)
+                    raise
+                metadata['status']='COMPLETED_BUDGET'
+                metadata['learning_audit']=json.loads((root/'learning_audit.json').read_text())
+                metadata['training_coverage']=training_coverage(phase)
+                write_json(root/'launch_metadata.json',metadata)
             source=phase
+        if args.execute:
+            final=instance['phases'][-1]
+            learning=json.loads((Path(final['logdir'])/'learning_audit.json').read_text())
+            if learning['actual_learning']:
+                fold=next(f for f in manifest['folds'] if f['validation']==instance['fold'])
+                root=Path(final['logdir'])
+                checkpoint=root/'ckpt'/(root/'ckpt/latest').read_text().strip()
+                evaluator=Path(__file__).resolve().with_name('evaluate_fg_abcd.py')
+                result_root=Path(args.manifest).resolve().parent/'pilot_evaluation'/instance['method']/str(instance['seed'])
+                evaluation=[sys.executable,str(evaluator),'--manifest',str(Path(args.manifest).resolve()),
+                    '--env-config',fold['validation_env'],'--model-config',str(root/'config.yaml'),
+                    '--checkpoint',str(checkpoint),'--output',str(result_root),'--seed',str(instance['seed'])]
+                subprocess.run(evaluation,env=env,check=True)
+            else:
+                print(f"{instance['method']}: policy learning gate failed; no formal comparison claimed",flush=True)
 
 
 if __name__=='__main__':

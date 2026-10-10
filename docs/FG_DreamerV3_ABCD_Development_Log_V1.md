@@ -38,7 +38,7 @@ env MPLCONFIGDIR=/tmp/fg-matplotlib PYTHONPATH=src \
   tests/entry_v1/test_entry_data.py
 ```
 
-结果：39 项通过。覆盖轮转持仓浮亏、JSON 恢复后下一步一致、完整窗口选择、重复评估一致、Reward 与期末浮亏、固定分母以及原入口交易回归。
+结果：40 项通过。覆盖轮转持仓浮亏、JSON 恢复后下一步一致、完整窗口选择、重复评估一致、Reward 与期末浮亏、固定分母、强退未成交及原入口交易回归。
 
 Dreamer `dreamerv3/tests/test_fg_stage_transfer.py`：1 项通过，覆盖结构、完成预算和 fold 不匹配拒绝。沙箱运行曾出现 pytest 缓存只读警告，测试本身通过。
 
@@ -46,9 +46,19 @@ Dreamer `dreamerv3/tests/test_fg_stage_transfer.py`：1 项通过，覆盖结构
 
 ## 待完成，禁止误记完成
 
-- P3 正式 batch16 × length64 的 CUDA smoke（2040 交互，包括同目录恢复、C 迁移）：正在验证。
+- P3 正式 batch16 × length64 的 CUDA smoke：PASS；独立 v2 共 2040 交互、3 次真实 GPU 更新，同目录恢复与 C 迁移均通过。
 - P4 A/B/C 100k：NOT_RUN。只有 P3 和评估验收通过后才启动。
 - P5 正式 1M：36 个方法实例准备为 NOT_RUN，不自动启动。
 - D：后续滚动设计，本轮不运行。
 
 smoke 与先导的实际结果、失败和修复证据将补充到本记录。观察到基线数字不等于 Dreamer 具有择时能力。
+
+## smoke 发现与修复
+
+第一轮 `smoke/`：预训练 1040→1050 的完整恢复成功，但梯度更新为 0。Replay 长度 65，1040 交互只有 976 条可采样序列，不足 batch16×64 的 1024 门槛。近期迁移随后被配置结构校验拒绝：PyYAML 将 Dreamer 保存的 `4e-05`/`1e-20` 读成字符串。旧日志完整保留，不算通过。
+
+修复：Dreamer 模型配置使用相同的 ruamel YAML 读取器；科学计数法回归测试通过。新独立 `smoke_v2/` 预算为 1120+920=2040，前段 1110→1120 验证恢复，已观察到 3 次真实 GPU 更新。Actor/Critic 参数有限但 gate 未开启、变化为零，符合 warm-up，不宣称策略学习。
+
+评估自查修复：按开仓 bob 定位执行 bar，排除同时间戳的上一根信号 bar；新增信号 bar 极端低价回归。强退未成交保留账户亏损并单独计终局奖励失败，不冒充已平仓或右删失。旧 `validation_baselines_FG409/` 的 MAE 路径存在此边界问题，后续采用新 `validation_baselines_FG409_v2/`；旧产物保留。
+
+`tools/audit_fg_abcd_smoke.py` 实际检查点审计 PASS：完整 Agent 所有参数与 182 个优化器变量在近期阶段精确相等；warm-up gate 保留；非活动账户完全相同，活动账户恢复后仅推进 10 根并保留历史账簿/成交前缀；近期局部 920 交互、实际 919 根，账户重新建立。该短阶段不发生梯度更新，因此能直接核对完整迁移；模型择时能力仍未验证。

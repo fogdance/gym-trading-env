@@ -1,5 +1,7 @@
 """Unified full-account evaluation; never reads sealed test prices."""
 import argparse
+from concurrent.futures import ProcessPoolExecutor
+import multiprocessing
 import json
 from pathlib import Path
 import numpy as np
@@ -7,6 +9,11 @@ import pandas as pd
 
 from gym_trading_env.research.fg_abcd_evaluation import replay_policy,matched_quotas
 from gym_trading_env.research.fg_entry_v1 import write_json
+
+
+def matched_worker(payload):
+    config,output,quotas,seed=payload
+    return replay_policy(config,output,quotas=quotas,seed=seed)
 
 
 def main():
@@ -17,7 +24,10 @@ def main():
     parser.add_argument('--checkpoint')
     parser.add_argument('--seed',type=int,default=0)
     parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v1/experiment_manifest.json')
+    parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()
+    if args.workers<1:
+        raise ValueError('workers must be positive')
     from gym_trading_env.envs.entry_contract import fingerprint
     manifest=json.loads(Path(args.manifest).read_text())
     digest=manifest.pop('content_hash')
@@ -57,8 +67,11 @@ def main():
         rows.append(dreamer)
         quotas=matched_quotas(root/'dreamerv3/policy_actions.csv')
         matched=[]
-        for seed in range(30):
-            result=replay_policy(args.env_config,root/f'matched_random/{seed}',quotas=quotas,seed=seed)
+        payloads=[(args.env_config,str(root/f'matched_random/{seed}'),quotas,seed) for seed in range(30)]
+        # Workers simulate independent Env accounts; no model/GPU inference in them.
+        with ProcessPoolExecutor(max_workers=args.workers,mp_context=multiprocessing.get_context('spawn')) as pool:
+            results=list(pool.map(matched_worker,payloads))
+        for result in results:
             result['dreamer_minus_reward_per_day']=dreamer['reward_per_day']-result['reward_per_day']
             result['diagnostic']='trajectory_conditioned_closed_loop'
             matched.append(result)

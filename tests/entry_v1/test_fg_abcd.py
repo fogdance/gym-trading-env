@@ -66,7 +66,7 @@ def test_rotating_account_bank_preserves_loss_cursor_and_resume(tmp_path,monkeyp
 def test_evaluation_reward_denominator_and_unfinished_account(tmp_path,monkeypatch):
     from gym_trading_env.research.fg_abcd_evaluation import replay_policy,matched_quotas
     directory=tmp_path/'fixture';directory.mkdir()
-    prices=[(1000,1000,1000,1000),(1000,1000,1000,1000),(1007,1007,1007,1007),
+    prices=[(1000,1000,900,1000),(1000,1000,1000,1000),(1007,1007,1007,1007),
             (990,990,980,980),(980,980,970,970)]
     source=make_env(directory,prices,chunk=2)
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
@@ -77,6 +77,9 @@ def test_evaluation_reward_denominator_and_unfinished_account(tmp_path,monkeypat
     b=replay_policy(config,tmp_path/'b',strategy='always_add')
     assert a==b and a['reward_reconcile_error']==0
     assert a['total_reward']==pytest.approx(60/62)
+    first_trade=pd.read_csv(tmp_path/'a/trades.csv').iloc[0]
+    assert first_trade.MAE_points==0  # Signal bar's pre-entry low 900 is excluded.
+    assert first_trade.duration_trading_bars==2
     assert a['open_lots_at_end']>0 and a['max_floating_loss']>0
     assert a['max_equity_drawdown']>0 and a['right_censored_batches']>0
     c=replay_policy(config,tmp_path/'c',strategy='rule_add')
@@ -85,3 +88,18 @@ def test_evaluation_reward_denominator_and_unfinished_account(tmp_path,monkeypat
     d=replay_policy(config,tmp_path/'d',quotas=quotas,seed=0)
     assert d['ADD_fill']<=sum(quotas.values())
     assert d['match_status'] in ('exact_match','partial_match')
+
+
+def test_unfilled_main_exit_preserves_loss_and_is_terminal_reward_failure(tmp_path,monkeypatch):
+    from gym_trading_env.research.fg_abcd_evaluation import replay_policy
+    directory=tmp_path/'fixture';directory.mkdir()
+    source=make_env(directory,[(1000,1000,1000,1000),(1000,1000,990,990),
+                              (990,990,980,980)],main_exit='2026-01-05 09:33')
+    source._raw.iloc[-1,source._raw.columns.get_loc('Volume')]=0
+    from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+    monkeypatch.setattr('gym_trading_env.research.fg_abcd_evaluation.FixedDirectionEntryEnv',
+        lambda config_path:FixedDirectionEntryEnv(config_path=config_path,df=source._raw.copy()))
+    result=replay_policy(directory/'env.yaml',tmp_path/'result',strategy='always_add')
+    assert result['open_lots_at_end']>0 and result['net_equity_change']<0
+    assert result['total_reward']==0 and result['forced_exit_unfilled_batches']>0
+    assert result['right_censored_batches']==0

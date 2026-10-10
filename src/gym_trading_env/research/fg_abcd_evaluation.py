@@ -59,10 +59,11 @@ def replay_policy(config_path, output, *, strategy=None, policy=None, seed=0, qu
             action=baseline_action(env,strategy,rng,.5)
         count=len(env.fills)
         # Denominator counts observable minutes, not overnight closures.
-        if key[1]!='NO_TRADE':
-            observed+=1
-            capacity+=int(env.net_lots>=6)
+        was_full=int(env.net_lots>=6)
         obs,reward,terminal,truncated,info=env.step(action)
+        if env.current_step>i and key[1]!='NO_TRADE':
+            observed+=1
+            capacity+=was_full
         new=[f for f in env.fills[count:] if f['reason']=='ENTRY' and f['committed']]
         filled[key]+=len(new)
         slots[key]-=1
@@ -87,24 +88,31 @@ def replay_policy(config_path, output, *, strategy=None, policy=None, seed=0, qu
         start=timestamp(fill['time'])
         stop=timestamp(event['exit_time']) if event else end
         duration=(stop-start).total_seconds()/60
-        status='success' if reward else 'terminal_failure' if event else 'right_censored'
-        bars=env._raw.loc[start:stop]
+        status=('success' if reward else 'terminal_failure' if event else
+                'terminal_failure_unfilled' if env.pending_reason else 'right_censored')
+        opening_indices=np.flatnonzero(pd.DatetimeIndex(env.bobs)==start)
+        if len(opening_indices)!=1:
+            raise RuntimeError('Entry fill does not identify one executable bar')
+        opening_index=int(opening_indices[0])
+        stop_index=int(env._raw.index.get_loc(stop))
+        bars=env._raw.iloc[opening_index:stop_index+1]
         price=float(fill['price'])
         adverse=bars.Low.min() if fill['side']=='LONG' else bars.High.max()
         mae=max(0,price-adverse if fill['side']=='LONG' else adverse-price)
         trade=dict(contract=env.contract,entry_id=fill['entry_id'],direction=fill['side'],entry_timestamp=str(start),
             entry_price=price,exit_timestamp=str(stop) if event else None,completion_status=status,
-            duration_minutes=duration,duration_trading_bars=max(0,len(bars)-1),MAE_points=float(mae),
+            duration_minutes=duration,duration_trading_bars=len(bars),MAE_points=float(mae),
+            MAE_basis='post_entry_bar_extrema_conservative_bound',
             reward=reward['reward'] if reward else 0,exit_reason=event['reason'] if event else env.status)
         for h in horizon:
             trade[f'success_within_{h}_minutes']=bool(reward and duration<=h)
-            trade[f'observable_{h}_minutes']=bool(event or duration>=h)
+            trade[f'observable_{h}_minutes']=bool(event or env.pending_reason or duration>=h)
         first_day=trading_days.index(str(env._trading_day(start)))
         last_day=trading_days.index(str(env._trading_day(stop)))
         for h in (1,5):
             trade[f'success_within_{h}_trading_days']=bool(reward and last_day-first_day<h)
             # Horizon closes at the end of its h-th known trading day.
-            trade[f'observable_{h}_trading_days']=bool(event or last_day-first_day>=h or
+            trade[f'observable_{h}_trading_days']=bool(event or env.pending_reason or last_day-first_day>=h or
                 first_day+h-1<len(trading_days) and stop==env._raw.index[-1] and last_day-first_day==h-1)
         trades.append(trade)
     calculated=sum(60/(60+e['elapsed_minutes']) for e in env.reward_events)
@@ -119,7 +127,8 @@ def replay_policy(config_path, output, *, strategy=None, policy=None, seed=0, qu
     summary=dict(env._get_info(),strategy=strategy or ('matched_random' if quotas is not None else 'dreamerv3'),seed=seed,
         total_reward=env.total_reward,eligible_trading_days=len(direction_days),raw_trading_days=len(all_days),
         reward_per_day=env.total_reward/len(direction_days) if direction_days else None,
-        completed_batches=len(rewards),terminal_failure_batches=sum(t['completion_status']=='terminal_failure' for t in trades),
+        completed_batches=len(rewards),terminal_failure_batches=sum(t['completion_status'].startswith('terminal_failure') for t in trades),
+        forced_exit_unfilled_batches=sum(t['completion_status']=='terminal_failure_unfilled' for t in trades),
         right_censored_batches=sum(t['completion_status']=='right_censored' for t in trades),
         median_tp_minutes=float(np.median(success)) if success else None,p90_tp_minutes=float(np.percentile(success,90)) if success else None,
         open_batches_at_end=len(env.entries),open_lots_at_end=float(env.net_lots),
