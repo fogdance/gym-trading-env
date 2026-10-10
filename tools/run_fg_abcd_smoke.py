@@ -2,6 +2,7 @@
 import argparse
 import json
 import os
+import pickle
 from pathlib import Path
 import subprocess
 import sys
@@ -33,6 +34,10 @@ def main():
             subprocess.run(command(instance,phase,dreamer,transfer),cwd=dreamer,env=env,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
     run(dict(source,steps=1110))
+    checkpoint=Path(source['logdir'])/'ckpt'/(Path(source['logdir'])/'ckpt/latest').read_text().strip()
+    before=dict(step=pickle.loads((checkpoint/'step.pkl').read_bytes()),
+                driver=pickle.loads((checkpoint/'driver.pkl').read_bytes()))
+    (root/'before_resume.json').write_text(json.dumps(before,default=str))
     run(source)  # Same-logdir full checkpoint resume, only ten more interactions.
     receipt=transfer_receipt(instance,source,target)
     run(target,receipt)

@@ -84,6 +84,8 @@ def test_evaluation_reward_denominator_and_unfinished_account(tmp_path,monkeypat
     assert a['max_equity_drawdown']>0 and a['right_censored_batches']>0
     c=replay_policy(config,tmp_path/'c',strategy='rule_add')
     assert c['eligible_trading_days']==a['eligible_trading_days']==1
+    assert pd.read_csv(tmp_path/'c/trades.csv').empty
+    assert 'entry_id' in pd.read_csv(tmp_path/'c/trades.csv').columns
     quotas=matched_quotas(tmp_path/'a/policy_actions.csv')
     d=replay_policy(config,tmp_path/'d',quotas=quotas,seed=0)
     assert d['ADD_fill']<=sum(quotas.values())
@@ -103,3 +105,21 @@ def test_unfilled_main_exit_preserves_loss_and_is_terminal_reward_failure(tmp_pa
     assert result['open_lots_at_end']>0 and result['net_equity_change']<0
     assert result['total_reward']==0 and result['forced_exit_unfilled_batches']>0
     assert result['right_censored_batches']==0
+
+
+def test_matched_workers_spawn_independent_real_accounts(tmp_path):
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+    from tools.evaluate_fg_abcd import matched_worker
+    from gym_trading_env.research.fg_abcd_evaluation import slot_key
+    source=make_env(tmp_path,[(1000,1000,1000,1000),(1000,1000,990,990),(990,990,980,980)])
+    market=tmp_path/'market.csv';source._raw.to_csv(market,index_label='Date')
+    config=tmp_path/'env.yaml';raw=yaml.safe_load(config.read_text())
+    raw['trading']['data_path']=str(market);config.write_text(yaml.safe_dump(raw))
+    quotas={slot_key(source,0):2}
+    with ProcessPoolExecutor(max_workers=2,mp_context=multiprocessing.get_context('spawn')) as pool:
+        futures=[pool.submit(matched_worker,(str(config),str(tmp_path/f'worker_{seed}'),quotas,seed)) for seed in (0,1)]
+        results=[f.result() for f in futures]
+    assert [r['seed'] for r in results]==[0,1]
+    assert all(r['ADD_fill']==2 and r['open_lots_at_end']==6 for r in results)
+    assert all(r['total_reward']==0 and r['net_equity_change']<0 for r in results)

@@ -19,8 +19,8 @@ def main():
         '| Fold | Budget | Method | Seed | Phase | Interactions | Dataset | Status |',
         '|---|---|---|---:|---|---:|---|---|']
     pilot=['# Pilot observed status','','No market-performance claim from smoke or a single seed.','',
-        '| Method | Phase | Budget | Checkpoint step | Updates | Actor gate | Status |',
-        '|---|---|---:|---:|---:|---|---|']
+        '| Method | Phase | Budget | Checkpoint step | Logged step | Updates | Actor gate | Status |',
+        '|---|---|---:|---:|---:|---:|---|---|']
     for instance in manifest['instances']:
         for phase in instance['phases']:
             root=Path(phase['logdir']);metadata=root/'launch_metadata.json'
@@ -34,7 +34,16 @@ def main():
                     step=pickle.loads((checkpoint/'step.pkl').read_bytes())
                 audit=root/'learning_audit.json'
                 observed=json.loads(audit.read_text()) if audit.exists() else {}
-                pilot.append('| '+ ' | '.join(map(str,[instance['method'],phase['phase'],phase['steps'],step,
+                logged_step=step
+                metrics=root/'metrics.jsonl'
+                if metrics.exists():
+                    for line in metrics.read_text().splitlines():
+                        try:
+                            record=json.loads(line)
+                        except json.JSONDecodeError:
+                            continue  # A live writer may have an incomplete final line.
+                        logged_step=max(logged_step,int(record.get('step',0)))
+                pilot.append('| '+ ' | '.join(map(str,[instance['method'],phase['phase'],phase['steps'],step,logged_step,
                     observed.get('updates','NOT_VERIFIED'),observed.get('actor_gate_enabled','NOT_VERIFIED'),status]))+' |')
     (path.parent/'train_config_matrix.md').write_text('\n'.join(matrix)+'\n')
     (path.parent/'pilot_results.md').write_text('\n'.join(pilot)+'\n')

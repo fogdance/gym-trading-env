@@ -146,7 +146,7 @@ def replay_policy(config_path, output, *, strategy=None, policy=None, seed=0, qu
         differences=[dict(trading_date=k[0],direction=k[1],session=k[2],minute_bin=k[3],
             requested=target[k],filled=filled[k],difference=filled[k]-target[k]) for k in sorted(set(target)|set(filled)) if target[k] or filled[k]]
         summary['match_status']='exact_match' if all(r['difference']==0 for r in differences) else 'partial_match'
-        pd.DataFrame(differences).to_csv(output/'quota_differences.csv',index=False)
+        pd.DataFrame(differences,columns=['trading_date','direction','session','minute_bin','requested','filled','difference']).to_csv(output/'quota_differences.csv',index=False)
     for unit,limits in [('minutes',horizon),('trading_days',(1,5))]:
         for h in limits:
             eligible=sum(t[f'observable_{h}_{unit}'] for t in trades)
@@ -155,8 +155,15 @@ def replay_policy(config_path, output, *, strategy=None, policy=None, seed=0, qu
             summary[f'observable_count_{h}_{unit}']=eligible
             summary[f'censored_count_{h}_{unit}']=len(trades)-eligible
             summary[f'success_rate_{h}_{unit}']=wins/eligible if eligible else None
+    schemas=dict(trades=['contract','entry_id','direction','entry_timestamp','entry_price','exit_timestamp',
+        'completion_status','duration_minutes','duration_trading_bars','MAE_points','MAE_basis','reward','exit_reason'],
+        policy_actions=['signal_timestamp','execution_clock','trading_date','direction','session','minute_bin','action','legal_add','add_fill','entry_ids','reward','status','net_lots'],
+        fills=['entry_id','time','side','quantity','price','reason','committed'],
+        reward_events=['entry_id','elapsed_minutes','reward'],
+        account_equity=['time','equity','unrealized_pnl','net_lots','intrabar'])
     for name,rows in [('trades',trades),('policy_actions',actions),('fills',env.fills),('reward_events',env.reward_events),('account_equity',env.equity_history)]:
-        pd.DataFrame(rows).to_csv(output/f'{name}.csv',index=False)
+        columns=list(dict.fromkeys(schemas[name]+[k for row in rows for k in row]))
+        pd.DataFrame(rows).reindex(columns=columns).to_csv(output/f'{name}.csv',index=False)
     pd.DataFrame([summary]).to_csv(output/'episode_metrics.csv',index=False)
     write_json(output/'account_state.json',env.export_state())
     write_json(output/'summary.json',summary)

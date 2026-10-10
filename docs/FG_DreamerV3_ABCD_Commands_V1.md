@@ -73,4 +73,14 @@ python tools/run_fg_abcd.py --budget formal --fold FG409 --seed 0 --method C --c
 tensorboard --host 0.0.0.0 --logdir /data/logdir/fg_abcd_v1/v1
 ```
 
+## 进度与验收报告
+
+本批先导已经启动，不要重复执行启动命令。只刷新报告、不启动训练：
+
+```bash
+python tools/watch_fg_abcd.py --once
+```
+
+持续每 60 秒刷新可省略 `--once`。生成的 `pilot_results.md` 分别列出已保存检查点和最新日志步数；`comparison.md`、`pilot_comparison.json` 汇总各方法的学习审计与验证结果。未通过策略学习验收时明确标记，不能用其结果推断择时能力。
+
 旧日志和 checkpoint 保留；本批未执行 D、1M 正式训练或最终盲测。

@@ -73,12 +73,22 @@ def main():
             results=list(pool.map(matched_worker,payloads))
         for result in results:
             result['dreamer_minus_reward_per_day']=dreamer['reward_per_day']-result['reward_per_day']
+            result['dreamer_minus_median_tp_minutes']=(dreamer['median_tp_minutes']-result['median_tp_minutes']
+                if dreamer['median_tp_minutes'] is not None and result['median_tp_minutes'] is not None else None)
+            result['waiting_difference_basis']='SUCCESS_ONLY_WITH_FAILURE_AND_CENSOR_COUNTS_REPORTED'
+            for unit,limits in [('minutes',(5,15,60)),('trading_days',(1,5))]:
+                for h in limits:
+                    field=f'success_rate_{h}_{unit}'
+                    result[f'dreamer_minus_{field}']=(dreamer[field]-result[field]
+                        if dreamer[field] is not None and result[field] is not None else None)
             result['diagnostic']='trajectory_conditioned_closed_loop'
             matched.append(result)
         pd.DataFrame(matched).to_csv(root/'matched_random.csv',index=False)
         write_json(root/'matched_random_summary.json',dict(seeds=30,
             exact_matches=sum(r['match_status']=='exact_match' for r in matched),
             mean_reward_per_day=float(np.mean([r['reward_per_day'] for r in matched])),
+            mean_paired_reward_per_day_delta=float(np.mean([r['dreamer_minus_reward_per_day'] for r in matched])),
+            reward_per_day_quantiles=list(map(float,np.percentile([r['reward_per_day'] for r in matched],[5,50,95]))),
             market_confidence_interval=False,superiority_claim='NOT_ESTABLISHED'))
     if len({r['eligible_trading_days'] for r in rows})!=1:
         raise RuntimeError('Strategy-dependent denominator')

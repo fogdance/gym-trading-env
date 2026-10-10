@@ -19,12 +19,12 @@ def checkpoint(root):
 def main():
     parser=argparse.ArgumentParser(__doc__)
     parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v1/smoke_v2')
-    parser.add_argument('--before',default='artifacts/fg_abcd_v1/v1/smoke_v2_before_resume.json')
+    parser.add_argument('--before')
     parser.add_argument('--output',default='artifacts/fg_abcd_v1/v1/smoke_audit.json')
     args=parser.parse_args()
     source=checkpoint(Path(args.logdir)/'pretrain')
     target=checkpoint(Path(args.logdir)/'recent')
-    before=json.loads(Path(args.before).read_text())
+    before=json.loads((Path(args.before) if args.before else Path(args.logdir)/'before_resume.json').read_text())
     old=before['driver']['envs'][0]['env']
     current=source['driver']['envs'][0]['env']
     recent=target['driver']['envs'][0]['env']

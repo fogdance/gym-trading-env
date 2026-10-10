@@ -47,7 +47,7 @@ Dreamer `dreamerv3/tests/test_fg_stage_transfer.py`：1 项通过，覆盖结构
 ## 待完成，禁止误记完成
 
 - P3 正式 batch16 × length64 的 CUDA smoke：PASS；独立 v2 共 2040 交互、3 次真实 GPU 更新，同目录恢复与 C 迁移均通过。
-- P4 A/B/C 100k：NOT_RUN。只有 P3 和评估验收通过后才启动。
+- P4 A/B/C 100k：已启动顺序执行，当前 A RUNNING；B、C 尚未运行。通过学习审计的模型随后自动评估，未通过 gate 则明确不作策略学习结论。
 - P5 正式 1M：36 个方法实例准备为 NOT_RUN，不自动启动。
 - D：后续滚动设计，本轮不运行。
 
@@ -62,3 +62,21 @@ smoke 与先导的实际结果、失败和修复证据将补充到本记录。�
 评估自查修复：按开仓 bob 定位执行 bar，排除同时间戳的上一根信号 bar；新增信号 bar 极端低价回归。强退未成交保留账户亏损并单独计终局奖励失败，不冒充已平仓或右删失。旧 `validation_baselines_FG409/` 的 MAE 路径存在此边界问题，后续采用新 `validation_baselines_FG409_v2/`；旧产物保留。
 
 `tools/audit_fg_abcd_smoke.py` 实际检查点审计 PASS：完整 Agent 所有参数与 182 个优化器变量在近期阶段精确相等；warm-up gate 保留；非活动账户完全相同，活动账户恢复后仅推进 10 根并保留历史账簿/成交前缀；近期局部 920 交互、实际 919 根，账户重新建立。该短阶段不发生梯度更新，因此能直接核对完整迁移；模型择时能力仍未验证。
+
+## P4 启动证据
+
+启动入口：`tools/run_fg_abcd.py --budget pilot --execute`；已确认 `[CudaDevice(id=0)]`。A 日志：`/data/logdir/fg_abcd_v1/v1/FG409/pilot/A/0/train/`。启动代码 SHA：Env `d2c105b`、Dreamer `fce03e4`，保存于 `launch_metadata.json`。
+
+首份训练日志到 2900 交互，`train/opt/updates` 的窗口均值 57、`train/avail/ready=0`。该均值不是精确累计更新数，尚未证明 Actor/Critic 有效学习。最终以 `learning_audit.json` 的真实参数变化和 gate 为准。
+
+修正后的三个 FG409 基线在 `validation_baselines_FG409_v2/` 全部完成：固定分母 91 日，Always/Random/Rule 的 Reward/day 分别约 0.249892 / 0.298110 / 0.250915，TP 批次 73 / 80 / 73，Reward 和动作对账错误均为零。属于基线事实，不是 Dreamer 结果。
+
+`tools/report_fg_abcd.py` 从冻结清单、运行元数据及日志更新生成的 `assumptions.md`、`train_config_matrix.md`、`pilot_results.md`，生成文件不提交。正式 36 个方法实例仍全部 NOT_RUN。
+
+## 评估与状态工具补充验收
+
+相关 Env 回归共 41 项通过（`test_fg_abcd.py`、`test_entry_contract.py`、`test_entry_data.py`），包括真实 Env 的两进程随机回放：独立 seed 和独立账户均保留未完成仓位与实际亏损。无成交时 CSV 仍有可读取的字段表头。配额随机报告增加配对 Reward/day、各时间范围成功率与成功样本等待时间差；随机分位数不解释为市场置信区间。
+
+`watch_fg_abcd.py` 汇总真实运行状态与已完成评估，不触发训练。smoke 工具自动保存恢复前账户快照，审计工具默认从同一 smoke 目录读取；既有 v2 运行按原快照路径再次审计 PASS。
+
+早期 gate 未通过的实测证据：10310 步评估的 posterior accuracy 为 0.994099，门槛 0.995；posterior exact accuracy 为 0.988199，门槛 0.990。其余四项当次达标，但要求六项同时连续五次通过。此记录说明当次未通过原因，不预测后续收敛，也不调整门槛。
