@@ -156,7 +156,7 @@ def export_fg(client, start, end, output, provider="JUEJIN", excluded_contracts=
     return manifest
 
 
-def prepare_main_contracts(export_manifest, costs, output):
+def prepare_main_contracts(export_manifest, costs, output, *, explicit_exits=False):
     """Materialize user-confirmed complete sessions and main-qualification expiry.
 
     This calendar is an explicit user declaration, not an independent exchange audit.
@@ -185,6 +185,10 @@ def prepare_main_contracts(export_manifest, costs, output):
             selected=times[runs==run]
             sessions.append(dict(start=str(selected[0]-pd.Timedelta(minutes=1)),end=str(selected[-1])))
         terminal=i+1<len(files) and files[i+1]['contract']!=item['contract']
+        if explicit_exits:
+            terminal=bool(item.get('main_exit_at') and item.get('next_main_contract'))
+            if terminal and timestamp(item['main_exit_at']) != times[-1]:
+                raise ValueError('Main exit must be the last observable old-contract bar')
         # Infinity beyond the frozen dataset is a no-expiry sentinel, never a fill.
         deadline=times[-1] if terminal else timestamp('2260-01-01')
         terms={k:costs[k] for k in ('margin_rate','open_fee','close_fee','close_today_fee','spread','slippage')}
