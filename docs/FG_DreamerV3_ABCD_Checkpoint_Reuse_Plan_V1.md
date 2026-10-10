@@ -1,6 +1,6 @@
 # FG ABC 固定步数与完整 Checkpoint 复用实施计划 V1
 
-日期：2026-10-10。状态：实施中；所有训练保持停止。代码直接修改两个仓库现有 feat/fg-abcd-comparison-v1 分支。
+日期：2026-10-10。状态：代码与非模型验收已完成；真实 GPU smoke 待授权，所有模型训练保持停止。代码直接修改两个仓库现有 feat/fg-abcd-comparison-v1 分支。
 
 ## 已确认规则
 
@@ -42,3 +42,19 @@ C 跨阶段只加载完整 Agent（含优化器与随机计数）及 Gate 学习
 2. 完整恢复与固定调度：最小非模型训练测试，覆盖恢复样本/队列/计数/carry/Gate、精确边界、坏节点拒绝、保留策略；提交代码和结果。
 3. 编排：共享前缀去重、先导预算续算、C 固定源节点、全部命令 dry-run 和 guard 校验；提交代码和说明。
 4. 本轮不启动任何模型训练。真实 GPU 恢复与 C 分支 smoke 必须后续授权；通过非训练回归不能宣称 GPU 学习已验收。
+
+## 实施证据与限制
+
+- 两仓分支均为 feat/fg-abcd-comparison-v1。文档提交 1724520；Dreamer 第一阶段核心提交 736a192，后续修正见 git log。
+- Dreamer 新增 embodied/run/fg_checkpoint.py，FG_FULL_V1 opt-in 协议；旧训练默认 fg_full_checkpoint=False，原保存及墙钟报告规则保留。
+- 完整 Agent 额外保存实际 batch 随机计数、policy_params、pending_sync、pending_outs、pending_mets。普通恢复保留；C 新阶段丢弃历史 Replay 写回与待返回指标，新 carry 在载入参数后初始化。
+- 非神经网络端到端回归发现原异步预取在相同交互位置取到 [2,3] 与 [3,4]。确认后台 Replay.sample 与前台 Replay.add/update 交错导致取样人口不同。FG 完整恢复模式仍使用预取，但等待预取下一批完成后才继续，固定训练/报告流取样顺序；旧模式不启用这个屏障。
+- embodied/tests/test_fg_full_checkpoint.py：10 项通过。包含真实 Prefetch、在线 Replay、部分 chunk、数据更新、RNG/Ratio/carry、Gate 首次通过后恢复、C 新账户/Replay、损坏恢复点回退、保存失败、最近两点保留、精确边界及 worker 异常。
+- dreamerv3/tests/test_fg_c_full_node.py：验证受保护源节点实际 70，而源 A 配置目标 100，允许迁移；实际步数或报告配置错误时拒绝。没有初始化任何神经网络。
+- 新清单 hash：6890b1da2a9ef1797496308db60593baf0ee76a88816ca99d92ca2ac730252bd。39 个逻辑实例、52 个逻辑阶段、37 条唯一训练线路；全部 52 阶段通过 FG 准入检查，同一线路先导/正式及 A/C 身份一致。
+- readiness_audit.json、生成配置、命令及报告在 artifacts/fg_abcd_v1/v3_shared_prefix，仅本地保存，不提交。
+- 正式 runner 支持用户显式 --execute；默认只打印模板。本轮 GPU smoke 与先导已获授权，正式训练由用户启动。
+- 尚未验证：真实 GPU 上的完整恢复、迁移、传输 guard，以及大 Replay 保存耗时与磁盘增长。不能把 mock Agent 回归或旧 smoke 结果当作新模型运行验收。
+- 严格文件 Hash 在保存发布与恢复时检查。常规点轮换仅查看本协议完成节点的身份/保护标记，避免每 10000 步反复读取所有旧 Replay；损坏或不认识的元数据不进入清理。
+
+2026-10-11 补齐：C 的快照身份绑定 `fg_source_steps` 与迁移凭据哈希，70K/700K 不互相恢复。新增父节点回归，相关测试合计 62 项通过。准备检查现由 `tools/audit_fg_abcd_ready.py` 重复执行；C 实际父节点在启动时校验。新版 GPU smoke 正在运行，尚未报告 PASS。

@@ -163,3 +163,50 @@ def test_sequential_coverage_counts_early_exit_prefixes_without_claiming_full_pa
     state['completed'][0].pop('advanced_bars')
     with pytest.raises(ValueError,match='actual coverage counters'):
         account_progress(state,records)
+
+
+def shared_plans(tmp_path):
+    from gym_trading_env.research.fg_abcd import plan_phases
+    cfg=yaml.safe_load((__import__('pathlib').Path(__file__).resolve().parents[2]/'configs/fg_entry_v1/abcd_comparison.yaml').read_text())
+    cfg['log_root']=str(tmp_path/'logs')
+    datasets={k:dict(manifest=str(tmp_path/f'{k}.json'),selector=str(tmp_path/f'{k}.yaml')) for k in ('all','recent')}
+    result={(budget,method):dict(fold='CZCE.FG409',budget=budget,method=method,seed=0,
+        phases=plan_phases(cfg,'CZCE.FG409',datasets,budget,method,0)) for budget in ('pilot','formal') for method in 'ABC'}
+    return result
+
+
+def test_shared_graph_reuses_pilot_prefix_but_separates_c_branches(tmp_path):
+    plans=shared_plans(tmp_path)
+    a=plans['formal','A']['phases'][0];b=plans['formal','B']['phases'][0]
+    source,recent=plans['formal','C']['phases']
+    assert a['logdir']==source['logdir']==plans['pilot','A']['phases'][0]['logdir']
+    assert b['logdir']==plans['pilot','B']['phases'][0]['logdir']
+    assert source['shared_source'] and source['steps']==700000 and a['steps']==1000000
+    assert recent['steps']==300000 and recent['total_step_offset']==700000
+    assert recent['logdir']!=plans['pilot','C']['phases'][-1]['logdir']
+    assert a['checkpoint']['key_steps']==[70000,100000,700000,1000000]
+
+
+def test_dry_run_prints_three_unique_formal_lines_without_running_training(tmp_path,monkeypatch,capsys):
+    from tools.run_fg_abcd import main
+    plans=shared_plans(tmp_path)
+    manifest=dict(instances=[plans['formal',m] for m in 'ABC'],folds=[],shared_prefix=True)
+    manifest['content_hash']=fingerprint(manifest)
+    path=tmp_path/'manifest.json';path.write_text(json.dumps(manifest))
+    monkeypatch.setattr('sys.argv',['run_fg_abcd.py','--manifest',str(path),'--budget','formal'])
+    monkeypatch.setattr('subprocess.run',lambda *a,**k:pytest.fail('Dry-run must not launch any subprocess'))
+    main();output=capsys.readouterr().out
+    assert output.count('-m dreamerv3.main')==3
+    assert '# Reuse protected shared node 700000' in output
+    assert '--run.fg_report_every_steps 5000' in output and '--run.fg_save_every_steps 10000' in output
+    assert '--create-transfer' in output and 'C_recent_from_700000' in output
+
+
+def test_phase_status_does_not_confuse_pilot_and_formal_shared_directory(tmp_path):
+    from tools.run_fg_abcd import phase_record_path,phase_metadata
+    plans=shared_plans(tmp_path)
+    pilot=plans['pilot','A'];formal=plans['formal','A']
+    path=phase_record_path(pilot,pilot['phases'][0]);path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(dict(status='COMPLETED_BUDGET')))
+    assert phase_metadata(pilot,pilot['phases'][0])['status']=='COMPLETED_BUDGET'
+    assert phase_metadata(formal,formal['phases'][0])['status']=='NOT_RUN'

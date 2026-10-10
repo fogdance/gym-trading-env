@@ -7,6 +7,7 @@ import sys
 import time
 
 from gym_trading_env.envs.entry_contract import fingerprint
+from run_fg_abcd import phase_metadata, checkpoint_path
 from gym_trading_env.research.fg_entry_v1 import write_json
 
 
@@ -21,13 +22,13 @@ def publish(path):
         stages=[]
         for phase in instance['phases']:
             filename=Path(phase['logdir'])/'launch_metadata.json'
-            meta=json.loads(filename.read_text()) if filename.exists() else dict(status='NOT_RUN')
+            meta=phase_metadata(instance,phase)
             stages.append(meta)
             failed|=meta['status']=='FAILED'
             stopped|=meta['status']=='STOPPED_BY_USER'
             done&=meta['status']=='COMPLETED_BUDGET'
         audit=stages[-1].get('learning_audit',{})
-        evaluation=path.parent/'pilot_evaluation'/instance['method']/str(instance['seed'])/'comparison.json'
+        evaluation=path.parent/'pilot_evaluation'/instance['fold']/instance['method']/str(instance['seed'])/'comparison.json' if manifest.get('shared_prefix') else path.parent/'pilot_evaluation'/instance['method']/str(instance['seed'])/'comparison.json'
         result=None
         if evaluation.exists():
             evaluated=json.loads(evaluation.read_text())
@@ -54,7 +55,7 @@ def publish(path):
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v3_shared_prefix/experiment_manifest.json')
     parser.add_argument('--interval',type=int,default=60)
     parser.add_argument('--once',action='store_true')
     args=parser.parse_args()

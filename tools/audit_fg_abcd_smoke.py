@@ -12,15 +12,18 @@ def checkpoint(root):
     latest=directory/(directory/'latest').read_text().strip()
     if not (latest/'done').is_file():
         raise ValueError('Incomplete checkpoint')
+    if (latest/'manifest.json').exists():
+        from embodied.run.fg_checkpoint import validate_bundle
+        validate_bundle(latest)
     return {name:pickle.loads((latest/f'{name}.pkl').read_bytes())
             for name in ('agent','driver','step','action_mask_warmup')}
 
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v2_sequential/smoke')
+    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v3_shared_prefix/smoke')
     parser.add_argument('--before')
-    parser.add_argument('--output',default='artifacts/fg_abcd_v1/v2_sequential/smoke_audit.json')
+    parser.add_argument('--output',default='artifacts/fg_abcd_v1/v3_shared_prefix/smoke_audit.json')
     args=parser.parse_args()
     source=checkpoint(Path(args.logdir)/'pretrain')
     target=checkpoint(Path(args.logdir)/'recent')
@@ -53,7 +56,9 @@ def main():
     assert recent['manifest_hash']!=current['manifest_hash']
     assert recent['completed']==[]
     # Recent is below Replay's learning threshold: exact optimizer/model equality proves transfer.
-    receipt=json.loads((Path(args.logdir)/'pretrain/c_transfer_receipt.json').read_text())
+    receipt_path=Path(args.logdir)/'recent/source_transfer.json'
+    if not receipt_path.exists():receipt_path=Path(args.logdir)/'pretrain/c_transfer_receipt.json'
+    receipt=json.loads(receipt_path.read_text())
     assert receipt['replay_protocol']=='EMPTY_RECENT_ONLY'
     result=dict(status='PASS',total_interactions=source['step']+target['step'],
         gpu_updates=source['agent']['counters']['updates'],full_agent_optimizer_exact_match=True,

@@ -7,23 +7,26 @@ from pathlib import Path
 import subprocess
 import sys
 
-from run_fg_abcd import command,transfer_receipt
+from run_fg_abcd import command,transfer_receipt,checkpoint_path
+from gym_trading_env.envs.entry_contract import fingerprint
 
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
-    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v2_sequential/smoke')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v3_shared_prefix/experiment_manifest.json')
+    parser.add_argument('--logdir',default='/data/logdir/fg_abcd_v1/v3_shared_prefix/smoke')
     args=parser.parse_args()
     root=Path(args.logdir)
     if root.exists():
         raise FileExistsError('Use a new smoke directory; existing results are preserved')
     manifest=json.loads(Path(args.manifest).read_text())
+    digest=manifest.pop('content_hash')
+    if fingerprint(manifest)!=digest:raise ValueError('Smoke manifest changed')
     instance=next(r for r in manifest['instances'] if r['budget']=='pilot' and r['method']=='C')
     instance=dict(instance,phases=[dict(p) for p in instance['phases']])
     source,target=instance['phases']
     source.update(logdir=str(root/'pretrain'),steps=1120)
-    target.update(logdir=str(root/'recent'),steps=920)
+    target.update(logdir=str(root/'recent'),steps=920,total_step_offset=1120)
     dreamer='/home/v/Documents/work/dreamerv3'
     env=dict(os.environ,JAX_PLATFORMS='cuda',PYTHONDONTWRITEBYTECODE='1',
         MPLCONFIGDIR='/tmp/fg-matplotlib',PYTHONPATH=dreamer+':'+str(Path(__file__).resolve().parents[1]/'src'),
@@ -35,7 +38,7 @@ def main():
             subprocess.run(command(instance,phase,dreamer,transfer),cwd=dreamer,env=env,
                            stdout=log,stderr=subprocess.STDOUT,check=True)
     run(dict(source,steps=1110))
-    checkpoint=Path(source['logdir'])/'ckpt'/(Path(source['logdir'])/'ckpt/latest').read_text().strip()
+    checkpoint=checkpoint_path(dict(source,steps=1110))
     before=dict(step=pickle.loads((checkpoint/'step.pkl').read_bytes()),
                 driver=pickle.loads((checkpoint/'driver.pkl').read_bytes()))
     (root/'before_resume.json').write_text(json.dumps(before,default=str))

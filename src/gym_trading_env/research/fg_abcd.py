@@ -19,12 +19,44 @@ def choose_contracts(records, cutoff, months=None):
             and (start is None or pd.Timestamp(r['first_day']) >= start)]
 
 
+def plan_phases(cfg,fold,datasets,budget,method,seed):
+    spec=cfg[budget]
+    checkpoint=cfg.get('checkpoint',{})
+    shared=bool(checkpoint.get('shared_prefix',False))
+    phases=[('train','all' if method=='A' else 'recent',spec['steps'])] if method!='C' else [
+        ('pretrain','all',spec['pretrain_steps']),('recent','recent',spec['recent_steps'])]
+    if sum(p[2] for p in phases)!=spec['steps']:
+        raise ValueError('C total budget differs')
+    phase_records=[]
+    for p,d,n in phases:
+        base=Path(cfg['log_root'])/fold.split('.')[-1]
+        logdir=base/budget/method/str(seed)/p
+        phase=dict(phase=p,dataset=datasets[d],steps=n,logdir=str(logdir))
+        if shared:
+            line='all_history' if d=='all' else 'recent_from_scratch' if method=='B' else f'C_recent_from_{spec["pretrain_steps"]}'
+            phase.update(logdir=str(base/str(seed)/line),full_checkpoint=True,
+                shared_source=method=='C' and p=='pretrain',
+                total_step_offset=spec['pretrain_steps'] if method=='C' and p=='recent' else 0,
+                checkpoint=dict(checkpoint,key_steps=(
+                    sorted({cfg['pilot']['pretrain_steps'],cfg['pilot']['steps'],
+                        cfg['formal']['pretrain_steps'],cfg['formal']['steps']}) if d=='all' else
+                    sorted({cfg['pilot']['steps'],cfg['formal']['steps']}) if method=='B' else [n])))
+        phase_records.append(phase)
+    return phase_records
+
+
 def build_abcd(config_path):
     config_path=Path(config_path).resolve()
     cfg=read_yaml(config_path)
     mode=cfg.get('scheduler',{}).get('mode','sequential')
     if mode not in ('sequential','least_progress'):
         raise ValueError('Unknown ABC training order')
+    checkpoint=cfg.get('checkpoint',{})
+    shared=bool(checkpoint.get('shared_prefix',False))
+    if shared and (mode!='sequential' or not checkpoint.get('full_state')):
+        raise ValueError('Shared prefixes require sequential full-state checkpoints')
+    if checkpoint.get('keep_regular',2)!=2:
+        raise ValueError('FG full checkpoint protocol retains two regular points')
     output=Path(cfg['output']).resolve()
     if output.exists():
         raise FileExistsError('Refusing to overwrite an ABC experiment')
@@ -124,13 +156,9 @@ def build_abcd(config_path):
                 continue
             for seed in spec['seeds']:
                 for method in 'ABC':
-                    phases=[('train','all' if method=='A' else 'recent',spec['steps'])] if method!='C' else [
-                        ('pretrain','all',spec['pretrain_steps']),('recent','recent',spec['recent_steps'])]
-                    if sum(p[2] for p in phases)!=spec['steps']:
-                        raise ValueError('C total budget differs')
-                    instances.append(dict(fold=fold['validation'],budget=budget,method=method,seed=seed,status='NOT_RUN',
-                        phases=[dict(phase=p,dataset=datasets[d],steps=n,logdir=str(Path(cfg['log_root'])/fold['validation'].split('.')[-1]/budget/method/str(seed)/p)) for p,d,n in phases]))
-    result=dict(schema=1,config=str(config_path),config_sha256=file_hash(config_path),
+                    phase_records=plan_phases(cfg,fold['validation'],datasets,budget,method,seed)
+                    instances.append(dict(fold=fold['validation'],budget=budget,method=method,seed=seed,status='NOT_RUN',phases=phase_records))
+    result=dict(schema=2 if shared else 1,shared_prefix=shared,checkpoint=checkpoint,config=str(config_path),config_sha256=file_hash(config_path),
         export_manifest_sha256=file_hash(cfg['export_manifest']),folds=folds,instances=instances,
         blind_price_access=False,conditional_direction_only=True,training_order=mode)
     result['content_hash']=fingerprint(result)

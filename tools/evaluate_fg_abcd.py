@@ -23,7 +23,7 @@ def main():
     parser.add_argument('--model-config')
     parser.add_argument('--checkpoint')
     parser.add_argument('--seed',type=int,default=0)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v3_shared_prefix/experiment_manifest.json')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()
     if args.workers<1:

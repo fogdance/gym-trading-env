@@ -5,11 +5,12 @@ from pathlib import Path
 import pickle
 
 from gym_trading_env.envs.entry_contract import fingerprint
+from run_fg_abcd import phase_metadata, checkpoint_path
 
 
 def main():
     parser=argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
+    parser.add_argument('--manifest',default='artifacts/fg_abcd_v1/v3_shared_prefix/experiment_manifest.json')
     args=parser.parse_args()
     path=Path(args.manifest)
     manifest=json.loads(path.read_text());digest=manifest.pop('content_hash')
@@ -24,19 +25,20 @@ def main():
     for instance in manifest['instances']:
         for phase in instance['phases']:
             root=Path(phase['logdir']);metadata=root/'launch_metadata.json'
-            status=json.loads(metadata.read_text())['status'] if metadata.exists() else 'NOT_RUN'
+            record=phase_metadata(instance,phase)
+            status=record['status']
             matrix.append('| '+ ' | '.join(map(str,[instance['fold'],instance['budget'],instance['method'],instance['seed'],
                 phase['phase'],phase['steps'],phase['dataset']['selector'],status]))+' |')
             if instance['budget']=='pilot':
                 step=0;latest=root/'ckpt/latest'
-                if latest.exists():
-                    checkpoint=root/'ckpt'/latest.read_text().strip()
+                checkpoint=checkpoint_path(phase,required=False)
+                if checkpoint:
                     step=pickle.loads((checkpoint/'step.pkl').read_bytes())
                 audit=root/'learning_audit.json'
-                observed=json.loads(audit.read_text()) if audit.exists() else {}
+                observed=record.get('learning_audit',{}) if phase.get('full_checkpoint') else json.loads(audit.read_text()) if audit.exists() else {}
                 logged_step=step
                 metrics=root/'metrics.jsonl'
-                if metrics.exists():
+                if metrics.exists() and not phase.get('full_checkpoint'):
                     for line in metrics.read_text().splitlines():
                         try:
                             record=json.loads(line)
@@ -57,6 +59,8 @@ def main():
         '- Separate training accounts per contract; their returns are not pooled-investor performance.',
         '- Formal templates are NOT_RUN unless a later explicit launch is recorded.',
         '- Training steps count reset observations; actual advanced bars are separately audited.',
+        '- A/C share an identical protected prefix; compare their same-seed results as paired observations.',
+        '- Full checkpoints use fixed 5000-step reports and 10000-step saves; GPU smoke remains pending.',
         '- Market uncertainty cannot be inferred from matched-random seed variability.',
         '', 'Manifest: '+digest]
     (path.parent/'assumptions.md').write_text('\n'.join(assumptions)+'\n')

@@ -23,8 +23,8 @@ def frozen(path):
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('--manifest', default='artifacts/fg_abcd_v1/v2_sequential/experiment_manifest.json')
-    parser.add_argument('--output', default='artifacts/fg_abcd_v1/v2_sequential/sequential_budget_audit.json')
+    parser.add_argument('--manifest', default='artifacts/fg_abcd_v1/v3_shared_prefix/experiment_manifest.json')
+    parser.add_argument('--output', default='artifacts/fg_abcd_v1/v3_shared_prefix/sequential_budget_audit.json')
     parser.add_argument('--terminal-probe', action='store_true',
                         help='Seed six lots at the penultimate real bar and execute the final bar; not a full strategy replay.')
     args = parser.parse_args()
