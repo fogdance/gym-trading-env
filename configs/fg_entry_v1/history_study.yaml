@@ -1,0 +1,14 @@
+schema: 1
+master_config: configs/fg_entry_v1/fg.yaml
+export_manifest: artifacts/fg_entry_v1/main_export_345_audited/export_manifest.json
+output: artifacts/fg_history_study/v1
+blind_start: '2024-08-20'
+blind_end_inclusive: '2026-10-09'
+entry_spread: master
+take_profit_points: 5
+quantity: 3
+bootstrap_seed: 0
+bootstrap_replicates: 1000
+training_windows_months: [12, 24, 36, all]
+event_source: current_345_only
+day_horizons: trading_day_close
