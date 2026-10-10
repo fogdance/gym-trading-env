@@ -13,6 +13,18 @@ from tests.utils.assertions import assert_frame_allclose
 from gym_trading_env.utils.market_features import build_market_features
 
 
+def test_obs_volume_uses_clipped_absolute_volume_log_tanh():
+    bundle = MarketDataFactory.make_futures_bundle(num_days=1)
+    frame = bundle.df_1m.copy()
+    volumes = np.array([-7.0, 0.0, 10.0, 10.0, 1e9])
+    frame.loc[frame.index[:5], "Volume"] = volumes
+    got = build_market_features(frame, tz=bundle.tz, is_future=True)
+    values = got.loc[frame.index[:5], "obs_V_t"].to_numpy()
+    expected = np.tanh(np.log1p(np.clip(volumes, 0.0, None)) / 5.0)
+    np.testing.assert_allclose(values, expected)
+    assert values[2] == values[3]  # Same volume remains equal after different history.
+
+
 def test_market_features_match_spec_futures_full_table():
     bundle = MarketDataFactory.make_futures_bundle(num_days=3)
     df = bundle.df_1m

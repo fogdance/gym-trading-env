@@ -189,11 +189,12 @@ position index。`Action.*` 在这些测试里只能作为 scenario label，不�
 `obs_V_t` 以当前生产代码口径为准：
 
 ```text
-obs_V_t = clip(log1p(V_t / past_volume_baseline_t), 0, 3) * mask_t
+v = log1p(clip(V_t, 0.0, None))
+obs_V_t = tanh(v / 5.0)
 ```
 
-其中 `past_volume_baseline_t` 是同一 `session_id` 内只使用过去有效 bar 的
-EMA/expanding mean fallback。旧口径 `clip(V / I * 100, 0, 2)` 不再是契约。
+该字段仅依赖当前分钟成交量，负值裁剪为 0，不再使用历史成交量基准。
+独立的 volume_surprise/volume_impulse 字段仍沿用其原有历史基准。
 
 测试 oracle 必须与上述生产口径一致；如果未来再次修改 `obs_V_t`，需要同时修改
 production、oracle 和本节契约说明。

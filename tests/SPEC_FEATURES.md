@@ -258,7 +258,7 @@ base_t = 0 if still missing
 
 ```text
 obs_V_t =
-  clip(log1p(max(V_t / (base_t + eps), 0)), 0, 3) * mask_t
+  tanh(log1p(max(V_t, 0)) / 5.0)
 
 volume_surprise_logratio_floor =
   clip(log(max((V_t + 1) / (max(base_t, 1) + 1), eps)), -5, 5) * mask_t
