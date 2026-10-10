@@ -39,3 +39,8 @@ Dreamer smoke 脚本默认寻找同级 `gym-trading-env`；可用 `FG_ENV_ROOT` 
 ## 当前数据集入口（按主力边界切分）
 
 当前使用 `artifacts/fg_entry_v1/dataset_v2_main_split`，切分日期统一维护于 `configs/fg_entry_v1/fg.yaml` 的 `data.split`。旧 `dataset_v1` 保留用于历史审计；其统一配置哈希已过时，不能用于当前训练准入或恢复。详见 [FG_Entry_Dataset_Split.md](FG_Entry_Dataset_Split.md)。
+
+
+## 当前 345 分钟数据入口
+
+当前数据集使用 `artifacts/fg_entry_v1/dataset_v3_345_audited`，基于 `artifacts/fg_entry_v1/main_export_345_audited`。按用户要求保留早期交易日，仅在导出阶段截掉 23:01～23:30，23:00 保留。此前 dataset_v2_main_split 等产物仅作历史审计；统一配置已更新，其旧哈希不能用于当前训练准入。切分日期保持不变，未启动训练。详细修复及日志见 [FG_Entry_Minute_Clock_Fix.md](FG_Entry_Minute_Clock_Fix.md)。

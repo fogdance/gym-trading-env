@@ -33,3 +33,8 @@
 ## 按主力合约边界切分
 
 当前数据集入口改为 `artifacts/fg_entry_v1/dataset_v2_main_split`；训练截止 2022-12-09，验证截止 2024-08-19，测试截止 2025-12-31。FG301 完整进入训练，FG409 完整进入验证；构建器拒绝合约中途切分。旧冻结数据集保留为历史记录，未启动训练。
+
+
+## 当前 345 分钟数据入口
+
+当前数据集使用 `artifacts/fg_entry_v1/dataset_v3_345_audited`，基于 `artifacts/fg_entry_v1/main_export_345_audited`。按用户要求保留早期交易日，仅在导出阶段截掉 23:01～23:30，23:00 保留。此前 dataset_v2_main_split 等产物仅作历史审计；统一配置已更新，其旧哈希不能用于当前训练准入。切分日期保持不变，未启动训练。详细修复及日志见 [FG_Entry_Minute_Clock_Fix.md](FG_Entry_Minute_Clock_Fix.md)。

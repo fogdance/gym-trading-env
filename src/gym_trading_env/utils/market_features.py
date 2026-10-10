@@ -457,7 +457,7 @@ def _build_htf_context_frame(
     )
 
 
-def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
+def _add_obs_features_inplace(df: pd.DataFrame, minute_index_denominator=344.0, futures_clock=True) -> pd.DataFrame:
     """Generate the formal v2 market_seq fields from raw market features."""
     eps = 1e-12
     m = df.get("mask_t", pd.Series(1.0, index=df.index)).astype(float)
@@ -600,17 +600,18 @@ def _add_obs_features_inplace(df: pd.DataFrame) -> pd.DataFrame:
     df["obs_mask_t"] = m.astype(float)
 
     mi = pd.to_numeric(df.get("minute_index_t", 0.0), errors="coerce").fillna(0.0).astype(float)
-    if "day_id" in df.columns:
-        denom_mi = pd.to_numeric(df["minute_index_t"], errors="coerce").groupby(df["day_id"]).transform("max")
-    else:
-        denom_mi = pd.Series(float(np.nanmax(mi.to_numpy())), index=df.index)
-    denom_mi = pd.to_numeric(denom_mi, errors="coerce").fillna(1.0).astype(float).clip(lower=1.0)
+    # The denominator belongs to the planned clock, never the observed suffix.
+    denom_mi = minute_index_denominator
+    if denom_mi is None:  # Preserve the separate legacy FX observation contract.
+        denom_mi = mi.groupby(df['day_id']).transform('max').fillna(1.0).clip(lower=1.0)
     df["obs_minute_index_t"] = (mi / denom_mi).clip(0.0, 1.0).astype(float)
 
-    mi_np = mi.to_numpy(dtype=float, copy=False)
-    mi_max = float(np.nanmax(mi_np)) if len(mi_np) else 0.0
-    if mi_max <= 400.0:
-        df["obs_session_phase_t"] = (mi >= 120.0).astype(float)  # 0 night, 1 day
+    if futures_clock is None:
+        mi_max = float(mi.max()) if len(mi) else 0.0
+        df['obs_session_phase_t'] = (mi >= 120.0).astype(float) if mi_max <= 400.0 else 0.0
+    elif futures_clock:
+        # Wall-clock phase also works when a holiday has no night session.
+        df["obs_session_phase_t"] = ((df.index.hour >= 6) & (df.index.hour < 18)).astype(float)
     else:
         df["obs_session_phase_t"] = 0.0
 
@@ -773,6 +774,7 @@ def build_market_features(
     limit_up_pct: Optional[float] = None,
     limit_down_pct: Optional[float] = None,
     real_futures_clock: bool = False,
+    futures_schedule: Optional[dict] = None,
 ):
     need_cols = {"Open", "High", "Low", "Close"}
     if not need_cols.issubset(df_1m.columns):
@@ -781,7 +783,7 @@ def build_market_features(
     _ = ensure_index_tz_strict(df_1m.index, target_tz=tz)  # only validate
 
     if is_future:
-        return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct, real_futures_clock)
+        return _build_market_future(df_1m, tz, df_prev_session, limit_up_pct, limit_down_pct, real_futures_clock, futures_schedule)
     else:
         return _build_market_fx(df_1m, tz, rollover_hour_local)
 
@@ -907,7 +909,7 @@ def _build_market_fx(df_1m: pd.DataFrame, tz: str = "Asia/Singapore", rollover_h
         df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
 
     # obs
-    df = _add_obs_features_inplace(df)
+    df = _add_obs_features_inplace(df, minute_index_denominator=None, futures_clock=None)
     for col in FEATURES_MARKET_OBS:
         df[col] = pd.to_numeric(df.get(col, 0.0), errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
     for col in FEATURES_RISK_CONTEXT:
@@ -921,6 +923,35 @@ def _build_market_fx(df_1m: pd.DataFrame, tz: str = "Asia/Singapore", rollover_h
 # -----------------------------
 # Futures
 # -----------------------------
+def _planned_futures_minutes(frame, schedule):
+    """Compute zero-based minute positions from an ex-ante exchange schedule."""
+    if not schedule:
+        raise ValueError('Real futures clock requires an explicit futures_schedule')
+    local = frame.index.tz_convert(schedule['timezone'])
+    minutes = local.hour * 60 + local.minute
+    positions = np.full(len(frame), -1, dtype=int)
+    offset = 0
+    for start, end in schedule['segments']:
+        s, e = (int(t.split(':')[0])*60+int(t.split(':')[1]) for t in (start,end))
+        if not 0 <= s < e < 1440:
+            raise ValueError('Futures schedule requires ascending intraday segments')
+        match = (minutes > s) & (minutes <= e)
+        positions[match] = offset + np.asarray(minutes[match]) - s - 1
+        # A zero-duration opening mark occupies the preceding clock position.
+        if 'bob' in frame:
+            bobs = pd.DatetimeIndex(pd.to_datetime(frame.bob))
+            if bobs.tz is None:
+                bobs = bobs.tz_localize(schedule['timezone'])
+            marks = (minutes == s) & (bobs == frame.index)
+            positions[marks] = max(0, offset-1)
+        offset += e-s
+    if offset != 345 or schedule['minutes_per_day'] != 345:
+        raise ValueError('FG market clock must contain exactly 345 minutes')
+    if (positions < 0).any():
+        raise ValueError('Market bar lies outside configured 345-minute clock; truncate in FG export')
+    return pd.Series(positions,index=frame.index), 344.0
+
+
 def _build_market_future(
     df_1m: pd.DataFrame,
     tz: str = "Asia/Singapore",
@@ -928,15 +959,18 @@ def _build_market_future(
     limit_up_pct: Optional[float] = None,
     limit_down_pct: Optional[float] = None,
     real_futures_clock: bool = False,
+    futures_schedule: Optional[dict] = None,
 ):
     # Default keeps the historical 345-minute contract.
+    denominator = 344.0
     if real_futures_clock:
         if 'trading_date' not in df_1m:
             raise ValueError('Real futures clock requires DB trading_date')
         day=pd.to_datetime(df_1m.trading_date.astype(str),format='mixed').dt.strftime('%Y%m%d')
         sid=pd.Series(day.to_numpy(),index=df_1m.index)
+        planned_index, denominator = _planned_futures_minutes(df_1m, futures_schedule)
         base=dict(aligned=df_1m,mask=pd.Series(1,index=df_1m.index),session_id=sid,
-            minute_index=sid.groupby(sid,sort=False).cumcount(),
+            minute_index=planned_index,
             day_id=pd.Series(pd.factorize(sid,sort=False)[0],index=df_1m.index))
     else:
         base = strict_reindex_futures_345(df_1m, tz=tz)
@@ -1127,7 +1161,7 @@ def _build_market_future(
         X[col] = pd.to_numeric(X[col], errors="coerce").replace([np.inf, -np.inf], np.nan).fillna(0.0).astype(float)
 
     # obs
-    X = _add_obs_features_inplace(X)
+    X = _add_obs_features_inplace(X, minute_index_denominator=denominator)
     for col in FEATURES_MARKET_OBS:
         if col not in X.columns:
             X[col] = 0.0

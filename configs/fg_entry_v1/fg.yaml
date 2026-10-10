@@ -1,6 +1,10 @@
 # 唯一人工维护的 FG 配置。方向区间含首尾交易日；派生快照不得手工修改。
 schema: 1
 product: FG
+market_clock:
+  timezone: Asia/Shanghai
+  minutes_per_day: 345
+  segments: [['21:00', '23:00'], ['09:00', '10:15'], ['10:30', '11:30'], ['13:30', '15:00']]
 directions:
   date_basis: trading_date
   intervals:

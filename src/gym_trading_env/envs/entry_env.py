@@ -62,6 +62,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         else:
             master=None
             self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
+        self.market_clock = master.get('market_clock') if master is not None else self.entry_config.get('market_clock')
         terms_raw=read_yaml(resolve_path(config_path, self.entry_config["contract_config"]))
         if master is not None:
             terms_raw['lot_size']=master['costs']['lot_size']
@@ -70,7 +71,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     'close_today_fee','spread','slippage')})
         self.terms = ContractTerms(terms_raw, self.contract)
         self.config_hash = fingerprint({"env": raw, "strategy":master,"direction": self.directions.hash,
-                                        "contract": self.terms.hash, "position_obs": POSITION_OBS_FIELDS})
+                                        "contract": self.terms.hash, "position_obs": POSITION_OBS_FIELDS,
+                                        "market_clock_version": "planned_345_v1"})
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -132,7 +134,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.terms.at(time)
         if 'trading_date' in raw:
             from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
-            features=build_market_features(raw,is_future=True,real_futures_clock=True)
+            features=build_market_features(raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
             self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
         else:
             mapping = source.store.index.get_indexer(raw.index)

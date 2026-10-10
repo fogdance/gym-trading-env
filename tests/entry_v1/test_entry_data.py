@@ -75,6 +75,24 @@ def test_export_rejects_ambiguous_minute(tmp_path):
     assert not (tmp_path/'export').exists()
 
 
+def test_fg_export_truncates_late_night_before_writing_and_preserves_old_days(tmp_path, capsys):
+    db=Database([row(t,'CZCE.FG901','2018-09-03') for t in (
+        '2018-08-31 22:59','2018-08-31 23:00','2018-08-31 23:01','2018-08-31 23:30')])
+    manifest=export_fg(db,'2018-08-31','2018-09-04',tmp_path/'export')
+    assert manifest['removed_late_night_rows']==2 and manifest['minute_clock']==345
+    log=capsys.readouterr().out
+    assert 'contract=CZCE.FG901 trading_date=2018-09-03' in log
+    assert '23:01:00' in log and '23:30:00' in log and 'rows=2' in log
+    omitted=pd.read_csv(manifest['truncation_audit'])
+    assert len(omitted)==2 and omitted.Date.iloc[0].endswith('23:01:00')
+    exported=pd.read_csv(manifest['files'][0]['path'])
+    assert len(exported)==2 and exported.Date.iloc[-1].endswith('23:00:00')
+    from gym_trading_env.research.fg_entry_v1 import truncate_existing_fg_export
+    replay=truncate_existing_fg_export(manifest,tmp_path/'reprocessed')
+    assert replay['removed_late_night_rows']==0
+    pd.testing.assert_frame_equal(exported,pd.read_csv(replay['files'][0]['path']))
+
+
 def test_existing_fg_preset_retains_per_side_cost_semantics(tmp_path):
     from gym_trading_env.research.fg_entry_v1 import configured_fg_costs
     source=tmp_path/'1.yaml'
@@ -86,13 +104,18 @@ def test_existing_fg_preset_retains_per_side_cost_semantics(tmp_path):
     assert values['cost_basis']=='user_configured_constant_not_historical_exchange_schedule'
 
 
-def test_real_futures_feature_clock_keeps_historical_late_night_and_is_causal():
+def test_real_futures_clock_rejects_untrimmed_late_night_and_is_causal():
     from gym_trading_env.utils.market_features import build_market_features,FEATURES_MARKET_OBS_OUTPUT
     idx=pd.date_range('2017-12-21 22:59',periods=4,freq='min',tz='Asia/Shanghai')
     frame=pd.DataFrame(dict(Open=[1000]*4,High=[1000]*4,Low=[1000]*4,Close=[1000]*4,
         Volume=[10]*4,OpenInterest=[100]*4,trading_date=['2017-12-22']*4),index=idx)
-    left=build_market_features(frame,is_future=True,real_futures_clock=True)
-    assert left.index.equals(idx) and (left.trading_day==20171222).all()
-    changed=frame.copy();changed.loc[idx[-1],['Open','High','Low','Close']]=2000
-    right=build_market_features(changed,is_future=True,real_futures_clock=True)
+    from gym_trading_env.envs.entry_contract import read_yaml
+    schedule=read_yaml('configs/fg_entry_v1/fg.yaml')['market_clock']
+    with pytest.raises(ValueError,match='truncate in FG export'):
+        build_market_features(frame,is_future=True,real_futures_clock=True,futures_schedule=schedule)
+    frame=frame.iloc[:2]
+    left=build_market_features(frame,is_future=True,real_futures_clock=True,futures_schedule=schedule)
+    assert left.index.equals(idx[:2]) and (left.trading_day==20171222).all()
+    changed=frame.copy();changed.loc[frame.index[-1],['Open','High','Low','Close']]=2000
+    right=build_market_features(changed,is_future=True,real_futures_clock=True,futures_schedule=schedule)
     pd.testing.assert_frame_equal(left[FEATURES_MARKET_OBS_OUTPUT].iloc[:-1],right[FEATURES_MARKET_OBS_OUTPUT].iloc[:-1])

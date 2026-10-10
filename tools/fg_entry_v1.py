@@ -17,6 +17,9 @@ def main():
     exp.add_argument("--config",default="configs/fg_entry_v1/fg.yaml")
     exp.add_argument("--start");exp.add_argument("--end")
     exp.add_argument("--output",required=True)
+    trim=sub.add_parser('truncate-export',help='Apply the 23:00 cutoff to an existing FG export')
+    trim.add_argument('--export-manifest',required=True)
+    trim.add_argument('--output',required=True)
     build=sub.add_parser("build")
     build.add_argument("--export-manifest",required=True);build.add_argument("--config",default="configs/fg_entry_v1/fg.yaml")
 
@@ -62,10 +65,15 @@ def main():
         end=args.end or str(pd.Timestamp(master['data']['end_inclusive'])+pd.Timedelta(days=1))
         result=export_fg(client,start,end,args.output,args.provider or master["data"]["provider"],
             excluded_contracts=master['data']['excluded_contracts'])
+    elif args.command=='truncate-export':
+        from gym_trading_env.research.fg_entry_v1 import truncate_existing_fg_export
+        result=truncate_existing_fg_export(json.loads(Path(args.export_manifest).read_text()),args.output)
     elif args.command=="build":
         from gym_trading_env.research.fg_entry_v1 import prepare_main_contracts
         master=read_yaml(args.config)
         manifest=json.loads(Path(args.export_manifest).read_text())
+        if manifest.get('minute_clock')!=345 or manifest.get('night_cutoff')!='23:00':
+            raise ValueError('FG build requires the 345-minute export; run truncate-export first')
         contract_paths=prepare_main_contracts(manifest,master['costs'],Path(args.output)/'contracts')
         result=build_contract(manifest,args.config,contract_paths,args.config,args.output)
     else:

@@ -37,6 +37,57 @@ def configured_fg_costs(path):
         spread=float(raw["spread"]),slippage=0.0)
 
 
+def trim_fg_export_minutes(frame):
+    """FG export policy: retain 23:00 closes; omit 23:01--23:30 historical bars."""
+    times=pd.DatetimeIndex([timestamp(t) for t in frame.Date])
+    late=(times.hour==23)&(times.minute>0)
+    return frame.loc[~late].copy(), int(late.sum())
+
+
+def report_fg_truncation(frame, audit_path):
+    """Log every affected trading day and persist the exact omitted source bars."""
+    times=pd.DatetimeIndex([timestamp(t) for t in frame.Date])
+    removed=frame.loc[(times.hour==23)&(times.minute>0)].copy()
+    removed['truncation_reason']='FG_345_CLOCK_AFTER_23_00'
+    audit_path=Path(audit_path)
+    removed.to_csv(audit_path,index=False)
+    for (contract,day),part in removed.groupby(['symbol','trading_date'],sort=True):
+        print(f'[FG truncate] contract={contract} trading_date={day} '
+              f'from={part.Date.iloc[0]} to={part.Date.iloc[-1]} rows={len(part)}',flush=True)
+    print(f'[FG truncate] removed={len(removed)} kept_23_00=True audit={audit_path}',flush=True)
+    return str(audit_path)
+
+
+def truncate_existing_fg_export(export_manifest, output):
+    """Apply the export policy to an existing snapshot without re-querying DB."""
+    output=Path(output).resolve()
+    if output.exists() and any(output.iterdir()):
+        raise FileExistsError('Refusing to overwrite a FG export')
+    output.mkdir(parents=True,exist_ok=True)
+    records=[]
+    for item in export_manifest['files']:
+        if file_hash(item['path'])!=item['sha256']:
+            raise ValueError('Source FG export hash mismatch')
+        original=pd.read_csv(item['path'])
+        frame,removed=trim_fg_export_minutes(original)
+        if frame.empty:
+            raise ValueError('FG truncation removed an entire main segment')
+        target=output/Path(item['path']).name
+        frame.to_csv(target,index=False)
+        audit=report_fg_truncation(original,target.with_name(target.stem+'_truncated.csv'))
+        record=dict(item,path=str(target),sha256=file_hash(target),rows=len(frame),
+            first_timestamp=str(frame.Date.iloc[0]),last_timestamp=str(frame.Date.iloc[-1]),
+            source_path=item['path'],source_sha256=item['sha256'],removed_late_night_rows=removed,
+            truncation_audit=audit,truncation_audit_sha256=file_hash(audit))
+        if item.get('main_exit_at') and timestamp(item['main_exit_at'])!=timestamp(frame.Date.iloc[-1]):
+            record['main_exit_at']=record['last_timestamp']
+        records.append(record)
+    result=dict(export_manifest,files=records,minute_clock=345,
+        night_cutoff='23:00',removed_late_night_rows=sum(r['removed_late_night_rows'] for r in records))
+    write_json(output/'export_manifest.json',result)
+    return result
+
+
 def export_fg(client, start, end, output, provider="JUEJIN", excluded_contracts=()):
     """Read-only main-contract join; preserve identity and reject ambiguous bars."""
     from gym_trading_env.utils.time_contract import to_db_naive_dt
@@ -67,6 +118,8 @@ def export_fg(client, start, end, output, provider="JUEJIN", excluded_contracts=
                 ("CZCE.FG", provider, start.date(), end.date(), to_db_naive_dt(start), to_db_naive_dt(end)))
             frame = pd.DataFrame(cur.fetchall())
     frame=frame[~frame.symbol.isin(excluded_contracts)] if not frame.empty else frame
+    original=frame
+    frame,removed_late_night_rows=trim_fg_export_minutes(frame) if not frame.empty else (frame,0)
     mapping=mapping[~mapping.symbol.isin(excluded_contracts)]
     if frame.empty or frame.Date.duplicated().any():
         raise ValueError("Missing or ambiguous main-contract minute bars")
@@ -79,6 +132,7 @@ def export_fg(client, start, end, output, provider="JUEJIN", excluded_contracts=
     if missing:
         raise ValueError(f"Mapped trading days have no exported bars: {sorted(missing)}")
     output.mkdir(parents=True, exist_ok=True)
+    audit=report_fg_truncation(original,output/'truncated_late_night.csv')
     mapping_path = output/"main_contract_map.csv"
     mapping.to_csv(mapping_path,index=False)
     records=[]
@@ -95,7 +149,9 @@ def export_fg(client, start, end, output, provider="JUEJIN", excluded_contracts=
     manifest=dict(schema=1,product="FG",main_only=True,
         source="fut_continuous_map_v2 JOIN fut_bar_1m_v2",mapping_provider=provider,
         mapping_path=str(mapping_path),mapping_sha256=file_hash(mapping_path),
-        start=str(start),end=str(end),files=records,excluded_contracts=list(excluded_contracts))
+        start=str(start),end=str(end),files=records,excluded_contracts=list(excluded_contracts),
+        minute_clock=345,night_cutoff='23:00',removed_late_night_rows=removed_late_night_rows,
+        truncation_audit=audit,truncation_audit_sha256=file_hash(audit))
     write_json(output/"export_manifest.json",manifest)
     return manifest
 
