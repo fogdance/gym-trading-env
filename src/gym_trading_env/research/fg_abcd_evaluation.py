@@ -10,6 +10,58 @@ from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
 from .fg_entry_v1 import baseline_action, write_json
 
 
+def validate_validation_inputs(manifest_path, env_config):
+    """Verify frozen validation bytes and references before any simulation."""
+    import json
+    from gym_trading_env.envs.entry_contract import fingerprint, read_yaml, resolve_path
+    from .entry_pipeline import file_hash
+    experiment=json.loads(Path(manifest_path).read_text())
+    expected=experiment.pop('content_hash')
+    if fingerprint(experiment)!=expected:
+        raise ValueError('Experiment manifest changed')
+    selected=Path(env_config).expanduser().resolve()
+    folds=[f for f in experiment['folds'] if Path(f['validation_env']).resolve()==selected]
+    if len(folds)!=1:
+        raise ValueError('Evaluation requires a frozen development validation contract')
+    fold=folds[0]
+    hashes={str(Path(manifest_path).resolve()):file_hash(manifest_path)}
+    for descriptor in fold['datasets'].values():
+        path=Path(descriptor['manifest'])
+        dataset=json.loads(path.read_text())
+        checksum=dataset.pop('content_hash')
+        if (fingerprint(dataset)!=checksum or checksum!=descriptor['content_hash']
+                or dataset['product']!='FG'):
+            raise ValueError('Frozen validation dataset manifest changed')
+        rows=[r for r in dataset['files'] if r['role']=='validation']
+        if len(rows)!=1 or rows[0]['contract']!=fold['validation']:
+            raise ValueError('Frozen validation contract mismatch')
+        row=rows[0]
+        if Path(row['env_config']).resolve()!=selected:
+            raise ValueError('Frozen validation environment mismatch')
+        pairs=[(row['path'],row['sha256']), (row['env_config'],row['env_sha256']),
+               (row['contract_config'],row['contract_sha256']),
+               (dataset['direction_path'],dataset['direction_sha256'])]
+        for filename, checksum in pairs:
+            frozen=Path(filename).expanduser().resolve()
+            if not frozen.is_file() or file_hash(frozen)!=checksum:
+                raise ValueError(f'FG frozen validation input changed: {frozen}')
+            if str(frozen) in hashes and hashes[str(frozen)]!=checksum:
+                raise ValueError('Conflicting frozen validation inputs')
+            hashes[str(frozen)]=checksum
+        hashes[str(path.resolve())]=file_hash(path)
+        env=read_yaml(selected)
+        entry=env['entry']
+        if (env['strategy_mode']!='entry_only' or entry['contract']!=row['contract']
+                or Path(env['trading']['data_path']).expanduser().resolve()!=Path(row['path']).resolve()
+                or resolve_path(selected,entry['contract_config'])!=Path(row['contract_config']).resolve()
+                or resolve_path(selected,entry.get('strategy_config',entry.get('direction_config')))
+                    !=Path(dataset['direction_path']).resolve()):
+            raise ValueError('Validation environment references unfrozen inputs')
+    if not fold['datasets']:
+        raise ValueError('No frozen validation datasets')
+    return hashes
+
+
 def slot_key(env, index):
     """Known execution clock and manual direction only; no future prices/volume."""
     time=env.bobs[index+1]

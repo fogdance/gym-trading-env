@@ -2,12 +2,11 @@
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 import multiprocessing
-import json
 from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from gym_trading_env.research.fg_abcd_evaluation import replay_policy,matched_quotas
+from gym_trading_env.research.fg_abcd_evaluation import replay_policy,matched_quotas,validate_validation_inputs
 from gym_trading_env.research.fg_entry_v1 import write_json
 
 
@@ -28,12 +27,7 @@ def main():
     args=parser.parse_args()
     if args.workers<1:
         raise ValueError('workers must be positive')
-    from gym_trading_env.envs.entry_contract import fingerprint
-    manifest=json.loads(Path(args.manifest).read_text())
-    digest=manifest.pop('content_hash')
-    allowed={str(Path(f['validation_env']).resolve()) for f in manifest['folds']}
-    if fingerprint(manifest)!=digest or str(Path(args.env_config).resolve()) not in allowed:
-        raise ValueError('Evaluation requires a frozen development validation contract')
+    validate_validation_inputs(args.manifest,args.env_config)
     if bool(args.model_config)!=bool(args.checkpoint):
         raise ValueError('Provide both model config and checkpoint')
     root=Path(args.output)

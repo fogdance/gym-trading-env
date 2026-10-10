@@ -245,6 +245,50 @@ def run_phase(instance,phase,dreamer_root,environment,manifest_hash):
     return metadata
 
 
+def evaluate_with_retry(result_root, expected, evaluation, environment):
+    """Keep failed attempts; publish only complete results in the canonical directory."""
+    root=Path(result_root)
+    receipt=root/'evaluation_receipt.json'
+    required=('comparison.json','comparison.md','episode_metrics.csv',
+              'matched_random.csv','matched_random_summary.json')
+    def complete(folder):
+        if not all((folder/name).is_file() for name in required):
+            raise ValueError('Evaluation returned without complete result files')
+        comparison=json.loads((folder/'comparison.json').read_text())
+        strategies={r['strategy'] for r in comparison['results']}
+        if comparison['model_status']!='EVALUATED' or strategies!={'always_add','random_add','rule_add','dreamerv3'}:
+            raise ValueError('Evaluation returned without all four strategies')
+    root.parent.mkdir(parents=True,exist_ok=True)
+    if root.exists() and receipt.exists():
+        saved=json.loads(receipt.read_text())
+        # Preserve existing pilot receipts; they predate input/output hash fields.
+        for key,value in expected.items():
+            if key=='validation_inputs' and key not in saved:
+                continue
+            if saved.get(key)!=value:
+                raise ValueError('Existing evaluation identity mismatch; refusing overwrite')
+        complete(root)
+        for name,checksum in saved.get('output_hashes',{}).items():
+            if file_hash(root/name)!=checksum:
+                raise ValueError(f'Completed evaluation output changed: {name}')
+        return
+    if root.exists():
+        archived=root.with_name(root.name+'.incomplete_'+uuid.uuid4().hex)
+        root.rename(archived)
+        print(f'Preserved incomplete evaluation: {archived}',flush=True)
+    attempt=root.with_name(root.name+'.attempt_'+uuid.uuid4().hex)
+    command=list(evaluation)
+    command[command.index('--output')+1]=str(attempt)
+    subprocess.run(command,env=environment,check=True)
+    complete(attempt)
+    receipt_data=dict(expected,output_hashes={str(p.relative_to(attempt)):file_hash(p)
+        for p in attempt.rglob('*') if p.is_file()})
+    write_json(attempt/'evaluation_receipt.json',receipt_data)
+    if root.exists():
+        raise ValueError('Evaluation destination appeared during attempt; results preserved')
+    attempt.rename(root)
+
+
 def main():
     parser=argparse.ArgumentParser(__doc__)
     parser.add_argument('--manifest',default=DEFAULT_MANIFEST)
@@ -266,6 +310,10 @@ def main():
         PYTHONPATH=args.dreamer_root+':'+str(Path(__file__).resolve().parents[1]/'src'),
         JAX_COMPILATION_CACHE_DIR='/data/logdir/fg_abcd_v1/jax_cache')
     if args.execute:
+        from gym_trading_env.research.fg_abcd_evaluation import validate_validation_inputs
+        for fold in manifest['folds']:
+            if any(i['fold']==fold['validation'] for i in selected):
+                validate_validation_inputs(args.manifest,fold['validation_env'])
         subprocess.run([sys.executable,'-c','import jax; d=jax.devices(); assert d and all(x.platform=="gpu" for x in d); print(d)'],env=environment,check=True)
     planned={}
     for instance in selected:
@@ -295,17 +343,13 @@ def main():
                 fold=next(f for f in manifest['folds'] if f['validation']==instance['fold'])
                 point=checkpoint_path(final)
                 result_root=Path(args.manifest).resolve().parent/f"{args.budget}_evaluation"/instance['fold']/instance['method']/str(instance['seed'])
-                receipt=result_root/'evaluation_receipt.json'
-                expected=dict(experiment_hash=digest,checkpoint=str(point),agent_hash=file_hash(point/'agent.pkl'))
-                if result_root.exists():
-                    if not receipt.exists() or json.loads(receipt.read_text())!=expected:
-                        raise ValueError('Existing evaluation has no matching complete receipt; refusing overwrite')
-                    continue
+                inputs=validate_validation_inputs(args.manifest,fold['validation_env'])
+                expected=dict(experiment_hash=digest,checkpoint=str(point),agent_hash=file_hash(point/'agent.pkl'),
+                              validation_inputs=inputs)
                 evaluation=[sys.executable,str(Path(__file__).with_name('evaluate_fg_abcd.py')),'--manifest',args.manifest,
                     '--env-config',fold['validation_env'],'--model-config',str(point/'config.yaml' if final.get('full_checkpoint') else Path(final['logdir'])/'config.yaml'),
                     '--checkpoint',str(point),'--output',str(result_root),'--seed',str(instance['seed'])]
-                subprocess.run(evaluation,env=environment,check=True)
-                write_json(receipt,expected)
+                evaluate_with_retry(result_root,expected,evaluation,environment)
             else:print(f"{instance['method']}: policy learning gate failed; no formal comparison claimed",flush=True)
 
 
