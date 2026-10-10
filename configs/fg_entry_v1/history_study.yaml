@@ -17,3 +17,6 @@ parallel:
   start_method: spawn
   native_threads_per_worker: 1
 execution_modes: [touch_spread, conservative_spread, touch_zero_spread]
+forward_folds:
+  cutoffs: ['2021-12-31', '2022-12-09', '2023-12-31', '2024-04-30']
+  validation_months: 3

@@ -106,11 +106,8 @@ def run_job(task):
     return result
 
 
-def run_events(config_path, *, workers=None, roles=('train', 'validation'), contracts=None):
+def run_events(config_path, *, workers=None, roles=('train', 'validation'), contracts=None, plan_only=False):
     """Blind event execution has no CLI switch. Only pre-blind tasks are admitted."""
-    import fcntl
-    from gym_trading_env.research.fg_entry_v1 import write_json
-
     config = yaml.safe_load(Path(config_path).read_text())
     master = yaml.safe_load(Path(config['master_config']).read_text())
     if not roles or set(roles) - {'train', 'validation'}:
@@ -145,6 +142,8 @@ def run_events(config_path, *, workers=None, roles=('train', 'validation'), cont
                 raise ValueError('Nonadjacent main lifecycles cannot be merged')
             seen_contracts.add(item['contract'])
         previous = item['contract']
+    if plan_only:
+        return audit
     split = master['data']['split']
     a, b = split['train_end_inclusive'], split['validation_end_inclusive']
     if not a < b < config['blind_start']:
@@ -179,6 +178,15 @@ def run_events(config_path, *, workers=None, roles=('train', 'validation'), cont
                               signature=signature, manifest_sha256=signature_payload['manifest'],
                               schedule=master['market_clock'], costs=master['costs'],
                               take_profit=config['take_profit_points'], quantity=config['quantity']))
+    return execute_tasks(tasks, workers, run_directory, signature, signature_payload,
+                         selected_roles=list(roles), selected_contracts=contracts)
+
+
+def execute_tasks(tasks, workers, run_directory, signature, signature_payload, **metadata):
+    """Shared locked, atomic, resumable execution for descriptive and forward jobs."""
+    import fcntl
+    from gym_trading_env.research.fg_entry_v1 import write_json
+
     with (run_directory / 'run.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         started = time.monotonic()
@@ -200,7 +208,7 @@ def run_events(config_path, *, workers=None, roles=('train', 'validation'), cont
                     print(f"[FG events] {len(results)}/{len(tasks)} {result['contract']} {result['role']} {result['mode']} resumed={result['resumed']}", flush=True)
         results.sort(key=lambda r: (r['role'], r['contract'], r['mode']))
         summary = dict(schema=1, signature=signature, blind_sealed=True,
-                       selected_roles=list(roles), selected_contracts=contracts,
+                       **metadata,
                        seconds=round(time.monotonic() - started, 3), jobs=results)
         write_json(run_directory / 'summary.json', summary)
         print(f'[FG events] complete seconds={summary["seconds"]}', flush=True)

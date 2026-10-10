@@ -28,10 +28,11 @@ def window_coverage(config_path):
     days = pd.DataFrame(daily)
     first = pd.Timestamp(days.day.min())
     rows = []
-    cutoffs = ['2021-12-31', master['data']['split']['train_end_inclusive'], '2023-12-31', '2024-04-30']
+    cutoffs = config.get('forward_folds', {}).get('cutoffs',
+        ['2021-12-31', master['data']['split']['train_end_inclusive'], '2023-12-31', '2024-04-30'])
     for cutoff_text in cutoffs:
         cutoff = pd.Timestamp(cutoff_text)
-        validation_end = cutoff + pd.DateOffset(months=3)
+        validation_end = cutoff + pd.DateOffset(months=config.get('forward_folds', {}).get('validation_months', 3))
         if validation_end >= pd.Timestamp(config['blind_start']):
             raise ValueError('Proposed fold reaches sealed blind period')
         for months in config['training_windows_months']:

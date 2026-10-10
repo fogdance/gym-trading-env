@@ -12,7 +12,7 @@ from gym_trading_env.research.fg_history_study import audit_snapshot, audit_feat
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['audit', 'audit-features', 'events', 'statistics', 'window-coverage', 'market-profile'])
+    parser.add_argument('command', choices=['audit', 'audit-features', 'events', 'statistics', 'window-coverage', 'market-profile', 'fold-plan', 'fold-events'])
     parser.add_argument('--config', default='configs/fg_entry_v1/history_study.yaml')
     parser.add_argument('--workers', type=int)
     parser.add_argument('--roles', nargs='+', choices=['train', 'validation'], default=['train', 'validation'])
@@ -29,6 +29,10 @@ def main():
         from gym_trading_env.research.fg_history_parallel import run_events
         run_events(args.config, workers=args.workers, roles=args.roles, contracts=args.contracts)
         print('Development events computed; blind labels remain sealed.')
+        return
+    elif args.command in {'fold-plan', 'fold-events'}:
+        from gym_trading_env.research.fg_history_folds import run_folds
+        run_folds(args.config, workers=args.workers, plan_only=args.command == 'fold-plan')
         return
     elif args.command == 'window-coverage':
         from gym_trading_env.research.fg_history_windows import window_coverage
