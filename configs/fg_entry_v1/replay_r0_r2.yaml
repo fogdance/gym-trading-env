@@ -1,0 +1,9 @@
+schema: FG_REPLAY_R0_R2_V1
+train_manifest: artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+expected_manifest_hash: ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a
+seed: 0
+policies:
+  - {id: P1, kind: always_add}
+  - {id: P2_p01, kind: probabilistic, probability: 0.1}
+  - {id: P2_p05, kind: probabilistic, probability: 0.5}
+  - {id: P3, kind: capacity_delay, wait_minutes: 15}
