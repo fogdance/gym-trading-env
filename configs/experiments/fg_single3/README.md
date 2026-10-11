@@ -9,12 +9,14 @@
 - 在线 Gate 使用原有运行阈值、0.9915 / 0.004 开启余量以及连续 20 次观察；未达标期间 Actor/Critic 损失保持关闭。
 - 离线 `step` 表示梯度更新，在线 `step` 表示环境步；模型累计更新计数保留。
 
-在项目根目录、dreamerv3 环境中运行：
+当前 10,000 次离线更新已完成；配置已指向诊断接口修复后的新在线目录，原失败目录保留。使用 `resume` 跳过离线阶段，复用完整模型和优化器进入在线训练：
 
 ```bash
-python tools/fg_single3_experiment.py start --config configs/experiments/fg_single3/C1_M1_10K_then_online_1M.yaml
+python tools/fg_single3_experiment.py resume --config configs/experiments/fg_single3/C1_M1_10K_then_online_1M.yaml
 ```
 
-同一实验中断后将 `start` 改成 `resume`。新实验复制 YAML 并修改结果目录，用同一个入口选择配置；已生成的配置快照和实验收据不修改。
+新实验复制 YAML 并修改结果目录，完成 `prepare` 后使用 `start`；同一实验中断后使用 `resume`。各实验共用入口；已生成的配置快照和实验收据不修改。
 
-`prepare` 只执行 CPU 准入。训练由用户执行 `start` 后启动。当前两阶段不自动评估冻结的离线 Actor；独立 DEV 评估需使用在线训练后的模型，封存 TEST 不用于训练。
+`prepare` 只执行 CPU 准入。训练由用户执行 `start` 或 `resume` 后启动。当前两阶段不自动评估冻结的离线 Actor；独立 DEV 评估需使用在线训练后的模型，封存 TEST 不用于训练。
+
+本次诊断错误及真实 GPU 验证见 [启动修复记录](../../../docs/FG_Single3_Online_Startup_Diagnostics_Fix_20261012.md)。

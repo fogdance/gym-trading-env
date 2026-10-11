@@ -67,7 +67,7 @@ def source_files():
     dreamer = [DREAMER_ROOT / name for name in (
         'dreamerv3/agent.py','dreamerv3/rssm.py','dreamerv3/configs.yaml',
         'dreamerv3/fg_single3_offline.py','dreamerv3/main.py','dreamerv3/configuration.py',
-        'embodied/jax/agent.py','embodied/jax/opt.py','embodied/run/offline_pretrain.py',
+        'embodied/jax/agent.py','embodied/jax/opt.py','embodied/jax/outs.py','embodied/run/offline_pretrain.py',
         'embodied/run/fg_single3_audit.py','embodied/run/fg_checkpoint.py',
         'embodied/run/action_mask_warmup.py','embodied/run/train.py','dreamerv3/fg_stage_transfer.py')]
     return gym + dreamer

@@ -2,7 +2,7 @@
 # Shared model defaults remain in dreamerv3/configs.yaml via dreamer_presets.
 schema: FG_SINGLE3_TRAINING_V1
 experiment: C1_M1_OFFLINE_10K
-prepared_dir: artifacts/fg_single3_v1/experiments/C1_M1_OFFLINE_10K_from_zero_20261011_01
+prepared_dir: artifacts/fg_single3_v1/experiments/C1_M1_OFFLINE_10K_online_callback_fix_20261012_02
 dreamer_presets: [defaults, fg_entry_v1, fg_single3_joint_offline, fg_single3_1m]
 paths:
   dataset: artifacts/fg_single3_v1/replay/run_20261011_01
@@ -18,7 +18,7 @@ offline:
   key_updates: [0, 2000, 10000]
 online:
   env_steps: 1000000
-  logdir: /data/logdir/fg_single3/online_after_10k/C1_M1_ONLINE_1M
+  logdir: /data/logdir/fg_single3/online_after_10k_callback_fix/C1_M1_ONLINE_1M
   report_every_env_steps: 1600
   save_every_env_steps: 20000
   key_env_steps: [0, 10000, 100000, 250000, 500000, 1000000]
