@@ -124,8 +124,9 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 |---|---|---|
 | 基线 | PASS | 49+4项既有测试通过；旧完成标记修复已提交721392b |
 | 计划记录 | COMPLETE | 本文及原任务书纳入实验分支 |
-| E | IN_PROGRESS | 尚未发布新协议验收结果 |
-| R/O/D/H | NOT_RUN | 等待依赖Gate |
+| E | PASS | run_20261011_03；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
+| R | IN_PROGRESS | E已通过，开始候选事件研究 |
+| O/D/H | NOT_RUN | 等待依赖Gate |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。

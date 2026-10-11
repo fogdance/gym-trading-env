@@ -4,7 +4,7 @@ import json
 import numpy as np
 from pathlib import Path
 import gymnasium as gym
-from .entry_contract import read_yaml, fingerprint
+from .entry_contract import read_yaml, fingerprint, resolve_path
 from .entry_env import FixedDirectionEntryEnv
 
 
@@ -41,6 +41,19 @@ class FGEntryDatasetEnv(gym.Env):
         self.slice_bars=0
         self.env=FixedDirectionEntryEnv(config_path=self.paths[0])
         self.action_space,self.observation_space=self.env.action_space,self.env.observation_space
+        self.observation_identity=self.env.observation_identity
+        # Equal shapes do not imply equal max-lots/pending/reward semantics.
+        for path in self.paths:
+            item=read_yaml(path)
+            if item['entry'].get('protocol','fg_entry_v1')!=self.env.protocol:
+                raise ValueError('FG dataset mixes observation protocols')
+            if self.env.single3:
+                from gym_trading_env.rewards.single3_reward import Single3RewardConfig
+                entry=item['entry']
+                reward=(read_yaml(resolve_path(path,entry['strategy_config']))['reward']
+                        if entry.get('strategy_config') else entry['reward'])
+                if Single3RewardConfig(**reward).hash!=self.env.reward_config.hash:
+                    raise ValueError('FG dataset mixes reward candidates')
 
     def reset(self,seed=None,options=None):
         super().reset(seed=seed)

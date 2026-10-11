@@ -31,6 +31,10 @@ POSITION_OBS_FIELDS = (
     "pos1_size", "pos1_tp_distance", "pos1_holding_age",
     "pos2_size", "pos2_tp_distance", "pos2_holding_age",
 )
+SINGLE3_POSITION_OBS_FIELDS = ("direction", "position_ratio_3", "sl_pending",
+    *POSITION_OBS_FIELDS[3:])
+SINGLE3_PROTOCOL = "fg_single3_v1"
+SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
 
 
 class FixedDirectionEntryEnv(CustomTradingEnv):
@@ -45,13 +49,20 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if raw.get("strategy_mode") != "entry_only":
             raise ValueError("Explicit strategy_mode=entry_only is required")
         self.entry_config = raw["entry"]
+        self.protocol = self.entry_config.get("protocol", "fg_entry_v1")
+        if self.protocol not in ("fg_entry_v1", SINGLE3_PROTOCOL):
+            raise ValueError("Unknown FG entry protocol")
+        self.single3 = self.protocol == SINGLE3_PROTOCOL
+        self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
+        self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
         self.contract = self.entry_config["contract"]
         self.strategy_path=None
         if self.entry_config.get('strategy_config'):
             self.strategy_path=resolve_path(config_path,self.entry_config['strategy_config'])
             master=read_yaml(self.strategy_path)
-            if (master['product']!='FG' or master['reward']!={'formula':'60/(60+T_minutes)',
-                    'complete_quantity':3,'take_profit_points':5} or master['expiry']['mode']!='main_qualification'):
+            expected_reward = master.get('protocol') == SINGLE3_PROTOCOL if self.single3 else master['reward']=={
+                    'formula':'60/(60+T_minutes)', 'complete_quantity':3,'take_profit_points':5}
+            if (master['product']!='FG' or not expected_reward or master['expiry']['mode']!='main_qualification'):
                 raise ValueError('Unified FG configuration changes the frozen business contract')
             for key,value in master['environment']['trading'].items():
                 if raw['trading'].get(key)!=value:
@@ -70,19 +81,30 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
                     'close_today_fee','spread','slippage')})
         self.terms = ContractTerms(terms_raw, self.contract)
-        self.config_hash = fingerprint({"env": raw, "strategy":master,"direction": self.directions.hash,
-                                        "contract": self.terms.hash, "position_obs": POSITION_OBS_FIELDS,
-                                        "market_clock_version": "planned_345_v1"})
+        identity = {"env": raw, "strategy":master,"direction": self.directions.hash,
+                    "contract": self.terms.hash,
+                    "position_obs": SINGLE3_POSITION_OBS_FIELDS if self.single3 else POSITION_OBS_FIELDS,
+                    "market_clock_version": "planned_345_v1"}
+        if self.single3:
+            from gym_trading_env.rewards.single3_reward import Single3RewardConfig
+            self.reward_config = Single3RewardConfig(**(master['reward'] if master else raw['entry']['reward']))
+            identity.update(protocol=self.protocol, fill_model=self.fill_model,
+                            reward_hash=self.reward_config.hash)
+        self.config_hash = fingerprint(identity)
+        self.observation_identity = fingerprint(dict(protocol=self.protocol,
+            fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1'))
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
             raise ValueError("Entry v1 requires an offline matching FG futures config")
-        if (tr.initial_balance, tr.trade_lot, tr.max_long_position, tr.max_short_position) != (300000, 3, 6, 6):
-            raise ValueError("Entry contract requires 300000 CNY, 3 lots per ADD and max 6")
+        if (tr.initial_balance, tr.trade_lot, tr.max_long_position, tr.max_short_position) != (300000, 3, self.max_lots, self.max_lots):
+            raise ValueError(f"Entry contract requires 300000 CNY, 3 lots per ADD and max {self.max_lots}")
+        if self.single3 and raw['trading'].get('stop_loss_enabled') is not True:
+            raise ValueError("Single3 snapshot must explicitly enable SL30")
         # These are strategy properties; do not inherit daily caps or strategy exits.
         tr.intraday_single_position = False
         tr.max_entries_per_day = 2 ** 63 - 1
-        tr.stop_loss_enabled = False
+        tr.stop_loss_enabled = self.single3
         tr.take_profit_enabled = True
         tr.lot_size = self.terms.multiplier
         self.main_exit_at = timestamp(self.entry_config["main_exit_at"]) if self.entry_config.get("main_exit_at") else None
@@ -189,7 +211,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._update_unrealized_pnl()
 
     def _compute_stop_loss_price(self, entry_exec_price, side):
-        return None
+        return entry_exec_price + (-30 if side == "long" else 30) if self.single3 else None
 
     def _compute_take_profit_price(self, entry_exec_price, sl_exec_price, side):
         return entry_exec_price + (5 if side == "long" else -5)
@@ -199,7 +221,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise RuntimeError("Entry Ledger conservation failed")
 
     def _preflight_open(self, side, price):
-        if self.net_lots + 3 > 6 or len(self.entries) >= 2:
+        if self.net_lots + 3 > self.max_lots or len(self.entries) >= self.max_entries:
             return ForexCode.ERROR_HIT_MAX_POSITION
         held, _ = self._positions()
         if self.net_lots and held != side.name:
@@ -244,7 +266,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         position = np.zeros(9, np.float32)
         position[0] = {"SHORT": -1, "NO_TRADE": 0, "LONG": 1}[direction]
         # Opens commit atomically or are rejected; there is no resting opening order.
-        position[2] = 0.0
+        position[2] = float(any(e.get("sl_pending", False) for e in self.entries.values())) if self.single3 else 0.0
         held_quantity = Decimal(0)
         for item in self.entries.values():
             positions = self.position_manager.long_positions if item["side"] == "LONG" else self.position_manager.short_positions
@@ -260,7 +282,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             offset = 3 + 3 * item["obs_slot"]
             position[offset:offset+3] = [float(pos.size / 3), float(distance / 5),
                                        np.log1p(age) / np.log1p(43200)]
-        position[1] = float(held_quantity / 6)
+        position[1] = float(held_quantity / self.max_lots)
         if held_quantity != self.net_lots:
             raise RuntimeError("PositionManager/account quantities lack a matching entry identity")
         mask = np.array([1, self._can_add()], np.float32)
@@ -297,7 +319,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.entries = {}
         self.fills, self.attributions, self.reward_events, self.equity_history = [], [], [], []
         self.processed_fills = set()
-        self.reward_function = FastTakeProfitReward()
+        self.reward_function = self._new_reward()
+        if self.single3:
+            self.last_reward_components = None
         self.total_reward = self.max_floating_loss = 0.0
         self.legal_add_decisions = self.voluntary_waits = 0
         self.status, self.terminated, self.truncated = "ACTIVE", False, False
@@ -321,13 +345,15 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.entry_sequence += 1
         entry_id = f"{self.contract}:{self.account_sequence}:{self.entry_sequence}"
         used_obs_slots = {entry["obs_slot"] for entry in self.entries.values()}
-        obs_slot = next(i for i in range(2) if i not in used_obs_slots)
+        obs_slot = next(i for i in range(self.max_entries) if i not in used_obs_slots)
         item = dict(entry_id=entry_id, side=side, slot=slot, entry_time=str(time),
                     obs_slot=obs_slot,
                     entry_price=str(execution), closed_quantity="0", exit_notional="0",
                     exit_pending=False, trading_day=self._trading_day(time), all_tp=True)
         self.entries[entry_id] = item
-        self.trade_record_manager.trade_history[-1].meta.update(entry_id=entry_id, fill_model="minute_close_confirm_v1")
+        if self.single3:
+            item.update(sl_pending=False, open_fee=str(self.trade_record_manager.trade_history[-1].fee))
+        self.trade_record_manager.trade_history[-1].meta.update(entry_id=entry_id, fill_model=self.fill_model)
         self.fills.append(dict(entry_id=entry_id, time=str(time), side=side, quantity=3,
                                price=str(execution), reason="ENTRY", committed=True))
         return code
@@ -338,9 +364,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         Partial fills retain the original entry reservation until the whole entry exits.
         Duplicate external fill IDs are rejected before bookkeeping.
         """
+        if self.single3 and fill_id is None:
+            fill_id = f"{entry_id}|{timestamp(time)}|{reason}|3"
         if fill_id is not None and fill_id in self.processed_fills:
             raise ValueError("Duplicate exit fill")
         item = self.entries[entry_id]
+        if self.single3 and quantity is not None and Decimal(str(quantity)) != 3:
+            raise ValueError("Single3 requires an atomic full three-lot exit")
         time = timestamp(time)
         if time < timestamp(item["entry_time"]):
             raise ValueError("Exit precedes entry")
@@ -356,7 +386,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             item["exit_pending"] = True
             return code, None
         record = self.trade_record_manager.trade_history[-1]
-        record.meta.update(entry_id=entry_id, fill_model="minute_close_confirm_v1")
+        record.meta.update(entry_id=entry_id, fill_model=self.fill_model)
         closed = record.closed_size
         item["closed_quantity"] = str(Decimal(item["closed_quantity"]) + closed)
         item["exit_notional"] = str(Decimal(item["exit_notional"]) + closed * price)
@@ -372,9 +402,45 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         event = dict(entry_id=entry_id, side=side, entry_time=item["entry_time"], exit_time=str(time),
                      entry_price=item["entry_price"], exit_price=str(Decimal(item["exit_notional"])/3),
                      closed_quantity=3, reason="TAKE_PROFIT" if item["all_tp"] else item["non_tp_reason"], committed=True)
+        if self.single3:
+            event.update(gross_trade_pnl=str(record.pnl), open_fee=item['open_fee'],
+                         close_fee=str(record.fee),
+                         net_trade_pnl=str(record.pnl - record.fee - Decimal(item['open_fee'])),
+                         **item.get('exit_metadata', {}))
         self.attributions.append(event)
         del self.entries[entry_id]
         return code, event
+
+    def _new_reward(self):
+        if not self.single3:
+            return FastTakeProfitReward()
+        from gym_trading_env.rewards.single3_reward import Single3Reward
+        return Single3Reward(self.reward_config)
+
+    def _exit_request(self, item, pos, row, bob, time):
+        """Shared executable quote rules; financial mutation stays in settle_exit.
+
+        Called even without liquidity so a touched SL can remain pending.
+        """
+        from .entry_execution import single3_exit_decision
+        same_bar = timestamp(item['entry_time']) == bob
+        sign = 1 if item['side'] == 'LONG' else -1
+        favorable = row.Close if same_bar else (row.High if sign == 1 else row.Low)
+        decision = single3_exit_decision(side=item['side'], entry_time=timestamp(item['entry_time']),
+            stop_price=pos.stop_loss_price, tp_price=pos.take_profit_price,
+            opening_quote=self._price(row.Open, item['side'], bob),
+            adverse_quote=self._price(row.Low if sign==1 else row.High, item['side'], time),
+            favorable_quote=self._price(favorable, item['side'], time),
+            close_quote=self._price(row.Close, item['side'], time), bob=bob, time=time,
+            tick=self.terms.tick, valid_bar=bool(self.valid_fill_clock[self.current_step]),
+            was_pending=item.get('sl_pending',False), trigger_time=item.get('sl_trigger_time'),
+            global_reason=self.pending_reason)
+        item['sl_pending'] = decision.sl_pending
+        if decision.sl_trigger_time:
+            item['sl_trigger_time'] = decision.sl_trigger_time
+        # Metadata belongs to this attempt, never a stale pending attempt.
+        item['exit_metadata'] = decision.metadata
+        return (decision.reason, decision.price) if decision.reason else None
 
     def step(self, action):
         if not self.action_space.contains(action):
@@ -386,6 +452,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.legal_add_decisions += 1
             self.voluntary_waits += int(action == 0)
         old = self.current_step
+        fills_before = len(self.fills)
         if old + 1 == len(self._raw):
             self.status, self.truncated = "DATA_END", True
             return self._get_obs(), 0.0, False, True, self._get_info()
@@ -438,10 +505,15 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         for entry_id, item in list(self.entries.items()):
             positions = self.position_manager.long_positions if item["side"] == "LONG" else self.position_manager.short_positions
             pos = positions[item["slot"]]
+            request = self._exit_request(item, pos, row, bob, time) if self.single3 else None
             if remaining_volume < pos.size:
                 continue
             reason = self.pending_reason
-            if reason:
+            if self.single3:
+                if request is None:
+                    continue
+                reason, price = request
+            elif reason:
                 raw_exit = row.Close if reason == "MAIN_ROLL" else (row.Low if item["side"] == "LONG" else row.High)
                 price = self._price(raw_exit, item["side"], time)
             else:
@@ -459,8 +531,18 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 remaining_volume -= size
                 if event is not None:
                     events.append(event)
-        reward = self.reward_function(events)
-        self.reward_events.extend(copy.deepcopy(e) for e in events if e.get("reward") is not None)
+        if self.single3:
+            bar = dict(bar_open=str(bob), bar_end=str(time),
+                **{k.lower(): float(row[k]) for k in ('Open', 'High', 'Low', 'Close')},
+                valid_bar=bool(self.valid_fill_clock[self.current_step]), eligible_market_minute=False,
+                entries=[copy.deepcopy(f) for f in self.fills[fills_before:] if f['reason']=='ENTRY'],
+                exits=events, true_terminal=bool(self.pending_reason and not self.entries))
+            self.last_reward_components = self.reward_function.step(bar, self.terms.multiplier)
+            reward = self.last_reward_components['total']
+            self.reward_events.extend(copy.deepcopy(self.last_reward_components['events']))
+        else:
+            reward = self.reward_function(events)
+            self.reward_events.extend(copy.deepcopy(e) for e in events if e.get("reward") is not None)
         self.total_reward += reward
         self._mark(row.Close, time)
         self._sample_equity()
@@ -482,7 +564,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         completed = [e for e in self.attributions if e["reason"] == "TAKE_PROFIT"]
         waits = [(timestamp(e["exit_time"])-timestamp(e["entry_time"])).total_seconds()/60 for e in completed]
         return dict(status=self.status, reject_reason=getattr(self, "reject_reason", None),
-                    fill_model="minute_close_confirm_v1", direction_hash=self.directions.hash,
+                    fill_model=self.fill_model, direction_hash=self.directions.hash,
                     tp_count=len(completed), mean_tp_wait_minutes=float(np.mean(waits)) if waits else None,
                     cumulative_speed_reward=self.total_reward, unfinished_entries=len(self.entries),
                     unfinished_lots=float(self.net_lots), max_floating_loss=self.max_floating_loss,
@@ -497,7 +579,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return fingerprint(self._raw.iloc[:through+1].to_dict(orient="split"))
 
     def export_state(self):
-        state = dict(schema=1, contract=self.contract, config_hash=self.config_hash,
+        state = dict(schema=2 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
                      cursor_time=str(self._raw.index[self.current_step]), prefix_hash=self._prefix_hash(self.current_step),
                      balances=self.ledger.snapshot(), ledger_entries=[dict(timestamp=e.timestamp, memo=e.memo,
                      postings=[dict(account=p.account, amount=p.amount) for p in e.postings], meta=e.meta) for e in self.ledger.entries],
@@ -513,11 +595,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     "total_reward", "max_floating_loss", "legal_add_decisions", "voluntary_waits", "status",
                     "terminated", "truncated", "pending_reason", "completed_accounts"):
             state[key] = getattr(self, key)
+        if self.single3:
+            state.update(reward_state=self.reward_function.snapshot(), last_reward_components=self.last_reward_components)
         return json.loads(json.dumps(state, default=str))
 
     def import_state(self, state):
         state = copy.deepcopy(state)
-        if state["schema"] != 1 or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
+        if state["schema"] != (2 if self.single3 else 1) or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
             raise ValueError("Incompatible Entry checkpoint")
         i = int(self._raw.index.get_indexer([timestamp(state["cursor_time"])])[0])
         if i < 0 or self._prefix_hash(i) != state["prefix_hash"]:
@@ -543,8 +627,17 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             setattr(self, key, state[key])
         self.current_step, self.current_price = i, Decimal(state["current_price"])
         self.last_close_position, self._entries_used_today = None, self.entry_sequence
-        self.reward_function = FastTakeProfitReward()
-        self.reward_function.rewarded = set(state["rewarded"])
+        if self.single3:
+            from gym_trading_env.rewards.single3_reward import Single3Reward
+            self.reward_function = Single3Reward.restore(state['reward_state'], self.reward_config)
+            self.last_reward_components = state['last_reward_components']
+            if self.reward_function.rewarded != set(state['rewarded']):
+                raise ValueError('Single3 rewarded identity mismatch')
+            if set(self.reward_function.scorer.active) != set(self.entries):
+                raise ValueError('Single3 reward/financial active entry identity mismatch')
+        else:
+            self.reward_function = FastTakeProfitReward()
+            self.reward_function.rewarded = set(state["rewarded"])
         self.processed_fills = set(state["processed_fills"])
         self.np_random.bit_generator.state = state["rng"]
         self._assert_ledger_conservation()
