@@ -124,9 +124,18 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 |---|---|---|
 | 基线 | PASS | 49+4项既有测试通过；旧完成标记修复已提交721392b |
 | 计划记录 | COMPLETE | 本文及原任务书纳入实验分支 |
-| E | PASS | run_20261011_03；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
-| R | IN_PROGRESS | E已通过，开始候选事件研究 |
-| O/D/H | NOT_RUN | 等待依赖Gate |
+| E | PASS | run_20261011_04；44项测试；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
+| R | PASS (2合约CPU研究) | run_20261011_02；15项测试、10条完整账户和40个候选独立Env视图对账；全Fold统计待D |
+| O | IN_PROGRESS | 5项精确/独立原Env穷举测试通过；2048真实候选性能及22个候选完整参考重放PASS；全18合约运行中 |
+| D/H | NOT_RUN | 等待依赖Gate；复用接口及测试开发中 |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。
+
+### E刷新及R发布前回归
+
+E04命令：`python tools/fg_single3.py env-test --output artifacts/fg_single3_v1/env/run_20261011_04`。收据content hash：`06ca881053ada31f064a7c488f3140dfdcb51c0a8cb1bf95f1fe1d07ee03ad89`。两个合约逐步/最终状态哈希与E03一致，新增TP统计缓存不改变财务或反馈；执行源码归档在每次产物内。
+
+R01候选逐行Reward对账完成后，补充短chunk测试发现：P3读取CHUNK_END的行政mask=0，错误清空15分钟计时。已改为用当前已知状态判定恢复后的合法空仓机会；真实模型发布mask保持原协议。回归测试使用chunk7，证明首次入场16、SL后再次入场41，并验证候选视图财务和动作一致。R01正式`manifest.json`已改名为失败证据，保留所有原产物及执行源码，不能被下游当成PASS。阶段命令现在先执行所需测试，再生成和签发产物。
+
+R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --output artifacts/fg_single3_v1/reward/run_20261011_02 --workers 12`。其状态等待实际最终收据；四候选尚未选定。

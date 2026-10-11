@@ -9,6 +9,8 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import subprocess
+import sys
 import time
 
 import numpy as np
@@ -42,13 +44,49 @@ def load_config(path):
     return config
 
 
-def execution_provenance(config):
+def execution_provenance(config,stage='E'):
     result = provenance(config['dreamer_root'])
-    files = list(Path(__file__).parent.glob('fg_single3*.py'))
+    dependencies={'E':[], 'R':['fg_single3_replay.py','fg_single3_reward.py'],
+        'O':['fg_single3_replay.py','fg_single3_oracle.py'],
+        'D':['fg_single3_replay.py','fg_single3_dataset.py','fg_single3_coverage.py'],
+        'H':['fg_single3_replay.py','fg_single3_dataset.py','fg_single3_horizon.py']}
+    files=[Path(__file__),*(Path(__file__).parent/p for p in dependencies[stage])]
     files += [PROJECT/'src/gym_trading_env/rewards/single3_reward.py',
               PROJECT/'tools/fg_single3.py']
     result['code_files'].update({str(p): digest(p) for p in files if p.exists()})
     return result
+
+
+def source_witness(output,code):
+    """Archive actual dirty/committed bytes, so later CLI development is harmless."""
+    directory=Path(output)/'source_witness'
+    directory.mkdir()
+    snapshots={}
+    for filename,expected in code['code_files'].items():
+        check_files({filename:expected})
+        target=directory/(expected+'.py')
+        if not target.exists():target.write_bytes(Path(filename).read_bytes())
+        snapshots[str(target.resolve())]=expected
+    return snapshots
+
+
+def required_tests(stage):
+    """Run semantic regressions before long work or any formal completion marker."""
+    paths={'E':['tests/entry_v1/test_fg_single3_env.py','tests/entry_v1/test_entry_contract.py'],
+           'R':['tests/entry_v1/test_fg_single3_replay.py','tests/entry_v1/test_fg_replay.py'],
+           'O':['tests/entry_v1/test_fg_single3_oracle.py'],
+           'D':['tests/entry_v1/test_fg_single3_replay.py','tests/entry_v1/test_fg_single3_coverage.py'],
+           'H':['tests/entry_v1/test_fg_single3_horizon.py']}[stage]
+    hashes={str(PROJECT/p):digest(PROJECT/p) for p in paths}
+    command=[sys.executable,'-m','pytest','-p','no:cacheprovider',*paths,'-q','--tb=short']
+    env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',CUDA_VISIBLE_DEVICES='',JAX_PLATFORMS='cpu',
+             PYTHONPATH=str(PROJECT/'src')+':'+str(PROJECT),OPENBLAS_NUM_THREADS='1',OMP_NUM_THREADS='1')
+    result=subprocess.run(command,cwd=PROJECT,env=env,text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    print(result.stdout,flush=True)
+    check_files(hashes)
+    if result.returncode:
+        raise RuntimeError(f'{stage} required semantic tests failed; no completion may be published')
+    return dict(command=command,returncode=result.returncode,output=result.stdout,test_files=hashes)
 
 
 def make_output(path, config):
@@ -195,9 +233,11 @@ def _env_audit_pair(job):
 def env_audit(config, output, contracts=('CZCE.FG809','CZCE.FG909')):
     from concurrent.futures import ProcessPoolExecutor
     import multiprocessing
+    tests=required_tests('E')
     output = make_output(output, config)
     code = execution_provenance(config)
     inputs = prepare_inputs(config, output/'inputs')
+    snapshots=source_witness(output,code)
     reports = []
     available = {r['contract']:r for r in inputs['views']['C2']['rows']}
     if not contracts or len(set(contracts))!=len(contracts) or set(contracts)-set(available):
@@ -209,8 +249,8 @@ def env_audit(config, output, contracts=('CZCE.FG809','CZCE.FG909')):
             write_json(output/(contract.replace('.','_')+'_account.json'),state)
             reports.append(report)
     receipt = dict(schema=SCHEMA, stage='E', status='PASS',
-        training_content_hash=inputs['original_content_hash'], config=config, provenance=code,
-        frozen_inputs=inputs['frozen_files'], reports=reports,
+        training_content_hash=inputs['original_content_hash'], config=config, provenance=code,tests=tests,
+        frozen_inputs={**inputs['frozen_files'],**snapshots}, source_snapshots=snapshots,reports=reports,
         files={str(p.relative_to(output)):digest(p) for p in output.rglob('*') if p.is_file()})
     write_json(output/'manifest.pending.json', signed(receipt))
     check_files(inputs['frozen_files'])

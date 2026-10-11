@@ -77,3 +77,11 @@ E运行：`run_20261011_03`，状态 **PASS**。
 训练源content hash：`ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a`。
 两个账户的持仓集合均为0/3，max_entries=1，最终空仓；每步及完整状态独立对账PASS。未创建Agent、未启动GPU、未做梯度更新。
 既有29项Env回归通过；单仓位新增边界测试见测试文件及执行记录。
+
+## E04发布前回归及源码归档
+
+实际命令：`python tools/fg_single3.py env-test --output artifacts/fg_single3_v1/env/run_20261011_04`。44项测试通过，真实FG809/FG909的财务、每步反馈和最终状态哈希与E03一致；27/25次chunk恢复一致。E04收据content hash：`06ca881053ada31f064a7c488f3140dfdcb51c0a8cb1bf95f1fe1d07ee03ad89`。
+
+TP信息缓存只对追加的真实归因增量计算，reset/import清空缓存；该缓存不进入可恢复账户状态。实际旧/新方法在同一事件历史输出一致；2000个TP、100次info查询用时6.026s/0.000408s，属于扩大历史的性能微基准，不作为财务验收证据。财务证据来自E04完整真实重放。
+
+P3的chunk计时使用当前已知财务/市场状态判断恢复后的合法机会，不把CHUNK_END行政mask误认为机会消失；模型发布mask与is_first保持原规则。这一边界错误在R01发现，旧R完成标记已撤销，R02发布前15项Replay回归通过。

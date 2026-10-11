@@ -247,10 +247,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             return self.directions.at(self.contract, time, day)
         return self.directions.at(self.contract, time)
 
-    def _can_add(self):
+    def _can_add(self, *, continuing=False):
         time = self._raw.index[self.current_step]
         direction = self.direction_at(time)
-        if self.status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
+        status = 'ACTIVE' if continuing and self.status=='CHUNK_END' else self.status
+        if status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
             return False
         self._set_terms(time)
         price = self._price(self._raw.iloc[self.current_step].Close, direction, time, opening=True)
@@ -326,6 +327,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.legal_add_decisions = self.voluntary_waits = 0
         self.status, self.terminated, self.truncated = "ACTIVE", False, False
         self.pending_reason = None
+        if self.single3:
+            self._tp_info_cache = (0, 0, 0.)
         self._initialized = True
         self._sample_equity()
         return self._get_obs(), self._get_info()
@@ -561,15 +564,28 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                                        net_lots=float(self.net_lots), intrabar=intrabar))
 
     def _get_info(self):
-        completed = [e for e in self.attributions if e["reason"] == "TAKE_PROFIT"]
-        waits = [(timestamp(e["exit_time"])-timestamp(e["entry_time"])).total_seconds()/60 for e in completed]
+        if self.single3:
+            consumed,count,total=getattr(self,'_tp_info_cache',(0,0,0.))
+            if consumed>len(self.attributions):
+                consumed,count,total=0,0,0.
+            for event in self.attributions[consumed:]:
+                if event['reason']=='TAKE_PROFIT':
+                    count+=1
+                    total+=(timestamp(event['exit_time'])-timestamp(event['entry_time'])).total_seconds()/60
+            self._tp_info_cache=(len(self.attributions),count,total)
+            mean=total/count if count else None
+        else:
+            completed = [e for e in self.attributions if e["reason"] == "TAKE_PROFIT"]
+            waits = [(timestamp(e["exit_time"])-timestamp(e["entry_time"])).total_seconds()/60 for e in completed]
+            count=len(completed)
+            mean=float(np.mean(waits)) if waits else None
         return dict(status=self.status, reject_reason=getattr(self, "reject_reason", None),
                     fill_model=self.fill_model, direction_hash=self.directions.hash,
-                    tp_count=len(completed), mean_tp_wait_minutes=float(np.mean(waits)) if waits else None,
+                    tp_count=count, mean_tp_wait_minutes=mean,
                     cumulative_speed_reward=self.total_reward, unfinished_entries=len(self.entries),
                     unfinished_lots=float(self.net_lots), max_floating_loss=self.max_floating_loss,
                     account_net_pnl=float(self._calculate_equity())-300000,
-                    non_tp_exits=len(self.attributions)-len(completed),
+                    non_tp_exits=len(self.attributions)-count,
                     voluntary_wait_fraction=self.voluntary_waits/max(1, self.legal_add_decisions),
                     **{"log/env/account_net_pnl": float(self._calculate_equity())-300000,
                        "log/env/unfinished_entries": len(self.entries),
@@ -642,6 +658,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.np_random.bit_generator.state = state["rng"]
         self._assert_ledger_conservation()
         self._initialized = True
+        if self.single3:
+            self._tp_info_cache=(0,0,0.)
         self._get_obs()
 
     def continue_data(self, df):

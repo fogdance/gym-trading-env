@@ -24,6 +24,7 @@ from .fg_reward_candidates import CandidateConfig, FGRewardScorer
 
 
 SCHEMA = "FG_REPLAY_R0_R2_V1"
+SINGLE3_SCHEMA = "FG_SINGLE3_REPLAY_V1"
 FIELDS = {
     "market_seq": ((60, 18), np.dtype("float32")),
     "position_state": ((9,), np.dtype("float32")),
@@ -279,10 +280,11 @@ def iter_sidecar(directory):
             yield json.loads(line)
 
 
-def trace_manifest(directory, *, verify=True):
+def trace_manifest(directory, *, verify=True, schema=SCHEMA):
     directory = Path(directory)
     data = read_manifest(directory / "manifest.json")
-    if data["schema"] != SCHEMA or data["reward_version"] != "V1":
+    expected_reward = 'FG_SINGLE3_REWARD_V1' if schema==SINGLE3_SCHEMA else 'V1'
+    if schema not in (SCHEMA,SINGLE3_SCHEMA) or data["schema"] != schema or data["reward_version"] != expected_reward:
         raise ValueError("Incompatible Replay/Reward identity")
     if verify:
         check_files({str(directory / p): h for p, h in data["files"].items()})
@@ -318,7 +320,8 @@ def iter_replay_rows(directory, manifest=None):
         raise ValueError("Saved Replay record count mismatch")
 
 
-def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_factory=None):
+def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_factory=None,
+                  protocol='fg_entry_v1', policy_factory=None):
     """One complete independent Driver stream. Never reload an earlier account."""
     embodied = cpu_runtime(dreamer_root)
     from embodied.envs.from_gymnasium import FromGymnasium
@@ -329,8 +332,11 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
     began = time.monotonic()
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
     print(f"Collect {spec['id']} {raw.contract}: {len(raw._raw)} source rows, CPU Driver", flush=True)
-    policy = BehaviorPolicy(spec)
-    scorer = FGRewardScorer(CandidateConfig())  # Diagnostic flags only; never replaces V1.
+    single3 = protocol == 'fg_single3_v1'
+    if protocol not in ('fg_entry_v1','fg_single3_v1') or raw.single3 != single3:
+        raise ValueError('Explicit Replay protocol must match the actual Env')
+    policy = (policy_factory or BehaviorPolicy)(spec)
+    scorer = raw._new_reward() if single3 else FGRewardScorer(CandidateConfig())
 
     class Observed(gym.Wrapper):
         def reset(self, *, seed=None, options=None):
@@ -341,8 +347,14 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
 
         def step(self, action):
             obs, self.last = execute_observed(self.env, action)
-            policy.observe(advanced=self.last["advanced"], valid_bar=self.last["valid_bar"],
-                           interval_slots=self.last["interval_slots"], lots_after=self.last["lots_after"])
+            if single3:
+                # CHUNK_END hides actions administratively; it is not a loss of
+                # the known market/account opportunity after continuation.
+                policy.observe_row(self.last, legal_after=self.env._can_add(continuing=True)
+                    if self.env.status=='CHUNK_END' else bool(obs['action_mask'][1]))
+            else:
+                policy.observe(advanced=self.last["advanced"], valid_bar=self.last["valid_bar"],
+                               interval_slots=self.last["interval_slots"], lots_after=self.last["lots_after"])
             return obs, self.last["official_reward"], self.last["is_terminal"], self.env.truncated, self.env._get_info()
 
     observed = Observed(raw)
@@ -363,8 +375,9 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
             def capture(step, worker):
                 row = copy.deepcopy(observed.last)
                 if row["advanced"]:
-                    diagnostics = scorer.step(row["bar"])
-                    if not np.isclose(diagnostics["v0"], row["official_reward"], rtol=0, atol=1e-9):
+                    diagnostics = scorer.step(row['bar'],raw.terms.multiplier) if single3 else scorer.step(row["bar"])
+                    score = diagnostics['total'] if single3 else diagnostics['v0']
+                    if not np.isclose(score, row["official_reward"], rtol=0, atol=1e-9):
                         raise RuntimeError("Committed TP events disagree with Env V1 reward")
                     row["diagnostics"] = {k: diagnostics[k] for k in
                         ("early_first5", "early_next10", "penalized", "intrabar_ambiguous")}
@@ -401,15 +414,16 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         chunks = [dict(path="replay/" + c.filename, uuid=str(c.uuid), succ=str(c.succ), length=c.length)
                   for c in replay.chunks.values() if c.length]
         write_json(directory / "account_state.json", raw.export_state())
-        trades = scorer.trade_rows()
+        trades = scorer.scorer.trade_rows() if single3 else scorer.trade_rows()
         for trade in trades:
             if trade["status"] == "right_censored" and raw.pending_reason:
                 trade["status"] = "terminal_failure_unfilled"
         write_json(directory / "trade_diagnostics.json", trades)
         source_rows = len(raw._raw)
-        payload = dict(schema=SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
-                       reward_version="V1", reward_params_hash=fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
-                       obs_version="FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
+        payload = dict(schema=SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
+                       reward_version='FG_SINGLE3_REWARD_V1' if single3 else "V1",
+                       reward_params_hash=raw.reward_config.hash if single3 else fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
+                       obs_version='FG_SINGLE3_V1_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
                        contract=raw.contract, records=state["records"], advanced=state["advanced"],
                        valid_minutes=state["valid_minutes"], chunk_resets=state["chunk_resets"],
                        sequence_starts=max(0, state["records"] - 64), chunks=chunks,
@@ -417,10 +431,16 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                        terminal_status=raw.status, terminal=raw.terminated,
                        pending_reason=raw.pending_reason,
                        open_entries=len(raw.entries), open_lots=float(raw.net_lots), total_reward=raw.total_reward,
-                       tp_events=len(raw.reward_events), non_tp_exits=sum(e["reason"] != "TAKE_PROFIT" for e in raw.attributions),
+                       tp_events=sum(e['reason']=='TAKE_PROFIT' for e in raw.attributions) if single3 else len(raw.reward_events),
+                       non_tp_exits=sum(e["reason"] != "TAKE_PROFIT" for e in raw.attributions),
                        array_hash=array_hash.hexdigest(), event_hash=event_hash.hexdigest(),
                        elapsed_seconds=time.monotonic() - began,
                        files={str(p.relative_to(directory)): digest(p) for p in directory.rglob("*") if p.is_file()})
+        if single3:
+            payload.update(protocol=protocol,reward_candidate=raw.reward_config.candidate,
+                           fill_model=raw.fill_model, observation_identity=raw.observation_identity,
+                           sl_events=sum(e['reason']=='STOP_LOSS' for e in raw.attributions),
+                           early10_events=sum(e['reason']=='FIRST_ADVERSE10' for e in raw.reward_events))
         payload["replay_trace_hash"] = fingerprint({k: payload[k] for k in
             ("identity", "policy", "env_config_hash", "reward_version", "array_hash", "event_hash")})
         write_json(directory / "manifest.json", signed(payload))
@@ -430,13 +450,15 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         driver.close()
 
 
-def reconcile_trace(directory, dreamer_root, *, env_factory=None):
+def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA):
     """Replay frozen actions through a second original Env, checking every row."""
     cpu_runtime(dreamer_root)
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
     directory = Path(directory)
-    manifest = trace_manifest(directory)
+    manifest = trace_manifest(directory,schema=schema)
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=manifest["config_path"])
+    if raw.single3 != (schema==SINGLE3_SCHEMA):
+        raise ValueError('Replay/Env protocol mismatch')
     hasher, event_hash = hashlib.sha256(), hashlib.sha256()
     pending = None
     sidecar = iter(iter_sidecar(directory))
