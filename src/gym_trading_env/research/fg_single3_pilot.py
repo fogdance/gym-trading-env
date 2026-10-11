@@ -22,14 +22,15 @@ def prepare_pilot(config,dataset,coverage,horizon,output):
     import elements
     from dreamerv3.main import _resolve_seed_protocol
     from dreamerv3.fg_single3_offline import validate
+    from dreamerv3.configuration import read_config_yaml
     dreamer=Path(config['dreamer_root']).resolve()
     tests=[dreamer/'embodied/tests/test_fg_single3_offline.py',dreamer/'dreamerv3/tests/test_fg_entry.py',
            Path(__file__).resolve().parents[3]/'tests/entry_v1/test_fg_single3_pilot.py']
-    definitions=yaml.safe_load((dreamer/'dreamerv3/configs.yaml').read_text())
+    definitions=read_config_yaml(dreamer/'dreamerv3/configs.yaml')
     base=elements.Config(definitions['defaults']).update(definitions['fg_entry_v1']).update(definitions['fg_single3_joint_offline'])
     receipts=[]
     codefiles=[Path(__file__),dreamer/'dreamerv3/fg_single3_offline.py',dreamer/'dreamerv3/main.py',
-        dreamer/'dreamerv3/fg_entry_guard.py',dreamer/'dreamerv3/configs.yaml',
+        dreamer/'dreamerv3/fg_entry_guard.py',dreamer/'dreamerv3/configs.yaml',dreamer/'dreamerv3/configuration.py',
         dreamer/'embodied/run/offline_pretrain.py',dreamer/'embodied/run/action_mask_warmup.py',
         dreamer/'embodied/run/fg_checkpoint.py',dreamer/'dreamerv3/agent.py',*tests]
     provenance=dict(code_files={str(p):digest(p) for p in codefiles})

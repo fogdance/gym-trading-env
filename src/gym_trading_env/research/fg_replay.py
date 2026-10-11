@@ -321,9 +321,9 @@ def iter_replay_rows(directory, manifest=None):
 
 
 def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_factory=None,
-                  protocol='fg_entry_v1', policy_factory=None):
+                  protocol='fg_entry_v1', policy_factory=None, runtime_factory=None):
     """One complete independent Driver stream. Never reload an earlier account."""
-    embodied = cpu_runtime(dreamer_root)
+    embodied = (runtime_factory or cpu_runtime)(dreamer_root)
     from embodied.envs.from_gymnasium import FromGymnasium
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
     import gymnasium as gym
@@ -386,6 +386,8 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                 row.update(ordinal=state["records"], action=int(step["action"]),
                            legal_add=bool(step["action_mask"][1]),
                            p3_waited=policy.waited, p3_waiting=policy.waiting)
+                if hasattr(policy, 'last_diagnostics'):
+                    row['policy_diagnostics'] = copy.deepcopy(policy.last_diagnostics)
                 replay.add(step, worker=worker)
                 chunkid, offset = replay.streams[worker][-1]
                 row["stepid"] = (bytes(chunkid) + offset.to_bytes(4, "big")).hex()
@@ -450,9 +452,9 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         driver.close()
 
 
-def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA):
+def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None):
     """Replay frozen actions through a second original Env, checking every row."""
-    cpu_runtime(dreamer_root)
+    (runtime_factory or cpu_runtime)(dreamer_root)
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
     directory = Path(directory)
     manifest = trace_manifest(directory,schema=schema)
