@@ -24,7 +24,7 @@ STAGES = {
     'D generation': ('replay/run_20261011_01', 'D_GENERATED'),
     'D coverage': ('coverage/run_20261011_01', 'D_AUDIT'),
     'H': ('horizon/run_20261011_01', 'H'),
-    'Pilot preparation': ('pilot/run_20261011_01', 'PILOT_PREPARED'),
+    'Pilot preparation': ('pilot/run_20261011_02', 'PILOT_PREPARED'),
 }
 
 

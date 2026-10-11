@@ -1,9 +1,9 @@
 # FG Single3 CPU 实施与验收汇总
 
-状态：IN_PROGRESS，以下缺失Gate仍未完成。
+状态：CPU阶段验收及模型先导准备完成。
 模型NOT_RUN；gradient_updates=0；择时能力NOT_ESTABLISHED。
 
-报告生成UTC：2026-10-11T07:02:42.706210+00:00。
+报告生成UTC：2026-10-11T07:46:19.014338+00:00。
 
 正式依据：`FG_DreamerV3_Single3_TP5_SL30_Reward_OracleReplay_Execution_Plan_V1.md`；原文件SHA256 `9e3287a5bbe9eec93788275ae5b3ee082677c637b266690bad08732823679744`。业务协议和实施范围见 `FG_Single3_Implementation_Plan_and_Progress.md`。
 
@@ -15,8 +15,8 @@
 | O | PASS | f2a8497913568d9fedec1c2ad568facc32905a948a29d65ca3b58309b3e8e678 |
 | D generation | PASS | 2cb543e5167a4c828fb05b67cdca9fda3c0cabdc7961fc28fc7ad8d433aba123 |
 | D coverage | PASS | a1cbec5f456a3b3629d36e55f0aa20ebd005053923b29e0630741eb8bdb9c0b9 |
-| H | NOT_COMPLETED | - |
-| Pilot preparation | NOT_COMPLETED | - |
+| H | PASS | 9719bc7349405fa3cabdb6eb7b85e702225930f846d3f0c57028c6950ee2b6ca |
+| Pilot preparation | PASS | f655b89b9210417e2caf46e48e1231fa7bf779083d9da58025c42e7c85776576 |
 
 输入源为冻结18合约TRAIN白名单；保留旧6手Replay、Checkpoint和实验结果。原账户/撮合、Driver/Replay、Uniform采样和Dreamer网络继续复用。所有新价格轨迹来自Single3真实Env；同一自然策略四Reward视图冻结动作后分别执行Env，不把旧6手反馈重新标记为新数据。
 
@@ -29,6 +29,8 @@
 - O：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_oracle.py -q --tb=short`；returncode=0；输出 `.....                                                                    [100%]`。
 - D generation：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_replay.py tests/entry_v1/test_fg_single3_coverage.py -q --tb=short`；returncode=0；输出 `....                                                                     [100%]`。
 - D coverage：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_replay.py tests/entry_v1/test_fg_single3_coverage.py -q --tb=short`；returncode=0；输出 `....                                                                     [100%]`。
+- H：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_horizon.py -q --tb=short`；returncode=0；输出 `.                                                                        [100%]`。
+- Pilot preparation：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider /home/v/Documents/work/dreamerv3/embodied/tests/test_fg_single3_offline.py /home/v/Documents/work/dreamerv3/dreamerv3/tests/test_fg_entry.py /home/v/Documents/work/gym-trading-env/tests/entry_v1/test_fg_single3_pilot.py -q --tb=short`；returncode=0；输出 `........                                                                 [100%]`。
 
 ## 真实产物与范围
 
@@ -71,6 +73,10 @@ C2只是采集诊断配置。以下为真实1000批次train64位置的曝光，�
 本轮真实TRAIN的ADD拒单=0、SL pending观察行=0、终局未平仓=0。未出现的风险分支只有构造Env测试证据，不能声称模型已经覆盖这些状态。
 
 推进分钟统计不含18个合约的初始观察；unvisited_rows=0。多策略及四Reward视图仍是同一历史市场的相关反事实。
+
+H实际576个公平同账户快照ADD/WAIT分叉；H333/1000/3000/γ1比较见 `FG_Single3_Horizon_Credit_Assignment.md`。这是冻结后续P1的有限反事实，Critic预测误差NOT_MEASURED。
+
+8份M0/M1模板已CPU预检；authorized=False，在Agent初始化前阻止启动。现有Mask warmup/ADD召回门控与完整Checkpoint恢复通过FakeAgent接线测试；实际GPU网络权重与训练能力未验证。
 
 Reward候选未选定，不按P4高分选参数；保持horizon333/imag15/原网络作为第一组基线。当前工程证据不证明Agent学会WAIT/ADD或快速TP。
 

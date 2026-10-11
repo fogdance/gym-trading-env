@@ -129,7 +129,8 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 | O | PASS | 18合约488142候选、3439个独立参考路径、72条最终H333完整Driver账户；exact_proven；5项独立原Env/精确比较测试 |
 | 输入因果审计 | PASS | run_20261011_01；18个TRAIN合约×11个截点，60×18 float32观察与当时前缀逐值相同 |
 | D | PASS | 378账户、10261209 Replay行；29池×1000真实batch；0非法ADD/6手/不连续序列；完整D_AUDIT已发布 |
-| H | IN_PROGRESS | 正式D-Gate后自动启动20 worker、576组同状态分叉；尚无正式H收据 |
+| H | PASS | 576组同状态分叉，四候选×18合约×8快照；H333/1000/3000/γ1实际比较完成；Critic预测误差未测量 |
+| 模型先导准备 | PASS | pilot/run_20261011_02；8份模板真实数据准入及8项CPU测试通过；默认authorized=False |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。
@@ -186,4 +187,20 @@ CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检�
 
 实际378账户、10261209行、10250982次推进、488136个唯一推进有效分钟；18个合约初始观察不算推进行，unvisited_rows=0。9849次真实账户恢复；29池各1000个B16×65批次，首batch全部复现，0不连续序列、0非法ADD、0拒单、0六手决策。总审计进程累计峰值RSS为13611241472字节（约12.68GiB），低于16GiB预算；JAX实际平台仅cpu。阶段必需4项测试实际通过，既有公共覆盖回归此前也已验证。
 
-四候选自然策略未折扣总分均负，P0为0，不能据此宣称模型已出现All-WAIT；模型尚未训练。C2自然池实际train64 TP均值9.408/batch，自然+P4为14.519/batch，两个池零TP batch比例均0；后验曝光变化不等于模型收益。真实TRAIN没有SL pending观察或终局未平仓，相关边界仍只有构造Env测试证据。完整表已写入 `FG_Single3_Replay_R0_R2_Coverage.md`、`FG_Single3_Reward_Research.md`；当前CPU汇总保留H和模型先导准备未完成状态。
+四候选自然策略未折扣总分均负，P0为0，不能据此宣称模型已出现All-WAIT；模型尚未训练。C2自然池实际train64 TP均值9.408/batch，自然+P4为14.519/batch，两个池零TP batch比例均0；后验曝光变化不等于模型收益。真实TRAIN没有SL pending观察或终局未平仓，相关边界仍只有构造Env测试证据。完整表已写入 `FG_Single3_Replay_R0_R2_Coverage.md`、`FG_Single3_Reward_Research.md`；D结束时的CPU汇总保留H和模型先导准备未完成状态，最终结果见后续阶段记录。
+
+### H完整Gate与先导准备重试
+
+流水线02的 `horizon-audit --workers 20` 实际returncode=0，耗时2413.86642027秒。576组完整对照通过，收据content hash `9719bc7349405fa3cabdb6eb7b85e702225930f846d3f0c57028c6950ee2b6ca`，同一dataset/coverage文件SHA256均相符；阶段必需1项测试通过，实际最大worker累计峰值RSS 611913728字节。H1000/H3000/γ1相对H333的排序变化分别18/25/50组（包含平分变化）；有限后续P1的反事实不能称为最优Q或Critic误差，H333仍为第一组基线。
+
+随后先导01实际失败：容量应为1949908，但真实preset解析为字符串 `"1949908"`，目录逐值相符；整数比较导致准入误拒绝。新增实际preset回归先复现该ValueError；修复准入后又复现make_replay中int/str比较TypeError。Dreamer `d49c5b0`将Single3容量比较和构造按数值处理，回归最终通过且非整数容量仍拒绝，旧模式分支保持原行为；两份源码均不在已签发D/H冻结源码集合内，未使其收据失效。
+
+先导01源码归档及流水线02的FAIL日志保留，没有正式先导完成收据或完成报告。使用同一D/H Gate、输出新建为 `pilot/run_20261011_02`；流水线新增可复用的 `--start-stage prepare-pilot`，各阶段CLI仍独立重新校验必要Gate。继续日志为 `artifacts/fg_single3_v1/cpu_pipeline_run_20261011_03.log`；报告汇总器也改为等待先导02及日志03，不重跑已通过的E～H，不启动GPU。
+
+### CPU阶段最终验收（实际完成）
+
+先导02实际returncode=0，耗时61.70974612秒；PILOT_PREPARED收据content hash `f655b89b9210417e2caf46e48e1231fa7bf779083d9da58025c42e7c85776576`。四候选各M0/M1共8份模板全部实际通过完整D/H数据准入，必需8项CPU测试通过；全部bash脚本语法通过、horizon333/imag15/预算2000更新/model seed0/Replay seed202一致。M0完整容量1949908、M1完整容量2437385；全部authorized=False、gradient_updates_executed=0。
+
+另行使用CPU环境执行原样C0/M0启动脚本，实际exit1且错误为 `Single3 GPU pilot is NOT_RUN: user Reward/Replay/Oracle acceptance is required`；调用链在main.py:181的FG准入及fg_single3_offline.py:12停止，未创建神经Agent。验证收据：`artifacts/fg_single3_v1/resources/default_pilot_block_verified.json`。不是模型训练失败，而是预期的未授权阻止。Dreamer agent.py相对原基线无差异；旧6手Replay、Checkpoint及结果保留。
+
+E→R→O→D→H及CPU先导准备已全部验收，报告已从实际收据汇总。日志01保留资源调整的中断，日志02保留D生成/覆盖及H通过、先导01容量错误，日志03仅重跑先导并正式通过；不把三个日志的耗时相加解释为从头运行的全阶段总耗时。`FG_Single3_CPU_Implementation_and_Verification.md`为完整总结；GPU和模型仍NOT_RUN，Reward候选未选定，择时能力NOT_ESTABLISHED。用户确认Reward、Replay、Oracle结果并选一组Reward后，才可授权M0/M1同预算先导。

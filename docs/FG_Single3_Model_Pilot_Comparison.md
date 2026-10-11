@@ -1,9 +1,13 @@
-# FG Single3 模型先导准备
+# FG Single3 模型先导比较（准备完成，尚未运行）
 
-状态：NOT_RUN；等待E/R/O/D/H完整CPU验收和用户确认。没有初始化神经Agent、没有启动GPU、没有执行梯度更新。
+模型状态：NOT_RUN。尚未选定训练Reward，未初始化神经Agent、未启动GPU、未执行梯度更新；择时能力NOT_ESTABLISHED。
 
-准备C0/C1/C2/C3各自的M0自然池与M1自然+Oracle池。每组联合离线完整Agent训练2000次梯度更新、model seed0/replay seed202、原size50m网络/horizon333、B16×64+context1、imag15，完整Uniform容量。原有Mask warmup和ADD类召回/支持数将接入offline_pretrain；不是WM-only，不新增Actor BC。
+四候选各准备M0自然池、M1自然+P4池，供用户验收后选一组Reward运行。两组网络结构沿用fg_entry_v1/size50m；horizon333、imag15、B16/64+context1；model seed0、Replay seed202；每组2000次梯度更新（2,048,000训练时间位置），完整Uniform容量。
 
-新入口只接受签名的全Fold3手数据、1000真实batch覆盖、576同账户H对照；一份训练run只含一份Reward。启动配置默认authorized=False；必须由用户确认CPU结果后再启用。新Checkpoint身份绑定数据、Reward、Obs、M池、网络/训练配置和源码；复用原FullCheckpoint与RuntimeState保存Agent、预取队列、Replay RNG、carry及Gate；旧6手或其他Reward/池的checkpoint拒绝接续。
+模式是完整Agent联合离线训练，复用现有Mask warmup并检查ADD合法类post/prior召回及真实正类支持数。不是WM-only；不新增Actor BC Loss。Gate未通过时沿用原有Actor/Critic loss门控。
 
-正式CPU预检与配置会在D/H产物完成后生成，测试和状态以实测收据为准。工程准备不能作为Agent择时能力验收；能力NOT_ESTABLISHED。
+CPU FakeAgent测试证明首次训练关闭Actor，满足Gate后开启，Gate/训练carry/预取队列/Replay RNG复用原FullCheckpoint保存和恢复，不重复更新；不同身份恢复拒绝。真实GPU权重及训练结果尚未验证。
+
+启动脚本默认authorized=False，会在Agent初始化前拒绝启动；只有用户确认Reward、完整Replay覆盖和Oracle结果后才能设置True。旧6手Replay、Checkpoint、不同Reward和不同M池的Checkpoint身份均不能接续。
+
+每个候选配置及预检在此目录；不存在已训练模型结果。

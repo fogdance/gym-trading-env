@@ -26,6 +26,8 @@ def main():
     parser.add_argument('--log',required=True)
     parser.add_argument('--workers',type=int,default=12)
     parser.add_argument('--resume-dataset',action='store_true',help='Reuse completed same-identity accounts after a preserved partial attempt')
+    parser.add_argument('--start-stage',choices=('replay-generate','replay-audit','horizon-audit','prepare-pilot'),
+                        default='replay-generate',help='Continue at a stage whose own CLI revalidates the required signed Gates')
     args=parser.parse_args()
     cwd=Path(__file__).resolve().parents[1]
     log=Path(args.log).resolve();log.parent.mkdir(parents=True,exist_ok=True)
@@ -40,6 +42,7 @@ def main():
         ['prepare-pilot','--dataset',args.dataset,'--coverage',args.coverage,'--horizon',args.horizon,'--output',args.pilot]]
     if args.resume_dataset:
         commands[0].append('--resume')
+    commands=commands[next(i for i,command in enumerate(commands) if command[0]==args.start_stage):]
     with log.open('x',buffering=1) as stream:
         stream.write('WAITING_FOR_EXACT_ORACLE\n')
         oracle=Path(args.oracle).resolve()
