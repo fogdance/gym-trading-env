@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "time": "2026-10-11T16:14:48.263576+00:00",
+  "report_sha256": "c1731c9c6a840a5943c020bfbd1610517427ef287b97695b7f8fd7d783aa73ca",
+  "checks": [
+    "bash -n for both command blocks",
+    "all documented pytest paths exist",
+    "verification scripts parse",
+    "dataset/Oracle/TRAIN/Reward/Obs/label hashes match saved manifest"
+  ]
+}

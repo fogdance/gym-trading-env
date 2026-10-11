@@ -1,0 +1,14 @@
+{
+  "status": "PASS_METADATA_ONLY",
+  "source_identity_hash": "1e88d9b5903bac73e80e70de5bf92bd7be8187b17bc74120d6772be350899faf",
+  "metadata_checkpoint": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000008000",
+  "config_manifest_sha256": "8adea2b410648d23bbd7f173305f02eb3c2cc8e17acfa018b48ba7da8354f453",
+  "architecture_and_learning_exact": true,
+  "core_files_match": 15,
+  "package_versions_match": 9,
+  "parameter_payload_loaded": false,
+  "full_model_runtime_compatibility_verified": false,
+  "feature_width": 5120,
+  "projected_full_features_bytes": 8234926080,
+  "content_hash": "c57f4ba9f11117e12e48bcea780d3e2b5d7cadfe97a330771d1057f5f616f9e3"
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="32.904" timestamp="2026-10-11T23:25:48.077386+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_s3a" name="test_original_policy_parity_teacher_history_and_future_isolation" time="15.148" /><testcase classname="embodied.tests.test_fg_s3a" name="test_actor_gradient_equivalence_frozen_nonzero_state_and_inference" time="4.057" /><testcase classname="embodied.tests.test_fg_s3a" name="test_full_1024_features_checkpoint_resume_and_corruption" time="4.080"><failure message="ValueError: BC optimizer structure differs">bundle = {'root': PosixPath('/tmp/fg_s3a_neural_cpu_final1/s3a_neural0'), 'labels': PosixPath('/tmp/fg_s3a_neural_cpu_final1/s3...status': 'PASS', 'candidate': 'C1', 'seed': 0, ...}, 'agent': &lt;embodied.jax.agent.Agent object at 0x78d60afa8310&gt;, ...}
+original = &lt;embodied.jax.agent.Agent object at 0x78d60afa8310&gt;
+tmp_path = PosixPath('/tmp/fg_s3a_neural_cpu_final1/test_full_1024_features_checkp0')
+
+    def test_full_1024_features_checkpoint_resume_and_corruption(bundle,original,tmp_path):
+        a=original
+        m=build_features(a,bundle['source'],bundle['labels'],tmp_path/'features',shard_rows=137)
+        assert m['complete'] and m['visited_rows']&gt;1024 and m['max_original_probability_error']&lt;=1e-6
+        assert m['rows']==bundle['lm']['summary']['counts']['eligible']
+        # Chunk-reset holding state was validated by the original collector and labels.
+        a.load_exact(bundle['snapshot']);a.sync_policy_from_train(reset_counter=True)
+        cache=FeatureCache(tmp_path/'features',bundle['source'],bundle['labels']);bc=ActorBC(a);sampler=Sampler(cache.rows,9)
+        identity=training_identity(bundle['source'],cache,9,'resume',16,None)
+        def update():
+            x,index=cache.batch(sampler.next(16));return bc.update(x,index['mask'],index['label'])
+        for _ in range(3):update()
+        node=save_bc(tmp_path/'ckpt',bc,sampler,identity)
+        for _ in range(3):update()
+        continuous=parameter_digests(a.params);continuous_opt=jax.tree.map(np.asarray,bc.s3a_bc_opt);next_indices=sampler.next(31)
+        # Restore requires the source first, then BC weights; source cannot overwrite resumed pol.
+        a.load_exact(bundle['snapshot']);a.sync_policy_from_train(reset_counter=True);bc=ActorBC(a);sampler=Sampler(cache.rows,9)
+&gt;       restore_bc(node,bc,sampler,identity)
+
+embodied/tests/test_fg_s3a.py:133: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/fg_s3a_neural_cpu_final1/test_full_1024_features_checkp0/ckpt/bc_000000000003')
+bc = &lt;dreamerv3.fg_s3a_actor.ActorBC object at 0x78d58c192d50&gt;
+sampler = &lt;embodied.run.fg_s3a_train.Sampler object at 0x78d608520190&gt;
+identity = {'protocol': 'FG_S3A_BC_V1', 'source_manifest_sha256': '3e8d82fdab2fc653873bcfaf947298b1801092c203a7cce20598c6efdb5870ba', 'source_identity_hash': '115ac65196a441c5fc7f270b34f3f5cbb8dec640f51eec4a280d4a76edc57f1b', 'diagnostic': True, ...}
+
+    def restore_bc(path,bc,sampler,identity):
+        m=validate_bc(path,identity)
+        state=pickle.loads((Path(path)/'state.pkl').read_bytes())
+        if state['bc_updates']!=m['bc_updates'] or state['source_digests']!=bc.source_digests:
+            raise ValueError('BC source fingerprint or update count differs')
+        if jax.tree.structure(state['s3a_bc_opt'])!=jax.tree.structure(bc.s3a_bc_opt):
+&gt;           raise ValueError('BC optimizer structure differs')
+E           ValueError: BC optimizer structure differs
+
+embodied/run/fg_s3a_checkpoint.py:144: ValueError</failure></testcase><testcase classname="embodied.tests.test_fg_s3a" name="test_model_source_schema_and_cache_identity" time="7.844" /><testcase classname="embodied.tests.test_fg_s3a" name="test_all_wait_prior_metrics_and_uniform_sampler" time="0.001" /></testsuite></testsuites>

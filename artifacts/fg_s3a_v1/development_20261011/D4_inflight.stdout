@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/dreamerv3-dev/scripts/fg_s3a.py", line 88, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/home/v/Documents/work/dreamerv3-dev/scripts/fg_s3a.py", line 69, in main
+    source=validate_source(args.source_checkpoint,labels,diagnostic=args.diagnostic)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3a_checkpoint.py", line 62, in validate_source
+    raise ValueError('Completed protected C1_M1_1M checkpoint (62500 updates) required')
+ValueError: Completed protected C1_M1_1M checkpoint (62500 updates) required

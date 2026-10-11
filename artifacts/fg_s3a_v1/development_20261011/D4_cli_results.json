@@ -1,0 +1,32 @@
+[
+  {
+    "name": "bc_audit",
+    "result": {
+      "chunk_id": "b8ff27",
+      "wall_time_seconds": 0.000008105,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "label_audit",
+    "result": {
+      "chunk_id": "0da5fa",
+      "wall_time_seconds": 0.925895012,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "inflight_reject",
+    "result": {
+      "chunk_id": "dd24a3",
+      "wall_time_seconds": 0.000006523,
+      "exit_code": 1,
+      "original_token_count": 0,
+      "output": ""
+    }
+  }
+]

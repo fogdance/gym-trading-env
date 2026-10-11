@@ -1,0 +1,70 @@
+{
+  "gate": "D0_FINAL",
+  "time": "2026-10-11T15:56:33.188069+00:00",
+  "file_protection_status": "FAIL",
+  "protected_files_checked": 152,
+  "changed_protected_files": [
+    "/home/v/Documents/work/dreamerv3/dreamerv3/fg_single3_offline.py",
+    "/home/v/Documents/work/dreamerv3/dreamerv3/fg_stage_transfer.py",
+    "/home/v/Documents/work/dreamerv3/embodied/run/action_mask_warmup.py",
+    "/home/v/Documents/work/dreamerv3/embodied/run/fg_single3_audit.py",
+    "/home/v/Documents/work/dreamerv3/embodied/run/offline_pretrain.py",
+    "/home/v/Documents/work/dreamerv3/embodied/run/train.py",
+    "/home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_single3_evaluation.py",
+    "/home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_single3_experiment.py"
+  ],
+  "baseline_checkpoint_metadata_matches": [
+    "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000008000"
+  ],
+  "checkpoint_manifests": {
+    "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000000000": "65c5d774fccbdb565b0e5649dcdc16a29ed8a8f4ca03df6030412c9c28f599b2",
+    "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000002000": "bd75f3cc71d6d37ef6282e87be6cbc52a9c49f0ca8d02c421d43912c51a41726",
+    "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000008000": "e3b97c3f540320462ca0d97c0bb69f6e462e29858cadc2c7b5f2565b3d7d0bd9",
+    "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000010000": "86e880f2253ea888889b5a38893ffb7eaca0390b5e84666afcab4d8b4eca4591"
+  },
+  "production_process_exit": {
+    "status": "NOT_RUNNING",
+    "failure_path": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/failure_2e48c41d3b91406ca84daf2525f0507f.json",
+    "failure": {
+      "error": "KeyboardInterrupt()",
+      "status": "FAILED",
+      "time": 1791731539.878277,
+      "traceback": "Traceback (most recent call last):\n  File \"/home/v/Documents/work/dreamerv3/embodied/run/offline_pretrain.py\", line 278, in offline_pretrain\n    return _offline_pretrain(make_agent, make_replay, make_stream, make_logger, args, replay_dir)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/dreamerv3/embodied/run/offline_pretrain.py\", line 180, in _offline_pretrain\n    carry_train[0], outs, mets = agent.train(carry_train[0], batch)\n                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py\", line 81, in inner\n    return func(*args, **kwds)\n           ^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/dreamerv3/embodied/jax/agent.py\", line 275, in train\n    self.params, carry, outs, mets = self._train(\n                                     ^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/stages.py\", line 594, in __call__\n    return self._call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/stages.py\", line 591, in cpp_call_fallback\n    outs, _, _ = Compiled.call(params, *args, **kwargs)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/stages.py\", line 563, in call\n    out_flat = params.executable.call(*args_flat)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py\", line 2973, in call\n    return self.unsafe_call(*args)  # pylint: disable=not-callable\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py\", line 333, in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py\", line 1277, in __call__\n    results = self.xla_executable.execute_sharded(\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nKeyboardInterrupt\n",
+      "training_complete": false
+    },
+    "trigger_origin": "UNKNOWN",
+    "stale_progress": {
+      "actor_changes_gate_closed": 0,
+      "actor_effective_updates": 0,
+      "critic_effective_updates": 0,
+      "first_gate_open_update": null,
+      "gate_open_updates": 0,
+      "last_update": 10800,
+      "reward_effective_updates": 10799,
+      "status": "RUNNING",
+      "training_positions": 11059200,
+      "wm_effective_updates": 10799
+    },
+    "training_summary_exists": false,
+    "final_checkpoint_exists": false
+  },
+  "host_receipt": "D0_host_final.json",
+  "repos": {
+    "/home/v/Documents/work/gym-trading-env2": {
+      "baseline": "79aa9a9664a648fc961277986290874a6eb1c9d1",
+      "head": "3e70f61851da1f1127b34f5a3ff6776d7ee003e9",
+      "branch": "feat/fg-s3a-oracle-bc",
+      "diff_from_baseline": "A\tartifacts/fg_s3a_v1/development_20261011/D0_initial.json\nA\tartifacts/fg_s3a_v1/development_20261011/D1_identity_pytest.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D1_pytest.xml\nA\tartifacts/fg_s3a_v1/labels_20261011/audit.json\nA\tartifacts/fg_s3a_v1/labels_20261011/manifest.json\nA\tartifacts/fg_s3a_v1/labels_20261011_v2/audit.json\nA\tartifacts/fg_s3a_v1/labels_20261011_v2/manifest.json\nA\tdocs/FG_S3A_Implementation_and_Verification.md\nA\tsrc/gym_trading_env/research/fg_s3a_labels.py\nA\ttests/entry_v1/test_fg_s3a_labels.py\nA\ttools/fg_s3a.py",
+      "status": "M docs/FG_S3A_Implementation_and_Verification.md"
+    },
+    "/home/v/Documents/work/dreamerv3-dev": {
+      "baseline": "446e6fc9dbc92a1be24d0d44b840e85d4f96010e",
+      "head": "358b2674f4b9b1fd6fe705f88cf9c7bd5e87114e",
+      "branch": "feat/fg-s3a-oracle-bc",
+      "diff_from_baseline": "A\tdocs/FG_S3A_pending_integration.patch\nA\tdreamerv3/fg_s3a_actor.py\nA\tdreamerv3/fg_s3a_agent.py\nA\tembodied/run/fg_s3a_checkpoint.py\nA\tembodied/run/fg_s3a_eval.py\nA\tembodied/run/fg_s3a_features.py\nA\tembodied/run/fg_s3a_train.py\nA\tembodied/tests/test_fg_s3a.py\nA\tscripts/fg_s3a.py",
+      "status": "?? 1.patch\n?? 1.py\n?? 2.py\n?? 3.py\n?? atari.sh\n?? data/1.py\n?? data/EURUSD_5m.csv-bybit\n?? data/print_meta.sh\n?? data/test_zigzag.py\n?? \"data/\\350\\256\\255\\347\\273\\203\\350\\256\\260\\345\\275\\225.md\"\n?? docs/producer_consumer.md\n?? dreamerv3_backup.yml\n?? live.sh\n?? train.sh\n?? wm_diagnosis.py"
+    }
+  },
+  "s3a_signal_kill_restart_actions": false,
+  "formal_gpu_training": false
+}

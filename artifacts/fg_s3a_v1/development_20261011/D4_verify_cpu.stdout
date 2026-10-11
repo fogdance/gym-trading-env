@@ -1,0 +1,67 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "status": "PASS",
+  "scope": "RANDOM_SMALL_ORIGINAL_AGENT_REAL_C1_P4_BFLOAT16_CPU",
+  "source_manifest_sha256": "288a3013bd2aacc7038b9823484d6655fc65360635cbcd3f896cb924cb6ef499",
+  "feature_manifest_sha256": "9834dff3c18ecff66fd4cb3bfcf4059cbefdd5e4a3a65fb276fa986a454c8ad1",
+  "labels_manifest_sha256": "2f2a9de785bb963fe7e20fdc7c4b418ba7c2d5f27dfe0b1db5517e00e247d39f",
+  "updates": 20,
+  "resume_split": [
+    10,
+    10
+  ],
+  "all_model_parameters_byte_equal": true,
+  "independent_optimizer_byte_equal": true,
+  "sampler_byte_equal": true,
+  "all_update_metrics_equal": true,
+  "frozen_keys": 203,
+  "total_keys": 208,
+  "changed_keys": [
+    "pol/head/action/logits/bias",
+    "pol/head/action/logits/kernel",
+    "pol/mlp/linear0/bias",
+    "pol/mlp/linear0/kernel",
+    "pol/mlp/norm0/scale"
+  ],
+  "old_joint_updates": 0,
+  "old_joint_batches": 0,
+  "updated_policy_probability_max_error": 5.960464477539063e-08,
+  "actor_probability_change": 0.0035840868949890137,
+  "teacher_latents_unchanged_after_BC": true,
+  "policy_rows_checked": 32,
+  "jax_devices": [
+    "TFRT_CPU_0"
+  ],
+  "production_payload_loaded": false,
+  "formal_gpu_training": false,
+  "dev_evaluated": false,
+  "content_hash": "f55948c8061fa180cfc2731607e60224ff55c450aec0c5612afe2d40794b836a"
+}

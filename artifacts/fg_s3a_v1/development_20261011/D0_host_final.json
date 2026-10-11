@@ -1,0 +1,34 @@
+[
+  {
+    "name": "ps",
+    "chunk_id": "9744a3",
+    "wall_time_seconds": 0.000010119,
+    "exit_code": 1,
+    "original_token_count": 15,
+    "output": "    PID                  STARTED     ELAPSED STAT COMMAND\n"
+  },
+  {
+    "name": "cwd",
+    "chunk_id": "20a9bd",
+    "wall_time_seconds": 0.00001041,
+    "exit_code": 1,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "name": "gpu_processes",
+    "chunk_id": "0ced59",
+    "wall_time_seconds": 0.000009989,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": ""
+  },
+  {
+    "name": "gpu",
+    "chunk_id": "96d074",
+    "wall_time_seconds": 0.000016031,
+    "exit_code": 0,
+    "original_token_count": 14,
+    "output": "NVIDIA GeForce RTX 4060 Ti, 16380 MiB, 1153 MiB, 35 %\n"
+  }
+]

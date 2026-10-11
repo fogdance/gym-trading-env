@@ -1,0 +1,136 @@
+{
+  "counts": {
+    "total_rows": 488629,
+    "eligible": 402096,
+    "label_ADD": 16171,
+    "eligible_reset": 408,
+    "eligible_invalid_feedback_minute": 5,
+    "lots_before_filter_would_lose": 14087,
+    "held_forced_wait_excluded": 82251,
+    "label_WAIT": 385925,
+    "administrative_last_excluded": 469,
+    "terminal_excluded": 18,
+    "no_trade_excluded": 3795
+  },
+  "strata": {
+    "contract/CZCE.FG001": {
+      "ADD": 192,
+      "WAIT": 22681
+    },
+    "contract/CZCE.FG005": {
+      "WAIT": 17320,
+      "ADD": 152
+    },
+    "contract/CZCE.FG009": {
+      "WAIT": 21818,
+      "ADD": 525
+    },
+    "contract/CZCE.FG101": {
+      "WAIT": 22187,
+      "ADD": 859
+    },
+    "contract/CZCE.FG105": {
+      "WAIT": 20215,
+      "ADD": 1043
+    },
+    "contract/CZCE.FG109": {
+      "WAIT": 18384,
+      "ADD": 2173
+    },
+    "contract/CZCE.FG201": {
+      "WAIT": 23224,
+      "ADD": 3234
+    },
+    "contract/CZCE.FG205": {
+      "WAIT": 17771,
+      "ADD": 1696
+    },
+    "contract/CZCE.FG209": {
+      "WAIT": 24343,
+      "ADD": 1311
+    },
+    "contract/CZCE.FG301": {
+      "WAIT": 22284,
+      "ADD": 512
+    },
+    "contract/CZCE.FG305": {
+      "ADD": 565,
+      "WAIT": 21549
+    },
+    "contract/CZCE.FG309": {
+      "WAIT": 22158,
+      "ADD": 1236
+    },
+    "contract/CZCE.FG401": {
+      "WAIT": 20377,
+      "ADD": 1171
+    },
+    "contract/CZCE.FG405": {
+      "ADD": 801,
+      "WAIT": 17756
+    },
+    "contract/CZCE.FG809": {
+      "WAIT": 23841,
+      "ADD": 157
+    },
+    "contract/CZCE.FG901": {
+      "WAIT": 24637,
+      "ADD": 256
+    },
+    "contract/CZCE.FG905": {
+      "WAIT": 22555,
+      "ADD": 122
+    },
+    "contract/CZCE.FG909": {
+      "WAIT": 22825,
+      "ADD": 166
+    },
+    "direction/LONG": {
+      "ADD": 7930,
+      "WAIT": 192194
+    },
+    "direction/SHORT": {
+      "WAIT": 193731,
+      "ADD": 8241
+    },
+    "session/day": {
+      "WAIT": 255743,
+      "ADD": 10888
+    },
+    "session/night": {
+      "ADD": 5283,
+      "WAIT": 130182
+    },
+    "year/2018": {
+      "WAIT": 51272,
+      "ADD": 432
+    },
+    "year/2019": {
+      "ADD": 477,
+      "WAIT": 69799
+    },
+    "year/2020": {
+      "WAIT": 60608,
+      "ADD": 1710
+    },
+    "year/2021": {
+      "ADD": 6538,
+      "WAIT": 62205
+    },
+    "year/2022": {
+      "WAIT": 64231,
+      "ADD": 3383
+    },
+    "year/2023": {
+      "WAIT": 61403,
+      "ADD": 2896
+    },
+    "year/2024": {
+      "ADD": 735,
+      "WAIT": 16407
+    }
+  },
+  "add_rate": 0.04021676415582349,
+  "always_wait_accuracy": 0.9597832358441765,
+  "always_wait_pr_auc": 0.04021676415582349
+}

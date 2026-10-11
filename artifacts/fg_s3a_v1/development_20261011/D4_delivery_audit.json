@@ -1,0 +1,122 @@
+{
+  "time": "2026-10-11T16:15:41.204987+00:00",
+  "s3a_development_status": "CPU_IMPLEMENTATION_AND_REVIEW_COMPLETE",
+  "production_file_protection_status": "DRIFT_OBSERVED",
+  "protected_file_count": 152,
+  "unchanged_protected_count": 144,
+  "changed_production_files_outside_s3a_dev_diff": {
+    "/home/v/Documents/work/dreamerv3/dreamerv3/fg_single3_offline.py": {
+      "initial": "daac6fbbb24d6b9a56384c2114ffe38733cb23565a46c7b695e9e40ec81f7f75",
+      "current": "af695e2c13c53136852441ceb3c15f518c76499b4d7d114267ddac2109198253"
+    },
+    "/home/v/Documents/work/dreamerv3/dreamerv3/fg_stage_transfer.py": {
+      "initial": "bd2e4009342f09e79c84420ce02ee60a877cb2c13281814dd5a75d979d6ddf52",
+      "current": "700def17392ad869249aa9da2f6b73844bf30f43241b6c652772c9e285e43070"
+    },
+    "/home/v/Documents/work/dreamerv3/embodied/run/action_mask_warmup.py": {
+      "initial": "5b678ff284ac63076ae05031254b00f56fbafa8d679b75164c10ed1f5280cb76",
+      "current": "a280a4f67566d1d95d753b537d015e389df30bce0d0295da28b1e03f5ad78c2b"
+    },
+    "/home/v/Documents/work/dreamerv3/embodied/run/fg_single3_audit.py": {
+      "initial": "12945a9016e296fe1f52c77d34b30b5434b5e07e63ff71ced753abe9186cf7e3",
+      "current": "c94a3130dd945488c1da1db175d03cdd8e76e73ef7da402ba77aea3bb4231727"
+    },
+    "/home/v/Documents/work/dreamerv3/embodied/run/offline_pretrain.py": {
+      "initial": "d9f8a942c59ab5babb5d8938d04c72316df5c356f424e63f0df76ccaf2d17543",
+      "current": "6fd7f8fc5b71238c5565433082cdfa3f5d413e18963fd5820fd7188f2f0be599"
+    },
+    "/home/v/Documents/work/dreamerv3/embodied/run/train.py": {
+      "initial": "30ef93cc0701cead2c04b4194556a86cd3f0385a260120dc11aa82014d77279b",
+      "current": "6a87c011b5d922218ec15687b7f0b57b1d4c11e158e625f4ec5a3d427d311f4d"
+    },
+    "/home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_single3_evaluation.py": {
+      "initial": "4ca10ec018df8387557a0544de10da1a2962e29a63bcdac6ac011b0ccc74b49c",
+      "current": "4d78ed19c0bf5ad3a8ba0a8607725985c735f1b8ab2292f584936a924d638d50"
+    },
+    "/home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_single3_experiment.py": {
+      "initial": "c69aa40d45af262703ba6f444b0d93bf4d4ba391134061d1ebf688fe830d3ac7",
+      "current": "d63992715ae2f1d1fb38e59ccd9263ff5a8f4bc37de736f4a1944ba94dc3893a"
+    }
+  },
+  "repos": {
+    "/home/v/Documents/work/gym-trading-env2": {
+      "baseline": "79aa9a9664a648fc961277986290874a6eb1c9d1",
+      "head": "3e70f61851da1f1127b34f5a3ff6776d7ee003e9",
+      "branch": "feat/fg-s3a-oracle-bc",
+      "diff": "A\tartifacts/fg_s3a_v1/development_20261011/D0_final.json\nA\tartifacts/fg_s3a_v1/development_20261011/D0_host_final.json\nA\tartifacts/fg_s3a_v1/development_20261011/D0_initial.json\nA\tartifacts/fg_s3a_v1/development_20261011/D1_audit.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D1_identity_pytest.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D1_pytest.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D2_D3_pytest.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D2_D4_pytest.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D3_resume_failure.xml\nA\tartifacts/fg_s3a_v1/development_20261011/D4_audit.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D4_cli_results.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_continuous.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D4_delivery_audit.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_delivery_audit.py\nA\tartifacts/fg_s3a_v1/development_20261011/D4_document_validation.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_inflight.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D4_production_metadata_compatibility.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_real_resume_and_policy.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_resume.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D4_smoke.stdout\nA\tartifacts/fg_s3a_v1/development_20261011/D4_smoke_10.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_training_20.json\nA\tartifacts/fg_s3a_v1/development_20261011/D4_verify_cpu.py\nA\tartifacts/fg_s3a_v1/development_20261011/D4_verify_cpu.stdout\nA\tartifacts/fg_s3a_v1/labels_20261011/audit.json\nA\tartifacts/fg_s3a_v1/labels_20261011/manifest.json\nA\tartifacts/fg_s3a_v1/labels_20261011_v2/audit.json\nA\tartifacts/fg_s3a_v1/labels_20261011_v2/manifest.json\nA\tdocs/FG_S3A_Implementation_and_Verification.md\nA\tsrc/gym_trading_env/research/fg_s3a_labels.py\nA\ttests/entry_v1/test_fg_s3a_labels.py\nA\ttools/fg_s3a.py"
+    },
+    "/home/v/Documents/work/dreamerv3-dev": {
+      "baseline": "446e6fc9dbc92a1be24d0d44b840e85d4f96010e",
+      "head": "358b2674f4b9b1fd6fe705f88cf9c7bd5e87114e",
+      "branch": "feat/fg-s3a-oracle-bc",
+      "diff": "A\tdocs/FG_S3A_Implementation_and_Verification.md\nA\tdocs/FG_S3A_pending_integration.patch\nA\tdreamerv3/fg_s3a_actor.py\nA\tdreamerv3/fg_s3a_agent.py\nA\tembodied/run/fg_s3a_checkpoint.py\nA\tembodied/run/fg_s3a_eval.py\nA\tembodied/run/fg_s3a_features.py\nA\tembodied/run/fg_s3a_train.py\nA\tembodied/tests/test_fg_s3a.py\nA\tscripts/fg_s3a.py"
+    }
+  },
+  "all_dev_changes_additive": true,
+  "diff_checks": "PASS_EXCLUDING_RAW_PYTEST_XML_TRACEBACK_WHITESPACE",
+  "pending_core_patch": "NOT_APPLIED_CHECK_ONLY_PASS",
+  "old_source_identity_hash": "1e88d9b5903bac73e80e70de5bf92bd7be8187b17bc74120d6772be350899faf",
+  "old_source_core_matches": {
+    "dreamerv3/agent.py": true,
+    "dreamerv3/configs.yaml": true,
+    "dreamerv3/configuration.py": true,
+    "dreamerv3/fg_entry_guard.py": true,
+    "dreamerv3/fg_single3_offline.py": true,
+    "dreamerv3/main.py": true,
+    "dreamerv3/rssm.py": true,
+    "embodied/core/replay.py": true,
+    "embodied/core/streams.py": true,
+    "embodied/jax/agent.py": true,
+    "embodied/jax/opt.py": true,
+    "embodied/run/action_mask_warmup.py": true,
+    "embodied/run/fg_checkpoint.py": true,
+    "embodied/run/fg_single3_audit.py": true,
+    "embodied/run/offline_pretrain.py": true
+  },
+  "final_source_checkpoint_exists": false,
+  "old_source_training_summary_exists": false,
+  "tests": {
+    "D1_identity_pytest.xml": {
+      "tests": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "D2_D4_pytest.xml": {
+      "tests": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "real_cpu_proof_status": "PASS",
+  "production_payload_loaded": false,
+  "formal_s3a_gpu_training": false,
+  "c1_signal_kill_restart_performed": false,
+  "latest_user_scope": "Finish S3-A development only; C1 retraining handled separately",
+  "files": {
+    "D0_final.json": "25a8f1087a6721fa071c8194dd1da5ffb222521acaa27a9c8175ba5eca9c922e",
+    "D0_host_final.json": "309dd9766c54bce6c6fe5f5d484e3dc1da89195fe53bacba49eb18f253e8c9b0",
+    "D0_initial.json": "80d58e5ca2de2aaa9e2f0aa2a772517940832c97f05c9bce17e15393a426ba87",
+    "D1_audit.stdout": "69453e7e182ae12071a95ab77984d6b2dd597ed84d193192050d19aa056f6af6",
+    "D1_identity_pytest.xml": "3ebcfa519cd301cd457404a030938061cfa28256127a3399991114584442ed25",
+    "D1_pytest.xml": "e905b55ff51450d56bd254120ff85e7e0462cee49203233c89bb34454842db98",
+    "D2_D3_pytest.xml": "be5ccf0fa3ac1778b7dc15b5b26545a9d43813a72133566e05a81be2ebd61a77",
+    "D2_D4_pytest.xml": "0b4afd14eca8428140624d477c827c12530af39adbe5d2d875f251a6d2a741d9",
+    "D3_resume_failure.xml": "5abe758969037cab1706ac72fc1afd5a739622c953215658ad30e9bd093bcf49",
+    "D4_audit.stdout": "b81f5432afeb00ac6fcba24d967f31ba79eeab5df83bd5161f03b7e0bdcb9e44",
+    "D4_cli_results.json": "2bcc631d88953e47dc63ba00a247f4189e71523a374a65d75f65bd172d9bda41",
+    "D4_continuous.stdout": "2b6abe01529405b62fb32d4c1276bc7fb6ab7cbc1ecc695032c9084ad43ef3e9",
+    "D4_delivery_audit.py": "717a765431b48e5f948c3dc51bae7ebe882d7726e8793c41ddcbb4ec8d117a5f",
+    "D4_document_validation.json": "64ff03bc9dce0fefb9fdea6bff4517c14efbc06f091b8579bcb0403b798941da",
+    "D4_inflight.stdout": "d4ccb7283bbedfcede58dd4136b7471480fcab416d9899d319f941a8724d9208",
+    "D4_production_metadata_compatibility.json": "7b832410b2a6d811b1bc8c668b9ca0c7bbf18ff25f658bb2b2c44651f796a05e",
+    "D4_real_resume_and_policy.json": "f31286b6ce50ef200ae994ac5f0ad71d10d73e839544d50170683cc0427f57a5",
+    "D4_resume.stdout": "e7a36c92a731605c84293e70a6b279b9ee357268a21527f24c60eb37f1498c62",
+    "D4_smoke.stdout": "d320d5c997d1e8787b3be5ec02d0d6b9feb8346ca45ef7c87df66d2448786e0c",
+    "D4_smoke_10.json": "6699775effa31663282f3d93e8f4d257e5eaea9a770e0a619dbdbf17cadf5dcf",
+    "D4_training_20.json": "1e47cf4a8da9247ffaee2ccfbef0e54447d82cfbde41a26dfa1b9e18e7a317d2",
+    "D4_verify_cpu.py": "2297e3ee9003b4348b6e66697074f1dbf8500354a46314607b1aefd19cf626cb",
+    "D4_verify_cpu.stdout": "04e6c924e9bc253a71e17a46bb4ea27b7213510a64b211463916883d7925a74c"
+  }
+}
