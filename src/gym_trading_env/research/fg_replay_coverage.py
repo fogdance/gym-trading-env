@@ -364,11 +364,13 @@ def audit_dataset(root, output, dreamer_root, *, batches=1000, batch_size=16, se
         print(f"Native Uniform audit {pool_id}: sequences={sample['sequence_starts']} batches={batches}", flush=True)
     # Trade-level diagnostic data; the human result/report remains Markdown.
     write_json(output / "trade_diagnostics.json", corpus["trades"])
-    write_coverage(output / "replay_coverage.md", root, dataset, inputs, corpus, samples)
     import jax
     platforms = [device.platform for device in jax.devices()]
     if not platforms or any(platform != "cpu" for platform in platforms):
         raise RuntimeError(f"Audit used non-CPU devices: {platforms}")
+    # Recheck the source corpus before publishing any completion or PASS result.
+    validate_dataset(root)
+    write_coverage(output / "replay_coverage.md", root, dataset, inputs, corpus, samples)
     receipt = signed(dict(schema="FG_REPLAY_COVERAGE_V1", dataset_manifest_sha256=digest(Path(root) / "manifest.json"),
         batches=batches, batch_size=batch_size, batch_length=64, replay_context=1, sample_seed=seed,
         jax_platforms=platforms, gradient_updates=0,
@@ -376,5 +378,4 @@ def audit_dataset(root, output, dreamer_root, *, batches=1000, batch_size=16, se
         pools=[{k: v for k, v in sample.items() if k != "counts"} for sample in samples],
         files={p.name: digest(p) for p in output.iterdir() if p.is_file()}))
     write_json(output / "manifest.json", receipt)
-    validate_dataset(root)  # Read-only audit must not mutate the source corpus.
     return receipt

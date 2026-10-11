@@ -3,6 +3,8 @@ import copy
 import gzip
 import json
 import os
+import shutil
+from concurrent.futures import Future
 from pathlib import Path
 
 import numpy as np
@@ -16,6 +18,7 @@ from gym_trading_env.research.fg_replay import (
     iter_sidecar, reconcile_trace, signed, trace_manifest, validate_training, write_json)
 from gym_trading_env.research.fg_replay_coverage import (
     COLUMNS, INDEX, corpus_statistics, projection, row_labels, sample_statistics)
+from gym_trading_env.research import fg_replay, fg_replay_coverage
 
 
 DREAMER = Path(os.environ.get("FG_REPLAY_DREAMER_ROOT", "/home/v/Documents/work/dreamerv3"))
@@ -247,3 +250,123 @@ def test_legal_add_rejection_is_counted_at_actual_feedback(tmp_path, original_dr
     assert row_labels(rows[1])[INDEX["add_rejected"]] == 1
     corpus = corpus_statistics(tmp_path, dict(traces=[dict(directory="trace", policy_id="P1", contract=trace["contract"])]))
     assert corpus["rejection_reasons"] == {("P1", "INSUFFICIENT_BAR_VOLUME"): 1}
+
+
+def update_trace_identity(directory, trace, identity, factory):
+    trace = copy.deepcopy(trace)
+    trace["identity"] = identity
+    trace["replay_trace_hash"] = fg_replay.fingerprint({k: trace[k] for k in
+        ("identity", "policy", "env_config_hash", "reward_version", "array_hash", "event_hash")})
+    write_json(directory / "manifest.json", signed(trace))
+    receipt = reconcile_trace(directory, DREAMER, env_factory=factory)
+    write_json(directory / "reconciliation.json", signed(dict(receipt,
+        trace_manifest_sha256=digest(directory / "manifest.json"))))
+    return trace
+
+
+class ImmediatePool:
+    """Run the prepared account job inline; keep real publication validation."""
+    def __init__(self, **kwargs):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def submit(self, function, job):
+        future = Future()
+        future.set_result(function(job))
+        return future
+
+
+@pytest.mark.parametrize("invalid_view", [True, False])
+def test_generation_publishes_only_after_final_validation(full_trace, tmp_path, monkeypatch, invalid_view):
+    source, trace, factory = full_trace
+    output = tmp_path / "generation"
+    config = tmp_path / "replay.yaml"
+    config.write_text(yaml.safe_dump(dict(schema=SCHEMA, seed=0,
+        train_manifest="fixture", expected_manifest_hash="training",
+        policies=[dict(id="P1", kind="always_add")])))
+    monkeypatch.setattr(fg_replay, "validate_training", lambda path:
+        (dict(content_hash="training"), [dict(contract=trace["contract"],
+         env_config=trace["config_path"])], {}, []))
+    monkeypatch.setattr(fg_replay, "provenance", lambda root: dict(code_files={}))
+    monkeypatch.setattr("concurrent.futures.ProcessPoolExecutor", ImmediatePool)
+
+    def prepared_job(job):
+        directory = Path(job["directory"]) / "attempt_000"
+        shutil.copytree(source, directory)
+        prepared = update_trace_identity(directory, trace, job["identity"], factory)
+        if invalid_view:
+            view = output / "replay/P1"
+            view.mkdir(parents=True)
+            (view / "unrelated.npz").write_bytes(b"")
+        return dict(directory=str(directory), trace=prepared, resumed=False)
+
+    monkeypatch.setattr(fg_replay, "generate_job", prepared_job)
+    if invalid_view:
+        with pytest.raises(ValueError, match="missing or unrelated chunks"):
+            fg_replay.generate_dataset(config, output, DREAMER)
+        assert not (output / "manifest.json").exists()
+        assert (output / "manifest.pending.json").is_file()
+        assert (output / "inputs.json").is_file()
+        assert list(output.glob("traces/*/*/attempt_000/reconciliation.json"))
+    else:
+        result = fg_replay.generate_dataset(config, output, DREAMER)
+        assert fg_replay.read_manifest(output / "manifest.json") == result
+        assert fg_replay.validate_dataset(output) == result
+        assert not (output / "manifest.pending.json").exists()
+
+
+@pytest.mark.parametrize("fail_final", [True, False])
+def test_audit_publishes_pass_only_after_final_validation(full_trace, tmp_path, monkeypatch, fail_final):
+    directory, trace, factory = full_trace
+    identity = dict(trace["identity"], selected_contracts=[trace["contract"]])
+    trace = update_trace_identity(directory, trace, identity, factory)
+    write_json(tmp_path / "inputs.json", signed(dict(identity=identity, frozen_files={},
+        config=dict(policies=[dict(id="P1")]),
+        sources=[dict(contract=trace["contract"], valid_minutes=trace["valid_minutes"])])))
+    views = {key: "replay/" + key for key in ("P1", "all")}
+    for path in views.values():
+        view = tmp_path / path
+        view.mkdir(parents=True)
+        for chunk in trace["chunks"]:
+            source = directory / chunk["path"]
+            os.link(source, view / source.name)
+    dataset = signed(dict(schema=SCHEMA, reward_version="V1", identity=identity,
+        input_manifest_sha256=digest(tmp_path / "inputs.json"), views=views,
+        traces=[dict(directory="trace", manifest_sha256=digest(directory / "manifest.json"),
+            receipt_sha256=digest(directory / "reconciliation.json"),
+            policy_id="P1", contract=trace["contract"], records=trace["records"],
+            sequence_starts=trace["sequence_starts"], replay_trace_hash=trace["replay_trace_hash"])]))
+    write_json(tmp_path / "manifest.json", dataset)
+    output = tmp_path / "audit"
+    validations = []
+    real_validate = fg_replay_coverage.validate_dataset
+
+    def final_gate(root):
+        validations.append(root)
+        if len(validations) == 2:
+            if fail_final:
+                (tmp_path / "replay/P1/unrelated.npz").write_bytes(b"")
+            else:
+                assert not (output / "manifest.json").exists()
+                assert not (output / "replay_coverage.md").exists()
+        return real_validate(root)
+
+    monkeypatch.setattr(fg_replay_coverage, "validate_dataset", final_gate)
+    if fail_final:
+        with pytest.raises(ValueError, match="missing or unrelated chunks"):
+            fg_replay_coverage.audit_dataset(tmp_path, output, DREAMER, batches=1, batch_size=1)
+        assert not (output / "manifest.json").exists()
+        assert not (output / "replay_coverage.md").exists()
+        assert (output / "P1_batch_counts.npz").is_file()
+        assert (output / "trade_diagnostics.json").is_file()
+    else:
+        receipt = fg_replay_coverage.audit_dataset(tmp_path, output, DREAMER, batches=1, batch_size=1)
+        assert fg_replay.read_manifest(output / "manifest.json") == receipt
+        fg_replay.check_files({str(output / path): checksum for path, checksum in receipt["files"].items()})
+        assert "数据正确性：PASS" in (output / "replay_coverage.md").read_text()
+    assert len(validations) == 2

@@ -55,6 +55,8 @@ V1 Reward 仍为原 Env 的 `60/(60+T_minutes)`，数量3、TP5点。离线诊�
 
 已有输出拒绝覆盖；`generate --resume` 仅在冻结身份完全一致时复用通过对账的尝试。失败尝试保留，新尝试目录从账户真实起点重新运行，不伪造中间恢复。
 
+生成先写 `manifest.pending.json` 并执行完整数据校验，通过后原子重命名为正式 `manifest.json`。最终校验失败时保留候选 manifest、轨迹和对账凭据，不发布 dataset 完成标记。审计在 CPU 检查及最后一次来源校验通过后才写 `replay_coverage.md` 的 PASS 结论和审计 `manifest.json`；上述检查失败时仅保留已产生的计数与诊断数据。
+
 Dataset manifest 的 `views` 提供各策略和 `all` 的平铺原生 `.npz`目录；这些是原始chunks的硬链接，没有重新串接账户。调用原 `Replay.load(directory=...)` 即可读取。加载器的构造必须提供一个 directory（该版本原Replay的加载依赖此初始化）；后续训练应提供独立的新运行目录，不向冻结来源保存。
 
 ```python
@@ -69,6 +71,8 @@ reader.workers.shutdown(wait=True)
 ```
 
 容量是有效连续序列起点数，不是chunk数量。R2按整份语料设置容量并断言加载数，禁止最近数据静默替代完整历史。源文件/代码、Obs/Reward版本和账户对账receipt都核验后才登记复用。模型seed与采样seed独立，同一冻结语料可以被不同模型seed共享。
+
+冻结身份包含生成器源码文件哈希。更新源码后，直接核验旧语料会触发 `Frozen input/output changed`；旧语料应使用其登记的源码版本核验，或在新输出目录生成新身份的语料。不要修改或重新签名旧哈希来绕过这一检查。
 
 ## 验收证据
 

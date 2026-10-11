@@ -602,13 +602,17 @@ def generate_dataset(config_path, output, dreamer_root, *, workers=1, resume=Fal
         views[policy_id] = str(view.relative_to(root))
     payload = signed(dict(schema=SCHEMA, identity=identity, reward_version="V1", traces=records,
                           views=views, input_manifest_sha256=digest(root / "inputs.json")))
-    write_json(root / "manifest.json", payload)
-    return validate_dataset(root)
+    # Keep the candidate as failure evidence; only a validated manifest marks completion.
+    candidate = root / "manifest.pending.json"
+    write_json(candidate, payload)
+    validated = validate_dataset(root, manifest_path=candidate)
+    candidate.replace(root / "manifest.json")
+    return validated
 
 
-def validate_dataset(root):
+def validate_dataset(root, *, manifest_path=None):
     root = Path(root)
-    data = read_manifest(root / "manifest.json")
+    data = read_manifest(root / "manifest.json" if manifest_path is None else Path(manifest_path))
     inputs = read_manifest(root / "inputs.json")
     if (data["schema"] != SCHEMA or data["reward_version"] != "V1" or
             data["identity"] != inputs["identity"] or

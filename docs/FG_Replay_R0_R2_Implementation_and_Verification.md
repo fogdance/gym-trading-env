@@ -127,3 +127,13 @@ env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu \
 本轮数据正确性与学习充分性分开验收。学习是否充分仍为 `NOT_ESTABLISHED`，没有WM/Actor训练或策略收益对照证据。人工方向配置属于当前实验的条件输入；OHLC成交是原Env的保守模拟；MAE仅是已观察OHLC的保守上界。
 
 后续只根据正式覆盖报告决定是否另行增加固定P2种子或明确混合比例，不自动挑盈利轨迹，不推进R3/R4。
+
+## Review 第1项修复：最终校验与发布顺序
+
+2026-10-11 的失败路径回归确认：原生成器先写正式 dataset manifest 再校验，原审计器先写 PASS 报告及正式审计 manifest 再校验。插入不属于语料的 Replay chunk 后，真实校验器报 `Replay view has missing or unrelated chunks`，正式完成产物仍存在。新增4个生成/审计成功与失败用例，在修复前得到 `3 failed, 1 passed`。
+
+生成器改为写候选 `manifest.pending.json`，完整校验通过后原子重命名发布；最终校验失败保留候选和账户对账凭据。审计器把 CPU 检查及最终来源校验移到 PASS 报告和正式审计 manifest 发布之前，校验失败保留计数及诊断数据。
+
+修复后4个针对性用例全部通过；使用上文 CPU 环境运行 `pytest -p no:cacheprovider tests/entry_v1/test_fg_replay.py -v`，实测 `13 passed in 26.62s`。用例执行真实原 Env/Driver/Replay 收集与重放，审计使用真实原生 Uniform 采样及数据校验；生成发布测试仅将进程池替换为内联执行，复用准备好的真实轨迹。`git diff --check` 通过。
+
+历史正式 dataset manifest、审计 manifest、覆盖报告及7个登记审计产物的实际哈希与上述登记值一致。当前源码直接核验旧语料实测触发 `Frozen input/output changed: /home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_replay.py`，符合原源码冻结约束；本次没有修改历史哈希或重签旧产物，没有以更新后的源码宣称旧语料完整校验通过。旧语料使用其已登记源码版本核验；新生成使用新输出和新身份。
