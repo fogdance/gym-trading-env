@@ -3,7 +3,7 @@
 状态：IN_PROGRESS，以下缺失Gate仍未完成。
 模型NOT_RUN；gradient_updates=0；择时能力NOT_ESTABLISHED。
 
-报告生成UTC：2026-10-11T05:01:00.593255+00:00。
+报告生成UTC：2026-10-11T05:19:21.657582+00:00。
 
 正式依据：`FG_DreamerV3_Single3_TP5_SL30_Reward_OracleReplay_Execution_Plan_V1.md`；原文件SHA256 `9e3287a5bbe9eec93788275ae5b3ee082677c637b266690bad08732823679744`。业务协议和实施范围见 `FG_Single3_Implementation_Plan_and_Progress.md`。
 
@@ -12,7 +12,7 @@
 | E | PASS | 06ca881053ada31f064a7c488f3140dfdcb51c0a8cb1bf95f1fe1d07ee03ad89 |
 | R | PASS | 8d1203757d3eede1e8785e79c11b4288990582d80d69d23cfb1b35e726e907c4 |
 | Input | PASS | 4c44ee52e79c44699c2acf9091b1bebb6608856175414cb584588d320572129b |
-| O | NOT_COMPLETED | - |
+| O | PASS | f2a8497913568d9fedec1c2ad568facc32905a948a29d65ca3b58309b3e8e678 |
 | D generation | NOT_COMPLETED | - |
 | D coverage | NOT_COMPLETED | - |
 | H | NOT_COMPLETED | - |
@@ -26,6 +26,7 @@
 
 - E：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_env.py tests/entry_v1/test_entry_contract.py -q --tb=short`；returncode=0；输出 `............................................                             [100%]`。
 - R：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_replay.py tests/entry_v1/test_fg_replay.py -q --tb=short`；returncode=0；输出 `...............                                                          [100%]`。
+- O：`/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_single3_oracle.py -q --tb=short`；returncode=0；输出 `.....                                                                    [100%]`。
 
 ## 真实产物与范围
 

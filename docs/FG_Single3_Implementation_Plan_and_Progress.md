@@ -126,9 +126,10 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 | 计划记录 | COMPLETE | 本文及原任务书纳入实验分支 |
 | E | PASS | run_20261011_04；44项测试；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
 | R | PASS (2合约CPU研究) | run_20261011_02；15项测试、10条完整账户和40个候选独立Env视图对账；全Fold统计待D |
-| O | IN_PROGRESS | 5项精确/独立原Env穷举测试通过；2048真实候选性能及22个候选完整参考重放PASS；全18合约运行中 |
+| O | PASS | 18合约488142候选、3439个独立参考路径、72条最终H333完整Driver账户；exact_proven；5项独立原Env/精确比较测试 |
 | 输入因果审计 | PASS | run_20261011_01；18个TRAIN合约×11个截点，60×18 float32观察与当时前缀逐值相同 |
-| D/H | NOT_RUN | 实现及最小测试已提交；CPU流水线等待完整O-Gate后按D生成→D审计→H→先导准备顺序执行 |
+| D | IN_PROGRESS | 12个CPU worker自动开始完整378账户矩阵；等待生成与29池×1000真实batch审计，尚无正式D-Gate |
+| H | NOT_RUN | 等待正式D-Gate；同状态分叉实现与最小测试已提交 |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。
@@ -156,3 +157,9 @@ R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_
 先导准备的发布自审复现了源码哈希校验失败却留下“准备完成”报告的路径。把首轮完整哈希校验前移到报告生成之前；已有最终发布检查失败仍保留`.failed.md`证据。新回归在旧顺序下失败（实际存在`pilot_comparison.md`），修复后通过（没有完成报告/正式收据）。先导正式CPU预检同时运行这项回归，测试源码也归档并记哈希。该验证只检验发布失败语义，不是实际模型训练验收。
 
 CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检查、3个既有FG检查、1个发布失败回归）。报告汇总进程已用`python tools/fg_single3_reports.py --wait --pipeline-log artifacts/fg_single3_v1/cpu_pipeline_run_20261011_01.log`启动：等待所有CPU Gate后自动更新对应docs；流水线失败则拒绝汇总为完成。后台生成/审计/整理报告均已安排；最终仍须读取实际结果并自审。
+
+### O完整Gate（实际完成）
+
+命令：`python tools/fg_single3.py oracle --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --reward-receipt artifacts/fg_single3_v1/reward/run_20261011_02 --output artifacts/fg_single3_v1/oracle/run_20261011_01 --workers 4`。签名收据content hash：`f2a8497913568d9fedec1c2ad568facc32905a948a29d65ca3b58309b3e8e678`。
+
+488142个TRAIN候选完成索引及精确优化；3439个固定seed分层/边界候选另行完整原Env参考重放；所有四候选72条最终H333账户每笔交易、每步反馈和净现金增量均与计划一致，18个合约均为exact_proven。worker实际累计峰值RSS上界924872704字节；实际保留路径所需权益包络上界104358 CNY，小于初始300000。抽样不是全候选完整原Env穷尽重放；γ1只是精确优化诊断，未声明全部γ1账户另行Driver重放。逐合约证书、耗时与回报表见`FG_Single3_Oracle_Validation.md`。
