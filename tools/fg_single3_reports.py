@@ -49,6 +49,53 @@ def checked_report(root, receipt, filename):
     return path.read_text(encoding='utf-8')
 
 
+def coverage_findings(data_root, data, audit_root, audit):
+    """Interpret checked account receipts and sampled counts; never read prices."""
+    import numpy as np
+    rewards = {}
+    for trace in data['traces']:
+        if trace['policy_id'] not in ('P1', 'P2a', 'P2b', 'P3'):
+            continue
+        path = data_root / trace['directory'] / 'manifest.json'
+        if digest(path) != trace['manifest_sha256']:
+            raise ValueError(f'Account receipt changed: {path}')
+        account = read_manifest(path)
+        group = trace['candidate'] + '_' + trace['policy_id']
+        rewards[group] = rewards.get(group, 0.) + account['total_reward']
+    if len(rewards) != 16:
+        raise ValueError('Full TRAIN natural Reward comparison is incomplete')
+    lines = ['## CPU实测结果的解读', '']
+    if all(value < 0 for value in rewards.values()):
+        lines += ['四候选的P1/P2a/P2b/P3共16组完整TRAIN自然策略，未折扣Reward均为负；P0为0。'
+                  '这是需要在先导中检查All-WAIT偏好的数据证据，不证明已训练模型会选择All-WAIT，'
+                  '也不能用P4后验高分反选Reward。', '']
+    lines += table(['自然策略', '完整TRAIN未折扣raw Reward'],
+                   [(key, round(value, 6)) for key, value in sorted(rewards.items())])
+    rows = []
+    for pool in ('C2_natural', 'C2_natural_oracle'):
+        filename = pool + '_batch_counts.npz'
+        if audit['files'].get(filename) != digest(audit_root / filename):
+            raise ValueError(f'Sampled count bytes changed: {filename}')
+        with np.load(audit_root / filename, allow_pickle=False) as sampled:
+            columns = list(sampled['columns']); counts = sampled['counts']
+            if counts.shape != (1000, 2, len(columns)):
+                raise ValueError('Formal sampled count shape changed')
+            tp = counts[:, 1, columns.index('tp')]
+            rows.append((pool, float(tp.mean()), float((tp == 0).mean()),
+                         float(counts[:, 1, columns.index('legal_add_decision')].mean()),
+                         float(counts[:, 1, columns.index('sl')].mean())))
+    lines += ['', 'C2只是采集诊断配置。以下为真实1000批次train64位置的曝光，'
+              '不包含context1；加入P4后的曝光变化不是模型收益或择时能力。', '',
+              *table(['池', 'TP/batch均值', '零TP batch比例', '合法ADD决策/batch均值', 'SL/batch均值'], rows), '']
+    totals = audit['totals']
+    lines += [f'本轮真实TRAIN的ADD拒单={totals["add_rejected"]}、SL pending观察行={totals["sl_pending"]}、'
+              f'终局未平仓={totals["open_entries"]}。未出现的风险分支只有构造Env测试证据，'
+              '不能声称模型已经覆盖这些状态。', '',
+              f'推进分钟统计不含18个合约的初始观察；unvisited_rows={totals["unvisited_rows"]}。'
+              '多策略及四Reward视图仍是同一历史市场的相关反事实。', '']
+    return lines
+
+
 def collate(root, docs, *, require_complete=False, stages=None):
     stages = stages or STAGES
     root = root.resolve(); docs = docs.resolve(); docs.mkdir(parents=True, exist_ok=True)
@@ -114,7 +161,7 @@ def collate(root, docs, *, require_complete=False, stages=None):
         marker = '\n## 全TRAIN候选比较（D完整账户实测）\n'
         before = reward.read_text(encoding='utf-8').split(marker)[0]
         section = coverage.split('## 全Fold Reward与真实账户比较\n', 1)[1].split('\n## 年份/合约/方向/日夜盘', 1)[0]
-        publish(reward, before.rstrip() + marker + '\n' + section + '\n\n'
+        publish(reward, before.rstrip() + '\n' + marker + '\n' + section + '\n\n'
                 + 'early10条件概率、MAE、TP时长及年份/合约/方向/日夜盘完整表见 `FG_Single3_Replay_R0_R2_Coverage.md`；训练Reward尚未选定。\n')
     rows = [(name, 'PASS' if name in found else 'NOT_COMPLETED',
              found[name][1]['content_hash'] if name in found else '-') for name in stages]
@@ -143,6 +190,11 @@ def collate(root, docs, *, require_complete=False, stages=None):
     if 'D coverage' in found:
         coverage = found['D coverage'][1]
         lines += [f'实际Replay行{coverage["totals"]["records"]}、推进{coverage["totals"]["advanced"]}；访问唯一市场分钟{coverage["unique_advanced_minutes"]}；{len(coverage["pools"])}池各{coverage["batches"]}真实B16×65批次。非法ADD={coverage["totals"]["illegal_add"]}、6手决策={coverage["totals"]["lots6"]}。详见 `FG_Single3_Replay_R0_R2_Coverage.md`。', '']
+        if 'D generation' in found:
+            data_root, data = found['D generation']
+            if coverage['dataset_manifest_sha256'] != digest(data_root / 'manifest.json'):
+                raise ValueError('Coverage and generated dataset receipts differ')
+            lines += coverage_findings(data_root, data, found['D coverage'][0], coverage)
     if 'H' in found:
         lines += [f'H实际{found["H"][1]["pairs"]}个公平同账户快照ADD/WAIT分叉；H333/1000/3000/γ1比较见 `FG_Single3_Horizon_Credit_Assignment.md`。这是冻结后续P1的有限反事实，Critic预测误差NOT_MEASURED。', '']
     if 'Pilot preparation' in found:

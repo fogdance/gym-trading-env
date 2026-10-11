@@ -125,11 +125,11 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 | 基线 | PASS | 49+4项既有测试通过；旧完成标记修复已提交721392b |
 | 计划记录 | COMPLETE | 本文及原任务书纳入实验分支 |
 | E | PASS | run_20261011_04；44项测试；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
-| R | PASS (2合约CPU研究) | run_20261011_02；15项测试、10条完整账户和40个候选独立Env视图对账；全Fold统计待D |
+| R | PASS（完整TRAIN比较） | R02双合约研究及40视图对账；D已补齐18合约四候选自然策略/Oracle实测比较；参数未选定 |
 | O | PASS | 18合约488142候选、3439个独立参考路径、72条最终H333完整Driver账户；exact_proven；5项独立原Env/精确比较测试 |
 | 输入因果审计 | PASS | run_20261011_01；18个TRAIN合约×11个截点，60×18 float32观察与当时前缀逐值相同 |
-| D | IN_PROGRESS | 20个CPU worker执行完整378账户矩阵，162份同身份完成账户已复用；等待生成与29池×1000真实batch审计，尚无正式D-Gate |
-| H | NOT_RUN | 等待正式D-Gate；同状态分叉实现与最小测试已提交 |
+| D | PASS | 378账户、10261209 Replay行；29池×1000真实batch；0非法ADD/6手/不连续序列；完整D_AUDIT已发布 |
+| H | IN_PROGRESS | 正式D-Gate后自动启动20 worker、576组同状态分叉；尚无正式H收据 |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。
@@ -171,3 +171,19 @@ CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检�
 恢复命令在原流水线参数上使用 `--workers 20 --resume-dataset`，日志新建为02。已完成的R/O 82份账户和C2自然策略80份账户共162份，经同身份恢复检查后复用；12份被中断的局部产物保留，由新的attempt目录重新执行。原账户、撮合、反馈、Oracle及训练行情源码均未修改。
 
 实际资源证据：`artifacts/fg_single3_v1/resources/cpu_workers20_verified.json`，20个worker、CPU利用率90.1%、worker总RSS 7703437312字节、最大worker RSS 415178752字节、可用RAM 17236787200字节、identity_unchanged=true。该值为一次实测，不宣称整个运行持续达到此利用率。D/H仍遵守总RSS预算16GiB和每worker原BLAS线程限制。
+
+已完整读取当前根目录 `AGENTS.md`：CPU为12物理核/24逻辑线程，机器按空闲专用计算使用，存储仅使用 `/dev/sdd`、`/dev/sda`。其通用GPU使用建议不改变本任务明确的CPU先验收约束；未启动GPU。未使用NVMe或机械盘迁移产物。
+
+### D生成完成时记录（当时覆盖Gate待验收）
+
+流水线02的 `replay-generate --workers 20 --resume` 实际returncode=0，耗时3093.0419569秒。`artifacts/fg_single3_v1/replay/run_20261011_01/manifest.json` 的stage为D_GENERATED，content hash为 `2cb543e5167a4c828fb05b67cdca9fda3c0cabdc7961fc28fc7ad8d433aba123`。完整378份新协议账户、29个Replay视图；C0/C1/C3各5策略×18合约，C2另含18条独立P0。实际D worker累计峰值RSS最大707710976字节，低于20 worker时单worker预算858993459字节。
+
+生成通过不等于D完整验收；生成结束后流水线自动启动全语料统计及每池1000个原生Uniform批次。当时D_AUDIT收据尚未发布，最终结果见下节。
+
+### D完整覆盖Gate（实际完成）
+
+流水线02的 `replay-audit` 实际returncode=0，耗时1205.34595275秒。完整D_AUDIT收据content hash：`a1cbec5f456a3b3629d36e55f0aa20ebd005053923b29e0630741eb8bdb9c0b9`，绑定dataset文件SHA256 `c9e325b17be7bef1c83dff4c562f22bf61bd0d2ad01beb827f40c95fa136a17c`。
+
+实际378账户、10261209行、10250982次推进、488136个唯一推进有效分钟；18个合约初始观察不算推进行，unvisited_rows=0。9849次真实账户恢复；29池各1000个B16×65批次，首batch全部复现，0不连续序列、0非法ADD、0拒单、0六手决策。总审计进程累计峰值RSS为13611241472字节（约12.68GiB），低于16GiB预算；JAX实际平台仅cpu。阶段必需4项测试实际通过，既有公共覆盖回归此前也已验证。
+
+四候选自然策略未折扣总分均负，P0为0，不能据此宣称模型已出现All-WAIT；模型尚未训练。C2自然池实际train64 TP均值9.408/batch，自然+P4为14.519/batch，两个池零TP batch比例均0；后验曝光变化不等于模型收益。真实TRAIN没有SL pending观察或终局未平仓，相关边界仍只有构造Env测试证据。完整表已写入 `FG_Single3_Replay_R0_R2_Coverage.md`、`FG_Single3_Reward_Research.md`；当前CPU汇总保留H和模型先导准备未完成状态。
