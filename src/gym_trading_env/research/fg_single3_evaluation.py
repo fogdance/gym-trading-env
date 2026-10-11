@@ -151,7 +151,7 @@ def analyze_trace(directory, dev, strategy):
 
 
 def evaluate_strategy(prepared, strategy, output, *, agent=None):
-    from .fg_single3_experiment import DREAMER_ROOT
+    from .fg_single3_experiment import DREAMER_ROOT,EXPERIMENT
     prepared = Path(prepared)
     dev = require_dev(prepared/'dev_manifest.json')
     output = Path(output)
@@ -180,7 +180,7 @@ def evaluate_strategy(prepared, strategy, output, *, agent=None):
     else:
         raise ValueError('Only the four agreed causal strategies are allowed')
     spec = dict(id=strategy,kind=kinds.get(strategy,'neural_actor'),seed_components=[0],probability=.5)
-    identity = dict(role='DEV',experiment='C1_M1_1M',dev_hash=dev['content_hash'])
+    identity = dict(role='DEV',experiment=EXPERIMENT,dev_hash=dev['content_hash'])
     if model_hash:
         identity['model_checkpoint_sha256'] = model_hash
     collect_trace(row['env_config'],spec,output,identity,str(DREAMER_ROOT),env_factory=factory,
@@ -203,7 +203,7 @@ def evaluate_strategy(prepared, strategy, output, *, agent=None):
 
 def require_training(prepared, *, load_agent_state=False):
     """Bind reported counters and logs to the authoritative full checkpoint."""
-    from .fg_single3_experiment import require_prepared,UPDATES,DREAMER_ROOT
+    from .fg_single3_experiment import require_prepared,UPDATES,DREAMER_ROOT,EXPERIMENT
     receipt = require_prepared(prepared)
     embodied_runtime(DREAMER_ROOT)
     from embodied.run.fg_checkpoint import validate_bundle
@@ -213,7 +213,7 @@ def require_training(prepared, *, load_agent_state=False):
     checkpoint = logdir/'ckpt'/f'step_{UPDATES:012d}'
     meta = validate_bundle(checkpoint,expected)
     if (summary['identity_hash'] != expected['identity_hash'] or summary['last_update'] != UPDATES
-            or summary['status']!='TRAINING_COMPLETE' or summary['experiment']!='C1_M1_1M'
+            or summary['status']!='TRAINING_COMPLETE' or summary['experiment']!=EXPERIMENT
             or summary['training_positions']!=UPDATES*16*64
             or Path(summary['checkpoint']).resolve()!=checkpoint.resolve()
             or meta['step'] != UPDATES or not meta['protected']
@@ -267,18 +267,20 @@ def comparison(results, training):
 
 def invalidate_report(logdir):
     """Remove authoritative names while retaining every failed artifact."""
+    from .fg_single3_experiment import EXPERIMENT
     logdir=Path(logdir)
     suffix=uuid.uuid4().hex
     for name,failed in (('completion_manifest.json','completion_manifest.failed_'+suffix+'.json'),
-            ('C1_M1_1M_Report.md','C1_M1_1M_Report.failed_'+suffix+'.md')):
+            (EXPERIMENT+'_Report.md',EXPERIMENT+'_Report.failed_'+suffix+'.md')):
         if (logdir/name).exists():
             (logdir/name).rename(logdir/failed)
 
 
 def publish_report(logdir, body, result, metadata, external_files):
     """Publish completion last; preserve failed and corrupt attempts visibly."""
+    from .fg_single3_experiment import EXPERIMENT
     logdir=Path(logdir)
-    report_path=logdir/'C1_M1_1M_Report.md'
+    report_path=logdir/(EXPERIMENT+'_Report.md')
     marker=logdir/'completion_manifest.json'
     if marker.exists():
         try:
