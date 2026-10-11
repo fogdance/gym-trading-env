@@ -1,6 +1,6 @@
 # FG Reward V2/V3：实现交付与 Codex 验证说明
 
-状态：**工作机阶段一验收完成，真实 A 回放通过，E2 批量研究待运行；未接入正式训练 Env**。下方保留交付说明，最新实施记录见末节。原 `FastTakeProfitReward`、`entry_env.py`、DreamerV3、Gate/Checkpoint/Replay 均未修改。
+状态：**工作机 E1/E2 验收完成，36 条轨迹 × 32 组参数通过，详细报告已生成；未接入正式训练 Env**。下方保留交付说明，最新实施记录见末节。本任务没有修改原 `FastTakeProfitReward`、`entry_env.py`、DreamerV3、Gate/Checkpoint/Replay。
 
 ## 1. 包内可执行代码
 
@@ -140,3 +140,21 @@ python tools/fg_reward_offline.py \
 35条E2轨迹由最多4个spawn进程运行，各自独立账户、合约内部顺序推进。每条轨迹保存events.jsonl、参考配置逐分钟分量、逐笔信息、原Env账户/成交记录、评分器快照和输入hash；32组候选复用不变的TP/风险窗口/potential/capacity基础分量，仅增加参数、逐笔与交易日汇总。A极端候选还进行全轨迹逐分钟直接评分对照。
 
 最终唯一研究报告为 `docs/FG_Reward_V2_V3_Offline_Review_Report_V1.md`。报告必须区分未折扣和折扣结果，列出每组分母、正负奖励频率、Always WAIT优势风险、同根歧义的保守/不计首次风险对照以及真实账本。Random分位数仅表示同一FG409行情上的Seed变化。无模型训练、无Test价格访问、无正式Reward替换。
+
+## 6. 工作机阶段二完成记录（2026-10-11）
+
+实际产物：`artifacts/fg_reward_offline_v1/study_20261011`。E1 通过后执行 35 条独立 E2 轨迹（5 个确定性策略、30 个 Random Seed），总计 36 条轨迹和 1,152 条参数汇总，4 个进程。每条均推进 31,034 根有效分钟，覆盖 91 个有资格交易日；终局未完成、右删失、非法 ADD 请求均为 0。运行前后 7 项冻结输入、49 项源码/配置/收据哈希一致。A 全轨迹直接计分与分量重组最大误差为 0，全部轨迹 PBRS 端点残差不超过 1e-10。
+
+A 与独立 Always ADD 的动作、成交、Reward、权益和逐分钟分量五张完整表严格相同。Delay5 的原 V0 为 30.096090550，高于 A 的 22.740204501；但成交批数为 82 对 75，不能把增益全部归因于纯择时。30 个 Random Seed 中有 26 个 V0 不低于 A，均未匹配成交配额。
+
+A 的 8/32 个候选参数下 V3 低于 Always WAIT 的 0 分，均包含网格中较强的容量惩罚。alpha=.05 在不利持仓的固定负 Phi 状态中产生逐分钟正分；A 未折扣 potential 为 +8.553393393，折扣后与终局端点抵消。因此不得把未折扣 shaping 总分解释成真实盈利或训练改善。
+
+详细报告包含 75 笔 A 交易审计、全部 A 参数分量、策略对照、Random 分位数、正负频率、同根歧义、删失和 PBRS 限制。生成入口：
+
+```bash
+python tools/report_fg_reward_offline.py \
+  --study-dir artifacts/fg_reward_offline_v1/study_20261011 \
+  --out docs/NEW_FG_REWARD_OFFLINE_REPORT.md
+```
+
+报告入口要求完整 PASS 结果并保留已有报告文件；产物校验表、报告源码与文档 SHA 收据均在 artifacts，研究数据、图片与账户文件不提交 Git。此阶段没有启动 DreamerV3 训练或替换 V0。
