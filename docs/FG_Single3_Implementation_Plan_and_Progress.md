@@ -128,7 +128,7 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 | R | PASS (2合约CPU研究) | run_20261011_02；15项测试、10条完整账户和40个候选独立Env视图对账；全Fold统计待D |
 | O | PASS | 18合约488142候选、3439个独立参考路径、72条最终H333完整Driver账户；exact_proven；5项独立原Env/精确比较测试 |
 | 输入因果审计 | PASS | run_20261011_01；18个TRAIN合约×11个截点，60×18 float32观察与当时前缀逐值相同 |
-| D | IN_PROGRESS | 12个CPU worker自动开始完整378账户矩阵；等待生成与29池×1000真实batch审计，尚无正式D-Gate |
+| D | IN_PROGRESS | 20个CPU worker执行完整378账户矩阵，162份同身份完成账户已复用；等待生成与29池×1000真实batch审计，尚无正式D-Gate |
 | H | NOT_RUN | 等待正式D-Gate；同状态分叉实现与最小测试已提交 |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
@@ -146,7 +146,7 @@ R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_
 
 实际命令：`python tools/fg_single3_input_audit.py --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --output artifacts/fg_single3_v1/input_audit/run_20261011_01`。使用4个CPU worker，只打开冻结TRAIN白名单价格。198个截点覆盖首bar、60、1024、固定seed202随机点、日边界及数据尾；完整行情计算的60×18观察窗口与仅使用当时前缀重算结果精确相同。收据content hash：`4c44ee52e79c44699c2acf9091b1bebb6608856175414cb584588d320572129b`。这是实际抽样因果审计，不能表述为逐一穷尽所有行情截点。
 
-`tools/fg_single3_pipeline.py`复用各阶段正式CLI，等待完整签名O收据后自动启动新Replay生成、每池1000真实batch覆盖审计、576个同账户快照ADD/WAIT反事实、8份受保护的模型先导模板。任一阶段失败立即停止下游；流水线没有神经Agent/GPU训练命令。日志：`artifacts/fg_single3_v1/cpu_pipeline_run_20261011_01.log`。尚未发布的阶段保持NOT_RUN/IN_PROGRESS，不能因实现或单元测试通过改写成实际数据验收PASS。
+`tools/fg_single3_pipeline.py`复用各阶段正式CLI，等待完整签名O收据后自动启动新Replay生成、每池1000真实batch覆盖审计、576个同账户快照ADD/WAIT反事实、8份受保护的模型先导模板。任一阶段失败立即停止下游；流水线没有神经Agent/GPU训练命令。当前日志：`artifacts/fg_single3_v1/cpu_pipeline_run_20261011_02.log`。尚未发布的阶段保持NOT_RUN/IN_PROGRESS，不能因实现或单元测试通过改写成实际数据验收PASS。
 
 已提交：Gym `c54b2af`（R及Replay扩展）、`5f49900`（精确Oracle）、`a2cdc64`（D/H/输入审计/流水线）；Dreamer `61a3987`（联合离线先导准入与完整恢复）、`adbeae5`（Agent初始化前Checkpoint身份及完整性校验）。Dreamer FakeAgent恢复与Mask Gate接线测试2项通过，模型训练仍NOT_RUN。
 
@@ -156,10 +156,18 @@ R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_
 
 先导准备的发布自审复现了源码哈希校验失败却留下“准备完成”报告的路径。把首轮完整哈希校验前移到报告生成之前；已有最终发布检查失败仍保留`.failed.md`证据。新回归在旧顺序下失败（实际存在`pilot_comparison.md`），修复后通过（没有完成报告/正式收据）。先导正式CPU预检同时运行这项回归，测试源码也归档并记哈希。该验证只检验发布失败语义，不是实际模型训练验收。
 
-CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检查、3个既有FG检查、1个发布失败回归）。报告汇总进程已用`python tools/fg_single3_reports.py --wait --pipeline-log artifacts/fg_single3_v1/cpu_pipeline_run_20261011_01.log`启动：等待所有CPU Gate后自动更新对应docs；流水线失败则拒绝汇总为完成。后台生成/审计/整理报告均已安排；最终仍须读取实际结果并自审。
+CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检查、3个既有FG检查、1个发布失败回归）。报告汇总进程已用`python tools/fg_single3_reports.py --wait --pipeline-log artifacts/fg_single3_v1/cpu_pipeline_run_20261011_02.log`启动：等待所有CPU Gate后自动更新对应docs；流水线失败则拒绝汇总为完成。后台生成/审计/整理报告均已安排；最终仍须读取实际结果并自审。
 
 ### O完整Gate（实际完成）
 
 命令：`python tools/fg_single3.py oracle --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --reward-receipt artifacts/fg_single3_v1/reward/run_20261011_02 --output artifacts/fg_single3_v1/oracle/run_20261011_01 --workers 4`。签名收据content hash：`f2a8497913568d9fedec1c2ad568facc32905a948a29d65ca3b58309b3e8e678`。
 
 488142个TRAIN候选完成索引及精确优化；3439个固定seed分层/边界候选另行完整原Env参考重放；所有四候选72条最终H333账户每笔交易、每步反馈和净现金增量均与计划一致，18个合约均为exact_proven。worker实际累计峰值RSS上界924872704字节；实际保留路径所需权益包络上界104358 CNY，小于初始300000。抽样不是全候选完整原Env穷尽重放；γ1只是精确优化诊断，未声明全部γ1账户另行Driver重放。逐合约证书、耗时与回报表见`FG_Single3_Oracle_Validation.md`。
+
+## CPU并行度调整与同身份恢复
+
+按用户“直接当作空闲机器用”的要求，将D及后续H从12个worker调整为20个。原流水线01的FAIL是主动停止一个已核实属于本任务的worker后ProcessPool退出的真实记录，保留原日志，不解释为行情对账失败。原12个worker配置保存在 `artifacts/fg_single3_v1/replay/run_20261011_01/inputs.initial_workers12.json`；新 `inputs.json` 的identity、frozen_inputs和source_snapshots逐值相同。
+
+恢复命令在原流水线参数上使用 `--workers 20 --resume-dataset`，日志新建为02。已完成的R/O 82份账户和C2自然策略80份账户共162份，经同身份恢复检查后复用；12份被中断的局部产物保留，由新的attempt目录重新执行。原账户、撮合、反馈、Oracle及训练行情源码均未修改。
+
+实际资源证据：`artifacts/fg_single3_v1/resources/cpu_workers20_verified.json`，20个worker、CPU利用率90.1%、worker总RSS 7703437312字节、最大worker RSS 415178752字节、可用RAM 17236787200字节、identity_unchanged=true。该值为一次实测，不宣称整个运行持续达到此利用率。D/H仍遵守总RSS预算16GiB和每worker原BLAS线程限制。

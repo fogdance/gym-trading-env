@@ -25,6 +25,7 @@ def main():
     parser.add_argument('--pilot',required=True)
     parser.add_argument('--log',required=True)
     parser.add_argument('--workers',type=int,default=12)
+    parser.add_argument('--resume-dataset',action='store_true',help='Reuse completed same-identity accounts after a preserved partial attempt')
     args=parser.parse_args()
     cwd=Path(__file__).resolve().parents[1]
     log=Path(args.log).resolve();log.parent.mkdir(parents=True,exist_ok=True)
@@ -37,6 +38,8 @@ def main():
         ['replay-audit','--dataset',args.dataset,'--output',args.coverage],
         ['horizon-audit','--dataset',args.dataset,'--coverage',args.coverage,'--output',args.horizon,'--workers',str(args.workers)],
         ['prepare-pilot','--dataset',args.dataset,'--coverage',args.coverage,'--horizon',args.horizon,'--output',args.pilot]]
+    if args.resume_dataset:
+        commands[0].append('--resume')
     with log.open('x',buffering=1) as stream:
         stream.write('WAITING_FOR_EXACT_ORACLE\n')
         oracle=Path(args.oracle).resolve()
