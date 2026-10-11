@@ -12,7 +12,7 @@ import resource
 
 import numpy as np
 
-from .fg_replay import (FIELDS, cpu_runtime, digest, iter_sidecar, read_manifest,
+from .fg_replay import (FIELDS, SCHEMA, cpu_runtime, digest, iter_sidecar, read_manifest,
                         signed, trace_manifest, validate_dataset, write_json)
 
 
@@ -71,8 +71,10 @@ def distribution(values):
                 p90=float(np.quantile(values, .9)), maximum=float(values.max()))
 
 
-def corpus_statistics(root, dataset):
+def corpus_statistics(root, dataset, *, columns=COLUMNS, label_fn=row_labels, trace_schema=SCHEMA,
+                      group_fn=None, row_hook=None, trade_finalize=None):
     root = Path(root)
+    index = {name: n for n, name in enumerate(columns)}
     summaries = defaultdict(Counter)
     strata = defaultdict(Counter)
     market_reuse = Counter()
@@ -83,26 +85,26 @@ def corpus_statistics(root, dataset):
     account_restores = 0
     for trace_index, record in enumerate(dataset["traces"]):
         directory = root / record["directory"]
-        trace = trace_manifest(directory)
+        trace = trace_manifest(directory, schema=trace_schema)
         receipt = read_manifest(directory / "reconciliation.json")
         account_restores += receipt["account_restores"]
-        policy_id = record["policy_id"]
-        matrix = np.zeros((trace["records"], len(COLUMNS)), np.uint16)
+        policy_id = group_fn(record) if group_fn else record["policy_id"]
+        matrix = np.zeros((trace["records"], len(columns)), np.uint16)
         opened, active = {}, {}
         for row in iter_sidecar(directory):
             ordinal = row["ordinal"]
             if not 0 <= ordinal < len(matrix):
                 raise ValueError("Sidecar ordinal outside the saved Replay")
-            values = row_labels(row)
+            values = label_fn(row)
             matrix[ordinal] = values
-            if values[INDEX["add_rejected"]]:
+            if values[index["add_rejected"]]:
                 rejection_reasons[(policy_id, row["reject_reason"])] += 1
             if row["valid_bar"]:
                 market_reuse[(record["contract"], row["time"])] += 1
             if row["decision_executed"] or row["advanced"]:
                 for dimension, value in (("year", row["time"][:4]), ("contract", record["contract"]),
                                          ("direction", row["direction"]), ("session", row["session"])):
-                    strata[(policy_id, dimension, value)].update(dict(zip(COLUMNS, map(int, values))))
+                    strata[(policy_id, dimension, value)].update(dict(zip(columns, map(int, values))))
             for fill in row["fills"]:
                 if fill["reason"] == "ENTRY":
                     entry_id = fill["entry_id"]
@@ -123,6 +125,8 @@ def corpus_statistics(root, dataset):
                     duration_minutes=minute_age(event["exit_time"], item["time"]),
                     cross_env_chunk=(item["cursor"] - 1) // 1024 != (row["cursor"] - 1) // 1024,
                     cross_replay_chunk=item["stepid"][:32] != row["stepid"][:32])
+            if row_hook:
+                row_hook(row, opened, active, record)
             last = row
         for item in opened.values():
             if "exit_time" not in item:
@@ -134,10 +138,12 @@ def corpus_statistics(root, dataset):
                 "terminal_failure_unfilled" if trace["pending_reason"]
                 else "right_censored")
             item["MAE_basis"] = "observed_post_entry_OHLC_conservative_upper_bound"
+            if trade_finalize:
+                trade_finalize(item, record)
             trades.append(item)
         if sum(v["status"] == "success" for v in opened.values()) != trace["tp_events"]:
             raise ValueError("Coverage trade/TP identity mismatch")
-        totals = dict(zip(COLUMNS, map(int, matrix.sum(axis=0, dtype=np.int64))))
+        totals = dict(zip(columns, map(int, matrix.sum(axis=0, dtype=np.int64))))
         if totals["illegal_add"] or totals["tp"] != trace["tp_events"] or totals["decision"] != trace["advanced"]:
             raise ValueError("Coverage does not reconcile with real transitions")
         summaries[policy_id].update(totals)
@@ -169,10 +175,14 @@ def corpus_statistics(root, dataset):
                 market_reuse_histogram=dict(sorted(Counter(market_reuse.values()).items())))
 
 
-def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_size=16, seed=202):
+def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_size=16, seed=202,
+                      columns=COLUMNS, group_fn=None):
     """Use real Replay.load/sample; Sidecar labels are joined by actual stepid."""
     import embodied
-    records = [r for r in dataset["traces"] if pool_id == "all" or r["policy_id"] == pool_id]
+    index = {name: n for n, name in enumerate(columns)}
+    members = dataset.get("pool_members", {}).get(pool_id)
+    records = ([dataset["traces"][i] for i in members] if members is not None else
+               [r for r in dataset["traces"] if pool_id == "all" or r["policy_id"] == pool_id])
     expected = sum(r["sequence_starts"] for r in records)
     if not expected or min(batches, batch_size) <= 0:
         raise ValueError("Positive batch sizes and nonempty Replay are required")
@@ -182,7 +192,7 @@ def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_siz
         replay.load()
         if len(replay) != expected:
             raise ValueError(f"Native Replay silently omitted sequences: {len(replay)} != {expected}")
-        counts = np.zeros((batches, 2, len(COLUMNS)), np.int64)
+        counts = np.zeros((batches, 2, len(columns)), np.int64)
         sampled_starts = set()
         source_counts = Counter()
         fingerprint_batch = hashlib.sha256()
@@ -197,10 +207,12 @@ def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_siz
                 reproducible = all(np.array_equal(batch[k], same[k]) for k in batch)
                 if not reproducible:
                     raise RuntimeError("Fixed Uniform RNG did not reproduce the complete native batch")
+            if set(batch) != set(FIELDS) | {"stepid"}:
+                raise ValueError("Unexpected model tensor / potential future label in Replay")
             for key, (shape, dtype) in {**FIELDS, "stepid": ((20,), np.dtype("uint8"))}.items():
                 if batch[key].shape != (batch_size, 65, *shape) or batch[key].dtype != dtype:
                     raise ValueError(f"Sample field shape/dtype changed: {key}")
-            joined = np.empty((batch_size, 65, len(COLUMNS)), np.uint16)
+            joined = np.empty((batch_size, 65, len(columns)), np.uint16)
             for b, ids in enumerate(batch["stepid"]):
                 owners, ordinals = [], []
                 sampled_starts.add(ids[0].tobytes())
@@ -219,11 +231,12 @@ def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_siz
                 if len(set(owners)) != 1 or not np.all(np.diff(ordinals) == 1):
                     raise ValueError("Native sequence connected discontinuous financial accounts")
                 trace = dataset["traces"][owners[0]]
-                if pool_id != "all" and trace["policy_id"] != pool_id:
+                if (owners[0] not in members if members is not None else
+                        pool_id != "all" and trace["policy_id"] != pool_id):
                     raise ValueError("Wrong strategy was loaded into a policy pool")
-                source_counts[trace["policy_id"]] += 1
+                source_counts[group_fn(trace) if group_fn else trace["policy_id"]] += 1
                 cross_chunks += int(len(used_chunks) > 1)
-            if not np.array_equal(batch["action_mask"][:, :, 1] > .5, joined[:, :, INDEX["legal_add_mask"]].astype(bool)):
+            if not np.array_equal(batch["action_mask"][:, :, 1] > .5, joined[:, :, index["legal_add_mask"]].astype(bool)):
                 raise ValueError("Sample Mask labels do not match canonical Sidecar")
             counts[n, 0] = joined[:, :1].sum(axis=(0, 1), dtype=np.int64)
             counts[n, 1] = joined[:, 1:].sum(axis=(0, 1), dtype=np.int64)
