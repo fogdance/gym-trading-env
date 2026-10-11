@@ -9,6 +9,8 @@ import argparse
 from datetime import datetime, timezone
 from pathlib import Path
 import sys
+import json
+import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from gym_trading_env.research.fg_replay import digest, read_manifest
@@ -159,12 +161,29 @@ def main():
     parser.add_argument('--root', type=Path, default=Path('artifacts/fg_single3_v1'))
     parser.add_argument('--docs', type=Path, default=Path('docs'))
     parser.add_argument('--require-complete', action='store_true')
+    parser.add_argument('--wait', action='store_true', help='Wait for the signed pilot Gate, then publish complete CPU reports')
+    parser.add_argument('--pipeline-log', type=Path, help='Stop waiting when the CPU pipeline records a failed command')
     for name, (relative, _) in STAGES.items():
         parser.add_argument('--' + name.lower().replace(' ', '-'), default=relative)
     args = parser.parse_args()
     stages = {name: (getattr(args, name.lower().replace(' ', '_')), expected)
               for name, (_, expected) in STAGES.items()}
-    complete = collate(args.root, args.docs, require_complete=args.require_complete, stages=stages)
+    if args.wait:
+        print('WAITING_FOR_CPU_REPORT_GATES', flush=True)
+        gate = args.root / stages['Pilot preparation'][0] / 'manifest.json'
+        while not gate.exists():
+            if args.pipeline_log and args.pipeline_log.exists():
+                for line in args.pipeline_log.read_text().splitlines():
+                    if not line.startswith('{'):
+                        continue
+                    try:
+                        event = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    if event.get('status') == 'FAIL' and event.get('returncode'):
+                        raise RuntimeError('CPU pipeline failed; completion report refused')
+            time.sleep(30)
+    complete = collate(args.root, args.docs, require_complete=args.require_complete or args.wait, stages=stages)
     print('CPU_REPORTS_COMPLETE_GPU_NOT_RUN' if complete else 'CPU_REPORTS_IN_PROGRESS')
 
 

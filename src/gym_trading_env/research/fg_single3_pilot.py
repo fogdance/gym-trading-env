@@ -23,16 +23,17 @@ def prepare_pilot(config,dataset,coverage,horizon,output):
     from dreamerv3.main import _resolve_seed_protocol
     from dreamerv3.fg_single3_offline import validate
     dreamer=Path(config['dreamer_root']).resolve()
+    tests=[dreamer/'embodied/tests/test_fg_single3_offline.py',dreamer/'dreamerv3/tests/test_fg_entry.py',
+           Path(__file__).resolve().parents[3]/'tests/entry_v1/test_fg_single3_pilot.py']
     definitions=yaml.safe_load((dreamer/'dreamerv3/configs.yaml').read_text())
     base=elements.Config(definitions['defaults']).update(definitions['fg_entry_v1']).update(definitions['fg_single3_joint_offline'])
     receipts=[]
     codefiles=[Path(__file__),dreamer/'dreamerv3/fg_single3_offline.py',dreamer/'dreamerv3/main.py',
         dreamer/'dreamerv3/fg_entry_guard.py',dreamer/'dreamerv3/configs.yaml',
         dreamer/'embodied/run/offline_pretrain.py',dreamer/'embodied/run/action_mask_warmup.py',
-        dreamer/'embodied/run/fg_checkpoint.py',dreamer/'dreamerv3/agent.py']
+        dreamer/'embodied/run/fg_checkpoint.py',dreamer/'dreamerv3/agent.py',*tests]
     provenance=dict(code_files={str(p):digest(p) for p in codefiles})
     snapshots=source_witness(output,provenance)
-    tests=[dreamer/'embodied/tests/test_fg_single3_offline.py',dreamer/'dreamerv3/tests/test_fg_entry.py']
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',CUDA_VISIBLE_DEVICES='',JAX_PLATFORMS='cpu',
              PYTHONPATH=str(dreamer)+':'+str(Path(__file__).resolve().parents[2]))
     command=[sys.executable,'-m','pytest','-p','no:cacheprovider',*[str(p) for p in tests],'-q','--tb=short']
@@ -67,6 +68,8 @@ def prepare_pilot(config,dataset,coverage,horizon,output):
                 gradient_updates_budget=2000,gradient_updates_executed=0,argv=argv)))
             receipts.append(dict(candidate=candidate,mode=mode,pool=pool,capacity=capacity,
                                  directory=str(directory),identity_hash=checked['identity_hash']))
+    frozen={str(Path(p).resolve()/'manifest.json'):digest(Path(p)/'manifest.json') for p in (dataset,coverage,horizon)}
+    check_files({**frozen,**provenance['code_files']})
     lines=['# FG Single3 模型先导比较（准备完成，尚未运行）','',
         '模型状态：NOT_RUN。尚未选定训练Reward，未初始化神经Agent、未启动GPU、未执行梯度更新；择时能力NOT_ESTABLISHED。','',
         '四候选各准备M0自然池、M1自然+P4池，供用户验收后选一组Reward运行。两组网络结构沿用fg_entry_v1/size50m；horizon333、imag15、B16/64+context1；model seed0、Replay seed202；每组2000次梯度更新（2,048,000训练时间位置），完整Uniform容量。','',
@@ -74,8 +77,6 @@ def prepare_pilot(config,dataset,coverage,horizon,output):
         'CPU FakeAgent测试证明首次训练关闭Actor，满足Gate后开启，Gate/训练carry/预取队列/Replay RNG复用原FullCheckpoint保存和恢复，不重复更新；不同身份恢复拒绝。真实GPU权重及训练结果尚未验证。','',
         '启动脚本默认authorized=False，会在Agent初始化前拒绝启动；只有用户确认Reward、完整Replay覆盖和Oracle结果后才能设置True。旧6手Replay、Checkpoint、不同Reward和不同M池的Checkpoint身份均不能接续。','','每个候选配置及预检在此目录；不存在已训练模型结果。']
     (output/'pilot_comparison.md').write_text('\n'.join(lines)+'\n')
-    frozen={str(Path(p).resolve()/'manifest.json'):digest(Path(p)/'manifest.json') for p in (dataset,coverage,horizon)}
-    check_files({**frozen,**provenance['code_files']})
     receipt=signed(dict(schema='FG_SINGLE3_CPU_V1',stage='PILOT_PREPARED',status='PASS',model_status='NOT_RUN',
         selected_training_reward=None,gradient_updates=0,configurations=receipts,provenance=provenance,
         source_snapshots=snapshots,frozen_inputs=frozen,tests=dict(command=command,returncode=0,output=result.stdout),

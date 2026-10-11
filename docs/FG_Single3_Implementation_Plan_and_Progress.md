@@ -152,3 +152,7 @@ R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_
 模型模板自审发现真实preset中`run.steps`是字符串`"2000"`，来源为原默认YAML的科学计数法字符串类型：旧的整数比较误拒绝准入，且Counter与字符串比较会抛TypeError。新Single3准入使用精确数值预算比较，联合离线循环将已准入预算规范化为整数；未更改旧模式行为。新增真实preset回归验证能抵达数据准入、2001更新仍被拒绝；FakeAgent使用字符串预算完成门控及完整恢复。配置YAML重新载入为elements.Config后与解析配置一致。此项CPU验证不初始化神经Agent。
 
 `tools/fg_single3_reports.py`从各阶段签名收据汇总Markdown，验证被引用报告的文件哈希。缺失Gate显示IN_PROGRESS/NOT_COMPLETED；`--require-complete`拒绝在CPU阶段未结束时发布完成报告。该工具支持指定各stage运行目录，只读取收据/报告，不打开价格数据。
+
+先导准备的发布自审复现了源码哈希校验失败却留下“准备完成”报告的路径。把首轮完整哈希校验前移到报告生成之前；已有最终发布检查失败仍保留`.failed.md`证据。新回归在旧顺序下失败（实际存在`pilot_comparison.md`），修复后通过（没有完成报告/正式收据）。先导正式CPU预检同时运行这项回归，测试源码也归档并记哈希。该验证只检验发布失败语义，不是实际模型训练验收。
+
+CPU先导完整预检集合已实际通过7项（3个新离线/真实preset检查、3个既有FG检查、1个发布失败回归）。报告汇总进程已用`python tools/fg_single3_reports.py --wait --pipeline-log artifacts/fg_single3_v1/cpu_pipeline_run_20261011_01.log`启动：等待所有CPU Gate后自动更新对应docs；流水线失败则拒绝汇总为完成。后台生成/审计/整理报告均已安排；最终仍须读取实际结果并自审。
