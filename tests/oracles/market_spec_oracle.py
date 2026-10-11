@@ -597,8 +597,9 @@ def _add_obs_features_spec(df: pd.DataFrame) -> pd.DataFrame:
     base = ema_prev.fillna(exp_mean.groupby(sid).shift(1)).fillna(0.0)
     volume_ratio = (V_s.to_numpy(dtype=float, copy=False) + 1.0) / (np.maximum(base.to_numpy(dtype=float, copy=False), 1.0) + 1.0)
     volume_surprise = np.clip(np.log(np.maximum(volume_ratio, eps)), -5.0, 5.0) * mask_np
-    v = np.log1p(np.clip(V_s.to_numpy(dtype=float, copy=False), 0.0, None))
-    df["obs_V_t"] = np.tanh(v / 5.0)
+    old_volume_ratio = V_s.to_numpy(dtype=float, copy=False) / (base.to_numpy(dtype=float, copy=False) + eps)
+    old_volume_spike = np.log1p(np.clip(old_volume_ratio, 0.0, None))
+    df["obs_V_t"] = np.clip(old_volume_spike, 0.0, 3.0) * mask_np
     df["volume_surprise_logratio_floor"] = volume_surprise
     df["volume_surprise_rolling_percentile"] = _rolling_percentile_causal_spec(volume_surprise, window=240, min_periods=30)
     df["volume_impulse_recent"] = (

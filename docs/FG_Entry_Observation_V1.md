@@ -36,7 +36,7 @@
 
 18 个输出依次为：obs_V_t、obs_I_t、obs_cumVWAP_t、obs_dC_minus_cumVWAP_t、obs_cmp_C_vs_cumVWAP_t、obs_session_high_t、obs_session_low_t、obs_range_t、obs_open_drift_t、obs_bar_dir_t、obs_minute_index_t、obs_session_phase_t、obs_volatility_t、obs_dI_from_yclose_t、obs_pct_chg_from_ref_t、obs_mask_t、obs_weekday_sin_t、obs_weekday_cos_t。
 
-obs_V_t 使用用户指定旧公式：v=log1p(clip(V,0,None))，obs_V_t=tanh(v/5)。其他 17 个字段保持当前已确认实现。内部已有 MACD/ATR 计算不被加入输出或 Dreamer 输入，本阶段不改其业务用途。
+obs_V_t 恢复 `9699286` 的公式：`clip(log1p(clip(V/(past_volume_baseline+1e-12),0,None)),0,3)*mask_t`；基线为同 session 的过去有效成交量 EMA/expanding mean fallback，详见 `tests/SPEC_FEATURES.md`。其他 17 个字段保持当前已确认实现。内部已有 MACD/ATR 计算不被加入输出或 Dreamer 输入，本阶段不改其业务用途。
 
 ## Dreamer 与 A2
 
