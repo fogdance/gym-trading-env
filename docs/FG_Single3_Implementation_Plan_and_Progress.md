@@ -127,7 +127,8 @@ TRAIN源：`artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json`，con
 | E | PASS | run_20261011_04；44项测试；FG809/FG909完整独立重放及27/25次chunk恢复PASS |
 | R | PASS (2合约CPU研究) | run_20261011_02；15项测试、10条完整账户和40个候选独立Env视图对账；全Fold统计待D |
 | O | IN_PROGRESS | 5项精确/独立原Env穷举测试通过；2048真实候选性能及22个候选完整参考重放PASS；全18合约运行中 |
-| D/H | NOT_RUN | 等待依赖Gate；复用接口及测试开发中 |
+| 输入因果审计 | PASS | run_20261011_01；18个TRAIN合约×11个截点，60×18 float32观察与当时前缀逐值相同 |
+| D/H | NOT_RUN | 实现及最小测试已提交；CPU流水线等待完整O-Gate后按D生成→D审计→H→先导准备顺序执行 |
 | GPU/模型 | NOT_RUN | 未授权执行；择时能力NOT_ESTABLISHED |
 
 后续每阶段填写实际命令、耗时、测试数、数据范围、产物路径/哈希、提交和未解决项。最终总报告：`FG_Single3_CPU_Implementation_and_Verification.md`。
@@ -138,4 +139,16 @@ E04命令：`python tools/fg_single3.py env-test --output artifacts/fg_single3_v
 
 R01候选逐行Reward对账完成后，补充短chunk测试发现：P3读取CHUNK_END的行政mask=0，错误清空15分钟计时。已改为用当前已知状态判定恢复后的合法空仓机会；真实模型发布mask保持原协议。回归测试使用chunk7，证明首次入场16、SL后再次入场41，并验证候选视图财务和动作一致。R01正式`manifest.json`已改名为失败证据，保留所有原产物及执行源码，不能被下游当成PASS。阶段命令现在先执行所需测试，再生成和签发产物。
 
-R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --output artifacts/fg_single3_v1/reward/run_20261011_02 --workers 12`。其状态等待实际最终收据；四候选尚未选定。
+R02命令：`python tools/fg_single3.py reward-study --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --output artifacts/fg_single3_v1/reward/run_20261011_02 --workers 12`。最终收据已PASS；四候选尚未选定。
+
+### 输入因果性与后台阶段依赖
+
+实际命令：`python tools/fg_single3_input_audit.py --env-receipt artifacts/fg_single3_v1/env/run_20261011_04 --output artifacts/fg_single3_v1/input_audit/run_20261011_01`。使用4个CPU worker，只打开冻结TRAIN白名单价格。198个截点覆盖首bar、60、1024、固定seed202随机点、日边界及数据尾；完整行情计算的60×18观察窗口与仅使用当时前缀重算结果精确相同。收据content hash：`4c44ee52e79c44699c2acf9091b1bebb6608856175414cb584588d320572129b`。这是实际抽样因果审计，不能表述为逐一穷尽所有行情截点。
+
+`tools/fg_single3_pipeline.py`复用各阶段正式CLI，等待完整签名O收据后自动启动新Replay生成、每池1000真实batch覆盖审计、576个同账户快照ADD/WAIT反事实、8份受保护的模型先导模板。任一阶段失败立即停止下游；流水线没有神经Agent/GPU训练命令。日志：`artifacts/fg_single3_v1/cpu_pipeline_run_20261011_01.log`。尚未发布的阶段保持NOT_RUN/IN_PROGRESS，不能因实现或单元测试通过改写成实际数据验收PASS。
+
+已提交：Gym `c54b2af`（R及Replay扩展）、`5f49900`（精确Oracle）、`a2cdc64`（D/H/输入审计/流水线）；Dreamer `61a3987`（联合离线先导准入与完整恢复）、`adbeae5`（Agent初始化前Checkpoint身份及完整性校验）。Dreamer FakeAgent恢复与Mask Gate接线测试2项通过，模型训练仍NOT_RUN。
+
+模型模板自审发现真实preset中`run.steps`是字符串`"2000"`，来源为原默认YAML的科学计数法字符串类型：旧的整数比较误拒绝准入，且Counter与字符串比较会抛TypeError。新Single3准入使用精确数值预算比较，联合离线循环将已准入预算规范化为整数；未更改旧模式行为。新增真实preset回归验证能抵达数据准入、2001更新仍被拒绝；FakeAgent使用字符串预算完成门控及完整恢复。配置YAML重新载入为elements.Config后与解析配置一致。此项CPU验证不初始化神经Agent。
+
+`tools/fg_single3_reports.py`从各阶段签名收据汇总Markdown，验证被引用报告的文件哈希。缺失Gate显示IN_PROGRESS/NOT_COMPLETED；`--require-complete`拒绝在CPU阶段未结束时发布完成报告。该工具支持指定各stage运行目录，只读取收据/报告，不打开价格数据。
