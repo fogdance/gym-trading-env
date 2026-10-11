@@ -16,11 +16,12 @@ from test_fg_single3_env import single_env
 DREAMER = '/home/v/Documents/work/dreamerv3-dev'
 
 
-def native_dataset(root):
+def native_dataset(root, *, sl_double_touch=False):
     """Explicit synthetic Oracle receipt; no production admission bypass."""
     envdir = root/'env'; envdir.mkdir(parents=True)
     prices = [(1000,1000,1000,1000)]*1100
     prices[2] = prices[1030] = (1000,1007,1000,1007)
+    if sl_double_touch:prices[1]=(1000,1008,965,1007)
     sessions=[];times=[]
     for day in pd.date_range('2026-01-05',periods=4):
         date=day.strftime('%Y-%m-%d')
@@ -105,6 +106,38 @@ def test_rejects_foreign_candidate_identity_and_hash(corpus,tmp_path):
     with pytest.raises(ValueError,match='integrity'):sources(cloned,oracle)
 
 
+@pytest.mark.parametrize('change',['C0','C2','C3','old_schema','Obs','Reward','Oracle_gamma','Oracle_hash'])
+def test_foreign_trace_and_oracle_metadata_rejected(corpus,tmp_path,change):
+    from shutil import copytree
+    dataset,oracle,trace,_=corpus
+    cloned=tmp_path/'dataset';copytree(dataset,cloned)
+    directory=cloned/trace.relative_to(dataset)
+    t=read_manifest(directory/'manifest.json');t.pop('content_hash')
+    if change in ('C0','C2','C3'):t['policy']['candidate']=change
+    elif change=='old_schema':t['schema']='FG_REPLAY_R0_R2_V1'
+    elif change=='Obs':t['obs_version']='FOREIGN_OBSERVATION'
+    elif change=='Reward':t['reward_params_hash']='foreign_reward'
+    else:
+        copied_oracle=tmp_path/'oracle';copytree(oracle,copied_oracle);oracle=copied_oracle
+        plan_path=oracle/'C1_H333.json';plan=read_manifest(plan_path);plan.pop('content_hash')
+        if change=='Oracle_gamma':plan['gamma']=1;plan['gamma_rational']=[1,1]
+        write_json(plan_path,signed(plan))
+        om=read_manifest(oracle/'manifest.json');om.pop('content_hash')
+        om['files']['C1_H333.json']=digest(plan_path);write_json(oracle/'manifest.json',signed(om))
+        t['policy']['schedule_path']=str(plan_path)
+        t['policy']['schedule_sha256']=digest(plan_path) if change=='Oracle_gamma' else 'foreign_hash'
+    write_json(directory/'manifest.json',signed(t))
+    checksum=digest(directory/'manifest.json')
+    receipt=read_manifest(directory/'reconciliation.json');receipt.pop('content_hash')
+    receipt['trace_manifest_sha256']=checksum;write_json(directory/'reconciliation.json',signed(receipt))
+    m=read_manifest(cloned/'manifest.json');m.pop('content_hash')
+    m['traces'][0]['manifest_sha256']=checksum
+    m['traces'][0]['receipt_sha256']=digest(directory/'reconciliation.json')
+    write_json(cloned/'manifest.json',signed(m))
+    with pytest.raises(ValueError,match='identity|schema|frozen|bound|H333'):
+        sources(cloned,oracle)
+
+
 @pytest.mark.parametrize('field',['stepid','ordinal','action','legal_add','incoming_action'])
 def test_alignment_mutations_fail_closed(corpus,monkeypatch,field):
     _,_,trace,manifest=corpus
@@ -127,3 +160,26 @@ def test_exclusion_and_label_cache_integrity(corpus,tmp_path):
     result=build_labels(dataset,oracle,tmp_path/'labels')
     p=tmp_path/'labels'/result['traces'][0]['labels_file'];a=np.load(p);a['label'][0]=0;np.save(p,a)
     with pytest.raises(ValueError,match='changed'):load_labels(tmp_path/'labels')
+
+
+def test_duplicate_reset_label_and_generator_identity_rejected(corpus,tmp_path,monkeypatch):
+    dataset,oracle,trace,manifest=corpus
+    row=next(iter_sidecar(trace));step=next(iter_replay_rows(trace,manifest))[1]
+    with monkeypatch.context() as context:
+        context.setattr('gym_trading_env.research.fg_s3a_labels.aligned_rows',lambda *_:iter([(row,step),(row,step)]))
+        with pytest.raises(ValueError,match='Duplicate'):build_labels(dataset,oracle,tmp_path/'duplicates')
+    build_labels(dataset,oracle,tmp_path/'labels')
+    p=tmp_path/'labels/manifest.json';m=read_manifest(p);m.pop('content_hash')
+    m['provenance']['code_sha256']={'generator':'foreign_implementation'};write_json(p,signed(m))
+    with pytest.raises(ValueError,match='implementation identity'):load_labels(tmp_path/'labels')
+
+
+def test_sl_and_same_entry_bar_double_touch_do_not_rewrite_teacher_labels(tmp_path):
+    dataset,oracle,trace,manifest=native_dataset(tmp_path/'sl_native',sl_double_touch=True)
+    result=build_labels(dataset,oracle,tmp_path/'labels')
+    assert manifest['sl_events']==1
+    rows=list(iter_sidecar(trace));event=rows[1]['exits'][0]
+    assert event['reason']=='STOP_LOSS' and event['ambiguous_tp_sl'] and event['same_entry_bar']
+    a=np.load(tmp_path/'labels'/result['traces'][0]['labels_file'])
+    assert a['cursor'][a['label']==1].tolist()==[0,1022]
+    assert a[a['cursor']==1]['label'].tolist()==[0]  # Incoming ADD/negative reward never becomes label.

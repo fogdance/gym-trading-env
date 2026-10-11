@@ -190,17 +190,19 @@ def build_labels(dataset, oracle_receipt, output, *, candidate='C1', seed=0, run
         directory = Path(dataset)/rec['directory']
         t = trace_manifest(directory, schema=SINGLE3_SCHEMA)
         plan = read_manifest(t['policy']['schedule_path'])
-        rows, seen, local = [], set(), Counter()
+        rows, seen_cursors, seen_times, seen_stepids, local = [], set(), set(), set(), Counter()
         for row, step in aligned_rows(directory, t, set(plan['add_cursors'])):
             local['total_rows'] += 1
             why = exclusion(row, step)
             if why:
                 local[why+'_excluded'] += 1
                 continue
-            identity = (row['cursor'], row['time'])
-            if identity in seen:
+            if (row['cursor'] in seen_cursors or row['time'] in seen_times
+                    or row['stepid'] in seen_stepids):
                 raise ValueError('Duplicate supervised market minute')
-            seen.add(identity)
+            seen_cursors.add(row['cursor'])
+            seen_times.add(row['time'])
+            seen_stepids.add(row['stepid'])
             label = row['action']
             year = int(row['time'][:4])
             local['eligible'] += 1
@@ -240,11 +242,14 @@ def load_labels(directory, *, verify_sources=True):
     m = read_manifest(root/'manifest.json')
     if m.get('protocol') != PROTOCOL or m.get('status') != 'PASS' or m.get('candidate') != 'C1':
         raise ValueError('Foreign labels cache')
+    if list(m['provenance']['code_sha256'].values()) != [digest(Path(__file__).resolve())]:
+        raise ValueError('Labels generator implementation identity changed')
     check_files({str(root/p): h for p, h in m['files'].items()})
     if verify_sources:
         check_files(m['source']['frozen_inputs'])
     for rec in m['traces']:
         a = np.load(root/rec['labels_file'], mmap_mode='r', allow_pickle=False)
-        if a.dtype != INDEX_DTYPE or a.shape != (rec['samples'],) or not np.isin(a['label'], [0, 1]).all() or not a['mask'].all():
+        if (a.dtype != INDEX_DTYPE or a.shape != (rec['samples'],)
+                or not np.isin(a['label'], [0, 1]).all() or not np.all(a['mask'] == 1)):
             raise ValueError('Invalid labels index dtype/shape/mask')
     return m
