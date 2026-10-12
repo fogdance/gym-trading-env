@@ -1,0 +1,36 @@
+"""Review reproductions only; original CPU models plus isolated protocol fixture."""
+import json
+from types import SimpleNamespace
+
+import pytest
+
+from embodied.tests.test_fg_s3_source_transfer import source_bundle
+from embodied.tests import test_fg_s3c_resume as recovery
+from embodied.run import fg_s3_source_admission as sources
+
+
+def test_recovered_neural_step_and_update_log_agree(source_bundle, tmp_path, monkeypatch):
+    real_run = recovery.S3CRun
+
+    def probe(*args, **kwargs):
+        run = real_run(*args, **kwargs)
+        if kwargs.get('resume') and int(run.step) == 1:
+            rows = [json.loads(x) for x in (run.root / 'updates.jsonl').read_text().splitlines()]
+            steps = [x['local_update'] for x in rows]
+            print('REVIEW_REAL_CPU_RECOVERY:', {'checkpoint_step': int(run.step), 'log_steps': steps}, flush=True)
+            assert steps == [1], 'Uncheckpointed rows survive exact model recovery'
+        return run
+
+    monkeypatch.setattr(recovery, 'S3CRun', probe)
+    recovery.test_real_neural_joint_runtime_exact_resume_no_source_reload(source_bundle, tmp_path, monkeypatch)
+
+
+def test_diagnostic_catalog_flag_survives_full_source_admission(monkeypatch):
+    """Isolated public protocol check; no neural or production acceptance."""
+    catalog = SimpleNamespace(manifest={'diagnostic': True, 'source': {
+        'dataset_sha256': 'fixture-dataset', 'reward_params_hash': 'fixture-reward'},
+        'observation_identity': 'fixture-observation'}, manifest_sha256='fixture-catalog')
+    monkeypatch.setattr(sources, '_full', lambda path, catalog: {'diagnostic': False, 'step': 0})
+    receipt = sources.inspect_source('direct_full', catalog=catalog, path='/fixture/full')
+    print('REVIEW_PROTOCOL_ONLY:', {'catalog_diagnostic': True, 'source_diagnostic': receipt['origin']['diagnostic']}, flush=True)
+    assert receipt['origin']['diagnostic'], 'Diagnostic Catalog was admitted as a formal source'

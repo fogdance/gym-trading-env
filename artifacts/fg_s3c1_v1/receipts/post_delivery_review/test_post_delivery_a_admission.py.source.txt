@@ -1,0 +1,27 @@
+"""Read-only source admission against the real small CPU checkpoint from the review."""
+from pathlib import Path
+
+from gym_trading_env.research import fg_s3_experiment as manager
+from gym_trading_env.research.fg_s3a_labels import load_labels
+
+
+def test_formal_a_rejects_diagnostic_full_source(tmp_path):
+    root = Path('/tmp/pytest-of-v/pytest-221/actual_source0')
+    labels = load_labels(root / 'labels')
+    cfg = {'schema': manager.SOURCE_SCHEMA, 'experiment': 'review_formal_a',
+        'diagnostic': False, 'trainer': 's3a', 'prepared_dir': str(tmp_path / 'prepared'),
+        'paths': {'source_checkpoint': str(root / 'base/ckpt/step_000000000000'),
+            'labels': str(root / 'labels'), 'catalog': str(root / 'catalog'),
+            'dataset': labels['source']['dataset'], 'oracle_receipt': labels['source']['oracle_receipt'],
+            'features': str(tmp_path / 'missing_features')}}
+    try:
+        _, source, _, _ = manager.admission(cfg)
+    except ValueError as error:
+        assert 'diagnostic' in str(error).lower()
+        return
+    print('REVIEW_ACTUAL_SMALL_SOURCE_ADMISSION:', {
+        'experiment_diagnostic': cfg['diagnostic'],
+        'source_diagnostic': source['diagnostic'],
+        'source_path': source['path'],
+        'neural_training_in_this_probe': False}, flush=True)
+    raise AssertionError('Formal A admission accepted a diagnostic full source')

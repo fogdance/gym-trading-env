@@ -1,0 +1,121 @@
+{
+  "status": "OPEN_FINDINGS_REPRODUCED_NO_IMPLEMENTATION_CHANGE",
+  "reviewed_heads": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "3785ad6199581779468d4c425fd02364f1ac6bb5",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "1b7a5120e43c9b872518fbf692bc4bad168381b8"
+  },
+  "commands": [
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "-o",
+        "addopts=",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "/tmp/fg-s3-review-20261012/test_post_delivery_review.py",
+        "--junitxml=/tmp/fg-s3-review-20261012/review_reproductions.xml"
+      ],
+      "exit_code": 1
+    },
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "-o",
+        "addopts=",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "/tmp/fg-s3-review-20261012/test_post_delivery_a_admission.py",
+        "--junitxml=/tmp/fg-s3-review-20261012/review_a_admission.xml"
+      ],
+      "exit_code": 1
+    }
+  ],
+  "files": {
+    "review_reproductions.xml.raw.gz": {
+      "raw_sha256": "d5ac3a83840e6aac375fdf29bcacdfe6962f777567a73e38e86b2491dc70822e",
+      "archive_sha256": "0fb0fc6feb4612d36b8a6a5212ded9dc3127422c1f7c2d16d9951f35ea086235",
+      "raw_bytes": 4701,
+      "archive_bytes": 1513
+    },
+    "review_reproductions.stdout.raw.gz": {
+      "raw_sha256": "768f2239213b4f0fb8ce4704865c783e6b6ea482c12c45e89f4b277e94373e4e",
+      "archive_sha256": "380a5ad907a390d37b01abe306756543e61570999025d9fe1c620a2dcda04acd",
+      "raw_bytes": 8342,
+      "archive_bytes": 1947
+    },
+    "review_a_admission.xml.raw.gz": {
+      "raw_sha256": "5200c285d0faa32691d29dc57d4d8c57e114cf2ec680dde2df74e0c274377705",
+      "archive_sha256": "cb99bb43720c90c75bc76d89dcdf8911da7a1930ddc1c6cc30320ba418435d7e",
+      "raw_bytes": 1960,
+      "archive_bytes": 852
+    },
+    "review_a_admission.stdout.raw.gz": {
+      "raw_sha256": "6a84b01d7775c6f4663878aa9b17e8f57db79ba4b504f841b3294dab7de4c3f9",
+      "archive_sha256": "4bac3034462357fc33387393c324ff1d321c604be405f33731a7cc0d8436dcc9",
+      "raw_bytes": 2099,
+      "archive_bytes": 754
+    },
+    "test_post_delivery_review.py.source.txt": {
+      "sha256": "80e94d89f1dfddca86501c2e698578488f7b97c08e34168c23c3778b73a3fc6a"
+    },
+    "test_post_delivery_a_admission.py.source.txt": {
+      "sha256": "007ca841b2480c956c8af1364fd53c7cc1d520b9e229310d16783a40c817e247"
+    },
+    "review_evidence_checks.json": {
+      "sha256": "24bc8120bac9f6f47b0275a9e8c99aa2345b6b6d80adc0baf099a57914395244"
+    }
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "status": "OPEN",
+      "evidence": "Actual original neural CPU runtime restored local step 1 but update log retained steps 1,2,3; controlled checkpoint selection."
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "status": "OPEN",
+      "evidence": "Isolated source protocol fixture: Catalog diagnostic=true, direct_full origin diagnostic=false. No neural or production claim."
+    },
+    {
+      "id": "R3",
+      "priority": "P2",
+      "status": "OPEN",
+      "evidence": "Read-only A V2 admission accepted an actual small diagnostic full checkpoint under diagnostic=false. No full formal prepare/start or GPU execution."
+    }
+  ],
+  "formal_gpu": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "original_and_training_worktrees": "UNMODIFIED",
+  "interpretation": "Three expected failing review checks reveal previously untested contracts; existing passing receipts are not relabeled."
+}

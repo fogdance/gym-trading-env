@@ -1,5 +1,8 @@
 # Shared architecture implementation and verification
 
+> 交付后复查新增 3 项未修复 P2 问题，当前收尾状态见
+> [问题清单与复现](FG_S3_Post_Delivery_Review.md)。下文 PASS 保留其历史执行范围。
+
 ## Summary
 
 AR0–AR5 engineering acceptance and the real TRAIN Catalog audit passed.

@@ -1,5 +1,8 @@
 # 共享架构与 S3-C1 整体代码 Review
 
+> 交付后复查新增 3 项未修复 P2 问题，当前收尾状态见
+> [问题清单与复现](FG_S3_Post_Delivery_Review.md)。下文 PASS 保留其历史执行范围。
+
 ## Summary
 
 两份正式任务书的 AR0–AR5、C0–C4 已完成 CPU 工程验收。新增 S3-C 数学、

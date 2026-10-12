@@ -1,0 +1,99 @@
+{
+  "checks": [
+    {
+      "receipt": "c_final.xml",
+      "actual_sha256": "d32380836f36f0d00e28d16185e939484133161e5dfe117b08bd3423e40edfc1",
+      "matches_recorded_sha256": true
+    },
+    {
+      "receipt": "ready_lambda_resume_final.xml",
+      "actual_sha256": "254cb842146dc121b2862a806d0befcbae751649b5c6b24f864283ddfefa095e",
+      "matches_recorded_sha256": true
+    },
+    {
+      "receipt": "final_dependency_c_regression.xml",
+      "actual_sha256": "2c011830bf64a5a406f789e66a2750c6b6c808f3fac9ba243bebb50eded9b7a7",
+      "matches_recorded_sha256": true
+    },
+    {
+      "receipt": "s3a_shared_source_first.xml",
+      "actual_sha256": "fa5439fc2d7c629dfe80436a69f209fd142b9c4ca3953e40552c372c733229da",
+      "matches_recorded_sha256": true
+    },
+    {
+      "receipt": "s3a_shared_source_regression.xml",
+      "actual_sha256": "f192e8af0e978be41c6b990ad25137bc094fce065719eca670d4b1091b9249cb",
+      "matches_recorded_sha256": true
+    },
+    {
+      "receipt": "online_counter_contract.xml",
+      "actual_sha256": "cbae08fe6762aae033bf64bcf639cc81677d2ffc87d8064098d272f87e216d4f",
+      "matches_recorded_sha256": true
+    },
+    {
+      "runtime_file": "dreamerv3/fg_s3c_agent.py",
+      "unchanged_from_neural_acceptance": true
+    },
+    {
+      "runtime_file": "embodied/run/fg_s3c_train.py",
+      "unchanged_from_neural_acceptance": true
+    },
+    {
+      "runtime_file": "embodied/run/fg_s3c_stream.py",
+      "unchanged_from_neural_acceptance": true
+    },
+    {
+      "runtime_file": "embodied/run/fg_s3_teacher_adapter.py",
+      "unchanged_from_neural_acceptance": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/dreamerv3/fg_s3a_actor.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_checkpoint.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_features.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3b_train.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3a_labels.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3b_normalization.py",
+      "unchanged_from_original": true
+    },
+    {
+      "frozen_file": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/.gitignore",
+      "unchanged_from_original": true
+    },
+    {
+      "current_180k_source_diagnostic": false,
+      "current_catalog_diagnostic": false,
+      "interpretation": "Read-only identity inspection; no formal GPU training performed."
+    }
+  ],
+  "new_targeted_review_results": [
+    {
+      "receipt": "review_reproductions.xml",
+      "tests": 2,
+      "failures": 2,
+      "errors": 0,
+      "seconds": 57.352
+    },
+    {
+      "receipt": "review_a_admission.xml",
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "seconds": 0.925
+    }
+  ]
+}
