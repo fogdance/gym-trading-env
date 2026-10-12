@@ -276,4 +276,7 @@ Dreamer：`dreamerv3/fg_s3b_bc.py`、`embodied/run/fg_s3b_train.py`、
 包含原索引、值/证书、全局匹配索引、完整权重和校准；大 NumPy 文件留本地，
 Git 提交代码、metadata、可复现脚本与测试收据。
 
-最终源码提交与文档校验收据在收尾时填入，进度在证明设计文档同步。
+源码与 CPU 收据提交：Gym `52d2db6`，Dreamer `6ef6938`。
+`B4_document_validation.json`：16 个 Python AST、4 份 YAML、2 个 bash 文档块语法
+校验 PASS；两仓库 `git diff --cached --check` PASS。没有执行文档中的未来 GPU 命令。
+进度：**100%（本轮 B0–B4 代码与 CPU 验收范围）**。
