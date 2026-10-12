@@ -1,0 +1,14 @@
+{
+  "protocol": "FG_S3B_TRAIN_SCALE_V1",
+  "fold": "TRAIN",
+  "percentile": 90.0,
+  "method": "numpy_percentile_linear",
+  "scale": 3.7523039430204257,
+  "positive_rows": 396542,
+  "per_contract_normalization": false,
+  "class_reweighting": false,
+  "values_manifest_sha256": "a85eaccf6a0ef5f0c43a3d7af79a3d75882788de84c7e014602d49ae43cd2434",
+  "label_manifest_sha256": "2f2a9de785bb963fe7e20fdc7c4b418ba7c2d5f27dfe0b1db5517e00e247d39f",
+  "w_max": 3.0,
+  "content_hash": "c1aa4402c739f636c951852cc381f89b2a6025c33101d4a1d1ef73b5b39b9eb2"
+}

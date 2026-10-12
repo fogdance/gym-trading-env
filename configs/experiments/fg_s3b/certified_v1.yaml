@@ -1,0 +1,14 @@
+schema: FG_S3B_CPU_CONFIG_V1
+dataset: /home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01
+oracle_receipt: /home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01
+s3a_label_index: /home/v/Documents/work/gym-trading-env2/artifacts/fg_s3a_v1/labels_20261011_v2
+seed: 202
+proof:
+  exact_comparisons: 4096
+  exact_events: 8192
+weights:
+  percentile: 90.0
+  w_max: 3.0
+  min_total_ess: 2560.0
+  min_class_ess: 32.0
+  max_contract_contribution: 0.5

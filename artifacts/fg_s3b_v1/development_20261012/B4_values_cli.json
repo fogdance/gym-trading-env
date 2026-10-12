@@ -1,0 +1,13 @@
+{
+  "protocol": "FG_S3B_CERTIFIED_ADVANTAGE_V1",
+  "status": "PASS",
+  "complete": true,
+  "summary": {
+    "rows": 402096,
+    "certificates": {
+      "ADD_BETTER": 16171,
+      "WAIT_BETTER": 380371,
+      "TIE_EXACT": 5554
+    }
+  }
+}

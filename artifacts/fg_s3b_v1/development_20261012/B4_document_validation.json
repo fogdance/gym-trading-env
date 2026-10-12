@@ -1,0 +1,31 @@
+{
+  "status": "PASS",
+  "python_ast_files": [
+    "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/development_20261012/b0_snapshot.py",
+    "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/development_20261012/b4_actor_cpu.py",
+    "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/development_20261012/b4_benchmarks.py",
+    "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/development_20261012/b4_delivery_audit.py",
+    "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/development_20261012/b4_metadata.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_advantage.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_verify.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_weights.py",
+    "/home/v/Documents/work/gym-trading-env2/tests/entry_v1/test_fg_s3b_advantage.py",
+    "/home/v/Documents/work/gym-trading-env2/tests/entry_v1/test_fg_s3b_weights.py",
+    "/home/v/Documents/work/gym-trading-env2/tools/fg_s3b.py",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/fg_s3b_bc.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3b_checkpoint.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3b_train.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/tests/test_fg_s3b.py",
+    "/home/v/Documents/work/dreamerv3-dev/scripts/fg_s3b.py"
+  ],
+  "yaml_configs": [
+    "/home/v/Documents/work/gym-trading-env2/configs/experiments/fg_s3b/certified_v1.yaml",
+    "/home/v/Documents/work/dreamerv3-dev/configs/fg_s3b/S3A_FULL.yaml",
+    "/home/v/Documents/work/dreamerv3-dev/configs/fg_s3b/S3B_CERTIFIED.yaml",
+    "/home/v/Documents/work/dreamerv3-dev/configs/fg_s3b/S3A_MATCHED.yaml"
+  ],
+  "bash_syntax_blocks": 2,
+  "formal_commands_executed": false,
+  "receipt_status": "CPU_VERIFIED_WITH_PRODUCTION_DRIFT",
+  "report_scope": "code/CPU; future GPU only"
+}

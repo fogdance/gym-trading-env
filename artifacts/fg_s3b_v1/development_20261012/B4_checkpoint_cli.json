@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "protocol": "FG_S3B_BC_V1",
+  "bc_updates": 6,
+  "frozen_keys": 203,
+  "mode": "S3B_CERTIFIED"
+}

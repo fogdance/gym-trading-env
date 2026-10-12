@@ -1,0 +1,41 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+S3A_MATCHED 1: loss=0.691569, ADD recall=0.0, CLASSIFICATION_ONLY
+S3A_MATCHED 2: loss=0.691542, ADD recall=0.25, CLASSIFICATION_ONLY
+S3A_MATCHED 3: loss=0.690663, ADD recall=None, CLASSIFICATION_ONLY
+S3A_MATCHED 4: loss=0.690265, ADD recall=0.0, CLASSIFICATION_ONLY
+S3A_MATCHED 5: loss=0.690491, ADD recall=0.0, CLASSIFICATION_ONLY
+S3A_MATCHED 6: loss=0.689883, ADD recall=0.5, CLASSIFICATION_ONLY
+{
+  "status": "CPU_DIAGNOSTIC_COMPLETE",
+  "bc_updates": 6,
+  "checkpoint": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/actor_cpu_interface_v2/matched/ckpt/bc_000000000006_000000000006",
+  "classification": "CLASSIFICATION_ONLY"
+}

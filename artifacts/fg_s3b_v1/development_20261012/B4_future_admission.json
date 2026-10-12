@@ -1,0 +1,7 @@
+{
+  "status": "WAITING_FOR_SOURCE_CHECKPOINT",
+  "reason": "Completed protected C1_M1_1M checkpoint (62500 updates) required",
+  "data_proof_status": "PASS",
+  "weighted_supervision_status": "PASS",
+  "formal_gpu_training": "NOT_RUN"
+}

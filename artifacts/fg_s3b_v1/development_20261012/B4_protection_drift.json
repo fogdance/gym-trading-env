@@ -1,0 +1,42 @@
+{
+  "status": "DRIFT_OBSERVED",
+  "original_baseline_preserved": true,
+  "first_global_audit_exit_code": 1,
+  "changes": [
+    {
+      "path": "/home/v/Documents/work/gym-trading-env/configs/experiments/fg_single3/C1_M1_10K_then_online_1M.yaml",
+      "before": "cf6198e015e626dbf0996cf5c5adc1539fcf8c068e86b7082fafc7a3dc1f2996",
+      "after": "a35b7118224f5645a9ca479f2860835657cd02e17a006b193fd36fd421aeca1d"
+    },
+    {
+      "path": "/home/v/Documents/work/gym-trading-env/src/gym_trading_env/research/fg_single3_experiment.py",
+      "before": "d63992715ae2f1d1fb38e59ccd9263ff5a8f4bc37de736f4a1944ba94dc3893a",
+      "after": "f85cd852f17ac2d380c226f637975c72053c7d08f78644a5ee901b9457f8a490"
+    },
+    {
+      "path": "/home/v/Documents/work/dreamerv3/dreamerv3/tests/test_action_mask.py",
+      "before": "dd3f267dec8e1c1247b16b841b756d4c796fb40ac9f7eb3e5b3e1321a139105f",
+      "after": "0a74e490cbfe57ff945828c3544bed5317a6d9b10877fac7ff43f2d5d7f42855"
+    },
+    {
+      "path": "/home/v/Documents/work/dreamerv3/embodied/jax/outs.py",
+      "before": "72051ec743997f6191a3f3daf0e14e68f5ee6dee018a3f68f8eb8a42f8766b0c",
+      "after": "fdce07aa00790f4693a71e73bdd3cc67d6737524cdcb0f165569b303727ac33a"
+    },
+    {
+      "path": "/home/v/Documents/work/dreamerv3/embodied/run/train.py",
+      "before": "6a87c011b5d922218ec15687b7f0b57b1d4c11e158e625f4ec5a3d427d311f4d",
+      "after": "467c9ca73fe79a5d904c319f063988ea803cfea2d11a0fe47fc9f3f3b1e30bc6"
+    },
+    {
+      "path": "/home/v/Documents/work/dreamerv3/embodied/tests/test_fg_add_gate_training.py",
+      "before": "130e237b982f49f68f095441a4563baa06fdd5940f78eab53f172c1887cb4c9f",
+      "after": "355f3e976a593a6518bdb51770a1079138f069894b8b62b153077e0036df4b2d"
+    }
+  ],
+  "attribution": "Not determined; these are production paths outside both S3-B development repositories",
+  "development_existing_file_status": "PASS",
+  "development_existing_files": 374,
+  "action": "No rollback, re-signing, signal, restart, or write to those paths",
+  "content_hash": "872a5503a13f73100a66c33746d4b457f234c2ab77c1f12fa1505b7ee33e201c"
+}

@@ -1,0 +1,3447 @@
+{
+  "protocol": "FG_S3B_WEIGHTS_V1",
+  "status": "PASS",
+  "fold": "TRAIN",
+  "seed": 202,
+  "complete": true,
+  "same_supervision_index_as_s3a": true,
+  "diagnostic_partial": false,
+  "values": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3b_v1/values_full_v2",
+  "values_manifest_sha256": "a85eaccf6a0ef5f0c43a3d7af79a3d75882788de84c7e014602d49ae43cd2434",
+  "labels": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3a_v1/labels_20261011_v2",
+  "labels_manifest_sha256": "2f2a9de785bb963fe7e20fdc7c4b418ba7c2d5f27dfe0b1db5517e00e247d39f",
+  "config": {
+    "w_max": 3.0,
+    "percentile": 90.0,
+    "min_total_ess": 2560.0,
+    "min_class_ess": 32.0,
+    "max_contract_contribution": 0.5
+  },
+  "config_sha256": "084ad43320302a80e0ced12adef33e2fa41bc98c2d8a9a2cb7e7ba49e30362b2",
+  "scale_sha256": "95804ae2a67103259e62c20b5d9d6d4a48b7cbf4a5472989964c81eb0c5d7cbc",
+  "rows": 402096,
+  "matched_rows": 396542,
+  "matched_index_sha256": "22b2eaebbc6d9c826eb86dd538159ea9a776e2fb58f2c603ff5728f1f0af7847",
+  "shards": [
+    {
+      "contract": "CZCE.FG001",
+      "directory": "contracts/CZCE.FG001",
+      "rows": 22873,
+      "matched_rows": 22277,
+      "index_sha256": "7e7789a417975bc74b1012c9d352934fcdb0cca45be6a0163e0187eba86d4e7f"
+    },
+    {
+      "contract": "CZCE.FG005",
+      "directory": "contracts/CZCE.FG005",
+      "rows": 17472,
+      "matched_rows": 16788,
+      "index_sha256": "622ea527377f6b07821ce83205615ce9f778aee8bd947706b015e61cea1fd0e7"
+    },
+    {
+      "contract": "CZCE.FG009",
+      "directory": "contracts/CZCE.FG009",
+      "rows": 22343,
+      "matched_rows": 21940,
+      "index_sha256": "1554d3a7f6ede2c2a9000b0634e2f79608f0e039fc6bd984299eb0ad10763da4"
+    },
+    {
+      "contract": "CZCE.FG101",
+      "directory": "contracts/CZCE.FG101",
+      "rows": 23046,
+      "matched_rows": 22937,
+      "index_sha256": "aec11fadfbcae3afb507ee6e75f133ee2f3d47d958c143cbd3c62f45b8c3348e"
+    },
+    {
+      "contract": "CZCE.FG105",
+      "directory": "contracts/CZCE.FG105",
+      "rows": 21258,
+      "matched_rows": 21090,
+      "index_sha256": "40b39dfb0ad8574998f42b23bd11e7ae8e822bf774cc535b26a5675243340939"
+    },
+    {
+      "contract": "CZCE.FG109",
+      "directory": "contracts/CZCE.FG109",
+      "rows": 20557,
+      "matched_rows": 20526,
+      "index_sha256": "d86ab934820e1d677bc9d062fc2721f75d09085e1cac125000671821309e5d5f"
+    },
+    {
+      "contract": "CZCE.FG201",
+      "directory": "contracts/CZCE.FG201",
+      "rows": 26458,
+      "matched_rows": 26415,
+      "index_sha256": "e410c25eec9456d4530b9e0a936d3c7ba3dc54797f3fe84ca8828e08aee40683"
+    },
+    {
+      "contract": "CZCE.FG205",
+      "directory": "contracts/CZCE.FG205",
+      "rows": 19467,
+      "matched_rows": 19389,
+      "index_sha256": "f9f52ef793aa85cbe0ffcbcfcaa32aebd958e130c2f6eddca8611e487ac1d62e"
+    },
+    {
+      "contract": "CZCE.FG209",
+      "directory": "contracts/CZCE.FG209",
+      "rows": 25654,
+      "matched_rows": 25524,
+      "index_sha256": "fdb1e044ab9c803b03c79dde5ac8f450a6179c39cd119fa83d73554d57a03089"
+    },
+    {
+      "contract": "CZCE.FG301",
+      "directory": "contracts/CZCE.FG301",
+      "rows": 22796,
+      "matched_rows": 22677,
+      "index_sha256": "85885fc194bb120e12645eb053191891a7be7f52c610949064b5ef04ccd3f013"
+    },
+    {
+      "contract": "CZCE.FG305",
+      "directory": "contracts/CZCE.FG305",
+      "rows": 22114,
+      "matched_rows": 21760,
+      "index_sha256": "97e5c2787a00062f1788bc5280935c62a0c6d580cac4b09cb7d4d2d302ae8007"
+    },
+    {
+      "contract": "CZCE.FG309",
+      "directory": "contracts/CZCE.FG309",
+      "rows": 23394,
+      "matched_rows": 23191,
+      "index_sha256": "2b8df8990702f11121b5206d2f2b1a49c4973d3f5b335e1fa0dca0e88e177050"
+    },
+    {
+      "contract": "CZCE.FG401",
+      "directory": "contracts/CZCE.FG401",
+      "rows": 21548,
+      "matched_rows": 21502,
+      "index_sha256": "f16f7ca013336303b4888eb59853acb49be988e6747526fae2faee107cebb387"
+    },
+    {
+      "contract": "CZCE.FG405",
+      "directory": "contracts/CZCE.FG405",
+      "rows": 18557,
+      "matched_rows": 18469,
+      "index_sha256": "e0cedb5e558530f9067ff97ce6b912d3a0c08de2ce48c990e458ce4099e7adbe"
+    },
+    {
+      "contract": "CZCE.FG809",
+      "directory": "contracts/CZCE.FG809",
+      "rows": 23998,
+      "matched_rows": 23585,
+      "index_sha256": "b9d62302b6467b90f4c0e06b788354240df152da4c0068122112e9c229553fef"
+    },
+    {
+      "contract": "CZCE.FG901",
+      "directory": "contracts/CZCE.FG901",
+      "rows": 24893,
+      "matched_rows": 24499,
+      "index_sha256": "ef562cdecb7a8c1a69e58450d234973cf2a4f9fc8dd6449f33c3967622e32077"
+    },
+    {
+      "contract": "CZCE.FG905",
+      "directory": "contracts/CZCE.FG905",
+      "rows": 22677,
+      "matched_rows": 22240,
+      "index_sha256": "c35131f682a5adfa41b398e088162f0712c6b61eb7ecbf71c2c6615688d37709"
+    },
+    {
+      "contract": "CZCE.FG909",
+      "directory": "contracts/CZCE.FG909",
+      "rows": 22991,
+      "matched_rows": 21733,
+      "index_sha256": "53baf7cb1fdc8c18f2dab7669e5edbc0ee394889ba04933eb014cb5071869cba"
+    }
+  ],
+  "interfaces": {
+    "S3A_FULL": {
+      "rows": 402096,
+      "mask": "all_exact_S3A_legal_rows",
+      "weight": "ones"
+    },
+    "S3A_MATCHED": {
+      "rows": 396542,
+      "mask_sha256": "22b2eaebbc6d9c826eb86dd538159ea9a776e2fb58f2c603ff5728f1f0af7847",
+      "weight": "ones"
+    },
+    "S3B_CERTIFIED": {
+      "rows": 396542,
+      "mask_sha256": "22b2eaebbc6d9c826eb86dd538159ea9a776e2fb58f2c603ff5728f1f0af7847",
+      "weight": "min(w_max,margin_lower/global_TRAIN_P90)"
+    }
+  },
+  "feature_binding": "REQUIRED_AT_TRAIN_ADMISSION",
+  "code_sha256": {
+    "src/gym_trading_env/envs/__init__.py": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803",
+    "src/gym_trading_env/envs/account.py": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257",
+    "src/gym_trading_env/envs/accounting/__init__.py": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12",
+    "src/gym_trading_env/envs/accounting/ledger.py": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5",
+    "src/gym_trading_env/envs/action.py": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99",
+    "src/gym_trading_env/envs/broker_accounts.py": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151",
+    "src/gym_trading_env/envs/callbacks.py": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96",
+    "src/gym_trading_env/envs/config.py": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3",
+    "src/gym_trading_env/envs/entry_contract.py": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+    "src/gym_trading_env/envs/entry_dataset_env.py": "2647dd96dd4e7b3648262b52415d2e84a2f5ecea46959e01a1ece83b9794d4a8",
+    "src/gym_trading_env/envs/entry_env.py": "961521887df92b1fb9d657c2697cf652aa632bded7785b4316ec2b9d1112edbb",
+    "src/gym_trading_env/envs/entry_execution.py": "64ce49dc4ce96f6ec670325189d78d6bcc1e9cc3c717fc212da82ff571985127",
+    "src/gym_trading_env/envs/metrics.py": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db",
+    "src/gym_trading_env/envs/position.py": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c",
+    "src/gym_trading_env/envs/position_manager.py": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d",
+    "src/gym_trading_env/envs/target_transition.py": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80",
+    "src/gym_trading_env/envs/trade_record.py": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750",
+    "src/gym_trading_env/envs/trade_record_manager.py": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d",
+    "src/gym_trading_env/envs/trading_env.py": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127",
+    "src/gym_trading_env/envs/user_accounts.py": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5",
+    "src/gym_trading_env/research/fg_replay.py": "412b617aebce95f9533bd6c507658c30fe584921eed9c8a52ac104ce756fdfe6",
+    "src/gym_trading_env/research/fg_reward_candidates.py": "51784ff9b83d67a7af793e052a95b7285f8660921f05bf846cfe54660231b0e9",
+    "src/gym_trading_env/research/fg_s3a_labels.py": "a4b3cae13af109ae519f51097eeff18254097bfa748e0e16e3bc9882eaa03b24",
+    "src/gym_trading_env/research/fg_s3b_advantage.py": "e97caf4a745b77f5e1c812692c4c160877b0c6f9db172bc5598908172efa27ca",
+    "src/gym_trading_env/research/fg_single3.py": "4ec8913cf8b3e527e0f08923fb177090b61c388ae36fec77ffdb152b082d6d83",
+    "src/gym_trading_env/research/fg_single3_oracle.py": "aa1ebaad4c0589ac57391cc0cee1a7fc05ed87a2d94bfcc398985d483a95c5b6",
+    "src/gym_trading_env/rewards/__init__.py": "2eb123cb3314c14d6ebfb5b6eb6b52629aab849fc798f56c55fe2846aa4eaf69",
+    "src/gym_trading_env/rewards/fast_take_profit_reward.py": "eb7b9bcf1c8a725e416151e041efb438f297bfcaca1c1466050602d02a9a3781",
+    "src/gym_trading_env/rewards/reward_audit.py": "8ba64fe5bee3df82132b69f743eb3b56b28a432c4cbe33ab703b38a9370c7244",
+    "src/gym_trading_env/rewards/reward_functions.py": "a63b893cb2b93c3072c236fc839b019df1431c6e7900e5011c80b7c4bc979ed7",
+    "src/gym_trading_env/rewards/single3_reward.py": "609e14c049d2af175a9b884704f80365032f5b30e3e67d48a9ba518097a7cc5c",
+    "src/gym_trading_env/utils/__init__.py": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5",
+    "src/gym_trading_env/utils/agent_features.py": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889",
+    "src/gym_trading_env/utils/atr_util.py": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7",
+    "src/gym_trading_env/utils/bar_source.py": "9f847f8324811c48dcbbd8d980fb93fc400539d0bbf7f8ea0946df711ece0cdb",
+    "src/gym_trading_env/utils/daily_features.py": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394",
+    "src/gym_trading_env/utils/data_downloader.py": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b",
+    "src/gym_trading_env/utils/data_processing.py": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09",
+    "src/gym_trading_env/utils/decimal_util.py": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af",
+    "src/gym_trading_env/utils/feature_engineering.py": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990",
+    "src/gym_trading_env/utils/juejin_db.py": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320",
+    "src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+    "src/gym_trading_env/utils/market_store.py": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75",
+    "src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+    "src/gym_trading_env/utils/plot_intraday.py": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181",
+    "src/gym_trading_env/utils/rpc_client.py": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1",
+    "src/gym_trading_env/utils/rpc_protocol.py": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1",
+    "src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+    "src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+    "src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+    "src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+    "src/gym_trading_env/utils/trade_util.py": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913",
+    "src/gym_trading_env/research/fg_s3b_weights.py": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a"
+  },
+  "summary": {
+    "rows": 402096,
+    "positive": 396542,
+    "zero": 5554,
+    "sum_w": 158501.73754065624,
+    "sum_w_squared": 134399.95631315678,
+    "ess": 186925.66197618423,
+    "quantiles": {
+      "P10": 0.01550919159143789,
+      "P50": 0.25097634798407326,
+      "P90": 0.993918438062467,
+      "P99": 1.8385067123741334
+    },
+    "maximum": 3.0,
+    "classes": {
+      "ADD": {
+        "rows": 16171,
+        "positive": 16171,
+        "zero": 0,
+        "sum_w": 3005.0606633192774,
+        "sum_w_squared": 726.0720591361166,
+        "ess": 12437.31868841405,
+        "quantiles": {
+          "P10": 0.0050315438461598925,
+          "P50": 0.24306100370519082,
+          "P90": 0.2621340360078961,
+          "P99": 0.26213403600950397
+        },
+        "maximum": 0.26213403600983315
+      },
+      "WAIT": {
+        "rows": 385925,
+        "positive": 380371,
+        "zero": 5554,
+        "sum_w": 155496.6768773369,
+        "sum_w_squared": 133673.88425402058,
+        "ess": 180882.12708734593,
+        "quantiles": {
+          "P10": 0.016370991222474485,
+          "P50": 0.2530828423449137,
+          "P90": 1.0121890757812808,
+          "P99": 1.8540665976690487
+        },
+        "maximum": 3.0
+      }
+    },
+    "certificates": {
+      "ADD_BETTER": 16171,
+      "WAIT_BETTER": 380371,
+      "TIE_EXACT": 5554
+    },
+    "certified_coverage": 0.986187378138554,
+    "strata": {
+      "contract/CZCE.FG001": {
+        "rows": 22873,
+        "positive": 22277,
+        "zero": 596,
+        "sum_w": 4395.083506765067,
+        "sum_w_squared": 1376.0857549619423,
+        "ess": 14037.467477433884,
+        "quantiles": {
+          "P10": 0.040759751279615716,
+          "P50": 0.15560672824856303,
+          "P90": 0.39459628426332977,
+          "P99": 0.7179549334745507
+        },
+        "maximum": 1.1118275735724126,
+        "certificates": {
+          "ADD_BETTER": 192,
+          "WAIT_BETTER": 22085,
+          "TIE_EXACT": 596
+        },
+        "margin_quantiles": {
+          "P10": 0.1529429754430339,
+          "P50": 0.5838837399675909,
+          "P90": 1.480645193342501,
+          "P99": 2.693985127787524
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.026056923009662048,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG001/year/2019": {
+        "rows": 22873,
+        "positive": 22277,
+        "zero": 596,
+        "sum_w": 4395.083506765067,
+        "sum_w_squared": 1376.0857549619423,
+        "ess": 14037.467477433884,
+        "quantiles": {
+          "P10": 0.040759751279615716,
+          "P50": 0.15560672824856303,
+          "P90": 0.39459628426332977,
+          "P99": 0.7179549334745507
+        },
+        "maximum": 1.1118275735724126,
+        "certificates": {
+          "ADD_BETTER": 192,
+          "WAIT_BETTER": 22085,
+          "TIE_EXACT": 596
+        },
+        "margin_quantiles": {
+          "P10": 0.1529429754430339,
+          "P50": 0.5838837399675909,
+          "P90": 1.480645193342501,
+          "P99": 2.693985127787524
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.026056923009662048,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG001/direction/1": {
+        "rows": 22873,
+        "positive": 22277,
+        "zero": 596,
+        "sum_w": 4395.083506765067,
+        "sum_w_squared": 1376.0857549619423,
+        "ess": 14037.467477433884,
+        "quantiles": {
+          "P10": 0.040759751279615716,
+          "P50": 0.15560672824856303,
+          "P90": 0.39459628426332977,
+          "P99": 0.7179549334745507
+        },
+        "maximum": 1.1118275735724126,
+        "certificates": {
+          "ADD_BETTER": 192,
+          "WAIT_BETTER": 22085,
+          "TIE_EXACT": 596
+        },
+        "margin_quantiles": {
+          "P10": 0.1529429754430339,
+          "P50": 0.5838837399675909,
+          "P90": 1.480645193342501,
+          "P99": 2.693985127787524
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.026056923009662048,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG001/session/0": {
+        "rows": 14579,
+        "positive": 14417,
+        "zero": 162,
+        "sum_w": 2855.9293149697332,
+        "sum_w_squared": 924.762378949812,
+        "ess": 8819.92221760369,
+        "quantiles": {
+          "P10": 0.04358932526715407,
+          "P50": 0.15685070666212853,
+          "P90": 0.4150627624120601,
+          "P99": 0.7466264103386854
+        },
+        "maximum": 1.0569591501919258,
+        "certificates": {
+          "WAIT_BETTER": 14280,
+          "ADD_BETTER": 137,
+          "TIE_EXACT": 162
+        },
+        "margin_quantiles": {
+          "P10": 0.16356039707354209,
+          "P50": 0.588551525073845,
+          "P90": 1.5574416399997233,
+          "P99": 2.8015692234770357
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.011111873242334865,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG001/session/1": {
+        "rows": 8294,
+        "positive": 7860,
+        "zero": 434,
+        "sum_w": 1539.1541917953334,
+        "sum_w_squared": 451.3233760121304,
+        "ess": 5248.99828378815,
+        "quantiles": {
+          "P10": 0.03483699314122173,
+          "P50": 0.1519475601279337,
+          "P90": 0.37828440275434966,
+          "P99": 0.6371735006435648
+        },
+        "maximum": 1.1118275735724126,
+        "certificates": {
+          "ADD_BETTER": 55,
+          "WAIT_BETTER": 7805,
+          "TIE_EXACT": 434
+        },
+        "margin_quantiles": {
+          "P10": 0.13071898672678184,
+          "P50": 0.5701534290003788,
+          "P90": 1.4194380560382729,
+          "P99": 2.390868638852976
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.05232698336146612,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG005": {
+        "rows": 17472,
+        "positive": 16788,
+        "zero": 684,
+        "sum_w": 3007.142549941536,
+        "sum_w_squared": 1052.8009559032282,
+        "ess": 8589.378899177304,
+        "quantiles": {
+          "P10": 0.004899938455872448,
+          "P50": 0.13018888519695623,
+          "P90": 0.39266885987397876,
+          "P99": 0.7829800399654521
+        },
+        "maximum": 1.4251767969377849,
+        "certificates": {
+          "WAIT_BETTER": 16636,
+          "ADD_BETTER": 152,
+          "TIE_EXACT": 684
+        },
+        "margin_quantiles": {
+          "P10": 0.018386058388527603,
+          "P50": 0.4885082672619724,
+          "P90": 1.4734129112064656,
+          "P99": 2.9379790912686565
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.03914835164835165,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG005/year/2019": {
+        "rows": 4548,
+        "positive": 4533,
+        "zero": 15,
+        "sum_w": 554.8326632677779,
+        "sum_w_squared": 118.76636080945903,
+        "ess": 2591.973704765549,
+        "quantiles": {
+          "P10": 0.008857272605038949,
+          "P50": 0.09442941907847932,
+          "P90": 0.2633055790730109,
+          "P99": 0.47024856465412285
+        },
+        "maximum": 0.6554765911198066,
+        "certificates": {
+          "WAIT_BETTER": 4517,
+          "ADD_BETTER": 16,
+          "TIE_EXACT": 15
+        },
+        "margin_quantiles": {
+          "P10": 0.03323517892029444,
+          "P50": 0.35432788154530614,
+          "P90": 0.988002562574935,
+          "P99": 1.7645155433513608
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0032981530343007917,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG005/year/2020": {
+        "rows": 12924,
+        "positive": 12255,
+        "zero": 669,
+        "sum_w": 2452.3098866737573,
+        "sum_w_squared": 934.0345950937692,
+        "ess": 6438.545008789658,
+        "quantiles": {
+          "P10": 0.003409976497840851,
+          "P50": 0.15838422340311445,
+          "P90": 0.4558278063044901,
+          "P99": 0.8232068640307361
+        },
+        "maximum": 1.4251767969377849,
+        "certificates": {
+          "WAIT_BETTER": 12119,
+          "ADD_BETTER": 136,
+          "TIE_EXACT": 669
+        },
+        "margin_quantiles": {
+          "P10": 0.012795268258455207,
+          "P50": 0.5943057459877343,
+          "P90": 1.710404474934689,
+          "P99": 3.0889223618240105
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.051764159702878364,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG005/direction/-1": {
+        "rows": 17472,
+        "positive": 16788,
+        "zero": 684,
+        "sum_w": 3007.142549941536,
+        "sum_w_squared": 1052.8009559032282,
+        "ess": 8589.378899177304,
+        "quantiles": {
+          "P10": 0.004899938455872448,
+          "P50": 0.13018888519695623,
+          "P90": 0.39266885987397876,
+          "P99": 0.7829800399654521
+        },
+        "maximum": 1.4251767969377849,
+        "certificates": {
+          "WAIT_BETTER": 16636,
+          "ADD_BETTER": 152,
+          "TIE_EXACT": 684
+        },
+        "margin_quantiles": {
+          "P10": 0.018386058388527603,
+          "P50": 0.4885082672619724,
+          "P90": 1.4734129112064656,
+          "P99": 2.9379790912686565
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.03914835164835165,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG005/session/0": {
+        "rows": 14184,
+        "positive": 13610,
+        "zero": 574,
+        "sum_w": 2704.2185258167747,
+        "sum_w_squared": 1001.5773390712436,
+        "ess": 7301.281239201919,
+        "quantiles": {
+          "P10": 0.005617883945504567,
+          "P50": 0.1581068504488717,
+          "P90": 0.44312573392939075,
+          "P99": 0.8112068296552957
+        },
+        "maximum": 1.4251767969377849,
+        "certificates": {
+          "WAIT_BETTER": 13467,
+          "ADD_BETTER": 143,
+          "TIE_EXACT": 574
+        },
+        "margin_quantiles": {
+          "P10": 0.02108000808014793,
+          "P50": 0.5932649583578421,
+          "P90": 1.662742438677073,
+          "P99": 3.0438945855206647
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.04046813310772702,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG005/session/1": {
+        "rows": 3288,
+        "positive": 3178,
+        "zero": 110,
+        "sum_w": 302.924024124761,
+        "sum_w_squared": 51.22361683198463,
+        "ess": 1791.41907712071,
+        "quantiles": {
+          "P10": 0.003802584310630501,
+          "P50": 0.0682583450600378,
+          "P90": 0.18585100123484724,
+          "P99": 0.3928068749068931
+        },
+        "maximum": 0.5375408467551016,
+        "certificates": {
+          "WAIT_BETTER": 3169,
+          "ADD_BETTER": 9,
+          "TIE_EXACT": 110
+        },
+        "margin_quantiles": {
+          "P10": 0.014268452102446436,
+          "P50": 0.2561260573128286,
+          "P90": 0.6973694447478113,
+          "P99": 1.473930785558666
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.03345498783454988,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG009": {
+        "rows": 22343,
+        "positive": 21940,
+        "zero": 403,
+        "sum_w": 6468.331204393277,
+        "sum_w_squared": 3779.57024573836,
+        "ess": 11069.85870070904,
+        "quantiles": {
+          "P10": 0.018273877460086595,
+          "P50": 0.20547459996120346,
+          "P90": 0.6920349917480697,
+          "P99": 1.4071290724449244
+        },
+        "maximum": 2.6504508856850926,
+        "certificates": {
+          "WAIT_BETTER": 21415,
+          "ADD_BETTER": 525,
+          "TIE_EXACT": 403
+        },
+        "margin_quantiles": {
+          "P10": 0.06856914244775501,
+          "P50": 0.7710031516249684,
+          "P90": 2.5967256282443896,
+          "P99": 5.2799759668737645
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01803696907308777,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG009/year/2020": {
+        "rows": 22343,
+        "positive": 21940,
+        "zero": 403,
+        "sum_w": 6468.331204393277,
+        "sum_w_squared": 3779.57024573836,
+        "ess": 11069.85870070904,
+        "quantiles": {
+          "P10": 0.018273877460086595,
+          "P50": 0.20547459996120346,
+          "P90": 0.6920349917480697,
+          "P99": 1.4071290724449244
+        },
+        "maximum": 2.6504508856850926,
+        "certificates": {
+          "WAIT_BETTER": 21415,
+          "ADD_BETTER": 525,
+          "TIE_EXACT": 403
+        },
+        "margin_quantiles": {
+          "P10": 0.06856914244775501,
+          "P50": 0.7710031516249684,
+          "P90": 2.5967256282443896,
+          "P99": 5.2799759668737645
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01803696907308777,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG009/direction/1": {
+        "rows": 22343,
+        "positive": 21940,
+        "zero": 403,
+        "sum_w": 6468.331204393277,
+        "sum_w_squared": 3779.57024573836,
+        "ess": 11069.85870070904,
+        "quantiles": {
+          "P10": 0.018273877460086595,
+          "P50": 0.20547459996120346,
+          "P90": 0.6920349917480697,
+          "P99": 1.4071290724449244
+        },
+        "maximum": 2.6504508856850926,
+        "certificates": {
+          "WAIT_BETTER": 21415,
+          "ADD_BETTER": 525,
+          "TIE_EXACT": 403
+        },
+        "margin_quantiles": {
+          "P10": 0.06856914244775501,
+          "P50": 0.7710031516249684,
+          "P90": 2.5967256282443896,
+          "P99": 5.2799759668737645
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01803696907308777,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG009/session/0": {
+        "rows": 16044,
+        "positive": 15837,
+        "zero": 207,
+        "sum_w": 4876.17521389214,
+        "sum_w_squared": 3007.52459469979,
+        "ess": 7905.86542782686,
+        "quantiles": {
+          "P10": 0.015948283455546303,
+          "P50": 0.20531509218869012,
+          "P90": 0.7437636788510742,
+          "P99": 1.4591041398779663
+        },
+        "maximum": 2.536410781949643,
+        "certificates": {
+          "WAIT_BETTER": 15476,
+          "ADD_BETTER": 361,
+          "TIE_EXACT": 207
+        },
+        "margin_quantiles": {
+          "P10": 0.059842806894653815,
+          "P50": 0.7704046299812242,
+          "P90": 2.790827384828263,
+          "P99": 5.47500221734152
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.012902019446522065,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG009/session/1": {
+        "rows": 6299,
+        "positive": 6103,
+        "zero": 196,
+        "sum_w": 1592.1559905011368,
+        "sum_w_squared": 772.0456510385693,
+        "ess": 3283.433686438856,
+        "quantiles": {
+          "P10": 0.02146493819602518,
+          "P50": 0.206022788274206,
+          "P90": 0.5487612661693055,
+          "P99": 1.1850161214906583
+        },
+        "maximum": 2.6504508856850926,
+        "certificates": {
+          "WAIT_BETTER": 5939,
+          "ADD_BETTER": 164,
+          "TIE_EXACT": 196
+        },
+        "margin_quantiles": {
+          "P10": 0.08054297222963504,
+          "P50": 0.7730601207933655,
+          "P90": 2.059119062823967,
+          "P99": 4.446540665212168
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.031116050166693127,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG101": {
+        "rows": 23046,
+        "positive": 22937,
+        "zero": 109,
+        "sum_w": 11192.992981685622,
+        "sum_w_squared": 9523.681501742745,
+        "ess": 13154.901480602639,
+        "quantiles": {
+          "P10": 0.023051194044731403,
+          "P50": 0.37545355732133034,
+          "P90": 1.0486383266946313,
+          "P99": 1.7322029562048913
+        },
+        "maximum": 2.701389592106039,
+        "certificates": {
+          "WAIT_BETTER": 22078,
+          "ADD_BETTER": 859,
+          "TIE_EXACT": 109
+        },
+        "margin_quantiles": {
+          "P10": 0.0864950863053746,
+          "P50": 1.4088158635578731,
+          "P90": 3.934809728058606,
+          "P99": 6.499751982679251
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004729671092597414,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG101/year/2020": {
+        "rows": 23046,
+        "positive": 22937,
+        "zero": 109,
+        "sum_w": 11192.992981685622,
+        "sum_w_squared": 9523.681501742745,
+        "ess": 13154.901480602639,
+        "quantiles": {
+          "P10": 0.023051194044731403,
+          "P50": 0.37545355732133034,
+          "P90": 1.0486383266946313,
+          "P99": 1.7322029562048913
+        },
+        "maximum": 2.701389592106039,
+        "certificates": {
+          "WAIT_BETTER": 22078,
+          "ADD_BETTER": 859,
+          "TIE_EXACT": 109
+        },
+        "margin_quantiles": {
+          "P10": 0.0864950863053746,
+          "P50": 1.4088158635578731,
+          "P90": 3.934809728058606,
+          "P99": 6.499751982679251
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004729671092597414,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG101/direction/1": {
+        "rows": 23046,
+        "positive": 22937,
+        "zero": 109,
+        "sum_w": 11192.992981685622,
+        "sum_w_squared": 9523.681501742745,
+        "ess": 13154.901480602639,
+        "quantiles": {
+          "P10": 0.023051194044731403,
+          "P50": 0.37545355732133034,
+          "P90": 1.0486383266946313,
+          "P99": 1.7322029562048913
+        },
+        "maximum": 2.701389592106039,
+        "certificates": {
+          "WAIT_BETTER": 22078,
+          "ADD_BETTER": 859,
+          "TIE_EXACT": 109
+        },
+        "margin_quantiles": {
+          "P10": 0.0864950863053746,
+          "P50": 1.4088158635578731,
+          "P90": 3.934809728058606,
+          "P99": 6.499751982679251
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004729671092597414,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG101/session/0": {
+        "rows": 15081,
+        "positive": 15078,
+        "zero": 3,
+        "sum_w": 7520.415195343336,
+        "sum_w_squared": 6673.562658233273,
+        "ess": 8474.730456089472,
+        "quantiles": {
+          "P10": 0.02505821549638209,
+          "P50": 0.3721952751127686,
+          "P90": 1.09895437086346,
+          "P99": 1.7993483417797393
+        },
+        "maximum": 2.3457766849635884,
+        "certificates": {
+          "WAIT_BETTER": 14527,
+          "ADD_BETTER": 551,
+          "TIE_EXACT": 3
+        },
+        "margin_quantiles": {
+          "P10": 0.09402604081213005,
+          "P50": 1.3965897983792137,
+          "P90": 4.123610818990492,
+          "P99": 6.751701877727381
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.00019892580067634773,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG101/session/1": {
+        "rows": 7965,
+        "positive": 7859,
+        "zero": 106,
+        "sum_w": 3672.5777863422836,
+        "sum_w_squared": 2850.1188435094714,
+        "ess": 4732.37374906327,
+        "quantiles": {
+          "P10": 0.01966544493573176,
+          "P50": 0.3861331138501506,
+          "P90": 0.9609718645658092,
+          "P99": 1.5005504557669405
+        },
+        "maximum": 2.701389592106039,
+        "certificates": {
+          "WAIT_BETTER": 7551,
+          "ADD_BETTER": 308,
+          "TIE_EXACT": 106
+        },
+        "margin_quantiles": {
+          "P10": 0.07379072657359734,
+          "P50": 1.448888805630675,
+          "P90": 3.6058585165419763,
+          "P99": 5.630521391875388
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.013308223477715004,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG105": {
+        "rows": 21258,
+        "positive": 21090,
+        "zero": 168,
+        "sum_w": 11755.946944360763,
+        "sum_w_squared": 11811.55200636112,
+        "ess": 11700.603653456905,
+        "quantiles": {
+          "P10": 0.015608854738926927,
+          "P50": 0.43111655046682906,
+          "P90": 1.2549765343319224,
+          "P99": 2.019000569330284
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 20047,
+          "ADD_BETTER": 1043,
+          "TIE_EXACT": 168
+        },
+        "margin_quantiles": {
+          "P10": 0.05856916718290857,
+          "P50": 1.617680332218047,
+          "P90": 4.709053398171781,
+          "P99": 7.575903797258508
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.007902907140841095,
+        "capped_fraction": 0.00023520556966788973
+      },
+      "CZCE.FG105/year/2020": {
+        "rows": 4005,
+        "positive": 3943,
+        "zero": 62,
+        "sum_w": 2389.355949624955,
+        "sum_w_squared": 2479.1494514878677,
+        "ess": 2302.814721630391,
+        "quantiles": {
+          "P10": 0.015381486385743473,
+          "P50": 0.529563802127106,
+          "P90": 1.2962668109525564,
+          "P99": 2.06116322598037
+        },
+        "maximum": 2.8735390756938672,
+        "certificates": {
+          "WAIT_BETTER": 3753,
+          "ADD_BETTER": 190,
+          "TIE_EXACT": 62
+        },
+        "margin_quantiles": {
+          "P10": 0.057716012014740234,
+          "P50": 1.9870843428024283,
+          "P90": 4.86398706594379,
+          "P99": 7.7341109000548425
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.015480649188514358,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG105/year/2021": {
+        "rows": 17253,
+        "positive": 17147,
+        "zero": 106,
+        "sum_w": 9366.590994735809,
+        "sum_w_squared": 9332.40255487325,
+        "ess": 9400.904680955173,
+        "quantiles": {
+          "P10": 0.015938430331060297,
+          "P50": 0.40123413961836385,
+          "P90": 1.2437186011874626,
+          "P99": 1.982858769557444
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "ADD_BETTER": 853,
+          "WAIT_BETTER": 16294,
+          "TIE_EXACT": 106
+        },
+        "margin_quantiles": {
+          "P10": 0.0598058349767939,
+          "P50": 1.5055524441643946,
+          "P90": 4.666810211243565,
+          "P99": 7.440288779463026
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.006143859039007709,
+        "capped_fraction": 0.000289804671651307
+      },
+      "CZCE.FG105/direction/1": {
+        "rows": 21258,
+        "positive": 21090,
+        "zero": 168,
+        "sum_w": 11755.946944360763,
+        "sum_w_squared": 11811.55200636112,
+        "ess": 11700.603653456905,
+        "quantiles": {
+          "P10": 0.015608854738926927,
+          "P50": 0.43111655046682906,
+          "P90": 1.2549765343319224,
+          "P99": 2.019000569330284
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 20047,
+          "ADD_BETTER": 1043,
+          "TIE_EXACT": 168
+        },
+        "margin_quantiles": {
+          "P10": 0.05856916718290857,
+          "P50": 1.617680332218047,
+          "P90": 4.709053398171781,
+          "P99": 7.575903797258508
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.007902907140841095,
+        "capped_fraction": 0.00023520556966788973
+      },
+      "CZCE.FG105/session/0": {
+        "rows": 13976,
+        "positive": 13923,
+        "zero": 53,
+        "sum_w": 7691.922231922492,
+        "sum_w_squared": 7838.320100426377,
+        "ess": 7548.258665619574,
+        "quantiles": {
+          "P10": 0.015397366373644944,
+          "P50": 0.3987614394960429,
+          "P90": 1.2901877758480276,
+          "P99": 2.0706146816753974
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 13214,
+          "ADD_BETTER": 709,
+          "TIE_EXACT": 53
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598555958034,
+          "P50": 1.496274121745503,
+          "P90": 4.841176678551307,
+          "P99": 7.769575634526578
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0037922152261018888,
+        "capped_fraction": 0.00028620492272467084
+      },
+      "CZCE.FG105/session/1": {
+        "rows": 7282,
+        "positive": 7167,
+        "zero": 115,
+        "sum_w": 4064.0247124382718,
+        "sum_w_squared": 3973.231905934741,
+        "ess": 4156.892236428208,
+        "quantiles": {
+          "P10": 0.01627419450114175,
+          "P50": 0.47994744121056443,
+          "P90": 1.1937679184041337,
+          "P99": 1.9214639180702409
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 6833,
+          "ADD_BETTER": 334,
+          "TIE_EXACT": 115
+        },
+        "margin_quantiles": {
+          "P10": 0.06106572419611551,
+          "P50": 1.800908676096965,
+          "P90": 4.479380067279116,
+          "P99": 7.209916636146441
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.015792364734962924,
+        "capped_fraction": 0.00013732491073880802
+      },
+      "contract/CZCE.FG109": {
+        "rows": 20557,
+        "positive": 20526,
+        "zero": 31,
+        "sum_w": 11300.614296476504,
+        "sum_w_squared": 12802.87370805537,
+        "ess": 9974.626508842297,
+        "quantiles": {
+          "P10": 0.008271814460286478,
+          "P50": 0.301799500455324,
+          "P90": 1.3826160582017362,
+          "P99": 2.229433374353438
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 18353,
+          "ADD_BETTER": 2173,
+          "TIE_EXACT": 31
+        },
+        "margin_quantiles": {
+          "P10": 0.031038362015266326,
+          "P50": 1.132443455560107,
+          "P90": 5.187995686873733,
+          "P99": 8.365511641287737
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0015080021403901347,
+        "capped_fraction": 0.001216130758379141
+      },
+      "CZCE.FG109/year/2021": {
+        "rows": 20557,
+        "positive": 20526,
+        "zero": 31,
+        "sum_w": 11300.614296476504,
+        "sum_w_squared": 12802.87370805537,
+        "ess": 9974.626508842297,
+        "quantiles": {
+          "P10": 0.008271814460286478,
+          "P50": 0.301799500455324,
+          "P90": 1.3826160582017362,
+          "P99": 2.229433374353438
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 18353,
+          "ADD_BETTER": 2173,
+          "TIE_EXACT": 31
+        },
+        "margin_quantiles": {
+          "P10": 0.031038362015266326,
+          "P50": 1.132443455560107,
+          "P90": 5.187995686873733,
+          "P99": 8.365511641287737
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0015080021403901347,
+        "capped_fraction": 0.001216130758379141
+      },
+      "CZCE.FG109/direction/1": {
+        "rows": 20557,
+        "positive": 20526,
+        "zero": 31,
+        "sum_w": 11300.614296476504,
+        "sum_w_squared": 12802.87370805537,
+        "ess": 9974.626508842297,
+        "quantiles": {
+          "P10": 0.008271814460286478,
+          "P50": 0.301799500455324,
+          "P90": 1.3826160582017362,
+          "P99": 2.229433374353438
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 18353,
+          "ADD_BETTER": 2173,
+          "TIE_EXACT": 31
+        },
+        "margin_quantiles": {
+          "P10": 0.031038362015266326,
+          "P50": 1.132443455560107,
+          "P90": 5.187995686873733,
+          "P99": 8.365511641287737
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0015080021403901347,
+        "capped_fraction": 0.001216130758379141
+      },
+      "CZCE.FG109/session/0": {
+        "rows": 13359,
+        "positive": 13359,
+        "zero": 0,
+        "sum_w": 7169.7506960517885,
+        "sum_w_squared": 7924.668805683213,
+        "ess": 6486.747434374739,
+        "quantiles": {
+          "P10": 0.00825261369833609,
+          "P50": 0.29906559030891644,
+          "P90": 1.3267939334933816,
+          "P99": 2.1974303494474396
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 11947,
+          "ADD_BETTER": 1412
+        },
+        "margin_quantiles": {
+          "P10": 0.030966314920490887,
+          "P50": 1.1221849937378783,
+          "P90": 4.978534108222796,
+          "P99": 8.245426564744378
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0,
+        "capped_fraction": 0.00044913541432741973
+      },
+      "CZCE.FG109/session/1": {
+        "rows": 7198,
+        "positive": 7167,
+        "zero": 31,
+        "sum_w": 4130.863600424716,
+        "sum_w_squared": 4878.204902372156,
+        "ess": 3498.0150335661415,
+        "quantiles": {
+          "P10": 0.008757014007090015,
+          "P50": 0.30894360016037425,
+          "P90": 1.4546152712375942,
+          "P99": 2.3945625753018747
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 6406,
+          "ADD_BETTER": 761,
+          "TIE_EXACT": 31
+        },
+        "margin_quantiles": {
+          "P10": 0.03285897818788896,
+          "P50": 1.1592502890526981,
+          "P90": 5.4581586178425505,
+          "P99": 8.98512659311437
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004306751875520978,
+        "capped_fraction": 0.002639622117254793
+      },
+      "contract/CZCE.FG201": {
+        "rows": 26458,
+        "positive": 26415,
+        "zero": 43,
+        "sum_w": 15670.156890760549,
+        "sum_w_squared": 18632.51561428533,
+        "ess": 13178.779616467198,
+        "quantiles": {
+          "P10": 0.007987165973906661,
+          "P50": 0.32898747713031845,
+          "P90": 1.4472095074946327,
+          "P99": 2.378665338049269
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 23181,
+          "ADD_BETTER": 3234,
+          "TIE_EXACT": 43
+        },
+        "margin_quantiles": {
+          "P10": 0.029970274377448543,
+          "P50": 1.234461007640436,
+          "P90": 5.430369941348759,
+          "P99": 8.925475327088284
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0016252173255726055,
+        "capped_fraction": 0.0017764003326026154
+      },
+      "CZCE.FG201/year/2021": {
+        "rows": 26458,
+        "positive": 26415,
+        "zero": 43,
+        "sum_w": 15670.156890760549,
+        "sum_w_squared": 18632.51561428533,
+        "ess": 13178.779616467198,
+        "quantiles": {
+          "P10": 0.007987165973906661,
+          "P50": 0.32898747713031845,
+          "P90": 1.4472095074946327,
+          "P99": 2.378665338049269
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 23181,
+          "ADD_BETTER": 3234,
+          "TIE_EXACT": 43
+        },
+        "margin_quantiles": {
+          "P10": 0.029970274377448543,
+          "P50": 1.234461007640436,
+          "P90": 5.430369941348759,
+          "P99": 8.925475327088284
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0016252173255726055,
+        "capped_fraction": 0.0017764003326026154
+      },
+      "CZCE.FG201/direction/-1": {
+        "rows": 26458,
+        "positive": 26415,
+        "zero": 43,
+        "sum_w": 15670.156890760549,
+        "sum_w_squared": 18632.51561428533,
+        "ess": 13178.779616467198,
+        "quantiles": {
+          "P10": 0.007987165973906661,
+          "P50": 0.32898747713031845,
+          "P90": 1.4472095074946327,
+          "P99": 2.378665338049269
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 23181,
+          "ADD_BETTER": 3234,
+          "TIE_EXACT": 43
+        },
+        "margin_quantiles": {
+          "P10": 0.029970274377448543,
+          "P50": 1.234461007640436,
+          "P90": 5.430369941348759,
+          "P99": 8.925475327088284
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0016252173255726055,
+        "capped_fraction": 0.0017764003326026154
+      },
+      "CZCE.FG201/session/0": {
+        "rows": 17563,
+        "positive": 17557,
+        "zero": 6,
+        "sum_w": 10643.792826638566,
+        "sum_w_squared": 12786.732401058647,
+        "ess": 8859.990354300602,
+        "quantiles": {
+          "P10": 0.007987165974075098,
+          "P50": 0.3486416228059042,
+          "P90": 1.472870809279286,
+          "P99": 2.3984835521868746
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "ADD_BETTER": 2105,
+          "WAIT_BETTER": 15452,
+          "TIE_EXACT": 6
+        },
+        "margin_quantiles": {
+          "P10": 0.029970274378080572,
+          "P50": 1.3082093359556344,
+          "P90": 5.52665894521835,
+          "P99": 8.999839290140446
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.000341627284632466,
+        "capped_fraction": 0.0019928258270227183
+      },
+      "CZCE.FG201/session/1": {
+        "rows": 8895,
+        "positive": 8858,
+        "zero": 37,
+        "sum_w": 5026.364064121982,
+        "sum_w_squared": 5845.783213226682,
+        "ess": 4321.805100116218,
+        "quantiles": {
+          "P10": 0.007987165973336777,
+          "P50": 0.29903104162435723,
+          "P90": 1.4014870984585304,
+          "P99": 2.347180117695448
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 7729,
+          "ADD_BETTER": 1129,
+          "TIE_EXACT": 37
+        },
+        "margin_quantiles": {
+          "P10": 0.029970274375310166,
+          "P50": 1.1220553565725806,
+          "P90": 5.258805565638199,
+          "P99": 8.807333210607776
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.00415964024732996,
+        "capped_fraction": 0.0013490725126475548
+      },
+      "contract/CZCE.FG205": {
+        "rows": 19467,
+        "positive": 19389,
+        "zero": 78,
+        "sum_w": 11406.860308473806,
+        "sum_w_squared": 12944.72125631618,
+        "ess": 10051.700575131874,
+        "quantiles": {
+          "P10": 0.010987086268383989,
+          "P50": 0.3694300938210868,
+          "P90": 1.380332910968386,
+          "P99": 2.255820650633755
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 17693,
+          "ADD_BETTER": 1696,
+          "TIE_EXACT": 78
+        },
+        "margin_quantiles": {
+          "P10": 0.04122688712716282,
+          "P50": 1.3862139977152699,
+          "P90": 5.179428624507536,
+          "P99": 8.46452472211994
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004006780705809832,
+        "capped_fraction": 0.0003082139004469102
+      },
+      "CZCE.FG205/year/2021": {
+        "rows": 4475,
+        "positive": 4455,
+        "zero": 20,
+        "sum_w": 2400.8548915205483,
+        "sum_w_squared": 2458.0190503352514,
+        "ess": 2345.020153262023,
+        "quantiles": {
+          "P10": 0.012873165120537584,
+          "P50": 0.3314288441034922,
+          "P90": 1.2702518408877954,
+          "P99": 2.078058387552788
+        },
+        "maximum": 2.7483665605390013,
+        "certificates": {
+          "WAIT_BETTER": 4177,
+          "ADD_BETTER": 278,
+          "TIE_EXACT": 20
+        },
+        "margin_quantiles": {
+          "P10": 0.048304028240946185,
+          "P50": 1.2436217585602358,
+          "P90": 4.766370991192229,
+          "P99": 7.797506681440995
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004469273743016759,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG205/year/2022": {
+        "rows": 14992,
+        "positive": 14934,
+        "zero": 58,
+        "sum_w": 9006.005416953258,
+        "sum_w_squared": 10486.702205980926,
+        "ess": 7734.379405179702,
+        "quantiles": {
+          "P10": 0.010242011275853948,
+          "P50": 0.3825225682187063,
+          "P90": 1.4130644324955826,
+          "P99": 2.3097590365750578
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 13516,
+          "ADD_BETTER": 1418,
+          "TIE_EXACT": 58
+        },
+        "margin_quantiles": {
+          "P10": 0.03843113929484643,
+          "P50": 1.4353409410213513,
+          "P90": 5.3022472417950945,
+          "P99": 8.666917940367648
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0038687299893276415,
+        "capped_fraction": 0.00040021344717182497
+      },
+      "CZCE.FG205/direction/-1": {
+        "rows": 19467,
+        "positive": 19389,
+        "zero": 78,
+        "sum_w": 11406.860308473806,
+        "sum_w_squared": 12944.72125631618,
+        "ess": 10051.700575131874,
+        "quantiles": {
+          "P10": 0.010987086268383989,
+          "P50": 0.3694300938210868,
+          "P90": 1.380332910968386,
+          "P99": 2.255820650633755
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 17693,
+          "ADD_BETTER": 1696,
+          "TIE_EXACT": 78
+        },
+        "margin_quantiles": {
+          "P10": 0.04122688712716282,
+          "P50": 1.3862139977152699,
+          "P90": 5.179428624507536,
+          "P99": 8.46452472211994
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004006780705809832,
+        "capped_fraction": 0.0003082139004469102
+      },
+      "CZCE.FG205/session/0": {
+        "rows": 12846,
+        "positive": 12845,
+        "zero": 1,
+        "sum_w": 7555.899948675944,
+        "sum_w_squared": 8541.08629192504,
+        "ess": 6684.351624965669,
+        "quantiles": {
+          "P10": 0.010995776182524909,
+          "P50": 0.36984423605349737,
+          "P90": 1.3841546037029921,
+          "P99": 2.17980483962419
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 11746,
+          "ADD_BETTER": 1099,
+          "TIE_EXACT": 1
+        },
+        "margin_quantiles": {
+          "P10": 0.0412594943262583,
+          "P50": 1.3877679852469151,
+          "P90": 5.193768777224612,
+          "P99": 8.179290294736855
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 7.784524365561264e-05,
+        "capped_fraction": 7.784524365561264e-05
+      },
+      "CZCE.FG205/session/1": {
+        "rows": 6621,
+        "positive": 6544,
+        "zero": 77,
+        "sum_w": 3850.960359797862,
+        "sum_w_squared": 4403.634964391138,
+        "ess": 3367.6487294366175,
+        "quantiles": {
+          "P10": 0.010613904024597763,
+          "P50": 0.3685785759101147,
+          "P90": 1.3690294128284197,
+          "P99": 2.348728746070329
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 5947,
+          "ADD_BETTER": 597,
+          "TIE_EXACT": 77
+        },
+        "margin_quantiles": {
+          "P10": 0.03982659392233855,
+          "P50": 1.3830188437003768,
+          "P90": 5.137014463867017,
+          "P99": 8.813144134965114
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.011629663192871167,
+        "capped_fraction": 0.0007551729346020238
+      },
+      "contract/CZCE.FG209": {
+        "rows": 25654,
+        "positive": 25524,
+        "zero": 130,
+        "sum_w": 12918.131829916734,
+        "sum_w_squared": 12295.980714749492,
+        "ess": 13571.762500809005,
+        "quantiles": {
+          "P10": 0.015397366373713256,
+          "P50": 0.33930200284825396,
+          "P90": 1.1970040689066426,
+          "P99": 1.8832271053503256
+        },
+        "maximum": 2.8460536806902077,
+        "certificates": {
+          "WAIT_BETTER": 24213,
+          "ADD_BETTER": 1311,
+          "TIE_EXACT": 130
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598556214364,
+          "P50": 1.273164243162231,
+          "P90": 4.491523087569888,
+          "P99": 7.06644049300897
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005067435877446012,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG209/year/2022": {
+        "rows": 25654,
+        "positive": 25524,
+        "zero": 130,
+        "sum_w": 12918.131829916734,
+        "sum_w_squared": 12295.980714749492,
+        "ess": 13571.762500809005,
+        "quantiles": {
+          "P10": 0.015397366373713256,
+          "P50": 0.33930200284825396,
+          "P90": 1.1970040689066426,
+          "P99": 1.8832271053503256
+        },
+        "maximum": 2.8460536806902077,
+        "certificates": {
+          "WAIT_BETTER": 24213,
+          "ADD_BETTER": 1311,
+          "TIE_EXACT": 130
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598556214364,
+          "P50": 1.273164243162231,
+          "P90": 4.491523087569888,
+          "P99": 7.06644049300897
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005067435877446012,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG209/direction/-1": {
+        "rows": 25654,
+        "positive": 25524,
+        "zero": 130,
+        "sum_w": 12918.131829916734,
+        "sum_w_squared": 12295.980714749492,
+        "ess": 13571.762500809005,
+        "quantiles": {
+          "P10": 0.015397366373713256,
+          "P50": 0.33930200284825396,
+          "P90": 1.1970040689066426,
+          "P99": 1.8832271053503256
+        },
+        "maximum": 2.8460536806902077,
+        "certificates": {
+          "WAIT_BETTER": 24213,
+          "ADD_BETTER": 1311,
+          "TIE_EXACT": 130
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598556214364,
+          "P50": 1.273164243162231,
+          "P90": 4.491523087569888,
+          "P99": 7.06644049300897
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005067435877446012,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG209/session/0": {
+        "rows": 16911,
+        "positive": 16854,
+        "zero": 57,
+        "sum_w": 8675.727865873596,
+        "sum_w_squared": 8496.14103276917,
+        "ess": 8859.110708307444,
+        "quantiles": {
+          "P10": 0.015062031003571272,
+          "P50": 0.35648875729891105,
+          "P90": 1.2219852452540785,
+          "P99": 1.9669592384483106
+        },
+        "maximum": 2.8460536806902077,
+        "certificates": {
+          "WAIT_BETTER": 15980,
+          "ADD_BETTER": 874,
+          "TIE_EXACT": 57
+        },
+        "margin_quantiles": {
+          "P10": 0.05651731832459638,
+          "P50": 1.3376541696551556,
+          "P90": 4.585260054079661,
+          "P99": 7.38062890619005
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0033705871917686712,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG209/session/1": {
+        "rows": 8743,
+        "positive": 8670,
+        "zero": 73,
+        "sum_w": 4242.4039640431365,
+        "sum_w_squared": 3799.8396819803193,
+        "ess": 4736.5133533078715,
+        "quantiles": {
+          "P10": 0.016541159083615753,
+          "P50": 0.3135903971164343,
+          "P90": 1.1190861693429788,
+          "P99": 1.7634857800289954
+        },
+        "maximum": 2.5648156710146313,
+        "certificates": {
+          "WAIT_BETTER": 8233,
+          "ADD_BETTER": 437,
+          "TIE_EXACT": 73
+        },
+        "margin_quantiles": {
+          "P10": 0.06206745645157951,
+          "P50": 1.1766864835933377,
+          "P90": 4.199151445805283,
+          "P99": 6.617134645863251
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.008349536772274962,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG301": {
+        "rows": 22796,
+        "positive": 22677,
+        "zero": 119,
+        "sum_w": 9809.48565663456,
+        "sum_w_squared": 6564.202683943517,
+        "ess": 14659.20744389787,
+        "quantiles": {
+          "P10": 0.027038430387708617,
+          "P50": 0.3974647265869264,
+          "P90": 0.8650145469321686,
+          "P99": 1.255629405903056
+        },
+        "maximum": 1.64137392387432,
+        "certificates": {
+          "WAIT_BETTER": 22165,
+          "ADD_BETTER": 512,
+          "TIE_EXACT": 119
+        },
+        "margin_quantiles": {
+          "P10": 0.10145640895688234,
+          "P50": 1.4914084607836593,
+          "P90": 3.245797495223603,
+          "P99": 4.711503170742431
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005220214072644324,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG301/year/2022": {
+        "rows": 22796,
+        "positive": 22677,
+        "zero": 119,
+        "sum_w": 9809.48565663456,
+        "sum_w_squared": 6564.202683943517,
+        "ess": 14659.20744389787,
+        "quantiles": {
+          "P10": 0.027038430387708617,
+          "P50": 0.3974647265869264,
+          "P90": 0.8650145469321686,
+          "P99": 1.255629405903056
+        },
+        "maximum": 1.64137392387432,
+        "certificates": {
+          "WAIT_BETTER": 22165,
+          "ADD_BETTER": 512,
+          "TIE_EXACT": 119
+        },
+        "margin_quantiles": {
+          "P10": 0.10145640895688234,
+          "P50": 1.4914084607836593,
+          "P90": 3.245797495223603,
+          "P99": 4.711503170742431
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005220214072644324,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG301/direction/-1": {
+        "rows": 22796,
+        "positive": 22677,
+        "zero": 119,
+        "sum_w": 9809.48565663456,
+        "sum_w_squared": 6564.202683943517,
+        "ess": 14659.20744389787,
+        "quantiles": {
+          "P10": 0.027038430387708617,
+          "P50": 0.3974647265869264,
+          "P90": 0.8650145469321686,
+          "P99": 1.255629405903056
+        },
+        "maximum": 1.64137392387432,
+        "certificates": {
+          "WAIT_BETTER": 22165,
+          "ADD_BETTER": 512,
+          "TIE_EXACT": 119
+        },
+        "margin_quantiles": {
+          "P10": 0.10145640895688234,
+          "P50": 1.4914084607836593,
+          "P90": 3.245797495223603,
+          "P99": 4.711503170742431
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.005220214072644324,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG301/session/0": {
+        "rows": 14775,
+        "positive": 14767,
+        "zero": 8,
+        "sum_w": 6356.486924750032,
+        "sum_w_squared": 4242.096360943116,
+        "ess": 9524.754410702533,
+        "quantiles": {
+          "P10": 0.02313864367054948,
+          "P50": 0.4227487816709854,
+          "P90": 0.8551760597803865,
+          "P99": 1.220041536127302
+        },
+        "maximum": 1.5133292930954458,
+        "certificates": {
+          "WAIT_BETTER": 14423,
+          "ADD_BETTER": 344,
+          "TIE_EXACT": 8
+        },
+        "margin_quantiles": {
+          "P10": 0.08682322388114744,
+          "P50": 1.5862819203711196,
+          "P90": 3.2088805010906154,
+          "P99": 4.577966666659172
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0005414551607445009,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG301/session/1": {
+        "rows": 8021,
+        "positive": 7910,
+        "zero": 111,
+        "sum_w": 3452.9987318845283,
+        "sum_w_squared": 2322.1063230004,
+        "ess": 5134.6487128075,
+        "quantiles": {
+          "P10": 0.03769027752637402,
+          "P50": 0.3653758700203536,
+          "P90": 0.8869740540255027,
+          "P99": 1.2877631118567672
+        },
+        "maximum": 1.64137392387432,
+        "certificates": {
+          "WAIT_BETTER": 7742,
+          "ADD_BETTER": 168,
+          "TIE_EXACT": 111
+        },
+        "margin_quantiles": {
+          "P10": 0.1414253769757474,
+          "P50": 1.3710013177618914,
+          "P90": 3.328196240276706,
+          "P99": 4.8320786022964
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.013838673482109463,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG305": {
+        "rows": 22114,
+        "positive": 21760,
+        "zero": 354,
+        "sum_w": 9741.798959916756,
+        "sum_w_squared": 7157.177151110773,
+        "ess": 13259.787339580742,
+        "quantiles": {
+          "P10": 0.02154595839057821,
+          "P50": 0.33893091544188214,
+          "P90": 0.9348922566019071,
+          "P99": 1.4492566633847863
+        },
+        "maximum": 2.294744694868231,
+        "certificates": {
+          "ADD_BETTER": 565,
+          "WAIT_BETTER": 21195,
+          "TIE_EXACT": 354
+        },
+        "margin_quantiles": {
+          "P10": 0.08084698462512065,
+          "P50": 1.271771810424097,
+          "P90": 3.5079999007465994,
+          "P99": 5.43805149246736
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.016007958759157094,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG305/year/2022": {
+        "rows": 4172,
+        "positive": 4141,
+        "zero": 31,
+        "sum_w": 1963.2383033131496,
+        "sum_w_squared": 1585.7809281954633,
+        "ess": 2430.5404151769526,
+        "quantiles": {
+          "P10": 0.022943614514475318,
+          "P50": 0.3426837696803208,
+          "P90": 1.0445783794301122,
+          "P99": 1.5585858815329148
+        },
+        "maximum": 2.294744694868231,
+        "certificates": {
+          "ADD_BETTER": 142,
+          "WAIT_BETTER": 3999,
+          "TIE_EXACT": 31
+        },
+        "margin_quantiles": {
+          "P10": 0.0860914152098064,
+          "P50": 1.2858536601805712,
+          "P90": 3.9195755719294962,
+          "P99": 5.848287948811922
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0074304889741131355,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG305/year/2023": {
+        "rows": 17942,
+        "positive": 17619,
+        "zero": 323,
+        "sum_w": 7778.560656603607,
+        "sum_w_squared": 5571.3962229153085,
+        "ess": 10860.115394342021,
+        "quantiles": {
+          "P10": 0.021297739696313673,
+          "P50": 0.33788859760530887,
+          "P90": 0.903924443305936,
+          "P99": 1.4287104110253963
+        },
+        "maximum": 2.022905289042359,
+        "certificates": {
+          "WAIT_BETTER": 17196,
+          "ADD_BETTER": 423,
+          "TIE_EXACT": 323
+        },
+        "margin_quantiles": {
+          "P10": 0.07991559263990045,
+          "P50": 1.2678607170960425,
+          "P90": 3.391799252809407,
+          "P99": 5.360955708724927
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01800245234644967,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG305/direction/1": {
+        "rows": 22114,
+        "positive": 21760,
+        "zero": 354,
+        "sum_w": 9741.798959916756,
+        "sum_w_squared": 7157.177151110773,
+        "ess": 13259.787339580742,
+        "quantiles": {
+          "P10": 0.02154595839057821,
+          "P50": 0.33893091544188214,
+          "P90": 0.9348922566019071,
+          "P99": 1.4492566633847863
+        },
+        "maximum": 2.294744694868231,
+        "certificates": {
+          "ADD_BETTER": 565,
+          "WAIT_BETTER": 21195,
+          "TIE_EXACT": 354
+        },
+        "margin_quantiles": {
+          "P10": 0.08084698462512065,
+          "P50": 1.271771810424097,
+          "P90": 3.5079999007465994,
+          "P99": 5.43805149246736
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.016007958759157094,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG305/session/0": {
+        "rows": 14363,
+        "positive": 14314,
+        "zero": 49,
+        "sum_w": 6158.3799494169725,
+        "sum_w_squared": 4473.24798877979,
+        "ess": 8478.323512693589,
+        "quantiles": {
+          "P10": 0.01956224444395502,
+          "P50": 0.3356286722599712,
+          "P90": 0.9098162403227994,
+          "P99": 1.4692618891584486
+        },
+        "maximum": 2.022905289042359,
+        "certificates": {
+          "WAIT_BETTER": 13928,
+          "ADD_BETTER": 386,
+          "TIE_EXACT": 49
+        },
+        "margin_quantiles": {
+          "P10": 0.07340348696138184,
+          "P50": 1.2593807903118,
+          "P90": 3.4139070659872592,
+          "P99": 5.513117180018887
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.003411543549397758,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG305/session/1": {
+        "rows": 7751,
+        "positive": 7446,
+        "zero": 305,
+        "sum_w": 3583.419010499785,
+        "sum_w_squared": 2683.9291623309814,
+        "ess": 4784.363158697899,
+        "quantiles": {
+          "P10": 0.025171982865968258,
+          "P50": 0.34530166114971855,
+          "P90": 0.962201745769751,
+          "P99": 1.4347731765256362
+        },
+        "maximum": 2.294744694868231,
+        "certificates": {
+          "ADD_BETTER": 179,
+          "WAIT_BETTER": 7267,
+          "TIE_EXACT": 305
+        },
+        "margin_quantiles": {
+          "P10": 0.09445293056161529,
+          "P50": 1.295676784663592,
+          "P90": 3.610473404632974,
+          "P99": 5.383705047617086
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.03934976132111986,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG309": {
+        "rows": 23394,
+        "positive": 23191,
+        "zero": 203,
+        "sum_w": 12451.049308005788,
+        "sum_w_squared": 12264.422146539266,
+        "ess": 12640.516366613887,
+        "quantiles": {
+          "P10": 0.015397366373708475,
+          "P50": 0.35884068182746054,
+          "P90": 1.2264707993399524,
+          "P99": 1.987684193873868
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 21955,
+          "ADD_BETTER": 1236,
+          "TIE_EXACT": 203
+        },
+        "margin_quantiles": {
+          "P10": 0.05777559855619642,
+          "P50": 1.3464793053373183,
+          "P90": 4.602091216362717,
+          "P99": 7.458395238152291
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.008677438659485339,
+        "capped_fraction": 4.274600324869625e-05
+      },
+      "CZCE.FG309/year/2023": {
+        "rows": 23394,
+        "positive": 23191,
+        "zero": 203,
+        "sum_w": 12451.049308005788,
+        "sum_w_squared": 12264.422146539266,
+        "ess": 12640.516366613887,
+        "quantiles": {
+          "P10": 0.015397366373708475,
+          "P50": 0.35884068182746054,
+          "P90": 1.2264707993399524,
+          "P99": 1.987684193873868
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 21955,
+          "ADD_BETTER": 1236,
+          "TIE_EXACT": 203
+        },
+        "margin_quantiles": {
+          "P10": 0.05777559855619642,
+          "P50": 1.3464793053373183,
+          "P90": 4.602091216362717,
+          "P99": 7.458395238152291
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.008677438659485339,
+        "capped_fraction": 4.274600324869625e-05
+      },
+      "CZCE.FG309/direction/1": {
+        "rows": 23394,
+        "positive": 23191,
+        "zero": 203,
+        "sum_w": 12451.049308005788,
+        "sum_w_squared": 12264.422146539266,
+        "ess": 12640.516366613887,
+        "quantiles": {
+          "P10": 0.015397366373708475,
+          "P50": 0.35884068182746054,
+          "P90": 1.2264707993399524,
+          "P99": 1.987684193873868
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 21955,
+          "ADD_BETTER": 1236,
+          "TIE_EXACT": 203
+        },
+        "margin_quantiles": {
+          "P10": 0.05777559855619642,
+          "P50": 1.3464793053373183,
+          "P90": 4.602091216362717,
+          "P99": 7.458395238152291
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.008677438659485339,
+        "capped_fraction": 4.274600324869625e-05
+      },
+      "CZCE.FG309/session/0": {
+        "rows": 15246,
+        "positive": 15245,
+        "zero": 1,
+        "sum_w": 8184.828197131634,
+        "sum_w_squared": 8257.82173109913,
+        "ess": 8112.479876414625,
+        "quantiles": {
+          "P10": 0.014881982586709717,
+          "P50": 0.35928306187543974,
+          "P90": 1.2608143842898591,
+          "P99": 2.053359061311999
+        },
+        "maximum": 2.7474202000022014,
+        "certificates": {
+          "WAIT_BETTER": 14383,
+          "ADD_BETTER": 862,
+          "TIE_EXACT": 1
+        },
+        "margin_quantiles": {
+          "P10": 0.05584172194007219,
+          "P50": 1.3481392497356641,
+          "P90": 4.730958785587709,
+          "P99": 7.704827302197733
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 6.559097468188377e-05,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG309/session/1": {
+        "rows": 8148,
+        "positive": 7946,
+        "zero": 202,
+        "sum_w": 4266.221110874155,
+        "sum_w_squared": 4006.6004154401385,
+        "ess": 4542.66477304024,
+        "quantiles": {
+          "P10": 0.016814912040468217,
+          "P50": 0.358102152794516,
+          "P90": 1.1829882133211669,
+          "P99": 1.7989509889943798
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 7572,
+          "ADD_BETTER": 374,
+          "TIE_EXACT": 202
+        },
+        "margin_quantiles": {
+          "P10": 0.06309466075099052,
+          "P50": 1.3437081199349654,
+          "P90": 4.438931337391702,
+          "P99": 6.750210889304106
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.024791359842906233,
+        "capped_fraction": 0.00012272950417280314
+      },
+      "contract/CZCE.FG401": {
+        "rows": 21548,
+        "positive": 21502,
+        "zero": 46,
+        "sum_w": 10926.4633885861,
+        "sum_w_squared": 9842.306627731863,
+        "ess": 12130.04295616271,
+        "quantiles": {
+          "P10": 0.015397366373642103,
+          "P50": 0.37560541277641396,
+          "P90": 1.1254263613037718,
+          "P99": 1.7601821036715415
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 20331,
+          "ADD_BETTER": 1171,
+          "TIE_EXACT": 46
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598555947376,
+          "P50": 1.4093856713807527,
+          "P90": 4.222941773099274,
+          "P99": 6.604738248040713
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0021347688880638573,
+        "capped_fraction": 0.00018563207722294413
+      },
+      "CZCE.FG401/year/2023": {
+        "rows": 21548,
+        "positive": 21502,
+        "zero": 46,
+        "sum_w": 10926.4633885861,
+        "sum_w_squared": 9842.306627731863,
+        "ess": 12130.04295616271,
+        "quantiles": {
+          "P10": 0.015397366373642103,
+          "P50": 0.37560541277641396,
+          "P90": 1.1254263613037718,
+          "P99": 1.7601821036715415
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 20331,
+          "ADD_BETTER": 1171,
+          "TIE_EXACT": 46
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598555947376,
+          "P50": 1.4093856713807527,
+          "P90": 4.222941773099274,
+          "P99": 6.604738248040713
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0021347688880638573,
+        "capped_fraction": 0.00018563207722294413
+      },
+      "CZCE.FG401/direction/1": {
+        "rows": 21548,
+        "positive": 21502,
+        "zero": 46,
+        "sum_w": 10926.4633885861,
+        "sum_w_squared": 9842.306627731863,
+        "ess": 12130.04295616271,
+        "quantiles": {
+          "P10": 0.015397366373642103,
+          "P50": 0.37560541277641396,
+          "P90": 1.1254263613037718,
+          "P99": 1.7601821036715415
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 20331,
+          "ADD_BETTER": 1171,
+          "TIE_EXACT": 46
+        },
+        "margin_quantiles": {
+          "P10": 0.057775598555947376,
+          "P50": 1.4093856713807527,
+          "P90": 4.222941773099274,
+          "P99": 6.604738248040713
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0021347688880638573,
+        "capped_fraction": 0.00018563207722294413
+      },
+      "CZCE.FG401/session/0": {
+        "rows": 14011,
+        "positive": 14011,
+        "zero": 0,
+        "sum_w": 7018.97087980261,
+        "sum_w_squared": 6379.555843457141,
+        "ess": 7722.473698861667,
+        "quantiles": {
+          "P10": 0.0126387584325954,
+          "P50": 0.3600690057298737,
+          "P90": 1.1222434124270813,
+          "P99": 1.8001815179736413
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 13195,
+          "ADD_BETTER": 816
+        },
+        "margin_quantiles": {
+          "P10": 0.047424463101510377,
+          "P50": 1.3510883499596493,
+          "P90": 4.210998381478835,
+          "P99": 6.75482820804499
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0,
+        "capped_fraction": 0.0002854899721647277
+      },
+      "CZCE.FG401/session/1": {
+        "rows": 7537,
+        "positive": 7491,
+        "zero": 46,
+        "sum_w": 3907.492508783489,
+        "sum_w_squared": 3462.7507842747227,
+        "ess": 4409.355064054109,
+        "quantiles": {
+          "P10": 0.021563967789545134,
+          "P50": 0.41710133163621077,
+          "P90": 1.1341902278988998,
+          "P99": 1.7257260076982415
+        },
+        "maximum": 2.507513679407948,
+        "certificates": {
+          "WAIT_BETTER": 7136,
+          "ADD_BETTER": 355,
+          "TIE_EXACT": 46
+        },
+        "margin_quantiles": {
+          "P10": 0.08091456136387566,
+          "P50": 1.565090971337624,
+          "P90": 4.255826464280276,
+          "P99": 6.475448503259009
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.006103224094467295,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG405": {
+        "rows": 18557,
+        "positive": 18469,
+        "zero": 88,
+        "sum_w": 9479.387709922848,
+        "sum_w_squared": 8526.320990841537,
+        "ess": 10538.987618640827,
+        "quantiles": {
+          "P10": 0.01827387746039805,
+          "P50": 0.39526248630199046,
+          "P90": 1.1573307243500122,
+          "P99": 1.713228123386725
+        },
+        "maximum": 2.9261733638164853,
+        "certificates": {
+          "ADD_BETTER": 801,
+          "WAIT_BETTER": 17668,
+          "TIE_EXACT": 88
+        },
+        "margin_quantiles": {
+          "P10": 0.06856914244892368,
+          "P50": 1.4831449858790158,
+          "P90": 4.342656640357236,
+          "P99": 6.428552642677492
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004742145820983995,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG405/year/2023": {
+        "rows": 1415,
+        "positive": 1410,
+        "zero": 5,
+        "sum_w": 879.8649237154052,
+        "sum_w_squared": 933.7877896745565,
+        "ess": 829.0559081464609,
+        "quantiles": {
+          "P10": 0.01840542640189997,
+          "P50": 0.5844073905419045,
+          "P90": 1.2853655525612737,
+          "P99": 1.8948947745451605
+        },
+        "maximum": 2.2212035950069375,
+        "certificates": {
+          "ADD_BETTER": 66,
+          "WAIT_BETTER": 1344,
+          "TIE_EXACT": 5
+        },
+        "margin_quantiles": {
+          "P10": 0.06906275406082152,
+          "P50": 2.192874155860666,
+          "P90": 4.8230822310982955,
+          "P99": 7.110221134134607
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0035335689045936395,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG405/year/2024": {
+        "rows": 17142,
+        "positive": 17059,
+        "zero": 83,
+        "sum_w": 8599.522786207444,
+        "sum_w_squared": 7592.53320116698,
+        "ess": 9740.06832648879,
+        "quantiles": {
+          "P10": 0.01827451968094354,
+          "P50": 0.3893607575226342,
+          "P90": 1.137095997686517,
+          "P99": 1.6682871525362035
+        },
+        "maximum": 2.9261733638164853,
+        "certificates": {
+          "ADD_BETTER": 735,
+          "WAIT_BETTER": 16324,
+          "TIE_EXACT": 83
+        },
+        "margin_quantiles": {
+          "P10": 0.06857155225560882,
+          "P50": 1.4609999057096001,
+          "P90": 4.266729795711862,
+          "P99": 6.259920460551915
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004841908762104772,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG405/direction/-1": {
+        "rows": 18557,
+        "positive": 18469,
+        "zero": 88,
+        "sum_w": 9479.387709922848,
+        "sum_w_squared": 8526.320990841537,
+        "ess": 10538.987618640827,
+        "quantiles": {
+          "P10": 0.01827387746039805,
+          "P50": 0.39526248630199046,
+          "P90": 1.1573307243500122,
+          "P99": 1.713228123386725
+        },
+        "maximum": 2.9261733638164853,
+        "certificates": {
+          "ADD_BETTER": 801,
+          "WAIT_BETTER": 17668,
+          "TIE_EXACT": 88
+        },
+        "margin_quantiles": {
+          "P10": 0.06856914244892368,
+          "P50": 1.4831449858790158,
+          "P90": 4.342656640357236,
+          "P99": 6.428552642677492
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004742145820983995,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG405/session/0": {
+        "rows": 12268,
+        "positive": 12262,
+        "zero": 6,
+        "sum_w": 6359.0369340026,
+        "sum_w_squared": 5839.643983577633,
+        "ess": 6924.626028868873,
+        "quantiles": {
+          "P10": 0.017674419718892536,
+          "P50": 0.387539252915462,
+          "P90": 1.1822711905546837,
+          "P99": 1.7479244053229939
+        },
+        "maximum": 2.2212035950069375,
+        "certificates": {
+          "WAIT_BETTER": 11697,
+          "ADD_BETTER": 565,
+          "TIE_EXACT": 6
+        },
+        "margin_quantiles": {
+          "P10": 0.06631979480179842,
+          "P50": 1.454165066789878,
+          "P90": 4.436240850037792,
+          "P99": 6.558743638195103
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.000489077274209325,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG405/session/1": {
+        "rows": 6289,
+        "positive": 6207,
+        "zero": 82,
+        "sum_w": 3120.3507759202494,
+        "sum_w_squared": 2686.6770072639038,
+        "ess": 3624.026609250581,
+        "quantiles": {
+          "P10": 0.019866202654270092,
+          "P50": 0.40725391614073153,
+          "P90": 1.0828593008196172,
+          "P99": 1.5779434506945687
+        },
+        "maximum": 2.9261733638164853,
+        "certificates": {
+          "ADD_BETTER": 236,
+          "WAIT_BETTER": 5971,
+          "TIE_EXACT": 82
+        },
+        "margin_quantiles": {
+          "P10": 0.07454403055246052,
+          "P50": 1.5281404753453767,
+          "P90": 4.063217224201791,
+          "P99": 5.9209234319044866
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.013038638893305771,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG809": {
+        "rows": 23998,
+        "positive": 23585,
+        "zero": 413,
+        "sum_w": 4816.982017886403,
+        "sum_w_squared": 1545.8626348341572,
+        "ess": 15009.946704048676,
+        "quantiles": {
+          "P10": 0.030754829950791922,
+          "P50": 0.1642902737525815,
+          "P90": 0.4151202744291548,
+          "P99": 0.7198182595631524
+        },
+        "maximum": 1.3008466966323664,
+        "certificates": {
+          "WAIT_BETTER": 23428,
+          "ADD_BETTER": 157,
+          "TIE_EXACT": 413
+        },
+        "margin_quantiles": {
+          "P10": 0.11540146969127921,
+          "P50": 0.6164670420017168,
+          "P90": 1.5576574425682388,
+          "P99": 2.7009768936169167
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.017209767480623386,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG809/year/2018": {
+        "rows": 23998,
+        "positive": 23585,
+        "zero": 413,
+        "sum_w": 4816.982017886403,
+        "sum_w_squared": 1545.8626348341572,
+        "ess": 15009.946704048676,
+        "quantiles": {
+          "P10": 0.030754829950791922,
+          "P50": 0.1642902737525815,
+          "P90": 0.4151202744291548,
+          "P99": 0.7198182595631524
+        },
+        "maximum": 1.3008466966323664,
+        "certificates": {
+          "WAIT_BETTER": 23428,
+          "ADD_BETTER": 157,
+          "TIE_EXACT": 413
+        },
+        "margin_quantiles": {
+          "P10": 0.11540146969127921,
+          "P50": 0.6164670420017168,
+          "P90": 1.5576574425682388,
+          "P99": 2.7009768936169167
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.017209767480623386,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG809/direction/-1": {
+        "rows": 23998,
+        "positive": 23585,
+        "zero": 413,
+        "sum_w": 4816.982017886403,
+        "sum_w_squared": 1545.8626348341572,
+        "ess": 15009.946704048676,
+        "quantiles": {
+          "P10": 0.030754829950791922,
+          "P50": 0.1642902737525815,
+          "P90": 0.4151202744291548,
+          "P99": 0.7198182595631524
+        },
+        "maximum": 1.3008466966323664,
+        "certificates": {
+          "WAIT_BETTER": 23428,
+          "ADD_BETTER": 157,
+          "TIE_EXACT": 413
+        },
+        "margin_quantiles": {
+          "P10": 0.11540146969127921,
+          "P50": 0.6164670420017168,
+          "P90": 1.5576574425682388,
+          "P99": 2.7009768936169167
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.017209767480623386,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG809/session/0": {
+        "rows": 15480,
+        "positive": 15295,
+        "zero": 185,
+        "sum_w": 3015.252184702814,
+        "sum_w_squared": 940.7708613490433,
+        "ess": 9664.144703969403,
+        "quantiles": {
+          "P10": 0.0244861373077081,
+          "P50": 0.16055173900701983,
+          "P90": 0.40378627107445464,
+          "P99": 0.6740993262298538
+        },
+        "maximum": 1.3008466966323664,
+        "certificates": {
+          "WAIT_BETTER": 15165,
+          "ADD_BETTER": 130,
+          "TIE_EXACT": 185
+        },
+        "margin_quantiles": {
+          "P10": 0.09187942956905265,
+          "P50": 0.6024389233348268,
+          "P90": 1.5151288170901906,
+          "P99": 2.5294255597996926
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.011950904392764857,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG809/session/1": {
+        "rows": 8518,
+        "positive": 8290,
+        "zero": 228,
+        "sum_w": 1801.729833183589,
+        "sum_w_squared": 605.0917734851142,
+        "ess": 5364.856264838351,
+        "quantiles": {
+          "P10": 0.04973638984859554,
+          "P50": 0.17029930104448915,
+          "P90": 0.45423278817688156,
+          "P99": 0.7371522582601728
+        },
+        "maximum": 0.9327602596026561,
+        "certificates": {
+          "WAIT_BETTER": 8263,
+          "TIE_EXACT": 228,
+          "ADD_BETTER": 27
+        },
+        "margin_quantiles": {
+          "P10": 0.1866260517404861,
+          "P50": 0.6390147388028591,
+          "P90": 1.7044194821252745,
+          "P99": 2.7660193252760576
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.026766846677623857,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG901": {
+        "rows": 24893,
+        "positive": 24499,
+        "zero": 394,
+        "sum_w": 5532.148675514175,
+        "sum_w_squared": 2154.8843335319366,
+        "ess": 14202.46483384611,
+        "quantiles": {
+          "P10": 0.033672034142848396,
+          "P50": 0.1751237137572286,
+          "P90": 0.44896047222523555,
+          "P99": 0.922057338967104
+        },
+        "maximum": 1.6518590142504468,
+        "certificates": {
+          "WAIT_BETTER": 24243,
+          "ADD_BETTER": 256,
+          "TIE_EXACT": 394
+        },
+        "margin_quantiles": {
+          "P10": 0.12634770648372842,
+          "P50": 0.6571174016476292,
+          "P90": 1.6846361501910636,
+          "P99": 3.459839388697185
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01582774273892259,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG901/year/2018": {
+        "rows": 24893,
+        "positive": 24499,
+        "zero": 394,
+        "sum_w": 5532.148675514175,
+        "sum_w_squared": 2154.8843335319366,
+        "ess": 14202.46483384611,
+        "quantiles": {
+          "P10": 0.033672034142848396,
+          "P50": 0.1751237137572286,
+          "P90": 0.44896047222523555,
+          "P99": 0.922057338967104
+        },
+        "maximum": 1.6518590142504468,
+        "certificates": {
+          "WAIT_BETTER": 24243,
+          "ADD_BETTER": 256,
+          "TIE_EXACT": 394
+        },
+        "margin_quantiles": {
+          "P10": 0.12634770648372842,
+          "P50": 0.6571174016476292,
+          "P90": 1.6846361501910636,
+          "P99": 3.459839388697185
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01582774273892259,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG901/direction/-1": {
+        "rows": 24893,
+        "positive": 24499,
+        "zero": 394,
+        "sum_w": 5532.148675514175,
+        "sum_w_squared": 2154.8843335319366,
+        "ess": 14202.46483384611,
+        "quantiles": {
+          "P10": 0.033672034142848396,
+          "P50": 0.1751237137572286,
+          "P90": 0.44896047222523555,
+          "P99": 0.922057338967104
+        },
+        "maximum": 1.6518590142504468,
+        "certificates": {
+          "WAIT_BETTER": 24243,
+          "ADD_BETTER": 256,
+          "TIE_EXACT": 394
+        },
+        "margin_quantiles": {
+          "P10": 0.12634770648372842,
+          "P50": 0.6571174016476292,
+          "P90": 1.6846361501910636,
+          "P99": 3.459839388697185
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.01582774273892259,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG901/session/0": {
+        "rows": 16126,
+        "positive": 16053,
+        "zero": 73,
+        "sum_w": 3680.217659929842,
+        "sum_w_squared": 1496.6613088106621,
+        "ess": 9049.47695562623,
+        "quantiles": {
+          "P10": 0.03449706420096732,
+          "P50": 0.1792988279859556,
+          "P90": 0.4553849691543618,
+          "P99": 0.9526635166622297
+        },
+        "maximum": 1.6518590142504468,
+        "certificates": {
+          "WAIT_BETTER": 15864,
+          "ADD_BETTER": 189,
+          "TIE_EXACT": 73
+        },
+        "margin_quantiles": {
+          "P10": 0.12944347002391848,
+          "P50": 0.6727836992306422,
+          "P90": 1.7087428153501465,
+          "P99": 3.5746830699433896
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.004526851047997023,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG901/session/1": {
+        "rows": 8767,
+        "positive": 8446,
+        "zero": 321,
+        "sum_w": 1851.9310155843323,
+        "sum_w_squared": 658.2230247212742,
+        "ess": 5210.46568970374,
+        "quantiles": {
+          "P10": 0.02963588096623696,
+          "P50": 0.17109271728616443,
+          "P90": 0.4399032528732462,
+          "P99": 0.8503575895488255
+        },
+        "maximum": 1.433482766862451,
+        "certificates": {
+          "WAIT_BETTER": 8379,
+          "ADD_BETTER": 67,
+          "TIE_EXACT": 321
+        },
+        "margin_quantiles": {
+          "P10": 0.11120283300449493,
+          "P50": 0.6419918776949537,
+          "P90": 1.650650710303793,
+          "P99": 3.1908001362414025
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.03661457739249458,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG905": {
+        "rows": 22677,
+        "positive": 22240,
+        "zero": 437,
+        "sum_w": 3415.2738580758223,
+        "sum_w_squared": 842.0032455028679,
+        "ess": 13852.791646533366,
+        "quantiles": {
+          "P10": 0.01560024121046672,
+          "P50": 0.13098832080003828,
+          "P90": 0.3063669928668253,
+          "P99": 0.5306001514203718
+        },
+        "maximum": 0.7416570795797893,
+        "certificates": {
+          "WAIT_BETTER": 22118,
+          "ADD_BETTER": 122,
+          "TIE_EXACT": 437
+        },
+        "margin_quantiles": {
+          "P10": 0.058536846606104004,
+          "P50": 0.491507992627608,
+          "P90": 1.149582075345499,
+          "P99": 1.990973040341896
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.019270626626096927,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG905/year/2018": {
+        "rows": 2813,
+        "positive": 2808,
+        "zero": 5,
+        "sum_w": 475.6751494468995,
+        "sum_w_squared": 109.2322310506061,
+        "ess": 2071.429335692166,
+        "quantiles": {
+          "P10": 0.05708487559005226,
+          "P50": 0.1380825876412133,
+          "P90": 0.3244757720695846,
+          "P99": 0.46825220802317147
+        },
+        "maximum": 0.5628084592304387,
+        "certificates": {
+          "WAIT_BETTER": 2789,
+          "ADD_BETTER": 19,
+          "TIE_EXACT": 5
+        },
+        "margin_quantiles": {
+          "P10": 0.21419980376338352,
+          "P50": 0.5181278380685882,
+          "P90": 1.2175317189512993,
+          "P99": 1.757024606493367
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.0017774617845716318,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG905/year/2019": {
+        "rows": 19864,
+        "positive": 19432,
+        "zero": 432,
+        "sum_w": 2939.598708628922,
+        "sum_w_squared": 732.7710144522617,
+        "ess": 11792.552376313708,
+        "quantiles": {
+          "P10": 0.01467274859830304,
+          "P50": 0.12927835608282767,
+          "P90": 0.30306957355924813,
+          "P99": 0.5420188352435408
+        },
+        "maximum": 0.7416570795797893,
+        "certificates": {
+          "WAIT_BETTER": 19329,
+          "ADD_BETTER": 103,
+          "TIE_EXACT": 432
+        },
+        "margin_quantiles": {
+          "P10": 0.055056612420359925,
+          "P50": 0.48509168527679297,
+          "P90": 1.1372091558758857,
+          "P99": 2.0338194126756766
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.02174788562223117,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG905/direction/-1": {
+        "rows": 22677,
+        "positive": 22240,
+        "zero": 437,
+        "sum_w": 3415.2738580758223,
+        "sum_w_squared": 842.0032455028679,
+        "ess": 13852.791646533366,
+        "quantiles": {
+          "P10": 0.01560024121046672,
+          "P50": 0.13098832080003828,
+          "P90": 0.3063669928668253,
+          "P99": 0.5306001514203718
+        },
+        "maximum": 0.7416570795797893,
+        "certificates": {
+          "WAIT_BETTER": 22118,
+          "ADD_BETTER": 122,
+          "TIE_EXACT": 437
+        },
+        "margin_quantiles": {
+          "P10": 0.058536846606104004,
+          "P50": 0.491507992627608,
+          "P90": 1.149582075345499,
+          "P99": 1.990973040341896
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.019270626626096927,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG905/session/0": {
+        "rows": 14704,
+        "positive": 14602,
+        "zero": 102,
+        "sum_w": 2195.6621737464047,
+        "sum_w_squared": 539.4943432737682,
+        "ess": 8936.02025920481,
+        "quantiles": {
+          "P10": 0.015460706309098196,
+          "P50": 0.1266860551513922,
+          "P90": 0.3076690631790826,
+          "P99": 0.5279095902554839
+        },
+        "maximum": 0.6960339108770623,
+        "certificates": {
+          "WAIT_BETTER": 14508,
+          "ADD_BETTER": 94,
+          "TIE_EXACT": 102
+        },
+        "margin_quantiles": {
+          "P10": 0.05801326924550993,
+          "P50": 0.47536458427027195,
+          "P90": 1.1544678389122722,
+          "P99": 1.9808772370739496
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.006936887921653972,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG905/session/1": {
+        "rows": 7973,
+        "positive": 7638,
+        "zero": 335,
+        "sum_w": 1219.6116843294176,
+        "sum_w_squared": 302.50890222909965,
+        "ess": 4917.054174578781,
+        "quantiles": {
+          "P10": 0.01587668215886971,
+          "P50": 0.13856427116741044,
+          "P90": 0.3048650909450518,
+          "P99": 0.5331619402815866
+        },
+        "maximum": 0.7416570795797893,
+        "certificates": {
+          "WAIT_BETTER": 7610,
+          "TIE_EXACT": 335,
+          "ADD_BETTER": 28
+        },
+        "margin_quantiles": {
+          "P10": 0.05957413706680886,
+          "P50": 0.5199352610632256,
+          "P90": 1.1439464828423986,
+          "P99": 2.000585650787018
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.04201680672268908,
+        "capped_fraction": 0.0
+      },
+      "contract/CZCE.FG909": {
+        "rows": 22991,
+        "positive": 21733,
+        "zero": 1258,
+        "sum_w": 4213.887453339897,
+        "sum_w_squared": 1282.9947410070895,
+        "ess": 13840.156083162994,
+        "quantiles": {
+          "P10": 0.026554324117029883,
+          "P50": 0.15372769447659032,
+          "P90": 0.363092306354547,
+          "P99": 0.6982869693900395
+        },
+        "maximum": 1.2404207643184948,
+        "certificates": {
+          "WAIT_BETTER": 21567,
+          "TIE_EXACT": 1258,
+          "ADD_BETTER": 166
+        },
+        "margin_quantiles": {
+          "P10": 0.09963989508857361,
+          "P50": 0.5768330341359492,
+          "P90": 1.362432692814547,
+          "P99": 2.6201849486020286
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.054717063198642946,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG909/year/2019": {
+        "rows": 22991,
+        "positive": 21733,
+        "zero": 1258,
+        "sum_w": 4213.887453339897,
+        "sum_w_squared": 1282.9947410070895,
+        "ess": 13840.156083162994,
+        "quantiles": {
+          "P10": 0.026554324117029883,
+          "P50": 0.15372769447659032,
+          "P90": 0.363092306354547,
+          "P99": 0.6982869693900395
+        },
+        "maximum": 1.2404207643184948,
+        "certificates": {
+          "WAIT_BETTER": 21567,
+          "TIE_EXACT": 1258,
+          "ADD_BETTER": 166
+        },
+        "margin_quantiles": {
+          "P10": 0.09963989508857361,
+          "P50": 0.5768330341359492,
+          "P90": 1.362432692814547,
+          "P99": 2.6201849486020286
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.054717063198642946,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG909/direction/1": {
+        "rows": 22991,
+        "positive": 21733,
+        "zero": 1258,
+        "sum_w": 4213.887453339897,
+        "sum_w_squared": 1282.9947410070895,
+        "ess": 13840.156083162994,
+        "quantiles": {
+          "P10": 0.026554324117029883,
+          "P50": 0.15372769447659032,
+          "P90": 0.363092306354547,
+          "P99": 0.6982869693900395
+        },
+        "maximum": 1.2404207643184948,
+        "certificates": {
+          "WAIT_BETTER": 21567,
+          "TIE_EXACT": 1258,
+          "ADD_BETTER": 166
+        },
+        "margin_quantiles": {
+          "P10": 0.09963989508857361,
+          "P50": 0.5768330341359492,
+          "P90": 1.362432692814547,
+          "P99": 2.6201849486020286
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.054717063198642946,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG909/session/0": {
+        "rows": 15115,
+        "positive": 14518,
+        "zero": 597,
+        "sum_w": 2826.8539290150757,
+        "sum_w_squared": 863.644342062926,
+        "ess": 9252.770783978263,
+        "quantiles": {
+          "P10": 0.03169715859444981,
+          "P50": 0.15582127220452138,
+          "P90": 0.37649957167229064,
+          "P99": 0.708772105218482
+        },
+        "maximum": 0.9394226840139018,
+        "certificates": {
+          "WAIT_BETTER": 14407,
+          "TIE_EXACT": 597,
+          "ADD_BETTER": 111
+        },
+        "margin_quantiles": {
+          "P10": 0.1189373731764978,
+          "P50": 0.5846887740994846,
+          "P90": 1.4127408273314375,
+          "P99": 2.6595283651141983
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.039497188223618925,
+        "capped_fraction": 0.0
+      },
+      "CZCE.FG909/session/1": {
+        "rows": 7876,
+        "positive": 7215,
+        "zero": 661,
+        "sum_w": 1387.0335243248217,
+        "sum_w_squared": 419.35039894416354,
+        "ess": 4587.719488153146,
+        "quantiles": {
+          "P10": 0.015397366374072605,
+          "P50": 0.14498536463993106,
+          "P90": 0.3438425447080603,
+          "P99": 0.6779187501360544
+        },
+        "maximum": 1.2404207643184948,
+        "certificates": {
+          "WAIT_BETTER": 7160,
+          "ADD_BETTER": 55,
+          "TIE_EXACT": 661
+        },
+        "margin_quantiles": {
+          "P10": 0.05777559855756275,
+          "P50": 0.5440291554186675,
+          "P90": 1.2902017362862317,
+          "P99": 2.5437571991829957
+        },
+        "uncertified_fraction": 0.0,
+        "zero_margin_fraction": 0.08392585068562722,
+        "capped_fraction": 0.0
+      },
+      "year/2018": {
+        "rows": 51704,
+        "positive": 50892,
+        "zero": 812,
+        "sum_w": 10824.805842847476,
+        "sum_w_squared": 3809.9791994167003,
+        "ess": 30755.13418899618,
+        "quantiles": {
+          "P10": 0.03341777831516172,
+          "P50": 0.16795735308501825,
+          "P90": 0.42232484407318943,
+          "P99": 0.8604102960723767
+        },
+        "maximum": 1.6518590142504468,
+        "certificates": {
+          "WAIT_BETTER": 50460,
+          "ADD_BETTER": 432,
+          "TIE_EXACT": 812
+        },
+        "margin_quantiles": {
+          "P10": 0.1253936613389638,
+          "P50": 0.6302270382401878,
+          "P90": 1.584691177651315,
+          "P99": 3.228520946567751
+        },
+        "zero_margin_fraction": 0.015704781061426584
+      },
+      "year/2019": {
+        "rows": 70276,
+        "positive": 67975,
+        "zero": 2301,
+        "sum_w": 12103.402332001664,
+        "sum_w_squared": 3510.6178712307524,
+        "ess": 41728.36616904307,
+        "quantiles": {
+          "P10": 0.01963619824425585,
+          "P50": 0.1435541958618736,
+          "P90": 0.347677563096353,
+          "P99": 0.6704627889862362
+        },
+        "maximum": 1.2404207643184948,
+        "certificates": {
+          "ADD_BETTER": 477,
+          "WAIT_BETTER": 67498,
+          "TIE_EXACT": 2301
+        },
+        "margin_quantiles": {
+          "P10": 0.07368098409785198,
+          "P50": 0.5386589751696348,
+          "P90": 1.304591890906178,
+          "P99": 2.515780166761526
+        },
+        "zero_margin_fraction": 0.032742330240764984
+      },
+      "year/2020": {
+        "rows": 62318,
+        "positive": 61075,
+        "zero": 1243,
+        "sum_w": 22502.990022377613,
+        "sum_w_squared": 16716.43579406274,
+        "ess": 30292.615374808636,
+        "quantiles": {
+          "P10": 0.014390677528102584,
+          "P50": 0.24261524765667875,
+          "P90": 0.8823627995535546,
+          "P99": 1.6238460392605714
+        },
+        "maximum": 2.8735390756938672,
+        "certificates": {
+          "WAIT_BETTER": 59365,
+          "ADD_BETTER": 1710,
+          "TIE_EXACT": 1243
+        },
+        "margin_quantiles": {
+          "P10": 0.053998196031434756,
+          "P50": 0.9103661504190327,
+          "P90": 3.3108934119393445,
+          "P99": 6.093163895975543
+        },
+        "zero_margin_fraction": 0.01994608299367759
+      },
+      "year/2021": {
+        "rows": 68743,
+        "positive": 68543,
+        "zero": 200,
+        "sum_w": 38738.217073493404,
+        "sum_w_squared": 43225.810927549195,
+        "ess": 34716.513810425335,
+        "quantiles": {
+          "P10": 0.009410576496285903,
+          "P50": 0.3372147270917491,
+          "P90": 1.3635941954411328,
+          "P99": 2.258221089617315
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "ADD_BETTER": 6538,
+          "WAIT_BETTER": 62005,
+          "TIE_EXACT": 200
+        },
+        "margin_quantiles": {
+          "P10": 0.035311343293108935,
+          "P50": 1.265332150110927,
+          "P90": 5.1166198762335275,
+          "P99": 8.473531898782934
+        },
+        "zero_margin_fraction": 0.0029093871375994646
+      },
+      "year/2022": {
+        "rows": 67614,
+        "positive": 67276,
+        "zero": 338,
+        "sum_w": 33696.8612068177,
+        "sum_w_squared": 30932.666532869396,
+        "ess": 36708.06892722823,
+        "quantiles": {
+          "P10": 0.016034249212945877,
+          "P50": 0.37185705738838315,
+          "P90": 1.1271036433449395,
+          "P99": 1.93913302007732
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 63893,
+          "ADD_BETTER": 3383,
+          "TIE_EXACT": 338
+        },
+        "margin_quantiles": {
+          "P10": 0.06016537654510898,
+          "P50": 1.3953207026784027,
+          "P90": 4.229235445115904,
+          "P99": 7.276216477277234
+        },
+        "zero_margin_fraction": 0.004998964711450292
+      },
+      "year/2023": {
+        "rows": 64299,
+        "positive": 63722,
+        "zero": 577,
+        "sum_w": 32035.938276910896,
+        "sum_w_squared": 28611.912786860994,
+        "ess": 35869.72143132413,
+        "quantiles": {
+          "P10": 0.016724654021535577,
+          "P50": 0.3595744261909317,
+          "P90": 1.1116668493273103,
+          "P99": 1.7992563083656112
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 60826,
+          "ADD_BETTER": 2896,
+          "TIE_EXACT": 577
+        },
+        "margin_quantiles": {
+          "P10": 0.06275598523066035,
+          "P50": 1.34923253720554,
+          "P90": 4.17131190205596,
+          "P99": 6.751356540384657
+        },
+        "zero_margin_fraction": 0.008973700990684147
+      },
+      "year/2024": {
+        "rows": 17142,
+        "positive": 17059,
+        "zero": 83,
+        "sum_w": 8599.522786207444,
+        "sum_w_squared": 7592.53320116698,
+        "ess": 9740.06832648879,
+        "quantiles": {
+          "P10": 0.01827451968094354,
+          "P50": 0.3893607575226342,
+          "P90": 1.137095997686517,
+          "P99": 1.6682871525362035
+        },
+        "maximum": 2.9261733638164853,
+        "certificates": {
+          "ADD_BETTER": 735,
+          "WAIT_BETTER": 16324,
+          "TIE_EXACT": 83
+        },
+        "margin_quantiles": {
+          "P10": 0.06857155225560882,
+          "P50": 1.4609999057096001,
+          "P90": 4.266729795711862,
+          "P99": 6.259920460551915
+        },
+        "zero_margin_fraction": 0.004841908762104772
+      },
+      "direction/-1": {
+        "rows": 201972,
+        "positive": 199586,
+        "zero": 2386,
+        "sum_w": 76055.56949712645,
+        "sum_w_squared": 64559.29242990823,
+        "ess": 89599.02492445041,
+        "quantiles": {
+          "P10": 0.014390677527503502,
+          "P50": 0.23700285094248488,
+          "P90": 0.9685461175114736,
+          "P99": 1.874517480035217
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 191345,
+          "ADD_BETTER": 8241,
+          "TIE_EXACT": 2386
+        },
+        "margin_quantiles": {
+          "P10": 0.053998196029186825,
+          "P50": 0.8893067320985683,
+          "P90": 3.634279415735427,
+          "P99": 7.0337593315968565
+        },
+        "zero_margin_fraction": 0.011813518705563148
+      },
+      "direction/1": {
+        "rows": 200124,
+        "positive": 196956,
+        "zero": 3168,
+        "sum_w": 82446.16804352979,
+        "sum_w_squared": 69840.66388324852,
+        "ess": 97326.83292393963,
+        "quantiles": {
+          "P10": 0.017699981850781185,
+          "P50": 0.26134684671221925,
+          "P90": 1.014132228648724,
+          "P99": 1.8006986004784187
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "ADD_BETTER": 7930,
+          "WAIT_BETTER": 189026,
+          "TIE_EXACT": 3168
+        },
+        "margin_quantiles": {
+          "P10": 0.06641571169007622,
+          "P50": 0.9806528034142151,
+          "P90": 3.8053323603026987,
+          "P99": 6.756768458766532
+        },
+        "zero_margin_fraction": 0.015830185285123224
+      },
+      "session/0": {
+        "rows": 266631,
+        "positive": 264547,
+        "zero": 2084,
+        "sum_w": 105489.52065168238,
+        "sum_w_squared": 90227.31236616978,
+        "ess": 123333.37517758226,
+        "quantiles": {
+          "P10": 0.015397366373080172,
+          "P50": 0.2509955404916534,
+          "P90": 1.0045671244331416,
+          "P99": 1.857955625980206
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "WAIT_BETTER": 253659,
+          "ADD_BETTER": 10888,
+          "TIE_EXACT": 2084
+        },
+        "margin_quantiles": {
+          "P10": 0.05777559855383884,
+          "P50": 0.941811556267374,
+          "P90": 3.769441182039168,
+          "P99": 6.97161422132251
+        },
+        "zero_margin_fraction": 0.007816045396071725
+      },
+      "session/1": {
+        "rows": 135465,
+        "positive": 131995,
+        "zero": 3470,
+        "sum_w": 53012.21688897385,
+        "sum_w_squared": 44172.64394698699,
+        "ess": 63620.713825876715,
+        "quantiles": {
+          "P10": 0.016226542302674327,
+          "P50": 0.25093825613038107,
+          "P90": 0.9732610150732554,
+          "P99": 1.8039529590234478
+        },
+        "maximum": 3.0,
+        "certificates": {
+          "ADD_BETTER": 5283,
+          "WAIT_BETTER": 126712,
+          "TIE_EXACT": 3470
+        },
+        "margin_quantiles": {
+          "P10": 0.06088691866391261,
+          "P50": 0.9415966079326984,
+          "P90": 3.651971144447438,
+          "P99": 6.768979801167047
+        },
+        "zero_margin_fraction": 0.02561547263130698
+      }
+    },
+    "contract_contributions": {
+      "CZCE.FG001": 0.027728929505505977,
+      "CZCE.FG005": 0.01897230021954929,
+      "CZCE.FG009": 0.040809213228556115,
+      "CZCE.FG101": 0.07061747811322625,
+      "CZCE.FG105": 0.07416919919471118,
+      "CZCE.FG109": 0.07129646950133817,
+      "CZCE.FG201": 0.0988642593696558,
+      "CZCE.FG205": 0.07196678399533575,
+      "CZCE.FG209": 0.08150151556921065,
+      "CZCE.FG301": 0.06188882096083265,
+      "CZCE.FG305": 0.06146178023706492,
+      "CZCE.FG309": 0.0785546549911609,
+      "CZCE.FG401": 0.06893592182725079,
+      "CZCE.FG405": 0.0598062069035133,
+      "CZCE.FG809": 0.030390720585323744,
+      "CZCE.FG901": 0.034902763599642936,
+      "CZCE.FG905": 0.02154723292670399,
+      "CZCE.FG909": 0.02658574927141742
+    },
+    "maximum_contract_contribution": 0.0988642593696558,
+    "capped_fraction": 0.0002188532091838765,
+    "training_admission": "PASS",
+    "flags": [],
+    "teacher_ADD_fraction": 0.04021676415582349,
+    "no_resampling": true,
+    "class_reweighting": false
+  },
+  "files": {
+    "matched_global.npy": "22b2eaebbc6d9c826eb86dd538159ea9a776e2fb58f2c603ff5728f1f0af7847",
+    "scale.json": "95804ae2a67103259e62c20b5d9d6d4a48b7cbf4a5472989964c81eb0c5d7cbc",
+    "audit.json": "47e5e6d201fb6ec65b9658893a10df03c07bf83fd0ac9040bb3b3355a222cb2b",
+    "contracts/CZCE.FG109/index.npy": "d86ab934820e1d677bc9d062fc2721f75d09085e1cac125000671821309e5d5f",
+    "contracts/CZCE.FG109/weights.npy": "00c932833d73c5bb22731f1ffefe439332ccab0568b725c918eb151013f1358f",
+    "contracts/CZCE.FG109/matched.npy": "7669982097c6d29309cfa4d1908311fcdcc92840d839c3f68eb22e4147d2d394",
+    "contracts/CZCE.FG401/index.npy": "f16f7ca013336303b4888eb59853acb49be988e6747526fae2faee107cebb387",
+    "contracts/CZCE.FG401/weights.npy": "c41b387726ad04e2ccdbe64bd3950a4ce9d53a93b01f6fe210e1b50492e47a06",
+    "contracts/CZCE.FG401/matched.npy": "8611338bc1ae546ef2d58afd4796e66c9b1acef7f82d424bf67b1ed5bea1a1a2",
+    "contracts/CZCE.FG009/index.npy": "1554d3a7f6ede2c2a9000b0634e2f79608f0e039fc6bd984299eb0ad10763da4",
+    "contracts/CZCE.FG009/weights.npy": "aafb55cc9e9cb39a840b4d30a575ea1396cc2e33d61b330ee4e22b608d03d8eb",
+    "contracts/CZCE.FG009/matched.npy": "96527d107bdce24476650fd235e3fe31da97d13426fdb3094865a8b5791f80c6",
+    "contracts/CZCE.FG909/index.npy": "53baf7cb1fdc8c18f2dab7669e5edbc0ee394889ba04933eb014cb5071869cba",
+    "contracts/CZCE.FG909/weights.npy": "fcd03310850b2b8034444d1c2c4e4e649f47e7054f6b0454a340ffb8c86afaa2",
+    "contracts/CZCE.FG909/matched.npy": "dca34fbd6fdb6aa03a8c7f80e99516858e0160925d87f35f2c992ba483bc98f5",
+    "contracts/CZCE.FG301/index.npy": "85885fc194bb120e12645eb053191891a7be7f52c610949064b5ef04ccd3f013",
+    "contracts/CZCE.FG301/weights.npy": "8405b77ceea4d86cc9533ce13b11bcff7cad05d2479bb69952a2997d6e3bc9a3",
+    "contracts/CZCE.FG301/matched.npy": "447d65df93d858199dd810aa8d95f59da411eedca8bcdc09d9690cbc5f1ba3f1",
+    "contracts/CZCE.FG209/index.npy": "fdb1e044ab9c803b03c79dde5ac8f450a6179c39cd119fa83d73554d57a03089",
+    "contracts/CZCE.FG209/weights.npy": "ecbc777814e35b19c7c4cf56b225bdb7e66c572131dc611b808e3ed4df1c0248",
+    "contracts/CZCE.FG209/matched.npy": "5324f52f07bf594946ca6e77966efccb96deb7d99cdd7e43ef4c97656571432b",
+    "contracts/CZCE.FG105/index.npy": "40b39dfb0ad8574998f42b23bd11e7ae8e822bf774cc535b26a5675243340939",
+    "contracts/CZCE.FG105/weights.npy": "dc796c00d87a27212691e9c99946827e526b55d01bfbc0b14bc8a652ec6619f7",
+    "contracts/CZCE.FG105/matched.npy": "6918596fb240852b80aa38e1d6f9c01805208d6c469956f543e591b4d861deda",
+    "contracts/CZCE.FG201/index.npy": "e410c25eec9456d4530b9e0a936d3c7ba3dc54797f3fe84ca8828e08aee40683",
+    "contracts/CZCE.FG201/weights.npy": "ca901ec5a4842b71ffd8792fa5e966148c874a58eb16b3a6e5c646e7788a71e8",
+    "contracts/CZCE.FG201/matched.npy": "390dd8cba046d189be0e78c456b54343d301c88499ccbe3f1a84e16ae57f9fe4",
+    "contracts/CZCE.FG101/index.npy": "aec11fadfbcae3afb507ee6e75f133ee2f3d47d958c143cbd3c62f45b8c3348e",
+    "contracts/CZCE.FG101/weights.npy": "149dc99857656cfef785a7e6615f0d3a29c5a300fe43b064d786a942b10ad52e",
+    "contracts/CZCE.FG101/matched.npy": "64d55a99071b34cfdd459585e33266f648e2238913b63927cf9ba8d7f0b686f0",
+    "contracts/CZCE.FG309/index.npy": "2b8df8990702f11121b5206d2f2b1a49c4973d3f5b335e1fa0dca0e88e177050",
+    "contracts/CZCE.FG309/weights.npy": "addf22ff732ea4ac931cf575796179d8439131866bfc0d2cd575122e1c70564b",
+    "contracts/CZCE.FG309/matched.npy": "b7b32cb64287db518f63c97fc9e1840a79b3e7d8765e2ed616ef6a2d8e08c8ed",
+    "contracts/CZCE.FG001/index.npy": "7e7789a417975bc74b1012c9d352934fcdb0cca45be6a0163e0187eba86d4e7f",
+    "contracts/CZCE.FG001/weights.npy": "4ea594dc986b74ac5c150bb161708aa94d96347fa9b5716516c598d02c6c7997",
+    "contracts/CZCE.FG001/matched.npy": "08acb46c973c49f10e5baf8cb4a6dca9036433010daa6b9d62a4980f0a34668c",
+    "contracts/CZCE.FG305/index.npy": "97e5c2787a00062f1788bc5280935c62a0c6d580cac4b09cb7d4d2d302ae8007",
+    "contracts/CZCE.FG305/weights.npy": "47b3e22db863865ac0112fbed86849194ebfc48a6dcfe03ae63fddc3aaed3635",
+    "contracts/CZCE.FG305/matched.npy": "ed35af2629c11bd909271fc0fc449718879af5bde2e45f490b5d103a18a553e3",
+    "contracts/CZCE.FG405/index.npy": "e0cedb5e558530f9067ff97ce6b912d3a0c08de2ce48c990e458ce4099e7adbe",
+    "contracts/CZCE.FG405/weights.npy": "bfb1f1c973a08e2ad2e5369d54cedc1c1f2a0849fec1e66757b965407ff99c8d",
+    "contracts/CZCE.FG405/matched.npy": "e1d2cba72c0b9d77131a1d130cf46a362f79ee36daa027f9f7c71eef3f825bae",
+    "contracts/CZCE.FG905/index.npy": "c35131f682a5adfa41b398e088162f0712c6b61eb7ecbf71c2c6615688d37709",
+    "contracts/CZCE.FG905/weights.npy": "cebf1d30b209f278193009452f4dc9ce845ffda0fe268248ab6496d9d7214d8c",
+    "contracts/CZCE.FG905/matched.npy": "25ea6a8e16f6d86fbf3291e2d70aa55e5de1ff3b9ca3ca3b64f0fe1cd4f0901e",
+    "contracts/CZCE.FG901/index.npy": "ef562cdecb7a8c1a69e58450d234973cf2a4f9fc8dd6449f33c3967622e32077",
+    "contracts/CZCE.FG901/weights.npy": "9197034c597916416a0df52ac133f90f967c06313371a93a4cea37d76c4ecc2b",
+    "contracts/CZCE.FG901/matched.npy": "d0735b14ead8df97fe3e4d1614d12a4a18fc075b69c9fd1dd1e380b17cbb3c0d",
+    "contracts/CZCE.FG005/index.npy": "622ea527377f6b07821ce83205615ce9f778aee8bd947706b015e61cea1fd0e7",
+    "contracts/CZCE.FG005/weights.npy": "70e3297b57e06db13e059f4ebd8db74c3f731786aa9e11d3c02b64594eb89570",
+    "contracts/CZCE.FG005/matched.npy": "eb0f22a4993f0dcf498e17c755266f200f956ccf86e6d8c3da7d371d65faaa23",
+    "contracts/CZCE.FG205/index.npy": "f9f52ef793aa85cbe0ffcbcfcaa32aebd958e130c2f6eddca8611e487ac1d62e",
+    "contracts/CZCE.FG205/weights.npy": "234a870db3af353a77ecf63c4cecfc208d20eebd7ea055610491f9daef525178",
+    "contracts/CZCE.FG205/matched.npy": "1042b0ae02902e73af115926174e683eded5b987d7b653fab23f76b933f512ee",
+    "contracts/CZCE.FG809/index.npy": "b9d62302b6467b90f4c0e06b788354240df152da4c0068122112e9c229553fef",
+    "contracts/CZCE.FG809/weights.npy": "a46648e1c049b906bad9689495fdf8f02a6dace1dc2cc7f3fbb55a7f6729d87e",
+    "contracts/CZCE.FG809/matched.npy": "7602f2512c79a55e6ff42375fc97f712d8a99762ceb6ac6f9dcb7916e40f2097"
+  },
+  "content_hash": "e07ff6a0aabcd1fc44500f9358f1769a1b23484ca0bb964afd60e0e1091a0ac9"
+}
