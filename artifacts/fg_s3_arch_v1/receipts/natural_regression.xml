@@ -14,8 +14,8 @@
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -35,7 +35,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -54,7 +54,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -64,16 +64,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -86,23 +86,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -111,22 +111,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -135,7 +135,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -154,7 +154,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -164,7 +164,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -185,7 +185,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -213,7 +213,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -222,7 +222,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -235,15 +235,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.
@@ -274,8 +274,8 @@ E               IsADirectoryError: [Errno 21] Is a directory: '.'
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -295,7 +295,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -314,7 +314,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -324,16 +324,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -346,23 +346,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -371,22 +371,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -395,7 +395,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -414,7 +414,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -424,7 +424,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -445,7 +445,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -473,7 +473,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -482,7 +482,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -495,15 +495,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.
@@ -534,8 +534,8 @@ E               IsADirectoryError: [Errno 21] Is a directory: '.'
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -555,7 +555,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -574,7 +574,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -584,16 +584,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -606,23 +606,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -631,22 +631,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -655,7 +655,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -674,7 +674,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -684,7 +684,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -705,7 +705,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -733,7 +733,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -742,7 +742,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -755,15 +755,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.
@@ -794,8 +794,8 @@ E               IsADirectoryError: [Errno 21] Is a directory: '.'
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -815,7 +815,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -834,7 +834,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -844,16 +844,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -866,23 +866,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -891,22 +891,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -915,7 +915,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -934,7 +934,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -944,7 +944,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -965,7 +965,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -993,7 +993,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -1002,7 +1002,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -1015,15 +1015,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.
@@ -1054,8 +1054,8 @@ E               IsADirectoryError: [Errno 21] Is a directory: '.'
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1075,7 +1075,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -1094,7 +1094,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -1104,16 +1104,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -1126,23 +1126,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -1151,22 +1151,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -1175,7 +1175,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -1194,7 +1194,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -1204,7 +1204,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -1225,7 +1225,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -1253,7 +1253,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -1262,7 +1262,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -1275,15 +1275,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.
@@ -1314,8 +1314,8 @@ E               IsADirectoryError: [Errno 21] Is a directory: '.'
 &gt;       nt=collect_trace(root/'native/env/env.yaml',dict(id='P1',kind='always_add',seed_components=[0]),
                          nat,ident,dreamer,protocol='fg_single3_v1',policy_factory=Single3BehaviorPolicy)
 
-tests/entry_v1/test_fg_s3_teacher_catalog.py:27: 
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_fg_s3_teacher_catalog.py:27:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 src/gym_trading_env/research/fg_replay.py:333: in collect_trace
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1335,7 +1335,7 @@ src/gym_trading_env/envs/entry_env.py:132: in _load_market
                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/io/parsers/readers.py:1880: in _make_engine
     self.handles = get_handle(
-_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
 
 path_or_buf = PosixPath('.'), mode = 'r', encoding = 'utf-8', compression = None
 memory_map = False, is_text = True, errors = 'strict', storage_options = None
@@ -1354,7 +1354,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
     ) -&gt; IOHandles[str] | IOHandles[bytes]:
         """
         Get file handle for given path/buffer and mode.
-    
+
         Parameters
         ----------
         path_or_buf : str or file handle
@@ -1364,16 +1364,16 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
         encoding : str or None
             Encoding to use.
         {compression_options}
-    
+
                May be a dict with key 'method' as compression mode
                and other keys as compression options if compression
                mode is 'zip'.
-    
+
                Passing compression options as keys in dict is
                supported for compression modes 'gzip', 'bz2', 'zstd' and 'zip'.
-    
+
             .. versionchanged:: 1.4.0 Zstandard support.
-    
+
         memory_map : bool, default False
             See parsers._parser_params for more information. Only used by read_csv.
         is_text : bool, default True
@@ -1386,23 +1386,23 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             of options.
         storage_options: StorageOptions = None
             Passed to _get_filepath_or_buffer
-    
+
         Returns the dataclass IOHandles
         """
         # Windows does not default to utf-8. Set to utf-8 for a consistent behavior
         encoding = encoding or "utf-8"
-    
+
         errors = errors or "strict"
-    
+
         # read_csv does not know whether the buffer is opened in binary/text mode
         if _is_binary_mode(path_or_buf, mode) and "b" not in mode:
             mode += "b"
-    
+
         # validate encoding and errors
         codecs.lookup(encoding)
         if isinstance(errors, str):
             codecs.lookup_error(errors)
-    
+
         # open URLs
         ioargs = _get_filepath_or_buffer(
             path_or_buf,
@@ -1411,22 +1411,22 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
             mode=mode,
             storage_options=storage_options,
         )
-    
+
         handle = ioargs.filepath_or_buffer
         handles: list[BaseBuffer]
-    
+
         # memory mapping needs to be the first step
         # only used for read_csv
         handle, memory_map, handles = _maybe_memory_map(handle, memory_map)
-    
+
         is_path = isinstance(handle, str)
         compression_args = dict(ioargs.compression)
         compression = compression_args.pop("method")
-    
+
         # Only for write methods
         if "r" not in mode and is_path:
             check_parent_directory(str(handle))
-    
+
         if compression:
             if compression != "zstd":
                 # compression libraries do not like an explicit text-mode
@@ -1435,7 +1435,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 # python-zstandard defaults to text mode, but we always expect
                 # compression libraries to use binary mode.
                 ioargs.mode += "b"
-    
+
             # GZ Compression
             if compression == "gzip":
                 if isinstance(handle, str):
@@ -1454,7 +1454,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                         mode=ioargs.mode,
                         **compression_args,
                     )
-    
+
             # BZ Compression
             elif compression == "bz2":
                 # Overload of "BZ2File" to handle pickle protocol 5
@@ -1464,7 +1464,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **compression_args,
                 )
-    
+
             # ZIP Compression
             elif compression == "zip":
                 # error: Argument 1 to "_BytesZipFile" has incompatible type
@@ -1485,7 +1485,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in ZIP file. "
                             f"Only one file per ZIP: {zip_names}"
                         )
-    
+
             # TAR Encoding
             elif compression == "tar":
                 compression_args.setdefault("mode", ioargs.mode)
@@ -1513,7 +1513,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                             "Multiple files found in TAR archive. "
                             f"Only one file per TAR archive: {files}"
                         )
-    
+
             # XZ Compression
             elif compression == "xz":
                 # error: Argument 1 to "LZMAFile" has incompatible type "Union[str,
@@ -1522,7 +1522,7 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                 handle = get_lzma_file()(
                     handle, ioargs.mode, **compression_args  # type: ignore[arg-type]
                 )
-    
+
             # Zstd Compression
             elif compression == "zstd":
                 zstd = import_optional_dependency("zstandard")
@@ -1535,15 +1535,15 @@ memory_map = False, is_text = True, errors = 'strict', storage_options = None
                     mode=ioargs.mode,
                     **open_args,
                 )
-    
+
             # Unrecognized Compression
             else:
                 msg = f"Unrecognized compression type: {compression}"
                 raise ValueError(msg)
-    
+
             assert not isinstance(handle, str)
             handles.append(handle)
-    
+
         elif isinstance(handle, str):
             # Check whether the filename is to be opened in binary mode.
             # Binary mode does not support 'encoding' and 'newline'.

@@ -1,26 +1,30 @@
 {
   "stage": "AR0-AR5",
   "status": "PASS_ENGINEERING_AND_REAL_TRAIN_CATALOG",
-  "unique_pytest_cases": 22,
+  "unique_pytest_cases": 21,
   "receipts": {
     "architecture.xml": "10650f92644927d92664d0cb3816a47a9448d179b528f4d64fc8426af515d2ae",
     "source_snapshot_final.xml": "b96bdda3abc34bfa7df0b0ec821de0d732c0285af0105f8e409bd23430fc4d5e",
     "architecture_final.stdout": "950f9e6707e96b9e610a5e379b94bfe86447493b393b1c585832253575d6e8db",
+    "real_s3a_source_admission_receipt.json": "396cbe89919b89ac4417d37eebb62b62c3021029c4d4a23496759f2d3949c9ec",
     "source_final_v2.xml": "d644e57a940d05ded8a5c179f8c4eba1c643804a21ad45c9029d50da15c332fc",
-    "natural_regression.stdout": "e7fcfe1c5fc2b3cb196cff7ffd66d4c2118aca0621347621f7ba915395c79c71",
+    "natural_regression.stdout": "8f599759b6ef64af9fc5c2c78cba880c555bf38738162566bef44cf7388fdfe2",
     "natural_source_final.xml": "ab61f21bd4688f1127f6dd84e1c96fab7cebf172f6c89fe92f24873ae8457d5a",
     "natural_source_final.stdout": "6ccebe48290647c8594007d9b85d44f3e5e3e15e50c44e34209fe0382db75199",
     "real_catalog_final.stdout": "4fd98da262e79d64752a4ce794c95ea4ca2f1d6b03680f110c5eb213459e97e0",
+    "natural_regression.xml.raw.gz": "c27ded17681657b9efc63dac717d9829176566b9b971ddedf0952513692a9a23",
     "real_s3a_transfer_summary.json": "2fd462b84c5b64f8ee567ec096009d8ae590ddc1145cbb150edfbcb611269689",
     "real_catalog_audit.json": "ea16cb97fe5e6fda074989eb2fb540edd35d2ff4d55fc354287fbb25a60ee74e",
     "source_snapshot_final.stdout": "688e397cae91535d0b012be5862d3ead33ec2befb06318617cc3d702809d7c26",
+    "natural_regression.stdout.raw.gz": "5b94f7ef7ac7eaa0eaf249c768b48a39690e2a742b621fb9090d767eeee8dde2",
     "architecture_final.xml": "df0020ca93922a0c06a29ca7d898b2350d8c5778879dad3f21f656fae823f7b1",
     "real_catalog_final2.stdout": "71a46d2ef3cfede148beabfb20284be9653eb95b5b99c1758476bf126b944ea9",
     "architecture.stdout": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
     "real_s3a_transfer.stdout": "b865032902342baf28ab353babb5b541789e581cdcc3ed8d659d3e02c56ab365",
-    "natural_regression.xml": "7e4b11876d1c3f94bab6a517587ed93676db968d1a771d765e357e5b343cf68f",
+    "natural_regression.xml": "ae546a9313fc6278491e6ec0ec61a5276717c48f9769b7ae2f263a76f41b87b6",
     "source_final_v2.stdout": "dd0c4c794cf24f2f0a2e5f65598fa86a294f1c857b2ea042da78c0ce90685fd8",
-    "real_catalog.stdout": "584a4853edccabc8d6220acda696baa1a6c7071cb3a80673b0296587e9478db2"
+    "real_catalog.stdout": "584a4853edccabc8d6220acda696baa1a6c7071cb3a80673b0296587e9478db2",
+    "real_s3a_transfer_receipt.json": "6fb8f5989b86935cbba243a3becce701d980a65a6627519f6979df878bc45077"
   },
   "commands": [
     "python -m pytest -o addopts= -q -p no:cacheprovider tests/entry_v1/test_fg_s3_teacher_catalog.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py (see XML and stdout)",
@@ -39,5 +43,40 @@
     "formal_GPU",
     "DEV",
     "TEST"
-  ]
+  ],
+  "unique_test_names": [
+    "test_actor_gradient_equivalence_frozen_nonzero_state_and_inference",
+    "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+    "test_batch_one_preserves_threefold_raw_gradient_with_frozen_mean",
+    "test_catalog_tamper_output_and_diagnostic_boundary",
+    "test_complete_view_exact_sparse_and_pure_join",
+    "test_legacy_input_contract_still_requires_latent_cache",
+    "test_masked_categorical_never_selects_invalid_actions",
+    "test_masked_categorical_rejects_action_invalid_under_loss_mask",
+    "test_masked_categorical_unimix_and_gradients_stay_inside_valid_set",
+    "test_masked_probability_reports_zero_for_unavailable_add",
+    "test_missing_baseline_requires_authenticated_features",
+    "test_no_inference_source_and_frozen_snapshot",
+    "test_ones_byte_identical_to_s3a_and_analytic_weighted_gradient",
+    "test_predicted_mask_mode_falls_back_to_best_logit",
+    "test_reconstruction_contract_alignment_causality_and_stopped_gradient",
+    "test_sparse_corruption_fails_closed[duplicate-DUPLICATE_STEPID]",
+    "test_sparse_corruption_fails_closed[invalid-INVALID_LABEL_PRESENT]",
+    "test_sparse_corruption_fails_closed[label-LABEL_FIELD_MISMATCH]",
+    "test_sparse_corruption_fails_closed[missing-ELIGIBLE_LABEL_MISSING]",
+    "test_strict_mask_rejects_all_false_input",
+    "test_three_interfaces_exact_resume_isolation_and_updated_policy"
+  ],
+  "raw_evidence": {
+    "natural_regression.stdout": {
+      "raw_sha256": "e7fcfe1c5fc2b3cb196cff7ffd66d4c2118aca0621347621f7ba915395c79c71",
+      "gzip": "natural_regression.stdout.raw.gz",
+      "readable_normalization": "trailing spaces only"
+    },
+    "natural_regression.xml": {
+      "raw_sha256": "7e4b11876d1c3f94bab6a517587ed93676db968d1a771d765e357e5b343cf68f",
+      "gzip": "natural_regression.xml.raw.gz",
+      "readable_normalization": "trailing spaces only"
+    }
+  }
 }
