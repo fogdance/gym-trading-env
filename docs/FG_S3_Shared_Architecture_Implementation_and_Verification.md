@@ -160,3 +160,44 @@ preserved in `source_boundaries.stdout`.
 C must consume the public dependency inventory and create new immutable
 diagnostic snapshots; previous run/prepared hashes remain unchanged and are
 not resigned. Repeat the C restore/CLI regressions after this shared acceptance.
+
+
+## Fourth shared-interface review: frozen online FG_FULL sources
+
+The user-selected live online 180k node exposed a source-family boundary: its
+FG_FULL identity is generic online provenance, while original SourceAdmission
+handled Single3 offline identities. Its checkpoint step is 180000 environment
+steps; actual Agent counters are updates=21183, batches=21399, actions=180000.
+No source counter is inferred from the directory name.
+
+Public freeze_source now copies the published complete node and binds the
+producer code map, entry manifest, phase-transfer receipt, selector and observed
+Agent counters. Public online admission verifies original C1 TRAIN/Reward/Obs
+lineage, full learning identity, all declared versions, producer code and actual
+counters. It creates an explicit FG_SINGLE3_ONLINE_SOURCE_V1 source identity;
+it does not rewrite the original checkpoint identity. Source model update
+21183 becomes the transfer offset, while environment progress 180000 is recorded
+separately. External Gate/window/margins are inherited through the public API.
+
+The existing S3 manager supports broader A preparation in FG_S3_PREPARED_V2,
+reusing the original Actor-only BC/feature/cache/checkpoint implementations.
+Original fixed-source V1 A/B code, algorithms and products remain intact.
+The user's final selected source is online 180k; old 10k preparations are kept.
+
+Functional commits: Dreamer 93a6fb65b493b60f7c1205b8351d7024cbfc326a;
+Gym 5293e978d3f234d5f7c3149f326f1da831012bad. Source-mode counter-domain contract:
+1 passed in 1.821s, explicitly a synthetic serialized boundary fixture. Actual
+production original neural CPU transfer loads all 286 parameter/state entries
+byte-exactly, with original joint optimizer, normalization, CLOSED Gate and
+counters preserved. No gradient training of this source or GPU launch occurred.
+Full proof and SHA receipts are in Gym artifacts/fg_s3c1_v1/receipts/
+online_180k_{final_source_admission_receipt,neural_transfer_receipt,neural_transfer_summary}.json.
+
+The frozen source manifest matches original SHA
+4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57;
+all 183 original files are copied and validated. CPU preparation of the selected
+A recipe under fixed training worktrees is READY_FOR_FEATURES. See
+FG_S3A_Online_180K_Startup.md and the final C report. Earlier production-payload
+NOT_RUN entries above describe the earlier audit scopes; this new CPU source
+transfer is an executed additional acceptance. Production C gradients,
+formal GPU by Codex, DEV and sealed TEST remain NOT_RUN.

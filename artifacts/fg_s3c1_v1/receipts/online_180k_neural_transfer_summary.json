@@ -1,0 +1,19 @@
+{
+  "status": "PASS_REAL_MODEL_TRANSFER",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "source_update_offset": 21183,
+  "source_environment_steps": 180000,
+  "counters": {
+    "updates": 21183,
+    "batches": 21399,
+    "actions": 180000
+  },
+  "gate_ready": false,
+  "all_parameter_state_entries": 286,
+  "all_entries_byte_exact": true,
+  "independent_bc_optimizer_imported": false,
+  "model_training": "NOT_RUN",
+  "gpu": "NOT_RUN"
+}
