@@ -24,3 +24,18 @@ python tools/fg_single3_experiment.py resume --config configs/experiments/fg_sin
 本次诊断错误及真实 GPU 验证见 [启动修复记录](../../../docs/FG_Single3_Online_Startup_Diagnostics_Fix_20261012.md)。
 
 prior ADD 的只读 CPU 审计共用 `tools/fg_single3_prior_audit.py --config <实验YAML> --output <新目录>`；通过 `--offline-checkpoint` 和 `--online-checkpoint` 可固定已有阶段的 Checkpoint。工具复用原生 Replay 标注与模型的因果上下文、availability head，保存逐位置概率、曲线及输入哈希，不启动训练。2026-10-12 的实际结果见 [prior ADD 概率审计](../../../docs/FG_Single3_Prior_ADD_Probability_Audit_20261012.md)。
+
+## Availability Gate 校准恢复
+
+`C1_M1_GATE_T030_from_180K.yaml` 使用独立的新实验身份继承在线180k完整状态。训练核心仍复用原 Driver、Replay、Env 和 FullCheckpoint；只有概率判定阈值与必要统计/参数发布接线发生变化。CPU验收不能自动启动GPU。
+
+```bash
+python tools/fg_single3_experiment.py prepare --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml
+python tools/fg_single3_experiment.py publish --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml
+# CPU双路径完整恢复测试与证书生成后，用户另行授权：
+python tools/fg_single3_experiment.py resume --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml --authorize-training
+```
+
+`prepare` 校验冻结模型的全部质量条件、真实窗口及来源哈希，生成不可覆盖的恢复包；`publish` 只复制到新日志目录。正式 `resume` 必须同时具备 GO、完整状态CPU恢复证书、严格身份和显式授权。旧窗口合格 streak 清零，新Gate需重新连续20次通过；模型、优化器、交易账户、Replay、随机状态和累计180k环境步保留。
+
+未通过完整预检时不提供绕过准入的启动路径。报告见 `docs/FG_Single3_Gate_Repair_Implementation_and_Verification.md`；GPU实际达标、DEV泛化和择时效果另行验证。

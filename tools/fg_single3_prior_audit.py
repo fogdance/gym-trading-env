@@ -77,7 +77,7 @@ def model_config(config):
         'report_length', 'replica', 'replicas')})
 
 
-def make_predict(config, data):
+def make_predict(config, data, return_features=False):
     import elements
     import jax
     import jax.numpy as jnp
@@ -102,12 +102,15 @@ def make_predict(config, data):
         carry, obs, prevact, _ = model._apply_replay_context(
             model.init_train(batch['action'].shape[0]), batch)
         _, _, tokens = model.enc(carry[0], obs, obs['is_first'], training=False)
-        _, _, _, post, prior, _ = model.dyn.loss(
+        dyn_carry, entries, _, post, prior, _ = model.dyn.loss(
             carry[1], tokens, prevact, obs['is_first'], training=False)
         probs = {}
         for name, feat in (('post', post), ('prior', prior)):
             output = model.avail(model.feat2tensor(feat), 2)
             probs[name] = jax.nn.sigmoid(model._binary_logits(output))
+        if return_features:
+            starts = model.dyn.starts(entries, dyn_carry, config['batch_length'])
+            return dict(probabilities=probs, starts=starts)
         return probs
     pure = nj.pure(predict)
     return jax.jit(lambda params, batch, seed: pure(params, batch, seed=seed)[1])

@@ -1,0 +1,11 @@
+schema: FG_SINGLE3_GATE_CALIBRATION_V1
+experiment: C1_M1_GATE_T030_180K
+source_checkpoint: /data/logdir/fg_single3/online_after_10k_callback_fix/C1_M1_ONLINE_1M/ckpt/step_000000180000
+source_prepared: artifacts/fg_single3_v1/experiments/C1_M1_OFFLINE_10K_online_callback_fix_20261012_02
+source_code_hashes: artifacts/fg_single3_v1/diagnostics/gate_repair_20261012_01/source_code_hashes.json
+threshold: 0.30
+prepared_dir: artifacts/fg_single3_v1/experiments/C1_M1_GATE_T030_from_180K_20261012_01
+logdir: /data/logdir/fg_single3/gate_threshold_v2/C1_M1_GATE_T030_180K
+preflight:
+  scan: artifacts/fg_single3_v1/diagnostics/gate_repair_20261012_01/scan_verified
+  windows: artifacts/fg_single3_v1/diagnostics/gate_repair_20261012_01/windows_verified
