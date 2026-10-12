@@ -1,0 +1,66 @@
+{
+  "/home/v/Documents/work/gym-trading-env2": {
+    "head": "76ab73a926916f39d399b61e256bc894c9b61246",
+    "scope_hashes": {
+      "artifacts/fg_s3a_v1/development_20261011/D4_delivery_audit.py": "717a765431b48e5f948c3dc51bae7ebe882d7726e8793c41ddcbb4ec8d117a5f",
+      "artifacts/fg_s3a_v1/development_20261011/D4_verify_cpu.py": "2297e3ee9003b4348b6e66697074f1dbf8500354a46314607b1aefd19cf626cb",
+      "artifacts/fg_s3b_v1/development_20261012/b0_snapshot.py": "21195cc6491b56b75ef4a2aa26feb7461c9baf276c29a94fc1eb511f6f0c4148",
+      "artifacts/fg_s3b_v1/development_20261012/b4_actor_cpu.py": "c6268af0e8610848fcc1fa95f0ce9c0fca186d24f0f16e52ffa4d51da184b575",
+      "artifacts/fg_s3b_v1/development_20261012/b4_benchmarks.py": "778a12f367c3f279b646e20c28346bd80b2201510699768f45ce348fe8a3cbfe",
+      "artifacts/fg_s3b_v1/development_20261012/b4_delivery_audit.py": "8ef547f392141971bdba68b9defb3a60d0ed1ad1622ed55d464176ad382c55a0",
+      "artifacts/fg_s3b_v1/development_20261012/b4_document_validation.py": "329a34c6405bde8457b04075dab109dce08d5d94d343fd9177e5248647124e07",
+      "artifacts/fg_s3b_v1/development_20261012/b4_metadata.py": "452c2f0e988ddb482b786f0e9d95819af946eb4f3a6c948d3ae8e5a79c0eea2f",
+      "configs/experiments/fg_s3b/certified_v1.yaml": "084ad43320302a80e0ced12adef33e2fa41bc98c2d8a9a2cb7e7ba49e30362b2",
+      "src/gym_trading_env/research/fg_s3a_labels.py": "a4b3cae13af109ae519f51097eeff18254097bfa748e0e16e3bc9882eaa03b24",
+      "src/gym_trading_env/research/fg_s3b_advantage.py": "e97caf4a745b77f5e1c812692c4c160877b0c6f9db172bc5598908172efa27ca",
+      "src/gym_trading_env/research/fg_s3b_verify.py": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc",
+      "src/gym_trading_env/research/fg_s3b_weights.py": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a",
+      "tests/entry_v1/test_fg_s3a_labels.py": "e4c322c2c81fa84e19c65557bd904f73042f108201dbe8efd64e6d2b9eaa030b",
+      "tests/entry_v1/test_fg_s3b_advantage.py": "042aa0bb52704b2605bfb5c131bb46a5f8bf010d15d2aed9e8b25524097fcc21",
+      "tests/entry_v1/test_fg_s3b_weights.py": "08420b7ddcc9a7502c41fa364c63bd55b9ba8903d1895a1627a90032d12d265c",
+      "tools/fg_s3a.py": "47f13b4d22c87fa5c2e48a60794de8de6ea94ebf7782b4cbcecdca31d701144d",
+      "tools/fg_s3b.py": "66556c5a99b69526568595343fcdedfaf02302732b2d23a03e2e594a2dd7db7f"
+    },
+    "untracked": [
+      "gy6.tar.bz2"
+    ]
+  },
+  "/home/v/Documents/work/dreamerv3-dev": {
+    "head": "b6aac90465dca384f0fd40ecbbbf21bdd831a523",
+    "scope_hashes": {
+      "configs/fg_s3b/S3A_FULL.yaml": "9e5560268b2aef59217c1b4cd5a41ef674168a16e20a0b6a5c6663c05812f2f3",
+      "configs/fg_s3b/S3A_MATCHED.yaml": "7346997d9a0ea327e9f0c87216b0b618a9aabdfcd43e9797f61f9159517ed382",
+      "configs/fg_s3b/S3B_CERTIFIED.yaml": "58b1d8b5ebbf4ba4506de40fe83228c3f72bf72c92e3f64e6ebd6ab714d30419",
+      "dreamerv3/fg_s3a_actor.py": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+      "dreamerv3/fg_s3a_agent.py": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+      "dreamerv3/fg_s3b_bc.py": "cb66705d0147acf70c9f46e771461ec84fcb2990bc22696d289f4430938fb5e0",
+      "embodied/run/fg_s3a_checkpoint.py": "ef38c172553911d62c9c18096dc1a61112c2aff88a8449d5d0e98c7afe019d83",
+      "embodied/run/fg_s3a_eval.py": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+      "embodied/run/fg_s3a_features.py": "a9b5b995737d74d77c55ba67eab0cda70201937c3c148ba9f5ea6bedc4fa5a60",
+      "embodied/run/fg_s3a_train.py": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+      "embodied/run/fg_s3b_checkpoint.py": "75f084c7d41b145776fd7080e3d242a57ffbe490f600d0f78067567ff5c95f6a",
+      "embodied/run/fg_s3b_train.py": "b07a4b9b255bbfa2d4f434b9f52fdd30369a4b4c4dfb2c3a7a87fbeb4e702a00",
+      "embodied/tests/test_fg_s3a.py": "45293c1cf77941268e77092ea7d531b9a5ef84c73d782bb71b3a2faf1c4833ac",
+      "embodied/tests/test_fg_s3b.py": "022500a40f5209d144bbeba80b13aedd27298d9abb502235714cfb7a485aa28c",
+      "scripts/fg_s3a.py": "3da4ea69b05f3bc4deaf1fad4a3e4f065e428402d822a47268b275bcdf326453",
+      "scripts/fg_s3b.py": "6100b1042d5a124621f248f0a35958a06eeb66c7342cb052b6d069ffe327d8ff"
+    },
+    "untracked": [
+      "1.patch",
+      "1.py",
+      "2.py",
+      "3.py",
+      "atari.sh",
+      "data/1.py",
+      "data/EURUSD_5m.csv-bybit",
+      "data/print_meta.sh",
+      "data/test_zigzag.py",
+      "data/训练记录.md",
+      "docs/producer_consumer.md",
+      "dreamerv3_backup.yml",
+      "live.sh",
+      "train.sh",
+      "wm_diagnosis.py"
+    ]
+  }
+}

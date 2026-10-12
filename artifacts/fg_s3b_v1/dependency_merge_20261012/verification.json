@@ -1,0 +1,30 @@
+{
+  "status": "PASS",
+  "tests": 3,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "pytest_stdout": "3 passed in 17.02s",
+  "targeted_test_names": [
+    "test_masked_probability_reports_zero_for_unavailable_add",
+    "test_ones_byte_identical_to_s3a_and_analytic_weighted_gradient",
+    "test_three_interfaces_exact_resume_isolation_and_updated_policy"
+  ],
+  "diff_check_exit_codes": {
+    "/home/v/Documents/work/gym-trading-env2": 0,
+    "/home/v/Documents/work/dreamerv3-dev": 0
+  },
+  "dependency_files_identical": {
+    "Gym": 7,
+    "Dreamer": 12
+  },
+  "s3a_s3b_code_config_hashes_unchanged": 34,
+  "existing_bound_cache_code_changes": {
+    "values_full_v2": 0,
+    "weights_full_v1": 0,
+    "smoke_real_v3/features": 0
+  },
+  "formal_gpu_training": "NOT_RUN",
+  "full_data_audit_repeated": false,
+  "test_prices_accessed": false
+}

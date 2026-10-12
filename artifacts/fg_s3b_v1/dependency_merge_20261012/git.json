@@ -1,0 +1,16 @@
+{
+  "/home/v/Documents/work/gym-trading-env2": {
+    "pre_head": "76ab73a926916f39d399b61e256bc894c9b61246",
+    "merge_head": "ee82eed7f17ebf8b0ea22b0ae943bce5e00ff27d",
+    "s3a_s3b_code_config_files": 18,
+    "changed_scoped_files": [],
+    "untracked_preserved": true
+  },
+  "/home/v/Documents/work/dreamerv3-dev": {
+    "pre_head": "b6aac90465dca384f0fd40ecbbbf21bdd831a523",
+    "merge_head": "fd20e281f6e27a87958ad5edfce3848b2e508d6e",
+    "s3a_s3b_code_config_files": 16,
+    "changed_scoped_files": [],
+    "untracked_preserved": true
+  }
+}
