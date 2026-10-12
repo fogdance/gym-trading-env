@@ -1,11 +1,12 @@
 # CPU diagnostic on a linked real TRAIN subset and a small original network.
 # Controlled READY fixture: warmup disabled, initial Gate true. Never formal admission.
 # Budget unit: gradient updates. No DEV/TEST evaluation.
+# New immutable snapshot after shared dependency inventory acceptance.
 schema: FG_S3_EXPERIMENT_V1
-experiment: S3C1_CPU_BFLOAT16
+experiment: S3C1_CPU_BFLOAT16_deps_v2
 trainer: s3c
 diagnostic: true
-prepared_dir: artifacts/fg_s3c1_v1/experiments/S3C1_CPU_BFLOAT16
+prepared_dir: artifacts/fg_s3c1_v1/experiments/S3C1_CPU_BFLOAT16_deps_v2
 dreamer_root: ../dreamerv3
 model:
   template: ../dreamerv3/dreamerv3/configs.yaml
@@ -63,4 +64,4 @@ train:
   consec: 2
   capacity: 4096
   device: cpu
-  logdir: artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16
+  logdir: artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16_deps_v2

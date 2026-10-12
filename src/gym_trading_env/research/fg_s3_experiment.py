@@ -367,7 +367,7 @@ def _joint_admission(cfg):
 
 
 def _prepare_joint(requested, cfg):
-    from embodied.run.fg_s3a_checkpoint import package_versions
+    from embodied.run.fg_s3_source_admission import runtime_versions
     from gym_trading_env.research.fg_s3_teacher_catalog import guard_output
     root = Path(cfg['prepared_dir'])
     if root.exists() or Path(cfg['train']['logdir']).exists():
@@ -412,7 +412,7 @@ def _prepare_joint(requested, cfg):
             experiment=cfg['experiment'], trainer='s3c', mode='S3C1', diagnostic=cfg['diagnostic'],
             requested_config=str(requested), requested_config_sha256=requested_hash,
             source_kind=source['kind'], source_receipt_sha256=digest(pending / 'source_admission_receipt.json'),
-            catalog_manifest_sha256=catalog.manifest_sha256, packages=package_versions(),
+            catalog_manifest_sha256=catalog.manifest_sha256, packages=runtime_versions(),
             source_versions={str(r): subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=r, text=True).strip()
                              for r in (GYM_ROOT, Path(cfg['dreamer_root']))},
             files={p.name: digest(p) for p in pending.iterdir()},
@@ -551,8 +551,13 @@ def require_prepared(prepared, config=None, *, verify_source=True):
         inputs = {p: h for p, h in inputs.items() if p in catalog.manifest['frozen_inputs']
                   or p == str(catalog.root / 'manifest.json')}
     check_files(inputs)
-    from embodied.run.fg_s3a_checkpoint import package_versions
-    if receipt['packages'] != package_versions():
+    if joint:
+        from embodied.run.fg_s3_source_admission import runtime_versions
+        packages = runtime_versions()
+    else:
+        from embodied.run.fg_s3a_checkpoint import package_versions
+        packages = package_versions()
+    if receipt['packages'] != packages:
         raise ValueError('Prepared S3 package versions changed')
     return receipt, cfg
 

@@ -1,11 +1,12 @@
 # CPU diagnostic: actual audited S3-A20/base package and real linked TRAIN data.
 # Preserve inherited CLOSED Gate. Report effective BC=0; never force admission.
 # Budget unit: gradient updates. No formal GPU, DEV or TEST.
+# New immutable snapshot after shared dependency inventory acceptance.
 schema: FG_S3_EXPERIMENT_V1
-experiment: S3C1_CPU_REAL_AFTER_BC_S3A
+experiment: S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2
 trainer: s3c
 diagnostic: true
-prepared_dir: artifacts/fg_s3c1_v1/experiments/S3C1_CPU_REAL_AFTER_BC_S3A
+prepared_dir: artifacts/fg_s3c1_v1/experiments/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2
 dreamer_root: ../dreamerv3
 model:
   template: ../dreamerv3/dreamerv3/configs.yaml
@@ -63,4 +64,4 @@ train:
   consec: 2
   capacity: 4096
   device: cpu
-  logdir: artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A
+  logdir: artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2
