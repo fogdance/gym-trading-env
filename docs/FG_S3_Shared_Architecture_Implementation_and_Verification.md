@@ -132,3 +132,31 @@ Complete commands and raw XML/stdout are in Gym
 Public changes reviewed for duplicate teacher definitions, independent BC
 optimizer import and source mutation; none introduced. C may now consume these
 public contracts.
+
+## Third public-interface return review: full-source dependencies
+
+The read-only completed original 10K checkpoint rejected admission despite
+matching installed versions. Confirmed cause: SourceAdmission compared its
+producer inventory against A/B's shorter package_versions() list, so portal
+3.5.1 and cloudpickle 3.1.0 compared as None. All nine producer-declared installed
+versions actually match. This is a shared protocol defect, not a C private
+loader issue. Old producer identities/checkpoints were not edited.
+
+Shared fix: verify every declared package via importlib.metadata, rejecting
+missing packages or exact-version mismatch. Public runtime_versions also binds
+stream/snapshot serialization dependencies. Functional Dreamer commit is
+recorded by the final C report. Regression: **4 passed in 40.66s** in
+`shared_dependencies_final.{xml,stdout}`; it includes actual three-mode neural
+transfer plus matching portal/cloudpickle, mismatch and missing-package cases.
+
+Actual real published 10K metadata and external Gate/window admission now
+passes, and a corrupted copied full bundle is rejected before model load.
+Evidence: `source_boundaries_final.{json,stdout}`. Agent payload bytes were
+hashed for bundle integrity, not deserialized or trained. Production-sized
+model transfer and training remain NOT_RUN. Source Gate/window/opening/samples
+are read through the same public API, not a C bypass. Initial failure is
+preserved in `source_boundaries.stdout`.
+
+C must consume the public dependency inventory and create new immutable
+diagnostic snapshots; previous run/prepared hashes remain unchanged and are
+not resigned. Repeat the C restore/CLI regressions after this shared acceptance.

@@ -1,0 +1,10 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.11, pytest-9.1.0, pluggy-1.6.0
+rootdir: /home/v/Documents/work/research/fg-s3-dev/dreamerv3
+plugins: jaxtyping-0.2.36, typeguard-4.3.0, anyio-4.7.0
+collected 4 items
+
+../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py ....           [100%]
+
+- generated xml file: /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/shared_dependencies_final.xml -
+============================== 4 passed in 40.66s ==============================

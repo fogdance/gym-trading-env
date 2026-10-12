@@ -1,0 +1,53 @@
+{
+  "corrupt_full": {
+    "status": "PASS_CORRUPT_FULL_SOURCE_REJECTED",
+    "reason": "FG full checkpoint corrupt file: agent.pkl",
+    "fixture": "/tmp/s3c_bundle_boundary_final_h13ofbo1/ckpt/step_000000000000"
+  },
+  "published_source_metadata": {
+    "status": "PASS_READ_ONLY_METADATA_AND_GATE_WINDOW",
+    "path": "/data/logdir/fg_single3/offline_10k_from_zero/C1_M1_OFFLINE_10K/ckpt/step_000000010000",
+    "step": 10000,
+    "manifest_sha256": "06ce514c289bc0b667bc894d7b788da905bc9da92b2575839e72a8ebe04d9055",
+    "gate": {
+      "actor_enabled": false,
+      "reports": 100,
+      "consecutive_passes": 0,
+      "consecutive_regressions": 0,
+      "switched_step": -1,
+      "last_passed": false,
+      "last_add_support_sufficient": true
+    },
+    "samples": 0,
+    "aggregate_keys": [],
+    "opening": {
+      "automatic_activation": false,
+      "consecutive_reports": 20,
+      "report_every_updates": 100,
+      "thresholds": {
+        "img_fallback": 0.0001,
+        "post_accuracy": 0.995,
+        "post_add_recall": 0.8,
+        "post_exact": 0.99,
+        "prior_accuracy": 0.9915,
+        "prior_add_recall": 0.8,
+        "prior_exact": 0.98,
+        "prior_fpr": 0.004
+      }
+    },
+    "declared_dependency_versions": {
+      "cloudpickle": "3.1.0",
+      "elements": "3.20.0",
+      "gymnasium": "1.0.0",
+      "jax": "0.4.33",
+      "jaxlib": "0.4.33",
+      "numpy": "1.26.4",
+      "optax": "0.2.4",
+      "pandas": "2.2.3",
+      "portal": "3.5.1"
+    },
+    "model_payload_deserialized": false,
+    "production_model_transfer": "NOT_RUN",
+    "production_training": "NOT_RUN"
+  }
+}
