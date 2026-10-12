@@ -301,7 +301,20 @@ def admission(cfg, *, feature_required=False):
     from embodied.run.fg_s3a_checkpoint import validate_source
     from embodied.run.fg_s3a_features import FeatureCache
     # Missing source is reported before hashing the full TRAIN input again.
-    if not (Path(cfg['paths']['source_checkpoint']) / 'manifest.json').is_file():
+    source_path = Path(cfg['paths']['source_checkpoint'])
+    if cfg['schema'] == SOURCE_SCHEMA:
+        from embodied.run.fg_s3_source_admission import freeze_source
+        snapshot_root = Path(cfg['prepared_dir']).parent / (cfg['experiment'] + '_source')
+        if (snapshot_root / 'source_snapshot.json').is_file():
+            frozen = read_manifest(snapshot_root / 'source_snapshot.json')
+            if Path(frozen['source']).resolve() != source_path:
+                raise ValueError('Frozen model belongs to another requested source')
+            source_path = Path(frozen['snapshot'])
+        elif (source_path / 'manifest.json').is_file() and not (source_path.parent.parent / 'source_snapshot.json').is_file():
+            metadata = read_manifest_hashes(source_path / 'manifest.json')
+            if metadata['identity'].get('schema') == 1 and 'code_hash' in metadata['identity']:
+                source_path = Path(freeze_source(source_path, snapshot_root)['snapshot'])
+    if not (source_path / 'manifest.json').is_file():
         raise FileNotFoundError('Source checkpoint is not available: ' + cfg['paths']['source_checkpoint'])
     labels = load_labels(cfg['paths']['labels'])
     for name in ('dataset', 'oracle_receipt'):
@@ -314,7 +327,7 @@ def admission(cfg, *, feature_required=False):
         if catalog.manifest['labels_manifest_sha256'] != digest(Path(cfg['paths']['labels']) / 'manifest.json'):
             raise ValueError('S3-A labels differ from the shared Catalog')
         spec = inspect_source('direct_full', catalog=catalog,
-                              path=cfg['paths']['source_checkpoint'], diagnostic=cfg['diagnostic'])
+                              path=source_path, diagnostic=cfg['diagnostic'])
         source = dict(spec['origin'], admission_receipt=spec)
     else:
         source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
@@ -511,6 +524,9 @@ def prepare(config):
         catalog = load_catalog(cfg['paths']['catalog'])
         inputs.update(catalog.manifest['frozen_inputs'])
         inputs[str(catalog.root / 'manifest.json')] = catalog.manifest_sha256
+        inputs.update(source.get('provenance_files', {}))
+        from embodied.run.fg_checkpoint import validate_bundle
+        inputs.update({str(checkpoint/n):h for n,h in validate_bundle(checkpoint)['files'].items()})
     code = runtime_files(cfg)
     from embodied.run.fg_s3a_checkpoint import package_versions
     from embodied.run.fg_s3_source_admission import runtime_versions
