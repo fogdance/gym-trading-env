@@ -1,0 +1,19 @@
+catalog CZCE.FG001 {'total_rows': 27490, 'valid': 22873, 'ADD': 192, 'excluded_held_forced_wait': 4590, 'WAIT': 22681, 'excluded_administrative_last': 26, 'excluded_terminal': 1}
+catalog CZCE.FG005 {'total_rows': 20525, 'valid': 17472, 'WAIT': 17320, 'ADD': 152, 'excluded_held_forced_wait': 3032, 'excluded_administrative_last': 20, 'excluded_terminal': 1}
+catalog CZCE.FG009 {'total_rows': 27626, 'valid': 22343, 'WAIT': 21818, 'ADD': 525, 'excluded_held_forced_wait': 5256, 'excluded_administrative_last': 26, 'excluded_terminal': 1}
+catalog CZCE.FG101 {'total_rows': 28077, 'valid': 23046, 'WAIT': 22187, 'ADD': 859, 'excluded_held_forced_wait': 5003, 'excluded_administrative_last': 27, 'excluded_terminal': 1}
+catalog CZCE.FG105 {'total_rows': 25645, 'valid': 21258, 'WAIT': 20215, 'ADD': 1043, 'excluded_held_forced_wait': 4361, 'excluded_administrative_last': 25, 'excluded_terminal': 1}
+catalog CZCE.FG109 {'total_rows': 24969, 'valid': 20557, 'WAIT': 18384, 'ADD': 2173, 'excluded_held_forced_wait': 4387, 'excluded_administrative_last': 24, 'excluded_terminal': 1}
+catalog CZCE.FG201 {'total_rows': 31290, 'valid': 26458, 'WAIT': 23224, 'ADD': 3234, 'excluded_held_forced_wait': 4801, 'excluded_administrative_last': 30, 'excluded_terminal': 1}
+catalog CZCE.FG205 {'total_rows': 23242, 'valid': 19467, 'WAIT': 17771, 'ADD': 1696, 'excluded_held_forced_wait': 3752, 'excluded_administrative_last': 22, 'excluded_terminal': 1}
+catalog CZCE.FG209 {'total_rows': 31981, 'valid': 25654, 'WAIT': 24343, 'ADD': 1311, 'excluded_held_forced_wait': 6295, 'excluded_administrative_last': 31, 'excluded_terminal': 1}
+catalog CZCE.FG301 {'total_rows': 27730, 'valid': 22796, 'WAIT': 22284, 'ADD': 512, 'excluded_held_forced_wait': 4906, 'excluded_administrative_last': 27, 'excluded_terminal': 1}
+catalog CZCE.FG305 {'total_rows': 26921, 'valid': 22114, 'ADD': 565, 'excluded_held_forced_wait': 4780, 'WAIT': 21549, 'excluded_administrative_last': 26, 'excluded_terminal': 1}
+catalog CZCE.FG309 {'total_rows': 28768, 'valid': 23394, 'WAIT': 22158, 'ADD': 1236, 'excluded_held_forced_wait': 5345, 'excluded_administrative_last': 28, 'excluded_terminal': 1}
+catalog CZCE.FG401 {'total_rows': 26816, 'valid': 21548, 'WAIT': 20377, 'ADD': 1171, 'excluded_held_forced_wait': 5241, 'excluded_administrative_last': 26, 'excluded_terminal': 1}
+catalog CZCE.FG405 {'total_rows': 26455, 'excluded_no_trade': 3795, 'excluded_administrative_last': 25, 'valid': 18557, 'ADD': 801, 'WAIT': 17756, 'excluded_held_forced_wait': 4077, 'excluded_terminal': 1}
+catalog CZCE.FG809 {'total_rows': 28291, 'valid': 23998, 'WAIT': 23841, 'ADD': 157, 'excluded_held_forced_wait': 4265, 'excluded_administrative_last': 27, 'excluded_terminal': 1}
+catalog CZCE.FG901 {'total_rows': 29444, 'valid': 24893, 'WAIT': 24637, 'ADD': 256, 'excluded_held_forced_wait': 4522, 'excluded_administrative_last': 28, 'excluded_terminal': 1}
+catalog CZCE.FG905 {'total_rows': 26788, 'valid': 22677, 'WAIT': 22555, 'ADD': 122, 'excluded_held_forced_wait': 4084, 'excluded_administrative_last': 26, 'excluded_terminal': 1}
+catalog CZCE.FG909 {'total_rows': 26571, 'valid': 22991, 'WAIT': 22825, 'ADD': 166, 'excluded_held_forced_wait': 3554, 'excluded_administrative_last': 25, 'excluded_terminal': 1}
+{"chunks": 2435, "counts": {"ADD": 16171, "WAIT": 385925, "excluded_administrative_last": 469, "excluded_held_forced_wait": 82251, "excluded_no_trade": 3795, "excluded_terminal": 18, "total_rows": 488629, "valid": 402096}, "diagnostic": false, "manifest_sha256": "690ebdadc85dd166eacb2b0c58eb3993295ea43f2198edbd2b32c481dfc8f78e", "protocol": "FG_S3_TEACHER_CATALOG_V1"}

@@ -1,0 +1,43 @@
+{
+  "stage": "AR0-AR5",
+  "status": "PASS_ENGINEERING_AND_REAL_TRAIN_CATALOG",
+  "unique_pytest_cases": 22,
+  "receipts": {
+    "architecture.xml": "10650f92644927d92664d0cb3816a47a9448d179b528f4d64fc8426af515d2ae",
+    "source_snapshot_final.xml": "b96bdda3abc34bfa7df0b0ec821de0d732c0285af0105f8e409bd23430fc4d5e",
+    "architecture_final.stdout": "950f9e6707e96b9e610a5e379b94bfe86447493b393b1c585832253575d6e8db",
+    "source_final_v2.xml": "d644e57a940d05ded8a5c179f8c4eba1c643804a21ad45c9029d50da15c332fc",
+    "natural_regression.stdout": "e7fcfe1c5fc2b3cb196cff7ffd66d4c2118aca0621347621f7ba915395c79c71",
+    "natural_source_final.xml": "ab61f21bd4688f1127f6dd84e1c96fab7cebf172f6c89fe92f24873ae8457d5a",
+    "natural_source_final.stdout": "6ccebe48290647c8594007d9b85d44f3e5e3e15e50c44e34209fe0382db75199",
+    "real_catalog_final.stdout": "4fd98da262e79d64752a4ce794c95ea4ca2f1d6b03680f110c5eb213459e97e0",
+    "real_s3a_transfer_summary.json": "2fd462b84c5b64f8ee567ec096009d8ae590ddc1145cbb150edfbcb611269689",
+    "real_catalog_audit.json": "ea16cb97fe5e6fda074989eb2fb540edd35d2ff4d55fc354287fbb25a60ee74e",
+    "source_snapshot_final.stdout": "688e397cae91535d0b012be5862d3ead33ec2befb06318617cc3d702809d7c26",
+    "architecture_final.xml": "df0020ca93922a0c06a29ca7d898b2350d8c5778879dad3f21f656fae823f7b1",
+    "real_catalog_final2.stdout": "71a46d2ef3cfede148beabfb20284be9653eb95b5b99c1758476bf126b944ea9",
+    "architecture.stdout": "83a1593c5b5783693fe3006d1f6597bcb4f3a5968f23b59481ee09a0477f910a",
+    "real_s3a_transfer.stdout": "b865032902342baf28ab353babb5b541789e581cdcc3ed8d659d3e02c56ab365",
+    "natural_regression.xml": "7e4b11876d1c3f94bab6a517587ed93676db968d1a771d765e357e5b343cf68f",
+    "source_final_v2.stdout": "dd0c4c794cf24f2f0a2e5f65598fa86a294f1c857b2ea042da78c0ce90685fd8",
+    "real_catalog.stdout": "584a4853edccabc8d6220acda696baa1a6c7071cb3a80673b0296587e9478db2"
+  },
+  "commands": [
+    "python -m pytest -o addopts= -q -p no:cacheprovider tests/entry_v1/test_fg_s3_teacher_catalog.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py (see XML and stdout)",
+    "python tools/fg_s3_arch.py build-catalog --dataset /home/v/Documents/work/research/fg-data/fg_single3_v1/replay/run_20261011_01 --oracle-receipt /home/v/Documents/work/research/fg-data/fg_single3_v1/oracle/run_20261011_01 --s3a-labels /home/v/Documents/work/research/gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2 --output artifacts/fg_s3_arch_v1/teacher_catalog_v1_final",
+    "python ../dreamerv3/scripts/fg_s3_arch.py transfer-smoke --mode after_bc_s3a --catalog artifacts/fg_s3_arch_v1/teacher_catalog_v1_final --source-checkpoint /home/v/Documents/work/research/gym-trading-env/artifacts/fg_s3a_v1/smoke_real_v3/train/ckpt/bc_000000000020 --base-checkpoint /home/v/Documents/work/research/gym-trading-env/artifacts/fg_s3a_v1/smoke_real_v3/source/ckpt/step_000000000000 --output artifacts/fg_s3_arch_v1/transfer_real_s3a20"
+  ],
+  "environment": {
+    "python": "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "native_threads": 1
+  },
+  "not_run": [
+    "production_large_model_payload_transfer",
+    "formal_GPU",
+    "DEV",
+    "TEST"
+  ]
+}

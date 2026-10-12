@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/tools/fg_s3_arch.py", line 32, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/tools/fg_s3_arch.py", line 23, in main
+    build_catalog(args.dataset, args.oracle_receipt, args.s3a_labels, args.output,
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_teacher_catalog.py", line 126, in build_catalog
+    owners, frozen = _ownership(source, diagnostic=diagnostic)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_teacher_catalog.py", line 85, in _ownership
+    or t['identity']['training_hash'] != source['training_hash']
+       ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+KeyError: 'training_hash'

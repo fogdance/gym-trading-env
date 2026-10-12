@@ -1,0 +1,17 @@
+{
+  "status": "PASS_REAL_MODEL_TRANSFER",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "diagnostic": true,
+  "kind": "after_bc_s3a",
+  "source_bc_updates": 20,
+  "source_update_offset": 0,
+  "counters": {
+    "updates": 0,
+    "batches": 0,
+    "actions": 1100
+  },
+  "baseline_non_actor_optimizer_equality": "PASS",
+  "independent_bc_optimizer_imported": false
+}

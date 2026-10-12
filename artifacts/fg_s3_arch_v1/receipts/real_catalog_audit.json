@@ -1,0 +1,40 @@
+{
+  "status": "PASS_REAL_TRAIN_CATALOG",
+  "summary": {
+    "protocol": "FG_S3_TEACHER_CATALOG_V1",
+    "manifest_sha256": "47736742ff81e337d10585b86d0709f5fd1bff8d082b01324b267f9f1761f0de",
+    "diagnostic": false,
+    "counts": {
+      "total_rows": 488629,
+      "valid": 402096,
+      "ADD": 16171,
+      "excluded_held_forced_wait": 82251,
+      "WAIT": 385925,
+      "excluded_administrative_last": 469,
+      "excluded_terminal": 18,
+      "excluded_no_trade": 3795
+    },
+    "chunks": 2435
+  },
+  "tested_owners": [
+    "P1",
+    "P2a",
+    "P2b",
+    "P3",
+    "P4"
+  ],
+  "mixed_valid": [
+    [
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  ],
+  "seconds": 5.620468378008809,
+  "data_alias": "/home/v/Documents/work/research/fg-data",
+  "canonical_data": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+  "production_model_tested": false,
+  "content_hash": "182338b031cd8ff89c7a6418be28bc16b062989f7cdbe5a74a9ed3fed9926e91"
+}

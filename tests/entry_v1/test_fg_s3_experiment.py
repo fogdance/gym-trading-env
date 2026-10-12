@@ -12,7 +12,7 @@ import yaml
 from gym_trading_env.research import fg_s3_experiment as manager
 from gym_trading_env.research.fg_replay import digest, read_manifest
 
-DREAMER = Path('/home/v/Documents/work/dreamerv3-dev')
+DREAMER = Path(__file__).resolve().parents[3]/'dreamerv3'
 sys.path.insert(0, str(DREAMER / 'embodied/tests'))
 from test_fg_s3b import bundle  # Reuse the existing original-neural source fixture.
 

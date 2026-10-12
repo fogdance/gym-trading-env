@@ -19,7 +19,7 @@ from gym_trading_env.research.fg_s3b_advantage import build_values,audit_values
 from gym_trading_env.research.fg_s3b_weights import (
     audit_weights,build_weight_index,fit_weight_scale,scaled_weights,weight_statistics)
 
-DREAMER = '/home/v/Documents/work/dreamerv3-dev'
+DREAMER = str(Path(__file__).resolve().parents[3]/'dreamerv3')
 
 
 def certified_native_dataset(root):

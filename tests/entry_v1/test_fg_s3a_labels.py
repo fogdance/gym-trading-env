@@ -13,10 +13,10 @@ from gym_trading_env.research.fg_s3a_labels import (aligned_rows, build_labels, 
     load_labels, sources)
 from test_fg_single3_env import single_env
 
-DREAMER = '/home/v/Documents/work/dreamerv3-dev'
+DREAMER = str(Path(__file__).resolve().parents[3] / 'dreamerv3')
 
 
-def native_dataset(root, *, sl_double_touch=False):
+def native_dataset(root, *, sl_double_touch=False, return_factory=False):
     """Explicit synthetic Oracle receipt; no production admission bypass."""
     envdir = root/'env'; envdir.mkdir(parents=True)
     prices = [(1000,1000,1000,1000)]*1100
@@ -71,7 +71,7 @@ def native_dataset(root, *, sl_double_touch=False):
     write_json(dataset/'manifest.json', signed(dict(schema=SINGLE3_SCHEMA,stage='D_GENERATED',
         status='PASS',full_training_fold=True,identity=did,input_manifest_sha256=digest(dataset/'inputs.json'),
         traces=[rec],pool_members={'C1_P4':[0]})))
-    return dataset, oracle, trace, t
+    return (dataset, oracle, trace, t, factory) if return_factory else (dataset, oracle, trace, t)
 
 
 @pytest.fixture(scope='module')
