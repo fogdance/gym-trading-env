@@ -1,0 +1,8 @@
+{
+  "status": "SERIALIZED_FULL_AGENT_BYTES_EQUAL",
+  "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+  "calibration_manifest_sha256": "bf6177bc1c35702132834b677287df29ac4f2924688c18b3945667471fdc9532",
+  "agent_sha256": "2cc450b328484ddfa489b3c54ef10cbf98395678dbc6ae957fd1a1fe3777b1c3",
+  "producer_admission": "NOT_VERIFIED_NOT_SELECTED",
+  "content_hash": "2ecf84d8c006ff37e06e746232cda05143e01cf96495cce25797915ee2ab172c"
+}

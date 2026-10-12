@@ -1,0 +1,38 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+Traceback (most recent call last):
+  File "/tmp/fg_s3_actor_smoke.py", line 21, in <module>
+    agent=make_agent(source['config'],out/'model',agent_cls=S3AAgent,device=a.device)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3_source_transfer.py", line 27, in make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/jax/agent.py", line 48, in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+  File "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/jax/agent.py", line 73, in __init__
+    available = jax.devices()
+                ^^^^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/xla_bridge.py", line 1083, in devices
+    return get_backend(backend).devices()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/xla_bridge.py", line 1017, in get_backend
+    return _get_backend_uncached(platform)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/xla_bridge.py", line 996, in _get_backend_uncached
+    bs = backends()
+         ^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/xla_bridge.py", line 903, in backends
+    assert _default_backend is not None
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

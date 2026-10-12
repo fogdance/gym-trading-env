@@ -1,0 +1,10 @@
+{
+  "status": "PASS_REAL_CPU_MODEL",
+  "source_unchanged": true,
+  "old_bc_unchanged": true,
+  "real_joint_updates": 1,
+  "formal_s3a_training": "NOT_RUN",
+  "formal_s3c_training": "NOT_RUN",
+  "elapsed_seconds": 68.93896585400216,
+  "content_hash": "1fe76494bdc1554d42ff02302e966d44f93b6a620707c45ccc52e7447353ba11"
+}

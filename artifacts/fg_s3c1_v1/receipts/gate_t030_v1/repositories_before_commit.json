@@ -1,0 +1,41 @@
+{
+  "repositories": [
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "head": "dac64daffc2e0262591e5d3d564768c91863321d",
+      "status": " M src/gym_trading_env/research/fg_s3_experiment.py\n M tests/entry_v1/test_fg_s3_experiment.py\n?? configs/experiments/fg_single3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K.yaml\n?? configs/experiments/fg_single3/S3B_CERTIFIED_T030_FROM_ONLINE_180K.yaml\n?? configs/experiments/fg_single3/S3C1_T030_AFTER_BC_S3A.yaml\n?? configs/experiments/fg_single3/S3C1_T030_DIRECT_FULL.yaml\n?? configs/experiments/fg_single3/S3C1_T030_DIRECT_INIT.yaml\n",
+      "worktrees": "/home/v/Documents/work/research/gym-trading-env              d374e93 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/gym-trading-env    dac64da [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/gym-trading-env  5293e97 (detached HEAD)\n"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3",
+      "head": "563d9b4141e8175651fabff3908b0e2f1a0e411d",
+      "status": " M dreamerv3/agent.py\n M embodied/run/fg_s3_source_admission.py\n M embodied/run/fg_s3_source_transfer.py\n M embodied/run/fg_s3c_train.py\n M embodied/tests/test_fg_s3c_agent.py\n M embodied/tests/test_fg_s3c_resume.py\n M scripts/fg_s3_arch.py\n?? embodied/run/fg_s3_gate.py\n?? embodied/tests/test_fg_s3_gate.py\n",
+      "worktrees": "/home/v/Documents/work/research/dreamerv3              bb1d123 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/dreamerv3    563d9b4 [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/dreamerv3  93a6fb6 (detached HEAD)\n"
+    },
+    {
+      "path": "/home/v/Documents/work/research/gym-trading-env",
+      "head": "d374e93e68c09d6bd8121177709960ef2ce497da",
+      "status": "?? gy6.tar.bz2\n?? gy7.tar.bz2\n",
+      "worktrees": "/home/v/Documents/work/research/gym-trading-env              d374e93 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/gym-trading-env    dac64da [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/gym-trading-env  5293e97 (detached HEAD)\n"
+    },
+    {
+      "path": "/home/v/Documents/work/research/dreamerv3",
+      "head": "bb1d123fbb12e9390cee0282490a604f66be10f8",
+      "status": "?? 1.patch\n?? 1.py\n?? 2.py\n?? 3.py\n?? atari.sh\n?? data/1.py\n?? data/EURUSD_5m.csv-bybit\n?? data/print_meta.sh\n?? data/test_zigzag.py\n?? \"data/\\350\\256\\255\\347\\273\\203\\350\\256\\260\\345\\275\\225.md\"\n?? docs/producer_consumer.md\n?? dreamerv3_backup.yml\n?? live.sh\n?? train.sh\n?? wm_diagnosis.py\n",
+      "worktrees": "/home/v/Documents/work/research/dreamerv3              bb1d123 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/dreamerv3    563d9b4 [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/dreamerv3  93a6fb6 (detached HEAD)\n"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env",
+      "head": "5293e978d3f234d5f7c3149f326f1da831012bad",
+      "status": "",
+      "worktrees": "/home/v/Documents/work/research/gym-trading-env              d374e93 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/gym-trading-env    dac64da [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/gym-trading-env  5293e97 (detached HEAD)\n"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-train/dreamerv3",
+      "head": "93a6fb65b493b60f7c1205b8351d7024cbfc326a",
+      "status": "",
+      "worktrees": "/home/v/Documents/work/research/dreamerv3              bb1d123 [feat/fg-s3b-certified-bc]\n/home/v/Documents/work/research/fg-s3-dev/dreamerv3    563d9b4 [feat/fg-s3-shared-s3c1]\n/home/v/Documents/work/research/fg-s3-train/dreamerv3  93a6fb6 (detached HEAD)\n"
+    }
+  ],
+  "content_hash": "7777da427659103b3cd4669808724d707f5ef22d82d136283d72f32320c57dfc"
+}

@@ -1,0 +1,37 @@
+# Unified Gate 0.30. Source modes are explicit; B/C formal training not started.
+schema: FG_S3_EXPERIMENT_V1
+experiment: S3C1_T030_AFTER_BC_S3A_seed0_20261012
+trainer: s3c
+diagnostic: false
+prepared_dir: artifacts/fg_s3_gate_t030_v1/experiments/S3C1_T030_AFTER_BC_S3A_seed0_20261012
+dreamer_root: ../dreamerv3
+model:
+  template: ../dreamerv3/dreamerv3/configs.yaml
+  presets:
+  - defaults
+  - fg_entry_v1
+  - fg_single3_joint_offline
+  - fg_single3_1m
+  overrides:
+    agent.avail_threshold: 0.3
+paths:
+  catalog: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+  replay_directory: null
+source:
+  kind: after_bc_s3a
+  checkpoint: /data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012/ckpt/bc_000000001000
+  base_checkpoint: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+  features: ../../fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/features/C1_M1_ONLINE_180K_seed0
+train:
+  mode: S3C1
+  seed: 0
+  replay_seed: 202
+  bc_lambda: 1.0
+  batch_size: 16
+  updates: 1000
+  report_every: 100
+  save_every: 100
+  consec: 1
+  capacity: null
+  device: gpu
+  logdir: /data/logdir/fg_single3/s3c1/S3C1_T030_AFTER_BC_S3A_seed0_20261012

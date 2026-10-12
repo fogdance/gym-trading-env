@@ -1,0 +1,50 @@
+import argparse,copy,json,time
+from pathlib import Path
+import jax,numpy as np
+from embodied.run.fg_s3_source_admission import inspect_source
+from embodied.run.fg_s3_source_transfer import make_agent,apply_and_audit_transfer
+from embodied.run.fg_s3a_features import FeatureCache
+from embodied.run.fg_s3a_train import Sampler,training_identity
+from embodied.run.fg_s3a_checkpoint import save_bc,restore_bc,audit_bc
+from dreamerv3.fg_s3a_agent import S3AAgent
+from dreamerv3.fg_s3a_actor import ActorBC,parameter_digests
+from gym_trading_env.research.fg_s3_experiment import read_experiment,admission,resolve_defaults
+from gym_trading_env.research.fg_replay import write_json,signed,digest
+
+p=argparse.ArgumentParser();p.add_argument('--device',choices=('cpu','gpu'),required=True)
+p.add_argument('--output-suffix',default='')
+a=p.parse_args();started=time.monotonic()
+root=Path('/home/v/Documents/work/research/fg-s3-dev/gym-trading-env')
+out=root/'artifacts/fg_s3c1_v1/receipts/gate_t030_v1'/('actor_'+a.device+a.output_suffix);out.mkdir(exist_ok=False)
+_,cfg=read_experiment('S3A_ORACLE_BC_T030_FROM_ONLINE_180K')
+labels,source,_,cache=admission(cfg,feature_required=True)
+_,opt=resolve_defaults(cfg,source)
+agent=make_agent(source['config'],out/'model',agent_cls=S3AAgent,device=a.device)
+transfer=apply_and_audit_transfer(agent,source['admission_receipt']);write_json(out/'source_transfer.json',transfer)
+bc=ActorBC(agent,opt);sampler=Sampler(cache.rows,0)
+assert bc.source_digests==cache.manifest['source_param_digests']
+identity=training_identity(source,cache,0,'smoke_'+a.device,256,opt)
+save_bc(out/'ckpt',bc,sampler,identity)
+rows=[]
+for _ in range(2):
+ indices=sampler.next(256);x,data=cache.batch(indices)
+ metrics=bc.update(x,data['mask'],data['label'])
+ adds=int((data['label']==1).sum());rows.append(dict(metrics,teacher_ADD=adds,teacher_WAIT=256-adds))
+saved=save_bc(out/'ckpt',bc,sampler,identity)
+expected=parameter_digests(agent.params);expected_opt=__import__('embodied.tests.test_fg_s3b',fromlist=['tree_hash']).tree_hash(bc.s3a_bc_opt)
+expected_sampler=sampler.save();next_indices=sampler.next(256)
+audit_bc(saved,identity);restore_bc(saved,bc,sampler,identity)
+assert parameter_digests(agent.params)==expected
+assert __import__('embodied.tests.test_fg_s3b',fromlist=['tree_hash']).tree_hash(bc.s3a_bc_opt)==expected_opt
+assert np.array_equal(sampler.next(256),next_indices)
+assert int(agent.n_updates)==21183 and int(agent.n_batches)==21399 and bc.bc_updates==2
+assert not agent.get_avail_actor_enabled()
+proof=bc.freeze_audit();assert proof['changed_keys'] and all(k.startswith('pol/') for k in proof['changed_keys'])
+result=signed(dict(status='REAL_ACTOR_SMOKE_AND_RESUME_PASS',device=a.device,devices=[str(x) for x in jax.devices()],
+ updates=2,batch_size=256,source_updates=21183,source_threshold=.5,target_threshold=.3,
+ gate_ready=False,original_joint_optimizer_updated=False,cache_reused=True,cache_rows=cache.rows,
+ cache_manifest_sha256=digest(cache.root/'manifest.json'),target_model_identity_hash=source['identity_hash'],
+ batches=rows,positive_batch_coverage=sum(row['teacher_ADD']>0 for row in rows)/len(rows),
+ changed_keys=proof['changed_keys'],resume_params_optimizer_sampler_exact=True,
+ formal_training=False,standalone_smoke_not_a_transfer_source=True,elapsed_seconds=time.monotonic()-started))
+write_json(out/'summary.json',result);print(json.dumps(result),flush=True)

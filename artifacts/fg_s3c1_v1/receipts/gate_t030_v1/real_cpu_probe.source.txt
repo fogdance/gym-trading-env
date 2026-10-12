@@ -1,0 +1,88 @@
+import copy,gc,json,pickle,time
+from pathlib import Path
+import jax,numpy as np
+from embodied.jax import internal
+from embodied.run.fg_checkpoint import validate_bundle,file_hash
+from embodied.run.fg_s3_source_admission import inspect_source,transfer_control_state
+from embodied.run.fg_s3_source_transfer import make_agent,apply_and_audit_transfer
+from embodied.run.fg_s3_gate import make_gate_controller
+from embodied.run.fg_s3_teacher_adapter import attach_teacher
+from dreamerv3.fg_s3c_agent import S3CAgent
+from dreamerv3.fg_s3a_actor import parameter_digests
+from dreamerv3.configuration import read_config_yaml
+from gym_trading_env.research.fg_s3_teacher_catalog import load_catalog
+from gym_trading_env.research.fg_replay import read_manifest,iter_replay_rows,write_json,signed
+
+root=Path('/home/v/Documents/work/research/fg-s3-dev/gym-trading-env')
+out=root/'artifacts/fg_s3c1_v1/receipts/gate_t030_v1/real_cpu';out.mkdir(exist_ok=False)
+source=root/'artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000'
+oldbc=Path('/data/logdir/fg_single3/s3/S3A_ORACLE_BC_FROM_ONLINE_180K_seed0/ckpt/bc_000000001000')
+cat=load_catalog(root/'artifacts/fg_s3_arch_v1/teacher_catalog_v1_final')
+cfg=read_config_yaml(source/'config.yaml');cfg['agent']['avail_threshold']=.3
+cfg.update(batch_size=1,batch_length=64,report_length=16)
+source_hash=file_hash(source/'manifest.json');old_hash=file_hash(oldbc/'manifest.json')
+started=time.monotonic()
+spec=inspect_source('direct_full',catalog=cat,path=source,config=cfg)
+agent=make_agent(cfg,out/'agent',agent_cls=S3CAgent,bc_lambda=1.)
+direct=apply_and_audit_transfer(agent,spec)
+assert direct['params_after']==direct['original_source_param_digests']
+control=transfer_control_state(spec)
+gate=make_gate_controller(cfg,spec['gate_policy'],control,agent.get_avail_actor_enabled())
+assert gate.required_passes==20 and gate.reports==0 and control['samples']==0
+write_json(out/'direct_transfer.json',direct);write_json(out/'source_admission.json',spec)
+
+# Read the actual separately published calibration node, without admitting an
+# unavailable producer. This is byte equality evidence, not source admission.
+calibrated=Path('/data/logdir/fg_single3/gate_threshold_v2/C1_M1_GATE_T030_180K/ckpt/step_000000180000')
+validate_bundle(calibrated)
+calcfg=read_config_yaml(calibrated/'config.yaml');assert calcfg['agent']['avail_threshold']==.3
+assert file_hash(source/'agent.pkl')==file_hash(calibrated/'agent.pkl')
+write_json(out/'published_calibration_comparison.json',signed(dict(status='SERIALIZED_FULL_AGENT_BYTES_EQUAL',
+ source_manifest_sha256=source_hash,calibration_manifest_sha256=file_hash(calibrated/'manifest.json'),
+ agent_sha256=file_hash(source/'agent.pkl'),producer_admission='NOT_VERIFIED_NOT_SELECTED')))
+
+rec=cat.manifest['traces'][0];arr=cat.arrays[0]
+row=arr[np.flatnonzero(arr['label_valid'] & (arr['label']==1))[0]]
+start=max(0,int(row['ordinal'])-32)
+trace=Path(cat.manifest['source']['dataset'])/rec['trace_id'];tm=read_manifest(trace/'manifest.json')
+rows=[]
+for n,value in iter_replay_rows(trace,tm):
+ if n>=start+65:break
+ if n>=start:rows.append(value)
+assert len(rows)==65
+raw={k:np.stack([r[k] for r in rows])[None] for k in rows[0]}
+raw['consec']=np.zeros((1,65),np.int32);raw['is_first'][:,0]=True
+batch=attach_teacher(raw,cat,mode='train',sampling_flags=True)
+data=internal.device_put(copy.deepcopy(batch),agent.train_sharded)
+data['seed']=agent._seeds(202,agent.train_mirrored)
+opt=int(agent.params['opt/step/value']);before=parameter_digests(agent.params)
+_,_,metrics=agent.train(agent.init_train(1),data);agent.sync_policy_from_train()
+metrics={k:float(np.asarray(v)) for k,v in metrics.items() if np.asarray(v).size==1 and np.isfinite(v).all()}
+after=parameter_digests(agent.params)
+assert metrics['opt/finite']==1 and metrics['bc/active']==0 and metrics['bc/gate_ready']==0
+assert metrics['bc/valid_count']>0 and int(agent.params['opt/step/value'])==opt+1
+assert int(agent.n_updates)==21184
+assert any(before[k]!=after[k] for k in before if k.startswith(('enc/','dyn/')))
+result=dict(status='REAL_180K_CPU_ONE_JOINT_UPDATE_PASS',diagnostic=False,formal_training=False,
+ batch_shape=[1,65],native_stepid_sha256=__import__('hashlib').sha256(batch['stepid'].tobytes()).hexdigest(),
+ catalog_sha256=cat.manifest_sha256,valid_teacher_rows=int(batch['teacher_valid'][:,1:].sum()),
+ add_rows=int((batch['teacher_valid'][:,1:]&(batch['teacher_action'][:,1:]==1)).sum()),
+ gate_ready=False,bc_effective_updates=0,metrics=metrics,source_updates=21183,target_updates=21184,
+ opt_updates_per_call=1,devices=[str(x) for x in jax.devices()])
+write_json(out/'one_joint_update.json',signed(result))
+print(json.dumps(result),flush=True)
+
+# Restore the actual completed A1000 actor, original WM/critic/joint optimizer.
+# It is a new .50 -> .30 transfer, never an old-run resume.
+bc_spec=inspect_source('after_bc_s3a',catalog=cat,path=oldbc,base_checkpoint=source,config=cfg)
+bc_receipt=apply_and_audit_transfer(agent,bc_spec)
+assert bc_receipt['baseline_non_actor_optimizer_equality']=='PASS'
+assert not bc_receipt['independent_bc_optimizer_imported'] and bc_receipt['source_bc_updates']==1000
+assert any(bc_receipt['params_after'][k]!=direct['params_after'][k] for k in direct['params_after'] if k.startswith('pol/'))
+assert bc_receipt['joint_opt']==direct['joint_opt'] and bc_receipt['gate_norm']==direct['gate_norm']
+write_json(out/'after_bc_1000_admission.json',bc_spec);write_json(out/'after_bc_1000_transfer.json',bc_receipt)
+assert file_hash(source/'manifest.json')==source_hash and file_hash(oldbc/'manifest.json')==old_hash
+validate_bundle(source)
+write_json(out/'summary.json',signed(dict(status='PASS_REAL_CPU_MODEL',source_unchanged=True,
+ old_bc_unchanged=True,real_joint_updates=1,formal_s3a_training='NOT_RUN',formal_s3c_training='NOT_RUN',
+ elapsed_seconds=time.monotonic()-started)))

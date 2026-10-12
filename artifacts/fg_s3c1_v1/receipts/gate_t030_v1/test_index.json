@@ -1,0 +1,53 @@
+{
+  "suites": {
+    "gate.xml": {
+      "tests": 7,
+      "failures": 4,
+      "errors": 0,
+      "sha256": "1ca96efe71f4b2218da4dd207b069165dff29951acf488869085c70a1f714371"
+    },
+    "gate_retry.xml": {
+      "tests": 7,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "799c652f2ca5988bfcb9f3512528d68c9a11960b7b419e89375bace7eaf62d7e"
+    },
+    "shared_cpu.xml": {
+      "tests": 13,
+      "failures": 1,
+      "errors": 0,
+      "sha256": "b23f2aa8fab959e6f91b1348fdba6ad506d822dbde7a770c6f382258ed21d730"
+    },
+    "manager_cpu.xml": {
+      "tests": 10,
+      "failures": 1,
+      "errors": 0,
+      "sha256": "2ce0da8feb4e8b8230f21859e346a71921b65848fbb7bf18132815194dc5fc00"
+    },
+    "final_neural_cpu.xml": {
+      "tests": 15,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "e195d6e9ddde063c143076ab64e760610181fe5d4477b242446c479bba9aede3"
+    },
+    "final_manager_cpu.xml": {
+      "tests": 10,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "b4e2402a91442e8138af3391870cdf7cc2bac474455637bbd27e512dca543bb9"
+    },
+    "target_identity_cpu.xml": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "175cda07db87629b47eff1557eb96cef382bc04c675b01fd7e3f9260d56677f2"
+    },
+    "final_contract_cpu.xml": {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "sha256": "e5f334a4a2ca17b9e0b5dfc315587afb5a48cf874c508138cd7bacca0d2311fe"
+    }
+  },
+  "content_hash": "4e3643d86bf5ee02e6d3a405a90d66ff944d41a1642241148137225c0127fc3b"
+}

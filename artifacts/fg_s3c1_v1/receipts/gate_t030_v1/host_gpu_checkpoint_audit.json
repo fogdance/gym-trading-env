@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/gate_t030_v1/actor_gpu_host/ckpt/bc_000000000002",
+  "manifest_sha256": "1ba28c1248d8df8eb0c92de4f8ee522470dfa28496980bc9434fa1e28a60f54a",
+  "updates": 2,
+  "source_identity_hash": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+  "changed_keys": [
+    "pol/head/action/logits/bias",
+    "pol/head/action/logits/kernel",
+    "pol/mlp/linear0/bias",
+    "pol/mlp/linear0/kernel",
+    "pol/mlp/linear1/bias",
+    "pol/mlp/linear1/kernel",
+    "pol/mlp/linear2/bias",
+    "pol/mlp/linear2/kernel",
+    "pol/mlp/norm0/scale",
+    "pol/mlp/norm1/scale",
+    "pol/mlp/norm2/scale"
+  ],
+  "content_hash": "9f69221250cc613604e80212b4e19799f094e0bae29eaf3f2b5b8f05db6f1330"
+}

@@ -1,0 +1,32 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-8ty__skv because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"status": "REAL_ACTOR_SMOKE_AND_RESUME_PASS", "device": "cpu", "devices": ["TFRT_CPU_0"], "updates": 2, "batch_size": 256, "source_updates": 21183, "source_threshold": 0.5, "target_threshold": 0.3, "gate_ready": false, "original_joint_optimizer_updated": false, "cache_reused": true, "cache_rows": 402096, "cache_manifest_sha256": "4f4af313cb53fae18bec4c4f6301c52e65c776943583d031856aeca3b1218ced", "target_model_identity_hash": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770", "batches": [{"finite": true, "grad_norm": 5.621655464172363, "loss": 0.6963210105895996, "param_delta": 0.06639952957630157, "update_norm": 0.06639938801527023, "bc_updates": 1, "phase": "S3A_ACTOR_ONLY", "pol/grad_norm": 5.621655464172363, "pol/update_norm": 0.06639938801527023, "pol/param_delta": 0.06639952957630157, "teacher_ADD": 13, "teacher_WAIT": 243, "tp": 10, "fp": 207, "fn": 3, "tn": 36, "precision": 0.04608294930875576, "recall": 0.7692307692307693, "pr_auc": 0.06828402927156782, "pr_auc_definition": "average_precision_tied_thresholds", "balanced_accuracy": 0.4586894586894587, "f1": 0.08695652173913043, "accuracy": 0.1796875, "predicted_ADD_fraction": 0.84765625, "p_ADD_mean": 0.5017572046490386, "p_ADD_min": 0.49667325615882874, "p_ADD_max": 0.505638599395752, "p_ADD_teacher_ADD": 0.5017335988008059, "p_ADD_teacher_WAIT": 0.5017584675133474, "brier": 0.25158686731835334, "always_wait_accuracy": 0.94921875, "always_wait_pr_auc": 0.05078125, "status": "CLASSIFICATION_ONLY"}, {"finite": true, "grad_norm": 5.636801719665527, "loss": 0.685590386390686, "param_delta": 0.061357032507658005, "update_norm": 0.061357032507658005, "bc_updates": 2, "phase": "S3A_ACTOR_ONLY", "pol/grad_norm": 5.636801719665527, "pol/update_norm": 0.061357032507658005, "pol/param_delta": 0.061357032507658005, "teacher_ADD": 10, "teacher_WAIT": 246, "tp": 0, "fp": 1, "fn": 10, "tn": 245, "precision": 0.0, "recall": 0.0, "pr_auc": 0.03293130158459591, "pr_auc_definition": "average_precision_tied_thresholds", "balanced_accuracy": 0.49796747967479676, "f1": 0.0, "accuracy": 0.95703125, "predicted_ADD_fraction": 0.00390625, "p_ADD_mean": 0.49582640652079135, "p_ADD_min": 0.49061790108680725, "p_ADD_max": 0.5009920597076416, "p_ADD_teacher_ADD": 0.4952004551887512, "p_ADD_teacher_WAIT": 0.49585185169689056, "brier": 0.24622174589998705, "always_wait_accuracy": 0.9609375, "always_wait_pr_auc": 0.0390625, "status": "CLASSIFICATION_ONLY"}], "positive_batch_coverage": 1.0, "changed_keys": ["pol/head/action/logits/bias", "pol/head/action/logits/kernel", "pol/mlp/linear0/bias", "pol/mlp/linear0/kernel", "pol/mlp/linear1/bias", "pol/mlp/linear1/kernel", "pol/mlp/linear2/bias", "pol/mlp/linear2/kernel", "pol/mlp/norm0/scale", "pol/mlp/norm1/scale", "pol/mlp/norm2/scale"], "resume_params_optimizer_sampler_exact": true, "formal_training": false, "standalone_smoke_not_a_transfer_source": true, "elapsed_seconds": 62.455754685011925, "content_hash": "269a328c42e101190b5f3504a67d52418b5cd4539691beeb53d670235617edf5"}

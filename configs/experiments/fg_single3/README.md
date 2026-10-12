@@ -169,3 +169,34 @@ CPU prepare 已完成；从固定 research/fg-s3-train 工作区执行 start。�
 
 CPU四份诊断配置的deps_v2目录已有已验收的历史快照；重复prepare会拒绝覆盖。
 执行新的诊断实验时选新实验名/prepared/logdir；不修改旧快照哈希以恢复到新源码。
+
+## S3-A/B/C 统一 Gate 0.30 新运行
+
+历史配置和原 `fg-s3-train` 保留。新运行共用验收后的冻结目录
+`research/fg-s3-train-t030/{gym-trading-env,dreamerv3}`，各算法使用独立Run。
+
+| 配置 | 用途 |
+| --- | --- |
+| `S3A_ORACLE_BC_T030_FROM_ONLINE_180K` | 新A等权Actor BC，1000次更新、B256、seed0 |
+| `S3B_CERTIFIED_T030_FROM_ONLINE_180K` | 新B原CERTIFIED权重及全局均值，暂不启动 |
+| `S3C1_T030_DIRECT_INIT` | 原网络随机初始化、原正式20窗Gate |
+| `S3C1_T030_DIRECT_FULL` | 原180k冻结来源经显式0.50→0.30新Run迁移 |
+| `S3C1_T030_AFTER_BC_S3A` | 新A1000及同一原基线；A节点未产生前拒绝准备 |
+
+新配置固定availability阈值0.30；原Actor分类/BC损失和真实Action Mask不改。
+保留80%双Recall、连续20窗及全部原质量/回归规则。跨阈值transfer清空旧统计
+并关闭READY；同Run resume精确保留。A/B的BC不要求Gate READY，C要求。
+目标身份绑定进BC checkpoint；缺少对应managed snapshot的新中途BC包拒绝迁移。
+复用原8.2GB缓存并核验原producer和逐文件hash，不重新生成。
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env
+PY=/home/v/miniconda3/envs/dreamerv3/bin/python
+$PY tools/fg_s3_experiment.py prepare --config S3A_ORACLE_BC_T030_FROM_ONLINE_180K
+$PY tools/fg_s3_experiment.py start --config S3A_ORACLE_BC_T030_FROM_ONLINE_180K
+# 同一Run中断后，不改配置或来源：
+$PY tools/fg_s3_experiment.py resume --config S3A_ORACLE_BC_T030_FROM_ONLINE_180K
+```
+
+CPU prepare不等于GPU或生产验收。冻结SHA、主机GPU smoke和`/tmp/done`交接条件
+见 [统一修复报告](../../../docs/FG_S3_Integrated_Gate_T030_And_S3A_Retrain_Review.md)。

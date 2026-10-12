@@ -1,0 +1,32 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"status": "REAL_180K_CPU_ONE_JOINT_UPDATE_PASS", "diagnostic": false, "formal_training": false, "batch_shape": [1, 65], "native_stepid_sha256": "d08d2bafd9bd2db18bda923bd2f792763dcfe4993d07112dcbab6ef493b61214", "catalog_sha256": "47736742ff81e337d10585b86d0709f5fd1bff8d082b01324b267f9f1761f0de", "valid_teacher_rows": 52, "add_rows": 0, "gate_ready": false, "bc_effective_updates": 0, "metrics": {"adv": 0.0037565589882433414, "adv_mag": 0.0037565589882433414, "adv_std": 0.0031279257964342833, "avail/img_action_invalid_rate": 0.0, "avail/img_cardinality": 1.1064453125, "avail/img_fallback_rate": 0.0, "avail/post_accuracy": 0.9609375, "avail/post_add_positives": 52.0, "avail/post_add_true_positives": 47.0, "avail/post_cardinality": 1.734375, "avail/post_exact_accuracy": 0.921875, "avail/post_fnr": 0.043103449046611786, "avail/post_fpr": 0.0, "avail/prior_accuracy": 0.9453125, "avail/prior_add_positives": 52.0, "avail/prior_add_true_positives": 45.0, "avail/prior_cardinality": 1.703125, "avail/prior_exact_accuracy": 0.890625, "avail/prior_fnr": 0.06034482643008232, "avail/prior_fpr": 0.0, "avail/ready": 0.0, "bc/accuracy": 0.0, "bc/active": 0.0, "bc/add_count": 0.0, "bc/always_wait_accuracy": 1.0, "bc/base_loss": 25.57756996154785, "bc/fn": 0.0, "bc/fp": 52.0, "bc/gate_ready": 0.0, "bc/lambda": 1.0, "bc/nll": 0.6998921036720276, "bc/p_add_mean": 0.5033588409423828, "bc/tn": 0.0, "bc/total_loss": 25.57756996154785, "bc/tp": 0.0, "bc/valid_count": 52.0, "bc/wait_count": 52.0, "con": 0.9969943165779114, "dyn_ent": 51.750213623046875, "ent/action": 0.07869792729616165, "loss/avail_post": 0.46163034439086914, "loss/avail_prior": 0.5964494943618774, "loss/con": 0.020441804081201553, "loss/dyn": 10.34781551361084, "loss/market_seq": 12.164359092712402, "loss/policy": 0.0, "loss/position_state": 0.7905289530754089, "loss/rep": 10.34781551361084, "loss/repval": 0.0, "loss/rew": 0.16156327724456787, "loss/value": 0.0, "opt/actor_changed": 0.0, "opt/actor_delta_norm": 0.0, "opt/actor_grad_norm": 0.0, "opt/critic_changed": 0.0, "opt/critic_delta_norm": 0.0, "opt/critic_grad_norm": 0.0, "opt/finite": 1.0, "opt/grad_norm": 213.81488037109375, "opt/grad_rms": 0.03276529163122177, "opt/loss": 25.57756996154785, "opt/param_count": 42584132.0, "opt/param_rms": 0.029363108798861504, "opt/reward_changed": 1.0, "opt/reward_delta_norm": 0.08249987661838531, "opt/reward_grad_norm": 0.6300639510154724, "opt/update_rms": 2.41365451074671e-05, "opt/updates": 21184.0, "opt/wm_changed": 1.0, "opt/wm_delta_norm": 0.062144629657268524, "opt/wm_grad_norm": 212.64144897460938, "rep_ent": 41.225624084472656, "ret": -0.15873610973358154, "ret_max": -0.1302964687347412, "ret_min": -0.1620538830757141, "ret_rate": 0.0, "rew": 0.0007043904042802751, "slowval": -0.164475217461586, "tar": -0.16071882843971252, "val": -0.164475217461586, "weight": 0.9748609066009521, "train/update_index": 21184.0}, "source_updates": 21183, "target_updates": 21184, "opt_updates_per_call": 1, "devices": ["TFRT_CPU_0"]}

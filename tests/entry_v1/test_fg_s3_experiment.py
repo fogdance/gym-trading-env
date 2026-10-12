@@ -156,19 +156,24 @@ def test_worker_keeps_exclusive_lock_after_launcher_descriptor_closes(tmp_path, 
         pass
 
 
-def test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer(bundle, tmp_path, monkeypatch):
+@pytest.mark.parametrize('trainer', ['s3a', 's3b'])
+def test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer(bundle, tmp_path, monkeypatch, trainer):
     from gym_trading_env.research.fg_s3_teacher_catalog import build_catalog, load_catalog
     from embodied.run import fg_s3a_checkpoint
     from embodied.run.fg_s3_source_admission import inspect_source, prepare_transfer
     from dreamerv3.fg_s3a_actor import parameter_digests
 
-    path, cfg = experiment(bundle, tmp_path / 'shared_s3a', existing_features=True)
+    path, cfg = experiment(bundle, tmp_path / ('shared_'+trainer), trainer, existing_features=True)
     cfg['schema'] = manager.SOURCE_SCHEMA
+    cfg['model']['overrides'] = {'agent.avail_threshold': .30}
     lm = read_manifest(bundle['labels'] / 'manifest.json')
     catalog = tmp_path / 'catalog'
     build_catalog(lm['source']['dataset'], lm['source']['oracle_receipt'], bundle['labels'],
                   catalog, diagnostic=True)
     cfg['paths']['catalog'] = str(catalog)
+    rejected=copy.deepcopy(cfg);rejected['diagnostic']=False
+    with pytest.raises(ValueError,match='Formal experiment cannot consume a diagnostic'):
+        manager.admission(rejected)
     path.write_text(yaml.safe_dump(cfg))
     # The new source route must not relax or call the historical 62500 loader.
     monkeypatch.setattr(fg_s3a_checkpoint, 'validate_source',
@@ -180,24 +185,39 @@ def test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer(bundle, tm
     assert receipt['status'] == 'READY_FOR_BC'
     assert 'portal' in receipt['packages'] and 'cloudpickle' in receipt['packages']
     prepared = Path(cfg['prepared_dir'])
-    assert read_manifest(prepared / 'source_admission_receipt.json')['kind'] == 'direct_full'
+    source=read_manifest(prepared / 'source_admission_receipt.json')
+    assert source['kind'] == 'direct_full'
+    assert source['gate_transfer']['reset_required'] and source['target_config']['agent']['avail_threshold']==.3
     result = manager.start(prepared, config=path)
     assert result['bc_updates'] == 2
     run = Path(cfg['train']['logdir'])
     node = run / 'ckpt' / (run / 'ckpt/latest').read_text().strip()
+    assert read_manifest(node/'manifest.json')['identity']['source_identity_hash']==source['target_model_identity_hash']
     before = digest(node / 'state.pkl')
     assert manager.start(prepared, resume=True, config=path)['bc_updates'] == 2
     assert digest(node / 'state.pkl') == before
     assert (run / 'managed_snapshot/source_admission_receipt.json').is_file()
     proofs = [read_manifest(p) for p in (prepared / 'transfer_receipts').glob('*.json')]
     assert proofs and all(p['params_before'] == p['params_after'] for p in proofs)
-    spec = inspect_source('after_bc_s3a', catalog=load_catalog(catalog), path=node,
-                          base_checkpoint=cfg['paths']['source_checkpoint'])
-    state = prepare_transfer(spec)
-    original = parameter_digests(bundle['agent'].params)
-    updated = parameter_digests(state['params'])
-    assert any(updated[k] != original[k] for k in updated if k.startswith('pol/'))
-    assert all(updated[k] == original[k] for k in updated if not k.startswith('pol/'))
+    if trainer=='s3a':
+        # A mid-run package cannot be mistaken for a .50 source while its
+        # authenticated .30 managed snapshot is unavailable.
+        snapshot=run/'managed_snapshot';held=run/'snapshot_held'
+        snapshot.rename(held)
+        try:
+            with pytest.raises(ValueError,match='baseline reference differs'):
+                inspect_source('after_bc_s3a',catalog=load_catalog(catalog),path=node,
+                               base_checkpoint=cfg['paths']['source_checkpoint'])
+        finally:held.rename(snapshot)
+        spec = inspect_source('after_bc_s3a', catalog=load_catalog(catalog), path=node,
+                              base_checkpoint=cfg['paths']['source_checkpoint'])
+        assert spec['origin']['config']['agent']['avail_threshold']==.3
+        assert not spec['gate_transfer']['reset_required']
+        state = prepare_transfer(spec)
+        original = parameter_digests(bundle['agent'].params)
+        updated = parameter_digests(state['params'])
+        assert any(updated[k] != original[k] for k in updated if k.startswith('pol/'))
+        assert all(updated[k] == original[k] for k in updated if not k.startswith('pol/'))
     target = prepared / 'source_admission_receipt.json'
     target.write_text(target.read_text() + '\n')
     with pytest.raises(ValueError, match='changed'):

@@ -1,0 +1,41 @@
+# Unified Gate 0.30. New run; audited threshold transfer from frozen Online180k.
+schema: FG_S3_EXPERIMENT_V2
+experiment: S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012
+trainer: s3a
+diagnostic: false
+prepared_dir: artifacts/fg_s3_gate_t030_v1/experiments/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012
+dreamer_root: ../dreamerv3
+model:
+  template: ../dreamerv3/dreamerv3/configs.yaml
+  presets:
+  - defaults
+  - fg_entry_v1
+  - fg_single3_joint_offline
+  - fg_single3_1m
+  overrides:
+    agent.avail_threshold: 0.3
+paths:
+  dataset: ../../fg-data/fg_single3_v1/replay/run_20261011_01
+  oracle_receipt: ../../fg-data/fg_single3_v1/oracle/run_20261011_01
+  labels: ../../gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2
+  source_checkpoint: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+  catalog: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+  features: ../../fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/features/C1_M1_ONLINE_180K_seed0
+  weights: null
+features:
+  seed: 0
+  shard_rows: 1024
+  max_rows: null
+  device: gpu
+train:
+  mode: S3A_FULL
+  seed: 0
+  batch_size: 256
+  updates: 1000
+  comparison_updates: 1000
+  save_every: 100
+  device: gpu
+  logdir: /data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012
+  optimizer:
+    lr: 4.0e-05
+    agc: 0.3

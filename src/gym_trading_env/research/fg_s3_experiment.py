@@ -140,13 +140,18 @@ def read_experiment(config):
     _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
                    'dreamer_root', 'model', 'paths', 'features', 'train'), 'experiment')
     if (cfg['schema'] not in (SCHEMA, SOURCE_SCHEMA) or cfg['trainer'] not in TRAINERS
-            or (cfg['schema'] == SOURCE_SCHEMA and cfg['trainer'] != 's3a')):
+            or (cfg['schema'] == SOURCE_SCHEMA and cfg['trainer'] not in ('s3a', 's3b'))):
         raise ValueError('Foreign S3 experiment schema/trainer')
     if not isinstance(cfg['experiment'], str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', cfg['experiment']):
         raise ValueError('Experiment must be a safe, nonempty run name')
     if type(cfg['diagnostic']) is not bool:
         raise ValueError('diagnostic must be an explicit boolean')
-    _mapping(cfg['model'], ('template', 'presets'), 'model')
+    model_keys = ('template', 'presets') + (('overrides',) if 'overrides' in cfg['model'] else ())
+    _mapping(cfg['model'], model_keys, 'model')
+    if 'overrides' in cfg['model'] and (cfg['schema'] != SOURCE_SCHEMA
+            or not isinstance(cfg['model']['overrides'], dict)
+            or set(cfg['model']['overrides']) - {'agent.avail_threshold'}):
+        raise ValueError('Shared Actor BC allows only the availability threshold override')
     if (not isinstance(cfg['model']['presets'], list) or not cfg['model']['presets']
             or any(not isinstance(x, str) for x in cfg['model']['presets'])):
         raise ValueError('Model presets must be a nonempty list of names')
@@ -328,7 +333,17 @@ def admission(cfg, *, feature_required=False):
             raise ValueError('S3-A labels differ from the shared Catalog')
         spec = inspect_source('direct_full', catalog=catalog,
                               path=source_path, diagnostic=cfg['diagnostic'])
-        source = dict(spec['origin'], admission_receipt=spec)
+        if spec['origin']['diagnostic'] and not cfg['diagnostic']:
+            raise ValueError('Formal experiment cannot consume a diagnostic source or Catalog')
+        overrides = cfg['model'].get('overrides', {})
+        if overrides:
+            import elements
+            from embodied.run.fg_checkpoint import plain
+            target = plain(elements.Config(spec['origin']['config']).update(overrides))
+            spec = inspect_source('direct_full', catalog=catalog, path=source_path,
+                                  config=target, diagnostic=cfg['diagnostic'])
+        source = dict(spec['origin'], config=spec['target_config'], admission_receipt=spec,
+                      identity=spec['target_model_identity'],identity_hash=spec['target_model_identity_hash'])
     else:
         source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
     weights = None
@@ -341,7 +356,13 @@ def admission(cfg, *, feature_required=False):
             raise ValueError(weights['summary']['training_admission'])
     cache = None
     if Path(cfg['paths']['features']).exists() or feature_required:
-        cache = FeatureCache(cfg['paths']['features'], source, cfg['paths']['labels'])
+        cache_source = source
+        if cfg['schema'] == SOURCE_SCHEMA:
+            original = source['admission_receipt']['origin']
+            cached = read_manifest(Path(cfg['paths']['features'])/'manifest.json')['source']
+            if cached['identity_hash'] == original['identity_hash']:
+                cache_source = original
+        cache = FeatureCache(cfg['paths']['features'], cache_source, cfg['paths']['labels'])
         if cache.manifest['seed'] != cfg['features']['seed']:
             raise ValueError('Frozen feature seed differs from experiment configuration')
         if cfg['trainer'] == 's3b':
@@ -391,10 +412,10 @@ def _joint_admission(cfg):
     spec = inspect_source(source['kind'], catalog=catalog, path=source['checkpoint'],
         base_checkpoint=source['base_checkpoint'], features=source['features'],
         seed=train['seed'] if source['kind'] == 'direct_init' else None,
-        config=defaults if source['kind'] == 'direct_init' else None, diagnostic=cfg['diagnostic'])
+        config=defaults, diagnostic=cfg['diagnostic'])
     if spec['origin']['diagnostic'] and not cfg['diagnostic']:
         raise ValueError('Formal experiment cannot consume a diagnostic source or Catalog')
-    if defaults['agent'] != spec['origin']['config']['agent']:
+    if defaults['agent'] != spec['target_config']['agent']:
         raise ValueError('Target model/optimizer/loss config differs from signed source')
     if (defaults['action_mask_warmup'] != spec['origin']['config']['action_mask_warmup']
             or defaults['jax']['compute_dtype'] != spec['origin']['config']['jax']['compute_dtype']):
@@ -408,7 +429,7 @@ def _joint_admission(cfg):
     if not control['complete'] and not cfg['diagnostic']:
         raise ValueError('Formal source lacks Gate controller/window state')
     prepare_transfer(spec)  # Actual full source format/finite-state audit, no GPU init.
-    config = copy.deepcopy(spec['origin']['config'])
+    config = copy.deepcopy(spec['target_config'])
     # Model/optimizer/Gate policy stay source-bound. Only new-run batch/logging
     # settings change; the original initialization counters are transferred.
     config.update(seed=train['seed'], batch_size=train['batch_size'], batch_length=64,
@@ -712,6 +733,8 @@ def execute_phase(prepared, phase, resume=False):
             args['agent'] = _load_actor_source(source, cfg['train']['logdir'], cfg['train']['device'], prepared)
         return train(source, cache, cfg['train']['logdir'], **args)
     from embodied.run.fg_s3b_train import train
+    if cfg['schema'] == SOURCE_SCHEMA:
+        args['agent'] = _load_actor_source(source, cfg['train']['logdir'], cfg['train']['device'], prepared)
     return train(source, cache, cfg['paths']['weights'], cfg['train']['logdir'], **args,
                  mode=cfg['train']['mode'], comparison_updates=cfg['train']['comparison_updates'],
                  config_sha256=digest(Path(prepared) / 'effective_config.yaml'))
