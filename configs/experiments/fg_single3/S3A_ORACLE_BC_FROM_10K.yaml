@@ -2,10 +2,10 @@
 # Current source Gate is CLOSED; S3-A uses its original independent BC objective.
 # S3-C will later inherit the saved Actor and original joint optimizer/Gate.
 schema: FG_S3_EXPERIMENT_V2
-experiment: S3A_ORACLE_BC_FROM_10K_seed0
+experiment: S3A_ORACLE_BC_FROM_10K_merged_v2_seed0
 trainer: s3a
 diagnostic: false
-prepared_dir: artifacts/fg_s3_v2/experiments/S3A_ORACLE_BC_FROM_10K_seed0
+prepared_dir: artifacts/fg_s3_v2/experiments/S3A_ORACLE_BC_FROM_10K_merged_v2_seed0
 dreamer_root: ../dreamerv3
 model:
   template: ../dreamerv3/dreamerv3/configs.yaml
@@ -31,5 +31,5 @@ train:
   comparison_updates: 1000
   save_every: 100
   device: gpu
-  logdir: /data/logdir/fg_single3/s3/S3A_ORACLE_BC_FROM_10K_seed0
+  logdir: /data/logdir/fg_single3/s3/S3A_ORACLE_BC_FROM_10K_merged_v2_seed0
   optimizer: {lr: 0.00004, agc: 0.3}

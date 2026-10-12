@@ -33,13 +33,14 @@ S3 使用 `tools/fg_s3_experiment.py` 管理 `plan / prepare / start / resume / 
 
 S3-C 使用已有 S3 管理入口。本目录名不代表调用 Single3 预训练流程。
 2026-10-12 已将 S3 YAML 的代码/模板定位改为兄弟 Dreamer worktree，TRAIN
-输入只读复用 `research/fg-data`。A/B 指定的正式源 62500 节点仍不存在；
+输入只读复用 `research/fg-data`。原 V1 A/B 指定的正式源 62500 节点仍不存在；
 `plan` 成功仅表示配置解析，实际来源准入后再生成新准备快照。初始核对记录见
 [S3 入口与配置核对](../../../docs/FG_S3_Entry_and_Config_Review.md)。
 
 | 配置名称 | 训练器 | 监督样本 / 权重 |
 |---|---|---|
 | `S3A_ORACLE_BC` | 原 S3-A | 全部合法空仓样本 / 1 |
+| `S3A_ORACLE_BC_FROM_10K` | 原 S3-A 算法 + 公共来源准入 | 用户选定的完整 10000 来源；全部合法空仓样本 / 1 |
 | `S3A_FULL` | S3-B 公平对照入口 | 同一完整索引 / 1 |
 | `S3A_MATCHED` | S3-B 公平对照入口 | 严格证书子集 / 1 |
 | `S3B_CERTIFIED` | S3-B | 同一严格证书子集 / 冻结优势权重 |
