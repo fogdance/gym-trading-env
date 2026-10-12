@@ -100,3 +100,35 @@ S3C1_T030_DIRECT_INIT / DIRECT_FULL / AFTER_BC_S3A
 用户已在d3运行等待 `/tmp/done` 后启动新版A的命令。此文件是**启动授权信号**，只在冻结、CPU prepare和主机GPU smoke实际通过后创建。访问限制未解除而主机probe未提供时，保持不创建，A状态为WAITING_GPU_SMOKE。
 
 今晚必要项：共享问题修复、Source身份、CPU模型/Actor恢复、冻结和CPU prepare、文档和receipt、成功GPU准入后释放信号。明日项：C生产含ADD批的进一步联合更新、完整Replay内存/耗时与GPU资源预检、生产Gate真实连续20窗、正式A完整分类Review。DEV/TEST未授权，不执行；B/C正式训练未授权，不执行。实际新A指标不足时不得更改Loss或采样来伪装成功。
+
+## 6. 冻结与交接实际记录（2026-10-13）
+
+- Gym冻结提交：`9752438c3d9e23752778076e1883a44a507dc780`。
+- Dreamer冻结提交：`00b82f850d44c268167578e07f77b0b613591f4a`。
+- 固定训练目录：`/home/v/Documents/work/research/fg-s3-train-t030/{gym-trading-env,dreamerv3}`，均detached且tracked clean；三算法可共用。
+- 新A CPU prepare状态：`READY_FOR_BC`，diagnostic=false；manifest文件SHA `3f49dd24222741d359cbef3e13323ebe08fbdf3942b0da027c384237b12ca603`，receipt content hash `2db6136bc01c98e444c50d2a1a17723ecba8e80b36db643f3541a71621016cc2`。
+- Python导入实测均来自上述冻结兄弟目录，无外部实验源码。
+- 主机GPU smoke状态：PASS，实际`cuda:0`、B256×2；source/model/Gate/原optimizer不变，仅原11个Actor键更新，参数/独立optimizer/sampler精确恢复。CPU对实际GPU atomic节点另行审计通过。
+- `/tmp/done` 已于主机2026-10-13 00:02创建，触发用户d3内已设置的等待命令。创建前已复核新Run不存在、GPU无计算进程、冻结配置/源码/来源和GPU source identity一致。
+- 正式A启动状态及实际PID/日志随后以真实运行收据记录；B/C正式训练、DEV/TEST仍NOT_RUN。
+
+今晚共享修复与启动前工程准入全部完成。生产Gate已达标、C含ADD大模型联合梯度、C全量资源验收与完整新A分类结论仍不在本次PASS范围，待明日按实际证据处理。
+
+正式A启动已实测：状态`RUNNING_BC`，launcher PID=2304609，worker PID=2304815；最后记录`BC 765: loss=0.101979, ADD recall=0.0, ALL_WAIT_COLLAPSE`。stdout：`/data/logdir/fg_single3/s3/launch_logs/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012_train_4afb1b4fff4c4fd6bb8c22599f0b6b4a.stdout.log`。identity的source hash与冻结CPU prepare及GPU smoke完全相同。启动/状态收据：`s3a_start_status.json`。当前ALL_WAIT_COLLAPSE仅为实际批次指标，不代表修复失败或分类改善；未调整Loss、class weight或采样。
+
+## 7. 新A实际完成与明日待办（2026-10-13）
+
+新A已实际GPU完成1000次Actor BC，launcher/worker已正常退出，最终`TRAINING_CHECKPOINT_VERIFIED`。最终节点：`/data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012/ckpt/bc_000000001000`。275非Actor状态冻结；Gate CLOSED，原joint updates=21183，BC updates=1000。
+
+全TRAIN：ADD16171 / WAIT385925；TP=0、FP=0、FN=16171、TN=385925；ADD recall=0、预测ADD频率=0、P(ADD)平均0.04194671060178488、accuracy=Always-WAIT baseline=0.9597832358441765。1000/1000批含ADD。结论：**工程运行完成，但Actor仍ALL_WAIT_COLLAPSE，不能判定监督训练效果通过。**
+
+独立对比原A：全部模型状态摘要相同=`True`，完整TRAIN分类结果相同=`True`。原Actor BC只消费相同缓存/真实mask和等权标签；availability阈值不进入其损失，因此Gate修复不是Actor分类改进。当前证据不确定collapse的优化/特征根因，未凭稀有正类或loss下降作根因结论。
+
+新A1000经冻结版本SourceAdmission实际CPU只读审计通过：从**已绑定0.30的目标身份**识别来源，after_bc 0.30→0.30不再次重置；Gate保持CLOSED、window samples=0，完整原joint optimizer/counters保留，不引入独立BC optimizer。未启动C或B；未执行DEV/TEST。收据：`s3a_complete_status.json`、`new_s3a1000_after_bc_admission.json`、`old_new_s3a_comparison.json`。
+
+明日待办：
+
+1. 排查并明确S3-A ALL_WAIT_COLLAPSE的可证实根因；任何Loss/采样/模型变更先与用户确定，不在本任务中修改。
+2. C生产模型含ADD有效行的进一步CPU/GPU联合更新和单optimizer验证；今天大模型批仅含WAIT，受控小模型有ADD梯度验证，两个证据不能混为一谈。
+3. C完整Replay资源与耗时预检，及实际新阈值Gate连续20个合格窗口的证据。
+4. B/C正式训练和DEV/TEST未授权，继续NOT_RUN，不自动排训练顺序。

@@ -1,0 +1,27 @@
+{
+  "status": "READY_TO_RELEASE_S3A",
+  "prepared": "/home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env/artifacts/fg_s3_gate_t030_v1/experiments/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012",
+  "prepared_manifest_sha256": "3f49dd24222741d359cbef3e13323ebe08fbdf3942b0da027c384237b12ca603",
+  "prepared_content_hash": "2db6136bc01c98e444c50d2a1a17723ecba8e80b36db643f3541a71621016cc2",
+  "source_versions": {
+    "/home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env": "9752438c3d9e23752778076e1883a44a507dc780",
+    "/home/v/Documents/work/research/fg-s3-train-t030/dreamerv3": "00b82f850d44c268167578e07f77b0b613591f4a"
+  },
+  "source_identity_hash": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+  "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+  "threshold": 0.3,
+  "gate_required_reports": 20,
+  "run": "/data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012",
+  "source_updates": 21183,
+  "budget_updates": 1000,
+  "batch_size": 256,
+  "seed": 0,
+  "gpu_smoke_sha256": "01f6a445965d82e8cd4fa0a588d8adb8371129e3c4880e88549caf7842e877e9",
+  "feature_cache": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/features/C1_M1_ONLINE_180K_seed0",
+  "reuse": true,
+  "old_run_preserved": true,
+  "b_and_c_formal": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "content_hash": "585651c77a1011d2fcfdcf75a6ff56fc9f2924b93e65c73f0d2c467cd304701b"
+}

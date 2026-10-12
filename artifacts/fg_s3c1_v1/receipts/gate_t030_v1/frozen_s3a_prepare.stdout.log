@@ -1,0 +1,20 @@
+{
+  "protocol": "FG_S3_PREPARED_V2",
+  "status": "READY_FOR_BC",
+  "experiment": "S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012",
+  "trainer": "s3a",
+  "mode": "S3A_FULL",
+  "diagnostic": false,
+  "requested_config": "/home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env/configs/experiments/fg_single3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K.yaml",
+  "requested_config_sha256": "f2c9046e53790c43f03aa2650f56ca21292606d7066cb3b58bed2f248b980184",
+  "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+  "source_identity_hash": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+  "source_model_config_sha256": "880e311d2ddb1eb94ea378a80260edddd55c401726031977a85d353802ea1dda",
+  "source_versions": {
+    "/home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env": "9752438c3d9e23752778076e1883a44a507dc780",
+    "/home/v/Documents/work/research/fg-s3-train-t030/dreamerv3": "00b82f850d44c268167578e07f77b0b613591f4a"
+  },
+  "formal_gpu_training": "NOT_RUN",
+  "online_rl_training": "NOT_RUN",
+  "content_hash": "2db6136bc01c98e444c50d2a1a17723ecba8e80b36db643f3541a71621016cc2"
+}

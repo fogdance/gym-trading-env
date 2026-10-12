@@ -1,0 +1,71 @@
+{
+  "status": "RUNNING_BC",
+  "observed_utc": "2026-10-12T16:06:12.942000+00:00",
+  "run": "/data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012",
+  "launcher_pid": 2304609,
+  "worker_pid": 2304815,
+  "stdout": "/data/logdir/fg_single3/s3/launch_logs/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012_train_4afb1b4fff4c4fd6bb8c22599f0b6b4a.stdout.log",
+  "last_updates": [
+    "BC 763: loss=0.183805, ADD recall=0.0, ALL_WAIT_COLLAPSE",
+    "BC 764: loss=0.198476, ADD recall=0.0, ALL_WAIT_COLLAPSE",
+    "BC 765: loss=0.101979, ADD recall=0.0, ALL_WAIT_COLLAPSE"
+  ],
+  "checkpoint": "bc_000000000700",
+  "identity": {
+    "protocol": "FG_S3A_BC_V1",
+    "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+    "source_identity_hash": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+    "diagnostic": false,
+    "feature_manifest_sha256": "4f4af313cb53fae18bec4c4f6301c52e65c776943583d031856aeca3b1218ced",
+    "label_manifest_sha256": "2f2a9de785bb963fe7e20fdc7c4b418ba7c2d5f27dfe0b1db5517e00e247d39f",
+    "seed": 0,
+    "run_id": "S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012_2db6136bc01c98e4",
+    "batch_size": 256,
+    "optimizer": {
+      "lr": 4e-05,
+      "agc": 0.3,
+      "eps": 1e-20,
+      "beta1": 0.9,
+      "beta2": 0.999,
+      "momentum": true,
+      "nesterov": false,
+      "wd": 0.0,
+      "schedule": "const",
+      "warmup": 0,
+      "anneal": 0
+    },
+    "sampler": "uniform_permutation_all_legal_rows_no_class_reweighting",
+    "code_sha256": {
+      "dreamerv3/fg_s3a_actor.py": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+      "dreamerv3/fg_s3a_agent.py": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+      "embodied/run/fg_s3a_checkpoint.py": "ef38c172553911d62c9c18096dc1a61112c2aff88a8449d5d0e98c7afe019d83",
+      "embodied/run/fg_s3a_features.py": "a9b5b995737d74d77c55ba67eab0cda70201937c3c148ba9f5ea6bedc4fa5a60",
+      "embodied/run/fg_s3a_train.py": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+      "embodied/run/fg_s3a_eval.py": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+      "scripts/fg_s3a.py": "3da4ea69b05f3bc4deaf1fad4a3e4f065e428402d822a47268b275bcdf326453",
+      "gym_trading_env/research/fg_replay.py": "412b617aebce95f9533bd6c507658c30fe584921eed9c8a52ac104ce756fdfe6",
+      "gym_trading_env/research/fg_s3a_labels.py": "a4b3cae13af109ae519f51097eeff18254097bfa748e0e16e3bc9882eaa03b24",
+      "gym_trading_env/envs/entry_contract.py": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+      "gym_trading_env/rewards/single3_reward.py": "609e14c049d2af175a9b884704f80365032f5b30e3e67d48a9ba518097a7cc5c"
+    },
+    "packages": {
+      "jax": "0.4.33",
+      "jaxlib": "0.4.33",
+      "ninjax": "3.5.1",
+      "optax": "0.2.4",
+      "numpy": "1.26.4",
+      "elements": "3.20.0",
+      "gymnasium": "1.0.0",
+      "pandas": "2.2.3"
+    }
+  },
+  "marker_exists": true,
+  "frozen_handoff_sha256": "3382c78a9c8d6026043eccc3cb411de9de6cb1a04b44d34fc967f3adbe8f3342",
+  "gpu_smoke": "PASS",
+  "formal_gpu_training": "STARTED",
+  "s3b_formal": "NOT_RUN",
+  "s3c_formal": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "content_hash": "dceee2bd69da58702345f0d6a2a31af215ea6118ac12f44cb22d2e050cf53280"
+}

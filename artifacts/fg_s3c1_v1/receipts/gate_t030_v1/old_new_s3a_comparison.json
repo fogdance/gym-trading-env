@@ -1,0 +1,9 @@
+{
+  "status": "REAL_COMPLETED_RUN_COMPARISON",
+  "all_model_state_digests_equal": true,
+  "classification_equal": true,
+  "availability_threshold_old": 0.5,
+  "availability_threshold_new": 0.3,
+  "note": "Pure Actor BC uses cached RSSM features and true Env masks; availability threshold does not enter its loss. This does not establish the root cause of collapse.",
+  "content_hash": "8c20301703782525308f0c9e3e9c333eaaa7005f3258b45ca2f6fa959a497d97"
+}
