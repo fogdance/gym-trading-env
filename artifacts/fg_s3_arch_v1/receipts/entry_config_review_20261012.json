@@ -1,0 +1,296 @@
+{
+  "scope": "READ_ONLY_ENTRY_AND_CONFIG_REVIEW",
+  "gym_head": "1e59c27b3833ca58c070ea12db6d41fdf09ee3b0",
+  "dreamer_head": "8de631a0741d889aa16dd1e8f1f193ee11baa569",
+  "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+  "python": "/home/v/miniconda3/envs/dreamerv3/bin/python",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": ""
+  },
+  "data_link": "/home/v/Documents/work/research/fg-data",
+  "data_link_target": "/home/v/Documents/work/gym-trading-env/artifacts",
+  "files": {
+    "tools/fg_s3_experiment.py": "bac5666d6d98fad8e612bcf3c241f514eae49f8138e3a95abdd2683da81f609f",
+    "tools/fg_single3_experiment.py": "3f7816ca093f3455da412748ade70171fef4a40f3316ebcda64020d152f7a45b",
+    "src/gym_trading_env/research/fg_s3_experiment.py": "6e22f5a20bc4774219eeeb8ced6fb23fdf32f9eebb1c6418739a91c6b18ed21b",
+    "configs/experiments/fg_single3/README.md": "de0e9dca1596657952a92d03262d7302d74860bc16ae8abad29228107e50eee1"
+  },
+  "config_plans": [
+    {
+      "name": "S3A_ORACLE_BC",
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "tools/fg_s3_experiment.py",
+        "plan",
+        "--config",
+        "S3A_ORACLE_BC"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "status": "CONFIG_ONLY_NOT_ADMITTED",
+        "config": {
+          "schema": "FG_S3_EXPERIMENT_V1",
+          "experiment": "S3A_ORACLE_BC_seed0",
+          "trainer": "s3a",
+          "diagnostic": false,
+          "prepared_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/experiments/S3A_ORACLE_BC_seed0",
+          "dreamer_root": "/home/v/Documents/work/dreamerv3-dev",
+          "model": {
+            "template": "/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml",
+            "presets": [
+              "defaults",
+              "fg_entry_v1",
+              "fg_single3_joint_offline",
+              "fg_single3_1m"
+            ]
+          },
+          "paths": {
+            "dataset": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+            "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+            "labels": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2",
+            "source_checkpoint": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000062500",
+            "features": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/features/C1_M1_1M_seed0",
+            "weights": null
+          },
+          "features": {
+            "seed": 0,
+            "shard_rows": 1024,
+            "max_rows": null,
+            "device": "gpu"
+          },
+          "train": {
+            "mode": "S3A_FULL",
+            "seed": 0,
+            "batch_size": 256,
+            "updates": 1000,
+            "comparison_updates": 1000,
+            "save_every": 100,
+            "device": "gpu",
+            "logdir": "/data/logdir/fg_single3/s3/S3A_ORACLE_BC_seed0",
+            "optimizer": {
+              "lr": 4e-05,
+              "agc": 0.3
+            }
+          }
+        },
+        "formal_gpu_training": "NOT_RUN"
+      },
+      "stderr": "",
+      "config_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_single3/S3A_ORACLE_BC.yaml",
+      "config_sha256": "3123daa73487cf10621332423ceff7f3c41105570a6746879d980fa0f01de171",
+      "dreamer_root_exists": false,
+      "model_template_in_current_pair": false,
+      "source_checkpoint_exists": false
+    },
+    {
+      "name": "S3A_FULL",
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "tools/fg_s3_experiment.py",
+        "plan",
+        "--config",
+        "S3A_FULL"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "status": "CONFIG_ONLY_NOT_ADMITTED",
+        "config": {
+          "schema": "FG_S3_EXPERIMENT_V1",
+          "experiment": "S3A_FULL_global_mean_v2_seed0",
+          "trainer": "s3b",
+          "diagnostic": false,
+          "prepared_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/experiments/S3A_FULL_global_mean_v2_seed0",
+          "dreamer_root": "/home/v/Documents/work/dreamerv3-dev",
+          "model": {
+            "template": "/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml",
+            "presets": [
+              "defaults",
+              "fg_entry_v1",
+              "fg_single3_joint_offline",
+              "fg_single3_1m"
+            ]
+          },
+          "paths": {
+            "dataset": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+            "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+            "labels": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2",
+            "source_checkpoint": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000062500",
+            "features": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/features/C1_M1_1M_seed0",
+            "weights": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3b_v2/weights_global_mean_v2"
+          },
+          "features": {
+            "seed": 0,
+            "shard_rows": 1024,
+            "max_rows": null,
+            "device": "gpu"
+          },
+          "train": {
+            "mode": "S3A_FULL",
+            "seed": 0,
+            "batch_size": 256,
+            "updates": 1000,
+            "comparison_updates": 1000,
+            "save_every": 100,
+            "device": "gpu",
+            "logdir": "/data/logdir/fg_single3/s3/S3A_FULL_global_mean_v2_seed0",
+            "optimizer": {
+              "lr": 4e-05,
+              "agc": 0.3
+            }
+          }
+        },
+        "formal_gpu_training": "NOT_RUN"
+      },
+      "stderr": "",
+      "config_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_single3/S3A_FULL.yaml",
+      "config_sha256": "3b1d73011b9fd0b33babdcb361382c5a26203236a2d9e87069c358c362eeabc0",
+      "dreamer_root_exists": false,
+      "model_template_in_current_pair": false,
+      "source_checkpoint_exists": false
+    },
+    {
+      "name": "S3A_MATCHED",
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "tools/fg_s3_experiment.py",
+        "plan",
+        "--config",
+        "S3A_MATCHED"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "status": "CONFIG_ONLY_NOT_ADMITTED",
+        "config": {
+          "schema": "FG_S3_EXPERIMENT_V1",
+          "experiment": "S3A_MATCHED_global_mean_v2_seed0",
+          "trainer": "s3b",
+          "diagnostic": false,
+          "prepared_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/experiments/S3A_MATCHED_global_mean_v2_seed0",
+          "dreamer_root": "/home/v/Documents/work/dreamerv3-dev",
+          "model": {
+            "template": "/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml",
+            "presets": [
+              "defaults",
+              "fg_entry_v1",
+              "fg_single3_joint_offline",
+              "fg_single3_1m"
+            ]
+          },
+          "paths": {
+            "dataset": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+            "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+            "labels": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2",
+            "source_checkpoint": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000062500",
+            "features": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/features/C1_M1_1M_seed0",
+            "weights": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3b_v2/weights_global_mean_v2"
+          },
+          "features": {
+            "seed": 0,
+            "shard_rows": 1024,
+            "max_rows": null,
+            "device": "gpu"
+          },
+          "train": {
+            "mode": "S3A_MATCHED",
+            "seed": 0,
+            "batch_size": 256,
+            "updates": 1000,
+            "comparison_updates": 1000,
+            "save_every": 100,
+            "device": "gpu",
+            "logdir": "/data/logdir/fg_single3/s3/S3A_MATCHED_global_mean_v2_seed0",
+            "optimizer": {
+              "lr": 4e-05,
+              "agc": 0.3
+            }
+          }
+        },
+        "formal_gpu_training": "NOT_RUN"
+      },
+      "stderr": "",
+      "config_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_single3/S3A_MATCHED.yaml",
+      "config_sha256": "dca6273fd2e9dfa8d5461b6c258def14b5050327d63e1b7fe948872f4776f44e",
+      "dreamer_root_exists": false,
+      "model_template_in_current_pair": false,
+      "source_checkpoint_exists": false
+    },
+    {
+      "name": "S3B_CERTIFIED",
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "tools/fg_s3_experiment.py",
+        "plan",
+        "--config",
+        "S3B_CERTIFIED"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "status": "CONFIG_ONLY_NOT_ADMITTED",
+        "config": {
+          "schema": "FG_S3_EXPERIMENT_V1",
+          "experiment": "S3B_CERTIFIED_global_mean_v2_seed0",
+          "trainer": "s3b",
+          "diagnostic": false,
+          "prepared_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/experiments/S3B_CERTIFIED_global_mean_v2_seed0",
+          "dreamer_root": "/home/v/Documents/work/dreamerv3-dev",
+          "model": {
+            "template": "/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml",
+            "presets": [
+              "defaults",
+              "fg_entry_v1",
+              "fg_single3_joint_offline",
+              "fg_single3_1m"
+            ]
+          },
+          "paths": {
+            "dataset": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+            "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+            "labels": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3a_v1/labels_20261011_v2",
+            "source_checkpoint": "/data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000062500",
+            "features": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v1/features/C1_M1_1M_seed0",
+            "weights": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3b_v2/weights_global_mean_v2"
+          },
+          "features": {
+            "seed": 0,
+            "shard_rows": 1024,
+            "max_rows": null,
+            "device": "gpu"
+          },
+          "train": {
+            "mode": "S3B_CERTIFIED",
+            "seed": 0,
+            "batch_size": 256,
+            "updates": 1000,
+            "comparison_updates": 1000,
+            "save_every": 100,
+            "device": "gpu",
+            "logdir": "/data/logdir/fg_single3/s3/S3B_CERTIFIED_global_mean_v2_seed0",
+            "optimizer": {
+              "lr": 4e-05,
+              "agc": 0.3
+            }
+          }
+        },
+        "formal_gpu_training": "NOT_RUN"
+      },
+      "stderr": "",
+      "config_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_single3/S3B_CERTIFIED.yaml",
+      "config_sha256": "6494bde86eb0acd41860871c54ae03472274ff38a2d56325e7cd74c9488c023d",
+      "dreamer_root_exists": false,
+      "model_template_in_current_pair": false,
+      "source_checkpoint_exists": false
+    }
+  ],
+  "verification": {
+    "CLI_CONFIG_PARSE": "PASS_4_CONFIGS",
+    "SOURCE_ADMISSION": "NOT_RUN",
+    "MODEL_TRAINING": "NOT_RUN",
+    "FULLCHECKPOINT_RECOVERY": "NOT_RUN",
+    "FORMAL_GPU": "NOT_RUN",
+    "DEV": "NOT_RUN",
+    "TEST": "NOT_RUN"
+  }
+}

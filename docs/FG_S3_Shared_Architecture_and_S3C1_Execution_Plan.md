@@ -85,6 +85,17 @@ Catalog manifest, code/packages/config and supervision protocol.
 
 ## Verification and delivery
 
+Entry/config clarification (2026-10-12): extend the existing S3 manager
+`tools/fg_s3_experiment.py` and its implementation, with an `s3c` dispatch.
+`tools/fg_single3_experiment.py` belongs to the separate pretraining/online
+workflow. Existing S3 experiment YAMLs are in `configs/experiments/fg_single3/`;
+the directory name does not select a training algorithm. Add the C configuration
+alongside these, keep distinct preparation/FullCheckpoint semantics, and reuse
+the existing launcher rather than add per-experiment training scripts. Canonical
+YAML parsing and current sibling-worktree paths must be corrected before
+preparation. Full inventory, actual CLI evidence and pending fixes:
+[entry/config review](FG_S3_Entry_and_Config_Review.md).
+
 Required: full real Catalog reconciliation and negative cases; three real CPU
 source modes; NLL/unimix/empty batch; Gate and gradient isolation; per-source
 lambda-zero equivalence; action/stepid shift rejection; 65→64 and resets;

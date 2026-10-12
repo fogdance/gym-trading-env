@@ -1,6 +1,8 @@
 # FG Single3 训练配置
 
-每个实验一份 YAML，共用 `tools/fg_single3_experiment.py` 启动入口。公共网络定义复用 DreamerV3 presets，运行时保存完整的解析后配置和哈希。
+每个实验一份 YAML。Single3 离线/在线流程使用 `tools/fg_single3_experiment.py`，
+S3 实验使用 `tools/fg_s3_experiment.py`，具体分派见下文。
+公共网络定义复用 DreamerV3 presets，运行时保存完整的解析后配置和哈希。
 
 本次使用 `C1_M1_10K_then_online_1M.yaml`：
 
@@ -26,6 +28,12 @@ python tools/fg_single3_experiment.py resume --config configs/experiments/fg_sin
 S3 使用 `tools/fg_s3_experiment.py` 管理 `plan / prepare / start / resume / audit`。
 原有 Single3 离线预训练和在线接续继续使用 `tools/fg_single3_experiment.py`。
 各实验 YAML 都集中在本目录，通过 `--config` 选择路径或下表名称。
+
+S3-C 将扩展已有 S3 管理入口。本目录名不代表调用 Single3 预训练流程。
+2026-10-12 核对发现下列 S3 YAML 仍包含旧源码路径，且配置指定的正式源
+62500 节点不存在；当前 `plan` 成功仅表示配置解析。修正路径并完成来源准入后
+再生成新准备快照。入口、配置、待修问题及只读命令收据见
+[S3 入口与配置核对](../../../docs/FG_S3_Entry_and_Config_Review.md)。
 
 | 配置名称 | 训练器 | 监督样本 / 权重 |
 |---|---|---|
