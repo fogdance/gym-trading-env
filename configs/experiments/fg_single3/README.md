@@ -62,3 +62,20 @@ $PY tools/fg_s3_experiment.py audit --config S3B_CERTIFIED
 S3-A / S3-B 原计算入口和独立 Checkpoint 协议保留；早期 `configs/fg_s3b/` YAML
 仍服务原入口，新管理流程统一使用本目录。后续 S3-C 可以增加独立适配器和实验
 配置，本轮仅支持 A/B。完整收据与说明见 `docs/FG_S3_Experiment_Management.md`。
+
+S3-B 的 P1-B1 修复使用固定 TRAIN 平均权重，Checkpoint 为 `FG_S3B_BC_V2`。
+三份对照配置使用独立的 `global_mean_v2` 实验/输出目录。新权重 manifest 是对
+现有 V1 权重的冻结总体统计引用，原数组、Oracle、标签和特征均不重算：
+
+```bash
+$PY tools/fg_s3b.py normalization-build \
+  --base-weights artifacts/fg_s3b_v1/weights_full_v1 \
+  --output artifacts/fg_s3b_v2/weights_global_mean_reproduce
+$PY tools/fg_s3b.py normalization-audit \
+  --output artifacts/fg_s3b_v2/weights_global_mean_v2
+```
+
+当前配置引用已生成的 `weights_global_mean_v2`。CERTIFIED 使用 MATCHED 总体的
+平均权重，FULL / MATCHED 等权对照使用 1；该尺度绑定进运行身份及恢复检查。
+旧版本在两仓库的 `fg-s3b-batchmean-v1-20261012` 标签中保留，V2 不接受旧 S3-B
+状态。具体公式、统计、CPU 证据和迁移边界见 `docs/FG_S3B_P1_Global_Mean_Fix.md`。

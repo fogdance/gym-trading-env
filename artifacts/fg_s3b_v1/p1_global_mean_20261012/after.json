@@ -1,0 +1,38 @@
+{
+  "status": "FIXED_P1_B1",
+  "metrics": [
+    {
+      "weight": 1.0,
+      "loss": 0.6925262808799744,
+      "grad_norm": 1.5790410041809082,
+      "global_mean_weight": 1.0,
+      "frozen_keys": 203,
+      "total_keys": 208,
+      "changed_keys": [
+        "pol/head/action/logits/bias",
+        "pol/head/action/logits/kernel",
+        "pol/mlp/linear0/bias",
+        "pol/mlp/linear0/kernel",
+        "pol/mlp/norm0/scale"
+      ]
+    },
+    {
+      "weight": 3.0,
+      "loss": 2.0775787830352783,
+      "grad_norm": 4.737123012542725,
+      "global_mean_weight": 1.0,
+      "frozen_keys": 203,
+      "total_keys": 208,
+      "changed_keys": [
+        "pol/head/action/logits/bias",
+        "pol/head/action/logits/kernel",
+        "pol/mlp/linear0/bias",
+        "pol/mlp/linear0/kernel",
+        "pol/mlp/norm0/scale"
+      ]
+    }
+  ],
+  "raw_gradient_ratio": 3.0,
+  "loss_version": "global_train_mean_v2",
+  "formal_gpu_training": "NOT_RUN"
+}

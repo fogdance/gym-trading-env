@@ -1,0 +1,49 @@
+{
+  "loss_version": "global_train_mean_v2",
+  "objective": "sum_population(w*CE)/sum_population(w)",
+  "batch_loss": "sum_batch((w/global_mean_weight)*CE)/batch_rows",
+  "raw_weight_populations": {
+    "TRAIN_FULL": {
+      "population_rows": 402096,
+      "sum_weights": 158501.73754065624,
+      "global_mean_weight": 0.39418879456810374,
+      "global_mean_weight_hex": "0x1.93a63a347a8a4p-2"
+    },
+    "TRAIN_MATCHED": {
+      "population_rows": 396542,
+      "sum_weights": 158501.7375406562,
+      "global_mean_weight": 0.39970983537848753,
+      "global_mean_weight_hex": "0x1.994d88fb5c4fbp-2"
+    }
+  },
+  "interfaces": {
+    "S3A_FULL": {
+      "population_rows": 402096,
+      "sum_weights": 402096.0,
+      "global_mean_weight": 1.0,
+      "global_mean_weight_hex": "0x1.0000000000000p+0",
+      "population": "TRAIN_FULL",
+      "loss_version": "global_train_mean_v2",
+      "sampling": "uniform_permutation_of_declared_population"
+    },
+    "S3A_MATCHED": {
+      "population_rows": 396542,
+      "sum_weights": 396542.0,
+      "global_mean_weight": 1.0,
+      "global_mean_weight_hex": "0x1.0000000000000p+0",
+      "population": "TRAIN_MATCHED",
+      "loss_version": "global_train_mean_v2",
+      "sampling": "uniform_permutation_of_declared_population"
+    },
+    "S3B_CERTIFIED": {
+      "population_rows": 396542,
+      "sum_weights": 158501.7375406562,
+      "global_mean_weight": 0.39970983537848753,
+      "global_mean_weight_hex": "0x1.994d88fb5c4fbp-2",
+      "population": "TRAIN_MATCHED",
+      "loss_version": "global_train_mean_v2",
+      "sampling": "uniform_permutation_of_declared_population"
+    }
+  },
+  "content_hash": "6ea5c1bfaa0e54b1887580ced069c3e78482831da8c83b9a5a54b6b9caba9fb9"
+}

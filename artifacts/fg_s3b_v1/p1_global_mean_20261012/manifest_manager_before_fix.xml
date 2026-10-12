@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="12.514" timestamp="2026-10-12T09:33:07.292328+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3b_normalization" name="test_full_matched_population_means_and_frozen_identity" time="1.167" /><testcase classname="tests.entry_v1.test_fg_s3_experiment" name="test_prepare_start_resume_original_actor_and_frozen_snapshot[s3b]" time="9.878"><failure message="FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-v/pytest-185/s3b_neural0/weights/scale.json'">bundle = {'root': PosixPath('/tmp/pytest-of-v/pytest-185/s3b_neural0'), 'labels': PosixPath('/tmp/pytest-of-v/pytest-185/s3b_ne...29', 'identity': {'candidate': 'C1', 'pool': 'C1_natural_oracle', 'model_seed': 0, 'replay_seed': 202, ...}, ...}, ...}
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-185/test_prepare_start_resume_orig0')
+trainer = 's3b'
+
+    @pytest.mark.parametrize('trainer', ['s3a', 's3b'])
+    def test_prepare_start_resume_original_actor_and_frozen_snapshot(bundle, tmp_path, trainer):
+        config, cfg = experiment(bundle, tmp_path / trainer, trainer, existing_features=trainer == 's3b')
+        prepared, logdir = Path(cfg['prepared_dir']), Path(cfg['train']['logdir'])
+&gt;       receipt = manager.prepare(config)
+                  ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_experiment.py:46:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/gym_trading_env/research/fg_s3_experiment.py:252: in prepare
+    inputs[str(p)] = digest(p)
+                     ^^^^^^^^^
+src/gym_trading_env/research/fg_history_study.py:14: in digest
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1050: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = PosixPath('/tmp/pytest-of-v/pytest-185/s3b_neural0/weights/scale.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+&gt;       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-v/pytest-185/s3b_neural0/weights/scale.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_experiment" name="test_central_configuration_interfaces_and_formal_partial_guard" time="0.014" /></testsuite></testsuites>

@@ -196,7 +196,7 @@ def admission(cfg, *, feature_required=False):
     source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
     weights = None
     if cfg['trainer'] == 's3b':
-        from gym_trading_env.research.fg_s3b_weights import audit_weights
+        from gym_trading_env.research.fg_s3b_normalization import audit_weights
         weights = audit_weights(cfg['paths']['weights'])
         if Path(weights['labels']).resolve() != Path(cfg['paths']['labels']):
             raise ValueError('Weights belong to a different S3-A label index')
@@ -247,8 +247,11 @@ def prepare(config):
         if p.is_file():
             inputs[str(p)] = digest(p)
     if weights:
-        for name in ('manifest.json', 'scale.json'):
+        for name in ('manifest.json', 'normalization.json'):
             p = Path(cfg['paths']['weights']) / name
+            inputs[str(p)] = digest(p)
+        for name in ('manifest.json', 'scale.json'):
+            p = Path(weights['base_weights']) / name
             inputs[str(p)] = digest(p)
         p = Path(weights['values']) / 'manifest.json'
         inputs[str(p)] = digest(p)

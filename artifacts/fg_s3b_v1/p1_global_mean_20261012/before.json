@@ -1,0 +1,19 @@
+{
+  "status": "REPRODUCED_P1_B1",
+  "metrics": [
+    {
+      "weight": 1.0,
+      "loss": 0.6925262808799744,
+      "grad_norm": 1.5790410041809082
+    },
+    {
+      "weight": 3.0,
+      "loss": 0.6925262808799744,
+      "grad_norm": 1.5790410041809082
+    }
+  ],
+  "actual_gradient_ratio": 1.0,
+  "required_gradient_ratio_with_fixed_mean": 3.0,
+  "formal_gpu_training": "NOT_RUN",
+  "production_oracle_recomputed": false
+}

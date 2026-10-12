@@ -14,7 +14,8 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'src'))
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command',required=True)
-    for name in ('values-build','values-audit','weights-build','weights-audit'):
+    for name in ('values-build','values-audit','weights-build','weights-audit',
+                 'normalization-build','normalization-audit'):
         p = sub.add_parser(name)
         p.add_argument('--config')
         p.add_argument('--dataset')
@@ -24,6 +25,8 @@ def main():
         p.add_argument('--seed',type=int)
         if name in ('weights-build',):
             p.add_argument('--values',required=True)
+        if name == 'normalization-build':
+            p.add_argument('--base-weights',required=True)
         if name == 'values-build':
             p.add_argument('--resume',action='store_true')
             p.add_argument('--contract',action='append')
@@ -62,9 +65,16 @@ def main():
                 raise ValueError('Requested source differs from value proof: '+name)
         result = build_weight_index(args.values,field('s3a_label_index'),args.output,seed=seed,
             weight_config=cfg.get('weights'),config_sha256=digest(args.config) if args.config else None)
-    else:
+    elif args.command == 'weights-audit':
         result = audit_weights(args.output)
-    if 'summary' in result:
+    else:
+        from gym_trading_env.research.fg_s3b_normalization import (
+            audit_weights as audit_normalization,build_normalization)
+        result = (build_normalization(args.base_weights,args.output)
+                  if args.command == 'normalization-build' else audit_normalization(args.output))
+    if args.command.startswith('normalization-'):
+        summary = result['normalization']
+    elif 'summary' in result:
         summary = result['summary']
     else:
         counts = Counter()

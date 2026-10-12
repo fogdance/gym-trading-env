@@ -1,0 +1,142 @@
+{
+  "status": "P1_B1_FIXED_CPU_VERIFIED",
+  "unique_passing_cases": 10,
+  "test_suites": [
+    {
+      "tests": 2,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "gradient.xml",
+      "names": [
+        "test_batch_one_preserves_threefold_raw_gradient_with_frozen_mean",
+        "test_ones_byte_identical_to_s3a_and_analytic_weighted_gradient"
+      ]
+    },
+    {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "remaining.xml",
+      "names": [
+        "test_batch_256_partition_gradient_mean_matches_full_population",
+        "test_global_mean_and_legacy_checkpoint_protocol_cannot_be_mixed",
+        "test_zero_extreme_tiny_nonfinite_and_legal_masks",
+        "test_three_interfaces_exact_resume_isolation_and_updated_policy",
+        "test_real_native_end_to_end_pipeline_and_weight_feature_isolation"
+      ]
+    },
+    {
+      "tests": 3,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "manifest_manager_before_fix.xml",
+      "names": [
+        "test_full_matched_population_means_and_frozen_identity",
+        "test_central_configuration_interfaces_and_formal_partial_guard"
+      ]
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "manager_fixed.xml",
+      "names": [
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3b]"
+      ]
+    }
+  ],
+  "loss_version": "global_train_mean_v2",
+  "checkpoint_protocol": "FG_S3B_BC_V2",
+  "normalization": {
+    "loss_version": "global_train_mean_v2",
+    "objective": "sum_population(w*CE)/sum_population(w)",
+    "batch_loss": "sum_batch((w/global_mean_weight)*CE)/batch_rows",
+    "raw_weight_populations": {
+      "TRAIN_FULL": {
+        "population_rows": 402096,
+        "sum_weights": 158501.73754065624,
+        "global_mean_weight": 0.39418879456810374,
+        "global_mean_weight_hex": "0x1.93a63a347a8a4p-2"
+      },
+      "TRAIN_MATCHED": {
+        "population_rows": 396542,
+        "sum_weights": 158501.7375406562,
+        "global_mean_weight": 0.39970983537848753,
+        "global_mean_weight_hex": "0x1.994d88fb5c4fbp-2"
+      }
+    },
+    "interfaces": {
+      "S3A_FULL": {
+        "population_rows": 402096,
+        "sum_weights": 402096.0,
+        "global_mean_weight": 1.0,
+        "global_mean_weight_hex": "0x1.0000000000000p+0",
+        "population": "TRAIN_FULL",
+        "loss_version": "global_train_mean_v2",
+        "sampling": "uniform_permutation_of_declared_population"
+      },
+      "S3A_MATCHED": {
+        "population_rows": 396542,
+        "sum_weights": 396542.0,
+        "global_mean_weight": 1.0,
+        "global_mean_weight_hex": "0x1.0000000000000p+0",
+        "population": "TRAIN_MATCHED",
+        "loss_version": "global_train_mean_v2",
+        "sampling": "uniform_permutation_of_declared_population"
+      },
+      "S3B_CERTIFIED": {
+        "population_rows": 396542,
+        "sum_weights": 158501.7375406562,
+        "global_mean_weight": 0.39970983537848753,
+        "global_mean_weight_hex": "0x1.994d88fb5c4fbp-2",
+        "population": "TRAIN_MATCHED",
+        "loss_version": "global_train_mean_v2",
+        "sampling": "uniform_permutation_of_declared_population"
+      }
+    }
+  },
+  "base_weights_manifest_sha256": "18ccc1d63c3a8fcd50697abe515de74188eba2f11141e04938262d49d8b1d210",
+  "unchanged_existing_source_files": [
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/fg_s3a_actor.py",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/fg_s3a_agent.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3a_checkpoint.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3a_features.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3a_train.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3a_eval.py",
+    "/home/v/Documents/work/dreamerv3-dev/scripts/fg_s3a.py",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/agent.py",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/rssm.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/jax/agent.py",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/jax/opt.py",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/configs.yaml",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3a_labels.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_weights.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_advantage.py",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_single3_oracle.py"
+  ],
+  "source_sha256": {
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3b_normalization.py": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25",
+    "/home/v/Documents/work/gym-trading-env2/src/gym_trading_env/research/fg_s3_experiment.py": "6e22f5a20bc4774219eeeb8ced6fb23fdf32f9eebb1c6418739a91c6b18ed21b",
+    "/home/v/Documents/work/gym-trading-env2/tools/fg_s3b.py": "30ae22708236b63da3c61bc6c6bc222fe0617fedf3e51250d2dc4a653248ec43",
+    "/home/v/Documents/work/gym-trading-env2/tests/entry_v1/test_fg_s3b_normalization.py": "88e1e107f2b6acc1d914da034b3aaf11df1374bce53e082aedfcd870385c005b",
+    "/home/v/Documents/work/dreamerv3-dev/dreamerv3/fg_s3b_bc.py": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3b_train.py": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/run/fg_s3b_checkpoint.py": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970",
+    "/home/v/Documents/work/dreamerv3-dev/scripts/fg_s3b.py": "770785d55e26659f50bb9cd1d8842bf9c95f0b87c682629a91ffc3afdef3f46a",
+    "/home/v/Documents/work/dreamerv3-dev/embodied/tests/test_fg_s3b.py": "7951c7fb1e9772a8547121fee25a61f9e6be2bafc381bf7478acfc6c3c2fd389"
+  },
+  "formal_gpu_training": "NOT_RUN",
+  "production_oracle_recomputed": false,
+  "sealed_test_accessed": false,
+  "base_weight_files_verified": 57,
+  "weight_array_shards_verified": 18,
+  "raw_failed_xml": {
+    "archive": "manifest_manager_before_fix.raw.xml.gz",
+    "sha256": "38e5bb89ef998fbec9eff531cc416eb7df0837f0d4d8f51419c6a458b9a69747",
+    "readable_xml_change": "trailing whitespace only; failure preserved"
+  }
+}
