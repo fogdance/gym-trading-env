@@ -11,7 +11,9 @@ S3 实验使用 `tools/fg_s3_experiment.py`，具体分派见下文。
 - 在线 Gate 使用原有运行阈值、0.9915 / 0.004 开启余量以及连续 20 次观察；未达标期间 Actor/Critic 损失保持关闭。
 - 离线 `step` 表示梯度更新，在线 `step` 表示环境步；模型累计更新计数保留。
 
-当前 10,000 次离线更新已完成；配置已指向诊断接口修复后的新在线目录，原失败目录保留。使用 `resume` 跳过离线阶段，复用完整模型和优化器进入在线训练：
+当前 10,000 次离线更新已完成；配置已指向诊断接口修复后的在线目录，原失败目录保留。恢复准入通过后，`resume` 跳过已完成的离线阶段，保留完整模型和优化器。
+
+2026-10-12 参数同步修复已提交至 DreamerV3 `0b3a641`。源码哈希已改变，旧准备收据与 Checkpoint 身份不能直接用于新源码恢复；需先生成并验证新的继续训练收据，保留全部旧产物。下面是统一入口形式，目前不能作为新源码已经通过恢复准入的命令。现有进程不会自动加载源码修复。见 [参数同步修复记录](../../../docs/FG_Single3_Policy_Parameter_Sync_Fix_20261012.md)。
 
 ```bash
 python tools/fg_single3_experiment.py resume --config configs/experiments/fg_single3/C1_M1_10K_then_online_1M.yaml
@@ -133,3 +135,19 @@ Replay、train/report Prefetch、Consec.current、carry、scheduler/RNG/计数�
 更新一次。Gate NOT READY 时新增 BC 为零，原 WM 继续训练。READY CPU 夹具和
 真实但 CLOSED 的旧来源分别报告，CLOSED 更新不计为有效 RL+BC。
 所有分类指标只描述 TRAIN imitation；不表示 DEV/TEST 或交易表现。
+prior ADD 的只读 CPU 审计共用 `tools/fg_single3_prior_audit.py --config <实验YAML> --output <新目录>`；通过 `--offline-checkpoint` 和 `--online-checkpoint` 可固定已有阶段的 Checkpoint。工具复用原生 Replay 标注与模型的因果上下文、availability head，保存逐位置概率、曲线及输入哈希，不启动训练。2026-10-12 的实际结果见 [prior ADD 概率审计](../../../docs/FG_Single3_Prior_ADD_Probability_Audit_20261012.md)。
+
+## Availability Gate 校准恢复
+
+`C1_M1_GATE_T030_from_180K.yaml` 使用独立的新实验身份继承在线180k完整状态。训练核心仍复用原 Driver、Replay、Env 和 FullCheckpoint；只有概率判定阈值与必要统计/参数发布接线发生变化。CPU验收不能自动启动GPU。
+
+```bash
+python tools/fg_single3_experiment.py prepare --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml
+python tools/fg_single3_experiment.py publish --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml
+# CPU双路径完整恢复测试与证书生成后，用户另行授权：
+python tools/fg_single3_experiment.py resume --config configs/experiments/fg_single3/C1_M1_GATE_T030_from_180K.yaml --authorize-training
+```
+
+`prepare` 校验冻结模型的全部质量条件、真实窗口及来源哈希，生成不可覆盖的恢复包；`publish` 只复制到新日志目录。正式 `resume` 必须同时具备 GO、完整状态CPU恢复证书、严格身份和显式授权。旧窗口合格 streak 清零，新Gate需重新连续20次通过；模型、优化器、交易账户、Replay、随机状态和累计180k环境步保留。
+
+未通过完整预检时不提供绕过准入的启动路径。报告见 `docs/FG_Single3_Gate_Repair_Implementation_and_Verification.md`；GPU实际达标、DEV泛化和择时效果另行验证。

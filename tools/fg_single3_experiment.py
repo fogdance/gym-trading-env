@@ -36,10 +36,12 @@ def baselines(prepared):
         return list(pool.map(baseline_job,jobs))
 
 
-def hardware_preflight(config):
+def hardware_preflight(config, allowed_logdirs=None):
     import psutil
-    from gym_trading_env.research.fg_single3_experiment import DEFAULT_LOGDIR,ONLINE_LOGDIR
-    if Path(config.logdir).resolve() not in (DEFAULT_LOGDIR,ONLINE_LOGDIR):
+    if allowed_logdirs is None:
+        from gym_trading_env.research.fg_single3_experiment import DEFAULT_LOGDIR,ONLINE_LOGDIR
+        allowed_logdirs=(DEFAULT_LOGDIR,ONLINE_LOGDIR)
+    if Path(config.logdir).resolve() not in allowed_logdirs:
         raise ValueError('Formal experiment must use the new allowed log directory')
     parent=Path(config.logdir).parent
     while not parent.exists():
@@ -59,7 +61,8 @@ def hardware_preflight(config):
 
 def run_training(argv,output,logdir):
     """Both phases use the official CLI, the same logging and the same backend."""
-    from gym_trading_env.research.fg_single3_experiment import DREAMER_ROOT,GYM_ROOT
+    GYM_ROOT=Path(__file__).resolve().parents[1]
+    DREAMER_ROOT=GYM_ROOT.parent/'dreamerv3'
     env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',JAX_PLATFORMS='cuda',JAX_PLATFORM_NAME='gpu',
         PYTHONPATH=str(DREAMER_ROOT)+':'+str(GYM_ROOT/'src'),MPLCONFIGDIR=str(logdir/'matplotlib'))
     if not env.get('CUDA_VISIBLE_DEVICES'):
@@ -252,13 +255,37 @@ def _report(prepared):
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',choices=['prepare','baselines','start','resume','evaluate','report'])
+    parser.add_argument('command',choices=['prepare','publish','baselines','start','resume','evaluate','report'])
     parser.add_argument('--prepared')
     parser.add_argument('--output')
     parser.add_argument('--config',help='Experiment YAML under configs/experiments/fg_single3/')
+    parser.add_argument('--authorize-training',action='store_true',
+        help='Explicit user authorization for a preflight-passing Gate continuation')
     args=parser.parse_args()
     if args.config:
         os.environ['FG_SINGLE3_TRAINING_CONFIG']=str(Path(args.config).resolve())
+        # Gate continuation has its own immutable full-state admission, without
+        # repeating pretraining or accessing the ordinary DEV preparation path.
+        sys.path.insert(0,str(Path(__file__).resolve().parents[2]/'dreamerv3'))
+        from dreamerv3.configuration import read_config_yaml
+        settings=read_config_yaml(args.config)
+        if settings.get('schema')=='FG_SINGLE3_GATE_CALIBRATION_V1':
+            from gym_trading_env.research.fg_single3_gate_calibration import prepare,publish,resume
+            if args.command=='prepare':
+                os.environ['JAX_PLATFORMS']='cpu'
+                os.environ['CUDA_VISIBLE_DEVICES']=''
+                result=prepare(args.config,args.output)
+                print(result['status'],result['preflight']['status'],flush=True)
+            elif args.command=='resume':
+                resume(args.prepared or str(Path(__file__).resolve().parents[1]/settings['prepared_dir']),
+                    authorize_training=args.authorize_training)
+            elif args.command=='publish':
+                print(publish(args.prepared or str(Path(__file__).resolve().parents[1]/settings['prepared_dir'])),flush=True)
+            else:
+                raise ValueError('Gate continuation supports prepare / publish / resume only')
+            return
+    if args.command=='publish':
+        raise ValueError('publish requires an explicit Gate calibration --config')
     cpu=args.command in ('prepare','baselines','report')
     os.environ['PYTHONDONTWRITEBYTECODE']='1'
     os.environ['JAX_PLATFORMS']='cpu' if cpu else 'cuda'
