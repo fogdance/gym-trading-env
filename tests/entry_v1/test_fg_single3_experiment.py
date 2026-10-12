@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from gym_trading_env.research import fg_single3_evaluation as evaluation
-from gym_trading_env.research.fg_single3_experiment import resolved_config,training_argv,DREAMER_ROOT
+from gym_trading_env.research.fg_single3_experiment import resolved_config,training_argv,DREAMER_ROOT,EXPERIMENT
 
 
 def test_prepared_configuration_matches_official_neural_cli_parser(tmp_path):
@@ -22,10 +22,33 @@ def test_prepared_configuration_matches_official_neural_cli_parser(tmp_path):
     assert dict(config)==dict(restored)
     assert isinstance(config.agent.valnorm.limit,float)
     assert config.agent.valnorm.limit==1e-8
-    assert config.run.steps==62500
+    assert config.run.steps==10000 and config.fg_single3_offline.profile==EXPERIMENT
+    assert list(config.run.fg_key_steps)==[0,2000,10000]
+    assert config.run.from_checkpoint==config.run.fg_stage_transfer==''
+    assert not config.agent.avail_actor_enabled
     example=tmp_path/'typed.yaml'
     example.write_text('limit: 1e-8\ncapacity: 1e6\ncontract: "0019"\nliteral: "1e-8"\n')
     assert read_config_yaml(example)==dict(limit=1e-8,capacity=1e6,contract='0019',literal='1e-8')
+
+
+def test_online_configuration_matches_cli_and_preserves_pretrained_model(tmp_path):
+    import elements
+    from dreamerv3.configuration import read_config_yaml
+    from dreamerv3.main import _resolve_seed_protocol
+    from gym_trading_env.research.fg_single3_experiment import online_config
+    offline=resolved_config()
+    online=online_config(tmp_path,offline)
+    definitions=read_config_yaml(DREAMER_ROOT/'dreamerv3/configs.yaml')
+    parsed,other=elements.Flags(configs=['defaults']).parse_known(training_argv(tmp_path,online)[3:])
+    restored=elements.Config(definitions['defaults'])
+    for name in parsed.configs:
+        restored=restored.update(definitions[name])
+    restored=_resolve_seed_protocol(elements.Flags(restored).parse(other))
+    assert dict(online)==dict(restored)
+    assert online.agent==offline.agent and online.seed_protocol==offline.seed_protocol
+    assert online.run.steps==1000000 and online.run.fg_source_steps==10000
+    assert online.run.fg_full_checkpoint and online.run.env_checkpoint
+    assert online.run.from_checkpoint=='' and not online.fg_single3_offline.enabled
 
 
 def test_actor_adapter_passes_only_observations_and_keeps_diagnostics_outside_replay():
@@ -78,8 +101,8 @@ def test_final_verification_failure_retains_no_pass_report_or_completion(tmp_pat
     with pytest.raises(ValueError,match='late verification'):
         evaluation.publish_report(tmp_path,'PASS report',{},dict(identity_hash='fixture'),{})
     assert not (tmp_path/'completion_manifest.json').exists()
-    assert not (tmp_path/'C1_M1_1M_Report.md').exists()
-    assert list(tmp_path.glob('C1_M1_1M_Report.failed_*.md'))
+    assert not (tmp_path/(EXPERIMENT+'_Report.md')).exists()
+    assert list(tmp_path.glob(EXPERIMENT+'_Report.failed_*.md'))
 
 
 def test_training_summary_cannot_invent_effective_actor_updates(tmp_path,monkeypatch):
@@ -94,7 +117,7 @@ def test_training_summary_cannot_invent_effective_actor_updates(tmp_path,monkeyp
     state=dict(last_update=updates,training_positions=updates*1024,actor_effective_updates=1)
     (checkpoint/'training_audit.pkl').write_bytes(pickle.dumps(state))
     log=tmp_path/'train_updates.jsonl';log.write_text('evidence\n')
-    summary=dict(state,status='TRAINING_COMPLETE',experiment='C1_M1_1M',identity_hash='fixture',
+    summary=dict(state,status='TRAINING_COMPLETE',experiment=EXPERIMENT,identity_hash='fixture',
         checkpoint=str(checkpoint),checkpoint_manifest_sha256=evaluation.digest(checkpoint/'manifest.json'),
         log_sha256=evaluation.digest(log))
     filename=tmp_path/'training_summary.json'
@@ -136,7 +159,7 @@ def test_report_preverification_failure_invalidates_existing_completion(tmp_path
     from tools import fg_single3_experiment as launcher
     from gym_trading_env.research import fg_single3_experiment as experiment
     (tmp_path/'completion_manifest.json').write_text('old completion')
-    (tmp_path/'C1_M1_1M_Report.md').write_text('old PASS')
+    (tmp_path/(EXPERIMENT+'_Report.md')).write_text('old PASS')
     monkeypatch.setattr(experiment,'DEFAULT_LOGDIR',tmp_path)
     def reject(_):
         raise ValueError('input hash changed')
@@ -144,5 +167,5 @@ def test_report_preverification_failure_invalidates_existing_completion(tmp_path
     with pytest.raises(ValueError,match='input hash'):
         launcher.report('prepared')
     assert not (tmp_path/'completion_manifest.json').exists()
-    assert not (tmp_path/'C1_M1_1M_Report.md').exists()
+    assert not (tmp_path/(EXPERIMENT+'_Report.md')).exists()
     assert list(tmp_path.glob('completion_manifest.failed_*.json'))
