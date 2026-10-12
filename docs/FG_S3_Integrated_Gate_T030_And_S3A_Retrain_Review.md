@@ -1,6 +1,6 @@
-# FG S3 统一 Gate 0.30 修复、来源迁移与 S3-A 准备
+# FG S3 统一 Gate 0.30 修复、来源迁移与 S3-A 重训验收
 
-日期：2026-10-12。执行范围：`research/fg-s3-dev/{gym-trading-env,dreamerv3}`；集成分支均为 `feat/fg-s3-shared-s3c1`。依据统一 Gate 任务书 V1 及 `FG_S3_Shared_S3C_gy7_d37_Code_Review_20261012.md`。未合并三个算法分支，未机械合并 Replay 分支，未修改两个其他实验仓库或 `.gitignore`。
+首次记录：2026-10-12；最终状态更新：2026-10-13。执行范围：`research/fg-s3-dev/{gym-trading-env,dreamerv3}`；集成分支均为 `feat/fg-s3-shared-s3c1`。依据统一 Gate 任务书 V1 及 `FG_S3_Shared_S3C_gy7_d37_Code_Review_20261012.md`。未合并三个算法分支，未机械合并 Replay 分支，未修改两个其他实验仓库或 `.gitignore`。
 
 ## 1. 已修复的问题
 
@@ -58,7 +58,8 @@ SourceReceipt明确区分原始来源和0.30目标身份，记录两端阈值、
 | 真实S3-A CPU Actor两步 / 原缓存 / 保存恢复 | PASS：`actor_cpu/summary.json`；B256，每批ADD分别13和10，仅11个 `pol/*` 键改变，原joint计数/optimizer不变，参数/独立opt/sampler精确恢复 |
 | 当前执行环境GPU smoke | FAIL（环境设备不可见）：`actor_gpu.stdout.log`；JAX CUDA backend初始化前退出，此沙箱内GPU模型/梯度未执行；主机单独通过见下一行 |
 | 主机GPU smoke | PASS：主机实际 `cuda:0` 两步BC与参数/optimizer/sampler保存恢复；`actor_gpu_host/summary.json` 及独立CPU `host_gpu_checkpoint_audit.json` 验证实际节点 |
-| 正式A/B/C、DEV/TEST、C生产全量Replay资源/收敛 | NOT_RUN；A只在全部必要准入完成后交给用户d3等待命令 |
+| 正式A GPU训练及最终节点 | PASS（运行与身份）：实际1000次BC完成，最终节点校验通过，275非Actor状态冻结；`s3a_complete_status.json`。**训练分类效果FAIL：全TRAIN仍ALL_WAIT_COLLAPSE。** |
+| 正式B/C、DEV/TEST、C生产全量Replay资源/收敛 | NOT_RUN；未启动B/C或执行DEV/TEST，未把小模型与WAIT-only大模型测试当作C生产验收 |
 
 模型套件15用例与管理套件10用例通过。最终身份元数据扩展后针对受影响的3入口再测，最后C after_bc恢复与AST负例另存 `final_contract_cpu.xml`。初始失败XML完整保留：`gate.xml`（收据变量覆盖错误和3处测试夹具问题）、`shared_cpu.xml`（此前已加载的收据变量覆盖错误）、`manager_cpu.xml`（在测试期间修改了被绑定的源码，正确拒绝code drift）。修正后PASS，未覆盖失败证据。
 
@@ -91,7 +92,7 @@ S3C1_T030_DIRECT_INIT / DIRECT_FULL / AFTER_BC_S3A
 
 全部配置0.30，旧配置0.50保持历史用途。A/B预算1000 Actor梯度更新、batch256、seed0；各有独立Run/prepared路径。C不使用特征缓存，使用当前RSSM repfeat；其中after_bc指向新A1000及同一冻结原基线，节点未产生前严格拒绝准备。B/C正式训练不启动。
 
-新A Run：`/data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012`。共用一对冻结worktree：`research/fg-s3-train-t030/{gym-trading-env,dreamerv3}`。双仓冻结SHA、实际prepare收据及状态在本报告末尾的运行交接记录中填写。
+新A Run：`/data/logdir/fg_single3/s3/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012`。共用一对冻结worktree：`research/fg-s3-train-t030/{gym-trading-env,dreamerv3}`。双仓冻结SHA、实际prepare收据见第6节，最终运行状态见第7节。
 
 ## 5. 权限与今晚/明日边界
 
@@ -99,7 +100,7 @@ S3C1_T030_DIRECT_INIT / DIRECT_FULL / AFTER_BC_S3A
 
 用户已在d3运行等待 `/tmp/done` 后启动新版A的命令。此文件是**启动授权信号**，只在冻结、CPU prepare和主机GPU smoke实际通过后创建。访问限制未解除而主机probe未提供时，保持不创建，A状态为WAITING_GPU_SMOKE。
 
-今晚必要项：共享问题修复、Source身份、CPU模型/Actor恢复、冻结和CPU prepare、文档和receipt、成功GPU准入后释放信号。明日项：C生产含ADD批的进一步联合更新、完整Replay内存/耗时与GPU资源预检、生产Gate真实连续20窗、正式A完整分类Review。DEV/TEST未授权，不执行；B/C正式训练未授权，不执行。实际新A指标不足时不得更改Loss或采样来伪装成功。
+今晚必要项：共享问题修复、Source身份、CPU模型/Actor恢复、冻结和CPU prepare、文档和receipt、成功GPU准入后释放信号。明日项：C生产含ADD批的进一步联合更新、完整Replay内存/耗时与GPU资源预检、生产Gate真实连续20窗、A的ALL_WAIT_COLLAPSE根因排查。正式A完整TRAIN分类结果已在第7节核验。DEV/TEST未授权，不执行；B/C正式训练未授权，不执行。实际新A指标不足时不得更改Loss或采样来伪装成功。
 
 ## 6. 冻结与交接实际记录（2026-10-13）
 
@@ -110,11 +111,11 @@ S3C1_T030_DIRECT_INIT / DIRECT_FULL / AFTER_BC_S3A
 - Python导入实测均来自上述冻结兄弟目录，无外部实验源码。
 - 主机GPU smoke状态：PASS，实际`cuda:0`、B256×2；source/model/Gate/原optimizer不变，仅原11个Actor键更新，参数/独立optimizer/sampler精确恢复。CPU对实际GPU atomic节点另行审计通过。
 - `/tmp/done` 已于主机2026-10-13 00:02创建，触发用户d3内已设置的等待命令。创建前已复核新Run不存在、GPU无计算进程、冻结配置/源码/来源和GPU source identity一致。
-- 正式A启动状态及实际PID/日志随后以真实运行收据记录；B/C正式训练、DEV/TEST仍NOT_RUN。
+- 正式A启动过程保存在`s3a_start_status.json`，最终完成状态保存在`s3a_complete_status.json`；B/C正式训练、DEV/TEST仍NOT_RUN。
 
-今晚共享修复与启动前工程准入全部完成。生产Gate已达标、C含ADD大模型联合梯度、C全量资源验收与完整新A分类结论仍不在本次PASS范围，待明日按实际证据处理。
+今晚共享修复与启动前工程准入全部完成。生产Gate已达标、C含ADD大模型联合梯度和C全量资源验收仍不在本次PASS范围，待明日按实际证据处理。新A完整TRAIN分类核验已完成，结果FAIL，详见第7节。
 
-正式A启动已实测：状态`RUNNING_BC`，launcher PID=2304609，worker PID=2304815；最后记录`BC 765: loss=0.101979, ADD recall=0.0, ALL_WAIT_COLLAPSE`。stdout：`/data/logdir/fg_single3/s3/launch_logs/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012_train_4afb1b4fff4c4fd6bb8c22599f0b6b4a.stdout.log`。identity的source hash与冻结CPU prepare及GPU smoke完全相同。启动/状态收据：`s3a_start_status.json`。当前ALL_WAIT_COLLAPSE仅为实际批次指标，不代表修复失败或分类改善；未调整Loss、class weight或采样。
+历史启动观测：状态`RUNNING_BC`，launcher PID=2304609，worker PID=2304815；当时记录`BC 765: loss=0.101979, ADD recall=0.0, ALL_WAIT_COLLAPSE`。stdout：`/data/logdir/fg_single3/s3/launch_logs/S3A_ORACLE_BC_T030_FROM_ONLINE_180K_seed0_20261012_train_4afb1b4fff4c4fd6bb8c22599f0b6b4a.stdout.log`。identity的source hash与冻结CPU prepare及GPU smoke完全相同。启动收据`s3a_start_status.json`保留这一历史时点，最终状态见第7节。未调整Loss、class weight或采样。
 
 ## 7. 新A实际完成与明日待办（2026-10-13）
 
