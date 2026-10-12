@@ -1,7 +1,8 @@
-"""Managed S3 experiments: immutable preparation, separate A/B trainers."""
+"""Managed S3 experiments: immutable preparation and distinct A/B/C trainers."""
 from contextlib import contextmanager
 import copy
 import fcntl
+import math
 import os
 from pathlib import Path
 import re
@@ -21,7 +22,88 @@ PROTOCOL = 'FG_S3_PREPARED_V1'
 SNAPSHOT_FILES = {'experiment.requested.yaml', 'model.template.yaml', 'model.defaults.yaml',
                   'source.config.yaml', 'effective_config.yaml', 'input_hashes.json', 'code_hashes.json'}
 TRAINERS = {'s3a': ('S3A_FULL',),
-            's3b': ('S3A_FULL', 'S3A_MATCHED', 'S3B_CERTIFIED')}
+            's3b': ('S3A_FULL', 'S3A_MATCHED', 'S3B_CERTIFIED'),
+            's3c': ('S3C1',)}
+JOINT_PROTOCOL = 'FG_S3C_PREPARED_V1'
+JOINT_SNAPSHOT_FILES = SNAPSHOT_FILES | {
+    'training.config.yaml', 'source_admission_receipt.json', 'teacher_catalog_identity.json'}
+
+
+def read_yaml(path):
+    """Use the canonical reader from the paired research Dreamer worktree."""
+    root = GYM_ROOT.parent / 'dreamerv3'
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
+    import dreamerv3
+    if Path(dreamerv3.__file__).resolve().parent.parent != root.resolve():
+        raise ValueError('Imported Dreamer is outside the paired worktrees')
+    from dreamerv3.configuration import read_config_yaml
+    return read_config_yaml(path)
+
+
+def _path(value):
+    if not isinstance(value, str) or not value:
+        raise ValueError('Configured paths must be nonempty strings')
+    path = Path(value).expanduser()
+    return str((path if path.is_absolute() else GYM_ROOT / path).resolve())
+
+
+def _joint_config(path, cfg):
+    _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
+                   'dreamer_root', 'model', 'paths', 'source', 'train'), 'joint experiment')
+    if cfg['schema'] != SCHEMA or cfg['trainer'] != 's3c':
+        raise ValueError('Foreign S3-C experiment schema/trainer')
+    if not isinstance(cfg['experiment'], str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', cfg['experiment']):
+        raise ValueError('Experiment must be a safe, nonempty run name')
+    if type(cfg['diagnostic']) is not bool:
+        raise ValueError('diagnostic must be an explicit boolean')
+    _mapping(cfg['model'], ('template', 'presets', 'overrides'), 'model')
+    if (not isinstance(cfg['model']['presets'], list) or not cfg['model']['presets']
+            or any(not isinstance(x, str) for x in cfg['model']['presets'])
+            or not isinstance(cfg['model']['overrides'], dict)):
+        raise ValueError('Model presets/overrides have invalid types')
+    _mapping(cfg['paths'], ('catalog', 'replay_directory'), 'joint paths')
+    _mapping(cfg['source'], ('kind', 'checkpoint', 'base_checkpoint', 'features'), 'source')
+    kind = cfg['source']['kind']
+    if kind not in ('direct_init', 'direct_full', 'after_bc_s3a'):
+        raise ValueError('NOT_SUPPORTED source kind: ' + str(kind))
+    if kind == 'direct_init' and any(cfg['source'][k] is not None for k in ('checkpoint', 'base_checkpoint', 'features')):
+        raise ValueError('direct_init cannot specify a model checkpoint or BC features')
+    if kind != 'direct_init' and cfg['source']['checkpoint'] is None:
+        raise ValueError('Explicit source checkpoint required')
+    if kind != 'after_bc_s3a' and any(cfg['source'][k] is not None for k in ('base_checkpoint', 'features')):
+        raise ValueError('Only after_bc_s3a accepts BC baseline/features provenance')
+    _mapping(cfg['train'], ('mode', 'seed', 'replay_seed', 'bc_lambda', 'batch_size', 'updates',
+                           'report_every', 'save_every', 'consec', 'capacity', 'device', 'logdir'), 'joint train')
+    train = cfg['train']
+    if train['mode'] != 'S3C1' or train['device'] not in ('cpu', 'gpu'):
+        raise ValueError('Invalid joint mode/device')
+    if cfg['diagnostic'] and train['device'] != 'cpu':
+        raise ValueError('Diagnostic experiments are CPU-only')
+    for name in ('seed', 'replay_seed'):
+        if type(train[name]) is not int or train[name] < 0:
+            raise ValueError('Seeds must be nonnegative integers')
+    for name in ('batch_size', 'updates', 'report_every', 'save_every', 'consec'):
+        _positive(train[name], name)
+    if train['capacity'] is not None:
+        _positive(train['capacity'], 'capacity')
+    if (isinstance(train['bc_lambda'], bool) or not isinstance(train['bc_lambda'], (int, float))
+            or not math.isfinite(train['bc_lambda']) or train['bc_lambda'] < 0):
+        raise ValueError('BC lambda must be finite and nonnegative')
+    cfg['prepared_dir'] = _path(cfg['prepared_dir'])
+    cfg['dreamer_root'] = _path(cfg['dreamer_root'])
+    cfg['model']['template'] = _path(cfg['model']['template'])
+    train['logdir'] = _path(train['logdir'])
+    cfg['paths'] = {k: None if v is None else _path(v) for k, v in cfg['paths'].items()}
+    for key in ('checkpoint', 'base_checkpoint', 'features'):
+        value = cfg['source'][key]
+        cfg['source'][key] = None if value is None else _path(value)
+    if cfg['paths']['catalog'] is None:
+        raise ValueError('Joint experiment requires the shared Catalog')
+    if not cfg['diagnostic'] and cfg['paths']['replay_directory'] is not None:
+        raise ValueError('Formal joint runs use the complete authenticated C1 pool')
+    _check_locations(cfg)
+    return path, cfg
 
 
 def _mapping(value, keys, name):
@@ -43,7 +125,9 @@ def read_experiment(config):
     if not path.is_file() and not path.is_absolute():
         path = CONFIG_ROOT / (str(config) if path.suffix else str(config) + '.yaml')
     path = path.resolve()
-    cfg = yaml.safe_load(path.read_text())
+    cfg = read_yaml(path)
+    if cfg.get('trainer') == 's3c':
+        return _joint_config(path, cfg)
     _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
                    'dreamer_root', 'model', 'paths', 'features', 'train'), 'experiment')
     if cfg['schema'] != SCHEMA or cfg['trainer'] not in TRAINERS:
@@ -82,18 +166,12 @@ def read_experiment(config):
     if not isinstance(cfg['train']['optimizer'], dict):
         raise ValueError('Optimizer overrides must be a mapping')
 
-    def resolve(value):
-        if not isinstance(value, str) or not value:
-            raise ValueError('Configured paths must be nonempty strings')
-        p = Path(value).expanduser()
-        return str((p if p.is_absolute() else GYM_ROOT / p).resolve())
-
-    cfg['prepared_dir'] = resolve(cfg['prepared_dir'])
-    cfg['dreamer_root'] = resolve(cfg['dreamer_root'])
-    cfg['model']['template'] = resolve(cfg['model']['template'])
-    cfg['train']['logdir'] = resolve(cfg['train']['logdir'])
+    cfg['prepared_dir'] = _path(cfg['prepared_dir'])
+    cfg['dreamer_root'] = _path(cfg['dreamer_root'])
+    cfg['model']['template'] = _path(cfg['model']['template'])
+    cfg['train']['logdir'] = _path(cfg['train']['logdir'])
     for key, value in cfg['paths'].items():
-        cfg['paths'][key] = None if key == 'weights' and value is None else resolve(value)
+        cfg['paths'][key] = None if key == 'weights' and value is None else _path(value)
     if cfg['trainer'] == 's3b' and cfg['paths']['weights'] is None:
         raise ValueError('S3-B comparison modes require frozen weights')
     if cfg['trainer'] == 's3a' and cfg['paths']['weights'] is not None:
@@ -103,6 +181,25 @@ def read_experiment(config):
 
 
 def _check_locations(cfg):
+    if Path(cfg['dreamer_root']) != (GYM_ROOT.parent / 'dreamerv3').resolve():
+        raise ValueError('Dreamer root must be the paired research worktree')
+    if not cfg['diagnostic'] and Path(cfg['model']['template']) != Path(cfg['dreamer_root']) / 'dreamerv3/configs.yaml':
+        raise ValueError('Formal model defaults must come from the paired research worktree')
+    if cfg['trainer'] == 's3c':
+        outputs = [Path(cfg['prepared_dir']), Path(cfg['train']['logdir'])]
+        inputs = [Path(cfg['paths']['catalog']), Path(cfg['dreamer_root']), Path(cfg['model']['template'])]
+        inputs.extend(Path(v).parent.parent if k in ('checkpoint', 'base_checkpoint') else Path(v)
+                      for k, v in cfg['source'].items() if k != 'kind' and v)
+        if cfg['paths']['replay_directory']:
+            inputs.append(Path(cfg['paths']['replay_directory']))
+        if any(_overlap(a, b) for a in outputs for b in inputs) or _overlap(*outputs):
+            raise ValueError('S3 outputs overlap an immutable source/model/data directory')
+        if not cfg['diagnostic']:
+            if not outputs[0].is_relative_to(GYM_ROOT / 'artifacts') or outputs[0] == GYM_ROOT / 'artifacts':
+                raise ValueError('Formal prepared snapshots must be under repository artifacts/')
+            if not outputs[1].is_relative_to(Path('/data/logdir/fg_single3')) or outputs[1] == Path('/data/logdir/fg_single3'):
+                raise ValueError('Formal training logs must be under /data/logdir/fg_single3/')
+        return
     prepared, logdir = Path(cfg['prepared_dir']), Path(cfg['train']['logdir'])
     features = Path(cfg['paths']['features'])
     inputs = [Path(cfg['paths'][n]) for n in ('dataset', 'oracle_receipt', 'labels')]
@@ -149,17 +246,22 @@ def runtime_files(cfg):
     return {str(p): digest(p) for p in sorted(set(files))}
 
 
-def resolve_defaults(cfg, source):
+def model_defaults(cfg):
     import elements
-    from dreamerv3.configuration import read_config_yaml
-    from dreamerv3.fg_s3a_actor import DEFAULT_OPT
     from embodied.run.fg_checkpoint import plain
-    definitions = read_config_yaml(cfg['model']['template'])
-    presets = cfg['model']['presets']
-    resolved = elements.Config(definitions[presets[0]])
-    for name in presets[1:]:
+    definitions = read_yaml(cfg['model']['template'])
+    selected, remaining = elements.Flags(configs=['defaults']).parse_known(
+        ['--configs', *cfg['model']['presets']])
+    resolved = elements.Config(definitions[selected.configs[0]])
+    for name in selected.configs[1:]:
         resolved = resolved.update(definitions[name])
-    defaults = plain(resolved)
+    resolved = elements.Flags(resolved).parse(remaining).update(cfg['model'].get('overrides', {}))
+    return plain(resolved)
+
+
+def resolve_defaults(cfg, source):
+    from dreamerv3.fg_s3a_actor import DEFAULT_OPT
+    defaults = model_defaults(cfg)
     # The checkpoint remains the exact model authority. A changed public
     # architecture must be reviewed instead of silently reshaping its tensors.
     for name in ('enc', 'dyn', 'dec', 'rewhead', 'conhead', 'availhead', 'policy', 'value'):
@@ -221,9 +323,133 @@ def _lock(path):
         yield stream
 
 
+def _joint_admission(cfg):
+    import elements
+    from embodied.run.fg_checkpoint import plain
+    from embodied.run.fg_s3_source_admission import inspect_source, prepare_transfer, transfer_control_state
+    from embodied.run.fg_s3_teacher_adapter import admit_replay_directory
+    from gym_trading_env.research.fg_s3_teacher_catalog import load_catalog
+    catalog = load_catalog(cfg['paths']['catalog'])
+    resolved = elements.Config(model_defaults(cfg))
+    train, source = cfg['train'], cfg['source']
+    resolved = resolved.update({'seed': train['seed'], 'batch_size': train['batch_size'],
+                                'batch_length': 64, 'replay_context': 1, 'logdir': train['logdir']})
+    defaults = plain(resolved)
+    spec = inspect_source(source['kind'], catalog=catalog, path=source['checkpoint'],
+        base_checkpoint=source['base_checkpoint'], features=source['features'],
+        seed=train['seed'] if source['kind'] == 'direct_init' else None,
+        config=defaults if source['kind'] == 'direct_init' else None, diagnostic=cfg['diagnostic'])
+    if spec['origin']['diagnostic'] and not cfg['diagnostic']:
+        raise ValueError('Formal experiment cannot consume a diagnostic source or Catalog')
+    if defaults['agent'] != spec['origin']['config']['agent']:
+        raise ValueError('Target model/optimizer/loss config differs from signed source')
+    if (defaults['action_mask_warmup'] != spec['origin']['config']['action_mask_warmup']
+            or defaults['jax']['compute_dtype'] != spec['origin']['config']['jax']['compute_dtype']):
+        raise ValueError('Target Gate policy/compute dtype differs from signed source')
+    if defaults['agent']['replay_context_mode'] != 'recompute_prefix':
+        raise ValueError('S3-C requires recompute_prefix')
+    if not cfg['diagnostic'] and (not defaults['action_mask_warmup']['enabled']
+                                  or defaults['agent']['avail_actor_enabled']):
+        raise ValueError('Formal joint runs require the original automatic Gate admission')
+    control = transfer_control_state(spec)
+    if not control['complete'] and not cfg['diagnostic']:
+        raise ValueError('Formal source lacks Gate controller/window state')
+    prepare_transfer(spec)  # Actual full source format/finite-state audit, no GPU init.
+    config = copy.deepcopy(spec['origin']['config'])
+    # Model/optimizer/Gate policy stay source-bound. Only new-run batch/logging
+    # settings change; the original initialization counters are transferred.
+    config.update(seed=train['seed'], batch_size=train['batch_size'], batch_length=64,
+                  replay_context=1, report_length=defaults['report_length'], logdir=train['logdir'])
+    directory = cfg['paths']['replay_directory']
+    if directory:
+        admit_replay_directory(directory, catalog, diagnostic=cfg['diagnostic'])
+    return catalog, spec, defaults, config
+
+
+def _prepare_joint(requested, cfg):
+    from embodied.run.fg_s3a_checkpoint import package_versions
+    from gym_trading_env.research.fg_s3_teacher_catalog import guard_output
+    root = Path(cfg['prepared_dir'])
+    if root.exists() or Path(cfg['train']['logdir']).exists():
+        raise FileExistsError('Prepared experiment or training output already exists')
+    catalog, source, defaults, config = _joint_admission(cfg)
+    protected = [catalog.root, Path(catalog.manifest['source']['dataset']),
+                 Path(catalog.manifest['source']['oracle_receipt']), Path(catalog.manifest['labels'])]
+    guard_output(root, protected)
+    guard_output(cfg['train']['logdir'], protected)
+    inputs = dict(catalog.manifest['frozen_inputs'])
+    inputs[str(catalog.root / 'manifest.json')] = catalog.manifest_sha256
+    origin = source['origin']
+    for producer in (origin, origin.get('baseline')):
+        if producer and producer.get('path'):
+            node = Path(producer['path'])
+            inputs[str(node / 'manifest.json')] = producer['manifest_sha256']
+            import json
+            meta = json.loads((node / 'manifest.json').read_text())
+            inputs.update({str(node / p): h for p, h in meta['files'].items()})
+    if cfg['source']['features']:
+        path = Path(cfg['source']['features']) / 'manifest.json'
+        inputs[str(path)] = digest(path)
+    code = runtime_files(cfg)
+    requested_hash = digest(requested)
+    with _lock(root.parent / ('.' + root.name + '.prepare.lock')):
+        if root.exists():
+            raise FileExistsError('Prepared experiment already exists')
+        pending = root.parent / ('.' + root.name + '.pending_' + uuid.uuid4().hex)
+        pending.mkdir()
+        (pending / 'experiment.requested.yaml').write_bytes(requested.read_bytes())
+        (pending / 'model.template.yaml').write_bytes(Path(cfg['model']['template']).read_bytes())
+        for name, value in (('model.defaults.yaml', defaults), ('source.config.yaml', origin['config']),
+                            ('effective_config.yaml', cfg), ('training.config.yaml', config)):
+            (pending / name).write_text(yaml.safe_dump(value, sort_keys=False))
+        write_json(pending / 'input_hashes.json', inputs)
+        write_json(pending / 'code_hashes.json', code)
+        write_json(pending / 'source_admission_receipt.json', source)
+        write_json(pending / 'teacher_catalog_identity.json', signed(dict(
+            protocol=catalog.manifest['protocol'], path=str(catalog.root),
+            manifest_sha256=catalog.manifest_sha256, counts=catalog.manifest['counts'])))
+        receipt = signed(dict(protocol=JOINT_PROTOCOL, status='READY_FOR_JOINT',
+            experiment=cfg['experiment'], trainer='s3c', mode='S3C1', diagnostic=cfg['diagnostic'],
+            requested_config=str(requested), requested_config_sha256=requested_hash,
+            source_kind=source['kind'], source_receipt_sha256=digest(pending / 'source_admission_receipt.json'),
+            catalog_manifest_sha256=catalog.manifest_sha256, packages=package_versions(),
+            source_versions={str(r): subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=r, text=True).strip()
+                             for r in (GYM_ROOT, Path(cfg['dreamer_root']))},
+            files={p.name: digest(p) for p in pending.iterdir()},
+            update_budget=cfg['train']['updates'], budget_unit='gradient_updates',
+            formal_gpu_training='NOT_RUN', dev_evaluation='NOT_RUN', test_evaluation='NOT_RUN'))
+        check_files(inputs)
+        check_files(code)
+        if read_experiment(requested)[1] != cfg or digest(requested) != requested_hash:
+            raise ValueError('Requested joint configuration changed during preparation')
+        if digest(pending / 'model.template.yaml') != digest(cfg['model']['template']):
+            raise ValueError('Model template changed during preparation')
+        write_json(pending / 'manifest.json', receipt)
+        (pending / 'done').write_text('')
+        pending.rename(root)
+    return receipt
+
+
+def _joint_binding(prepared, receipt, cfg):
+    return dict(run_id=cfg['experiment'] + '_' + receipt['content_hash'][:16],
+                experiment=cfg['experiment'], prepared_manifest_sha256=digest(Path(prepared) / 'manifest.json'),
+                catalog_manifest_sha256=receipt['catalog_manifest_sha256'],
+                requested_config_sha256=receipt['requested_config_sha256'],
+                source_versions=receipt['source_versions'])
+
+
+def _joint_identity(prepared, receipt, cfg):
+    identity = read_manifest(Path(cfg['train']['logdir']) / 'run_identity.json')['identity']
+    if identity.get('managed_preparation') != _joint_binding(prepared, receipt, cfg):
+        raise ValueError('Managed joint run belongs to another immutable preparation')
+    return identity
+
+
 def prepare(config):
     requested, cfg = read_experiment(config)
     activate(cfg)
+    if cfg['trainer'] == 's3c':
+        return _prepare_joint(requested, cfg)
     root = Path(cfg['prepared_dir'])
     if root.exists():
         raise FileExistsError('Prepared experiment already exists; choose a new experiment')
@@ -296,15 +522,16 @@ def prepare(config):
     return receipt
 
 
-def require_prepared(prepared, config=None):
+def require_prepared(prepared, config=None, *, verify_source=True):
     root = Path(prepared).resolve()
     receipt = read_manifest(root / 'manifest.json')
-    if (not (root / 'done').is_file() or receipt['protocol'] != PROTOCOL
-            or receipt['status'] not in ('READY_FOR_BC', 'READY_FOR_FEATURES')
-            or set(receipt['files']) != SNAPSHOT_FILES):
+    joint = receipt['protocol'] == JOINT_PROTOCOL
+    if (not (root / 'done').is_file() or receipt['protocol'] not in (PROTOCOL, JOINT_PROTOCOL)
+            or receipt['status'] not in ('READY_FOR_BC', 'READY_FOR_FEATURES', 'READY_FOR_JOINT')
+            or set(receipt['files']) != (JOINT_SNAPSHOT_FILES if joint else SNAPSHOT_FILES)):
         raise ValueError('Incomplete or foreign prepared S3 experiment')
     check_files({str(root / name): h for name, h in receipt['files'].items()})
-    cfg = yaml.safe_load((root / 'effective_config.yaml').read_text())
+    cfg = read_yaml(root / 'effective_config.yaml')
     _check_locations(cfg)
     if Path(cfg['prepared_dir']) != root or (cfg['experiment'], cfg['trainer'], cfg['train']['mode'], cfg['diagnostic']) != (
             receipt['experiment'], receipt['trainer'], receipt['mode'], receipt['diagnostic']):
@@ -315,7 +542,15 @@ def require_prepared(prepared, config=None):
             raise ValueError('Selected experiment YAML differs from its prepared snapshot')
     if runtime_files(cfg) != read_manifest_hashes(root / 'code_hashes.json'):
         raise ValueError('Prepared S3 runtime code/template changed')
-    check_files(read_manifest_hashes(root / 'input_hashes.json'))
+    # Joint resume uses its own model state. Historical source bytes are bound
+    # in the immutable preparation/transfer receipts, not readmitted on resume.
+    inputs = read_manifest_hashes(root / 'input_hashes.json')
+    if joint and not verify_source:
+        from gym_trading_env.research.fg_s3_teacher_catalog import load_catalog
+        catalog = load_catalog(cfg['paths']['catalog'])
+        inputs = {p: h for p, h in inputs.items() if p in catalog.manifest['frozen_inputs']
+                  or p == str(catalog.root / 'manifest.json')}
+    check_files(inputs)
     from embodied.run.fg_s3a_checkpoint import package_versions
     if receipt['packages'] != package_versions():
         raise ValueError('Prepared S3 package versions changed')
@@ -355,9 +590,28 @@ def _training_identity(prepared, receipt, cfg, source, cache):
 
 def execute_phase(prepared, phase, resume=False):
     # Called only by a separately configured child process.
-    raw = yaml.safe_load((Path(prepared) / 'effective_config.yaml').read_text())
+    raw = read_yaml(Path(prepared) / 'effective_config.yaml')
     activate(raw, raw['features' if phase == 'features' else 'train']['device'])
-    receipt, cfg = require_prepared(prepared)
+    receipt, cfg = require_prepared(prepared, verify_source=not resume)
+    if cfg['trainer'] == 's3c':
+        if phase != 'train':
+            raise ValueError('S3-C uses current RSSM features, not a feature-cache phase')
+        from embodied.run.fg_s3c_train import S3CRun
+        args = dict(catalog=cfg['paths']['catalog'], device=cfg['train']['device'])
+        if not resume:
+            source = cfg['source'];train = cfg['train']
+            args.update(config=read_yaml(Path(prepared) / 'training.config.yaml'),
+                source_kind=source['kind'], source_checkpoint=source['checkpoint'],
+                base_checkpoint=source['base_checkpoint'], features=source['features'],
+                seed=train['seed'] if source['kind'] == 'direct_init' else None,
+                bc_lambda=train['bc_lambda'], replay_seed=train['replay_seed'],
+                replay_directory=cfg['paths']['replay_directory'], capacity=train['capacity'],
+                consec=train['consec'], report_every=train['report_every'], save_every=train['save_every'],
+                diagnostic=cfg['diagnostic'], target_updates=train['updates'],
+                managed_binding=_joint_binding(prepared, receipt, cfg),
+                expected_source_hash=read_manifest(Path(prepared) / 'source_admission_receipt.json')['content_hash'])
+        run = S3CRun(cfg['train']['logdir'], resume=resume, **args)
+        return run.train_to(cfg['train']['updates'])
     _, source, _, cache = admission(cfg, feature_required=phase == 'train')
     if phase == 'features':
         if cache:
@@ -429,12 +683,16 @@ def _save_run_snapshot(prepared, cfg, identity, *, create=False):
     if read_manifest(logdir / 'run_identity.json')['identity'] != identity:
         raise ValueError('Managed logdir belongs to another training identity')
     dest = logdir / 'managed_snapshot'
-    expected = dict(prepared_manifest_sha256=digest(root / 'manifest.json'),
-                    feature_binding_sha256=digest(root / 'features_binding.json'))
+    joint = cfg['trainer'] == 's3c'
+    expected = (_joint_binding(prepared, read_manifest(root / 'manifest.json'), cfg) if joint else
+                dict(prepared_manifest_sha256=digest(root / 'manifest.json'),
+                     feature_binding_sha256=digest(root / 'features_binding.json')))
+    extras = {'preparation_receipt.json'} | (set() if joint else {'features_binding.json'})
+    names = (JOINT_SNAPSHOT_FILES if joint else SNAPSHOT_FILES) | extras
     if dest.exists():
         saved = read_manifest(dest / 'manifest.json')
         if (saved['protocol'] != 'FG_S3_RUN_SNAPSHOT_V1' or saved['binding'] != expected
-                or set(saved['files']) != SNAPSHOT_FILES | {'features_binding.json', 'preparation_receipt.json'}):
+                or set(saved['files']) != names):
             raise ValueError('Managed run snapshot differs from prepared experiment')
         check_files({str(dest / p): h for p, h in saved['files'].items()})
         return
@@ -442,8 +700,8 @@ def _save_run_snapshot(prepared, cfg, identity, *, create=False):
         raise ValueError('Managed run snapshot is missing')
     pending = logdir / ('.managed_snapshot.pending_' + uuid.uuid4().hex)
     pending.mkdir()
-    names = list(read_manifest(root / 'manifest.json')['files']) + ['features_binding.json']
-    for name in names:
+    copy_names = list(read_manifest(root / 'manifest.json')['files']) + ([] if joint else ['features_binding.json'])
+    for name in copy_names:
         shutil.copyfile(root / name, pending / name)
     shutil.copyfile(root / 'manifest.json', pending / 'preparation_receipt.json')
     write_json(pending / 'manifest.json', signed(dict(protocol='FG_S3_RUN_SNAPSHOT_V1', binding=expected,
@@ -452,6 +710,12 @@ def _save_run_snapshot(prepared, cfg, identity, *, create=False):
 
 
 def _audit_checkpoint(cfg, identity):
+    if cfg['trainer'] == 's3c':
+        from embodied.run.fg_s3c_train import audit_checkpoint
+        checked = audit_checkpoint(cfg['train']['logdir'], catalog=cfg['paths']['catalog'])
+        if checked['identity'] != identity:
+            raise ValueError('Joint checkpoint belongs to another identity')
+        return checked
     logdir = Path(cfg['train']['logdir'])
     name = (logdir / 'ckpt/latest').read_text().strip()
     if not name or Path(name).name != name:
@@ -464,11 +728,23 @@ def _audit_checkpoint(cfg, identity):
 
 
 def start(prepared, *, resume=False, config=None):
-    receipt, cfg = require_prepared(prepared, config)
+    receipt, cfg = require_prepared(prepared, config, verify_source=not resume)
     logdir = Path(cfg['train']['logdir'])
     with _lock(logdir.parent / ('.' + logdir.name + '.s3.lock')) as run_lock:
         if logdir.exists() != resume:
             raise ValueError('start requires a new logdir; resume requires an existing managed run')
+        if cfg['trainer'] == 's3c':
+            if resume:
+                identity = _joint_identity(prepared, receipt, cfg)
+                _audit_checkpoint(cfg, identity)
+                _save_run_snapshot(prepared, cfg, identity, create=True)
+            try:
+                _run_phase(prepared, cfg, 'train', resume, lock_fds=(run_lock.fileno(),))
+            finally:
+                if (logdir / 'run_identity.json').is_file():
+                    identity = _joint_identity(prepared, receipt, cfg)
+                    _save_run_snapshot(prepared, cfg, identity, create=True)
+            return audit(prepared)
         featuredir = Path(cfg['paths']['features'])
         if not featuredir.exists():
             if resume:
@@ -495,7 +771,16 @@ def start(prepared, *, resume=False, config=None):
 
 
 def audit(prepared, config=None):
-    receipt, cfg = require_prepared(prepared, config)
+    receipt, cfg = require_prepared(prepared, config, verify_source=False)
+    if cfg['trainer'] == 's3c':
+        result = dict(status=receipt['status'], experiment=cfg['experiment'], trainer='s3c', mode='S3C1',
+                      diagnostic=cfg['diagnostic'], prepared=str(prepared), logdir=cfg['train']['logdir'])
+        if Path(cfg['train']['logdir']).exists():
+            identity = _joint_identity(prepared, receipt, cfg)
+            _save_run_snapshot(prepared, cfg, identity)
+            checked = _audit_checkpoint(cfg, identity)
+            result.update({k: v for k, v in checked.items() if k != 'identity'})
+        return result
     _, source, _, cache = admission(cfg)
     result = dict(status=receipt['status'], experiment=cfg['experiment'], trainer=cfg['trainer'],
                   mode=cfg['train']['mode'], diagnostic=cfg['diagnostic'],

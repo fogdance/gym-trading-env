@@ -29,10 +29,10 @@ S3 使用 `tools/fg_s3_experiment.py` 管理 `plan / prepare / start / resume / 
 原有 Single3 离线预训练和在线接续继续使用 `tools/fg_single3_experiment.py`。
 各实验 YAML 都集中在本目录，通过 `--config` 选择路径或下表名称。
 
-S3-C 将扩展已有 S3 管理入口。本目录名不代表调用 Single3 预训练流程。
-2026-10-12 核对发现下列 S3 YAML 仍包含旧源码路径，且配置指定的正式源
-62500 节点不存在；当前 `plan` 成功仅表示配置解析。修正路径并完成来源准入后
-再生成新准备快照。入口、配置、待修问题及只读命令收据见
+S3-C 使用已有 S3 管理入口。本目录名不代表调用 Single3 预训练流程。
+2026-10-12 已将 S3 YAML 的代码/模板定位改为兄弟 Dreamer worktree，TRAIN
+输入只读复用 `research/fg-data`。A/B 指定的正式源 62500 节点仍不存在；
+`plan` 成功仅表示配置解析，实际来源准入后再生成新准备快照。初始核对记录见
 [S3 入口与配置核对](../../../docs/FG_S3_Entry_and_Config_Review.md)。
 
 | 配置名称 | 训练器 | 监督样本 / 权重 |
@@ -42,8 +42,8 @@ S3-C 将扩展已有 S3 管理入口。本目录名不代表调用 Single3 预�
 | `S3A_MATCHED` | S3-B 公平对照入口 | 严格证书子集 / 1 |
 | `S3B_CERTIFIED` | S3-B | 同一严格证书子集 / 冻结优势权重 |
 
-公共网络默认配置通过 `model.template` 引用
-`/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml`，按 `model.presets` 解析。
+公共网络默认配置通过 `model.template` 引用兄弟仓库
+`../dreamerv3/dreamerv3/configs.yaml`，按 `model.presets` 解析。
 源 Checkpoint 的模型配置和参数仍必须精确匹配；实验 YAML 不新增网络结构。
 BC 复用公共优化器的兼容默认项，使用独立的常数学习率优化器且关闭原预热。
 
@@ -68,8 +68,8 @@ $PY tools/fg_s3_experiment.py audit --config S3B_CERTIFIED
 `resume --prepared <prepared_dir>`，参数来自已保存配置。
 
 S3-A / S3-B 原计算入口和独立 Checkpoint 协议保留；早期 `configs/fg_s3b/` YAML
-仍服务原入口，新管理流程统一使用本目录。后续 S3-C 可以增加独立适配器和实验
-配置，本轮仅支持 A/B。完整收据与说明见 `docs/FG_S3_Experiment_Management.md`。
+仍服务原入口，新管理流程统一使用本目录。S3-C 使用同一管理入口的独立联合
+训练分派。原 A/B 管理收据与说明见 `docs/FG_S3_Experiment_Management.md`。
 
 S3-B 的 P1-B1 修复使用固定 TRAIN 平均权重，Checkpoint 为 `FG_S3B_BC_V2`。
 三份对照配置使用独立的 `global_mean_v2` 实验/输出目录。新权重 manifest 是对
@@ -87,3 +87,49 @@ $PY tools/fg_s3b.py normalization-audit \
 平均权重，FULL / MATCHED 等权对照使用 1；该尺度绑定进运行身份及恢复检查。
 旧版本在两仓库的 `fg-s3b-batchmean-v1-20261012` 标签中保留，V2 不接受旧 S3-B
 状态。具体公式、统计、CPU 证据和迁移边界见 `docs/FG_S3B_P1_Global_Mean_Fix.md`。
+
+## S3-C1 原 RL + 等权 Oracle BC
+
+S3-C 同样使用 `tools/fg_s3_experiment.py`。读取 YAML 使用 Dreamer canonical
+reader，presets/覆盖项使用 `elements.Config` 和官方 Flags 解析。原 S3-A/B
+训练器不改；C 不生成 BC feature cache、不使用独立 BC optimizer。
+
+| 配置 | 来源与用途 |
+| --- | --- |
+| `S3C1_DIRECT_INIT` | 显式 seed 的原网络随机初始化；正式模板 |
+| `S3C1_DIRECT_FULL` | 用户填写的冻结完整原模型；正式模板 |
+| `S3C1_AFTER_BC_S3A` | 用户填写的已审计 S3-A 包和对应基线；正式模板 |
+| `S3C1_CPU_FLOAT32` / `S3C1_CPU_BFLOAT16` | 小原网络、真实 TRAIN 链接切片、受控 READY 诊断夹具；仅 CPU |
+| `S3C1_CPU_REAL_DIRECT_FULL` | 现有小原模型完整包；继承 CLOSED Gate 的 CPU 诊断 |
+| `S3C1_CPU_REAL_AFTER_BC_S3A` | 现有 S3-A20 包；继承 Actor、原优化器及 CLOSED Gate 的 CPU 诊断 |
+
+正式模板中的来源占位路径必须由用户填写。提供三个来源配置表示接口支持，
+不代表选定正式训练顺序。所有预算为**梯度更新次数**；C 的 local update 从 0
+开始，模型总计数为 source update offset + local update。
+
+```bash
+PY=/home/v/miniconda3/envs/dreamerv3/bin/python
+$PY tools/fg_s3_experiment.py plan --config S3C1_DIRECT_FULL
+# 以下是明确的 CPU 诊断流程，每份配置拥有自己的 prepared/logdir。
+$PY tools/fg_s3_experiment.py prepare --config S3C1_CPU_FLOAT32
+$PY tools/fg_s3_experiment.py start --config S3C1_CPU_FLOAT32
+$PY tools/fg_s3_experiment.py resume --config S3C1_CPU_FLOAT32
+$PY tools/fg_s3_experiment.py audit --config S3C1_CPU_FLOAT32
+```
+
+CPU 示例使用已审计 `teacher_catalog_v1_final`；切片只链接原 C1 P1/P4 文件，
+选择与哈希记录在 `artifacts/fg_s3c1_v1/input_slice_train_receipt.json`。文件缺失时
+准备拒绝准入，需要按审计输入建立自己的诊断切片，不能自动回退其他数据。
+全量 Catalog/來源审计继续使用现有 `tools/fg_s3_arch.py` 与 Dreamer
+`scripts/fg_s3_arch.py`，C 不再提供第二套教师索引或迁移脚本。
+
+C 准备协议是 `FG_S3C_PREPARED_V1 / READY_FOR_JOINT`，额外保存完整训练配置、
+SourceAdmission 和 Catalog 身份。新 start 校验准备时的来源哈希并迁移一次；
+resume 只恢复本 run 的 `FG_FULL_V1` Agent、joint optimizer、Gate/window、
+Replay、train/report Prefetch、Consec.current、carry、scheduler/RNG/计数。
+换来源、改 lambda/预算、改已准备 YAML 或代码不能当作同 run 恢复。
+
+新增 BC 使用当前 posterior repfeat 的 stop-gradient 副本；每次只有原联合优化器
+更新一次。Gate NOT READY 时新增 BC 为零，原 WM 继续训练。READY CPU 夹具和
+真实但 CLOSED 的旧来源分别报告，CLOSED 更新不计为有效 RL+BC。
+所有分类指标只描述 TRAIN imitation；不表示 DEV/TEST 或交易表现。

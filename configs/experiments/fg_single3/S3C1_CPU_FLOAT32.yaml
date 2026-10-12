@@ -1,0 +1,66 @@
+# CPU diagnostic on a linked real TRAIN subset and a small original network.
+# Controlled READY fixture: warmup disabled, initial Gate true. Never formal admission.
+# Budget unit: gradient updates. No DEV/TEST evaluation.
+schema: FG_S3_EXPERIMENT_V1
+experiment: S3C1_CPU_FLOAT32
+trainer: s3c
+diagnostic: true
+prepared_dir: artifacts/fg_s3c1_v1/experiments/S3C1_CPU_FLOAT32
+dreamer_root: ../dreamerv3
+model:
+  template: ../dreamerv3/dreamerv3/configs.yaml
+  presets:
+  - defaults
+  overrides:
+    jax.platform: cpu
+    jax.compute_dtype: float32
+    jax.precompile: false
+    jax.profiler: false
+    jax.prealloc: false
+    batch_length: 64
+    report_length: 16
+    agent.replay_context_mode: recompute_prefix
+    agent.update_diagnostics: true
+    agent.enc.simple.layers: 1
+    agent.enc.simple.units: 16
+    agent.dec.simple.layers: 1
+    agent.dec.simple.units: 16
+    agent.dyn.rssm.deter: 32
+    agent.dyn.rssm.hidden: 16
+    agent.dyn.rssm.stoch: 2
+    agent.dyn.rssm.classes: 4
+    agent.dyn.rssm.blocks: 4
+    agent.policy.layers: 1
+    agent.policy.units: 16
+    agent.value.layers: 1
+    agent.value.units: 16
+    agent.rewhead.units: 16
+    agent.conhead.units: 16
+    agent.availhead.units: 16
+    agent.imag_length: 3
+    agent.horizon: 333
+    agent.contdisc: true
+    agent.avail_actor_enabled: true
+    agent.avail_always_available_index: 0
+    action_mask_warmup.enabled: false
+paths:
+  catalog: artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+  replay_directory: artifacts/fg_s3c1_v1/input_slice_train
+source:
+  kind: direct_init
+  checkpoint: null
+  base_checkpoint: null
+  features: null
+train:
+  mode: S3C1
+  seed: 0
+  replay_seed: 202
+  bc_lambda: 1.0
+  batch_size: 2
+  updates: 2
+  report_every: 1
+  save_every: 1
+  consec: 2
+  capacity: 4096
+  device: cpu
+  logdir: artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Manage separate S3-A/S3-B experiments through frozen YAML snapshots."""
+"""Manage separate S3-A/S3-B/S3-C experiments through frozen YAML snapshots."""
 import argparse
 import json
 import os
@@ -18,7 +18,7 @@ def main(argv=None):
     parser.add_argument('--resume-worker', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     from gym_trading_env.research.fg_s3_experiment import (
-        activate, audit, execute_phase, prepare, read_experiment, start)
+        activate, audit, execute_phase, prepare, read_experiment, read_yaml, start)
     if args.command == '_execute':
         if not args.prepared or not args.phase:
             parser.error('Internal worker requires --prepared and --phase')
@@ -43,9 +43,8 @@ def main(argv=None):
             _, cfg = read_experiment(args.config)
             prepared = args.prepared or cfg['prepared_dir']
         else:
-            import yaml
             prepared = args.prepared
-            cfg = yaml.safe_load((Path(prepared) / 'effective_config.yaml').read_text())
+            cfg = read_yaml(Path(prepared) / 'effective_config.yaml')
         activate(cfg)
         result = (audit(prepared, args.config) if args.command == 'audit'
                   else start(prepared, resume=args.command == 'resume', config=args.config))

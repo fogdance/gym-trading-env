@@ -114,7 +114,7 @@ def test_central_configuration_interfaces_and_formal_partial_guard(tmp_path):
     assert len({c['prepared_dir'] for c in configs}) == len(names)
     assert len({c['train']['logdir'] for c in configs}) == len(names)
     for cfg in configs:
-        assert cfg['model']['template'] == '/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml'
+        assert cfg['model']['template'] == str(DREAMER / 'dreamerv3/configs.yaml')
     for key in ('paths', 'features'):
         assert configs[1][key] == configs[2][key] == configs[3][key]
     assert configs[1]['train']['optimizer'] == configs[2]['train']['optimizer'] == configs[3]['train']['optimizer']
