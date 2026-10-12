@@ -1,0 +1,25 @@
+{
+  "gym_functional_commit": "396db7aba93abff4df6cb8618b19efd7260a9bf1",
+  "dreamer_functional_commit": "4b77f11f6dcc663735a9ce0a35dfcd88747d5462",
+  "commands": [
+    {
+      "name": "shared_pool_after",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider tests/entry_v1/test_fg_s3_teacher_catalog.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py --junitxml=artifacts/fg_s3c1_v1/receipts/shared_pool_after.xml",
+      "passed": 10,
+      "seconds": 60.86
+    },
+    {
+      "name": "shared_diagnostic_after",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -p no:cacheprovider ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py --junitxml=artifacts/fg_s3c1_v1/receipts/shared_diagnostic_after.xml",
+      "passed": 3,
+      "seconds": 40.1
+    }
+  ],
+  "unique_cases": 10,
+  "explicit_diagnostic_flag_test": "UNIT_CONTRACT_ONLY",
+  "neural_sources": "REAL_SMALL_ORIGINAL_AGENT_WITH_SYNTHETIC_TRAIN_FIXTURE",
+  "production_model": "NOT_RUN",
+  "formal_gpu": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN"
+}

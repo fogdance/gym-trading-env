@@ -102,3 +102,33 @@ join rejects a missing synthetic reset. Catalog format and hash did not change.
 Implement C0–C4 using these public APIs. Keep original joint optimizer, use
 current posterior repfeat, add equal-weight Actor-only BC gradient, and prove
 lambda-zero and exact FullCheckpoint/runtime recovery before delivery.
+
+## Second shared-interface return review (2026-10-12)
+
+Before C runner integration, authenticate the complete native Replay file set
+and bytes in the shared teacher adapter. Formal admission requires all 2435 C1
+chunks; diagnostic subsets require explicit admission and every included file
+still matches frozen hashes/ownership. C has no private UUID or label parser.
+The real Catalog metadata/view comparison found exactly 2435 expected and actual
+filenames, zero unknown or missing.
+
+SourceAdmission now accepts an explicit boolean diagnostic flag. This allows a
+small CPU diagnostic model on a real TRAIN Catalog without presenting it as a
+production source. It never upgrades diagnostic provenance to formal. The flag
+contract is tested separately from real neural source transfer.
+
+Functional commits: Gym `396db7aba93abff4df6cb8618b19efd7260a9bf1`,
+Dreamer `4b77f11f6dcc663735a9ce0a35dfcd88747d5462`.
+
+Actual regressions: full Catalog/pool and three-source CPU tests: **10 passed in
+60.86s**. After the explicit diagnostic API refinement, repeat the three real
+source cases: **3 passed in 40.10s**. This is 10 unique cases, not 13. Native
+fixture prices are synthetic; models are actual original neural Agents and BC
+packages. Formal GPU/production source training, DEV and sealed TEST: NOT_RUN.
+
+Complete commands and raw XML/stdout are in Gym
+`artifacts/fg_s3c1_v1/receipts/shared_return_review.json`,
+`shared_pool_after.{xml,stdout}`, `shared_diagnostic_after.{xml,stdout}`.
+Public changes reviewed for duplicate teacher definitions, independent BC
+optimizer import and source mutation; none introduced. C may now consume these
+public contracts.
