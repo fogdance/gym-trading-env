@@ -1,0 +1,51 @@
+{
+  "original_repositories": {
+    "gym-trading-env": {
+      "head": "d374e93e68c09d6bd8121177709960ef2ce497da",
+      "tracked_clean": true,
+      "gitignore_sha256": "1610a9dd8d1a119bd288d3558bbb818492560098544099f435c7a74b885179cc"
+    },
+    "dreamerv3": {
+      "head": "bb1d123fbb12e9390cee0282490a604f66be10f8",
+      "tracked_clean": true,
+      "gitignore_sha256": "342fe0468934adbb68394da2bb2ab591a1581c6667a389c4936f53f830a8521b"
+    }
+  },
+  "protected_algorithm_files": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3b_advantage.py": "e97caf4a745b77f5e1c812692c4c160877b0c6f9db172bc5598908172efa27ca",
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3b_normalization.py": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25",
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3a_labels.py": "a4b3cae13af109ae519f51097eeff18254097bfa748e0e16e3bc9882eaa03b24",
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3b_verify.py": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc",
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3b_weights.py": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/dreamerv3/fg_s3b_bc.py": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/dreamerv3/fg_s3a_agent.py": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/dreamerv3/fg_s3a_actor.py": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_train.py": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3b_checkpoint.py": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_eval.py": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3b_train.py": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_checkpoint.py": "ef38c172553911d62c9c18096dc1a61112c2aff88a8449d5d0e98c7afe019d83",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_features.py": "a9b5b995737d74d77c55ba67eab0cda70201937c3c148ba9f5ea6bedc4fa5a60",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/scripts/fg_s3b.py": "770785d55e26659f50bb9cd1d8842bf9c95f0b87c682629a91ffc3afdef3f46a",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3/scripts/fg_s3a.py": "3da4ea69b05f3bc4deaf1fad4a3e4f065e428402d822a47268b275bcdf326453"
+  },
+  "c_runtime_unchanged_since_acceptance": {
+    "dreamerv3/fg_s3c_agent.py": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e",
+    "embodied/run/fg_s3c_stream.py": "692b5e976e2d88f14e618678b45a6a3868774f65770f4c3f64067bd4b1f34df7",
+    "embodied/run/fg_s3c_train.py": "6b1baf18cf3dbd27b3afebb1b7ffbf61eb33c60c47581e47d676a84ce641d04c",
+    "embodied/run/fg_s3_teacher_adapter.py": "b1d608d6411ccca20c4337119b16362646d3d1c73782add49a29a735dcd3c134"
+  },
+  "merge": {
+    "gym-trading-env": {
+      "remote_tip": "1ba0a8c49a1475188fef8a4d5c1b8a07796e1f28",
+      "included_in_head": true
+    },
+    "dreamerv3": {
+      "remote_tip": "09e2e5ce5b07433790e7f4c3e40be7ca4e084064",
+      "included_in_head": true
+    }
+  },
+  "online_source_original_manifest_still_present": true,
+  "online_source_original_manifest_unchanged": true,
+  "source_snapshot_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57"
+}

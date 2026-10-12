@@ -1,0 +1,30 @@
+[
+  {
+    "original": "agent_first.stdout",
+    "archive": "agent_first.stdout.raw.gz",
+    "raw_sha256": "6a850e15f5b931c2e8af3bdecaf0b57370cf099c40f42bee7e788d8085781c80",
+    "archive_sha256": "c4f9a31f777b6e307946a9e8e6e72416fa75b24dca002b13f578e03321c2b40b",
+    "exact_original_preserved": true
+  },
+  {
+    "original": "agent_first.xml",
+    "archive": "agent_first.xml.raw.gz",
+    "raw_sha256": "4b877a0e548bd402e4eb34ac22c17f4b02eb22749a9fb984b1c53e59f20ef667",
+    "archive_sha256": "d79c75e1a6d613cdf89e5c8fac85daecb05940f8293abca0bde6726791afa01e",
+    "exact_original_preserved": true
+  },
+  {
+    "original": "nll_final.stdout",
+    "archive": "nll_final.stdout.raw.gz",
+    "raw_sha256": "ea92414222584887468684cabe1362649e0adca6f885cc417b948eae6eca0b84",
+    "archive_sha256": "e09465e1543db720e063c18d2dab503d431a2e1a3ca9d1913fcad8b2e86baa5b",
+    "exact_original_preserved": true
+  },
+  {
+    "original": "nll_final.xml",
+    "archive": "nll_final.xml.raw.gz",
+    "raw_sha256": "0e43cde09e16bfad9e5c64b46861a060109f68f8878ed156ef04f90b361a9e24",
+    "archive_sha256": "614cec4d6f7a572e43215273024325ac073a2741c621a4e9a582e902f98288db",
+    "exact_original_preserved": true
+  }
+]

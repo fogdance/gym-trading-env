@@ -1,0 +1,23 @@
+{
+  "protocol": "FG_S3C_PREPARED_V1",
+  "status": "READY_FOR_JOINT",
+  "experiment": "S3C1_CPU_BFLOAT16_deps_v2",
+  "trainer": "s3c",
+  "mode": "S3C1",
+  "diagnostic": true,
+  "requested_config": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_single3/S3C1_CPU_BFLOAT16.yaml",
+  "requested_config_sha256": "6c2a609c23921c3055caa924c6cb2957081058561bf233a090c96996f39cfb2f",
+  "source_kind": "direct_init",
+  "source_receipt_sha256": "4860fa624cf99d25794d314180c149de392e63af2120857e0fd627255e6a218b",
+  "catalog_manifest_sha256": "47736742ff81e337d10585b86d0709f5fd1bff8d082b01324b267f9f1761f0de",
+  "source_versions": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "dd03a9d82972bf41cf2695dc40436468d6dc5826",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5"
+  },
+  "update_budget": 2,
+  "budget_unit": "gradient_updates",
+  "formal_gpu_training": "NOT_RUN",
+  "dev_evaluation": "NOT_RUN",
+  "test_evaluation": "NOT_RUN",
+  "content_hash": "25ec7157829420658d4ac3ec91889efd1cb59d282752a0daf9d113807902e710"
+}

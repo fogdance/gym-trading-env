@@ -1,0 +1,67 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "status": "CPU_DIAGNOSTIC_COMPLETE"
+}
+{
+  "status": "TRAINING_CHECKPOINT_VERIFIED",
+  "experiment": "S3C1_CPU_REAL_AFTER_BC_S3A",
+  "trainer": "s3c",
+  "mode": "S3C1",
+  "diagnostic": true,
+  "prepared": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/experiments/S3C1_CPU_REAL_AFTER_BC_S3A",
+  "logdir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A/ckpt/step_000000000002",
+  "checkpoint_manifest_sha256": "f671124b6341849adef2e9f155318fa25e1a6009f0bc719c22ed0526f3644783",
+  "local_updates": 2,
+  "agent_updates": 2,
+  "counters": {
+    "all_updates": 2,
+    "wm_updates": 2,
+    "gate_ready_updates": 0,
+    "bc_effective_updates": 0,
+    "bc_valid_rows_seen": 196,
+    "bc_add_rows_seen": 1,
+    "bc_wait_rows_seen": 195,
+    "no_bc_batch_updates": 0,
+    "tp": 0,
+    "fp": 0,
+    "fn": 1,
+    "tn": 195,
+    "zero_bc_batch_ratio": 0.0,
+    "always_wait_accuracy": 0.9948979591836735,
+    "classification_rows": 196,
+    "accuracy": 0.9948979591836735,
+    "precision": null,
+    "recall": 0.0
+  }
+}

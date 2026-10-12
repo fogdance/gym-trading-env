@@ -153,3 +153,19 @@ python tools/fg_single3_experiment.py resume --config configs/experiments/fg_sin
 `prepare` 校验冻结模型的全部质量条件、真实窗口及来源哈希，生成不可覆盖的恢复包；`publish` 只复制到新日志目录。正式 `resume` 必须同时具备 GO、完整状态CPU恢复证书、严格身份和显式授权。旧窗口合格 streak 清零，新Gate需重新连续20次通过；模型、优化器、交易账户、Replay、随机状态和累计180k环境步保留。
 
 未通过完整预检时不提供绕过准入的启动路径。报告见 `docs/FG_Single3_Gate_Repair_Implementation_and_Verification.md`；GPU实际达标、DEV泛化和择时效果另行验证。
+
+
+## 当前 S3-A 来源与验收记录
+
+当前用户选择 S3A_ORACLE_BC_FROM_ONLINE_180K，来源是已冻结的在线180000节点。
+CPU prepare 已完成；从固定 research/fg-s3-train 工作区执行 start。原模型21183
+次更新与180000环境步是来源记录；新增Actor BC预算1000次，独立从0计数。
+后续新来源只填checkpoint路径和新实验名，不手填模型计数；prepare自动检查与
+冻结已发布的在线节点。同一运行中断后 resume，不更换来源或改冻结收据。
+
+[当前来源启动记录](../../../docs/FG_S3A_Online_180K_Startup.md)、
+[联合训练实施报告](../../../docs/FG_S3C1_Implementation_and_Verification.md)、
+[两任务书整体Review](../../../docs/FG_S3_Shared_Architecture_and_S3C1_Final_Review.md)。
+
+CPU四份诊断配置的deps_v2目录已有已验收的历史快照；重复prepare会拒绝覆盖。
+执行新的诊断实验时选新实验名/prepared/logdir；不修改旧快照哈希以恢复到新源码。

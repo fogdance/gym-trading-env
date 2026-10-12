@@ -1,0 +1,129 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"config": "S3C1_CPU_FLOAT32", "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2", "compute_dtype": "float32", "devices": ["TFRT_CPU_0"], "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE", "local_updates": 2, "bc_effective_updates": 2}
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"config": "S3C1_CPU_BFLOAT16", "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16_deps_v2", "compute_dtype": "bfloat16", "devices": ["TFRT_CPU_0"], "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE", "local_updates": 2, "bc_effective_updates": 2}
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"config": "S3C1_CPU_REAL_DIRECT_FULL", "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_DIRECT_FULL_deps_v2", "compute_dtype": "bfloat16", "devices": ["TFRT_CPU_0"], "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE", "local_updates": 2, "bc_effective_updates": 0}
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{"config": "S3C1_CPU_REAL_AFTER_BC_S3A", "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2", "compute_dtype": "bfloat16", "devices": ["TFRT_CPU_0"], "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE", "local_updates": 2, "bc_effective_updates": 0}
+ALL_FOUR_PAYLOADS_PASS

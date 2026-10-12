@@ -1,0 +1,272 @@
+[
+  {
+    "config": "S3C1_CPU_FLOAT32",
+    "command": "start",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "start",
+      "--config",
+      "S3C1_CPU_FLOAT32"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 53.519054889678955,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_float32_start.stdout",
+    "stdout_sha256": "66d31301a1acda200e734a2a2d3d2482dbecb9cb14d6b1e298907baed528d78e",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_FLOAT32",
+    "command": "resume",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "resume",
+      "--config",
+      "S3C1_CPU_FLOAT32"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 49.55106449127197,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_float32_resume.stdout",
+    "stdout_sha256": "66d31301a1acda200e734a2a2d3d2482dbecb9cb14d6b1e298907baed528d78e",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_FLOAT32",
+    "command": "audit",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "audit",
+      "--config",
+      "S3C1_CPU_FLOAT32"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 13.550101518630981,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_float32_audit.stdout",
+    "stdout_sha256": "c349ec0a9f5012817a1b9b3a69d42d7abc9d78c23f3bb881d07b7137493e756a",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "command": "prepare",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "prepare",
+      "--config",
+      "S3C1_CPU_BFLOAT16"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 7.980932235717773,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_bfloat16_prepare.stdout",
+    "stdout_sha256": "0be38a47f8e7e30e87032f2b9de9c5c003d06962f108cdbadd552f8de258bdb5",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "command": "start",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "start",
+      "--config",
+      "S3C1_CPU_BFLOAT16"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 55.79333448410034,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_bfloat16_start.stdout",
+    "stdout_sha256": "d5fc43ff19ead03f4553809656c99336189f21ace772e6940d235dae2ca5cfef",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "command": "resume",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "resume",
+      "--config",
+      "S3C1_CPU_BFLOAT16"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 48.50946044921875,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_bfloat16_resume.stdout",
+    "stdout_sha256": "1748ad9be93a624aa77432440d4cac1b59fbd06724f88e57551aa52cc99d4847",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "command": "audit",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "audit",
+      "--config",
+      "S3C1_CPU_BFLOAT16"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 13.03882360458374,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_bfloat16_audit.stdout",
+    "stdout_sha256": "876e80aea87ef4a84a83118bdb8daf1a268bb2a5b35389ace527426480d5b06e",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_DIRECT_FULL",
+    "command": "prepare",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "prepare",
+      "--config",
+      "S3C1_CPU_REAL_DIRECT_FULL"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 7.739168643951416,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_direct_full_prepare.stdout",
+    "stdout_sha256": "52d44fea6e178ddb0ea6f21d8e93d9d9591317da600dc1a52ee18a17702f0665",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_DIRECT_FULL",
+    "command": "start",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "start",
+      "--config",
+      "S3C1_CPU_REAL_DIRECT_FULL"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 54.069626569747925,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_direct_full_start.stdout",
+    "stdout_sha256": "d3f4528dac4f4ffd561aa92aee4a021543af8fa9fe87ea5f8d01f748019015c6",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_DIRECT_FULL",
+    "command": "resume",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "resume",
+      "--config",
+      "S3C1_CPU_REAL_DIRECT_FULL"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 47.6997332572937,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_direct_full_resume.stdout",
+    "stdout_sha256": "0b2efd24c7c9bb73781459d48f69f4858c4580b6483313c1c244509d5c9613fe",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_DIRECT_FULL",
+    "command": "audit",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "audit",
+      "--config",
+      "S3C1_CPU_REAL_DIRECT_FULL"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 13.10049557685852,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_direct_full_audit.stdout",
+    "stdout_sha256": "1bd586da761050660f9bdd97b19ef9b162ff0ec8b925a2b78d16f6e91b2f564e",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+    "command": "prepare",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "prepare",
+      "--config",
+      "S3C1_CPU_REAL_AFTER_BC_S3A"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 7.6238853931427,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_after_bc_s3a_prepare.stdout",
+    "stdout_sha256": "88c7ba8d2199e862af4f6d10a7795707dd11b3da7755e0c2cfec30ad14235a63",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+    "command": "start",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "start",
+      "--config",
+      "S3C1_CPU_REAL_AFTER_BC_S3A"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 57.388120889663696,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_after_bc_s3a_start.stdout",
+    "stdout_sha256": "4de0012ae633d99499336c72e99d462994566ad053c77b880a1ff28ad87cc3a7",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+    "command": "resume",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "resume",
+      "--config",
+      "S3C1_CPU_REAL_AFTER_BC_S3A"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 48.11394381523132,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_after_bc_s3a_resume.stdout",
+    "stdout_sha256": "2a318ca5fef9eba5e9c82dc3af9490d31066d1da10ee280dcb49c67ce01b21b2",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  },
+  {
+    "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+    "command": "audit",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "tools/fg_s3_experiment.py",
+      "audit",
+      "--config",
+      "S3C1_CPU_REAL_AFTER_BC_S3A"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 13.450358867645264,
+    "stdout": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/s3c1_cpu_real_after_bc_s3a_audit.stdout",
+    "stdout_sha256": "90257f4bd934d96923f3d8c55454aa248caf9befd513b9c73ba490c9cd3356c7",
+    "jax_platforms": "cpu",
+    "cuda_visible_devices": ""
+  }
+]

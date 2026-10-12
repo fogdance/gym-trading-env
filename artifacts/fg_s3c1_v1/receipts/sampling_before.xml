@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="18.078" timestamp="2026-10-12T13:30:57.360707+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_s3c_stream" name="test_native_sampling_flags_are_authenticated_not_raw_flags" time="16.188"><failure message="TypeError: attach_teacher() got an unexpected keyword argument 'sampling_flags'">source_bundle = {'root': PosixPath('/tmp/pytest-of-v/pytest-201/actual_source0'), 'catalog': &lt;gym_trading_env.research.fg_s3_teacher_c...0/base/ckpt/step_000000000000'), 'bc': PosixPath('/tmp/pytest-of-v/pytest-201/actual_source0/bc/bc_000000000002'), ...}
+
+    def test_native_sampling_flags_are_authenticated_not_raw_flags(source_bundle):
+        b=source_bundle;r=make_replay(b)
+        raw=r.sample(2)
+        assert raw['is_first'][:,0].all()
+        raw['consec']=np.zeros(raw['is_first'].shape,np.int32)
+        expected_native=[b['catalog'].lookup(x).record['is_first'] for x in raw['stepid'][:,0]]
+        assert not all(expected_native)
+&gt;       joined=attach_teacher(raw,b['catalog'],mode='train',sampling_flags=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: attach_teacher() got an unexpected keyword argument 'sampling_flags'
+
+../dreamerv3/embodied/tests/test_fg_s3c_stream.py:27: TypeError</failure></testcase></testsuite></testsuites>

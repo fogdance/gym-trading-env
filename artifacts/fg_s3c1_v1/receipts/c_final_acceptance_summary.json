@@ -1,0 +1,418 @@
+{
+  "status": "PASS_CPU_ENGINEERING_AND_REAL_TRAIN_AUDIT",
+  "formal_gpu": "NOT_RUN_BY_CODEX",
+  "dev": "NOT_RUN",
+  "sealed_test": "NOT_RUN",
+  "functional_commits": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "5293e978d3f234d5f7c3149f326f1da831012bad",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "93a6fb65b493b60f7c1205b8351d7024cbfc326a"
+  },
+  "neural_algorithm_evidence_commits": {
+    "gym": "dd03a9d82972bf41cf2695dc40436468d6dc5826",
+    "dreamer": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5"
+  },
+  "tests": [
+    {
+      "receipt": "c_final.xml",
+      "sha256": "d32380836f36f0d00e28d16185e939484133161e5dfe117b08bd3423e40edfc1",
+      "passed": 17,
+      "seconds": 1279.668,
+      "names": [
+        "test_lambda_zero_real_agent_equivalence_each_source[direct_init]",
+        "test_lambda_zero_real_agent_equivalence_each_source[direct_full]",
+        "test_lambda_zero_real_agent_equivalence_each_source[after_bc_s3a]",
+        "test_posterior_bc_gradient_gate_masks_and_real_joint_update",
+        "test_masked_nll_uses_actual_distribution_and_safe_invalid_rows",
+        "test_native_sampling_flags_are_authenticated_not_raw_flags",
+        "test_real_prefetch_consec_restore_keeps_current_and_teacher",
+        "test_real_neural_joint_runtime_exact_resume_no_source_reload",
+        "test_real_joint_runner_transferred_sources[True-direct_full]",
+        "test_real_joint_runner_transferred_sources[True-after_bc_s3a]",
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3a]",
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3b]",
+        "test_preparation_refuses_template_drift_overlap_and_snapshot_tamper",
+        "test_central_configuration_interfaces_and_formal_partial_guard",
+        "test_worker_keeps_exclusive_lock_after_launcher_descriptor_closes",
+        "test_managed_joint_prepare_start_resume_and_immutable_budget",
+        "test_joint_yaml_uses_canonical_types_and_rejects_foreign_source"
+      ]
+    },
+    {
+      "receipt": "ready_lambda_resume_final.xml",
+      "sha256": "254cb842146dc121b2862a806d0befcbae751649b5c6b24f864283ddfefa095e",
+      "passed": 4,
+      "seconds": 230.191,
+      "names": [
+        "test_lambda_zero_real_agent_equivalence_each_source[True-direct_init]",
+        "test_lambda_zero_real_agent_equivalence_each_source[True-direct_full]",
+        "test_lambda_zero_real_agent_equivalence_each_source[True-after_bc_s3a]",
+        "test_real_neural_joint_runtime_exact_resume_no_source_reload"
+      ]
+    },
+    {
+      "receipt": "final_dependency_c_regression.xml",
+      "sha256": "2c011830bf64a5a406f789e66a2750c6b6c808f3fac9ba243bebb50eded9b7a7",
+      "passed": 5,
+      "seconds": 213.561,
+      "names": [
+        "test_real_neural_joint_runtime_exact_resume_no_source_reload",
+        "test_real_joint_runner_transferred_sources[True-direct_full]",
+        "test_real_joint_runner_transferred_sources[True-after_bc_s3a]",
+        "test_managed_joint_prepare_start_resume_and_immutable_budget",
+        "test_joint_yaml_uses_canonical_types_and_rejects_foreign_source"
+      ]
+    },
+    {
+      "receipt": "s3a_shared_source_first.xml",
+      "sha256": "fa5439fc2d7c629dfe80436a69f209fd142b9c4ca3953e40552c372c733229da",
+      "passed": 1,
+      "seconds": 34.334,
+      "names": [
+        "test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer"
+      ]
+    },
+    {
+      "receipt": "s3a_shared_source_regression.xml",
+      "sha256": "f192e8af0e978be41c6b990ad25137bc094fce065719eca670d4b1091b9249cb",
+      "passed": 11,
+      "seconds": 304.025,
+      "names": [
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3a]",
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3b]",
+        "test_preparation_refuses_template_drift_overlap_and_snapshot_tamper",
+        "test_central_configuration_interfaces_and_formal_partial_guard",
+        "test_worker_keeps_exclusive_lock_after_launcher_descriptor_closes",
+        "test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer",
+        "test_managed_joint_prepare_start_resume_and_immutable_budget",
+        "test_joint_yaml_uses_canonical_types_and_rejects_foreign_source",
+        "test_real_neural_joint_runtime_exact_resume_no_source_reload",
+        "test_real_joint_runner_transferred_sources[True-direct_full]",
+        "test_real_joint_runner_transferred_sources[True-after_bc_s3a]"
+      ]
+    },
+    {
+      "receipt": "online_counter_contract.xml",
+      "sha256": "cbae08fe6762aae033bf64bcf639cc81677d2ffc87d8064098d272f87e216d4f",
+      "passed": 1,
+      "seconds": 1.821,
+      "names": [
+        "test_online_model_and_environment_counters_have_separate_domains"
+      ]
+    }
+  ],
+  "c_original_requirements_unique_cases": 20,
+  "all_listed_distinct_test_names": 22,
+  "real_train_cli_commands": {
+    "passed": 16,
+    "ledger": "real_cpu_cli_deps_v2_commands.json",
+    "sha256": "ee6c0e65722f1ba90f43187cfbaa9cb762c55b2d532a22e1e1c3490cb5177d0b"
+  },
+  "real_train_small_model_runs": [
+    {
+      "name": "S3C1_CPU_FLOAT32",
+      "source_kind": "direct_init",
+      "source_bc_updates": 0,
+      "source_update_offset": 0,
+      "counters": {
+        "all_updates": 2,
+        "wm_updates": 2,
+        "gate_ready_updates": 2,
+        "bc_effective_updates": 2,
+        "bc_valid_rows_seen": 196,
+        "bc_add_rows_seen": 1,
+        "bc_wait_rows_seen": 195,
+        "no_bc_batch_updates": 0,
+        "tp": 0,
+        "fp": 30,
+        "fn": 1,
+        "tn": 165
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2/ckpt/step_000000000002",
+      "checkpoint_manifest_sha256": "cdee525619e5d4e52d8fc8125ead4910b916f1dcba47aa6e52eeb6b746347752",
+      "transfer_receipt_sha256": "cc1f789f12f9f4a3829469c4d7510b24026ec39bf18730093fa578a9b1eab17e",
+      "source_admission_receipt_sha256": "4d4f3ef980004cff16b3f5daae3fc067f9d82d57ca4eced52ba580e8aa83d343",
+      "baseline_equality": "NOT_VERIFIED",
+      "compute_dtype": "see config.yaml",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "source_versions": {
+        "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "dd03a9d82972bf41cf2695dc40436468d6dc5826"
+      },
+      "all_transferred_entries_byte_exact": true
+    },
+    {
+      "name": "S3C1_CPU_BFLOAT16",
+      "source_kind": "direct_init",
+      "source_bc_updates": 0,
+      "source_update_offset": 0,
+      "counters": {
+        "all_updates": 2,
+        "wm_updates": 2,
+        "gate_ready_updates": 2,
+        "bc_effective_updates": 2,
+        "bc_valid_rows_seen": 196,
+        "bc_add_rows_seen": 1,
+        "bc_wait_rows_seen": 195,
+        "no_bc_batch_updates": 0,
+        "tp": 0,
+        "fp": 29,
+        "fn": 1,
+        "tn": 166
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16_deps_v2/ckpt/step_000000000002",
+      "checkpoint_manifest_sha256": "831cfd2c57f271ce4814aceb8d22dfb7586e38043e6d41f56d7a84f53c814f6f",
+      "transfer_receipt_sha256": "b8fe2dcabcb787bad833cf1b2eb23a6d0f026197711bdf5085d7f02be15420ef",
+      "source_admission_receipt_sha256": "4860fa624cf99d25794d314180c149de392e63af2120857e0fd627255e6a218b",
+      "baseline_equality": "NOT_VERIFIED",
+      "compute_dtype": "see config.yaml",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "source_versions": {
+        "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "dd03a9d82972bf41cf2695dc40436468d6dc5826"
+      },
+      "all_transferred_entries_byte_exact": true
+    },
+    {
+      "name": "S3C1_CPU_REAL_DIRECT_FULL",
+      "source_kind": "direct_full",
+      "source_bc_updates": 0,
+      "source_update_offset": 0,
+      "counters": {
+        "all_updates": 2,
+        "wm_updates": 2,
+        "gate_ready_updates": 0,
+        "bc_effective_updates": 0,
+        "bc_valid_rows_seen": 196,
+        "bc_add_rows_seen": 1,
+        "bc_wait_rows_seen": 195,
+        "no_bc_batch_updates": 0,
+        "tp": 0,
+        "fp": 44,
+        "fn": 1,
+        "tn": 151
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_DIRECT_FULL_deps_v2/ckpt/step_000000000002",
+      "checkpoint_manifest_sha256": "ffe1dbb6d2a15210d836432e9b667c539d9328816922cefa1f2151f31d00973b",
+      "transfer_receipt_sha256": "1334b1da62026f4a0d98a83d2c1c14f75810053c3e8de41b79755b16fd04c5a7",
+      "source_admission_receipt_sha256": "711a3033e063716d4bb0e9f77e5af05e80669a5d0487cd7db26cdb8528a1e58f",
+      "baseline_equality": "NOT_VERIFIED",
+      "compute_dtype": "see config.yaml",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "source_versions": {
+        "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "dd03a9d82972bf41cf2695dc40436468d6dc5826"
+      },
+      "all_transferred_entries_byte_exact": true
+    },
+    {
+      "name": "S3C1_CPU_REAL_AFTER_BC_S3A",
+      "source_kind": "after_bc_s3a",
+      "source_bc_updates": 20,
+      "source_update_offset": 0,
+      "counters": {
+        "all_updates": 2,
+        "wm_updates": 2,
+        "gate_ready_updates": 0,
+        "bc_effective_updates": 0,
+        "bc_valid_rows_seen": 196,
+        "bc_add_rows_seen": 1,
+        "bc_wait_rows_seen": 195,
+        "no_bc_batch_updates": 0,
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 195
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2/ckpt/step_000000000002",
+      "checkpoint_manifest_sha256": "fabb1390310c6083ab1f178d01ba243a69646af06e5815384416ebe55b15ae42",
+      "transfer_receipt_sha256": "80e7524deadc3272146cdd8ef8cda23c4088dc6944bc743b7b1f34837f4ab783",
+      "source_admission_receipt_sha256": "c5a6c5e506a2582bd8d4c5b75ab701ad395cd29dccca20f22f7ee2d1e7993029",
+      "baseline_equality": "PASS",
+      "compute_dtype": "see config.yaml",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "source_versions": {
+        "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "b382cd90f87c2dfe3c0c063e8e0cb47939c823c5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "dd03a9d82972bf41cf2695dc40436468d6dc5826"
+      },
+      "all_transferred_entries_byte_exact": true
+    }
+  ],
+  "exact_full_payload_restores": [
+    {
+      "config": "S3C1_CPU_FLOAT32",
+      "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2",
+      "compute_dtype": "float32",
+      "devices": [
+        "TFRT_CPU_0"
+      ],
+      "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+      "local_updates": 2,
+      "bc_effective_updates": 2
+    },
+    {
+      "config": "S3C1_CPU_BFLOAT16",
+      "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16_deps_v2",
+      "compute_dtype": "bfloat16",
+      "devices": [
+        "TFRT_CPU_0"
+      ],
+      "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+      "local_updates": 2,
+      "bc_effective_updates": 2
+    },
+    {
+      "config": "S3C1_CPU_REAL_DIRECT_FULL",
+      "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_DIRECT_FULL_deps_v2",
+      "compute_dtype": "bfloat16",
+      "devices": [
+        "TFRT_CPU_0"
+      ],
+      "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+      "local_updates": 2,
+      "bc_effective_updates": 0
+    },
+    {
+      "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+      "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2",
+      "compute_dtype": "bfloat16",
+      "devices": [
+        "TFRT_CPU_0"
+      ],
+      "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+      "local_updates": 2,
+      "bc_effective_updates": 0
+    }
+  ],
+  "real_production_source_cpu_transfer": {
+    "status": "PASS_REAL_MODEL_TRANSFER",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "source_update_offset": 21183,
+    "source_environment_steps": 180000,
+    "counters": {
+      "updates": 21183,
+      "batches": 21399,
+      "actions": 180000
+    },
+    "gate_ready": false,
+    "all_parameter_state_entries": 286,
+    "all_entries_byte_exact": true,
+    "independent_bc_optimizer_imported": false,
+    "model_training": "NOT_RUN",
+    "gpu": "NOT_RUN",
+    "scope": "Frozen real online source to original S3-A Agent, no gradient training; S3-C production joint updates NOT_RUN"
+  },
+  "selected_s3a_preparation": {
+    "path": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/experiments/S3A_ORACLE_BC_FROM_ONLINE_180K_seed0",
+    "sha256": "4060a6d0c766c30d37384bfbc88646e0ba75db5aa34b556b14569571ace7e49d",
+    "receipt": {
+      "protocol": "FG_S3_PREPARED_V2",
+      "status": "READY_FOR_FEATURES",
+      "experiment": "S3A_ORACLE_BC_FROM_ONLINE_180K_seed0",
+      "trainer": "s3a",
+      "mode": "S3A_FULL",
+      "diagnostic": false,
+      "requested_config": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env/configs/experiments/fg_single3/S3A_ORACLE_BC_FROM_ONLINE_180K.yaml",
+      "requested_config_sha256": "9c52ddd50b8bf5419bb315a0a9860e58f342eadfda4c7784ddaaafa9ea2d45de",
+      "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+      "source_identity_hash": "62a1cad28d987ba2a5511a1caf749ccc500c10ea85b32218191ae9a84e89cb5a",
+      "source_model_config_sha256": "880e311d2ddb1eb94ea378a80260edddd55c401726031977a85d353802ea1dda",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "source_versions": {
+        "/home/v/Documents/work/research/fg-s3-train/gym-trading-env": "5293e978d3f234d5f7c3149f326f1da831012bad",
+        "/home/v/Documents/work/research/fg-s3-train/dreamerv3": "93a6fb65b493b60f7c1205b8351d7024cbfc326a"
+      },
+      "files": {
+        "teacher_catalog_identity.json": "16fd34ccf2c9ac8eb7a35462fd9a9c6d5243c8a6c1cd6494b1c6fb1da45cc133",
+        "input_hashes.json": "2b18435e802661fb90ad5f4450815dc3867b915012ceb9ae7a92363b9a59793a",
+        "model.defaults.yaml": "9d8b4f4754781d6dfa64c4a6ea4ba0905923dff9afa0cfb4ce20269e4e7e960a",
+        "source.config.yaml": "880e311d2ddb1eb94ea378a80260edddd55c401726031977a85d353802ea1dda",
+        "experiment.requested.yaml": "9c52ddd50b8bf5419bb315a0a9860e58f342eadfda4c7784ddaaafa9ea2d45de",
+        "source_admission_receipt.json": "9caa8d2c31ef83d78730e397baefe3ea23fe7cd868021b06fe661fe5865072a5",
+        "effective_config.yaml": "413eb92c208c03232667551027c19cd00b0e85dac6eb75daf893b3b11100b573",
+        "model.template.yaml": "4e5661456a77e25fc06af5c4bfbdcbc85e8e2043790e9092d6eec070b45778ce",
+        "code_hashes.json": "2822ded4f6ae217aa1abf9a3dae5ff142f9fae77c575e0040f3ec4105742e932"
+      },
+      "formal_gpu_training": "NOT_RUN",
+      "online_rl_training": "NOT_RUN",
+      "content_hash": "d902bad9f40c3cc70e2931fe9521bbe5cea664bd91c92ff5fca0989c57b45de1"
+    }
+  },
+  "frozen_training_commits": {
+    "/home/v/Documents/work/research/fg-s3-train/gym-trading-env": "5293e978d3f234d5f7c3149f326f1da831012bad",
+    "/home/v/Documents/work/research/fg-s3-train/dreamerv3": "93a6fb65b493b60f7c1205b8351d7024cbfc326a"
+  },
+  "source_snapshot": {
+    "protocol": "FG_S3_SOURCE_ADMISSION_V1",
+    "source": "/data/logdir/fg_single3/online_after_10k_callback_fix/C1_M1_ONLINE_1M/ckpt/step_000000180000",
+    "snapshot": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000",
+    "manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+    "format": "FG_ONLINE_FULL_SOURCE_V1",
+    "files": {
+      "producer_code_hashes.json": "38f30fade5af9edcf0c7cda0f4b2e9a0eb9ba71be961dce5a756fc06e2797c25",
+      "selector.yaml": "983d12987ea31a363d7211fa2dc9ce2de966d0fd90e74fd5b9540bb76a709345",
+      "agent_counters.json": "b9c00ed783f27a39679d4064ac0533e2657e6a55b69f9e629b029c0d636ed34a",
+      "online_transfer.json": "c359edb047fdc51a4e39a9f9b80a0ef9f61a2cb586152b5bd0d35c4baea9b807",
+      "entry_manifest.json": "496cb7ad04bc2748bb9506234dd6b915c3e9c3668e021aa700a3c3041b42ec43"
+    },
+    "content_hash": "f9c6b66b9f034dbcd38ab88fe733c3dd666162445fb6f6b69eb5cbf4c0add080"
+  },
+  "old_run_resume": "Prior code identities retained; changes require new preparations, no resigning or hash bypass",
+  "interpretation": "Actual original neural CPU models, controlled synthetic-price fixtures, real TRAIN small-model diagnostics and real-source CPU transfer; no production convergence/trading claim"
+}

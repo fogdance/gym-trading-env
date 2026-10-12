@@ -1,0 +1,22 @@
+[
+  {
+    "config": "S3C1_CPU_FLOAT32",
+    "compute_dtype": "float32",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 2
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "compute_dtype": "bfloat16",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 2
+  }
+]

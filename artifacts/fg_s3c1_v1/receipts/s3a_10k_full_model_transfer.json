@@ -1,0 +1,19 @@
+{
+  "status": "PASS_REAL_PRODUCTION_SOURCE_CPU_TRANSFER",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "parameter_keys": 286,
+  "parameter_elements": 131032019,
+  "source_step": 10000,
+  "agent_updates": 10000,
+  "agent_batches": 10102,
+  "gate_ready": false,
+  "compute_dtype": "bfloat16",
+  "model_training": "NOT_RUN",
+  "formal_gpu_training": "NOT_RUN",
+  "prepared": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/experiments/S3A_ORACLE_BC_FROM_10K_seed0",
+  "prepared_manifest_sha256": "62001f56e1fdada8df970075a291ca55cf45f0491efe9c0e9ea19dc0ba55e2f7",
+  "source_manifest_sha256": "06ce514c289bc0b667bc894d7b788da905bc9da92b2575839e72a8ebe04d9055",
+  "source_identity_hash": "847e50f6270678c9192da3ee2bea79e0ee77005369133553e049728416d17e47"
+}

@@ -1,0 +1,148 @@
+F..                                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_real_neural_joint_runtime_exact_resume_no_source_reload _________
+
+source_bundle = {'root': PosixPath('/tmp/pytest-of-v/pytest-206/actual_source0'), 'catalog': <gym_trading_env.research.fg_s3_teacher_c...0/base/ckpt/step_000000000000'), 'bc': PosixPath('/tmp/pytest-of-v/pytest-206/actual_source0/bc/bc_000000000002'), ...}
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-206/test_real_neural_joint_runtime0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7efa78311d50>
+
+    def test_real_neural_joint_runtime_exact_resume_no_source_reload(source_bundle,tmp_path,monkeypatch):
+        b=source_bundle;cfg=config_for(b)
+        # Gate READY is a labelled test fixture; formal runner never forces it.
+        cfg['agent']['avail_actor_enabled']=True
+        run=S3CRun(tmp_path/'run',catalog=b['root']/'catalog',config=cfg,source_kind='direct_init',
+                   seed=0,bc_lambda=1.,replay_directory=b['trace']/'replay',capacity=2048,
+                   consec=2,report_every=1,save_every=2)
+        first=run.update();run.cp.save()
+        expected=[run.update() for _ in range(2)]
+        final=run.agent.save_exact();carry=copy.deepcopy(jax.device_get(run.carry))
+        counters=run.counters.save();gate=run.warmup.save();sampler=copy.deepcopy(run.replay.sampler.rng.bit_generator.state)
+        # Only the K=1 full bundle is the chosen recovery point. Later automatic
+        # nodes are kept intact; restore selects a validated node explicitly below.
+        import embodied.run.fg_s3c_train as module
+        original_load=module.FullCheckpoint.load
+        def load_at_one(cp,*args,**kwargs):return original_load(cp,cp._directory/'step_000000000001')
+        monkeypatch.setattr(module.FullCheckpoint,'load',load_at_one)
+        monkeypatch.setattr(module,'inspect_source',lambda *a,**k:(_ for _ in ()).throw(AssertionError('resume re-admitted source')))
+        monkeypatch.setattr(module,'apply_and_audit_transfer',lambda *a,**k:(_ for _ in ()).throw(AssertionError('resume re-transferred source')))
+        restored=S3CRun(tmp_path/'run',catalog=b['root']/'catalog',resume=True)
+        actual=[restored.update() for _ in range(2)]
+        for x,y in zip(expected,actual):
+            for k in ('stepid','teacher_action','teacher_valid'):np.testing.assert_array_equal(x[k],y[k])
+            tree_equal(x['metrics'],y['metrics'])
+        assert parameter_digests(restored.agent.params)==parameter_digests(final['params'])
+        tree_equal(restored.agent.save_exact(),final)
+        tree_equal(jax.device_get(restored.carry),carry)
+        assert restored.counters.save()==counters and restored.warmup.save()==gate
+        assert restored.replay.sampler.rng.bit_generator.state==sampler
+        # Teacher fields were not persisted into native chunks.
+        assert all(not any(k.startswith('teacher_') for k in chunk.data) for chunk in restored.replay.chunks.values())
+        with pytest.raises(ValueError,match='source transfer'):
+            S3CRun(tmp_path/'run',catalog=b['root']/'catalog',resume=True,source_kind='direct_init')
+        identity_path=tmp_path/'run'/'run_settings.json'
+        identity_path.write_text(identity_path.read_text()+' ')
+>       with pytest.raises(ValueError,match='settings changed'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'settings changed'
+E         Actual message: 'Resume code/Catalog identity changed'
+
+../dreamerv3/embodied/tests/test_fg_s3c_resume.py:57: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P4 CZCE.FG2701: 1100 source rows, CPU Driver
+labels CZCE.FG2701: 1091 (ADD 2)
+catalog CZCE.FG2701 {'total_rows': 1102, 'valid': 1091, 'ADD': 2, 'excluded_held_forced_wait': 8, 'WAIT': 1089, 'excluded_administrative_last': 1, 'excluded_unexecuted': 1, 'excluded_terminal': 1}
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED ../dreamerv3/embodied/tests/test_fg_s3c_resume.py::test_real_neural_joint_runtime_exact_resume_no_source_reload
+1 failed, 2 passed in 178.49s (0:02:58)

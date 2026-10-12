@@ -1,0 +1,144 @@
+{
+  "commands": [
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "scripts/fg_s3_arch.py",
+        "freeze-source",
+        "--source-checkpoint",
+        "/data/logdir/fg_single3/online_after_10k_callback_fix/C1_M1_ONLINE_1M/ckpt/step_000000180000",
+        "--output",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source"
+      ],
+      "exit_code": 0,
+      "stdout": "online_180k_freeze.stdout",
+      "stdout_sha256": "c1b9af340f287166f21ebf79015fc836f9d024f880e57a8471322aa62136f7b1"
+    },
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "-o",
+        "addopts=",
+        "-q",
+        "embodied/tests/test_fg_s3_source_transfer.py::test_online_model_and_environment_counters_have_separate_domains",
+        "--junitxml=/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/receipts/online_counter_contract.xml"
+      ],
+      "exit_code": 0,
+      "stdout": "online_counter_contract.stdout",
+      "stdout_sha256": "129d6bf5db5a76730f76f2745a6a72aa2915246d2366bdcaa01c99a0d9b8cc1b"
+    },
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "-q",
+        "tests/entry_v1/test_fg_s3_experiment.py",
+        "tests/entry_v1/test_fg_s3c_experiment.py",
+        "../dreamerv3/embodied/tests/test_fg_s3c_resume.py",
+        "--junitxml=artifacts/fg_s3c1_v1/receipts/s3a_shared_source_regression.xml"
+      ],
+      "exit_code": 0,
+      "stdout": "s3a_shared_source_regression.stdout",
+      "stdout_sha256": "08faea39fd19189f6544839f505d91d76ecb1367e219f5db362cdf22916ef869"
+    },
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-train/dreamerv3:/home/v/Documents/work/research/fg-s3-train/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "tools/fg_s3_experiment.py",
+        "prepare",
+        "--config",
+        "S3A_ORACLE_BC_FROM_ONLINE_180K"
+      ],
+      "exit_code": 0,
+      "stdout": "s3a_online_180k_frozen_prepare.stdout",
+      "stdout_sha256": "d0221ebcdce5b534eebb726069d2980c35b7839f2fa8c3f8edaecb57616cd0c5"
+    }
+  ],
+  "probes": [
+    {
+      "name": "real_dtype_restore_deps_v2",
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "execution": "inline Python; instantiate S3CRun(resume=True) for all 4 deps_v2 runs, recursively compare actual saved Agent/carry/streams/sampler/Gate/counters/schedule/aggregates",
+      "stdout": "real_dtype_restore_deps_v2.stdout",
+      "receipt": "real_dtype_restore_deps_v2.json",
+      "exit_code": 0,
+      "stdout_sha256": "4fefa5ebed0c7c4388fb5b248ea057f1fe54d9d2e95c423a8c8945f014bb5c0c",
+      "receipt_sha256": "6ae769dac16d1ecddcee7abc01c6c53f7944d83310c810c240c812ff8aea63b3"
+    },
+    {
+      "name": "online_180k_neural_transfer",
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "execution": "inline Python; load_catalog, inspect_source(direct_full), make_agent(config, agent_cls=S3AAgent,device=cpu), apply_and_audit_transfer; assert exact params and counters21183/21399/180000 with CLOSED Gate",
+      "stdout": "online_180k_neural_transfer.stdout",
+      "receipt": "online_180k_neural_transfer_receipt.json",
+      "exit_code": 0,
+      "stdout_sha256": "57c2e7886235e8ba49ba172b0d8569666739f2a735ddbc5724025200869d9f32",
+      "receipt_sha256": "6e2f9127dcc6954242b54dd4f980054ab0d179930a4ae6f7a2398c086b52df91"
+    }
+  ],
+  "cli_ledger": "real_cpu_cli_deps_v2_commands.json",
+  "formal_gpu": "NOT_RUN_BY_CODEX",
+  "dev": "NOT_RUN",
+  "sealed_test": "NOT_RUN"
+}

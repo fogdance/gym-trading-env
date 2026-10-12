@@ -1,0 +1,52 @@
+{
+  "status": "PASS_FROZEN_REAL_ONLINE_SOURCE_ADMISSION",
+  "kind": "direct_full",
+  "source": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000",
+  "source_model_updates": 21183,
+  "source_environment_steps": 180000,
+  "agent_counters": {
+    "updates": 21183,
+    "batches": 21399,
+    "actions": 180000
+  },
+  "gate": {
+    "actor_enabled": false,
+    "reports": 112,
+    "consecutive_passes": 0,
+    "consecutive_regressions": 0,
+    "switched_step": -1,
+    "last_passed": false,
+    "last_add_support_sufficient": true
+  },
+  "gate_opening": {
+    "thresholds": {
+      "post_accuracy": 0.995,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.9915,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.004,
+      "img_fallback": 0.0001,
+      "post_add_recall": 0.8,
+      "prior_add_recall": 0.8
+    },
+    "consecutive_reports": 20,
+    "automatic_activation": true
+  },
+  "partial_window_samples": 51200,
+  "aggregate_keys": [
+    "avail/post_accuracy",
+    "avail/post_exact_accuracy",
+    "avail/prior_accuracy",
+    "avail/prior_exact_accuracy",
+    "avail/prior_fpr",
+    "avail/img_fallback_rate",
+    "avail/post_add_positives",
+    "avail/post_add_true_positives",
+    "avail/prior_add_positives",
+    "avail/prior_add_true_positives"
+  ],
+  "parameter_entries": 286,
+  "parameter_elements": 131032019,
+  "model_training": "NOT_RUN",
+  "gpu": "NOT_RUN"
+}

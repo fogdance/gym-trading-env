@@ -1,0 +1,48 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "status": "PASS_REAL_PRODUCTION_SOURCE_CPU_TRANSFER",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "parameter_keys": 286,
+  "parameter_elements": 131032019,
+  "source_step": 10000,
+  "agent_updates": 10000,
+  "agent_batches": 10102,
+  "gate_ready": false,
+  "compute_dtype": "bfloat16",
+  "model_training": "NOT_RUN",
+  "formal_gpu_training": "NOT_RUN",
+  "prepared": "/home/v/Documents/work/research/fg-s3-train/gym-trading-env/artifacts/fg_s3_v2/experiments/S3A_ORACLE_BC_FROM_10K_seed0",
+  "prepared_manifest_sha256": "62001f56e1fdada8df970075a291ca55cf45f0491efe9c0e9ea19dc0ba55e2f7",
+  "source_manifest_sha256": "06ce514c289bc0b667bc894d7b788da905bc9da92b2575839e72a8ebe04d9055",
+  "source_identity_hash": "847e50f6270678c9192da3ee2bea79e0ee77005369133553e049728416d17e47"
+}

@@ -1,0 +1,33 @@
+{
+  "status": "TRAINING_CHECKPOINT_VERIFIED",
+  "experiment": "S3C1_CPU_FLOAT32_deps_v2",
+  "trainer": "s3c",
+  "mode": "S3C1",
+  "diagnostic": true,
+  "prepared": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/experiments/S3C1_CPU_FLOAT32_deps_v2",
+  "logdir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2/ckpt/step_000000000002",
+  "checkpoint_manifest_sha256": "cdee525619e5d4e52d8fc8125ead4910b916f1dcba47aa6e52eeb6b746347752",
+  "local_updates": 2,
+  "agent_updates": 2,
+  "counters": {
+    "all_updates": 2,
+    "wm_updates": 2,
+    "gate_ready_updates": 2,
+    "bc_effective_updates": 2,
+    "bc_valid_rows_seen": 196,
+    "bc_add_rows_seen": 1,
+    "bc_wait_rows_seen": 195,
+    "no_bc_batch_updates": 0,
+    "tp": 0,
+    "fp": 30,
+    "fn": 1,
+    "tn": 165,
+    "zero_bc_batch_ratio": 0.0,
+    "always_wait_accuracy": 0.9948979591836735,
+    "classification_rows": 196,
+    "accuracy": 0.8418367346938775,
+    "precision": 0.0,
+    "recall": 0.0
+  }
+}

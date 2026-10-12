@@ -1,0 +1,46 @@
+[
+  {
+    "config": "S3C1_CPU_FLOAT32",
+    "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_FLOAT32_deps_v2",
+    "compute_dtype": "float32",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 2
+  },
+  {
+    "config": "S3C1_CPU_BFLOAT16",
+    "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_BFLOAT16_deps_v2",
+    "compute_dtype": "bfloat16",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 2
+  },
+  {
+    "config": "S3C1_CPU_REAL_DIRECT_FULL",
+    "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_DIRECT_FULL_deps_v2",
+    "compute_dtype": "bfloat16",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 0
+  },
+  {
+    "config": "S3C1_CPU_REAL_AFTER_BC_S3A",
+    "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3c1_v1/cpu_runs/S3C1_CPU_REAL_AFTER_BC_S3A_deps_v2",
+    "compute_dtype": "bfloat16",
+    "devices": [
+      "TFRT_CPU_0"
+    ],
+    "status": "PASS_REAL_CPU_EXACT_PAYLOAD_RESTORE",
+    "local_updates": 2,
+    "bc_effective_updates": 0
+  }
+]

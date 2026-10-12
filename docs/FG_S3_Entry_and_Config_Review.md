@@ -134,3 +134,17 @@ tracked diff；原有 untracked 文件保留。未修改 `.gitignore`、旧数�
 按上述实际入口继续 S3-C 集成。先统一 S3 配置解析和代码定位，再完成 C 分派、
 新准备协议、FullCheckpoint 恢复和真实 CPU 验证；公共协议若需要调整，先完成
 共享架构回归与收据，再继续依赖该接口的 C 验收。
+
+
+## Final delivery update
+
+This document's initial inventory is historical. C now uses the existing S3
+entry with canonical configuration, public teacher/source services and full
+restore. The final report and requirement review are in
+FG_S3C1_Implementation_and_Verification.md and
+FG_S3_Shared_Architecture_and_S3C1_Final_Review.md.
+
+The user subsequently selected S3-A from the live online180k node; broader A
+admission is explicitly versioned and retains the original BC math. Final
+source/config/commits/CPU preparation/start commands are recorded in
+FG_S3A_Online_180K_Startup.md. No formal training was started by Codex.
