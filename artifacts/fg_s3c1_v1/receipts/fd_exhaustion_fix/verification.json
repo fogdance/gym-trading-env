@@ -1,0 +1,97 @@
+{
+  "status": "FIXED_AND_TARGETED_VERIFICATION_PASSED",
+  "root_cause": "start held 808 cache mmap handles while audit opened the same 404-shard cache again",
+  "changed_runtime": {
+    "file": "src/gym_trading_env/research/fg_s3_experiment.py",
+    "sha256": "dae5cace3aa47ebd7e732ac9f4c3a47d8d2d3e5f043333084f345e9cda536148"
+  },
+  "regression": {
+    "tests": 1,
+    "failures": 0,
+    "errors": 0,
+    "seconds": 0.418,
+    "scope": "Real NumPy mmap lifecycle unit test with mocked worker/checkpoint; no model training"
+  },
+  "actual_cache_after": {
+    "status": "PASS_REAL_CACHE_SCOPED_RELEASE",
+    "soft_nofile": 1024,
+    "baseline_fds": 4,
+    "events": [
+      {
+        "phase": "parent_metadata",
+        "live_fds": 812,
+        "rows": 402096,
+        "mappings": 808,
+        "fds_after_close": 4
+      },
+      {
+        "phase": "final_audit",
+        "live_fds": 812,
+        "rows": 402096,
+        "mappings": 808,
+        "fds_after_close": 4
+      }
+    ],
+    "scope": "Actual 404-shard cache and fixed ownership helper; no model training or prepared-hash bypass",
+    "production_joint_training": "NOT_RUN"
+  },
+  "completed_user_training": {
+    "bc_updates": 1000,
+    "worker_status": "BC_COMPLETE",
+    "checkpoint": "/data/logdir/fg_single3/s3/S3A_ORACLE_BC_FROM_ONLINE_180K_seed0/ckpt/bc_000000001000",
+    "checkpoint_manifest_sha256": "c26351abc7e8e319f49c11017f3db88d431d5fa04c84270272019ee1df9b109a",
+    "training_receipt_sha256": "318045a37aaac9b902232bcd0035ed273f3f6edb0afc099caaea722d914e7d11",
+    "fresh_cpu_audit": "TRAINING_CHECKPOINT_VERIFIED",
+    "frozen_keys": 275,
+    "checkpoint_unchanged": true,
+    "user_training_had_gpu": true,
+    "codex_retraining_launched": false
+  },
+  "protected_training_versions": {
+    "gym": "5293e978d3f234d5f7c3149f326f1da831012bad",
+    "dreamer": "93a6fb65b493b60f7c1205b8351d7024cbfc326a"
+  },
+  "fix_location": "Development worktree only; original prepared/runtime hashes and frozen training code are retained",
+  "earlier_review_findings": {
+    "R1": "OPEN",
+    "R2": "OPEN",
+    "R3": "OPEN"
+  },
+  "new_gpu_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "sealed_test": "NOT_RUN",
+  "commands": [
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+      "env": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3:/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "-o",
+        "addopts=",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/entry_v1/test_fg_s3_feature_lifecycle.py",
+        "--junitxml=artifacts/fg_s3c1_v1/receipts/fd_exhaustion_fix/cache_lifecycle_after.xml"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "files": {
+    "production_cache_double_open_before.stdout": "2281830afcb9f000518ed2a3d8be21eb98b4b8b23928d1def8ffeffa0c2f9b07",
+    "completed_1000_checkpoint_fresh_audit.stdout": "9dbe69bd9c9409680bdb137d8691e1d6d862dc49287429c84b29654acb8984e6",
+    "cache_lifecycle_after.xml": "81247236b43aadb7f64a52d9074a8e67f2e84aea3f38f798d6bb5ae11c986f21",
+    "production_cache_scope_after.stdout": "c8f6a725b9d36c0561558b82be206dcd13f0ae1cbcdd06158789ff0ccd54c0ff",
+    "cache_lifecycle_after.stdout": "791acbb2840ecff621592488f8e65512e312896e3865560d4000495c22ef5d13"
+  }
+}

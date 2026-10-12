@@ -351,6 +351,24 @@ def admission(cfg, *, feature_required=False):
 
 
 @contextmanager
+def _admission_scope(cfg, *, feature_required=False):
+    """Release launcher-owned feature mappings before another admission."""
+    admitted = admission(cfg, feature_required=feature_required)
+    try:
+        yield admitted
+    finally:
+        cache = admitted[-1]
+        if cache is not None:
+            for arrays in (cache.features, cache.index):
+                for array in arrays:
+                    mapping = getattr(array, '_mmap', None)
+                    if mapping is not None and not mapping.closed:
+                        mapping.close()
+            cache.features.clear()
+            cache.index.clear()
+
+
+@contextmanager
 def _lock(path):
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open('a') as stream:
@@ -829,9 +847,9 @@ def start(prepared, *, resume=False, config=None):
                 if not featuredir.exists():
                     _run_phase(prepared, cfg, 'features',
                                lock_fds=(run_lock.fileno(), feature_lock.fileno()))
-        _, source, _, cache = admission(cfg, feature_required=True)
-        _bind_features(prepared, cache)
-        _, identity = _training_identity(prepared, receipt, cfg, source, cache)
+        with _admission_scope(cfg, feature_required=True) as (_, source, _, cache):
+            _bind_features(prepared, cache)
+            _, identity = _training_identity(prepared, receipt, cfg, source, cache)
         if resume:
             if read_manifest(logdir / 'run_identity.json')['identity'] != identity:
                 raise ValueError('Managed resume training identity differs')
@@ -857,17 +875,17 @@ def audit(prepared, config=None):
             checked = _audit_checkpoint(cfg, identity)
             result.update({k: v for k, v in checked.items() if k != 'identity'})
         return result
-    _, source, _, cache = admission(cfg)
-    result = dict(status=receipt['status'], experiment=cfg['experiment'], trainer=cfg['trainer'],
-                  mode=cfg['train']['mode'], diagnostic=cfg['diagnostic'],
-                  prepared=str(Path(prepared).resolve()), logdir=cfg['train']['logdir'])
-    if cache:
-        _bind_features(prepared, cache, create=False)
-        _, identity = _training_identity(prepared, receipt, cfg, source, cache)
-        logdir = Path(cfg['train']['logdir'])
-        if logdir.exists():
-            _save_run_snapshot(prepared, cfg, identity)
-            checked = _audit_checkpoint(cfg, identity)
-            result.update(status='TRAINING_CHECKPOINT_VERIFIED', bc_updates=checked['bc_updates'],
-                          frozen_keys=checked['freeze_audit']['frozen_keys'])
-    return result
+    with _admission_scope(cfg) as (_, source, _, cache):
+        result = dict(status=receipt['status'], experiment=cfg['experiment'], trainer=cfg['trainer'],
+                      mode=cfg['train']['mode'], diagnostic=cfg['diagnostic'],
+                      prepared=str(Path(prepared).resolve()), logdir=cfg['train']['logdir'])
+        if cache:
+            _bind_features(prepared, cache, create=False)
+            _, identity = _training_identity(prepared, receipt, cfg, source, cache)
+            logdir = Path(cfg['train']['logdir'])
+            if logdir.exists():
+                _save_run_snapshot(prepared, cfg, identity)
+                checked = _audit_checkpoint(cfg, identity)
+                result.update(status='TRAINING_CHECKPOINT_VERIFIED', bc_updates=checked['bc_updates'],
+                              frozen_keys=checked['freeze_audit']['frozen_keys'])
+        return result

@@ -1,0 +1,23 @@
+{
+  "status": "PASS_REAL_CACHE_SCOPED_RELEASE",
+  "soft_nofile": 1024,
+  "baseline_fds": 4,
+  "events": [
+    {
+      "phase": "parent_metadata",
+      "live_fds": 812,
+      "rows": 402096,
+      "mappings": 808,
+      "fds_after_close": 4
+    },
+    {
+      "phase": "final_audit",
+      "live_fds": 812,
+      "rows": 402096,
+      "mappings": 808,
+      "fds_after_close": 4
+    }
+  ],
+  "scope": "Actual 404-shard cache and fixed ownership helper; no model training or prepared-hash bypass",
+  "production_joint_training": "NOT_RUN"
+}

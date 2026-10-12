@@ -1,0 +1,4 @@
+{"phase": "before_first_cache", "pid": 9, "soft_limit": 1024, "fds": 4, "shards": 404}
+{"phase": "one_cache_live", "fds": 812, "rows": 402096}
+{"phase": "second_cache_failed", "errno": 24, "message": "[Errno 24] Too many open files", "first_cache_live": true}
+{"phase": "after_scope_released", "fds": 4, "result": "REPRODUCED_ORIGINAL_EMFILE_ON_REAL_CACHE"}
