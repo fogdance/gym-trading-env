@@ -154,3 +154,51 @@ def test_worker_keeps_exclusive_lock_after_launcher_descriptor_closes(tmp_path, 
         future.result(timeout=10)
     with manager._lock(lock_path):
         pass
+
+
+def test_shared_source_s3a_prepare_train_resume_and_after_bc_transfer(bundle, tmp_path, monkeypatch):
+    from gym_trading_env.research.fg_s3_teacher_catalog import build_catalog, load_catalog
+    from embodied.run import fg_s3a_checkpoint
+    from embodied.run.fg_s3_source_admission import inspect_source, prepare_transfer
+    from dreamerv3.fg_s3a_actor import parameter_digests
+
+    path, cfg = experiment(bundle, tmp_path / 'shared_s3a', existing_features=True)
+    cfg['schema'] = manager.SOURCE_SCHEMA
+    lm = read_manifest(bundle['labels'] / 'manifest.json')
+    catalog = tmp_path / 'catalog'
+    build_catalog(lm['source']['dataset'], lm['source']['oracle_receipt'], bundle['labels'],
+                  catalog, diagnostic=True)
+    cfg['paths']['catalog'] = str(catalog)
+    path.write_text(yaml.safe_dump(cfg))
+    # The new source route must not relax or call the historical 62500 loader.
+    monkeypatch.setattr(fg_s3a_checkpoint, 'validate_source',
+                        lambda *a, **k: pytest.fail('V2 called fixed-source V1 admission'))
+    monkeypatch.setattr(fg_s3a_checkpoint, 'load_source',
+                        lambda *a, **k: pytest.fail('V2 called private V1 model transfer'))
+    receipt = manager.prepare(path)
+    assert receipt['protocol'] == manager.SOURCE_PROTOCOL
+    assert receipt['status'] == 'READY_FOR_BC'
+    assert 'portal' in receipt['packages'] and 'cloudpickle' in receipt['packages']
+    prepared = Path(cfg['prepared_dir'])
+    assert read_manifest(prepared / 'source_admission_receipt.json')['kind'] == 'direct_full'
+    result = manager.start(prepared, config=path)
+    assert result['bc_updates'] == 2
+    run = Path(cfg['train']['logdir'])
+    node = run / 'ckpt' / (run / 'ckpt/latest').read_text().strip()
+    before = digest(node / 'state.pkl')
+    assert manager.start(prepared, resume=True, config=path)['bc_updates'] == 2
+    assert digest(node / 'state.pkl') == before
+    assert (run / 'managed_snapshot/source_admission_receipt.json').is_file()
+    proofs = [read_manifest(p) for p in (prepared / 'transfer_receipts').glob('*.json')]
+    assert proofs and all(p['params_before'] == p['params_after'] for p in proofs)
+    spec = inspect_source('after_bc_s3a', catalog=load_catalog(catalog), path=node,
+                          base_checkpoint=cfg['paths']['source_checkpoint'])
+    state = prepare_transfer(spec)
+    original = parameter_digests(bundle['agent'].params)
+    updated = parameter_digests(state['params'])
+    assert any(updated[k] != original[k] for k in updated if k.startswith('pol/'))
+    assert all(updated[k] == original[k] for k in updated if not k.startswith('pol/'))
+    target = prepared / 'source_admission_receipt.json'
+    target.write_text(target.read_text() + '\n')
+    with pytest.raises(ValueError, match='changed'):
+        manager.require_prepared(prepared)

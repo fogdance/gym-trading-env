@@ -19,6 +19,8 @@ GYM_ROOT = Path(__file__).resolve().parents[3]
 CONFIG_ROOT = GYM_ROOT / 'configs/experiments/fg_single3'
 SCHEMA = 'FG_S3_EXPERIMENT_V1'
 PROTOCOL = 'FG_S3_PREPARED_V1'
+SOURCE_SCHEMA = 'FG_S3_EXPERIMENT_V2'
+SOURCE_PROTOCOL = 'FG_S3_PREPARED_V2'
 SNAPSHOT_FILES = {'experiment.requested.yaml', 'model.template.yaml', 'model.defaults.yaml',
                   'source.config.yaml', 'effective_config.yaml', 'input_hashes.json', 'code_hashes.json'}
 TRAINERS = {'s3a': ('S3A_FULL',),
@@ -27,6 +29,13 @@ TRAINERS = {'s3a': ('S3A_FULL',),
 JOINT_PROTOCOL = 'FG_S3C_PREPARED_V1'
 JOINT_SNAPSHOT_FILES = SNAPSHOT_FILES | {
     'training.config.yaml', 'source_admission_receipt.json', 'teacher_catalog_identity.json'}
+SOURCE_SNAPSHOT_FILES = SNAPSHOT_FILES | {'source_admission_receipt.json', 'teacher_catalog_identity.json'}
+
+
+def snapshot_files(cfg):
+    if cfg['trainer'] == 's3c':
+        return JOINT_SNAPSHOT_FILES
+    return SOURCE_SNAPSHOT_FILES if cfg['schema'] == SOURCE_SCHEMA else SNAPSHOT_FILES
 
 
 def read_yaml(path):
@@ -130,7 +139,8 @@ def read_experiment(config):
         return _joint_config(path, cfg)
     _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
                    'dreamer_root', 'model', 'paths', 'features', 'train'), 'experiment')
-    if cfg['schema'] != SCHEMA or cfg['trainer'] not in TRAINERS:
+    if (cfg['schema'] not in (SCHEMA, SOURCE_SCHEMA) or cfg['trainer'] not in TRAINERS
+            or (cfg['schema'] == SOURCE_SCHEMA and cfg['trainer'] != 's3a')):
         raise ValueError('Foreign S3 experiment schema/trainer')
     if not isinstance(cfg['experiment'], str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', cfg['experiment']):
         raise ValueError('Experiment must be a safe, nonempty run name')
@@ -140,8 +150,8 @@ def read_experiment(config):
     if (not isinstance(cfg['model']['presets'], list) or not cfg['model']['presets']
             or any(not isinstance(x, str) for x in cfg['model']['presets'])):
         raise ValueError('Model presets must be a nonempty list of names')
-    _mapping(cfg['paths'], ('dataset', 'oracle_receipt', 'labels', 'source_checkpoint',
-                            'features', 'weights'), 'paths')
+    path_keys = ('dataset', 'oracle_receipt', 'labels', 'source_checkpoint', 'features', 'weights')
+    _mapping(cfg['paths'], path_keys + (('catalog',) if cfg['schema'] == SOURCE_SCHEMA else ()), 'paths')
     _mapping(cfg['features'], ('seed', 'shard_rows', 'max_rows', 'device'), 'features')
     _mapping(cfg['train'], ('mode', 'seed', 'batch_size', 'updates', 'comparison_updates',
                             'save_every', 'device', 'logdir', 'optimizer'), 'train')
@@ -207,6 +217,8 @@ def _check_locations(cfg):
                Path(cfg['dreamer_root']), Path(cfg['model']['template'])]
     if cfg['paths']['weights']:
         inputs.append(Path(cfg['paths']['weights']))
+    if cfg['schema'] == SOURCE_SCHEMA:
+        inputs.append(Path(cfg['paths']['catalog']))
     if any(_overlap(output, p) for output in (prepared, logdir, features) for p in inputs):
         raise ValueError('S3 outputs overlap an immutable source/model/data directory')
     if any(_overlap(a, b) for a, b in ((prepared, logdir), (prepared, features), (logdir, features))):
@@ -295,7 +307,17 @@ def admission(cfg, *, feature_required=False):
     for name in ('dataset', 'oracle_receipt'):
         if cfg['paths'][name] != labels['source'][name]:
             raise ValueError('Experiment input differs from frozen S3-A labels: ' + name)
-    source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
+    if cfg['schema'] == SOURCE_SCHEMA:
+        from .fg_s3_teacher_catalog import load_catalog
+        from embodied.run.fg_s3_source_admission import inspect_source
+        catalog = load_catalog(cfg['paths']['catalog'])
+        if catalog.manifest['labels_manifest_sha256'] != digest(Path(cfg['paths']['labels']) / 'manifest.json'):
+            raise ValueError('S3-A labels differ from the shared Catalog')
+        spec = inspect_source('direct_full', catalog=catalog,
+                              path=cfg['paths']['source_checkpoint'], diagnostic=cfg['diagnostic'])
+        source = dict(spec['origin'], admission_receipt=spec)
+    else:
+        source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
     weights = None
     if cfg['trainer'] == 's3b':
         from gym_trading_env.research.fg_s3b_normalization import audit_weights
@@ -484,8 +506,14 @@ def prepare(config):
     if cache:
         p = cache.root / 'manifest.json'
         inputs[str(p)] = digest(p)
+    if cfg['schema'] == SOURCE_SCHEMA:
+        from .fg_s3_teacher_catalog import load_catalog
+        catalog = load_catalog(cfg['paths']['catalog'])
+        inputs.update(catalog.manifest['frozen_inputs'])
+        inputs[str(catalog.root / 'manifest.json')] = catalog.manifest_sha256
     code = runtime_files(cfg)
     from embodied.run.fg_s3a_checkpoint import package_versions
+    from embodied.run.fg_s3_source_admission import runtime_versions
     with _lock(root.parent / ('.' + root.name + '.prepare.lock')):
         if root.exists():
             raise FileExistsError('Prepared experiment already exists')
@@ -498,13 +526,18 @@ def prepare(config):
             (pending / name).write_text(yaml.safe_dump(value, sort_keys=False))
         write_json(pending / 'input_hashes.json', inputs)
         write_json(pending / 'code_hashes.json', code)
-        receipt = signed(dict(protocol=PROTOCOL,
+        if cfg['schema'] == SOURCE_SCHEMA:
+            write_json(pending / 'source_admission_receipt.json', source['admission_receipt'])
+            write_json(pending / 'teacher_catalog_identity.json', signed(dict(
+                path=str(catalog.root), protocol=catalog.manifest['protocol'],
+                manifest_sha256=catalog.manifest_sha256)))
+        receipt = signed(dict(protocol=SOURCE_PROTOCOL if cfg['schema'] == SOURCE_SCHEMA else PROTOCOL,
             status='READY_FOR_BC' if cache else 'READY_FOR_FEATURES',
             experiment=cfg['experiment'], trainer=cfg['trainer'], mode=cfg['train']['mode'],
             diagnostic=cfg['diagnostic'], requested_config=str(requested),
             requested_config_sha256=digest(requested), source_manifest_sha256=source['manifest_sha256'],
             source_identity_hash=source['identity_hash'], source_model_config_sha256=digest(checkpoint / 'config.yaml'),
-            packages=package_versions(),
+            packages=runtime_versions() if cfg['schema'] == SOURCE_SCHEMA else package_versions(),
             source_versions={str(r): subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=r, text=True).strip()
                              for r in (GYM_ROOT, Path(cfg['dreamer_root']))},
             files={p.name: digest(p) for p in pending.iterdir()},
@@ -526,13 +559,16 @@ def require_prepared(prepared, config=None, *, verify_source=True):
     root = Path(prepared).resolve()
     receipt = read_manifest(root / 'manifest.json')
     joint = receipt['protocol'] == JOINT_PROTOCOL
-    if (not (root / 'done').is_file() or receipt['protocol'] not in (PROTOCOL, JOINT_PROTOCOL)
+    source_v2 = receipt['protocol'] == SOURCE_PROTOCOL
+    if (not (root / 'done').is_file() or receipt['protocol'] not in (PROTOCOL, JOINT_PROTOCOL, SOURCE_PROTOCOL)
             or receipt['status'] not in ('READY_FOR_BC', 'READY_FOR_FEATURES', 'READY_FOR_JOINT')
-            or set(receipt['files']) != (JOINT_SNAPSHOT_FILES if joint else SNAPSHOT_FILES)):
+            or set(receipt['files']) != (JOINT_SNAPSHOT_FILES if joint else SOURCE_SNAPSHOT_FILES if source_v2 else SNAPSHOT_FILES)):
         raise ValueError('Incomplete or foreign prepared S3 experiment')
     check_files({str(root / name): h for name, h in receipt['files'].items()})
     cfg = read_yaml(root / 'effective_config.yaml')
     _check_locations(cfg)
+    if source_v2 != (cfg['schema'] == SOURCE_SCHEMA) or joint != (cfg['trainer'] == 's3c'):
+        raise ValueError('Prepared source protocol differs from the configured schema')
     if Path(cfg['prepared_dir']) != root or (cfg['experiment'], cfg['trainer'], cfg['train']['mode'], cfg['diagnostic']) != (
             receipt['experiment'], receipt['trainer'], receipt['mode'], receipt['diagnostic']):
         raise ValueError('Prepared S3 experiment location/mode differs')
@@ -551,7 +587,7 @@ def require_prepared(prepared, config=None, *, verify_source=True):
         inputs = {p: h for p, h in inputs.items() if p in catalog.manifest['frozen_inputs']
                   or p == str(catalog.root / 'manifest.json')}
     check_files(inputs)
-    if joint:
+    if joint or source_v2:
         from embodied.run.fg_s3_source_admission import runtime_versions
         packages = runtime_versions()
     else:
@@ -618,13 +654,16 @@ def execute_phase(prepared, phase, resume=False):
         run = S3CRun(cfg['train']['logdir'], resume=resume, **args)
         return run.train_to(cfg['train']['updates'])
     _, source, _, cache = admission(cfg, feature_required=phase == 'train')
+    if cfg['schema'] == SOURCE_SCHEMA:
+        expected = read_manifest(Path(prepared) / 'source_admission_receipt.json')
+        if expected != source['admission_receipt']:
+            raise ValueError('S3-A source changed after immutable preparation')
     if phase == 'features':
         if cache:
             return {'status': 'FEATURES_REUSED'}
-        from embodied.run.fg_s3a_checkpoint import load_source
         from embodied.run.fg_s3a_features import build_features
         root = cfg['paths']['features']
-        agent = load_source(source, root, device=cfg['features']['device'])
+        agent = _load_actor_source(source, root, cfg['features']['device'], prepared)
         return build_features(agent, source, cfg['paths']['labels'], root,
             seed=cfg['features']['seed'], run_id='features_' + str(cfg['features']['seed']),
             shard_rows=cfg['features']['shard_rows'], max_rows=cfg['features']['max_rows'])
@@ -635,11 +674,27 @@ def execute_phase(prepared, phase, resume=False):
         resume=resume, save_every=cfg['train']['save_every'], device=cfg['train']['device'])
     if cfg['trainer'] == 's3a':
         from embodied.run.fg_s3a_train import train
+        if cfg['schema'] == SOURCE_SCHEMA:
+            args['agent'] = _load_actor_source(source, cfg['train']['logdir'], cfg['train']['device'], prepared)
         return train(source, cache, cfg['train']['logdir'], **args)
     from embodied.run.fg_s3b_train import train
     return train(source, cache, cfg['paths']['weights'], cfg['train']['logdir'], **args,
                  mode=cfg['train']['mode'], comparison_updates=cfg['train']['comparison_updates'],
                  config_sha256=digest(Path(prepared) / 'effective_config.yaml'))
+
+
+def _load_actor_source(source, output, device, prepared):
+    if 'admission_receipt' not in source:
+        from embodied.run.fg_s3a_checkpoint import load_source
+        return load_source(source, output, device=device)
+    from dreamerv3.fg_s3a_agent import S3AAgent
+    from embodied.run.fg_s3_source_transfer import make_agent, apply_and_audit_transfer
+    agent = make_agent(source['config'], output, agent_cls=S3AAgent, device=device)
+    proof = apply_and_audit_transfer(agent, source['admission_receipt'])
+    receipts = Path(prepared) / 'transfer_receipts'
+    receipts.mkdir(exist_ok=True)
+    write_json(receipts / (uuid.uuid4().hex + '.json'), proof)
+    return agent
 
 
 def _run_phase(prepared, cfg, phase, resume=False, *, lock_fds=()):
@@ -693,7 +748,7 @@ def _save_run_snapshot(prepared, cfg, identity, *, create=False):
                 dict(prepared_manifest_sha256=digest(root / 'manifest.json'),
                      feature_binding_sha256=digest(root / 'features_binding.json')))
     extras = {'preparation_receipt.json'} | (set() if joint else {'features_binding.json'})
-    names = (JOINT_SNAPSHOT_FILES if joint else SNAPSHOT_FILES) | extras
+    names = snapshot_files(cfg) | extras
     if dest.exists():
         saved = read_manifest(dest / 'manifest.json')
         if (saved['protocol'] != 'FG_S3_RUN_SNAPSHOT_V1' or saved['binding'] != expected
