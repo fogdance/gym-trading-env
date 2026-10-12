@@ -114,3 +114,23 @@ def test_catalog_tamper_output_and_diagnostic_boundary(catalog_bundle,tmp_path):
     m=read_manifest(dest/'manifest.json');p=dest/m['traces'][0]['file']
     a=np.load(p);a['label'][0]=0;np.save(p,a)
     with pytest.raises(ValueError,match='changed'):load_catalog(dest)
+
+
+def test_shared_replay_admission_exact_pool_subset_and_corrupt_bytes(catalog_bundle,tmp_path):
+    from embodied.run.fg_s3_teacher_adapter import admit_replay_directory
+    _,_,_,_,_,_,out=catalog_bundle
+    catalog=load_catalog(out)
+    pool=tmp_path/'pool';pool.mkdir()
+    for source in catalog.manifest['frozen_inputs']:
+        if source.endswith('.npz'):
+            (pool/Path(source).name).symlink_to(source)
+    count=admit_replay_directory(pool,catalog)
+    removed=next(pool.glob('*.npz'));removed.rename(removed.with_suffix('.held'))
+    with pytest.raises(DatasetIdentityError,match='FILE_SET_MISMATCH'):
+        admit_replay_directory(pool,catalog)
+    assert admit_replay_directory(pool,catalog,diagnostic=True)==count-1
+    bad=tmp_path/'bad';bad.mkdir()
+    source=next(pool.glob('*.npz'))
+    (bad/source.name).write_bytes(source.read_bytes()+b'corrupt')
+    with pytest.raises(DatasetIdentityError,match='FILE_HASH_MISMATCH'):
+        admit_replay_directory(bad,catalog,diagnostic=True)
