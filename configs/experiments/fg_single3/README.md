@@ -20,3 +20,45 @@ python tools/fg_single3_experiment.py resume --config configs/experiments/fg_sin
 `prepare` 只执行 CPU 准入。训练由用户执行 `start` 或 `resume` 后启动。当前两阶段不自动评估冻结的离线 Actor；独立 DEV 评估需使用在线训练后的模型，封存 TEST 不用于训练。
 
 本次诊断错误及真实 GPU 验证见 [启动修复记录](../../../docs/FG_Single3_Online_Startup_Diagnostics_Fix_20261012.md)。
+
+## S3-A / S3-B 实验管理
+
+S3 使用 `tools/fg_s3_experiment.py` 管理 `plan / prepare / start / resume / audit`。
+原有 Single3 离线预训练和在线接续继续使用 `tools/fg_single3_experiment.py`。
+各实验 YAML 都集中在本目录，通过 `--config` 选择路径或下表名称。
+
+| 配置名称 | 训练器 | 监督样本 / 权重 |
+|---|---|---|
+| `S3A_ORACLE_BC` | 原 S3-A | 全部合法空仓样本 / 1 |
+| `S3A_FULL` | S3-B 公平对照入口 | 同一完整索引 / 1 |
+| `S3A_MATCHED` | S3-B 公平对照入口 | 严格证书子集 / 1 |
+| `S3B_CERTIFIED` | S3-B | 同一严格证书子集 / 冻结优势权重 |
+
+公共网络默认配置通过 `model.template` 引用
+`/home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml`，按 `model.presets` 解析。
+源 Checkpoint 的模型配置和参数仍必须精确匹配；实验 YAML 不新增网络结构。
+BC 复用公共优化器的兼容默认项，使用独立的常数学习率优化器且关闭原预热。
+
+`prepared_dir` 保存请求配置、公共模板、有效配置、源模型配置、输入/代码哈希及
+准备收据；`paths.features` 是独立且冻结的教师特征目录；`train.logdir` 保存各自的
+日志、Checkpoint 和运行配置快照。正式日志必须在 `/data/logdir/fg_single3/` 下。
+
+```bash
+PY=/home/v/miniconda3/envs/dreamerv3/bin/python
+$PY tools/fg_s3_experiment.py plan --config S3B_CERTIFIED
+# 核对并填写已完成的源 Checkpoint 后，准备与运行使用相同配置。
+$PY tools/fg_s3_experiment.py prepare --config S3B_CERTIFIED
+$PY tools/fg_s3_experiment.py start --config S3B_CERTIFIED
+$PY tools/fg_s3_experiment.py resume --config S3B_CERTIFIED
+$PY tools/fg_s3_experiment.py audit --config S3B_CERTIFIED
+```
+
+`plan` 仅解析配置，不表示数据或源模型已经准入。`prepare` 只在 CPU 上检查输入并
+保存快照；`start` 根据快照生成/复用教师特征，再调用对应原 Actor-only 训练器。
+正式 `start` 需要配置指定的 GPU；用 `CUDA_VISIBLE_DEVICES` 选择设备。
+准备后修改中央 YAML 会使 `--config` 恢复失败。明确恢复旧快照时使用
+`resume --prepared <prepared_dir>`，参数来自已保存配置。
+
+S3-A / S3-B 原计算入口和独立 Checkpoint 协议保留；早期 `configs/fg_s3b/` YAML
+仍服务原入口，新管理流程统一使用本目录。后续 S3-C 可以增加独立适配器和实验
+配置，本轮仅支持 A/B。完整收据与说明见 `docs/FG_S3_Experiment_Management.md`。

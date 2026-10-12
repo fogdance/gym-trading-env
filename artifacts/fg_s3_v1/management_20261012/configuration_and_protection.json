@@ -1,0 +1,52 @@
+{
+  "status": "PASS",
+  "configs": [
+    {
+      "config": "S3A_ORACLE_BC",
+      "status": "CONFIG_ONLY_NOT_ADMITTED",
+      "prepared_dir": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3_v1/experiments/S3A_ORACLE_BC_seed0",
+      "logdir": "/data/logdir/fg_single3/s3/S3A_ORACLE_BC_seed0"
+    },
+    {
+      "config": "S3A_FULL",
+      "status": "CONFIG_ONLY_NOT_ADMITTED",
+      "prepared_dir": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3_v1/experiments/S3A_FULL_seed0",
+      "logdir": "/data/logdir/fg_single3/s3/S3A_FULL_seed0"
+    },
+    {
+      "config": "S3A_MATCHED",
+      "status": "CONFIG_ONLY_NOT_ADMITTED",
+      "prepared_dir": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3_v1/experiments/S3A_MATCHED_seed0",
+      "logdir": "/data/logdir/fg_single3/s3/S3A_MATCHED_seed0"
+    },
+    {
+      "config": "S3B_CERTIFIED",
+      "status": "CONFIG_ONLY_NOT_ADMITTED",
+      "prepared_dir": "/home/v/Documents/work/gym-trading-env2/artifacts/fg_s3_v1/experiments/S3B_CERTIFIED_seed0",
+      "logdir": "/data/logdir/fg_single3/s3/S3B_CERTIFIED_seed0"
+    }
+  ],
+  "ast_files": 3,
+  "pre_existing_code": {
+    "/home/v/Documents/work/gym-trading-env2": {
+      "baseline": "926ac70",
+      "pre_existing_s3_files_unchanged": 18
+    },
+    "/home/v/Documents/work/dreamerv3-dev": {
+      "baseline": "fd20e28",
+      "pre_existing_s3_files_unchanged": 16
+    }
+  },
+  "supported_trainers": {
+    "s3a": [
+      "S3A_FULL"
+    ],
+    "s3b": [
+      "S3A_FULL",
+      "S3A_MATCHED",
+      "S3B_CERTIFIED"
+    ]
+  },
+  "formal_gpu_training": "NOT_RUN",
+  "sealed_test": "NOT_ACCESSED"
+}

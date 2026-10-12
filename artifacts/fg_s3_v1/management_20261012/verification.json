@@ -1,0 +1,42 @@
+{
+  "status": "PASS",
+  "unique_new_tests": 5,
+  "test_suites": [
+    {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "integration.xml",
+      "names": [
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3a]",
+        "test_prepare_start_resume_original_actor_and_frozen_snapshot[s3b]",
+        "test_preparation_refuses_template_drift_overlap_and_snapshot_tamper",
+        "test_central_configuration_interfaces_and_formal_partial_guard"
+      ]
+    },
+    {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "receipt": "lock_handoff.xml",
+      "names": [
+        "test_worker_keeps_exclusive_lock_after_launcher_descriptor_closes"
+      ]
+    }
+  ],
+  "integration_manager_sha256": "6b990a20b15ac12755e673e14b08853f2e0db839f2e44842f8cee71b871b494f",
+  "delivered_source_sha256": {
+    "src/gym_trading_env/research/fg_s3_experiment.py": "73af342b9b52f79a9e714d6e07d341d15f56a3f924594ea4dc9c40549213be8a",
+    "tools/fg_s3_experiment.py": "bac5666d6d98fad8e612bcf3c241f514eae49f8138e3a95abdd2683da81f609f",
+    "tests/entry_v1/test_fg_s3_experiment.py": "1d8d8fd3ec238abcdf60e435dfbdac0d40732616d805db0226a42b1dedab0b30"
+  },
+  "last_code_patch": "Popen lock descriptor inheritance; verified by targeted lock_handoff test",
+  "ast_files": 3,
+  "bash_document_blocks": 2,
+  "formal_gpu_training": "NOT_RUN",
+  "source_admission_relaxed": false,
+  "new_neural_networks": false,
+  "s3c_implemented": false
+}

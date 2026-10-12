@@ -1,0 +1,31 @@
+schema: FG_S3_EXPERIMENT_V1
+experiment: S3A_ORACLE_BC_seed0
+trainer: s3a
+diagnostic: false
+prepared_dir: artifacts/fg_s3_v1/experiments/S3A_ORACLE_BC_seed0
+dreamer_root: /home/v/Documents/work/dreamerv3-dev
+model:
+  template: /home/v/Documents/work/dreamerv3/dreamerv3/configs.yaml
+  presets: [defaults, fg_entry_v1, fg_single3_joint_offline, fg_single3_1m]
+paths:
+  dataset: /home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01
+  oracle_receipt: /home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01
+  labels: artifacts/fg_s3a_v1/labels_20261011_v2
+  source_checkpoint: /data/logdir/fg_single3/gate_margin_v2/C1_M1_1M/ckpt/step_000000062500
+  features: artifacts/fg_s3_v1/features/C1_M1_1M_seed0
+  weights: null
+features:
+  seed: 0
+  shard_rows: 1024
+  max_rows: null
+  device: gpu
+train:
+  mode: S3A_FULL
+  seed: 0
+  batch_size: 256
+  updates: 1000
+  comparison_updates: 1000
+  save_every: 100
+  device: gpu
+  logdir: /data/logdir/fg_single3/s3/S3A_ORACLE_BC_seed0
+  optimizer: {lr: 0.00004, agc: 0.3}
