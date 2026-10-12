@@ -22,3 +22,5 @@ python tools/fg_single3_experiment.py resume --config configs/experiments/fg_sin
 `prepare` 只执行 CPU 准入。训练由用户执行 `start` 或 `resume` 后启动。当前两阶段不自动评估冻结的离线 Actor；独立 DEV 评估需使用在线训练后的模型，封存 TEST 不用于训练。
 
 本次诊断错误及真实 GPU 验证见 [启动修复记录](../../../docs/FG_Single3_Online_Startup_Diagnostics_Fix_20261012.md)。
+
+prior ADD 的只读 CPU 审计共用 `tools/fg_single3_prior_audit.py --config <实验YAML> --output <新目录>`；通过 `--offline-checkpoint` 和 `--online-checkpoint` 可固定已有阶段的 Checkpoint。工具复用原生 Replay 标注与模型的因果上下文、availability head，保存逐位置概率、曲线及输入哈希，不启动训练。2026-10-12 的实际结果见 [prior ADD 概率审计](../../../docs/FG_Single3_Prior_ADD_Probability_Audit_20261012.md)。
