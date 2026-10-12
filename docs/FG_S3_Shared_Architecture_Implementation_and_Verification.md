@@ -87,6 +87,18 @@ transfer API; a formal C runner must reject missing necessary control state.
 
 ## Next recommended step
 
+### C integration return review
+
+C's actual Replay sampling exposed a public join boundary: `Replay.sample`
+sets the sequence's first is_first to True. The shared adapter now takes explicit
+`sampling_flags=True` and authenticates that transform only at the first row of
+consec=0. All other flags/actions/masks/position fields remain strict. No native
+data or teacher definition changed. Shared fix: Dreamer `e44b10f`.
+Catalog + actual Replay/Prefetch/Consec regression: `shared_sampling_after.xml`,
+8 passed in 49.53s. Failure and final receipts are in S3-C's receipt directory.
+The plain native join still rejects sampling-modified flags, and the annotated
+join rejects a missing synthetic reset. Catalog format and hash did not change.
+
 Implement C0–C4 using these public APIs. Keep original joint optimizer, use
 current posterior repfeat, add equal-weight Actor-only BC gradient, and prove
 lambda-zero and exact FullCheckpoint/runtime recovery before delivery.
