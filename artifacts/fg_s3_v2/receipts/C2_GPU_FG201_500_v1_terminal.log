@@ -1,0 +1,86 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2/C2 env=250 update=1 BC=0.689892 valid=8 ADD=5 actor_grad=3.082624
+A2/C2 env=250 update=2 BC=0.000000 valid=0 ADD=0 actor_grad=0.000000
+A2/C2 env=500 update=3 BC=0.000000 valid=0 ADD=0 actor_grad=0.000000
+A2/C2 env=500 update=4 BC=0.000000 valid=0 ADD=0 actor_grad=0.000000
+{
+  "protocol": "FG_S3_V2_LIVE_LEARNING_V1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1",
+  "env_steps": 500,
+  "counters": {
+    "all_updates": 4,
+    "wm_updates": 4,
+    "bc_valid_updates": 1,
+    "bc_add_updates": 1,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 4,
+    "cycles": 2,
+    "sampled_transitions": 256
+  },
+  "model_updates": 21187,
+  "counts": {
+    "native_rows": 501,
+    "resets": 1,
+    "env_steps": 500,
+    "valid_market_minutes": 500,
+    "actor_ADD": 28,
+    "oracle_ADD": 5,
+    "executed_ADD": 27,
+    "entries": 27,
+    "TP": 21,
+    "SL": 5,
+    "rejects": 0,
+    "certified_labels": 13,
+    "learnable_decisions": 53,
+    "unproven_funds": 40,
+    "published_native_rows": 500
+  },
+  "reward": -2.2777053330111583,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/ckpt/step_000000000500",
+  "checkpoint_manifest_sha256": "5d4083fcecf007c1eab86db96f723bdf119262a3bb792ee184b6672e6989b140",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 108.2570354109921,
+  "actor_proposal_versions": [
+    21183,
+    21185
+  ],
+  "label_ratio": 0.026,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "3b1cc788b529272b174e261daa4fcf0ff676e30d5fead7862ac90798be63f2b8"
+}

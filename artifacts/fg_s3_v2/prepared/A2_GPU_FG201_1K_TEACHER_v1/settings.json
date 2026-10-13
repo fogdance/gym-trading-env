@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "schema": "FG_S3_V2_DIAGNOSTIC_CONFIG_V1",
+    "experiment": "A2_GPU_FG201_1K_TEACHER_v1",
+    "mode": "a2",
+    "device": "gpu",
+    "contract": "CZCE.FG201",
+    "dreamer_root": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3",
+    "env_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/env/run_20261011_04",
+    "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+    "catalog": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v1/teacher_catalog_v1_final",
+    "source_checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000",
+    "dev_source_manifest": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json",
+    "prepared_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1",
+    "run_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1",
+    "env_steps": 1000,
+    "collect_every": 100,
+    "updates_per_collect": 4,
+    "save_every": 500,
+    "batch_size": 1,
+    "replay_seed": 202,
+    "beta": 1.0,
+    "bc_lambda": 1.0,
+    "config_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/configs/experiments/fg_s3_v2/A2_GPU_FG201_1K_TEACHER.yaml",
+    "config_sha256": "46ead8b509b2defbf180d86915b2cfba0c776afebdcd26239450ced90cc7f25e"
+  },
+  "content_hash": "11951f29850dacc4e50f8f63e5e2b7e013bd05779e9dbba681e2ff35566eed35"
+}

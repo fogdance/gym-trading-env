@@ -1,0 +1,43 @@
+{
+  "status": "PASS_ACTUAL_GPU_CHECKPOINT_ARTIFACTS",
+  "neural_computation": "none; verifies saved GPU results",
+  "runs": [
+    {
+      "run": "A2_GPU_FG201_1K_v2",
+      "env_steps": 1000,
+      "updates": 8,
+      "bc_updates": 2,
+      "wm_changed": true,
+      "actor_changed": true,
+      "frozen_critic_norm_optimizer": true,
+      "source_unchanged": true,
+      "checkpoint_manifest_sha256": "61e96e3fdddfea9a762f893c5ce43a8b2bf9a25f93527df236b06449154ba6c3"
+    },
+    {
+      "run": "A2_GPU_FG201_1K_TEACHER_v1",
+      "env_steps": 1000,
+      "updates": 40,
+      "bc_updates": 40,
+      "wm_changed": true,
+      "actor_changed": true,
+      "frozen_critic_norm_optimizer": true,
+      "source_unchanged": true,
+      "checkpoint_manifest_sha256": "52f8108069910869ad867bbd3633b66d567aa3ddbcf47aac877819e018727721"
+    },
+    {
+      "run": "C2_GPU_FG201_500_v1",
+      "env_steps": 500,
+      "updates": 4,
+      "bc_updates": 1,
+      "wm_changed": true,
+      "actor_changed": true,
+      "frozen_critic_norm_optimizer": true,
+      "source_unchanged": true,
+      "checkpoint_manifest_sha256": "5d4083fcecf007c1eab86db96f723bdf119262a3bb792ee184b6672e6989b140"
+    }
+  ],
+  "resume_scope": "real 500-to-1000 continuation and preserved ownership/pending decision",
+  "uninterrupted_bitwise_comparison": "NOT_RUN",
+  "production_gate_20_windows": "NOT_RUN",
+  "content_hash": "6eb8d11c56ddd1e9385820f03b0d8767e29844b0408d2232885866798bdc02be"
+}

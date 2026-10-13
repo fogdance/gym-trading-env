@@ -1,0 +1,33 @@
+{
+  "status": "ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE",
+  "output": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/evaluations/actor_only_69e3eca60b",
+  "fold": "DEV",
+  "contract": "CZCE.FG409",
+  "env_steps": 1000,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/ckpt/step_000000001000",
+  "checkpoint_manifest_sha256": "52f8108069910869ad867bbd3633b66d567aa3ddbcf47aac877819e018727721",
+  "devices": [
+    "cuda:0"
+  ],
+  "oracle_files_read": false,
+  "teacher_guidance": false,
+  "beta": 0.0,
+  "policy_mode": "eval_argmax",
+  "legal_decisions": 1001,
+  "actor_add_proposed": 0,
+  "add_executed": 0,
+  "entries": 0,
+  "tp_target_points": 5,
+  "tp_count": 0,
+  "sl30": 0,
+  "tp_minutes_p50": null,
+  "tp_minutes_p90": null,
+  "tp_effective_bars_p50": null,
+  "early_mae10": 0,
+  "reward": 0.0,
+  "right_censored": 0,
+  "all_wait": true,
+  "research_success": "NOT_ESTABLISHED",
+  "test": "NOT_RUN",
+  "content_hash": "bb2878dcb7eb63c31247e7b69f8d87ccab7d1802cff01a9e8b32e9ffe7c58ce2"
+}

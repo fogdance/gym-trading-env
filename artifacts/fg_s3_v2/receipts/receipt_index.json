@@ -1,0 +1,79 @@
+{
+  "status": "VERIFIED_MILESTONE_WITH_LIMITS",
+  "goal_complete": false,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "neural_device": "CUDA:0",
+  "code_commits": {
+    "gym": "f9e050126d6636cd884f70a3090e71c8fbbd46e0",
+    "dreamer": "dc6cca7fbbba9f663d70239432322058d5695d0d"
+  },
+  "files": {
+    "artifacts/fg_s3_v2/checks/gpu_1beb984b69/a2_first_update.json": "1b4f5170998381cf5a169a1e8dcd4d082a1bacfe8e11ab5c092174b299def538",
+    "artifacts/fg_s3_v2/checks/gpu_1beb984b69/c2_closed_update.json": "69f46bda44abf4c3df7818ab7e2a39973e83b0e9d10e17512a4f2035c80d2eef",
+    "artifacts/fg_s3_v2/checks/gpu_1beb984b69/receipt.json": "08db77f1fd9b43e15267939475059d7f9efbe9dde4dde803fc5936b6b5676af8",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1/experiment.yaml": "46ead8b509b2defbf180d86915b2cfba0c776afebdcd26239450ced90cc7f25e",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1/manifest.json": "ae7a30afb149de2e1836114a791581d549ed95620c8181f52cd019ade9e84b8a",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1/model_config.json": "e7a981227c1eae1a5f2433f4e1bde2f4a518ee637c2113ac2cd85d9ff8e1060c",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1/settings.json": "741ad49831124aadfb99a76b7217d399cc7977a1559a107e338ad92b3b469f47",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_TEACHER_v1/source_admission.json": "501ff6a1451754a503b61b13fa2874b14a3d03721c6c4b2c365ea2801443b111",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_v2/experiment.yaml": "a9591820bf5c31f673f619b3256044cccb7fbe7168930cf3f38f86e3a2ee7509",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_v2/manifest.json": "d76b020d9c890335781071fe0222b8292f16e1c0b43d3158ee97868ee9eb6872",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_v2/model_config.json": "e7a981227c1eae1a5f2433f4e1bde2f4a518ee637c2113ac2cd85d9ff8e1060c",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_v2/settings.json": "f3776b82f2feb593e90adf25a8f9b54b6d3427b833f85a4ab5b2db8475559511",
+    "artifacts/fg_s3_v2/prepared/A2_GPU_FG201_1K_v2/source_admission.json": "501ff6a1451754a503b61b13fa2874b14a3d03721c6c4b2c365ea2801443b111",
+    "artifacts/fg_s3_v2/prepared/C2_GPU_FG201_500_v1/experiment.yaml": "40eb44e90f405003c7fce244acfffa59920f5d5d2afb7e6f902c5fddeac472b5",
+    "artifacts/fg_s3_v2/prepared/C2_GPU_FG201_500_v1/manifest.json": "134103b9e580d0e5b402f2b0a4880892241cb1b0e073e72286175e22a08fbe6d",
+    "artifacts/fg_s3_v2/prepared/C2_GPU_FG201_500_v1/model_config.json": "e7a981227c1eae1a5f2433f4e1bde2f4a518ee637c2113ac2cd85d9ff8e1060c",
+    "artifacts/fg_s3_v2/prepared/C2_GPU_FG201_500_v1/settings.json": "3d43992e713159ed0de9d870a7c4dcae0adc3917af0dec8c0c91310d58a217d2",
+    "artifacts/fg_s3_v2/prepared/C2_GPU_FG201_500_v1/source_admission.json": "501ff6a1451754a503b61b13fa2874b14a3d03721c6c4b2c365ea2801443b111",
+    "artifacts/fg_s3_v2/receipts/A2_GPU_FG201_1K_TEACHER_v1_actor_only_terminal.log": "4151bfc0f858ab2d2a1a654b08cf55442695fbc725abaef4c47760244663e385",
+    "artifacts/fg_s3_v2/receipts/A2_GPU_FG201_1K_TEACHER_v1_terminal.log": "c6d4a7274ad9a710df51d46f841235b2ad9d34588285d5f5666c7e70c0835b83",
+    "artifacts/fg_s3_v2/receipts/A2_GPU_FG201_1K_v2_actor_only_terminal.log": "3994aaa184de97742006ef6d7ad721d31bcbefc89a01b62a690a515168810c47",
+    "artifacts/fg_s3_v2/receipts/A2_GPU_FG201_1K_v2_terminal.log": "1067941c4ff343d2079a780f08d26f6185eb830a44aa9f459d7269698141ac67",
+    "artifacts/fg_s3_v2/receipts/C2_GPU_FG201_500_v1_terminal.log": "9c2799daedcf0297a65b7981973bfaf1e1d2b62f10f94ec7440f9b7a35303c99",
+    "artifacts/fg_s3_v2/receipts/actual_checkpoint_verification.json": "80d1a69a05dbe1f5a585a133c049798941554bd24db7311bed1dd6755c195bec",
+    "artifacts/fg_s3_v2/receipts/actual_gpu_artifacts.xml": "0c0c17eeadf166e5fa013edad6b8b59337308c515a518065844128ac720a446a",
+    "artifacts/fg_s3_v2/receipts/real_train_metrics.json": "8be3748ed1e785ccdb495e0f3e95b22bb990704a9b413773449eb28fa35bcd46",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/cycles.jsonl": "882592c9d14d3d572a8f97b7764df942d99827591c32d54ba749433781485586",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/evaluations/actor_only_69e3eca60b/dev_manifest.json": "b3f00d103bc8ea6add17d00a1f911a8523a444a5a96dc23590deb0dd8b3721e1",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/evaluations/actor_only_69e3eca60b/receipt.json": "39ddae252096a77f211b8b4db86253b7cb58ede1b15414e69d4481a353f7506a",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/run_identity.json": "c8bb14778b478c5f31c1f8003ba89b40bc2e7ee9f68e84a5d932cc04bc8509e7",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/source_transfer.json": "c39e80fa504dbbf543455d5487a0a7090b78c00bccdfb85f55daa2ed6b1d911e",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/training_receipt.json": "edc0d615354411f8b9d8e6971a1b3b32042558b8282b58252202f3a606b103e9",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_TEACHER_v1/updates.jsonl": "3b63ece319a28829f5a336a6d4195991c9dbbbb6eef943d9606d5fce4c6c949a",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/cycles.jsonl": "da0db43bdfe770afd2a5f57c4823c9433c880b2d95411de4f62469c29cbfafc6",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/evaluations/actor_only_aebc1449f4/dev_manifest.json": "ace4f6ad2476237a13313b8630e91683085d6a18742479ab3250b9673d968fda",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/evaluations/actor_only_aebc1449f4/receipt.json": "37f022fefd3405bb7b6fcfbb7e8c2854ecbc4ac83feca8d7060b8a6acd67036b",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/run_identity.json": "a6c1ad1e55abb641dd5a619f1f517f088078c6adc67645b0d57f9041b3ba3aaa",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/source_transfer.json": "c39e80fa504dbbf543455d5487a0a7090b78c00bccdfb85f55daa2ed6b1d911e",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/training_receipt.json": "49160b2b07243f2f7b912194f30103a95cf53f6fe85935f3a1af0666441aff36",
+    "artifacts/fg_s3_v2/runs/A2_GPU_FG201_1K_v2/updates.jsonl": "f8cb87394f9abd6a193cfa999f88b914c7c72bc17ab6d8d06e2a5289110d101c",
+    "artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/cycles.jsonl": "133f17e56850cda9717465169c9ed78d4994045dd4b6deda76260506dd17a623",
+    "artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/run_identity.json": "15de21c183ef2844c651c637e8ee1d0dd050763674766eb285b8aadb4c94e699",
+    "artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/source_transfer.json": "c39e80fa504dbbf543455d5487a0a7090b78c00bccdfb85f55daa2ed6b1d911e",
+    "artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/training_receipt.json": "65ddd81447b3ea03d97f3823c76201a993268bae6d2a120af681fc33f9361209",
+    "artifacts/fg_s3_v2/runs/C2_GPU_FG201_500_v1/updates.jsonl": "cfb203442b2096869bb7e6d73de82ff3b3712bf50a8fa9cd79474216dfcd0958"
+  },
+  "targeted_data_tests": {
+    "command": "env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:../dreamerv3 MPLCONFIGDIR=/tmp/fg_s3_v2_mpl /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -q tests/entry_v1/test_fg_s3_v2.py -k 'not real_gpu'",
+    "passed": 3,
+    "failed": 0,
+    "neural_computation": "none"
+  },
+  "actual_artifact_test": {
+    "command": "env PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:../dreamerv3 MPLCONFIGDIR=/tmp/fg_s3_v2_mpl /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -q tests/entry_v1/test_fg_s3_v2_artifacts.py --junitxml=artifacts/fg_s3_v2/receipts/actual_gpu_artifacts.xml",
+    "passed": 1,
+    "failed": 0
+  },
+  "gpu_contract_scope": "small original-network controlled fixture; nine assertions, not production-market acceptance",
+  "effect_failures": [
+    "40-update A2 teacher model has Actor-only DEV ALL_WAIT"
+  ],
+  "open_work": [
+    "formal 1M preparation/authorization and long-run resource lifecycle",
+    "R1 and B2 postponed per amendment",
+    "TRAIN-only sampling/curriculum diagnostics"
+  ],
+  "content_hash": "dbb7d5b40be32007e78441abf41878c33427015952cc1b043ad76d5cbeb3b916"
+}

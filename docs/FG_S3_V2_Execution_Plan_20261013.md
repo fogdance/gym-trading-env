@@ -56,5 +56,10 @@ C2 CLOSED/受控READY、lambda=0、一次联合更新；一次真实 FullCheckpo
 R1/B2、多合约和提前优化后置。Q仍为null，不实现伪价值权重。
 按 A2、恢复/评价、C2 功能提交双仓 SHA，报告真实命令/收据和PASS/FAIL/NOT_RUN，最后整体Review。
 
-当前：已读取任务书/D0源码、核对双仓；已落实时提交和WM/BC路径，尚待模型测试。
-权限切换后，沙箱外 CUDA 探针实测 `CudaDevice(id=0)` 和微小 GPU 运算通过；尚无V2训练验收结果。
+当前：已完成并提交 GPU 学习器、实时提交/采样、独立评价和实用 FullCheckpoint。
+真实 Online180k 来源模型完成 A2 1000步/8更新（500保存后恢复），另一个独立 A2 接管诊断
+完成1000步/40更新，10个周期均有WM及Actor参数变化；C2 CLOSED 完成500步/4更新。
+两个独立 Actor-only DEV 各1000步：前者9次ADD、Reward负；后者All-WAIT，研究效果未达成。
+真实Checkpoint验收检查来源继承、Critic/慢目标/Normalizer/对应优化器状态冻结及恢复行身份。
+具体数值、命令、失败及NOT_RUN写入 `FG_S3_V2_Live_Learning_Implementation_20261013.md`。
+正式1M入口/预算及长期资源准备仍未完成，R1/B2按最新修订后置；不把当前短诊断标成完整1M验收。

@@ -1,0 +1,532 @@
+{
+  "config": {
+    "action_mask_warmup": {
+      "add_recall_enabled": true,
+      "consecutive_reports": 5,
+      "enabled": true,
+      "img_fallback": 0.0001,
+      "min_add_positives": 16,
+      "min_train_samples": 25000,
+      "post_accuracy": 0.995,
+      "post_add_recall": 0.8,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.99,
+      "prior_add_recall": 0.8,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.005,
+      "regression_reports": 5,
+      "stop_on_regression": true
+    },
+    "agent": {
+      "ac_grads": false,
+      "advnorm": {
+        "impl": "none",
+        "limit": 1e-08,
+        "rate": 0.01
+      },
+      "avail_actor_enabled": false,
+      "avail_always_available_index": 0,
+      "avail_post_grad": true,
+      "avail_prior_grad": true,
+      "avail_threshold": 0.3,
+      "availhead": {
+        "act": "silu",
+        "layers": 2,
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "units": 512,
+        "winit": "trunc_normal_in"
+      },
+      "conhead": {
+        "act": "silu",
+        "layers": 1,
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "units": 512,
+        "winit": "trunc_normal_in"
+      },
+      "contdisc": true,
+      "dec": {
+        "simple": {
+          "act": "silu",
+          "bspace": 8,
+          "depth": 32,
+          "kernel": 5,
+          "layers": 3,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "norm": "rms",
+          "outer": false,
+          "outscale": 1.0,
+          "strided": false,
+          "units": 512,
+          "winit": "trunc_normal_in"
+        },
+        "typ": "simple"
+      },
+      "dyn": {
+        "rssm": {
+          "absolute": false,
+          "act": "silu",
+          "blocks": 8,
+          "classes": 32,
+          "deter": 4096,
+          "dynlayers": 1,
+          "free_nats": 1.0,
+          "hidden": 512,
+          "imglayers": 2,
+          "norm": "rms",
+          "obslayers": 1,
+          "outscale": 1.0,
+          "stoch": 32,
+          "unimix": 0.01,
+          "winit": "trunc_normal_in"
+        },
+        "typ": "rssm"
+      },
+      "enc": {
+        "simple": {
+          "act": "silu",
+          "depth": 32,
+          "kernel": 5,
+          "layers": 3,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "norm": "rms",
+          "outer": false,
+          "strided": false,
+          "symlog": true,
+          "units": 512,
+          "winit": "trunc_normal_in"
+        },
+        "typ": "simple"
+      },
+      "horizon": 333,
+      "imag_last": 0,
+      "imag_length": 15,
+      "imag_loss": {
+        "actent": 0.01,
+        "lam": 0.95,
+        "slowreg": 1.0,
+        "slowtar": false
+      },
+      "loss_scales": {
+        "avail_post": 1.0,
+        "avail_prior": 1.0,
+        "con": 1.0,
+        "dyn": 1.0,
+        "policy": 1.0,
+        "rec": 1.0,
+        "rep": 0.1,
+        "repval": 0.3,
+        "rew": 1.0,
+        "value": 1.0
+      },
+      "opt": {
+        "agc": 0.3,
+        "anneal": 0,
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "eps": 1e-20,
+        "lr": 4e-05,
+        "momentum": true,
+        "schedule": "const",
+        "warmup": 1000,
+        "wd": 0.0
+      },
+      "policy": {
+        "act": "silu",
+        "layers": 3,
+        "maxstd": 1.0,
+        "minstd": 0.2,
+        "norm": "rms",
+        "outscale": 0.01,
+        "unimix": 0.05,
+        "units": 512,
+        "winit": "trunc_normal_in"
+      },
+      "policy_dist_cont": "bounded_normal",
+      "policy_dist_disc": "categorical",
+      "repl_loss": {
+        "lam": 0.95,
+        "slowreg": 1.0,
+        "slowtar": false
+      },
+      "replay_context_mode": "recompute_prefix",
+      "report": true,
+      "report_gradnorms": false,
+      "repval_grad": true,
+      "repval_loss": true,
+      "retnorm": {
+        "debias": false,
+        "impl": "perc",
+        "limit": 1.0,
+        "perchi": 95.0,
+        "perclo": 5.0,
+        "rate": 0.01
+      },
+      "reward_grad": true,
+      "rewhead": {
+        "act": "silu",
+        "bins": 255,
+        "layers": 1,
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "units": 512,
+        "winit": "trunc_normal_in"
+      },
+      "slowvalue": {
+        "every": 1,
+        "rate": 0.02
+      },
+      "update_diagnostics": true,
+      "valnorm": {
+        "impl": "none",
+        "limit": 1e-08,
+        "rate": 0.01
+      },
+      "value": {
+        "act": "silu",
+        "bins": 255,
+        "layers": 3,
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "units": 512,
+        "winit": "trunc_normal_in"
+      }
+    },
+    "audit": {
+      "entry_eval_config": "",
+      "entry_eval_version": "",
+      "execution_timing": "",
+      "matched_random_seed": 20260615,
+      "split_manifest_hash": ""
+    },
+    "batch_length": 64,
+    "batch_size": 1,
+    "clock_addr": "",
+    "clock_port": "",
+    "consec_report": 1,
+    "consec_train": 1,
+    "dreamer": {
+      "seed": 0
+    },
+    "env": {
+      "atari": {
+        "actions": "all",
+        "aggregate": "max",
+        "autostart": false,
+        "clip_reward": false,
+        "gray": true,
+        "lives": "unused",
+        "noops": 30,
+        "pooling": 2,
+        "repeat": 4,
+        "resize": "pillow",
+        "size": [
+          96,
+          96
+        ],
+        "sticky": true
+      },
+      "atari100k": {
+        "actions": "needed",
+        "autostart": false,
+        "clip_reward": false,
+        "gray": false,
+        "lives": "unused",
+        "noops": 30,
+        "repeat": 4,
+        "resize": "pillow",
+        "size": [
+          64,
+          64
+        ],
+        "sticky": false
+      },
+      "crafter": {
+        "logs": false,
+        "size": [
+          64,
+          64
+        ]
+      },
+      "dmc": {
+        "camera": -1,
+        "image": true,
+        "proprio": true,
+        "repeat": 1,
+        "size": [
+          64,
+          64
+        ]
+      },
+      "dmlab": {
+        "episodic": true,
+        "repeat": 4,
+        "size": [
+          64,
+          64
+        ],
+        "use_seed": true
+      },
+      "eval_seed": 0,
+      "gymnasium": {
+        "config_path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/experiments/C1_M1_OFFLINE_10K_online_callback_fix_20261012_02/online_env.yaml"
+      },
+      "loconav": {
+        "camera": -1,
+        "repeat": 1,
+        "size": [
+          64,
+          64
+        ]
+      },
+      "minecraft": {
+        "break_speed": 100.0,
+        "length": 36000,
+        "logs": false,
+        "size": [
+          64,
+          64
+        ]
+      },
+      "procgen": {
+        "resize": "pillow",
+        "size": [
+          96,
+          96
+        ]
+      },
+      "train_seed": 101
+    },
+    "errfile": false,
+    "experiment_seed": 0,
+    "fg_entry": {
+      "manifest": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/env/run_20261011_04/inputs/C1/train_manifest.json"
+    },
+    "fg_single3_offline": {
+      "authorized": true,
+      "candidate": "C1",
+      "coverage": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/coverage/run_20261011_01",
+      "dataset": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/replay/run_20261011_01",
+      "enabled": false,
+      "horizon": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/horizon/run_20261011_01",
+      "identity_hash": "847e50f6270678c9192da3ee2bea79e0ee77005369133553e049728416d17e47",
+      "pool": "C1_natural_oracle",
+      "profile": "C1_M1_OFFLINE_10K"
+    },
+    "ipv6": false,
+    "jax": {
+      "compute_dtype": "bfloat16",
+      "coordinator_address": "",
+      "debug": false,
+      "enable_policy": true,
+      "expect_devices": 0,
+      "jit": true,
+      "mock_devices": 0,
+      "platform": "cuda",
+      "policy_devices": [
+        0
+      ],
+      "prealloc": false,
+      "precompile": true,
+      "profiler": false,
+      "sync_train_metrics": true,
+      "train_devices": [
+        0
+      ]
+    },
+    "logdir": "/data/logdir/fg_single3/online_after_10k_callback_fix/C1_M1_ONLINE_1M",
+    "logger": {
+      "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+      "fps": 15,
+      "outputs": [
+        "jsonl"
+      ],
+      "timer": true,
+      "user": ""
+    },
+    "method": "name",
+    "random_agent": false,
+    "replay": {
+      "chunksize": 1024,
+      "fracs": {
+        "priority": 0.0,
+        "recency": 0.0,
+        "uniform": 1.0
+      },
+      "online": true,
+      "prio": {
+        "exponent": 0.8,
+        "initial": "inf",
+        "maxfrac": 0.5,
+        "zero_on_sample": true
+      },
+      "priosignal": "model",
+      "recexp": 1.0,
+      "seed": 202,
+      "size": 2437385.0
+    },
+    "replay_context": 1,
+    "replica": 0,
+    "replicas": 1,
+    "report_length": 64,
+    "run": {
+      "actor_addr": "localhost:{auto}",
+      "actor_batch": -1,
+      "actor_threads": 1,
+      "agent_process": false,
+      "checkpoint_retention": {
+        "directory": "ckpt_retained",
+        "enabled": false,
+        "steps": [
+          0
+        ]
+      },
+      "debug": true,
+      "duration": 0,
+      "env_checkpoint": true,
+      "envs": 1,
+      "episode_timeout": 180,
+      "eval_envs": 0,
+      "eval_eps": 1,
+      "fg_full_checkpoint": true,
+      "fg_keep_all_checkpoints": false,
+      "fg_key_steps": [
+        0,
+        10000,
+        100000,
+        250000,
+        500000,
+        1000000
+      ],
+      "fg_learning_audit": true,
+      "fg_report_every_steps": 1600,
+      "fg_reserve_gib": 20,
+      "fg_save_every_steps": 20000,
+      "fg_single3_audit": false,
+      "fg_single3_identity": "",
+      "fg_single3_offline": false,
+      "fg_source_steps": 10000,
+      "fg_stage_transfer": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/experiments/C1_M1_OFFLINE_10K_online_callback_fix_20261012_02/online_transfer.json",
+      "from_checkpoint": "",
+      "log_every": 120,
+      "logger_addr": "localhost:{auto}",
+      "remote_envs": false,
+      "remote_replay": false,
+      "replay_addr": "localhost:{auto}",
+      "replay_dir": "",
+      "report_batches": 1,
+      "report_every": 300,
+      "save_every": 900,
+      "steps": 1000000.0,
+      "train_ratio": 64.0,
+      "usage": {
+        "gc": false,
+        "gputil": false,
+        "malloc": false,
+        "nvsmi": true,
+        "psutil": true
+      }
+    },
+    "script": "train",
+    "seed": 0,
+    "seed_protocol": {
+      "config_seed": 0,
+      "config_seed_sync": "config.seed synchronized from resolved dreamer_seed",
+      "dreamer_seed": 0,
+      "dreamer_seed_source": "dreamer.seed",
+      "entry_eval_config": "",
+      "entry_eval_version": "",
+      "eval_determinism": "per_day checkpoint audits force deterministic start rows and eval policy uses pred(); eval_env_seed is recorded but not used to sample validation/test starts",
+      "eval_env_seed": 0,
+      "eval_env_seed_source": "env.eval_seed",
+      "eval_env_seed_usage": "not_used_per_day_forced_start",
+      "eval_policy_mode": "pred",
+      "execution_timing": "",
+      "experiment_seed": 0,
+      "gymnasium_constructor_seed_usage": "forbidden",
+      "matched_random_seed": 20260615,
+      "matched_random_seed_source": "audit.matched_random_seed",
+      "matched_random_seed_usage": "fixed_across_dreamer_seeds",
+      "replay_seed": 202,
+      "replay_seed_source": "replay.seed",
+      "replay_seed_usage": "replay_selector_sampling",
+      "split_manifest_hash": "",
+      "train_env_seed": 101,
+      "train_env_seed_source": "experiment_seed*1000+101",
+      "train_env_seed_usage": "first_reset_only_per_env"
+    },
+    "task": "gymnasium_FGEntryDatasetEnv-v0",
+    "walk_forward_guard": {
+      "allow_non_holdout_training": false,
+      "data_root": "/data/logdir/trading_contracts",
+      "enabled": false
+    },
+    "walk_forward_guard_result": {
+      "entry_eval_config": "",
+      "entry_eval_version": "",
+      "env_config_path": "",
+      "execution_timing": "",
+      "manifest_execution_timing": "",
+      "problems": [
+        ""
+      ],
+      "reason": "",
+      "role_map_source": "",
+      "roles": {
+        "test": {
+          "days": 0,
+          "max_day": 0,
+          "min_day": 0
+        },
+        "train": {
+          "days": 0,
+          "max_day": 0,
+          "min_day": 0
+        },
+        "validation": {
+          "days": 0,
+          "max_day": 0,
+          "min_day": 0
+        }
+      },
+      "split_fold_name": "",
+      "split_manifest_hash": "",
+      "split_manifest_path": "",
+      "status": "disabled",
+      "test_overlap_count": 0,
+      "test_overlap_days": [
+        0
+      ],
+      "training_data": {
+        "first_timestamp": "",
+        "last_timestamp": "",
+        "max_day": 0,
+        "min_day": 0,
+        "path": ""
+      },
+      "training_market_csv": "",
+      "training_max_exceeds_split_train": false,
+      "training_min_before_split_train": false,
+      "validation_overlap_count": 0,
+      "validation_overlap_days": [
+        0
+      ]
+    }
+  },
+  "content_hash": "1f380bedf6836322772830f66e5d7820b829b09e736f505a2a13338b73966186"
+}

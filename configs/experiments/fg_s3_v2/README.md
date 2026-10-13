@@ -41,6 +41,18 @@ TEST, R1 comparisons and B2 are outside the current implementation scope.
 frozen Critic/momentum, empty BC, C2 CLOSED/controlled READY and lambda=0. It is
 an automated contract test, not production-market or twenty-window Gate acceptance.
 
+Additional bounded configurations use the same entrypoint:
+
+- `C2_GPU_FG201_500`: 500 real TRAIN advances and four updates with the shared
+  production Gate CLOSED; READY is not forced for a real run.
+- `A2_GPU_FG201_1K_TEACHER`: 1000 real TRAIN advances, beta=1, four updates every
+  100 advances (40 total). This keeps early collection inside the certified
+  funding domain; all executed performance is teacher-guided. Its completed
+  Actor-only DEV evaluation is All-WAIT, not a successful trading model.
+
+Actual metrics, limitations and commands are in
+`docs/FG_S3_V2_Live_Learning_Implementation_20261013.md`.
+
 ## Historical D0 CPU prototype
 
 Single entry: `tools/fg_s3_dagger_d0.py`, selected with `--config`. D0 is limited
