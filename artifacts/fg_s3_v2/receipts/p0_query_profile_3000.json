@@ -1,0 +1,19 @@
+{
+  "cursor": 3000,
+  "queries": 20,
+  "elapsed_seconds": 4.581048360996647,
+  "result": {
+    "action": 0,
+    "valid": true,
+    "certified": true,
+    "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+    "q_add": null,
+    "q_wait": null,
+    "q_margin": null,
+    "state_id": "cf22e0a4d42858778d6207912e941b105f0fe7b929bfb81999ef5937fb9b5da8",
+    "oracle_identity": "f340cf482f6d1fd81f1d0fc5e93837a8ff010bab3c88f67a1fa39ab281f618a4",
+    "proof_hash": "e37e9a1737d0936e1f3af9dbddc7509d008ffbd82bccebb05b35e9aa76cfd9d5"
+  },
+  "profile": "         4011501 function calls (3849121 primitive calls) in 4.476 seconds\n\n   Ordered by: cumulative time\n   List reduced from 290 to 18 due to restriction <18>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n       40    0.004    0.000    3.354    0.084 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_env.py:597(export_state)\n       20    0.033    0.002    2.492    0.125 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py:55(query)\n      220    0.001    0.000    2.203    0.010 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/__init__.py:183(dumps)\n      220    0.001    0.000    2.201    0.010 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py:183(encode)\n      220    2.162    0.010    2.185    0.010 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py:205(iterencode)\n      140    0.001    0.000    1.591    0.011 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_contract.py:19(fingerprint)\n       40    0.010    0.000    1.295    0.032 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_env.py:594(_prefix_hash)\n       40    0.000    0.000    0.770    0.019 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py:91(snapshot)\n       40    0.001    0.000    0.768    0.019 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_reward_candidates.py:323(snapshot)\n       40    0.000    0.000    0.720    0.018 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/util/_decorators.py:325(wrapper)\n       40    0.000    0.000    0.720    0.018 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/frame.py:2063(to_dict)\n       40    0.001    0.000    0.720    0.018 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/methods/to_dict.py:78(to_dict)\n    10780    0.007    0.000    0.711    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/dataclasses.py:1265(asdict)\n       40    0.004    0.000    0.711    0.018 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_reward_candidates.py:326(<dictcomp>)\n171560/10780    0.287    0.000    0.700    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/dataclasses.py:1289(_asdict_inner)\n       40    0.125    0.003    0.560    0.014 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/frame.py:1999(_create_data_for_split_and_tight_to_dict)\n       40    0.000    0.000    0.487    0.012 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/__init__.py:299(loads)\n       40    0.000    0.000    0.487    0.012 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/decoder.py:332(decode)\n\n\n",
+  "neural_computation": false
+}

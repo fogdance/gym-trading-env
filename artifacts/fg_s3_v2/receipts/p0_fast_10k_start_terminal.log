@@ -1,0 +1,595 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2/C2 env=100 update=1 BC=0.695697 valid=56 ADD=9 actor_grad=4.543551
+A2/C2 env=100 update=2 BC=0.668741 valid=57 ADD=7 actor_grad=4.987896
+A2/C2 env=100 update=3 BC=0.635998 valid=57 ADD=7 actor_grad=5.572529
+A2/C2 env=100 update=4 BC=0.593923 valid=54 ADD=7 actor_grad=5.883037
+A2/C2 env=200 update=5 BC=0.545828 valid=54 ADD=7 actor_grad=5.556652
+A2/C2 env=200 update=6 BC=0.515241 valid=48 ADD=7 actor_grad=4.300806
+A2/C2 env=200 update=7 BC=0.446349 valid=53 ADD=6 actor_grad=4.083729
+A2/C2 env=200 update=8 BC=0.413533 valid=49 ADD=6 actor_grad=2.711895
+A2/C2 env=300 update=9 BC=0.414622 valid=57 ADD=8 actor_grad=1.256268
+A2/C2 env=300 update=10 BC=0.329107 valid=53 ADD=5 actor_grad=1.396165
+A2/C2 env=300 update=11 BC=0.370636 valid=49 ADD=6 actor_grad=0.153641
+A2/C2 env=300 update=12 BC=0.234813 valid=51 ADD=3 actor_grad=0.848221
+A2/C2 env=400 update=13 BC=0.311640 valid=53 ADD=5 actor_grad=0.264699
+A2/C2 env=400 update=14 BC=0.728076 valid=59 ADD=15 actor_grad=3.198974
+A2/C2 env=400 update=15 BC=0.338580 valid=59 ADD=6 actor_grad=0.601435
+A2/C2 env=400 update=16 BC=0.384276 valid=59 ADD=7 actor_grad=0.914197
+A2/C2 env=500 update=17 BC=0.382791 valid=59 ADD=7 actor_grad=0.920359
+A2/C2 env=500 update=18 BC=0.172254 valid=51 ADD=2 actor_grad=0.447272
+A2/C2 env=500 update=19 BC=0.268672 valid=52 ADD=4 actor_grad=0.147464
+A2/C2 env=500 update=20 BC=0.356499 valid=53 ADD=6 actor_grad=0.741822
+A2/C2 env=600 update=21 BC=0.696138 valid=59 ADD=15 actor_grad=3.133321
+A2/C2 env=600 update=22 BC=0.303437 valid=55 ADD=5 actor_grad=0.244622
+A2/C2 env=600 update=23 BC=0.660933 valid=52 ADD=14 actor_grad=2.932926
+A2/C2 env=600 update=24 BC=0.594145 valid=56 ADD=15 actor_grad=1.664614
+A2/C2 env=700 update=25 BC=0.383353 valid=55 ADD=5 actor_grad=3.621967
+A2/C2 env=700 update=26 BC=0.498145 valid=60 ADD=9 actor_grad=3.951562
+A2/C2 env=700 update=27 BC=0.543080 valid=58 ADD=11 actor_grad=3.371382
+A2/C2 env=700 update=28 BC=0.471287 valid=53 ADD=5 actor_grad=5.579376
+A2/C2 env=800 update=29 BC=0.463786 valid=60 ADD=9 actor_grad=3.016780
+A2/C2 env=800 update=30 BC=0.427540 valid=59 ADD=8 actor_grad=2.249581
+A2/C2 env=800 update=31 BC=0.319286 valid=59 ADD=4 actor_grad=2.844525
+A2/C2 env=800 update=32 BC=0.311381 valid=58 ADD=5 actor_grad=1.509428
+A2/C2 env=900 update=33 BC=0.499069 valid=57 ADD=11 actor_grad=1.315686
+A2/C2 env=900 update=34 BC=0.195711 valid=57 ADD=2 actor_grad=1.700046
+A2/C2 env=900 update=35 BC=0.588785 valid=59 ADD=14 actor_grad=2.447528
+A2/C2 env=900 update=36 BC=0.487827 valid=54 ADD=10 actor_grad=1.561369
+A2/C2 env=1000 update=37 BC=0.410706 valid=59 ADD=8 actor_grad=0.997295
+A2/C2 env=1000 update=38 BC=0.210021 valid=59 ADD=3 actor_grad=0.658496
+A2/C2 env=1000 update=39 BC=0.340903 valid=58 ADD=6 actor_grad=0.261035
+A2/C2 env=1000 update=40 BC=0.495773 valid=59 ADD=10 actor_grad=1.635913
+A2/C2 env=1100 update=41 BC=0.571205 valid=53 ADD=11 actor_grad=2.275581
+A2/C2 env=1100 update=42 BC=0.288896 valid=48 ADD=4 actor_grad=0.062700
+A2/C2 env=1100 update=43 BC=0.272630 valid=53 ADD=4 actor_grad=0.265549
+A2/C2 env=1100 update=44 BC=0.231047 valid=49 ADD=3 actor_grad=0.327719
+A2/C2 env=1200 update=45 BC=0.256557 valid=55 ADD=4 actor_grad=0.091842
+A2/C2 env=1200 update=46 BC=0.223302 valid=53 ADD=3 actor_grad=0.421838
+A2/C2 env=1200 update=47 BC=0.264762 valid=53 ADD=4 actor_grad=0.066205
+A2/C2 env=1200 update=48 BC=0.504993 valid=57 ADD=10 actor_grad=1.748114
+A2/C2 env=1300 update=49 BC=0.591135 valid=55 ADD=12 actor_grad=2.422462
+A2/C2 env=1300 update=50 BC=0.272501 valid=54 ADD=4 actor_grad=0.254347
+A2/C2 env=1300 update=51 BC=0.258420 valid=56 ADD=4 actor_grad=0.227541
+A2/C2 env=1300 update=52 BC=0.458208 valid=58 ADD=9 actor_grad=1.348469
+A2/C2 env=1400 update=53 BC=0.208552 valid=58 ADD=3 actor_grad=0.513730
+A2/C2 env=1400 update=54 BC=0.208571 valid=59 ADD=3 actor_grad=0.520597
+A2/C2 env=1400 update=55 BC=0.382256 valid=53 ADD=7 actor_grad=0.808094
+A2/C2 env=1400 update=56 BC=0.268917 valid=51 ADD=4 actor_grad=0.174579
+A2/C2 env=1500 update=57 BC=0.541313 valid=58 ADD=11 actor_grad=1.955048
+A2/C2 env=1500 update=58 BC=0.492099 valid=54 ADD=9 actor_grad=1.483811
+A2/C2 env=1500 update=59 BC=0.203555 valid=59 ADD=3 actor_grad=0.522220
+A2/C2 env=1500 update=60 BC=0.206698 valid=59 ADD=3 actor_grad=0.466822
+A2/C2 env=1600 update=61 BC=0.418131 valid=58 ADD=8 actor_grad=0.944666
+A2/C2 env=1600 update=62 BC=0.446654 valid=52 ADD=8 actor_grad=1.077072
+A2/C2 env=1600 update=63 BC=0.325311 valid=50 ADD=5 actor_grad=0.252187
+A2/C2 env=1600 update=64 BC=0.290673 valid=48 ADD=4 actor_grad=0.213465
+A2/C2 env=1700 update=65 BC=0.500235 valid=50 ADD=9 actor_grad=1.415069
+A2/C2 env=1700 update=66 BC=0.263579 valid=54 ADD=4 actor_grad=0.463783
+A2/C2 env=1700 update=67 BC=0.340133 valid=57 ADD=6 actor_grad=0.329721
+A2/C2 env=1700 update=68 BC=0.305578 valid=53 ADD=5 actor_grad=0.413291
+A2/C2 env=1800 update=69 BC=0.139050 valid=58 ADD=1 actor_grad=1.407791
+A2/C2 env=1800 update=70 BC=0.493010 valid=52 ADD=9 actor_grad=1.235222
+A2/C2 env=1800 update=71 BC=0.275586 valid=54 ADD=4 actor_grad=0.588656
+A2/C2 env=1800 update=72 BC=0.235725 valid=49 ADD=3 actor_grad=0.628256
+A2/C2 env=1900 update=73 BC=0.332479 valid=51 ADD=5 actor_grad=0.161391
+A2/C2 env=1900 update=74 BC=0.358117 valid=52 ADD=6 actor_grad=0.097597
+A2/C2 env=1900 update=75 BC=0.272040 valid=53 ADD=4 actor_grad=0.599751
+A2/C2 env=1900 update=76 BC=0.332506 valid=59 ADD=6 actor_grad=0.081278
+A2/C2 env=2000 update=77 BC=0.338876 valid=58 ADD=6 actor_grad=0.072536
+A2/C2 env=2000 update=78 BC=0.394559 valid=45 ADD=6 actor_grad=0.362839
+A2/C2 env=2000 update=79 BC=0.491170 valid=51 ADD=9 actor_grad=1.450360
+A2/C2 env=2000 update=80 BC=0.421578 valid=49 ADD=7 actor_grad=0.943923
+A2/C2 env=2100 update=81 BC=0.207674 valid=59 ADD=3 actor_grad=0.682799
+A2/C2 env=2100 update=82 BC=0.422607 valid=54 ADD=8 actor_grad=0.918927
+A2/C2 env=2100 update=83 BC=0.316113 valid=52 ADD=5 actor_grad=0.136166
+A2/C2 env=2100 update=84 BC=0.366021 valid=51 ADD=6 actor_grad=0.302662
+A2/C2 env=2200 update=85 BC=0.269333 valid=53 ADD=4 actor_grad=0.561124
+A2/C2 env=2200 update=86 BC=0.352930 valid=54 ADD=6 actor_grad=0.131271
+A2/C2 env=2200 update=87 BC=0.505077 valid=58 ADD=11 actor_grad=1.503867
+A2/C2 env=2200 update=88 BC=0.188555 valid=54 ADD=2 actor_grad=1.232296
+A2/C2 env=2300 update=89 BC=0.310708 valid=52 ADD=5 actor_grad=0.269241
+A2/C2 env=2300 update=90 BC=0.275328 valid=54 ADD=4 actor_grad=0.949644
+A2/C2 env=2300 update=91 BC=0.388960 valid=38 ADD=5 actor_grad=0.114242
+A2/C2 env=2300 update=92 BC=0.213790 valid=61 ADD=2 actor_grad=2.188349
+A2/C2 env=2400 update=93 BC=0.223808 valid=57 ADD=3 actor_grad=1.046231
+A2/C2 env=2400 update=94 BC=0.381031 valid=47 ADD=6 actor_grad=0.474081
+A2/C2 env=2400 update=95 BC=0.413512 valid=42 ADD=6 actor_grad=0.727065
+A2/C2 env=2400 update=96 BC=0.220551 valid=58 ADD=3 actor_grad=1.072656
+A2/C2 env=2500 update=97 BC=0.188701 valid=50 ADD=2 actor_grad=1.041564
+A2/C2 env=2500 update=98 BC=0.305913 valid=43 ADD=4 actor_grad=0.046649
+A2/C2 env=2500 update=99 BC=0.367148 valid=50 ADD=6 actor_grad=0.316278
+A2/C2 env=2500 update=100 BC=0.475254 valid=50 ADD=9 actor_grad=1.181431
+A2/C2 env=2600 update=101 BC=0.322652 valid=51 ADD=5 actor_grad=0.172887
+A2/C2 env=2600 update=102 BC=0.142759 valid=59 ADD=1 actor_grad=1.546452
+A2/C2 env=2600 update=103 BC=0.186257 valid=59 ADD=2 actor_grad=1.425071
+A2/C2 env=2600 update=104 BC=0.467410 valid=51 ADD=9 actor_grad=1.327639
+A2/C2 env=2700 update=105 BC=0.407487 valid=52 ADD=7 actor_grad=0.712935
+A2/C2 env=2700 update=106 BC=0.258038 valid=59 ADD=4 actor_grad=0.597364
+A2/C2 env=2700 update=107 BC=0.428614 valid=48 ADD=7 actor_grad=1.031675
+A2/C2 env=2700 update=108 BC=0.264104 valid=53 ADD=4 actor_grad=0.321558
+A2/C2 env=2800 update=109 BC=0.219548 valid=57 ADD=3 actor_grad=0.843908
+A2/C2 env=2800 update=110 BC=0.286533 valid=49 ADD=4 actor_grad=0.061370
+A2/C2 env=2800 update=111 BC=0.552599 valid=51 ADD=10 actor_grad=1.964714
+A2/C2 env=2800 update=112 BC=0.298175 valid=55 ADD=5 actor_grad=0.230938
+A2/C2 env=2900 update=113 BC=0.315058 valid=52 ADD=5 actor_grad=0.259047
+A2/C2 env=2900 update=114 BC=0.295982 valid=57 ADD=5 actor_grad=0.060349
+A2/C2 env=2900 update=115 BC=0.391038 valid=47 ADD=6 actor_grad=0.821329
+A2/C2 env=2900 update=116 BC=0.295077 valid=57 ADD=5 actor_grad=0.112899
+A2/C2 env=3000 update=117 BC=0.362545 valid=51 ADD=6 actor_grad=0.149582
+A2/C2 env=3000 update=118 BC=0.346562 valid=54 ADD=6 actor_grad=0.298740
+A2/C2 env=3000 update=119 BC=0.440750 valid=53 ADD=8 actor_grad=0.894404
+A2/C2 env=3000 update=120 BC=0.173454 valid=59 ADD=2 actor_grad=1.097702
+A2/C2 env=3100 update=121 BC=0.348857 valid=46 ADD=5 actor_grad=0.380094
+A2/C2 env=3100 update=122 BC=0.314621 valid=53 ADD=5 actor_grad=0.077182
+A2/C2 env=3100 update=123 BC=0.280369 valid=53 ADD=4 actor_grad=0.562952
+A2/C2 env=3100 update=124 BC=0.175213 valid=56 ADD=2 actor_grad=0.967989
+A2/C2 env=3200 update=125 BC=0.375570 valid=48 ADD=6 actor_grad=0.682755
+A2/C2 env=3200 update=126 BC=0.374322 valid=49 ADD=6 actor_grad=0.448318
+A2/C2 env=3200 update=127 BC=0.261505 valid=58 ADD=4 actor_grad=0.789864
+A2/C2 env=3200 update=128 BC=0.448649 valid=51 ADD=8 actor_grad=1.126899
+A2/C2 env=3300 update=129 BC=0.312526 valid=52 ADD=5 actor_grad=0.116625
+A2/C2 env=3300 update=130 BC=0.229813 valid=57 ADD=3 actor_grad=1.259367
+A2/C2 env=3300 update=131 BC=0.369219 valid=49 ADD=6 actor_grad=0.094796
+A2/C2 env=3300 update=132 BC=0.229620 valid=54 ADD=3 actor_grad=0.940886
+A2/C2 env=3400 update=133 BC=0.483865 valid=48 ADD=9 actor_grad=1.232634
+A2/C2 env=3400 update=134 BC=0.188986 valid=61 ADD=2 actor_grad=1.615984
+A2/C2 env=3400 update=135 BC=0.448079 valid=51 ADD=8 actor_grad=0.886599
+A2/C2 env=3400 update=136 BC=0.351422 valid=53 ADD=6 actor_grad=0.282632
+A2/C2 env=3500 update=137 BC=0.455036 valid=37 ADD=6 actor_grad=0.925343
+A2/C2 env=3500 update=138 BC=0.242507 valid=48 ADD=3 actor_grad=0.792783
+A2/C2 env=3500 update=139 BC=0.303734 valid=55 ADD=5 actor_grad=0.274535
+A2/C2 env=3500 update=140 BC=0.266441 valid=52 ADD=4 actor_grad=0.437033
+A2/C2 env=3600 update=141 BC=0.235702 valid=52 ADD=3 actor_grad=0.843174
+A2/C2 env=3600 update=142 BC=0.403885 valid=58 ADD=8 actor_grad=0.512866
+A2/C2 env=3600 update=143 BC=0.237757 valid=51 ADD=3 actor_grad=0.901603
+A2/C2 env=3600 update=144 BC=0.273246 valid=53 ADD=4 actor_grad=0.511189
+A2/C2 env=3700 update=145 BC=0.506456 valid=32 ADD=6 actor_grad=1.611465
+A2/C2 env=3700 update=146 BC=0.182002 valid=63 ADD=2 actor_grad=1.518175
+A2/C2 env=3700 update=147 BC=0.178890 valid=61 ADD=2 actor_grad=1.281863
+A2/C2 env=3700 update=148 BC=0.320483 valid=50 ADD=5 actor_grad=0.176703
+A2/C2 env=3800 update=149 BC=0.314058 valid=52 ADD=5 actor_grad=0.272198
+A2/C2 env=3800 update=150 BC=0.358806 valid=52 ADD=6 actor_grad=0.252513
+A2/C2 env=3800 update=151 BC=0.391663 valid=47 ADD=6 actor_grad=0.859634
+A2/C2 env=3800 update=152 BC=0.414170 valid=35 ADD=5 actor_grad=0.785016
+A2/C2 env=3900 update=153 BC=0.301401 valid=57 ADD=5 actor_grad=0.068466
+A2/C2 env=3900 update=154 BC=0.210492 valid=60 ADD=3 actor_grad=0.703113
+A2/C2 env=3900 update=155 BC=0.133016 valid=64 ADD=1 actor_grad=1.386719
+A2/C2 env=3900 update=156 BC=0.248343 valid=59 ADD=4 actor_grad=0.308187
+A2/C2 env=4000 update=157 BC=0.121237 valid=59 ADD=1 actor_grad=1.031593
+A2/C2 env=4000 update=158 BC=0.282955 valid=47 ADD=4 actor_grad=0.084664
+A2/C2 env=4000 update=159 BC=0.445563 valid=53 ADD=8 actor_grad=1.252241
+A2/C2 env=4000 update=160 BC=0.160536 valid=59 ADD=2 actor_grad=0.669800
+A2/C2 env=4100 update=161 BC=0.114987 valid=59 ADD=1 actor_grad=0.855612
+A2/C2 env=4100 update=162 BC=0.207490 valid=60 ADD=3 actor_grad=0.623709
+A2/C2 env=4100 update=163 BC=0.214054 valid=54 ADD=3 actor_grad=0.228586
+A2/C2 env=4100 update=164 BC=0.461782 valid=52 ADD=8 actor_grad=1.283979
+A2/C2 env=4200 update=165 BC=0.163199 valid=56 ADD=2 actor_grad=0.621969
+A2/C2 env=4200 update=166 BC=0.105363 valid=63 ADD=1 actor_grad=0.649662
+A2/C2 env=4200 update=167 BC=0.528829 valid=51 ADD=9 actor_grad=1.709590
+A2/C2 env=4200 update=168 BC=0.323783 valid=51 ADD=5 actor_grad=0.554503
+A2/C2 env=4300 update=169 BC=0.321465 valid=53 ADD=5 actor_grad=0.434545
+A2/C2 env=4300 update=170 BC=0.325057 valid=54 ADD=5 actor_grad=0.451924
+A2/C2 env=4300 update=171 BC=0.277098 valid=53 ADD=4 actor_grad=0.118334
+A2/C2 env=4300 update=172 BC=0.527754 valid=51 ADD=9 actor_grad=1.657762
+A2/C2 env=4400 update=173 BC=0.164165 valid=58 ADD=2 actor_grad=0.640582
+A2/C2 env=4400 update=174 BC=0.220218 valid=52 ADD=3 actor_grad=0.417170
+A2/C2 env=4400 update=175 BC=0.359869 valid=44 ADD=5 actor_grad=0.779936
+A2/C2 env=4400 update=176 BC=0.302626 valid=45 ADD=4 actor_grad=0.489506
+A2/C2 env=4500 update=177 BC=0.407938 valid=52 ADD=7 actor_grad=1.041176
+A2/C2 env=4500 update=178 BC=0.380680 valid=50 ADD=6 actor_grad=0.694535
+A2/C2 env=4500 update=179 BC=0.219773 valid=52 ADD=3 actor_grad=0.069742
+A2/C2 env=4500 update=180 BC=0.331962 valid=50 ADD=5 actor_grad=0.232534
+A2/C2 env=4600 update=181 BC=0.118197 valid=59 ADD=1 actor_grad=0.949250
+A2/C2 env=4600 update=182 BC=0.376916 valid=52 ADD=6 actor_grad=0.675909
+A2/C2 env=4600 update=183 BC=0.455011 valid=51 ADD=8 actor_grad=1.076867
+A2/C2 env=4600 update=184 BC=0.396188 valid=49 ADD=6 actor_grad=0.720238
+A2/C2 env=4700 update=185 BC=0.167054 valid=62 ADD=2 actor_grad=1.014120
+A2/C2 env=4700 update=186 BC=0.492882 valid=46 ADD=8 actor_grad=1.427727
+A2/C2 env=4700 update=187 BC=0.629934 valid=50 ADD=12 actor_grad=2.437684
+A2/C2 env=4700 update=188 BC=0.619770 valid=50 ADD=12 actor_grad=2.383223
+A2/C2 env=4800 update=189 BC=0.274688 valid=51 ADD=4 actor_grad=0.163903
+A2/C2 env=4800 update=190 BC=0.454595 valid=55 ADD=9 actor_grad=0.738854
+A2/C2 env=4800 update=191 BC=0.186944 valid=62 ADD=2 actor_grad=1.627943
+A2/C2 env=4800 update=192 BC=0.278383 valid=56 ADD=4 actor_grad=1.329130
+A2/C2 env=4900 update=193 BC=0.202028 valid=56 ADD=2 actor_grad=1.727497
+A2/C2 env=4900 update=194 BC=0.257353 valid=58 ADD=4 actor_grad=0.616851
+A2/C2 env=4900 update=195 BC=0.463350 valid=52 ADD=9 actor_grad=0.874473
+A2/C2 env=4900 update=196 BC=0.207166 valid=62 ADD=2 actor_grad=2.136607
+A2/C2 env=5000 update=197 BC=0.260098 valid=58 ADD=4 actor_grad=0.746712
+A2/C2 env=5000 update=198 BC=0.404592 valid=50 ADD=7 actor_grad=0.057981
+A2/C2 env=5000 update=199 BC=0.352466 valid=47 ADD=5 actor_grad=0.286986
+A2/C2 env=5000 update=200 BC=0.275659 valid=51 ADD=4 actor_grad=0.326857
+A2/C2 env=5100 update=201 BC=0.221262 valid=56 ADD=3 actor_grad=0.767534
+A2/C2 env=5100 update=202 BC=0.570532 valid=44 ADD=10 actor_grad=1.695627
+A2/C2 env=5100 update=203 BC=0.316344 valid=58 ADD=5 actor_grad=1.186570
+A2/C2 env=5100 update=204 BC=0.479482 valid=45 ADD=8 actor_grad=1.080602
+A2/C2 env=5200 update=205 BC=0.254009 valid=59 ADD=4 actor_grad=0.575406
+A2/C2 env=5200 update=206 BC=0.358156 valid=53 ADD=6 actor_grad=0.183788
+A2/C2 env=5200 update=207 BC=0.427922 valid=48 ADD=7 actor_grad=0.822339
+A2/C2 env=5200 update=208 BC=0.397675 valid=52 ADD=7 actor_grad=0.414138
+A2/C2 env=5300 update=209 BC=0.227745 valid=52 ADD=3 actor_grad=0.551057
+A2/C2 env=5300 update=210 BC=0.439121 valid=52 ADD=8 actor_grad=1.028253
+A2/C2 env=5300 update=211 BC=0.414327 valid=48 ADD=7 actor_grad=0.387301
+A2/C2 env=5300 update=212 BC=0.238424 valid=54 ADD=3 actor_grad=1.000208
+A2/C2 env=5400 update=213 BC=0.230090 valid=52 ADD=3 actor_grad=0.620977
+A2/C2 env=5400 update=214 BC=0.506832 valid=47 ADD=9 actor_grad=1.237391
+A2/C2 env=5400 update=215 BC=0.461452 valid=42 ADD=7 actor_grad=0.817533
+A2/C2 env=5400 update=216 BC=0.254246 valid=52 ADD=3 actor_grad=1.727331
+A2/C2 env=5500 update=217 BC=0.395406 valid=59 ADD=8 actor_grad=0.426234
+A2/C2 env=5500 update=218 BC=0.377524 valid=56 ADD=7 actor_grad=0.098705
+A2/C2 env=5500 update=219 BC=0.303536 valid=53 ADD=5 actor_grad=0.300968
+A2/C2 env=5500 update=220 BC=0.434528 valid=52 ADD=8 actor_grad=0.958039
+A2/C2 env=5600 update=221 BC=0.174982 valid=61 ADD=2 actor_grad=1.199622
+A2/C2 env=5600 update=222 BC=0.262298 valid=57 ADD=4 actor_grad=0.807621
+A2/C2 env=5600 update=223 BC=0.265614 valid=56 ADD=4 actor_grad=0.608640
+A2/C2 env=5600 update=224 BC=0.258707 valid=57 ADD=4 actor_grad=0.649188
+A2/C2 env=5700 update=225 BC=0.378266 valid=49 ADD=6 actor_grad=0.562297
+A2/C2 env=5700 update=226 BC=0.407417 valid=51 ADD=7 actor_grad=0.205536
+A2/C2 env=5700 update=227 BC=0.425974 valid=47 ADD=7 actor_grad=0.804899
+A2/C2 env=5700 update=228 BC=0.305271 valid=56 ADD=5 actor_grad=0.096377
+A2/C2 env=5800 update=229 BC=0.594975 valid=50 ADD=12 actor_grad=2.023186
+A2/C2 env=5800 update=230 BC=0.272491 valid=54 ADD=4 actor_grad=0.894739
+A2/C2 env=5800 update=231 BC=0.279591 valid=53 ADD=4 actor_grad=0.726618
+A2/C2 env=5800 update=232 BC=0.178967 valid=52 ADD=2 actor_grad=0.924057
+A2/C2 env=5900 update=233 BC=0.295573 valid=58 ADD=5 actor_grad=0.043211
+A2/C2 env=5900 update=234 BC=0.214869 valid=59 ADD=3 actor_grad=0.626074
+A2/C2 env=5900 update=235 BC=0.294388 valid=58 ADD=5 actor_grad=0.131076
+A2/C2 env=5900 update=236 BC=0.372232 valid=56 ADD=7 actor_grad=0.573183
+A2/C2 env=6000 update=237 BC=0.478440 valid=50 ADD=9 actor_grad=0.999167
+A2/C2 env=6000 update=238 BC=0.697799 valid=46 ADD=13 actor_grad=3.380361
+A2/C2 env=6000 update=239 BC=0.374253 valid=56 ADD=7 actor_grad=0.145711
+A2/C2 env=6000 update=240 BC=0.433877 valid=55 ADD=9 actor_grad=0.879626
+A2/C2 env=6100 update=241 BC=0.597500 valid=51 ADD=13 actor_grad=2.069069
+A2/C2 env=6100 update=242 BC=0.280275 valid=56 ADD=4 actor_grad=1.430607
+A2/C2 env=6100 update=243 BC=0.227395 valid=58 ADD=3 actor_grad=1.162509
+A2/C2 env=6100 update=244 BC=0.605421 valid=52 ADD=14 actor_grad=2.026789
+A2/C2 env=6200 update=245 BC=0.468282 valid=53 ADD=9 actor_grad=0.421825
+A2/C2 env=6200 update=246 BC=0.371093 valid=53 ADD=6 actor_grad=1.217159
+A2/C2 env=6200 update=247 BC=0.707730 valid=56 ADD=17 actor_grad=3.332956
+A2/C2 env=6200 update=248 BC=0.396312 valid=57 ADD=8 actor_grad=0.295187
+A2/C2 env=6300 update=249 BC=0.271992 valid=57 ADD=4 actor_grad=1.197735
+A2/C2 env=6300 update=250 BC=0.450860 valid=56 ADD=9 actor_grad=0.148564
+A2/C2 env=6300 update=251 BC=0.328179 valid=59 ADD=5 actor_grad=1.994488
+A2/C2 env=6300 update=252 BC=0.410006 valid=50 ADD=7 actor_grad=0.880908
+A2/C2 env=6400 update=253 BC=0.330957 valid=57 ADD=4 actor_grad=2.858658
+A2/C2 env=6400 update=254 BC=0.304259 valid=59 ADD=3 actor_grad=3.207497
+A2/C2 env=6400 update=255 BC=0.433991 valid=51 ADD=8 actor_grad=0.621997
+A2/C2 env=6400 update=256 BC=0.268589 valid=56 ADD=3 actor_grad=2.264062
+A2/C2 env=6500 update=257 BC=0.426478 valid=49 ADD=8 actor_grad=0.399843
+A2/C2 env=6500 update=258 BC=0.351972 valid=54 ADD=6 actor_grad=0.433179
+A2/C2 env=6500 update=259 BC=0.324338 valid=57 ADD=6 actor_grad=0.164198
+A2/C2 env=6500 update=260 BC=0.401899 valid=51 ADD=7 actor_grad=0.815554
+A2/C2 env=6600 update=261 BC=0.428196 valid=55 ADD=9 actor_grad=0.667809
+A2/C2 env=6600 update=262 BC=0.466357 valid=50 ADD=8 actor_grad=0.935764
+A2/C2 env=6600 update=263 BC=0.534405 valid=51 ADD=11 actor_grad=1.421875
+A2/C2 env=6600 update=264 BC=0.586590 valid=52 ADD=13 actor_grad=2.083279
+A2/C2 env=6700 update=265 BC=0.453129 valid=45 ADD=7 actor_grad=1.209090
+A2/C2 env=6700 update=266 BC=0.448805 valid=50 ADD=8 actor_grad=0.717020
+A2/C2 env=6700 update=267 BC=0.312414 valid=56 ADD=5 actor_grad=0.604927
+A2/C2 env=6700 update=268 BC=0.427892 valid=47 ADD=7 actor_grad=0.922262
+A2/C2 env=6800 update=269 BC=0.230633 valid=57 ADD=3 actor_grad=1.130364
+A2/C2 env=6800 update=270 BC=0.319601 valid=53 ADD=5 actor_grad=0.552993
+A2/C2 env=6800 update=271 BC=0.431778 valid=51 ADD=8 actor_grad=0.928263
+A2/C2 env=6800 update=272 BC=0.381007 valid=56 ADD=7 actor_grad=0.103893
+A2/C2 env=6900 update=273 BC=0.436961 valid=51 ADD=8 actor_grad=0.790056
+A2/C2 env=6900 update=274 BC=0.439321 valid=51 ADD=8 actor_grad=0.522753
+A2/C2 env=6900 update=275 BC=0.260672 valid=56 ADD=4 actor_grad=0.656032
+A2/C2 env=6900 update=276 BC=0.399696 valid=51 ADD=7 actor_grad=0.199987
+A2/C2 env=7000 update=277 BC=0.282893 valid=55 ADD=4 actor_grad=1.441059
+A2/C2 env=7000 update=278 BC=0.415936 valid=56 ADD=8 actor_grad=0.116214
+A2/C2 env=7000 update=279 BC=0.415361 valid=48 ADD=7 actor_grad=0.480270
+A2/C2 env=7000 update=280 BC=0.500094 valid=48 ADD=9 actor_grad=1.055600
+A2/C2 env=7100 update=281 BC=0.314113 valid=55 ADD=5 actor_grad=0.989850
+A2/C2 env=7100 update=282 BC=0.285549 valid=55 ADD=4 actor_grad=1.310694
+A2/C2 env=7100 update=283 BC=0.343583 valid=57 ADD=6 actor_grad=0.719183
+A2/C2 env=7100 update=284 BC=0.268455 valid=59 ADD=4 actor_grad=1.354110
+A2/C2 env=7200 update=285 BC=0.393027 valid=51 ADD=7 actor_grad=0.188709
+A2/C2 env=7200 update=286 BC=0.329529 valid=62 ADD=6 actor_grad=0.931994
+A2/C2 env=7200 update=287 BC=0.363091 valid=58 ADD=7 actor_grad=0.066200
+A2/C2 env=7200 update=288 BC=0.480755 valid=55 ADD=10 actor_grad=0.987181
+A2/C2 env=7300 update=289 BC=0.386742 valid=52 ADD=7 actor_grad=0.436761
+A2/C2 env=7300 update=290 BC=0.345084 valid=57 ADD=6 actor_grad=0.122316
+A2/C2 env=7300 update=291 BC=0.598190 valid=47 ADD=11 actor_grad=2.192507
+A2/C2 env=7300 update=292 BC=0.453826 valid=50 ADD=8 actor_grad=0.828654
+A2/C2 env=7400 update=293 BC=0.436444 valid=52 ADD=8 actor_grad=0.671093
+A2/C2 env=7400 update=294 BC=0.312927 valid=55 ADD=5 actor_grad=0.806298
+A2/C2 env=7400 update=295 BC=0.333177 valid=57 ADD=6 actor_grad=0.424257
+A2/C2 env=7400 update=296 BC=0.436479 valid=56 ADD=9 actor_grad=0.523331
+A2/C2 env=7500 update=297 BC=0.343135 valid=57 ADD=6 actor_grad=0.158510
+A2/C2 env=7500 update=298 BC=0.273079 valid=57 ADD=4 actor_grad=1.241052
+A2/C2 env=7500 update=299 BC=0.324107 valid=56 ADD=5 actor_grad=1.203235
+A2/C2 env=7500 update=300 BC=0.296508 valid=58 ADD=5 actor_grad=0.685068
+A2/C2 env=7600 update=301 BC=0.480508 valid=56 ADD=10 actor_grad=1.088406
+A2/C2 env=7600 update=302 BC=0.502803 valid=51 ADD=10 actor_grad=1.349779
+A2/C2 env=7600 update=303 BC=0.380691 valid=49 ADD=6 actor_grad=0.240736
+A2/C2 env=7600 update=304 BC=0.493548 valid=54 ADD=10 actor_grad=0.847736
+A2/C2 env=7700 update=305 BC=0.339055 valid=57 ADD=6 actor_grad=0.073242
+A2/C2 env=7700 update=306 BC=0.268966 valid=56 ADD=4 actor_grad=0.771409
+A2/C2 env=7700 update=307 BC=0.438047 valid=50 ADD=8 actor_grad=0.682078
+A2/C2 env=7700 update=308 BC=0.390059 valid=53 ADD=7 actor_grad=0.079572
+A2/C2 env=7800 update=309 BC=0.446314 valid=48 ADD=8 actor_grad=0.794921
+A2/C2 env=7800 update=310 BC=0.334042 valid=50 ADD=5 actor_grad=0.623937
+A2/C2 env=7800 update=311 BC=0.260904 valid=60 ADD=4 actor_grad=1.053779
+A2/C2 env=7800 update=312 BC=0.302155 valid=58 ADD=5 actor_grad=0.512877
+A2/C2 env=7900 update=313 BC=0.246130 valid=59 ADD=3 actor_grad=1.822379
+A2/C2 env=7900 update=314 BC=0.499166 valid=48 ADD=9 actor_grad=1.228669
+A2/C2 env=7900 update=315 BC=0.280773 valid=54 ADD=4 actor_grad=0.974016
+A2/C2 env=7900 update=316 BC=0.271138 valid=54 ADD=4 actor_grad=0.719379
+A2/C2 env=8000 update=317 BC=0.229862 valid=61 ADD=3 actor_grad=1.526173
+A2/C2 env=8000 update=318 BC=0.480975 valid=52 ADD=9 actor_grad=1.146527
+A2/C2 env=8000 update=319 BC=0.371048 valid=49 ADD=6 actor_grad=0.054538
+A2/C2 env=8000 update=320 BC=0.268004 valid=55 ADD=4 actor_grad=0.697223
+A2/C2 env=8100 update=321 BC=0.386293 valid=54 ADD=7 actor_grad=0.219143
+A2/C2 env=8100 update=322 BC=0.356396 valid=45 ADD=5 actor_grad=0.417158
+A2/C2 env=8100 update=323 BC=0.327755 valid=50 ADD=5 actor_grad=0.324030
+A2/C2 env=8100 update=324 BC=0.506942 valid=48 ADD=9 actor_grad=1.495117
+A2/C2 env=8200 update=325 BC=0.342788 valid=55 ADD=6 actor_grad=0.175759
+A2/C2 env=8200 update=326 BC=0.276332 valid=56 ADD=4 actor_grad=1.105479
+A2/C2 env=8200 update=327 BC=0.648133 valid=49 ADD=13 actor_grad=2.598991
+A2/C2 env=8200 update=328 BC=0.530612 valid=55 ADD=11 actor_grad=1.789021
+A2/C2 env=8300 update=329 BC=0.333609 valid=57 ADD=6 actor_grad=0.132596
+A2/C2 env=8300 update=330 BC=0.290855 valid=49 ADD=4 actor_grad=0.375290
+A2/C2 env=8300 update=331 BC=0.640330 valid=49 ADD=12 actor_grad=2.659522
+A2/C2 env=8300 update=332 BC=0.265471 valid=58 ADD=4 actor_grad=1.030147
+A2/C2 env=8400 update=333 BC=0.260005 valid=57 ADD=4 actor_grad=0.617482
+A2/C2 env=8400 update=334 BC=0.229511 valid=54 ADD=3 actor_grad=1.043833
+A2/C2 env=8400 update=335 BC=0.440618 valid=52 ADD=8 actor_grad=0.783248
+A2/C2 env=8400 update=336 BC=0.294563 valid=58 ADD=5 actor_grad=0.714355
+A2/C2 env=8500 update=337 BC=0.265126 valid=55 ADD=4 actor_grad=0.699044
+A2/C2 env=8500 update=338 BC=0.335719 valid=56 ADD=6 actor_grad=0.460595
+A2/C2 env=8500 update=339 BC=0.440846 valid=52 ADD=8 actor_grad=0.749040
+A2/C2 env=8500 update=340 BC=0.304428 valid=55 ADD=5 actor_grad=0.347268
+A2/C2 env=8600 update=341 BC=0.448929 valid=56 ADD=9 actor_grad=0.717769
+A2/C2 env=8600 update=342 BC=0.265512 valid=60 ADD=4 actor_grad=1.109335
+A2/C2 env=8600 update=343 BC=0.413109 valid=56 ADD=8 actor_grad=0.592680
+A2/C2 env=8600 update=344 BC=0.400193 valid=52 ADD=7 actor_grad=0.281451
+A2/C2 env=8700 update=345 BC=0.263344 valid=60 ADD=4 actor_grad=1.039034
+A2/C2 env=8700 update=346 BC=0.328516 valid=50 ADD=5 actor_grad=0.147086
+A2/C2 env=8700 update=347 BC=0.463701 valid=49 ADD=8 actor_grad=1.091068
+A2/C2 env=8700 update=348 BC=0.271063 valid=53 ADD=4 actor_grad=0.498535
+A2/C2 env=8800 update=349 BC=0.399506 valid=53 ADD=7 actor_grad=0.511372
+A2/C2 env=8800 update=350 BC=0.403513 valid=52 ADD=7 actor_grad=0.690287
+A2/C2 env=8800 update=351 BC=0.303658 valid=55 ADD=5 actor_grad=0.236643
+A2/C2 env=8800 update=352 BC=0.255053 valid=59 ADD=4 actor_grad=0.583271
+A2/C2 env=8900 update=353 BC=0.340207 valid=55 ADD=6 actor_grad=0.072019
+A2/C2 env=8900 update=354 BC=0.332410 valid=57 ADD=6 actor_grad=0.092470
+A2/C2 env=8900 update=355 BC=0.646781 valid=46 ADD=12 actor_grad=2.603878
+A2/C2 env=8900 update=356 BC=0.307330 valid=55 ADD=5 actor_grad=0.366769
+A2/C2 env=9000 update=357 BC=0.302964 valid=57 ADD=5 actor_grad=0.290039
+A2/C2 env=9000 update=358 BC=0.144413 valid=61 ADD=1 actor_grad=1.597831
+A2/C2 env=9000 update=359 BC=0.431750 valid=53 ADD=8 actor_grad=0.855667
+A2/C2 env=9000 update=360 BC=0.356848 valid=52 ADD=6 actor_grad=0.045934
+A2/C2 env=9100 update=361 BC=0.406546 valid=43 ADD=6 actor_grad=0.549726
+A2/C2 env=9100 update=362 BC=0.228346 valid=52 ADD=3 actor_grad=0.720841
+A2/C2 env=9100 update=363 BC=0.453858 valid=49 ADD=8 actor_grad=1.047030
+A2/C2 env=9100 update=364 BC=0.276386 valid=54 ADD=4 actor_grad=0.713291
+A2/C2 env=9200 update=365 BC=0.284969 valid=50 ADD=4 actor_grad=0.254395
+A2/C2 env=9200 update=366 BC=0.370164 valid=50 ADD=6 actor_grad=0.245362
+A2/C2 env=9200 update=367 BC=0.350257 valid=54 ADD=6 actor_grad=0.150930
+A2/C2 env=9200 update=368 BC=0.350050 valid=54 ADD=6 actor_grad=0.271947
+A2/C2 env=9300 update=369 BC=0.301724 valid=55 ADD=5 actor_grad=0.178145
+A2/C2 env=9300 update=370 BC=0.280380 valid=61 ADD=5 actor_grad=0.506030
+A2/C2 env=9300 update=371 BC=0.240407 valid=48 ADD=3 actor_grad=0.462737
+A2/C2 env=9300 update=372 BC=0.404130 valid=52 ADD=7 actor_grad=0.708423
+A2/C2 env=9400 update=373 BC=0.496605 valid=55 ADD=10 actor_grad=1.286983
+A2/C2 env=9400 update=374 BC=0.325854 valid=50 ADD=5 actor_grad=0.159811
+A2/C2 env=9400 update=375 BC=0.486251 valid=52 ADD=9 actor_grad=1.242581
+A2/C2 env=9400 update=376 BC=0.382159 valid=55 ADD=7 actor_grad=0.405907
+A2/C2 env=9500 update=377 BC=0.379246 valid=49 ADD=6 actor_grad=0.485856
+A2/C2 env=9500 update=378 BC=0.420357 valid=50 ADD=7 actor_grad=0.643752
+A2/C2 env=9500 update=379 BC=0.282301 valid=51 ADD=4 actor_grad=0.559341
+A2/C2 env=9500 update=380 BC=0.494192 valid=49 ADD=9 actor_grad=1.341917
+A2/C2 env=9600 update=381 BC=0.377885 valid=48 ADD=6 actor_grad=0.416063
+A2/C2 env=9600 update=382 BC=0.274254 valid=51 ADD=4 actor_grad=0.680345
+A2/C2 env=9600 update=383 BC=0.278602 valid=51 ADD=4 actor_grad=0.751056
+A2/C2 env=9600 update=384 BC=0.353671 valid=53 ADD=6 actor_grad=0.055493
+A2/C2 env=9700 update=385 BC=0.405586 valid=54 ADD=8 actor_grad=0.351773
+A2/C2 env=9700 update=386 BC=0.288377 valid=50 ADD=4 actor_grad=0.970473
+A2/C2 env=9700 update=387 BC=0.333524 valid=58 ADD=6 actor_grad=0.516795
+A2/C2 env=9700 update=388 BC=0.288855 valid=52 ADD=4 actor_grad=1.143440
+A2/C2 env=9800 update=389 BC=0.367582 valid=50 ADD=6 actor_grad=0.250885
+A2/C2 env=9800 update=390 BC=0.198335 valid=61 ADD=2 actor_grad=1.859549
+A2/C2 env=9800 update=391 BC=0.361202 valid=43 ADD=5 actor_grad=0.286294
+A2/C2 env=9800 update=392 BC=0.359326 valid=51 ADD=6 actor_grad=0.206459
+A2/C2 env=9900 update=393 BC=0.368602 valid=50 ADD=6 actor_grad=0.052212
+A2/C2 env=9900 update=394 BC=0.436017 valid=54 ADD=8 actor_grad=0.659162
+A2/C2 env=9900 update=395 BC=0.275477 valid=53 ADD=4 actor_grad=0.874115
+A2/C2 env=9900 update=396 BC=0.291895 valid=59 ADD=5 actor_grad=0.549988
+A2/C2 env=10000 update=397 BC=0.241927 valid=49 ADD=3 actor_grad=0.710243
+A2/C2 env=10000 update=398 BC=0.319769 valid=41 ADD=4 actor_grad=0.438599
+A2/C2 env=10000 update=399 BC=0.270512 valid=56 ADD=4 actor_grad=0.946409
+A2/C2 env=10000 update=400 BC=0.456513 valid=50 ADD=8 actor_grad=0.978709
+{
+  "protocol": "FG_S3_V2_LIVE_LEARNING_V1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_TRAIN_10K_FAST_v1",
+  "env_steps": 10000,
+  "counters": {
+    "all_updates": 400,
+    "wm_updates": 400,
+    "bc_valid_updates": 400,
+    "bc_add_updates": 400,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 400,
+    "cycles": 100,
+    "sampled_transitions": 25600
+  },
+  "model_updates": 21583,
+  "counts": {
+    "native_rows": 10010,
+    "resets": 10,
+    "env_steps": 10000,
+    "valid_market_minutes": 10000,
+    "actor_ADD": 1040,
+    "oracle_ADD": 896,
+    "executed_ADD": 896,
+    "entries": 896,
+    "TP": 896,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 8360,
+    "learnable_decisions": 8360,
+    "unproven_funds": 0,
+    "reward_sum": 841.8356864266098,
+    "published_native_rows": 10009,
+    "actor_oracle_ADD_tp": 108,
+    "actor_oracle_ADD_fn": 788
+  },
+  "reward": 841.8356864266098,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_TRAIN_10K_FAST_v1/ckpt/step_000000010000",
+  "checkpoint_manifest_sha256": "eef53b2a95b77a333e5e02adbd5267aefec12313f403ea1234e2c108bc599dff",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 243.45217459299602,
+  "collect_seconds": 111.4222078009625,
+  "update_seconds": 104.60670958511764,
+  "core_env_steps_per_second": 46.29009912653643,
+  "process_peak_rss_mib": 3918.3828125,
+  "oracle_query_recent_seconds": {
+    "50": 0.0036806955031352118,
+    "95": 0.00405320345016662,
+    "99": 0.004533588457852602
+  },
+  "actor_oracle_add_recall": 0.12053571428571429,
+  "retained_teacher_rows": 2841,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_TRAIN_10K_FAST_v1/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    21183,
+    21187,
+    21191,
+    21195,
+    21199,
+    21203,
+    21207,
+    21211,
+    21215,
+    21219,
+    21223,
+    21227,
+    21231,
+    21235,
+    21239,
+    21243,
+    21247,
+    21251,
+    21255,
+    21259,
+    21263,
+    21267,
+    21271,
+    21275,
+    21279,
+    21283,
+    21287,
+    21291,
+    21295,
+    21299,
+    21303,
+    21307,
+    21311,
+    21315,
+    21319,
+    21323,
+    21327,
+    21331,
+    21335,
+    21339,
+    21343,
+    21347,
+    21351,
+    21355,
+    21359,
+    21363,
+    21367,
+    21371,
+    21375,
+    21379,
+    21383,
+    21387,
+    21391,
+    21395,
+    21399,
+    21403,
+    21407,
+    21411,
+    21415,
+    21419,
+    21423,
+    21427,
+    21431,
+    21435,
+    21439,
+    21443,
+    21447,
+    21451,
+    21455,
+    21459,
+    21463,
+    21467,
+    21471,
+    21475,
+    21479,
+    21483,
+    21487,
+    21491,
+    21495,
+    21499,
+    21503,
+    21507,
+    21511,
+    21515,
+    21519,
+    21523,
+    21527,
+    21531,
+    21535,
+    21539,
+    21543,
+    21547,
+    21551,
+    21555,
+    21559,
+    21563,
+    21567,
+    21571,
+    21575,
+    21579
+  ],
+  "label_ratio": 0.836,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "2d3f2432f8646ad54dc244b4a87080c1060f9bd9d2fbfd4d3d12319ed9578aca"
+}

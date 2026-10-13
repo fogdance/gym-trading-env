@@ -1,0 +1,19 @@
+{
+  "cursor": 3000,
+  "queries": 20,
+  "elapsed_seconds": 0.12390055300784297,
+  "result": {
+    "action": 0,
+    "valid": true,
+    "certified": true,
+    "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+    "q_add": null,
+    "q_wait": null,
+    "q_margin": null,
+    "state_id": "c36a2bd4e20fd40eb6655ad471234ff66ab5ef0ba63d9dc23fa58f6ffd7352ba",
+    "oracle_identity": "f35dc2a7c3c4ef2c1ff49a1f5c297a652a451a166b576cf3fe18b4655625e888",
+    "proof_hash": "fabae3b1d3f709420415a1811cc8f1f0fa75bc949dcf46407303e227ff5b7fc9"
+  },
+  "profile": "         8241 function calls (8061 primitive calls) in 0.054 seconds\n\n   Ordered by: cumulative time\n   List reduced from 116 to 18 due to restriction <18>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n       20    0.000    0.000    0.051    0.003 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py:83(query)\n       20    0.000    0.000    0.046    0.002 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/generic.py:1445(equals)\n       20    0.000    0.000    0.046    0.002 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/internals/base.py:144(equals)\n       20    0.000    0.000    0.045    0.002 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/internals/managers.py:1513(_equal_values)\n       20    0.000    0.000    0.045    0.002 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/internals/ops.py:146(blockwise_all)\n       40    0.000    0.000    0.044    0.001 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/missing.py:615(array_equals)\n       40    0.000    0.000    0.044    0.001 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/missing.py:466(array_equivalent)\n       20    0.040    0.002    0.040    0.002 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/missing.py:564(_array_equivalent_object)\n       40    0.001    0.000    0.004    0.000 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py:57(decision_state)\n       20    0.003    0.000    0.003    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/missing.py:556(_array_equivalent_float)\n      140    0.000    0.000    0.002    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/__init__.py:183(dumps)\n      140    0.000    0.000    0.002    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py:183(encode)\n      100    0.000    0.000    0.002    0.000 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_contract.py:19(fingerprint)\n      140    0.002    0.000    0.002    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py:205(iterencode)\n       60    0.000    0.000    0.001    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/internals/ops.py:29(_iter_block_pairs)\n       40    0.000    0.000    0.001    0.000 /home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/internals/managers.py:708(_slice_take_blocks_ax0)\n       20    0.000    0.000    0.001    0.000 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py:24(rules_identity)\n       20    0.000    0.000    0.001    0.000 /home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py:39(hash)\n\n\n",
+  "neural_computation": false
+}

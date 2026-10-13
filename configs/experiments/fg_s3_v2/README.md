@@ -2,6 +2,13 @@
 
 ## Current P0 A2 training preparation (2026-10-13)
 
+The current measured version uses `_FAST` configurations and frozen pair
+Gym `b71250c` / Dreamer `e64004e` in `research/fg-s3-v2-train/`.
+GPU recovery and the independent 10000-step/400-update run passed;
+Actor-only DEV remains ALL_WAIT. Results, throughput and the prepared formal
+command are in `docs/FG_S3_V2_P0_GPU_10K_Training_20261013.md`.
+Earlier configurations and interrupted runs remain historical artifacts.
+
 Use `A2_P0_GPU_SMOKE_1K` for GPU save/interruption/resume, then the independent
 `A2_P0_GPU_TRAIN_10K` diagnostic. Both start from the original admitted Online180k
 checkpoint. They use the original TRAIN account scheduler, WM + equal Oracle BC,

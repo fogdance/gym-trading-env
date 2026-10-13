@@ -1,0 +1,17 @@
+{
+  "tp_minutes_p50": 2.0,
+  "tp_minutes_p90": 5.0,
+  "early_mae10": 0,
+  "warm_core_seconds": 157.06821694603423,
+  "warm_env_steps": 9000,
+  "initial20_bc": 0.4403638541698456,
+  "last40_bc": 0.34405237920582293,
+  "last40_add_tp": 0.0,
+  "last40_add_count": 223.0,
+  "actor_changed_cycles": 100,
+  "wm_changed_cycles": 100,
+  "checkpoint_bytes": 7178699494,
+  "training_beta": 1.0,
+  "independent_actor_success": false,
+  "content_hash": "c88acc73f323b1c67424a68ff6254e48e5cdd3f63d805092290b54a42a131e72"
+}

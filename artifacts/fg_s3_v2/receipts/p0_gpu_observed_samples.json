@@ -1,0 +1,30 @@
+{
+  "note": "Discrete host NVML samples; not a continuous measurement of peak GPU memory. Earlier non-FAST A2 used the same original model and batch size.",
+  "samples": [
+    {
+      "at": "2026-10-13T05:40:34.694Z",
+      "phase": "smoke_start",
+      "gpu": "2746503, /home/v/miniconda3/envs/dreamerv3/bin/python, 2190\n"
+    },
+    {
+      "at": "2026-10-13T05:42:25.268Z",
+      "phase": "smoke_train",
+      "gpu": ""
+    },
+    {
+      "at": "2026-10-13T05:43:52.728Z",
+      "phase": "smoke_resume",
+      "gpu": "2748823, /home/v/miniconda3/envs/dreamerv3/bin/python, 204\n"
+    },
+    {
+      "at": "2026-10-13T05:52:59.276Z",
+      "phase": "train_10k",
+      "gpu": "2751039, /home/v/miniconda3/envs/dreamerv3/bin/python, 2194\n2026/10/13 13:52:54.339, 7, 3452\n"
+    },
+    {
+      "at": "2026-10-13T06:31:15.765Z",
+      "phase": "fast_train_10k",
+      "gpu": "2026/10/13 14:31:15.705, 30, 1257\n"
+    }
+  ]
+}

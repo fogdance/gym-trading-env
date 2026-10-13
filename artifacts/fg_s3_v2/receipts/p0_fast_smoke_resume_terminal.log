@@ -1,0 +1,125 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2/C2 env=600 update=21 BC=0.123032 valid=56 ADD=1 actor_grad=1.038621
+A2/C2 env=600 update=22 BC=0.308410 valid=54 ADD=5 actor_grad=0.308914
+A2/C2 env=600 update=23 BC=0.693306 valid=53 ADD=13 actor_grad=2.995496
+A2/C2 env=600 update=24 BC=0.230402 valid=49 ADD=3 actor_grad=0.346104
+A2/C2 env=700 update=25 BC=0.409691 valid=51 ADD=7 actor_grad=0.907974
+A2/C2 env=700 update=26 BC=0.476824 valid=59 ADD=10 actor_grad=1.382620
+A2/C2 env=700 update=27 BC=0.589368 valid=52 ADD=12 actor_grad=2.296439
+A2/C2 env=700 update=28 BC=0.456822 valid=59 ADD=10 actor_grad=0.375297
+A2/C2 env=800 update=29 BC=0.477580 valid=52 ADD=10 actor_grad=0.314503
+A2/C2 env=800 update=30 BC=0.445133 valid=59 ADD=8 actor_grad=2.832107
+A2/C2 env=800 update=31 BC=0.347800 valid=58 ADD=3 actor_grad=4.405022
+A2/C2 env=800 update=32 BC=0.470618 valid=50 ADD=9 actor_grad=2.085926
+A2/C2 env=900 update=33 BC=0.320860 valid=53 ADD=3 actor_grad=3.511725
+A2/C2 env=900 update=34 BC=0.293721 valid=57 ADD=3 actor_grad=3.148472
+A2/C2 env=900 update=35 BC=0.413387 valid=60 ADD=9 actor_grad=0.769975
+A2/C2 env=900 update=36 BC=0.236600 valid=58 ADD=3 actor_grad=1.637978
+A2/C2 env=1000 update=37 BC=0.261107 valid=57 ADD=4 actor_grad=0.494650
+A2/C2 env=1000 update=38 BC=0.208820 valid=59 ADD=3 actor_grad=0.700633
+A2/C2 env=1000 update=39 BC=0.343309 valid=58 ADD=6 actor_grad=0.366171
+A2/C2 env=1000 update=40 BC=0.265917 valid=55 ADD=4 actor_grad=0.086451
+{
+  "protocol": "FG_S3_V2_LIVE_LEARNING_V1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1",
+  "env_steps": 1000,
+  "counters": {
+    "all_updates": 40,
+    "wm_updates": 40,
+    "bc_valid_updates": 40,
+    "bc_add_updates": 40,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 40,
+    "cycles": 10,
+    "sampled_transitions": 2560
+  },
+  "model_updates": 21223,
+  "counts": {
+    "native_rows": 1004,
+    "resets": 4,
+    "env_steps": 1000,
+    "valid_market_minutes": 1000,
+    "actor_ADD": 165,
+    "oracle_ADD": 104,
+    "executed_ADD": 104,
+    "entries": 104,
+    "TP": 104,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 870,
+    "learnable_decisions": 870,
+    "unproven_funds": 0,
+    "reward_sum": 100.30438888072968,
+    "published_native_rows": 1003,
+    "actor_oracle_ADD_tp": 27,
+    "actor_oracle_ADD_fn": 77
+  },
+  "reward": 100.30438888072968,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1/ckpt/step_000000001000",
+  "checkpoint_manifest_sha256": "cd36cd83f50499f4148a84dfc9fff96b28ff976912f4bb455cff690a38c06bdf",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 57.253357956011314,
+  "collect_seconds": 13.96304426898132,
+  "update_seconds": 90.32038736599497,
+  "core_env_steps_per_second": 9.589250989556078,
+  "process_peak_rss_mib": 3799.3203125,
+  "oracle_query_recent_seconds": {
+    "50": 0.0038599730032728985,
+    "95": 0.004148350709874648,
+    "99": 0.00442697043879889
+  },
+  "actor_oracle_add_recall": 0.25961538461538464,
+  "retained_teacher_rows": 1003,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    21183,
+    21187,
+    21191,
+    21195,
+    21199,
+    21203,
+    21207,
+    21211,
+    21215,
+    21219
+  ],
+  "label_ratio": 0.87,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "3b9956bf717803fe0f45bfe4ff687851aecc31263fb816848346951c5cf4b914"
+}

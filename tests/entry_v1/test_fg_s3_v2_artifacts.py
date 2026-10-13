@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import pickle
 
+import numpy as np
 import pytest
 
 from embodied.run.fg_checkpoint import file_hash, validate_bundle
@@ -21,6 +22,59 @@ def load(node, name):
 def frozen(key):
     return key.startswith(('val/', 'slowval/', 'slowval_count/', 'retnorm/', 'valnorm/', 'advnorm/')) or (
         key.startswith('opt/state/') and '/val/' in key)
+
+
+def test_actual_p0_gpu_recovery_and_bounded_teacher_snapshot():
+    smoke=ROOT/'runs/A2_P0_GPU_SMOKE_1K_FAST_v1'
+    train=ROOT/'runs/A2_P0_GPU_TRAIN_10K_FAST_v1'
+    if not all((r/'training_receipt.json').is_file() for r in (smoke,train)):
+        pytest.skip('Requires actual P0 GPU runs; never substitutes synthetic checkpoints')
+    states=[load(smoke/'ckpt'/f'step_{n:012d}','agent') for n in (0,500,1000)]
+    digests=[parameter_digests(s['params']) for s in states]
+    assert [s['counters']['updates'] for s in states]==[21183,21203,21223]
+    for a,b in zip(digests,digests[1:]):
+        assert any(a[k]!=b[k] for k in a if k.startswith('pol/'))
+        assert any(a[k]!=b[k] for k in a if k.startswith(('enc/','dyn/')))
+        assert all(a[k]==b[k] for k in a if frozen(k))
+    boundary=load(smoke/'ckpt/step_000000000500','collector')
+    final=load(smoke/'ckpt/step_000000001000','collector')
+    n=boundary['commit_seq']
+    assert boundary['records']==final['records'][:n]
+    for key in ('cursor','actual_observation_id','state_id','executed_action',
+                'oracle_proof_hash','policy_model_update','beta_draw'):
+        assert boundary['pending'][key]==final['records'][n][key]
+    receipt=read_manifest(train/'training_receipt.json')
+    node=Path(receipt['checkpoint'])
+    teacher=load(node,'collector'); replay=load(node,'replay')
+    native=set()
+    for shard in replay['chunks']:
+        with np.load(node/'replay'/shard['name'],allow_pickle=False) as data:
+            assert not any(k.startswith(('teacher','oracle','q_')) for k in data.files)
+            if shard['length']:
+                native.update(x.tobytes().hex() for x in data['stepid'])
+    assert native=={r['stepid'] for r in teacher['records']}
+    assert len(native)==len(teacher['records'])<teacher['commit_seq']
+    assert teacher['counts']['env_steps']==receipt['env_steps']==10000
+    assert teacher['pending']['stepid'] is None and teacher['pending_native'] is not None
+    assert len((train/'rollout/teacher_journal.jsonl').read_bytes().splitlines())==teacher['commit_seq']
+    before=parameter_digests(load(train/'ckpt/step_000000000000','agent')['params'])
+    trained=load(node,'agent'); after=parameter_digests(trained['params'])
+    assert all(before[k]==after[k] for k in before if frozen(k))
+    assert trained['counters']['updates']==21583
+    assert load(node,'v2_counters')['all_updates']==receipt['counters']['all_updates']==400
+    assert all(after[k]==h for k,h in parameter_digests(trained['policy_params']).items())
+    assert trained['pending_sync'] is None
+    transfer=read_manifest(train/'source_transfer.json')
+    assert before==transfer['params_after'] and not transfer['independent_bc_optimizer_imported']
+    spec=read_manifest(ROOT/'prepared/A2_P0_GPU_TRAIN_10K_FAST_v1/source_admission.json')
+    source=Path(spec['origin']['path']); meta=json.loads((source/'manifest.json').read_text())
+    assert file_hash(source/'manifest.json')==spec['origin']['manifest_sha256']
+    assert file_hash(source/'agent.pkl')==meta['files']['agent.pkl']
+    write_json(ROOT/'receipts/p0_actual_gpu_verification.json',signed(dict(
+        status='PASS_ACTUAL_P0_GPU_ARTIFACTS',gpu_resume='500 -> 1000; 20 further real updates',
+        actor_and_wm_continue_learning=True,frozen_critic_optimizer=True,
+        retained_teacher_rows=len(native),committed_rows=teacher['commit_seq'],source_unchanged=True,
+        uninterrupted_bitwise_equivalence='NOT_RUN',neural_computation='none; saved GPU artifacts only')))
 
 
 def test_actual_gpu_checkpoints_inheritance_resume_and_learning():

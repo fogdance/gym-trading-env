@@ -1,0 +1,12 @@
+{
+  "status": "PASS_ACTUAL_P0_GPU_ARTIFACTS",
+  "gpu_resume": "500 -> 1000; 20 further real updates",
+  "actor_and_wm_continue_learning": true,
+  "frozen_critic_optimizer": true,
+  "retained_teacher_rows": 2841,
+  "committed_rows": 10009,
+  "source_unchanged": true,
+  "uninterrupted_bitwise_equivalence": "NOT_RUN",
+  "neural_computation": "none; saved GPU artifacts only",
+  "content_hash": "5b51ee50733ec5f22ff8949f0512585bccaa2c8d06590f974161e0e77a6b61b6"
+}
