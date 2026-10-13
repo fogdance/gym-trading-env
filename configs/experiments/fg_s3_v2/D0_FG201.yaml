@@ -1,0 +1,13 @@
+schema: FG_S3_V2_D0_CONFIG_V1
+fold: TRAIN
+contract: CZCE.FG201
+dreamer_root: ../dreamerv3
+env_receipt: ../../fg-data/fg_single3_v1/env/run_20261011_04
+oracle_receipt: ../../fg-data/fg_single3_v1/oracle/run_20261011_01
+output_root: artifacts/fg_s3_v2_d0/runs
+env_steps: 1000
+seed: 202
+oracle_mix_probability: 0.5
+scripted_add_probability: 0.5
+catalog: artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+source_checkpoint: artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000

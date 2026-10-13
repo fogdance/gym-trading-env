@@ -229,7 +229,7 @@ def _mul(a,b):
     return (_down(min(products)),_up(max(products)))
 
 
-def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000):
+def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000,return_suffix=False):
     """Certified interval comparisons, exact rational fallback, WAIT on ties."""
     if end+1>max_states:raise ValueError('NOT_PROVEN: exact search state budget exceeded')
     gamma=Fraction(gamma)
@@ -294,12 +294,17 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000):
     schedule=chain(first[0])
     if any(by_cursor[t]['exit']['reason']!='TAKE_PROFIT' for t in schedule):
         raise RuntimeError('Dominance proof failed to retain only cash-positive TP trades')
-    return dict(oracle_optimality_status='exact_proven',candidate=candidate,
+    result = dict(oracle_optimality_status='exact_proven',candidate=candidate,
         gamma=float(gamma),gamma_rational=[gamma.numerator,gamma.denominator],
         objective=OBJECTIVE,tie_break='WAIT',add_cursors=schedule,
         value_interval=list(bounds[0]),search_states=end+1,exact_comparisons=exact_checks,
         exact_ties=ties,dominance_pruned=pruned,selected_trades=len(schedule),
         selected_cash_gain=sum(float(by_cursor[t]['exit']['net_trade_pnl']) for t in schedule))
+    if return_suffix:
+        # first[t] is the first retained trade of the optimum starting at t.
+        # Only first[t] == t means ADD now; schedule membership is insufficient.
+        result['suffix'] = dict(first=first, value_intervals=bounds)
+    return result
 
 
 def reference_candidate(env,t):
