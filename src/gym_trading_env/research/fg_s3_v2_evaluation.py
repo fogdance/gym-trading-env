@@ -79,8 +79,8 @@ def evaluate(prepared, run_dir, steps=1000):
     frozen_model = read_manifest(prepared/'model_config.json')
     cfg = frozen_model['config']
     extensions = agent_extensions(s)
-    if s['mode'] == 'tutor' and frozen_model['agent_extension'] != extensions:
-        raise ValueError('Frozen Tutor model configuration differs from settings')
+    if s['mode'] in ('tutor', 'b2') and frozen_model['agent_extension'] != extensions:
+        raise ValueError('Frozen extended model configuration differs from settings')
     output = root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
     output.mkdir(parents=True, exist_ok=False)
     dev = prepare_dev(s, output)
@@ -107,6 +107,8 @@ def evaluate(prepared, run_dir, steps=1000):
             mask=np.asarray(step['action_mask']).tolist(), is_first=bool(step['is_first']),
             is_last=bool(step['is_last']), reward_from_previous_action=float(step['reward']),
             p_add=policy.last_diagnostics['p_add'], advanced=bool(delta)))
+        if s['mode'] == 'b2':
+            rows[-1]['b2'] = policy.last_diagnostics['b2']
     driver.on_step(capture)
     try:
         while advanced < steps:
@@ -140,6 +142,17 @@ def evaluate(prepared, run_dir, steps=1000):
             all_wait=bool(legal and not any(r['action'] for r in legal)),
             research_success='NOT_ESTABLISHED', test='NOT_RUN'))
         check_files(dev['frozen_inputs'])
+        if s['mode'] == 'b2':
+            result = {k:v for k,v in result.items() if k != 'content_hash'}
+            decision = [r['b2'] for r in legal]
+            result['b2'] = dict(agent_extension=extensions,
+                legal_argmax_changed=sum(d['b2/argmax_changed'] for d in decision),
+                mix_active_decisions=sum(d['b2/mix_value'] > 0 for d in decision),
+                p_add_base_mean=float(np.mean([d['b2/p_add_base'] for d in decision])) if decision else None,
+                p_add_final_mean=float(np.mean([d['b2/p_add_final'] for d in decision])) if decision else None,
+                delta_logit_mean=float(np.mean([d['b2/delta_logit'] for d in decision])) if decision else None,
+                outcome_probabilities_source='causal RSSM predictions; no labels/Oracle queries')
+            result = signed(result)
         write_json(output/'receipt.json', result)
         return result
     finally:

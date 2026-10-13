@@ -5,7 +5,7 @@ import subprocess
 
 from dreamerv3.configuration import read_config_yaml
 from embodied.run.fg_checkpoint import plain, file_hash
-from embodied.run.fg_s3_source_admission import inspect_source
+from embodied.run.fg_s3_source_admission import inspect_source, LiveOracleTraining
 from embodied.run.fg_s3_v2_train import execution_code
 from .fg_replay import signed, write_json, read_manifest
 from .fg_s3_oracle_state_query import load_train_query
@@ -32,13 +32,25 @@ def read_settings(path):
     s = read_config_yaml(path)
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
-    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2', 'tutor') or s['device'] != 'gpu':
-        raise ValueError('S3-V2 requires an explicit A2/C2/Tutor GPU config')
+    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
+        raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
     s.setdefault('scope', 'diagnostic')
     if s['mode'] == 'tutor':
         extension = agent_extensions(s)
         s.update({k: extension[k] for k in DEFAULTS})
+    if s['mode'] == 'b2':
+        extension = agent_extensions(s)
+        s.update({k:v for k,v in extension.items() if k != 's3_v2_mode'})
+        if s['scope'] != 'diagnostic':
+            raise ValueError('B2 V0 supports only bounded diagnostic training')
+        s.setdefault('catalog', None)
+    s.setdefault('oracle_receipt_scope', 'aggregate')
+    if s['oracle_receipt_scope'] not in ('aggregate', 'diagnostic_contract') or (
+            s['oracle_receipt_scope'] == 'diagnostic_contract' and s['scope'] != 'diagnostic'):
+        raise ValueError('Contract-only Oracle evidence is diagnostic-only')
     s.setdefault('contracts', None)
+    if s['mode'] == 'b2' and s['contracts'] is not None:
+        raise ValueError('B2 V0 uses one authentic TRAIN contract per diagnostic')
     s.setdefault('env_slice_bars', 1024)
     s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)
     s.setdefault('beta_schedule', None)
@@ -69,6 +81,8 @@ def read_settings(path):
     if schedule.points is not None and schedule.points[-1][0] > s['env_steps']:
         raise ValueError('Beta schedule exceeds the frozen Env budget')
     for key in ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog', 'source_checkpoint', 'prepared_dir', 'run_dir', 'dev_source_manifest'):
+        if key == 'catalog' and s['mode'] == 'b2' and s[key] is None:
+            continue
         s[key] = str((PROJECT/s[key]).resolve())
     if Path(s['dreamer_root']) != PROJECT.parent/'dreamerv3':
         raise ValueError('Foreign Dreamer worktree')
@@ -86,19 +100,33 @@ def prepare(config):
     output = Path(s['prepared_dir'])
     if output.exists():
         raise FileExistsError('Preparation retained; use a new config/preparation name')
-    catalog = load_catalog(s['catalog'])
+    query, env = None, None
+    if s['mode'] == 'b2':
+        query, env, _, _, candidates = load_train_query(s['env_receipt'], s['oracle_receipt'],
+            s['contract'], receipt_scope=s['oracle_receipt_scope'])
+        catalog = None
+        binding = LiveOracleTraining(query, env)
+        admission_args = dict(live_oracle=binding, diagnostic=True, agent_extension=agent_extensions(s))
+    else:
+        catalog = load_catalog(s['catalog'])
+        admission_args = dict(catalog=catalog)
     try:
         kind = s.get('source_kind', 'warm_start')
-        initial = inspect_source(kind, catalog=catalog, path=s['source_checkpoint'])
+        initial = inspect_source(kind, path=s['source_checkpoint'], **admission_args)
         target = copy.deepcopy(initial['target_config'])
         target['agent']['avail_threshold'] = .30
-        spec = inspect_source(kind, catalog=catalog, path=s['source_checkpoint'],
-            config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1')
+        spec = inspect_source(kind, path=s['source_checkpoint'],
+            config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
         model = copy.deepcopy(spec['target_config'])
         model.update(batch_size=s['batch_size'], batch_length=64, report_length=64)
         output.mkdir(parents=True, exist_ok=False)
         if s['contracts'] is None:
-            query, env, _, _, _ = load_train_query(s['env_receipt'], s['oracle_receipt'], s['contract'])
+            if query is None:
+                query, env, _, _, _ = load_train_query(s['env_receipt'], s['oracle_receipt'], s['contract'],
+                                                    receipt_scope=s['oracle_receipt_scope'])
+            if s['mode'] == 'b2':
+                from .fg_s3_b2_outcome_catalog import OutcomeCatalog
+                OutcomeCatalog(query, env, candidates).write_receipt(output/'outcome_catalog.json')
             env.close()
         else:
             from .fg_s3_v2_train_pool import prepare_pool
@@ -106,7 +134,7 @@ def prepare(config):
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
         frozen_model = dict(config=plain(model))
-        if s['mode'] == 'tutor':
+        if s['mode'] in ('tutor', 'b2'):
             frozen_model['agent_extension'] = agent_extensions(s)
         write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
@@ -120,18 +148,21 @@ def prepare(config):
             files={p.name: file_hash(p) for p in output.iterdir() if p.is_file()},
             source_update_offset=spec['target_update_offset'], source_model_updates=spec['origin']['step'],
             clock_protocol='S3_MARKET_MINUTE', new_environment_steps=0,
-            training_identity=dict(candidate='C1', pool='C1_natural_oracle',
-                dataset_sha256=catalog.manifest['source']['dataset_sha256'],
-                reward_params_hash=catalog.manifest['source']['reward_params_hash'],
-                observation_identity=catalog.manifest['observation_identity'],
-                training_hash=catalog.manifest['source']['training_hash']),
+            training_identity=dict(candidate='C1', pool='C1_live_dagger' if catalog is None else 'C1_natural_oracle',
+                teacher_source_kind=spec.get('teacher_source_kind', 'catalog'),
+                dataset_sha256=spec['dataset_sha256'], reward_params_hash=spec['reward_params_hash'],
+                observation_identity=spec['observation_identity'],
+                training_hash=(binding if catalog is None else catalog).manifest['source']['training_hash']),
             diagnostic=s['scope'] == 'diagnostic', budget_unit='environment_advances', formal_1m='NOT_RUN'))
         write_json(output/'manifest.json', result)
         return result
     finally:
-        for a in catalog.arrays:
-            if getattr(a, '_mmap', None) is not None:
-                a._mmap.close()
+        if env is not None:
+            env.close()
+        if catalog is not None:
+            for a in catalog.arrays:
+                if getattr(a, '_mmap', None) is not None:
+                    a._mmap.close()
 
 
 def settings_from_prepared(prepared):

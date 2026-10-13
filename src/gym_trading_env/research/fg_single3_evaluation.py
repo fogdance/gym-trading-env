@@ -47,6 +47,9 @@ class ActorPolicy:
         self.last_diagnostics = dict(p_add=p_add,
             past_market_features=[float(x) for x in obs['market_seq'][0,-1]],
             position_state=[float(x) for x in obs['position_state'][0]])
+        if self.agent.config.get('s3_v2_mode') == 'b2':
+            self.last_diagnostics['b2'] = {k: np.asarray(v[0]).tolist() for k, v in out.items()
+                                           if k.startswith('b2/')}
         # Do not add model caches or diagnostics to model observations/Replay.
         return carry, action, {}
 
