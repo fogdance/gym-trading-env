@@ -10,6 +10,7 @@ from embodied.run.fg_s3_v2_train import execution_code
 from .fg_replay import signed, write_json, read_manifest
 from .fg_s3_oracle_state_query import load_train_query
 from .fg_s3_teacher_catalog import load_catalog
+from .fg_s3_v2_beta import BetaSchedule
 
 
 PROJECT = Path(__file__).resolve().parents[3]
@@ -34,6 +35,7 @@ def read_settings(path):
     s.setdefault('contracts', None)
     s.setdefault('env_slice_bars', 1024)
     s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)
+    s.setdefault('beta_schedule', None)
     if s['scope'] not in ('diagnostic', 'formal'):
         raise ValueError('Explicit diagnostic or formal scope required')
     for key in ('env_steps', 'collect_every', 'updates_per_collect', 'save_every', 'batch_size',
@@ -57,6 +59,9 @@ def read_settings(path):
     import math
     if not math.isfinite(s['beta']) or not 0 <= s['beta'] <= 1 or not math.isfinite(s['bc_lambda']) or s['bc_lambda'] < 0:
         raise ValueError('Invalid beta or BC lambda')
+    schedule = BetaSchedule(s['beta'], s['beta_schedule'])
+    if schedule.points is not None and schedule.points[-1][0] > s['env_steps']:
+        raise ValueError('Beta schedule exceeds the frozen Env budget')
     for key in ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog', 'source_checkpoint', 'prepared_dir', 'run_dir', 'dev_source_manifest'):
         s[key] = str((PROJECT/s[key]).resolve())
     if Path(s['dreamer_root']) != PROJECT.parent/'dreamerv3':

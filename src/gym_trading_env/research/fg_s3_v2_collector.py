@@ -8,16 +8,17 @@ import uuid
 import numpy as np
 
 from .fg_s3_dagger_d0 import D0Collector, join_d0_teacher
+from .fg_s3_v2_beta import BetaSchedule
 from .fg_single3_evaluation import embodied_runtime
 
 
 class V2Collector(D0Collector):
     output_directory = 'fg_s3_v2'
     max_env_steps = 10000  # Formal budgets additionally require entrypoint authorization.
-    protocol = 'FG_S3_V2_LIVE_DAGGER_V2'
+    protocol = 'FG_S3_V2_LIVE_DAGGER_V3'
     runtime = staticmethod(embodied_runtime)
 
-    def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, **kwargs):
+    def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None, **kwargs):
         if type(replay_capacity) is not int or replay_capacity < 65:
             raise ValueError('Live Replay capacity must retain a complete sequence')
         if type(max_env_steps) is not int or not 65 <= max_env_steps <= 1000000:
@@ -29,7 +30,12 @@ class V2Collector(D0Collector):
         self.index = {}
         self.commit_seq = 0
         self.model_versions = set()
+        initial_beta = kwargs.get('beta', .5) if kwargs.get('mode', 'mixed') == 'mixed' else 0.
+        self.beta_schedule = BetaSchedule(initial_beta, beta_schedule)
         super().__init__(*args, **kwargs)
+        self.identity['beta_schedule'] = self.beta_schedule.points
+        from gym_trading_env.envs.entry_contract import fingerprint
+        self.identity_hash = fingerprint(self.identity)
         self.journal = self.root/'teacher_journal.jsonl'
         if not kwargs.get('existing', False):
             self.journal.touch(exist_ok=False)
@@ -47,6 +53,12 @@ class V2Collector(D0Collector):
             directory=str(self.root/'replay'), chunksize=1024, save_wait=True, seed=seed)
 
     def context_snapshot(self):
+        # Driver steps the previous action before asking for the next one;
+        # capture() commits that feedback only after this policy call. Count
+        # that real advance now, without counting reset/native rows as steps.
+        completed = int(self.counts['env_steps']) + int(self.pending is not None
+            and self.observed.last.get('advanced', False))
+        self.policy.beta = self.beta_schedule.advance(completed)
         return self.oracle.decision_state(self.decision_env)
 
     def output_allowed(self, root):
@@ -69,6 +81,7 @@ class V2Collector(D0Collector):
     def capture(self, step, worker):
         super().capture(step, worker)
         self.pending['policy_model_update'] = int(self.agent.n_updates) if self.agent else None
+        self.pending['beta_env_steps'] = self.beta_schedule.env_steps
 
     def _complete(self, result, next_context):
         if self.pending is None:
@@ -131,12 +144,16 @@ class V2Collector(D0Collector):
     def save(self):
         with self.commit_lock:
             self.prune()
+            if (self.beta_schedule.env_steps != self.counts['env_steps']
+                    or self.policy.beta != self.beta_schedule.beta):
+                raise ValueError('Beta schedule has not reached the committed Env boundary')
             return dict(protocol=self.protocol, identity=self.identity,
                 records=copy.deepcopy(self.records), pending=copy.deepcopy(self.pending),
                 pending_native=copy.deepcopy(self.pending_native), commit_seq=self.commit_seq,
                 journal_bytes=self.journal.stat().st_size, model_versions=sorted(self.model_versions),
                 counts=copy.deepcopy(self.counts), query_seconds=list(self.query_seconds),
-                mixing=dict(beta=self.policy.beta, rng=copy.deepcopy(self.policy.rng.bit_generator.state),
+                mixing=dict(beta=self.policy.beta, schedule=self.beta_schedule.save(),
+                            rng=copy.deepcopy(self.policy.rng.bit_generator.state),
                             actor=self.policy.actor.save() if self.agent is None and
                                   hasattr(self.policy.actor, 'save') else None,
                             decision=copy.deepcopy(self.policy.decision)))
@@ -169,8 +186,10 @@ class V2Collector(D0Collector):
                     (backup/('teacher_tail_'+uuid.uuid4().hex+'.jsonl')).write_bytes(tail)
                     stream.truncate(boundary)
             mix = state['mixing']
+            self.beta_schedule.load(mix['schedule'], int(self.counts['env_steps']))
+            self.policy.beta = self.beta_schedule.beta
             if mix['beta'] != self.policy.beta:
-                raise ValueError('Live mixing schedule differs')
+                raise ValueError('Live mixing beta differs from its restored schedule')
             self.policy.rng.bit_generator.state = copy.deepcopy(mix['rng'])
             if mix['actor'] is not None:
                 if self.agent is not None or not hasattr(self.policy.actor, 'load'):

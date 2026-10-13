@@ -1,0 +1,29 @@
+schema: FG_S3_V2_DIAGNOSTIC_CONFIG_V1
+experiment: A2_GPU_FORMAL_1M_BETA_v1
+mode: a2
+scope: formal
+device: gpu
+contract: CZCE.FG201
+contracts: ALL_TRAIN
+env_slice_bars: 1000
+dreamer_root: ../dreamerv3
+env_receipt: ../../fg-data/fg_single3_v1/env/run_20261011_04
+oracle_receipt: ../../fg-data/fg_single3_v1/oracle/run_20261011_01
+catalog: artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+source_checkpoint: artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/A2_GPU_FORMAL_1M_BETA_v1
+run_dir: /data/logdir/fg_single3/s3_v2/A2_GPU_FORMAL_1M_BETA_v1
+env_steps: 1000000
+collect_every: 100
+updates_per_collect: 4
+save_every: 50000
+batch_size: 1
+replay_capacity: 8192
+replay_seed: 202
+beta: 1.0
+# Completed real Env advances; interpolation is linear, reset rows do not count.
+# Review autonomous ADD and valid labels at 100K; use a saved checkpoint to
+# change research direction if ALL_WAIT/label collapse/poor entries persist.
+beta_schedule: [[0, 1.0], [10000, 1.0], [100000, 0.98], [1000000, 0.90]]
+bc_lambda: 1.0

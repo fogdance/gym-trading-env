@@ -58,7 +58,8 @@ def test_pool_rotation_keeps_raw_account_and_checkpoint_owner(tmp_path,monkeypat
     selector, queries=make_pool(tmp_path,monkeypatch)
     oracle=PoolOracleQuery(queries,json.loads((tmp_path/'pool.json').read_text())['content_hash'])
     env=ObservedTrainingPool(selector)
-    a=V2Collector(env,oracle,tmp_path/'a',DREAMER,beta=1.)
+    schedule=[[0,1.],[100,1.],[200,.95]]
+    a=V2Collector(env,oracle,tmp_path/'a',DREAMER,beta=1.,beta_schedule=schedule)
     b=None
     try:
         from gym_trading_env.research.fg_single3_evaluation import embodied_runtime
@@ -70,15 +71,21 @@ def test_pool_rotation_keeps_raw_account_and_checkpoint_owner(tmp_path,monkeypat
         assert a.counts['env_steps']==sum(env.advanced)==140
         assert len(env.accounts)==2 and a.counts['resets']>1
         saved=a.save();driver=a.driver.save()
+        assert saved['mixing']['schedule']['env_steps']==140
+        assert saved['mixing']['beta']==pytest.approx(.98)
+        assert all(r['beta']==a.beta_schedule.value(r['beta_env_steps']) for r in a.records)
         assert len(saved['records']) < saved['commit_seq']
         from embodied.run.fg_checkpoint import save_replay,load_replay
         replay=save_replay(a.replay,tmp_path/'snapshot')
-        b=V2Collector(ObservedTrainingPool(selector),oracle,tmp_path/'b',DREAMER,beta=1.)
+        b=V2Collector(ObservedTrainingPool(selector),oracle,tmp_path/'b',DREAMER,
+                      beta=1.,beta_schedule=schedule)
         b.replay.workers.shutdown(wait=True)
         b.replay=embodied.Replay(length=65,capacity=65,online=True,chunksize=16,seed=202,
                                 directory=str(b.root/'small_replay'),save_wait=True)
         b.journal.write_bytes(a.journal.read_bytes()+b'{uncheckpointed crash tail')
         b.driver.load(driver);load_replay(b.replay,replay,tmp_path/'snapshot');b.load(saved)
+        assert b.beta_schedule.save()==a.beta_schedule.save()
+        assert b.policy.beta==a.policy.beta
         assert b.journal.read_bytes()==a.journal.read_bytes()
         assert next((b.root/'recovery_logs').iterdir()).read_bytes()==b'{uncheckpointed crash tail'
         a.advance(160);b.advance(160)
@@ -90,6 +97,8 @@ def test_pool_rotation_keeps_raw_account_and_checkpoint_owner(tmp_path,monkeypat
         assert [{k:v for k,v in r.items() if k!='stepid'} for r in a.records]==[
             {k:v for k,v in r.items() if k!='stepid'} for r in b.records]
         assert a.env.export_state()==b.env.export_state()
+        assert a.beta_schedule.save()==b.beta_schedule.save()
+        assert a.policy.beta==pytest.approx(.97)
         x,y=a.sample(1),b.sample(1)
         for key in x:
             if key!='stepid':np.testing.assert_array_equal(x[key],y[key])
@@ -117,3 +126,27 @@ def test_formal_budget_needs_explicit_authorization_and_isolated_root(tmp_path):
     path.write_text(yaml.safe_dump(cfg))
     with pytest.raises(ValueError,match='isolated'):
         read_settings(path)
+
+
+def test_beta_schedule_uses_env_advances_and_validates_checkpoint_boundary():
+    from gym_trading_env.research.fg_s3_v2_beta import BetaSchedule
+    points=[[0,1.],[10000,1.],[100000,.98],[1000000,.90]]
+    schedule=BetaSchedule(1.,points)
+    assert schedule.advance(10000)==1.
+    assert schedule.advance(55000)==pytest.approx(.99)
+    saved=schedule.save()
+    restored=BetaSchedule(1.,points)
+    restored.load(saved,55000)
+    assert restored.save()==saved
+    assert restored.advance(100000)==.98
+    assert restored.advance(1000000)==.90
+    assert restored.advance(1000001)==.90
+    with pytest.raises(ValueError,match='rewind'):
+        restored.advance(1000000)
+    with pytest.raises(ValueError,match='boundary'):
+        schedule.load(saved,55001)
+    with pytest.raises(ValueError,match='boundary'):
+        BetaSchedule(1.,[[0,1.],[1000000,.95]]).load(saved,55000)
+    with pytest.raises(ValueError,match='increasing'):
+        BetaSchedule(1.,[[0,1.],[100000,.90],[200000,.95]])
+    assert BetaSchedule(.5).advance(1000000)==.5
