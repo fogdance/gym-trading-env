@@ -29,11 +29,11 @@ DREAMER = PROJECT.parent/'dreamerv3'
 
 def small_config():
     defaults = read_config_yaml(DREAMER/'dreamerv3/configs.yaml')['defaults']
+    defaults['agent']['s3_clock_protocol'] = 'S3_MARKET_MINUTE'
     return plain(elements.Config(defaults).update({
         'jax.platform': 'cuda', 'jax.compute_dtype': 'float32',
         'batch_size': 1, 'batch_length': 64, 'report_length': 64, 'replay_context': 1,
         'agent.replay_context_mode': 'recompute_prefix', 'agent.update_diagnostics': True,
-        'agent.s3_clock_protocol': 'S3_MARKET_MINUTE',
         'agent.enc.simple.layers': 1, 'agent.enc.simple.units': 16,
         'agent.dec.simple.layers': 1, 'agent.dec.simple.units': 16,
         'agent.dyn.rssm.deter': 32, 'agent.dyn.rssm.hidden': 16,
