@@ -1,7 +1,7 @@
 # S3-V2 A2：beta 递减与 18 合约 GPU 短跑
 
 2026-10-13。结论 **GO_WITH_LIMITS**：当前固定 Online180k 来源的启动准备无已知工程阻断。
-完成 beta 调度、真实 18 合约交互和 GPU 同 Run 恢复；正式 1M 尚未启动。
+完成 beta 调度、真实 18 合约交互和 GPU 同 Run 恢复；Codex未启动正式1M。
 不改 WM/BC Loss、网络、Reward、Oracle 数学，不开发 C2。
 
 ## 推荐的正式调度
@@ -56,8 +56,9 @@ Replay/Sidecar 的8039个已提交 owner与执行动作一致；另有一条 pen
 原research仓库、旧训练树和旧模型/日志保留。
 冻结树prepare完成：`artifacts/fg_s3_v2/prepared/A2_GPU_FORMAL_1M_BETA_v1`，18合约、1M环境步、40000联合更新预算、Replay容量8192。
 准备manifest SHA256可由其文件直接核对；签名content_hash为`d324ecff779da7a42d2eae9d2bd3b17f3cddce7d8f5f9558506738c7e2d749b0`。
-新Run `/data/logdir/fg_single3/s3_v2/A2_GPU_FORMAL_1M_BETA_v1`尚未创建。
-以下由用户在tmux执行：
+新Run `/data/logdir/fg_single3/s3_v2/A2_GPU_FORMAL_1M_BETA_v1`。
+报告最后检查时，用户已启动进程2838219，cwd确认为上述冻结Gym；进程仍在载入，Run目录已经创建，尚未生成训练身份/Checkpoint。
+下列命令与用户已执行的启动命令一致，当前Run不要重复start：
 
 ```bash
 cd /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env &&
@@ -82,4 +83,4 @@ env PYTHONPATH=src:../dreamerv3 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s
 主收据 `artifacts/fg_s3_v2/receipts/beta_all_train_summary.json`，三份`beta_all_train_*_terminal.log`保留真实命令输出。
 正式prepare输出在冻结树的`artifacts/fg_s3_v2/receipts/beta_frozen_formal_prepare_terminal.log`。
 PASS：真实18合约GPU、beta递减/恢复、有效标签覆盖、动作/Replay绑定、WM/Actor参数学习、来源保持。
-NOT_RUN：正式1M、正式10K/100K学习里程碑、此次Actor-only、长期全部生命周期轮转、C2/消融。
+NOT_RUN：正式1M完成验收、正式10K/100K学习里程碑、此次Actor-only、长期全部生命周期轮转、C2/消融。
