@@ -1,0 +1,103 @@
+{
+  "identity": {
+    "protocol": "FG_S3_V2_ORACLE_STATE_QUERY_D0_V1",
+    "fold": "TRAIN",
+    "rules": {
+      "contract": "CZCE.FG201",
+      "config_hash": "11d11b928334928f821840624d3454b90912a650221df724fedf7223a3235672",
+      "observation_identity": "4eb0ddfced5a3fdeeed559dbf041e776611fe68a5731374b528f5878859e7dff",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "96f34998ce005b7e5f08239dbeba95239cdd2b97e0e2d3596ce73fe173a17aa1"
+    },
+    "source": {
+      "contract": "CZCE.FG201",
+      "market_sha256": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c",
+      "env_receipt_sha256": "68f8e6fb096776674453e75fbce887a583143c199189f1a5237622b042cba982",
+      "oracle_receipt_sha256": "697c01439e86b026054302034bc3dc8d4de0e7abef0c7c11e4794522dd955d01",
+      "candidate_files": {
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01/contracts/CZCE.FG201/candidates.jsonl.gz": "31d4ffa3b322cd6db373cf7f40e1976aba3ae7b1f2a2841334652cd08d555eb3",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01/contracts/CZCE.FG201/C1_H333.json": "2aecde8a9f7c24ef42ece60a9ac3be62dcc8f66b98965e60ffbe6e9b620a10b4"
+      },
+      "checked_env_code": {
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/__init__.py": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/account.py": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/accounting/__init__.py": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/accounting/ledger.py": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/action.py": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/broker_accounts.py": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/callbacks.py": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/config.py": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_contract.py": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_dataset_env.py": "2647dd96dd4e7b3648262b52415d2e84a2f5ecea46959e01a1ece83b9794d4a8",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_env.py": "961521887df92b1fb9d657c2697cf652aa632bded7785b4316ec2b9d1112edbb",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/entry_execution.py": "64ce49dc4ce96f6ec670325189d78d6bcc1e9cc3c717fc212da82ff571985127",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/metrics.py": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/position.py": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/position_manager.py": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/target_transition.py": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/trade_record.py": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/trade_record_manager.py": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/trading_env.py": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/envs/user_accounts.py": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/__init__.py": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/agent_features.py": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/atr_util.py": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/bar_source.py": "9f847f8324811c48dcbbd8d980fb93fc400539d0bbf7f8ea0946df711ece0cdb",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/daily_features.py": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/data_downloader.py": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/data_processing.py": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/decimal_util.py": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/feature_engineering.py": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/juejin_db.py": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/market_store.py": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/plot_intraday.py": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/rpc_client.py": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/rpc_protocol.py": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/utils/trade_util.py": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913",
+        "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py": "609e14c049d2af175a9b884704f80365032f5b30e3e67d48a9ba518097a7cc5c"
+      },
+      "training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+      "strategy_files": {
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/env/run_20261011_04/inputs/C1/single3.yaml": "cdf54a6f71c004f6085c0f960196c1b33f33dbc38bea762b46f91032facf5eb0"
+      }
+    },
+    "funds_certificate": {
+      "status": "exact_proven",
+      "proof": "nonpositive_interval_dominance_then_TP_only_funds_v1",
+      "arbitrary_losing_paths_funds_irrelevant": false,
+      "retained_paths_cash_lower_bound": "300000",
+      "required_equity_upper_bound": "104358.000",
+      "minimum_TP_net_cash_gain": "282.0",
+      "constant_terms": true,
+      "reasoning": [
+        "WAIT has zero reward and no cashflow; clocks are exogenous.",
+        "Non-TP and censored intervals have only nonpositive feedback (alpha=lambda_capacity=0).",
+        "Remove such intervals and nonpositive total TP intervals, keeping later decisions at the same cursor.",
+        "Every retained TP increases cash; worst observed quote envelope keeps funds/margin nonbinding.",
+        "The relaxed interval DP upper bound is attained by its original-Env TP-only account replay."
+      ],
+      "scope": "observed TRAIN feedback to real terminal or right-censored boundary"
+    },
+    "market_hash": "f20970643280460062c530d3c3900a9e9cd7f3eefd2b98619f5fa5f7a52f6901",
+    "gamma_rational": [
+      332,
+      333
+    ],
+    "boundary": 31259,
+    "tie_break": "WAIT",
+    "certified_domain": "flat_active_cash_at_least_original_certificate_floor",
+    "query_code_sha256": "155b0ed7fa6d4b7881f692820d3a0db6dd0b7078ce35201734daf002637f92ac",
+    "optimizer_code_sha256": "36e8c5f6cb657476aff5a0d0b02046a37c40303e7a9d7b5398399ce1e7e52d81",
+    "suffix_first_hash": "8a1c2bd8d3345e5de15865ac10b8ac7619d4e049cfc632c06086c23c6d2ba303"
+  },
+  "identity_hash": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+  "precompute_seconds": 21.4389484480198,
+  "dp_seconds": 0.15755673102103174,
+  "content_hash": "3a1faf525330a06a59c88bd72ffb823c96216df0e8e7e38244126775aa95f20e"
+}

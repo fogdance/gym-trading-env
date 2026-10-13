@@ -1,0 +1,68 @@
+{
+  "protocol": "FG_S3_V2_DAGGER_D0_V1",
+  "status": "D0_ROLLOUT_COMPLETE",
+  "identity": {
+    "protocol": "FG_S3_V2_DAGGER_D0_V1",
+    "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+    "rules": {
+      "contract": "CZCE.FG201",
+      "config_hash": "11d11b928334928f821840624d3454b90912a650221df724fedf7223a3235672",
+      "observation_identity": "4eb0ddfced5a3fdeeed559dbf041e776611fe68a5731374b528f5878859e7dff",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "96f34998ce005b7e5f08239dbeba95239cdd2b97e0e2d3596ce73fe173a17aa1"
+    },
+    "mode": "mixed",
+    "seed": 202,
+    "beta": 1.0,
+    "actor_probability": null,
+    "actor_kind": "checkpoint",
+    "source_checkpoint_identity": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+    "collector_code_sha256": "67bad3ead17991489bf55be6c3cb4fd2a6a867d8879c322cea5fe8d1a50b4b9f",
+    "policy_code_sha256": "fee2834d135e5809b7dabeff2752b77cfd48c445d8cd2d9f33ff595d46947c72"
+  },
+  "env_steps": 100,
+  "counts": {
+    "native_rows": 101,
+    "resets": 1,
+    "env_steps": 100,
+    "valid_market_minutes": 100,
+    "actor_ADD": 73,
+    "oracle_ADD": 14,
+    "executed_ADD": 14,
+    "entries": 14,
+    "TP": 14,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 79,
+    "learnable_decisions": 79,
+    "unproven_funds": 0
+  },
+  "oracle_reasons": {
+    "CERTIFIED_SUFFIX_DOMINANCE": 79,
+    "NO_LEARNABLE_DECISION": 21
+  },
+  "label_ratio_all_advances": 0.79,
+  "label_ratio_legal_decisions": 1.0,
+  "semantic_trace_hash": "3659b75bc585da62755ea3dab1785ba2fc13ccd16e5582e5763e10db8026fad5",
+  "final_state_id": "fe550b9b9d1ae2e0af86eded42d680f02e5e46ac809a55eea0c9440d66aaa6e0",
+  "query_seconds": {
+    "count": 101,
+    "total": 0.7228686712333001,
+    "mean": 0.007157115556765348,
+    "p95": 0.009269642003346235
+  },
+  "native_sample": "PASS",
+  "sample_teacher_valid": 57,
+  "gradient_updates": 0,
+  "gpu_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "files": {
+    "sidecar.jsonl": "b65cdc7ea2b29464793decc8bcf007e4989133ce04e7ac5998ff6bc8745dd949",
+    "native_sample.npz": "a1893ba5a35473201ee6dd1512f1a570cd30fa57801137bbefe15093c0a0b14d",
+    "env_state.json": "0c425ce7772ab8d7a3ed413c247f6a734d7ec496d96f71f7ffee88ae291220d9",
+    "train_join_sample.npz": "255f135f14ed5257afc13d907452976033b83f11a4a1df25282618fc0759772c",
+    "replay/20261013T083702F645958-2JowiD9KJ1Q1ZvKNEmlUY1-36Y9iVkFNQkuMeweK0hFa3-101.npz": "65b2ba2d23e5591c0c496b7027608acef16b03b622c923b7e20046fb462006f4"
+  },
+  "content_hash": "09060ae03ebfad1adacb28cbc3b32e0819caee6a9b4f4a3f71c004e63c407598"
+}

@@ -1,0 +1,378 @@
+{
+  "status": "PASS_REAL_TRAIN_ENV_COUNTERFACTUALS",
+  "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+  "contract": "CZCE.FG201",
+  "cases": [
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 8,
+      "answer": {
+        "action": 1,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "42c91df8e840b65fb759b127717b18a0301bf52f35190f7bedd6b61edd5cb4e8",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "bc854f70096189824f15a8b68922ff1a30f4cce887d5c5117ff445ef3390803d"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 8,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:2:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:09:00+08:00",
+          "exit_time": "2021-07-23 21:11:00+08:00",
+          "entry_price": "2953",
+          "exit_price": "2948",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:11:00+08:00"
+        },
+        "exit_cursor": 10,
+        "rewards": [
+          [
+            10,
+            0.9677419066429138
+          ]
+        ]
+      },
+      "state_id": "42c91df8e840b65fb759b127717b18a0301bf52f35190f7bedd6b61edd5cb4e8",
+      "status": "PASS"
+    },
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 81,
+      "answer": {
+        "action": 1,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "8c372a453f07b399ce10187748af79a7ab8ebddddc09f1b915d2f24f0e23ef65",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "9ee42d0d48d6e15be8fb79ae970e29369113670ce456c527caf634ab493a5cf0"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 81,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:3:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 22:22:00+08:00",
+          "exit_time": "2021-07-23 22:25:00+08:00",
+          "entry_price": "2956",
+          "exit_price": "2951",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:25:00+08:00"
+        },
+        "exit_cursor": 84,
+        "rewards": [
+          [
+            84,
+            0.9523809552192688
+          ]
+        ]
+      },
+      "state_id": "8c372a453f07b399ce10187748af79a7ab8ebddddc09f1b915d2f24f0e23ef65",
+      "status": "PASS"
+    },
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 98,
+      "answer": {
+        "action": 1,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "a71f4953359d20aa7c196e2320322f12b52450232e8816631ec306262c25dd64",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "444b0e6392ca49a2496d44be5d602ecfe8b7cc9e338cd8b6e8261f2327bd766c"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 98,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:4:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 22:39:00+08:00",
+          "exit_time": "2021-07-23 22:46:00+08:00",
+          "entry_price": "2959",
+          "exit_price": "2954",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:46:00+08:00"
+        },
+        "exit_cursor": 105,
+        "rewards": [
+          [
+            105,
+            0.89552241563797
+          ]
+        ]
+      },
+      "state_id": "a71f4953359d20aa7c196e2320322f12b52450232e8816631ec306262c25dd64",
+      "status": "PASS"
+    },
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 0,
+      "answer": {
+        "action": 0,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "bbfa38e20613ea4499d36717baac510e67ccd54bf01ec57776f42ff5ed6ff2b2",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "a72ab625ec703d7ccb7e295de2112389d30fd2fb860967db85913805220b9d2e"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 0,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:5:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:01:00+08:00",
+          "exit_time": "2021-07-23 21:03:00+08:00",
+          "entry_price": "2988",
+          "exit_price": "2983",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:03:00+08:00"
+        },
+        "exit_cursor": 2,
+        "rewards": [
+          [
+            2,
+            0.9677419066429138
+          ]
+        ]
+      },
+      "state_id": "bbfa38e20613ea4499d36717baac510e67ccd54bf01ec57776f42ff5ed6ff2b2",
+      "status": "PASS"
+    },
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 2,
+      "answer": {
+        "action": 0,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "67723a7b7f13d3baf3bbc13b4a7138f2eb5f456243e93e771e978633bed2ded3",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "f6792aca88be6b23a2fadf10349bd74f9fb59dc9b52eae620e04d79544835151"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 2,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:6:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:03:00+08:00",
+          "exit_time": "2021-07-23 21:06:00+08:00",
+          "entry_price": "2973",
+          "exit_price": "2968",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:06:00+08:00"
+        },
+        "exit_cursor": 5,
+        "rewards": [
+          [
+            5,
+            0.9523809552192688
+          ]
+        ]
+      },
+      "state_id": "67723a7b7f13d3baf3bbc13b4a7138f2eb5f456243e93e771e978633bed2ded3",
+      "status": "PASS"
+    },
+    {
+      "kind": "FRESH_SUFFIX_COUNTERFACTUAL",
+      "cursor": 3,
+      "answer": {
+        "action": 0,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "ebc5b1d7141fe2596aa59107dc709897cc9a3bc8ae60dd99edee324d92d37b4e",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "d75edab88c5f55102a480a6c80518671a91a206b9c083da5745196e9310fb406"
+      },
+      "on_initial_P4_schedule": false,
+      "actual": {
+        "start_cursor": 3,
+        "filled": true,
+        "exit": {
+          "entry_id": "CZCE.FG201:7:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:04:00+08:00",
+          "exit_time": "2021-07-23 21:07:00+08:00",
+          "entry_price": "2969",
+          "exit_price": "2964",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:07:00+08:00"
+        },
+        "exit_cursor": 6,
+        "rewards": [
+          [
+            6,
+            0.9523809552192688
+          ]
+        ]
+      },
+      "state_id": "ebc5b1d7141fe2596aa59107dc709897cc9a3bc8ae60dd99edee324d92d37b4e",
+      "status": "PASS"
+    },
+    {
+      "kind": "ACTUAL_PROFIT_HISTORY",
+      "completed_TP": 1,
+      "cursor": 2,
+      "cash": "300282.00",
+      "answer": {
+        "action": 0,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "35179609f10f7d4ab15b157219da6237d3af3d0e51e21ac9ec463466ada61e7b",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "db0c12beaca98d7e9f4c9c71889fe63de32f345f75d66f560813811d161ca5b8"
+      },
+      "status": "PASS"
+    },
+    {
+      "kind": "ACTUAL_PROFIT_HISTORY",
+      "completed_TP": 2,
+      "cursor": 6,
+      "cash": "300564.00",
+      "answer": {
+        "action": 1,
+        "valid": true,
+        "certified": true,
+        "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "c07ace182531e932aef2ea8d5176a83a77541e2d3f511e2975cf28c60d0fe0b6",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "d52c89064044d5e7813cd1343a92916ee075dc4d12cd3d6fcc2d76dc1ef50731"
+      },
+      "status": "PASS"
+    },
+    {
+      "kind": "ACTUAL_LOSS_HISTORY_SKIPPED",
+      "cursor": 47,
+      "cash": "298182.00",
+      "answer": {
+        "action": 0,
+        "valid": false,
+        "certified": false,
+        "reason": "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "4305675ccf48d06c25856966bb2b2eaa1494add773b4cdb072594e3c2a75842f",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "d72b26d6b2bcfc5a93ce6a60d3486728524b825e6323c50969f87b561fd84802"
+      },
+      "status": "PASS"
+    },
+    {
+      "kind": "REAL_CONTRACT_END",
+      "cursor": 31259,
+      "answer": {
+        "action": 0,
+        "valid": false,
+        "certified": false,
+        "reason": "CONTRACT_OR_GAP_BOUNDARY",
+        "q_add": null,
+        "q_wait": null,
+        "q_margin": null,
+        "state_id": "07c41802dc17cca81d38c116b4f3f43c6adc80249e4ddda53c132167672f5a44",
+        "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+        "proof_hash": "b49e2f98aeeb75c9de5bf7ffc3fe34f6435cedfaedb83ff4abec766615f04d1f"
+      },
+      "execution_status": "DATA_END",
+      "status": "PASS"
+    }
+  ],
+  "seconds": 20.820371909008827,
+  "scope": "Original suffix proof plus independent Env interval checks; not exhaustive full-contract action search",
+  "real_next_bar_reject_candidates": 0,
+  "real_gap": "NOT_RUN_COMPLETE_CALENDAR",
+  "real_tie": "NOT_RUN_USE_ORIGINAL_ENV_CPU_FIXTURE",
+  "production_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "content_hash": "994ed928f38a81e8205048a0d0d752cd18c138060414523e7e506d6db0b7bbe2"
+}

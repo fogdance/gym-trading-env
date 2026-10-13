@@ -1,0 +1,13 @@
+{
+  "status": "PASS_REAL_TRAIN_ENV_COUNTERFACTUALS",
+  "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+  "contract": "CZCE.FG201",
+  "seconds": 20.820371909008827,
+  "scope": "Original suffix proof plus independent Env interval checks; not exhaustive full-contract action search",
+  "real_next_bar_reject_candidates": 0,
+  "real_gap": "NOT_RUN_COMPLETE_CALENDAR",
+  "real_tie": "NOT_RUN_USE_ORIGINAL_ENV_CPU_FIXTURE",
+  "production_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN"
+}

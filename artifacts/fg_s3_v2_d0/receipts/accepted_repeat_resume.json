@@ -1,0 +1,15 @@
+{
+  "status": "PASS_FINAL_CODE_REPEAT_AND_EXACT_COLLECTION_RESTORE",
+  "env_steps": 1000,
+  "saved_at": 400,
+  "semantic_rows_equal": true,
+  "native_ids_preserved_on_resume": true,
+  "semantic_trace_hash": "fbedd22e966909e842a5ad1ccbc1060c59a245f8bf101f2cb292842e863ec24c",
+  "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+  "runs": [
+    "accepted_mixed_1000",
+    "accepted_mixed_resume_1000",
+    "accepted_mixed_repeat_1000"
+  ],
+  "content_hash": "5164c6518dd20f72e9e6662e49c41e76926ea80ee9eea13cdc81d62738ae264e"
+}

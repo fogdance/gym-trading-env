@@ -1,0 +1,70 @@
+{
+  "protocol": "FG_S3_V2_DAGGER_D0_V1",
+  "status": "D0_ROLLOUT_COMPLETE",
+  "identity": {
+    "protocol": "FG_S3_V2_DAGGER_D0_V1",
+    "oracle_identity": "03a0d6cccc03f06cb18f032e955bfbbb28d7272ef4de7e336983e174690414ac",
+    "rules": {
+      "contract": "CZCE.FG201",
+      "config_hash": "11d11b928334928f821840624d3454b90912a650221df724fedf7223a3235672",
+      "observation_identity": "4eb0ddfced5a3fdeeed559dbf041e776611fe68a5731374b528f5878859e7dff",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "96f34998ce005b7e5f08239dbeba95239cdd2b97e0e2d3596ce73fe173a17aa1"
+    },
+    "mode": "scripted",
+    "seed": 202,
+    "beta": 0.0,
+    "actor_probability": 0.5,
+    "actor_kind": "scripted",
+    "source_checkpoint_identity": null,
+    "collector_code_sha256": "67bad3ead17991489bf55be6c3cb4fd2a6a867d8879c322cea5fe8d1a50b4b9f",
+    "policy_code_sha256": "fee2834d135e5809b7dabeff2752b77cfd48c445d8cd2d9f33ff595d46947c72"
+  },
+  "env_steps": 1000,
+  "counts": {
+    "native_rows": 1001,
+    "resets": 1,
+    "env_steps": 1000,
+    "valid_market_minutes": 1000,
+    "actor_ADD": 51,
+    "oracle_ADD": 7,
+    "executed_ADD": 51,
+    "entries": 51,
+    "TP": 43,
+    "SL": 7,
+    "rejects": 0,
+    "certified_labels": 43,
+    "learnable_decisions": 107,
+    "unproven_funds": 64
+  },
+  "oracle_reasons": {
+    "CERTIFIED_SUFFIX_DOMINANCE": 43,
+    "NO_LEARNABLE_DECISION": 893,
+    "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 64
+  },
+  "label_ratio_all_advances": 0.043,
+  "label_ratio_legal_decisions": 0.40186915887850466,
+  "semantic_trace_hash": "029f16837369ab95451b668d7e4f2dc7ea4f59806b168dbeff4670e44b1b9f7a",
+  "final_state_id": "54b30f4dc0df435db0ddb2703d7a4f09613262b15c5946dac98846000952656e",
+  "query_seconds": {
+    "count": 1001,
+    "total": 17.12224949404481,
+    "mean": 0.017105144349695112,
+    "p95": 0.028628106985706836
+  },
+  "native_sample": "PASS",
+  "sample_teacher_valid": 10,
+  "gradient_updates": 0,
+  "gpu_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "files": {
+    "runtime_identity.json": "1759dcbb06189be2a16f453891adf9214e89bc7a774282fd9e89f6ae7cadc059",
+    "sidecar.jsonl": "43cd47023db2f506be0b544fdb4bf73b5ffcab1ddb1071b4a892f1fb7f77a011",
+    "native_sample.npz": "a04d03c80df52b7e5468ef1f84a11eb451d22b0f974b16edebf5f0d654b8e021",
+    "env_state.json": "248b3960f155916695344f300bdde5d12dc2a15cc99808f65d51cdda368a2f50",
+    "train_join_sample.npz": "9c6deba32d34d6aade0575a9716f854230081ecdd68219d74137597a6e957ac9",
+    "replay/20261013T082719F216939-1knYJTW5eL391AQUVSehID-6Y9pNoRPEi67rX95N9H8b6-1001.npz": "f5e08717163857ab085f68c9a57c8486a5bd9718df172fa916236f8db1589bdb"
+  },
+  "content_hash": "e0bd0cc9fac3e3e6f617b03847933c30f9b561605c34688de814a76ff05decc4"
+}

@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/tools/fg_s3_dagger_d0.py", line 97, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/tools/fg_s3_dagger_d0.py", line 92, in main
+    result = model_smoke(config, query, env, output)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_model_smoke.py", line 15, in model_smoke
+    from embodied.run.fg_s3a_checkpoint import parameter_digests
+ImportError: cannot import name 'parameter_digests' from 'embodied.run.fg_s3a_checkpoint' (/home/v/Documents/work/research/fg-s3-dev/dreamerv3/embodied/run/fg_s3a_checkpoint.py)

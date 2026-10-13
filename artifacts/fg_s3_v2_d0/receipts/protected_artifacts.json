@@ -1,0 +1,10 @@
+{
+  "status": "PASS_UNCHANGED",
+  "old_s3a1000_manifest_sha256": "e4bdaecfbc7a3fb2abd6a8a6220fad5ea2918ca60fcc1e869e650051d35f498f",
+  "source_manifest_sha256": "4979acfb0272ffbc3c96833e5b77fccd66c5d4d0f335bfca48810f764d927a57",
+  "source_agent_sha256": "2cc450b328484ddfa489b3c54ef10cbf98395678dbc6ae957fd1a1fe3777b1c3",
+  "other_experiment_code_imported": false,
+  "training_worktree_source_modified": false,
+  "official_training_started": false,
+  "content_hash": "df6dc1cb8280736a3141eae9901576569c15e18b4b9760c651b4703724db1968"
+}

@@ -1,0 +1,69 @@
+{
+  "protocol": "FG_S3_V2_DAGGER_D0_V1",
+  "status": "D0_ROLLOUT_COMPLETE",
+  "identity": {
+    "protocol": "FG_S3_V2_DAGGER_D0_V1",
+    "oracle_identity": "2bdf570cebc536a63d618f7109fc5d2d4f852f66d2342f89ce07df70c8512d40",
+    "rules": {
+      "contract": "CZCE.FG201",
+      "config_hash": "11d11b928334928f821840624d3454b90912a650221df724fedf7223a3235672",
+      "observation_identity": "4eb0ddfced5a3fdeeed559dbf041e776611fe68a5731374b528f5878859e7dff",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "96f34998ce005b7e5f08239dbeba95239cdd2b97e0e2d3596ce73fe173a17aa1"
+    },
+    "mode": "mixed",
+    "seed": 202,
+    "beta": 0.5,
+    "actor_probability": 0.5,
+    "actor_kind": "scripted",
+    "source_checkpoint_identity": null,
+    "collector_code_sha256": "46f0aeade7cedc1561197e030cbcbfef08e3de6a89d1d28a395da3972d107279",
+    "policy_code_sha256": "8983618353ecdf1c0ddbc5413b49690fdec421c0092f289bbe1ccbbb23dc3e5b"
+  },
+  "env_steps": 100,
+  "counts": {
+    "native_rows": 101,
+    "resets": 1,
+    "env_steps": 100,
+    "valid_market_minutes": 100,
+    "actor_ADD": 9,
+    "oracle_ADD": 5,
+    "executed_ADD": 8,
+    "entries": 8,
+    "TP": 6,
+    "SL": 1,
+    "rejects": 0,
+    "certified_labels": 13,
+    "learnable_decisions": 26,
+    "unproven_funds": 13
+  },
+  "oracle_reasons": {
+    "CERTIFIED_SUFFIX_DOMINANCE": 13,
+    "NO_LEARNABLE_DECISION": 74,
+    "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 13
+  },
+  "label_ratio_all_advances": 0.13,
+  "label_ratio_legal_decisions": 0.5,
+  "semantic_trace_hash": "528595f1d7d9dc10977bbd5cb75d92bb67ba98a3846c0f260b15765154ee2adf",
+  "final_state_id": "6a2c08ddc9959736af469d6a19e565400b1976a6a3371fb210d534df0b439322",
+  "query_seconds": {
+    "count": 101,
+    "total": 0.5096634209912736,
+    "mean": 0.005046172485062114,
+    "p95": 0.006210142018971965
+  },
+  "native_sample": "PASS",
+  "sample_teacher_valid": 12,
+  "gradient_updates": 0,
+  "gpu_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "files": {
+    "sidecar.jsonl": "9bc52feb8151dfdfb53e80e3c2525c9b96024d25c4d90cf46667b008005acad6",
+    "native_sample.npz": "fea1535562d5701a1339f744a00350ccbb4d14717970c9f8ced2e32e8dc2169d",
+    "env_state.json": "13e41e2431cb03e9a52e475e5a39b155b49cfe0feeee096ca251dbe62c79d554",
+    "train_join_sample.npz": "a30b7340983a1871b895d74722d7c9d9c89e96e496d7f8105fdcff66776f9981",
+    "replay/20261013T075431F851534-3jG3itiadDakUJQHUtC5rS-37gurZpWiktLyEgmGA7Q2I-101.npz": "4fadc47606ee4c931af0dc9505d5ba0844cd3b5e47a77a1a64eacde20226f0da"
+  },
+  "content_hash": "eb4250526ae233ac4e3725f35eed5863daa772ece4b2ac10be9fc803a32e1094"
+}

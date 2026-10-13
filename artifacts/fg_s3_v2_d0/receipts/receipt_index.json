@@ -1,0 +1,481 @@
+{
+  "protocol": "FG_S3_V2_D0_DELIVERY_V1",
+  "conclusion": "GO_WITH_LIMITS",
+  "code_gym_sha": "96e5115fc7f7e1d480898b8a1d9d52ca240e5bec",
+  "code_dreamer_sha": "f92c096e5c9a81758cfde103b20e680e8f4be09c",
+  "cwd": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env",
+  "commands": {
+    "final_wait_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode wait --env-steps 1000 --output artifacts/fg_s3_v2_d0/runs/final_wait_1000",
+    "final_scripted_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode scripted --env-steps 1000 --output artifacts/fg_s3_v2_d0/runs/final_scripted_1000",
+    "final_mixed_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode mixed --env-steps 1000 --save-at 400 --output artifacts/fg_s3_v2_d0/runs/final_mixed_1000",
+    "accepted_mixed_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode mixed --env-steps 1000 --save-at 400 --output artifacts/fg_s3_v2_d0/runs/accepted_mixed_1000",
+    "accepted_mixed_resume_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode mixed --env-steps 1000 --resume-collection artifacts/fg_s3_v2_d0/runs/accepted_mixed_1000/collection_checkpoints/env_000400 --output artifacts/fg_s3_v2_d0/runs/accepted_mixed_resume_1000",
+    "accepted_mixed_repeat_1000": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py collect --mode mixed --env-steps 1000 --output artifacts/fg_s3_v2_d0/runs/accepted_mixed_repeat_1000",
+    "final_oracle_verify": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py verify_oracle --output artifacts/fg_s3_v2_d0/runs/final_oracle_verify",
+    "final_model_smoke_03": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_dagger_d0.py model_smoke --output artifacts/fg_s3_v2_d0/runs/final_model_smoke_03",
+    "targeted_cpu_final": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl PYTHONPATH=src:../dreamerv3 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest tests/entry_v1/test_fg_s3_dagger_d0.py tests/entry_v1/test_fg_single3_oracle.py -q --junitxml=artifacts/fg_s3_v2_d0/receipts/targeted_cpu_final.xml",
+    "proof_integrity_cpu": "env PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/tmp/fg_s3_d0_mpl PYTHONPATH=src:../dreamerv3 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest tests/entry_v1/test_fg_s3_dagger_d0.py -k \"driver_mixing or rejected_add\" -q --junitxml=artifacts/fg_s3_v2_d0/receipts/proof_integrity_cpu.xml"
+  },
+  "tests": {
+    "collector_round3.xml": [
+      {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.550"
+      }
+    ],
+    "d0_initial.xml": [
+      {
+        "tests": "4",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.781"
+      }
+    ],
+    "d0_round2.xml": [
+      {
+        "tests": "4",
+        "failures": "1",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.743"
+      }
+    ],
+    "independent_label_cpu.xml": [
+      {
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "1.793"
+      }
+    ],
+    "oracle_initial.xml": [
+      {
+        "tests": "3",
+        "failures": "3",
+        "errors": "0",
+        "skipped": "0",
+        "time": "2.059"
+      }
+    ],
+    "proof_integrity_cpu.xml": [
+      {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.991"
+      }
+    ],
+    "sidecar_join_final.xml": [
+      {
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "3.963"
+      }
+    ],
+    "targeted_cpu_final.xml": [
+      {
+        "tests": "11",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.516"
+      }
+    ],
+    "targeted_cpu_round4.xml": [
+      {
+        "tests": "10",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0",
+        "time": "14.299"
+      }
+    ]
+  },
+  "rollouts": {
+    "final_wait_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 0,
+        "oracle_ADD": 125,
+        "executed_ADD": 0,
+        "entries": 0,
+        "TP": 0,
+        "SL": 0,
+        "rejects": 0,
+        "certified_labels": 1000,
+        "learnable_decisions": 1000,
+        "unproven_funds": 0
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 1000
+      },
+      "semantic_trace_hash": "3ab720a1ca71e0ee23b4b9e5ecc2811f1aff1abda4fbc39457739f706c8cec0c",
+      "final_state_id": "845724a66f1868e9131de09d9a449822eee2c7aa871da994482f09e5f64bf2ec",
+      "query_seconds": {
+        "count": 1001,
+        "total": 12.290786735480651,
+        "mean": 0.012278508227253397,
+        "p95": 0.01943580701481551
+      }
+    },
+    "final_scripted_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 51,
+        "oracle_ADD": 7,
+        "executed_ADD": 51,
+        "entries": 51,
+        "TP": 43,
+        "SL": 7,
+        "rejects": 0,
+        "certified_labels": 43,
+        "learnable_decisions": 107,
+        "unproven_funds": 64
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 43,
+        "NO_LEARNABLE_DECISION": 893,
+        "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 64
+      },
+      "semantic_trace_hash": "029f16837369ab95451b668d7e4f2dc7ea4f59806b168dbeff4670e44b1b9f7a",
+      "final_state_id": "54b30f4dc0df435db0ddb2703d7a4f09613262b15c5946dac98846000952656e",
+      "query_seconds": {
+        "count": 1001,
+        "total": 17.12224949404481,
+        "mean": 0.017105144349695112,
+        "p95": 0.028628106985706836
+      }
+    },
+    "final_mixed_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 77,
+        "oracle_ADD": 22,
+        "executed_ADD": 51,
+        "entries": 51,
+        "TP": 44,
+        "SL": 6,
+        "rejects": 0,
+        "certified_labels": 141,
+        "learnable_decisions": 160,
+        "unproven_funds": 19
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 141,
+        "NO_LEARNABLE_DECISION": 840,
+        "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 19
+      },
+      "semantic_trace_hash": "2c3b7c9c663abcce5a20cf610aeffa58eca3edc568527689fe2ad3d8012466b1",
+      "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+      "query_seconds": {
+        "count": 1001,
+        "total": 17.220978251774795,
+        "mean": 0.017203774477297498,
+        "p95": 0.02816842298489064
+      }
+    },
+    "accepted_mixed_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 77,
+        "oracle_ADD": 22,
+        "executed_ADD": 51,
+        "entries": 51,
+        "TP": 44,
+        "SL": 6,
+        "rejects": 0,
+        "certified_labels": 141,
+        "learnable_decisions": 160,
+        "unproven_funds": 19
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 141,
+        "NO_LEARNABLE_DECISION": 840,
+        "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 19
+      },
+      "semantic_trace_hash": "fbedd22e966909e842a5ad1ccbc1060c59a245f8bf101f2cb292842e863ec24c",
+      "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+      "query_seconds": {
+        "count": 1001,
+        "total": 16.709382814762648,
+        "mean": 0.01669269012463801,
+        "p95": 0.02750368500710465
+      }
+    },
+    "accepted_mixed_resume_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 77,
+        "oracle_ADD": 22,
+        "executed_ADD": 51,
+        "entries": 51,
+        "TP": 44,
+        "SL": 6,
+        "rejects": 0,
+        "certified_labels": 141,
+        "learnable_decisions": 160,
+        "unproven_funds": 19
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 141,
+        "NO_LEARNABLE_DECISION": 840,
+        "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 19
+      },
+      "semantic_trace_hash": "fbedd22e966909e842a5ad1ccbc1060c59a245f8bf101f2cb292842e863ec24c",
+      "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+      "query_seconds": {
+        "count": 1001,
+        "total": 17.074902923515765,
+        "mean": 0.017057845078437328,
+        "p95": 0.0285767909954302
+      }
+    },
+    "accepted_mixed_repeat_1000": {
+      "env_steps": 1000,
+      "counts": {
+        "native_rows": 1001,
+        "resets": 1,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 77,
+        "oracle_ADD": 22,
+        "executed_ADD": 51,
+        "entries": 51,
+        "TP": 44,
+        "SL": 6,
+        "rejects": 0,
+        "certified_labels": 141,
+        "learnable_decisions": 160,
+        "unproven_funds": 19
+      },
+      "oracle_reasons": {
+        "CERTIFIED_SUFFIX_DOMINANCE": 141,
+        "NO_LEARNABLE_DECISION": 840,
+        "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 19
+      },
+      "semantic_trace_hash": "fbedd22e966909e842a5ad1ccbc1060c59a245f8bf101f2cb292842e863ec24c",
+      "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+      "query_seconds": {
+        "count": 1001,
+        "total": 17.539255019684788,
+        "mean": 0.01752173328639839,
+        "p95": 0.027913931000512093
+      }
+    }
+  },
+  "model_interface": {
+    "status": "PASS_REAL_CPU_MODEL_INTERFACES",
+    "seconds": 76.54057802600437,
+    "source_identity": "9a8243d7c056b19193f6cf30a154c35da9b2255a087f9a29ac9b1db84c2fc770",
+    "source_files_unchanged": true,
+    "rollout_env_steps": 100,
+    "source_updates": 21183,
+    "updates_after": 21184,
+    "policy_calls": 101,
+    "runtime_batch_size": 1,
+    "threshold": 0.3,
+    "gate_ready": false,
+    "actor_keys_changed": [],
+    "critic_keys_changed": [],
+    "source_actor_success_required": false,
+    "bc_gradient_updates": 0,
+    "replay_bridge": "PASS_NATIVE_REPLAY_CONSEC_PREFETCH_AND_P4_DAGGER_JOIN",
+    "full_v2_training": "NOT_RUN",
+    "gpu_training": "NOT_RUN",
+    "dev": "NOT_RUN",
+    "test": "NOT_RUN",
+    "content_hash": "244660a0d54e607fa57c7dd14ada0a9cd591c8d9f795b6acdfd804336fd65f2b"
+  },
+  "real_oracle": "PASS_10_ORIGINAL_ENV_COUNTERFACTUAL_CASES",
+  "current_proof_guard_rechecks": "PASS_SAVED_NATIVE_BATCHES_FOR_ALL_D0_RUNS_AND_MODEL",
+  "passed": [
+    "CPU semantic regressions",
+    "real TRAIN bounded collection",
+    "certified-domain counterfactuals",
+    "actual policy carry",
+    "native P4/DAgger join",
+    "collection restore/repeat",
+    "actual FullCheckpoint model transfer",
+    "one original CPU WM update"
+  ],
+  "failed_retained": [
+    "oracle_initial.xml: fixture env.config_path missing",
+    "d0_initial.xml/d0_round2.xml: fixture time calendar/feature clock",
+    "final_model_smoke_01.log: wrong digest import",
+    "final_model_smoke_02.log: missing Agent.stream seed"
+  ],
+  "not_run": [
+    "formal 1M",
+    "GPU",
+    "DEV",
+    "TEST",
+    "arbitrary-loss exact fallback",
+    "reliable Q",
+    "interleaved A2/B2/C2 learner",
+    "model-level V2 exact resume",
+    "production Gate 20 windows"
+  ],
+  "files": {
+    "receipts/final_model_smoke_03.log": "4c4ed16c22ea975160568ba76cb740be407077cd547cc34ce9a137b8df05c9f8",
+    "receipts/accepted_mixed_1000.log": "355174469919d60a5d20d2bdb7fcb7a1f15cf10bfa21d4edc2d073fd0531c434",
+    "receipts/targeted_cpu_round4.log": "7040371af15613c02e821ec0eecc1d1330f691ace4cef93a41bfa358822c4103",
+    "receipts/final_model_smoke_02.log": "39965fed021d9ca047ac2c6a33baa53f85e7eb844cda470369abbdd760ae20b3",
+    "receipts/collector_round3.log": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+    "receipts/final_mixed_1000.log": "74798a5fa9b49582828c1cefc7620e87e541e58e97a6e02188111837e54bd3d1",
+    "receipts/final_oracle_verify.log": "847a737e6a3a86982d6f193cfabc6fbdb2a789b3f78174c1b72e3292f495abe2",
+    "receipts/targeted_cpu_final.log": "08faea39fd19189f6544839f505d91d76ecb1367e219f5db362cdf22916ef869",
+    "receipts/independent_label_cpu.log": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+    "receipts/targeted_cpu_final.xml": "8309599bd6e592ebdb32e99001da4c667cfc93863273f9f7ead5321de090eb26",
+    "receipts/real_repeat_resume.json": "862a6fa4bee17cbf98067fcd0f07326088ab63cc3329b0f36607539ad61c6718",
+    "receipts/d0_round2.xml": "de5c9f0c89088352d7dfb0b868a4d9e0c61dd2c8b11d2e1eb576c9adc6841ee8",
+    "receipts/independent_label_cpu.xml": "9c362f93531ee40c30615dbb424bf955cabe43182837e6465924e5dbda052682",
+    "receipts/d0_round2.log": "6020d3eebf66ed48cb9a499e65fc522ddb6af5acc4de5b813cd6f16cd46b71a2",
+    "receipts/proof_integrity_cpu.log": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "receipts/proof_integrity_cpu.xml": "75293c546a1390e3cc810aac200de150ac9c3379fd7b3d61a84683063a175a14",
+    "receipts/final_mixed_resume_1000.log": "e553091964357fe4b1972cb0495c0d26a445a6599047a906030122fb6aa26ab6",
+    "receipts/final_wait_1000.log": "bc6e6ce2322af46866f55efa53ef2ad63c3333577576e201d5f7f1b081594b0a",
+    "receipts/accepted_repeat_resume.json": "45ee7348d227051742425ffd717fe9b2dd948d28dc636393fa2d081015e76fd2",
+    "receipts/real_oracle_verify_01.log": "27000a1ad7c56fbdd2cf70906659afad3caee4e27347eb61780c594acb01005b",
+    "receipts/final_model_smoke_01.log": "ddf5e6f0e872a7b5c2621786bebca3bcba27803b5e088465c991e629fa94f62e",
+    "receipts/sidecar_join_final.xml": "28778ad0bd2d124b506834686fc5948269150bf84ca63f5e7fbc2de61a952e06",
+    "receipts/d0_initial.xml": "6f7d960c4ec4a955b8c7513b30e45b250045b3bd5a35f73d073ea28606b6a28e",
+    "receipts/final_mixed_repeat_1000.log": "cdf2f41bf94e80b84df99aafd3e671a13ab149230ea7fed3eb9e39812f1fe496",
+    "receipts/accepted_mixed_repeat_1000.log": "a6e325e8ffd9247355aa5df35d9050d1dea5babe342a5cc5e5aa7c160f0c5b07",
+    "receipts/oracle_initial.xml": "661a623f8ecc0c6a5ceecebf1e0d6c7f459ec957913cdf40dc5a5c16a6146191",
+    "receipts/collector_round3.xml": "cfc73efe929f0617216d30488ebc242ca4f1fbbe6857afe912356c2756b31b73",
+    "receipts/bootstrap_mixed_100.log": "8353341c3c5df392a2af616f5ce22b2d8a5843df1597d17a2b88516bc6c07d69",
+    "receipts/oracle_initial.log": "8594ae3c807658dd94ef92fc73a94b4439178ccff909163a30f5d26d70d71290",
+    "receipts/targeted_cpu_round4.xml": "bd0fcfe2fb7303ec8b562e243907d3f5ff0603cbe77832cfd5c1da25f8d81ce5",
+    "receipts/sidecar_join_final.log": "99db33d5c94c6f7da021687c7391181685cc33299c5435b1c861e2db3be3ec87",
+    "receipts/accepted_mixed_resume_1000.log": "0f22de1b180845a80168ffb261898167194ccc3107b90c272c44b039b977fb3d",
+    "receipts/final_scripted_1000.log": "810b67f814a040f701a18ee254a746b962ac57c2d980465796aaf7a8e0af234b",
+    "receipts/d0_initial.log": "5feb4341fe8aee72bcccf53ef608bcfcdb0224285af7161f53c6845c67cafa76",
+    "runs/final_mixed_1000/runtime_identity.json": "f5f11f36bbddc71e2c483c2dfd10f3f4d41b26cdaa1762f93f5f4af0c2c99cb3",
+    "runs/final_mixed_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/final_mixed_1000/receipt.json": "20769ba468ae2a49a1a193404f4b360a8eece4c1b656de4cc8182661b937d3ad",
+    "runs/final_mixed_1000/oracle_identity.json": "991352d0b3ef301d38e87e608c52d62890c1d9b51f552ffa065813473c8c24fe",
+    "runs/final_mixed_1000/collection_checkpoints/env_000400/manifest.json": "e2408226ce85268d971b51cccda006b478a46a6f5e441852787a8650a295db5b",
+    "runs/final_mixed_1000/sidecar.jsonl": "5c83676b6175e8f28430507bb4efa02d180c92a8b5b57f14d1a046916371ee94",
+    "runs/final_model_smoke_03/source_admission.json": "073e5a1264f26de9d8eba563925075ebe6356d4478c40c15e3bca412fef049ce",
+    "runs/final_model_smoke_03/transfer.json": "83b6ec01202e26aed7d50e0957ec98163de03178f953737c87d64c08d5acdc24",
+    "runs/final_model_smoke_03/receipt.json": "09871bb35ccfaf8cc64ac939064e28a9e3c06882328e72756192da1c07297e83",
+    "runs/final_model_smoke_03/rollout/bridge_receipt.json": "ad9e672b5662e4996ae2f0225f38dab1785b1feb7e929f2a767a5e1d378a765d",
+    "runs/final_model_smoke_03/rollout/env_state.json": "0c425ce7772ab8d7a3ed413c247f6a734d7ec496d96f71f7ffee88ae291220d9",
+    "runs/final_model_smoke_03/rollout/receipt.json": "f3bf083f87435a123481f2f17756159ece95b7205b0a2edf020d1b5b2767342d",
+    "runs/final_scripted_1000/runtime_identity.json": "1759dcbb06189be2a16f453891adf9214e89bc7a774282fd9e89f6ae7cadc059",
+    "runs/final_scripted_1000/env_state.json": "248b3960f155916695344f300bdde5d12dc2a15cc99808f65d51cdda368a2f50",
+    "runs/final_scripted_1000/receipt.json": "954a28eb8cdb77a1ea5512acd55d2461f9a9a0d54b08bfec919e530d94f82fd2",
+    "runs/final_scripted_1000/oracle_identity.json": "7580f96322a7b5b3c3c6fc6d45ebbd6e4472895e506c6ccda314095054e03035",
+    "runs/final_scripted_1000/sidecar.jsonl": "43cd47023db2f506be0b544fdb4bf73b5ffcab1ddb1071b4a892f1fb7f77a011",
+    "runs/accepted_mixed_repeat_1000/runtime_identity.json": "8e8d35d6b77268c4ad8f6add44d46de413e0f36d6e621359395fb43b7e25785b",
+    "runs/accepted_mixed_repeat_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/accepted_mixed_repeat_1000/receipt.json": "51bb7306b8cafcd99cba745b91f5bfd193d555ab60ac92eec7d27de80c4d09d7",
+    "runs/accepted_mixed_repeat_1000/oracle_identity.json": "22dedae9052ef52bd4d1e804dd76992ee636f027fd90efade51f296e6a758b71",
+    "runs/accepted_mixed_repeat_1000/sidecar.jsonl": "b3caa26d65c4363bc0afdd7af229962b5636235972bf4326310cbf44cd12956b",
+    "runs/final_mixed_repeat_1000/runtime_identity.json": "49222107502a1cd5010f977c77566b4586f5d17b3ac4bfb7a357cdafa35b7e92",
+    "runs/final_mixed_repeat_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/final_mixed_repeat_1000/receipt.json": "573447bd0b7be25bf1f7f373a3744b7b3fa5cd11aa8bc9c26bf1422fe098b69d",
+    "runs/final_mixed_repeat_1000/oracle_identity.json": "0c04414ac4d8900ba20cf31cbbc0529ae641ece56ce9360040bee2bb39a2f334",
+    "runs/final_mixed_repeat_1000/sidecar.jsonl": "56ed6be26a05e224e3bbabc749a7f01ae807e49766bac9b5d4b88c6dceeeb05f",
+    "runs/accepted_mixed_1000/runtime_identity.json": "69af52322d49bd47e5fc2cc80d522c8f9f4b69cba8ebaeb4444e10289f114ce2",
+    "runs/accepted_mixed_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/accepted_mixed_1000/receipt.json": "9261f2bcd5edbe83454a19b85369d7b86d29bf8d33e7c486c63e2ff441996389",
+    "runs/accepted_mixed_1000/oracle_identity.json": "aa4daff86545c4944b3f09225a60a371a2921fd1b50f1225f4593782a2cc1c8e",
+    "runs/accepted_mixed_1000/collection_checkpoints/env_000400/manifest.json": "292e83b6f8e28cb21991afb63759b6c852271d55531de1a472299c619180ae9c",
+    "runs/accepted_mixed_1000/sidecar.jsonl": "021df138b8200329059b79b3f11bff6f9577a20c362d3ff10c23c34d6a2d9acf",
+    "runs/final_oracle_verify/receipt.json": "a5afbee281517afccd1c4df53e0f3585f3d5e46f14d63e7033bad22dcd383381",
+    "runs/accepted_mixed_resume_1000/runtime_identity.json": "df09f88676cb0156a011cbfa41e0050f034e8231f7a5ba64862e23a413e67591",
+    "runs/accepted_mixed_resume_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/accepted_mixed_resume_1000/receipt.json": "0c3c8407015490c6ea097fab6935151eaffc1153fdc1c6ac53e7420b8fd0504d",
+    "runs/accepted_mixed_resume_1000/oracle_identity.json": "06a7f6df01f72e26fc9ab84039852fc0775fd4fe7f645d512adc0ef10e2fa63d",
+    "runs/accepted_mixed_resume_1000/sidecar.jsonl": "021df138b8200329059b79b3f11bff6f9577a20c362d3ff10c23c34d6a2d9acf",
+    "runs/bootstrap_mixed_100/env_state.json": "13e41e2431cb03e9a52e475e5a39b155b49cfe0feeee096ca251dbe62c79d554",
+    "runs/bootstrap_mixed_100/receipt.json": "881f0bc3bd556f0489c02d961aef2cd11e37fa5251773172f4d5ea7eee532a7e",
+    "runs/bootstrap_mixed_100/oracle_identity.json": "86b9c7cb8224b7b7165d525f8b49cf678121ce4f978597de3e32b7d6a1e65ee9",
+    "runs/bootstrap_mixed_100/sidecar.jsonl": "9bc52feb8151dfdfb53e80e3c2525c9b96024d25c4d90cf46667b008005acad6",
+    "runs/final_wait_1000/runtime_identity.json": "bdc6f2bd42c5e263400fb7db95499141e9deccbbc5d7cdf713c876005285e078",
+    "runs/final_wait_1000/env_state.json": "c7fa3df705c24e6a5040911a7c122a1014939b7f0df10444fc5ec46ec29eff52",
+    "runs/final_wait_1000/receipt.json": "f97ec47e7f007b1268600245e06774c6fbbce93eaa3d3eb09e5231b1d2ae3296",
+    "runs/final_wait_1000/oracle_identity.json": "7fba99a3a1169d5f8f723188a35caf38b817fbbd5930a6fcd2463fa1725e2633",
+    "runs/final_wait_1000/sidecar.jsonl": "ceeb7efcb409897bcf39477ef335e56037df0d8cc8cad14d42227e1d0bbd8434",
+    "runs/final_mixed_resume_1000/runtime_identity.json": "370e485fe8100df470e9ca215dc1ba23f769fedcf661919b35c1a298f225b915",
+    "runs/final_mixed_resume_1000/env_state.json": "255b864abf0207f9deb70c3a110bb32865217eb0178dd507204f3b3776b0412f",
+    "runs/final_mixed_resume_1000/receipt.json": "b67bcd8ab8fac176827bc71fc4621de14eac6c83f6795011d03d0e345c9226a5",
+    "runs/final_mixed_resume_1000/oracle_identity.json": "a482978a5e144c53ace77c8f3c035f9afdc09e09c304ff35e90d6ae280b01f22",
+    "runs/final_mixed_resume_1000/sidecar.jsonl": "5c83676b6175e8f28430507bb4efa02d180c92a8b5b57f14d1a046916371ee94",
+    "runs/final_model_smoke_02/source_admission.json": "073e5a1264f26de9d8eba563925075ebe6356d4478c40c15e3bca412fef049ce",
+    "runs/final_model_smoke_02/transfer.json": "83b6ec01202e26aed7d50e0957ec98163de03178f953737c87d64c08d5acdc24",
+    "runs/final_model_smoke_02/rollout/bridge_receipt.json": "ad9e672b5662e4996ae2f0225f38dab1785b1feb7e929f2a767a5e1d378a765d",
+    "runs/final_model_smoke_02/rollout/env_state.json": "0c425ce7772ab8d7a3ed413c247f6a734d7ec496d96f71f7ffee88ae291220d9",
+    "runs/final_model_smoke_02/rollout/receipt.json": "a4e1bcb5f949b64408a747e51231c65a3821109f5cf7a760f548d9e3e86f6232",
+    "runs/real_oracle_verify_01/receipt.json": "4abb0827e91f295064037704b7dbd9ea4db19f54b42e38bb53ea3ed42b64a4dc",
+    "receipts/protected_artifacts.json": "638008d5279e6f38ac9c57e99388b81db254c205afb4fe667f31cb8d4edf8360",
+    "receipts/oracle_initial.log.raw.gz": "9a17682f1d26f3d1db3394012958ba40e48aac839fed0e71e54c7def58e77395",
+    "receipts/oracle_initial.xml.raw.gz": "1c70382b6f85db383e5c75edb0bf6f3024708793da790f7a54ab1ae992ef61b7",
+    "receipts/d0_initial.log.raw.gz": "378a36f107872fa97d45c4578c0650d38ff0830b7f17a9074eae295c70834128",
+    "receipts/d0_initial.xml.raw.gz": "f69e7f5aaebd13568dcaab960e4a86619b8b3b2af190018df05480374fa76600",
+    "receipts/d0_round2.log.raw.gz": "2396a5eed8294c7336c7426f32667e4c2a71705f40719af89d3353fbc8e4e67e",
+    "receipts/d0_round2.xml.raw.gz": "4bfd6e30a4256f48143bcea3932401f59b21787b230fd059435f04eb0a141a94"
+  },
+  "raw_failure_archives": {
+    "oracle_initial.log": {
+      "gzip": "oracle_initial.log.raw.gz",
+      "original_sha256": "8594ae3c807658dd94ef92fc73a94b4439178ccff909163a30f5d26d70d71290",
+      "gzip_sha256": "9a17682f1d26f3d1db3394012958ba40e48aac839fed0e71e54c7def58e77395"
+    },
+    "oracle_initial.xml": {
+      "gzip": "oracle_initial.xml.raw.gz",
+      "original_sha256": "661a623f8ecc0c6a5ceecebf1e0d6c7f459ec957913cdf40dc5a5c16a6146191",
+      "gzip_sha256": "1c70382b6f85db383e5c75edb0bf6f3024708793da790f7a54ab1ae992ef61b7"
+    },
+    "d0_initial.log": {
+      "gzip": "d0_initial.log.raw.gz",
+      "original_sha256": "5feb4341fe8aee72bcccf53ef608bcfcdb0224285af7161f53c6845c67cafa76",
+      "gzip_sha256": "378a36f107872fa97d45c4578c0650d38ff0830b7f17a9074eae295c70834128"
+    },
+    "d0_initial.xml": {
+      "gzip": "d0_initial.xml.raw.gz",
+      "original_sha256": "6f7d960c4ec4a955b8c7513b30e45b250045b3bd5a35f73d073ea28606b6a28e",
+      "gzip_sha256": "f69e7f5aaebd13568dcaab960e4a86619b8b3b2af190018df05480374fa76600"
+    },
+    "d0_round2.log": {
+      "gzip": "d0_round2.log.raw.gz",
+      "original_sha256": "6020d3eebf66ed48cb9a499e65fc522ddb6af5acc4de5b813cd6f16cd46b71a2",
+      "gzip_sha256": "2396a5eed8294c7336c7426f32667e4c2a71705f40719af89d3353fbc8e4e67e"
+    },
+    "d0_round2.xml": {
+      "gzip": "d0_round2.xml.raw.gz",
+      "original_sha256": "de5c9f0c89088352d7dfb0b868a4d9e0c61dd2c8b11d2e1eb576c9adc6841ee8",
+      "gzip_sha256": "4bfd6e30a4256f48143bcea3932401f59b21787b230fd059435f04eb0a141a94"
+    }
+  },
+  "content_hash": "d0d3d3a4a8c399f6cdbe9887300cb8fd9767a73f234b422f27399d0d2fce86ae"
+}

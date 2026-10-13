@@ -1,0 +1,41 @@
+{
+  "protocol": "FG_S3_V2_DAGGER_D0_V1",
+  "status": "D0_ROLLOUT_COMPLETE",
+  "env_steps": 1000,
+  "counts": {
+    "native_rows": 1001,
+    "resets": 1,
+    "env_steps": 1000,
+    "valid_market_minutes": 1000,
+    "actor_ADD": 0,
+    "oracle_ADD": 125,
+    "executed_ADD": 0,
+    "entries": 0,
+    "TP": 0,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 1000,
+    "learnable_decisions": 1000,
+    "unproven_funds": 0
+  },
+  "oracle_reasons": {
+    "CERTIFIED_SUFFIX_DOMINANCE": 1000
+  },
+  "label_ratio_all_advances": 1.0,
+  "label_ratio_legal_decisions": 1.0,
+  "semantic_trace_hash": "3ab720a1ca71e0ee23b4b9e5ecc2811f1aff1abda4fbc39457739f706c8cec0c",
+  "final_state_id": "845724a66f1868e9131de09d9a449822eee2c7aa871da994482f09e5f64bf2ec",
+  "query_seconds": {
+    "count": 1001,
+    "total": 12.290786735480651,
+    "mean": 0.012278508227253397,
+    "p95": 0.01943580701481551
+  },
+  "native_sample": "PASS",
+  "sample_teacher_valid": 65,
+  "gradient_updates": 0,
+  "gpu_training": "NOT_RUN",
+  "dev": "NOT_RUN",
+  "test": "NOT_RUN",
+  "content_hash": "6fc9344d92069224aef6d888fc9d6d78ae7c8fbc2bca0f1f9cd94678bcb1a631"
+}

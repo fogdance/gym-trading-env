@@ -1,0 +1,17 @@
+{
+  "status": "PASS_NATIVE_REPLAY_CONSEC_PREFETCH_AND_P4_DAGGER_JOIN",
+  "batch_shape": [
+    2,
+    65
+  ],
+  "prefix": 1,
+  "effective_length": 64,
+  "new_dagger_valid": 57,
+  "historical_p4_valid": 64,
+  "prefetch_pending": 1,
+  "old_catalog_sha256": "47736742ff81e337d10585b86d0709f5fd1bff8d082b01324b267f9f1761f0de",
+  "oracle_label_need_not_equal_executed_action": true,
+  "native_replay_contains_teacher": false,
+  "full_v2_training": "NOT_RUN",
+  "content_hash": "f7588868d6699a7358157e3ba209b067d72f00082491b5b6573113602a005215"
+}

@@ -1,0 +1,40 @@
+{
+  "config": {
+    "schema": "FG_S3_V2_D0_CONFIG_V1",
+    "fold": "TRAIN",
+    "contract": "CZCE.FG201",
+    "dreamer_root": "/home/v/Documents/work/research/fg-s3-dev/dreamerv3",
+    "env_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/env/run_20261011_04",
+    "oracle_receipt": "/home/v/Documents/work/gym-trading-env/artifacts/fg_single3_v1/oracle/run_20261011_01",
+    "output_root": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2_d0/runs",
+    "env_steps": 1000,
+    "seed": 202,
+    "oracle_mix_probability": 0.5,
+    "scripted_add_probability": 0.5,
+    "catalog": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v1/teacher_catalog_v1_final",
+    "source_checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000"
+  },
+  "command": [
+    "tools/fg_s3_dagger_d0.py",
+    "collect",
+    "--mode",
+    "mixed",
+    "--env-steps",
+    "1000",
+    "--resume-collection",
+    "artifacts/fg_s3_v2_d0/runs/final_mixed_1000/collection_checkpoints/env_000400",
+    "--output",
+    "artifacts/fg_s3_v2_d0/runs/final_mixed_resume_1000"
+  ],
+  "code_versions": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": {
+      "sha": "0137999b62517a7fc083ac9b7c91c4ea7ddadea8",
+      "dirty": []
+    },
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": {
+      "sha": "f92c096e5c9a81758cfde103b20e680e8f4be09c",
+      "dirty": []
+    }
+  },
+  "content_hash": "0c9d3e137bf336e08b62c6baca794805017282c44cd4d81209bf5d36fcbc5962"
+}

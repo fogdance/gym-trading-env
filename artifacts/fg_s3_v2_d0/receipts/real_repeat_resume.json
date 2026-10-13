@@ -1,0 +1,11 @@
+{
+  "status": "PASS_REAL_1000_ADVANCE_REPEAT_AND_400_PLUS_600_RESTORE",
+  "semantic_records_equal": true,
+  "physical_stepids_preserved_on_resume": true,
+  "final_state_equal": true,
+  "advances": 1000,
+  "saved_at": 400,
+  "semantic_trace_hash": "2c3b7c9c663abcce5a20cf610aeffa58eca3edc568527689fe2ad3d8012466b1",
+  "final_state_id": "db2d588017a513e84bf7ccaffee29c29b60ff7e36b9fd9792b8753bdcc1cc35d",
+  "content_hash": "43f86a2b79744c5c9ceb4a0ef357945a38b360baa8b1c52d396cdaeef8d329c5"
+}
