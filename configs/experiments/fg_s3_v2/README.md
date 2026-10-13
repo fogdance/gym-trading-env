@@ -38,6 +38,9 @@ run after A2 releases the GPU. Use the same prepare/start/resume/evaluate comman
 The old `C2_GPU_FG201_500` configuration and outputs remain historical records.
 No formal C2 training is started by either diagnostic.
 
+Actual CPU results and their limits are recorded in
+[`FG_S3_V2_C2_Implementation_20261013.md`](../../../docs/FG_S3_V2_C2_Implementation_20261013.md).
+
 ## A2 beta schedule and 18-contract path (2026-10-13)
 
 `A2_GPU_FORMAL_1M_BETA` uses the original ALL_TRAIN pool and Replay Online180k
