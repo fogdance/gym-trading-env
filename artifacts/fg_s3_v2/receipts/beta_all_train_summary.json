@@ -1,0 +1,330 @@
+{
+  "status": "PASS_REAL_GPU_ALL_18_BETA_AND_RESUME",
+  "run": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_ALL_TRAIN_BETA_8K_v1",
+  "source_update_offset": 21183,
+  "model_updates": 21503,
+  "updates": 320,
+  "resumed_updates": 120,
+  "actor_and_wm_continue_learning": true,
+  "critic_optimizer_frozen": true,
+  "beta_checkpoint_boundary": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 1.0,
+    "points": [
+      [
+        0,
+        1.0
+      ],
+      [
+        3600,
+        1.0
+      ],
+      [
+        5200,
+        0.98
+      ],
+      [
+        8000,
+        0.9
+      ]
+    ],
+    "env_steps": 5000,
+    "beta": 0.9824999999999999
+  },
+  "beta_final": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 1.0,
+    "points": [
+      [
+        0,
+        1.0
+      ],
+      [
+        3600,
+        1.0
+      ],
+      [
+        5200,
+        0.98
+      ],
+      [
+        8000,
+        0.9
+      ]
+    ],
+    "env_steps": 8000,
+    "beta": 0.9
+  },
+  "contracts": [
+    "CZCE.FG001",
+    "CZCE.FG005",
+    "CZCE.FG009",
+    "CZCE.FG101",
+    "CZCE.FG105",
+    "CZCE.FG109",
+    "CZCE.FG201",
+    "CZCE.FG205",
+    "CZCE.FG209",
+    "CZCE.FG301",
+    "CZCE.FG305",
+    "CZCE.FG309",
+    "CZCE.FG401",
+    "CZCE.FG405",
+    "CZCE.FG809",
+    "CZCE.FG901",
+    "CZCE.FG905",
+    "CZCE.FG909"
+  ],
+  "coverage": {
+    "env_steps": 8000,
+    "legal_decisions": 6111,
+    "certified_labels": 6111,
+    "valid_ratio": 0.763875,
+    "valid_legal_ratio": 1.0,
+    "actor_controlled_legal": 110,
+    "autonomous_executed_add": 6,
+    "unproven_funds": 0
+  },
+  "phases": {
+    "0_3600": {
+      "env_steps": 3600,
+      "legal_decisions": 2929,
+      "certified_labels": 2929,
+      "valid_ratio": 0.8136111111111111,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 0,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "3600_5200": {
+      "env_steps": 1600,
+      "legal_decisions": 1370,
+      "certified_labels": 1370,
+      "valid_ratio": 0.85625,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 14,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "5200_8000": {
+      "env_steps": 2800,
+      "legal_decisions": 1812,
+      "certified_labels": 1812,
+      "valid_ratio": 0.6471428571428571,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 96,
+      "autonomous_executed_add": 6,
+      "unproven_funds": 0
+    }
+  },
+  "per_contract": {
+    "CZCE.FG001": {
+      "env_steps": 400,
+      "legal_decisions": 354,
+      "certified_labels": 354,
+      "valid_ratio": 0.885,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 3,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG005": {
+      "env_steps": 400,
+      "legal_decisions": 215,
+      "certified_labels": 215,
+      "valid_ratio": 0.5375,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 3,
+      "autonomous_executed_add": 1,
+      "unproven_funds": 0
+    },
+    "CZCE.FG009": {
+      "env_steps": 400,
+      "legal_decisions": 319,
+      "certified_labels": 319,
+      "valid_ratio": 0.7975,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 4,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG101": {
+      "env_steps": 400,
+      "legal_decisions": 337,
+      "certified_labels": 337,
+      "valid_ratio": 0.8425,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 1,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG105": {
+      "env_steps": 400,
+      "legal_decisions": 317,
+      "certified_labels": 317,
+      "valid_ratio": 0.7925,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 13,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG109": {
+      "env_steps": 400,
+      "legal_decisions": 327,
+      "certified_labels": 327,
+      "valid_ratio": 0.8175,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 11,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG201": {
+      "env_steps": 600,
+      "legal_decisions": 501,
+      "certified_labels": 501,
+      "valid_ratio": 0.835,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 19,
+      "autonomous_executed_add": 2,
+      "unproven_funds": 0
+    },
+    "CZCE.FG205": {
+      "env_steps": 400,
+      "legal_decisions": 327,
+      "certified_labels": 327,
+      "valid_ratio": 0.8175,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 7,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG209": {
+      "env_steps": 600,
+      "legal_decisions": 490,
+      "certified_labels": 490,
+      "valid_ratio": 0.8166666666666667,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 6,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG301": {
+      "env_steps": 400,
+      "legal_decisions": 362,
+      "certified_labels": 362,
+      "valid_ratio": 0.905,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 3,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG305": {
+      "env_steps": 400,
+      "legal_decisions": 312,
+      "certified_labels": 312,
+      "valid_ratio": 0.78,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 3,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG309": {
+      "env_steps": 600,
+      "legal_decisions": 419,
+      "certified_labels": 419,
+      "valid_ratio": 0.6983333333333334,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 12,
+      "autonomous_executed_add": 1,
+      "unproven_funds": 0
+    },
+    "CZCE.FG401": {
+      "env_steps": 400,
+      "legal_decisions": 326,
+      "certified_labels": 326,
+      "valid_ratio": 0.815,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 6,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG405": {
+      "env_steps": 400,
+      "legal_decisions": 0,
+      "certified_labels": 0,
+      "valid_ratio": 0.0,
+      "valid_legal_ratio": 0.0,
+      "actor_controlled_legal": 0,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG809": {
+      "env_steps": 400,
+      "legal_decisions": 380,
+      "certified_labels": 380,
+      "valid_ratio": 0.95,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 0,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    },
+    "CZCE.FG901": {
+      "env_steps": 600,
+      "legal_decisions": 396,
+      "certified_labels": 396,
+      "valid_ratio": 0.66,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 6,
+      "autonomous_executed_add": 1,
+      "unproven_funds": 0
+    },
+    "CZCE.FG905": {
+      "env_steps": 400,
+      "legal_decisions": 329,
+      "certified_labels": 329,
+      "valid_ratio": 0.8225,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 5,
+      "autonomous_executed_add": 1,
+      "unproven_funds": 0
+    },
+    "CZCE.FG909": {
+      "env_steps": 400,
+      "legal_decisions": 400,
+      "certified_labels": 400,
+      "valid_ratio": 1.0,
+      "valid_legal_ratio": 1.0,
+      "actor_controlled_legal": 8,
+      "autonomous_executed_add": 0,
+      "unproven_funds": 0
+    }
+  },
+  "real_contract_switches": 39,
+  "replay_sidecar_owners": 8039,
+  "counts": {
+    "native_rows": 8040,
+    "resets": 40,
+    "env_steps": 8000,
+    "valid_market_minutes": 8000,
+    "actor_ADD": 399,
+    "oracle_ADD": 304,
+    "executed_ADD": 302,
+    "entries": 302,
+    "TP": 298,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 6111,
+    "learnable_decisions": 6111,
+    "unproven_funds": 0,
+    "reward_sum": 271.00782389752567,
+    "published_native_rows": 8039,
+    "actor_oracle_ADD_tp": 15,
+    "actor_oracle_ADD_fn": 289
+  },
+  "core_env_steps_per_second": 9.201619813815576,
+  "process_peak_rss_mib": 3777.3828125,
+  "formal_1m": "NOT_RUN",
+  "formal_time_axis": "NOT_RUN; accelerated beta and 200-bar slices",
+  "actor_only_evaluation": "NOT_RUN; mixed TRAIN measurements only",
+  "content_hash": "87fe477e319f0ab0ec65d843be3d464e68d878f0b390579e5245f9c4a049d63b"
+}

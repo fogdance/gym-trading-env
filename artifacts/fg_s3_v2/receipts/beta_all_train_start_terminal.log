@@ -1,0 +1,369 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,584,132 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,085,952 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2/C2 env=100 update=1 BC=0.699489 valid=64 ADD=0 beta=1.000000 actor_grad=6.948558
+A2/C2 env=100 update=2 BC=0.662301 valid=64 ADD=0 beta=1.000000 actor_grad=6.657137
+A2/C2 env=100 update=3 BC=0.617908 valid=64 ADD=0 beta=1.000000 actor_grad=7.607926
+A2/C2 env=100 update=4 BC=0.560011 valid=64 ADD=0 beta=1.000000 actor_grad=8.280112
+A2/C2 env=200 update=5 BC=0.491117 valid=64 ADD=0 beta=1.000000 actor_grad=8.215677
+A2/C2 env=200 update=6 BC=0.418015 valid=64 ADD=0 beta=1.000000 actor_grad=7.595111
+A2/C2 env=200 update=7 BC=0.362941 valid=56 ADD=1 beta=1.000000 actor_grad=6.272445
+A2/C2 env=200 update=8 BC=0.275026 valid=64 ADD=0 beta=1.000000 actor_grad=5.606109
+A2/C2 env=300 update=9 BC=0.243896 valid=56 ADD=1 beta=1.000000 actor_grad=4.110409
+A2/C2 env=300 update=10 BC=0.476273 valid=55 ADD=10 beta=1.000000 actor_grad=0.550227
+A2/C2 env=300 update=11 BC=0.143644 valid=64 ADD=0 beta=1.000000 actor_grad=2.921632
+A2/C2 env=300 update=12 BC=0.397093 valid=59 ADD=8 beta=1.000000 actor_grad=0.549249
+A2/C2 env=400 update=13 BC=0.102465 valid=64 ADD=0 beta=1.000000 actor_grad=1.960355
+A2/C2 env=400 update=14 BC=0.435500 valid=48 ADD=7 beta=1.000000 actor_grad=1.157067
+A2/C2 env=400 update=15 BC=0.301598 valid=56 ADD=5 beta=1.000000 actor_grad=0.205386
+A2/C2 env=400 update=16 BC=0.120639 valid=56 ADD=1 beta=1.000000 actor_grad=0.968109
+A2/C2 env=500 update=17 BC=0.116335 valid=56 ADD=1 beta=1.000000 actor_grad=0.840603
+A2/C2 env=500 update=18 BC=0.345093 valid=48 ADD=5 beta=1.000000 actor_grad=0.652999
+A2/C2 env=500 update=19 BC=0.491836 valid=56 ADD=9 beta=1.000000 actor_grad=1.664726
+A2/C2 env=500 update=20 BC=0.109096 valid=56 ADD=1 beta=1.000000 actor_grad=0.604850
+A2/C2 env=600 update=21 BC=0.339420 valid=50 ADD=5 beta=1.000000 actor_grad=0.645749
+A2/C2 env=600 update=22 BC=0.103216 valid=63 ADD=1 beta=1.000000 actor_grad=0.619648
+A2/C2 env=600 update=23 BC=0.239059 valid=47 ADD=3 beta=1.000000 actor_grad=0.126842
+A2/C2 env=600 update=24 BC=0.341634 valid=50 ADD=5 beta=1.000000 actor_grad=0.608604
+A2/C2 env=700 update=25 BC=0.102872 valid=63 ADD=1 beta=1.000000 actor_grad=0.607775
+A2/C2 env=700 update=26 BC=0.398606 valid=48 ADD=6 beta=1.000000 actor_grad=1.067698
+A2/C2 env=700 update=27 BC=0.336999 valid=48 ADD=5 beta=1.000000 actor_grad=0.746255
+A2/C2 env=700 update=28 BC=0.108078 valid=56 ADD=1 beta=1.000000 actor_grad=0.570997
+A2/C2 env=800 update=29 BC=0.384493 valid=48 ADD=6 beta=1.000000 actor_grad=0.995978
+A2/C2 env=800 update=30 BC=0.219578 valid=53 ADD=3 beta=1.000000 actor_grad=0.161862
+A2/C2 env=800 update=31 BC=0.069003 valid=61 ADD=0 beta=1.000000 actor_grad=1.116108
+A2/C2 env=800 update=32 BC=0.228789 valid=49 ADD=3 beta=1.000000 actor_grad=0.089038
+A2/C2 env=900 update=33 BC=0.195455 valid=43 ADD=2 beta=1.000000 actor_grad=0.385271
+A2/C2 env=900 update=34 BC=0.087419 valid=63 ADD=0 beta=1.000000 actor_grad=1.531022
+A2/C2 env=900 update=35 BC=0.452689 valid=48 ADD=7 beta=1.000000 actor_grad=1.380230
+A2/C2 env=900 update=36 BC=0.364923 valid=52 ADD=6 beta=1.000000 actor_grad=0.716337
+A2/C2 env=1000 update=37 BC=0.224120 valid=51 ADD=3 beta=1.000000 actor_grad=0.106748
+A2/C2 env=1000 update=38 BC=0.054216 valid=64 ADD=0 beta=1.000000 actor_grad=0.749014
+A2/C2 env=1000 update=39 BC=0.054118 valid=64 ADD=0 beta=1.000000 actor_grad=0.744676
+A2/C2 env=1000 update=40 BC=0.254545 valid=51 ADD=4 beta=1.000000 actor_grad=0.321438
+A2/C2 env=1100 update=41 BC=0.101072 valid=61 ADD=1 beta=1.000000 actor_grad=0.486107
+A2/C2 env=1100 update=42 BC=0.254968 valid=53 ADD=4 beta=1.000000 actor_grad=0.207084
+A2/C2 env=1100 update=43 BC=0.055398 valid=63 ADD=0 beta=1.000000 actor_grad=0.750122
+A2/C2 env=1100 update=44 BC=0.335639 valid=50 ADD=5 beta=1.000000 actor_grad=0.328901
+A2/C2 env=1200 update=45 BC=0.147788 valid=60 ADD=2 beta=1.000000 actor_grad=0.161316
+A2/C2 env=1200 update=46 BC=0.109786 valid=51 ADD=1 beta=1.000000 actor_grad=0.459745
+A2/C2 env=1200 update=47 BC=0.325947 valid=55 ADD=5 beta=1.000000 actor_grad=0.487681
+A2/C2 env=1200 update=48 BC=0.173686 valid=47 ADD=2 beta=1.000000 actor_grad=0.043628
+A2/C2 env=1300 update=49 BC=0.223969 valid=52 ADD=3 beta=1.000000 actor_grad=0.162186
+A2/C2 env=1300 update=50 BC=0.285898 valid=50 ADD=4 beta=1.000000 actor_grad=0.242928
+A2/C2 env=1300 update=51 BC=0.215938 valid=54 ADD=3 beta=1.000000 actor_grad=0.243312
+A2/C2 env=1300 update=52 BC=0.288479 valid=50 ADD=5 beta=1.000000 actor_grad=0.796909
+A2/C2 env=1400 update=53 BC=0.045208 valid=64 ADD=0 beta=1.000000 actor_grad=0.513328
+A2/C2 env=1400 update=54 BC=0.592069 valid=48 ADD=9 beta=1.000000 actor_grad=1.961525
+A2/C2 env=1400 update=55 BC=0.424748 valid=56 ADD=9 beta=1.000000 actor_grad=1.370031
+A2/C2 env=1400 update=56 BC=0.385693 valid=56 ADD=9 beta=1.000000 actor_grad=1.334841
+A2/C2 env=1500 update=57 BC=0.272867 valid=49 ADD=5 beta=1.000000 actor_grad=0.325581
+A2/C2 env=1500 update=58 BC=0.233683 valid=52 ADD=3 beta=1.000000 actor_grad=1.433825
+A2/C2 env=1500 update=59 BC=0.123342 valid=62 ADD=1 beta=1.000000 actor_grad=0.982352
+A2/C2 env=1500 update=60 BC=0.096423 valid=60 ADD=1 beta=1.000000 actor_grad=0.326018
+A2/C2 env=1600 update=61 BC=0.229601 valid=50 ADD=3 beta=1.000000 actor_grad=0.760415
+A2/C2 env=1600 update=62 BC=0.095912 valid=58 ADD=1 beta=1.000000 actor_grad=0.233918
+A2/C2 env=1600 update=63 BC=0.055590 valid=64 ADD=0 beta=1.000000 actor_grad=0.772032
+A2/C2 env=1600 update=64 BC=0.221613 valid=54 ADD=4 beta=1.000000 actor_grad=0.953735
+A2/C2 env=1700 update=65 BC=0.092989 valid=58 ADD=1 beta=1.000000 actor_grad=0.142977
+A2/C2 env=1700 update=66 BC=0.375695 valid=53 ADD=3 beta=1.000000 actor_grad=2.830377
+A2/C2 env=1700 update=67 BC=0.087924 valid=64 ADD=0 beta=1.000000 actor_grad=1.481731
+A2/C2 env=1700 update=68 BC=0.398385 valid=55 ADD=10 beta=1.000000 actor_grad=0.723092
+A2/C2 env=1800 update=69 BC=0.072458 valid=63 ADD=0 beta=1.000000 actor_grad=1.060003
+A2/C2 env=1800 update=70 BC=0.038878 valid=64 ADD=0 beta=1.000000 actor_grad=0.355099
+A2/C2 env=1800 update=71 BC=0.247315 valid=46 ADD=3 beta=1.000000 actor_grad=0.156924
+A2/C2 env=1800 update=72 BC=0.292132 valid=50 ADD=4 beta=1.000000 actor_grad=0.310425
+A2/C2 env=1900 update=73 BC=0.314003 valid=46 ADD=4 beta=1.000000 actor_grad=0.489926
+A2/C2 env=1900 update=74 BC=0.083276 valid=62 ADD=1 beta=1.000000 actor_grad=0.080715
+A2/C2 env=1900 update=75 BC=0.257128 valid=59 ADD=4 beta=1.000000 actor_grad=0.332159
+A2/C2 env=1900 update=76 BC=0.031795 valid=64 ADD=0 beta=1.000000 actor_grad=0.167293
+A2/C2 env=2000 update=77 BC=0.031577 valid=64 ADD=0 beta=1.000000 actor_grad=0.161961
+A2/C2 env=2000 update=78 BC=0.429181 valid=52 ADD=6 beta=1.000000 actor_grad=0.426017
+A2/C2 env=2000 update=79 BC=0.202184 valid=58 ADD=3 beta=1.000000 actor_grad=0.224457
+A2/C2 env=2000 update=80 BC=0.031108 valid=64 ADD=0 beta=1.000000 actor_grad=0.150716
+A2/C2 env=2100 update=81 BC=0.087661 valid=62 ADD=1 beta=1.000000 actor_grad=0.094957
+A2/C2 env=2100 update=82 BC=0.313077 valid=49 ADD=4 beta=1.000000 actor_grad=0.251522
+A2/C2 env=2100 update=83 BC=0.176807 valid=47 ADD=2 beta=1.000000 actor_grad=0.065377
+A2/C2 env=2100 update=84 BC=0.339167 valid=56 ADD=5 beta=1.000000 actor_grad=0.289293
+A2/C2 env=2200 update=85 BC=0.278256 valid=53 ADD=4 beta=1.000000 actor_grad=0.444355
+A2/C2 env=2200 update=86 BC=0.156685 valid=55 ADD=2 beta=1.000000 actor_grad=0.029262
+A2/C2 env=2200 update=87 BC=0.354392 valid=50 ADD=5 beta=1.000000 actor_grad=0.737896
+A2/C2 env=2200 update=88 BC=0.414498 valid=52 ADD=6 beta=1.000000 actor_grad=0.682190
+A2/C2 env=2300 update=89 BC=0.359628 valid=51 ADD=5 beta=1.000000 actor_grad=0.459115
+A2/C2 env=2300 update=90 BC=0.168709 valid=50 ADD=2 beta=1.000000 actor_grad=0.050593
+A2/C2 env=2300 update=91 BC=0.034636 valid=64 ADD=0 beta=1.000000 actor_grad=0.230696
+A2/C2 env=2300 update=92 BC=0.315412 valid=58 ADD=5 beta=1.000000 actor_grad=0.490906
+A2/C2 env=2400 update=93 BC=0.033264 valid=64 ADD=0 beta=1.000000 actor_grad=0.202327
+A2/C2 env=2400 update=94 BC=0.416747 valid=35 ADD=4 beta=1.000000 actor_grad=0.554613
+A2/C2 env=2400 update=95 BC=0.339431 valid=44 ADD=4 beta=1.000000 actor_grad=0.384862
+A2/C2 env=2400 update=96 BC=0.431234 valid=49 ADD=6 beta=1.000000 actor_grad=0.845216
+A2/C2 env=2500 update=97 BC=0.035752 valid=63 ADD=0 beta=1.000000 actor_grad=0.258829
+A2/C2 env=2500 update=98 BC=0.048963 valid=63 ADD=0 beta=1.000000 actor_grad=0.582837
+A2/C2 env=2500 update=99 BC=0.146786 valid=60 ADD=2 beta=1.000000 actor_grad=0.027219
+A2/C2 env=2500 update=100 BC=0.430256 valid=33 ADD=4 beta=1.000000 actor_grad=0.732088
+A2/C2 env=2600 update=101 BC=0.091862 valid=60 ADD=1 beta=1.000000 actor_grad=0.157462
+A2/C2 env=2600 update=102 BC=0.036278 valid=64 ADD=0 beta=1.000000 actor_grad=0.278655
+A2/C2 env=2600 update=103 BC=0.035920 valid=64 ADD=0 beta=1.000000 actor_grad=0.271054
+A2/C2 env=2600 update=104 BC=0.048794 valid=63 ADD=0 beta=1.000000 actor_grad=0.572539
+A2/C2 env=2700 update=105 BC=0.036467 valid=64 ADD=0 beta=1.000000 actor_grad=0.285161
+A2/C2 env=2700 update=106 BC=0.393421 valid=47 ADD=6 beta=1.000000 actor_grad=1.257482
+A2/C2 env=2700 update=107 BC=0.089075 valid=63 ADD=1 beta=1.000000 actor_grad=0.159560
+A2/C2 env=2700 update=108 BC=0.466942 valid=53 ADD=7 beta=1.000000 actor_grad=0.854567
+A2/C2 env=2800 update=109 BC=0.230614 valid=51 ADD=3 beta=1.000000 actor_grad=0.171864
+A2/C2 env=2800 update=110 BC=0.185484 valid=44 ADD=2 beta=1.000000 actor_grad=0.098213
+A2/C2 env=2800 update=111 BC=0.227423 valid=52 ADD=3 beta=1.000000 actor_grad=0.161316
+A2/C2 env=2800 update=112 BC=0.209446 valid=56 ADD=3 beta=1.000000 actor_grad=0.196574
+A2/C2 env=2900 update=113 BC=0.201160 valid=60 ADD=3 beta=1.000000 actor_grad=0.105408
+A2/C2 env=2900 update=114 BC=0.113294 valid=51 ADD=1 beta=1.000000 actor_grad=0.433446
+A2/C2 env=2900 update=115 BC=0.036740 valid=64 ADD=0 beta=1.000000 actor_grad=0.288422
+A2/C2 env=2900 update=116 BC=0.119795 valid=58 ADD=1 beta=1.000000 actor_grad=0.805633
+A2/C2 env=3000 update=117 BC=0.040419 valid=64 ADD=0 beta=1.000000 actor_grad=0.386998
+A2/C2 env=3000 update=118 BC=0.036913 valid=64 ADD=0 beta=1.000000 actor_grad=0.297386
+A2/C2 env=3000 update=119 BC=0.037622 valid=64 ADD=0 beta=1.000000 actor_grad=0.305604
+A2/C2 env=3000 update=120 BC=0.116402 valid=45 ADD=1 beta=1.000000 actor_grad=0.284359
+A2/C2 env=3100 update=121 BC=0.244189 valid=47 ADD=3 beta=1.000000 actor_grad=0.266676
+A2/C2 env=3100 update=122 BC=0.040595 valid=22 ADD=0 beta=1.000000 actor_grad=0.364309
+A2/C2 env=3100 update=123 BC=0.290851 valid=60 ADD=5 beta=1.000000 actor_grad=0.500200
+A2/C2 env=3100 update=124 BC=0.047616 valid=63 ADD=0 beta=1.000000 actor_grad=0.548933
+A2/C2 env=3200 update=125 BC=0.409393 valid=49 ADD=6 beta=1.000000 actor_grad=0.850763
+A2/C2 env=3200 update=126 BC=0.000000 valid=0 ADD=0 beta=1.000000 actor_grad=0.000000
+A2/C2 env=3200 update=127 BC=0.000000 valid=0 ADD=0 beta=1.000000 actor_grad=0.000000
+A2/C2 env=3200 update=128 BC=0.100172 valid=62 ADD=1 beta=1.000000 actor_grad=0.411932
+A2/C2 env=3300 update=129 BC=0.036889 valid=64 ADD=0 beta=1.000000 actor_grad=0.299543
+A2/C2 env=3300 update=130 BC=0.240963 valid=16 ADD=1 beta=1.000000 actor_grad=0.166824
+A2/C2 env=3300 update=131 BC=0.034484 valid=58 ADD=0 beta=1.000000 actor_grad=0.229217
+A2/C2 env=3300 update=132 BC=0.116350 valid=51 ADD=1 beta=1.000000 actor_grad=0.512480
+A2/C2 env=3400 update=133 BC=0.087694 valid=56 ADD=1 beta=1.000000 actor_grad=0.102343
+A2/C2 env=3400 update=134 BC=0.033560 valid=64 ADD=0 beta=1.000000 actor_grad=0.206268
+A2/C2 env=3400 update=135 BC=0.000000 valid=0 ADD=0 beta=1.000000 actor_grad=0.000000
+A2/C2 env=3400 update=136 BC=0.038542 valid=64 ADD=0 beta=1.000000 actor_grad=0.335122
+A2/C2 env=3500 update=137 BC=0.334925 valid=56 ADD=5 beta=1.000000 actor_grad=0.366160
+A2/C2 env=3500 update=138 BC=0.038987 valid=63 ADD=0 beta=1.000000 actor_grad=0.337347
+A2/C2 env=3500 update=139 BC=0.460225 valid=16 ADD=2 beta=1.000000 actor_grad=0.515819
+A2/C2 env=3500 update=140 BC=0.031450 valid=64 ADD=0 beta=1.000000 actor_grad=0.159665
+A2/C2 env=3600 update=141 BC=0.242127 valid=49 ADD=3 beta=1.000000 actor_grad=0.153206
+A2/C2 env=3600 update=142 BC=0.087079 valid=62 ADD=1 beta=1.000000 actor_grad=0.079220
+A2/C2 env=3600 update=143 BC=0.247243 valid=60 ADD=4 beta=1.000000 actor_grad=0.385915
+A2/C2 env=3600 update=144 BC=0.452983 valid=49 ADD=6 beta=1.000000 actor_grad=0.460953
+A2/C2 env=3700 update=145 BC=0.472177 valid=54 ADD=7 beta=0.998750 actor_grad=0.612098
+A2/C2 env=3700 update=146 BC=0.382997 valid=49 ADD=5 beta=0.998750 actor_grad=0.352424
+A2/C2 env=3700 update=147 BC=0.250135 valid=47 ADD=3 beta=0.998750 actor_grad=0.179679
+A2/C2 env=3700 update=148 BC=0.185522 valid=44 ADD=2 beta=0.998750 actor_grad=0.118139
+A2/C2 env=3800 update=149 BC=0.092877 valid=56 ADD=1 beta=0.997500 actor_grad=0.064793
+A2/C2 env=3800 update=150 BC=0.363775 valid=41 ADD=4 beta=0.997500 actor_grad=0.389150
+A2/C2 env=3800 update=151 BC=0.409422 valid=36 ADD=4 beta=0.997500 actor_grad=0.472741
+A2/C2 env=3800 update=152 BC=0.293583 valid=50 ADD=4 beta=0.997500 actor_grad=0.395835
+A2/C2 env=3900 update=153 BC=0.226328 valid=54 ADD=3 beta=0.996250 actor_grad=0.150270
+A2/C2 env=3900 update=154 BC=0.216304 valid=55 ADD=3 beta=0.996250 actor_grad=0.159455
+A2/C2 env=3900 update=155 BC=0.578640 valid=55 ADD=9 beta=0.996250 actor_grad=0.964638
+A2/C2 env=3900 update=156 BC=0.184235 valid=44 ADD=2 beta=0.996250 actor_grad=0.045933
+A2/C2 env=4000 update=157 BC=0.042216 valid=63 ADD=0 beta=0.995000 actor_grad=0.418920
+A2/C2 env=4000 update=158 BC=0.759951 valid=59 ADD=13 beta=0.995000 actor_grad=1.473787
+A2/C2 env=4000 update=159 BC=0.035706 valid=64 ADD=0 beta=0.995000 actor_grad=0.265314
+A2/C2 env=4000 update=160 BC=0.035435 valid=64 ADD=0 beta=0.995000 actor_grad=0.256721
+A2/C2 env=4100 update=161 BC=0.036312 valid=64 ADD=0 beta=0.993750 actor_grad=0.272998
+A2/C2 env=4100 update=162 BC=0.277783 valid=54 ADD=4 beta=0.993750 actor_grad=0.315457
+A2/C2 env=4100 update=163 BC=0.036460 valid=64 ADD=0 beta=0.993750 actor_grad=0.279012
+A2/C2 env=4100 update=164 BC=0.036089 valid=64 ADD=0 beta=0.993750 actor_grad=0.274665
+A2/C2 env=4200 update=165 BC=0.261096 valid=43 ADD=3 beta=0.992500 actor_grad=0.293094
+A2/C2 env=4200 update=166 BC=0.037309 valid=64 ADD=0 beta=0.992500 actor_grad=0.297745
+A2/C2 env=4200 update=167 BC=0.299817 valid=57 ADD=5 beta=0.992500 actor_grad=0.615174
+A2/C2 env=4200 update=168 BC=0.045648 valid=63 ADD=0 beta=0.992500 actor_grad=0.471573
+A2/C2 env=4300 update=169 BC=0.039164 valid=64 ADD=0 beta=0.991250 actor_grad=0.333887
+A2/C2 env=4300 update=170 BC=0.279018 valid=27 ADD=2 beta=0.991250 actor_grad=0.297789
+A2/C2 env=4300 update=171 BC=0.092393 valid=63 ADD=1 beta=0.991250 actor_grad=0.259457
+A2/C2 env=4300 update=172 BC=0.212917 valid=56 ADD=3 beta=0.991250 actor_grad=0.138415
+A2/C2 env=4400 update=173 BC=0.000000 valid=0 ADD=0 beta=0.990000 actor_grad=0.000000
+A2/C2 env=4400 update=174 BC=0.177702 valid=47 ADD=2 beta=0.990000 actor_grad=0.036060
+A2/C2 env=4400 update=175 BC=0.168101 valid=50 ADD=2 beta=0.990000 actor_grad=0.029688
+A2/C2 env=4400 update=176 BC=0.113210 valid=51 ADD=1 beta=0.990000 actor_grad=0.422216
+A2/C2 env=4500 update=177 BC=0.289903 valid=47 ADD=4 beta=0.988750 actor_grad=0.682800
+A2/C2 env=4500 update=178 BC=0.092911 valid=58 ADD=1 beta=0.988750 actor_grad=0.149695
+A2/C2 env=4500 update=179 BC=0.114353 valid=51 ADD=1 beta=0.988750 actor_grad=0.441949
+A2/C2 env=4500 update=180 BC=0.277629 valid=52 ADD=4 beta=0.988750 actor_grad=0.410920
+A2/C2 env=4600 update=181 BC=0.036257 valid=64 ADD=0 beta=0.987500 actor_grad=0.274724
+A2/C2 env=4600 update=182 BC=0.041067 valid=59 ADD=0 beta=0.987500 actor_grad=0.370617
+A2/C2 env=4600 update=183 BC=0.037949 valid=64 ADD=0 beta=0.987500 actor_grad=0.306576
+A2/C2 env=4600 update=184 BC=0.417121 valid=52 ADD=6 beta=0.987500 actor_grad=0.622635
+A2/C2 env=4700 update=185 BC=0.035551 valid=64 ADD=0 beta=0.986250 actor_grad=0.259112
+A2/C2 env=4700 update=186 BC=0.442791 valid=56 ADD=7 beta=0.986250 actor_grad=0.743741
+A2/C2 env=4700 update=187 BC=0.220927 valid=52 ADD=3 beta=0.986250 actor_grad=0.203921
+A2/C2 env=4700 update=188 BC=0.368716 valid=46 ADD=5 beta=0.986250 actor_grad=0.636688
+A2/C2 env=4800 update=189 BC=0.374936 valid=38 ADD=4 beta=0.985000 actor_grad=0.618171
+A2/C2 env=4800 update=190 BC=0.584578 valid=53 ADD=9 beta=0.985000 actor_grad=1.154184
+A2/C2 env=4800 update=191 BC=0.525041 valid=53 ADD=8 beta=0.985000 actor_grad=0.987097
+A2/C2 env=4800 update=192 BC=0.162889 valid=50 ADD=2 beta=0.985000 actor_grad=0.065730
+A2/C2 env=4900 update=193 BC=0.042174 valid=64 ADD=0 beta=0.983750 actor_grad=0.397141
+A2/C2 env=4900 update=194 BC=0.142467 valid=61 ADD=2 beta=0.983750 actor_grad=0.074358
+A2/C2 env=4900 update=195 BC=0.040054 valid=64 ADD=0 beta=0.983750 actor_grad=0.360645
+A2/C2 env=4900 update=196 BC=0.397736 valid=34 ADD=4 beta=0.983750 actor_grad=0.801236
+A2/C2 env=5000 update=197 BC=0.041031 valid=64 ADD=0 beta=0.982500 actor_grad=0.378171
+A2/C2 env=5000 update=198 BC=0.095511 valid=60 ADD=1 beta=0.982500 actor_grad=0.266435
+A2/C2 env=5000 update=199 BC=0.149844 valid=59 ADD=2 beta=0.982500 actor_grad=0.155946
+A2/C2 env=5000 update=200 BC=0.185457 valid=58 ADD=3 beta=0.982500 actor_grad=0.339588
+{
+  "protocol": "FG_S3_V2_LIVE_LEARNING_V1",
+  "status": "DIAGNOSTIC_STOPPED",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_ALL_TRAIN_BETA_8K_v1",
+  "env_steps": 5000,
+  "counters": {
+    "all_updates": 200,
+    "wm_updates": 200,
+    "bc_valid_updates": 196,
+    "bc_add_updates": 138,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 200,
+    "cycles": 50,
+    "sampled_transitions": 12800
+  },
+  "model_updates": 21383,
+  "counts": {
+    "native_rows": 5025,
+    "resets": 25,
+    "env_steps": 5000,
+    "valid_market_minutes": 5000,
+    "actor_ADD": 294,
+    "oracle_ADD": 200,
+    "executed_ADD": 200,
+    "entries": 200,
+    "TP": 195,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 4131,
+    "learnable_decisions": 4131,
+    "unproven_funds": 0,
+    "reward_sum": 182.62663793563843,
+    "published_native_rows": 5024,
+    "actor_oracle_ADD_tp": 8,
+    "actor_oracle_ADD_fn": 192
+  },
+  "reward": 182.62663793563843,
+  "beta_schedule": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 1.0,
+    "points": [
+      [
+        0,
+        1.0
+      ],
+      [
+        3600,
+        1.0
+      ],
+      [
+        5200,
+        0.98
+      ],
+      [
+        8000,
+        0.9
+      ]
+    ],
+    "env_steps": 5000,
+    "beta": 0.9824999999999999
+  },
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_ALL_TRAIN_BETA_8K_v1/ckpt/step_000000005000",
+  "checkpoint_manifest_sha256": "84e6e75a4a05c58c3aa45ceefe6d9fcba49887edbc6e8ee3cdab30a5ae5750ab",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 542.0508953739773,
+  "collect_seconds": 460.3905298972386,
+  "update_seconds": 71.24330675724195,
+  "core_env_steps_per_second": 9.404969464442873,
+  "process_peak_rss_mib": 3868.75390625,
+  "oracle_query_recent_seconds": {
+    "50": 0.003466700029093772,
+    "95": 0.00400317859603092,
+    "99": 0.004399248322006317
+  },
+  "actor_oracle_add_recall": 0.04,
+  "retained_teacher_rows": 5024,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_GPU_ALL_TRAIN_BETA_8K_v1/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    21183,
+    21187,
+    21191,
+    21195,
+    21199,
+    21203,
+    21207,
+    21211,
+    21215,
+    21219,
+    21223,
+    21227,
+    21231,
+    21235,
+    21239,
+    21243,
+    21247,
+    21251,
+    21255,
+    21259,
+    21263,
+    21267,
+    21271,
+    21275,
+    21279,
+    21283,
+    21287,
+    21291,
+    21295,
+    21299,
+    21303,
+    21307,
+    21311,
+    21315,
+    21319,
+    21323,
+    21327,
+    21331,
+    21335,
+    21339,
+    21343,
+    21347,
+    21351,
+    21355,
+    21359,
+    21363,
+    21367,
+    21371,
+    21375,
+    21379
+  ],
+  "label_ratio": 0.8262,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "392b2e94731c365de31c0bf7524c4d68d23afc97ff61d69fa2ad34cf028170fd"
+}

@@ -1,0 +1,25 @@
+{
+  "protocol": "FG_S3_V2_PREPARED_V1",
+  "status": "PREPARED_NO_TRAINING",
+  "oracle_identity": "a1bc80e2eccfb5e292ef6c1034cd809e3f0778edbba1e34e4de033687109c130",
+  "settings_path": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/A2_GPU_ALL_TRAIN_BETA_8K_v1/settings.json",
+  "source_identity": "19f70eae2f694acf37c11402bbaa52a8d24c39d00e5a50a803366fa85c78fc53",
+  "versions": {
+    "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env": "8a69bec3a93220cf03e0845b26a70fb4df35b84c",
+    "/home/v/Documents/work/research/fg-s3-dev/dreamerv3": "6356747d64963fb5ef55a036d837591f778c9f0a"
+  },
+  "source_update_offset": 21183,
+  "new_environment_steps": 0,
+  "training_identity": {
+    "candidate": "C1",
+    "pool": "C1_natural_oracle",
+    "dataset_sha256": "c9e325b17be7bef1c83dff4c562f22bf61bd0d2ad01beb827f40c95fa136a17c",
+    "reward_params_hash": "96f34998ce005b7e5f08239dbeba95239cdd2b97e0e2d3596ce73fe173a17aa1",
+    "observation_identity": "4eb0ddfced5a3fdeeed559dbf041e776611fe68a5731374b528f5878859e7dff",
+    "training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a"
+  },
+  "diagnostic": true,
+  "budget_unit": "environment_advances",
+  "formal_1m": "NOT_RUN",
+  "content_hash": "84570237269289b703a43955ad7cd0204819e688cd258ca57c7db74dddbeeefb"
+}
