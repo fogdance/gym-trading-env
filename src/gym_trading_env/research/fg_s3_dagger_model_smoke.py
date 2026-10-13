@@ -12,7 +12,7 @@ def model_smoke(config, query, env, output):
     from gym_trading_env.research.fg_s3_teacher_catalog import load_catalog
     from embodied.run.fg_s3_source_admission import inspect_source
     from embodied.run.fg_s3_source_transfer import make_agent, apply_and_audit_transfer
-    from embodied.run.fg_s3a_checkpoint import parameter_digests
+    from dreamerv3.fg_s3a_actor import parameter_digests
     from .fg_s3_dagger_d0 import D0Collector
     from .fg_s3_dagger_bridge import prove_bridge
     started = time.perf_counter()
