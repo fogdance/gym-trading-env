@@ -1,4 +1,5 @@
 from fractions import Fraction
+import copy
 import itertools
 from pathlib import Path
 
@@ -107,6 +108,15 @@ def test_driver_mixing_native_replay_restore_and_no_teacher_leak(tmp_path):
         assert not any(k.startswith(('teacher','oracle','q_')) for k in sample)
         joined=join_d0_teacher(sample,first.records)
         assert joined['teacher_valid'].sum()>0
+        key=sample['stepid'][0,np.flatnonzero(joined['teacher_valid'][0])[0]].tobytes().hex()
+        corrupted=copy.deepcopy(first.records)
+        row=next(r for r in corrupted if r['stepid']==key)
+        row['teacher_action']=1-row['teacher_action']
+        with pytest.raises(ValueError,match='Uncertified'):
+            join_d0_teacher(sample,corrupted)
+        row['oracle_action']=row['teacher_action']
+        with pytest.raises(ValueError,match='Oracle proof'):
+            join_d0_teacher(sample,corrupted)
         bad={**sample,'action':1-sample['action']}
         with pytest.raises(ValueError,match='executed action'):
             join_d0_teacher(bad,first.records)

@@ -59,8 +59,16 @@ def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
             raise ValueError('D0 teacher observation alignment differs')
         if int(batch['action'][pos]) != row['executed_action']:
             raise ValueError('D0 Replay action is not the executed action')
+        proof = dict(action=row['oracle_action'], valid=row['oracle_valid'],
+            certified=row['oracle_certified'], reason=row['oracle_reason'],
+            q_add=row['q_add'], q_wait=row['q_wait'], q_margin=row['q_margin'],
+            state_id=row['state_id'], oracle_identity=row['oracle_identity'])
+        if fingerprint(proof) != row['oracle_proof_hash']:
+            raise ValueError('D0 Oracle proof differs from the recorded query')
         if row['teacher_valid']:
-            if not row['oracle_certified'] or not all(row['action_mask']):
+            if (not row['oracle_certified'] or not row['oracle_valid']
+                    or not row['execution_result']['advanced'] or not all(row['action_mask'])
+                    or row['teacher_action'] != row['oracle_action']):
                 raise ValueError('Uncertified or forced decision reached supervision')
             y[pos], valid[pos] = row['teacher_action'], True
     return {**batch, 'teacher_action': y, 'teacher_valid': valid}
