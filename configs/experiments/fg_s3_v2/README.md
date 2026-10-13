@@ -1,5 +1,34 @@
 # S3-V2 entries and diagnostic configurations
 
+## B2 Outcome-Aware diagnostics (market-minute V1)
+
+Use the independent `research/fg-s3-b2-dev/` pair. New E/O and live DAgger labels,
+H60 market bars, two lightweight outcome heads, and a bounded signed adapter on
+the original Actor. Natural Oracle BC supervises the final masked distribution;
+no Tutor ranking/difficulty or RL/Critic updates. Old Online180k is authenticated
+parameter initialization only; optimizer, Gate, replay and progress are fresh.
+
+The verified `B2_OUTCOME_GPU_TRAIN_10K_V3` Run completed500→1000 restore and10K,
+then fixed FG409 Actor-only5K. Its bounded budget was frozen before startup.
+Original/v2 preparations retain rejected optimizer-schema startup history;
+v3 derives the exact Ninjax-encoded new optimizer leaves. Existing outputs are
+not overwritten; create a new configuration/run name for another experiment.
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-b2-dev/gym-trading-env
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config B2_OUTCOME_GPU_TRAIN_10K_V3
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config B2_OUTCOME_GPU_TRAIN_10K_V3 --stop-at 500
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config B2_OUTCOME_GPU_TRAIN_10K_V3 --stop-at 1000
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config B2_OUTCOME_GPU_TRAIN_10K_V3
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py evaluate --config B2_OUTCOME_GPU_TRAIN_10K_V3 --eval-steps 5000
+```
+
+For a fresh standalone1K run use `B2_OUTCOME_GPU_SMOKE_1K` with the same entry.
+Formal B2 is rejected. Actual results and limitations are in
+`docs/B2_IMPLEMENTATION_REPORT.md`: engineering checks passed, DEV remained All-WAIT.
+Tutor's freeze and `/tmp/done_cd` release remain a separate procedure requiring
+its own regenerated data and real training/restore verification.
+
 ## Tutor E2 bounded dynamic curriculum (10K authorized)
 
 Use the isolated sibling pair `research/fg-s3-tutor-e2-dev/`; the earlier static
