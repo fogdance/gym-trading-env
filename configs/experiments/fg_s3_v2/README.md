@@ -1,5 +1,43 @@
 # S3-V2 entries and diagnostic configurations
 
+## C2 joint learning and isolated CPU diagnostics (2026-10-13)
+
+C2 development uses the sibling worktrees in `research/fg-s3-v2-c2-dev/`.
+The running A2 worktrees, snapshots, observer and outputs are retained unchanged.
+Use the existing entrypoint; no private DAgger, teacher index or migration API is added.
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-v2-c2-dev/gym-trading-env
+# Controlled small original-network test, with no CUDA initialization:
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  taskset -c 20-23 nice -n 10 /home/v/miniconda3/envs/dreamerv3/bin/python \
+  tools/fg_s3_v2_experiment.py c2_check --device cpu
+# Original Replay model and real FG201 TRAIN, with authentic production Gate:
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config C2_CPU_FG201_300
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  taskset -c 20-23 nice -n 10 /home/v/miniconda3/envs/dreamerv3/bin/python \
+  tools/fg_s3_v2_experiment.py start --config C2_CPU_FG201_300 --stop-at 200
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  taskset -c 20-23 nice -n 10 /home/v/miniconda3/envs/dreamerv3/bin/python \
+  tools/fg_s3_v2_experiment.py resume --config C2_CPU_FG201_300
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 \
+  taskset -c 20-23 nice -n 10 /home/v/miniconda3/envs/dreamerv3/bin/python \
+  tools/fg_s3_v2_experiment.py evaluate --config C2_CPU_FG201_300 --eval-steps 100
+```
+
+CPU is allowed only for C2 diagnostic scope. A2 and formal runs retain GPU.
+`c2_check` tests CLOSED → controlled READY → saved/restored READY → CLOSED,
+Actor BC/RL gradient additivity, one joint optimizer update, Critic momentum,
+SlowCritic and stateful Normalizer boundaries. The fixture enables stateful
+value/advantage normalizers; the production `none` configuration is unchanged.
+Its controlled Gate reports and prices do not certify production Gate readiness
+or market performance. Production regression still stops after five bad reports.
+
+`C2_GPU_FG201_500_V2` is a new, independent original-model GPU diagnostic, to be
+run after A2 releases the GPU. Use the same prepare/start/resume/evaluate commands.
+The old `C2_GPU_FG201_500` configuration and outputs remain historical records.
+No formal C2 training is started by either diagnostic.
+
 ## A2 beta schedule and 18-contract path (2026-10-13)
 
 `A2_GPU_FORMAL_1M_BETA` uses the original ALL_TRAIN pool and Replay Online180k
@@ -70,7 +108,8 @@ A2-to-C2 source migration, R1 and B2 remain deferred.
 Use `tools/fg_s3_v2_experiment.py` for `prepare / start / resume / evaluate / report`.
 The configuration selects A2 (WM + equal Oracle BC) or C2 (WM + equal Oracle BC,
 original RL only after the shared Single3 Gate opens). No network layers are added.
-Model work requires GPU; the entry restarts only its own process without an
+Formal and A2 model work requires GPU; isolated C2 diagnostics also support CPU.
+The entry restarts only its own process without an
 inherited `LD_LIBRARY_PATH` to prevent the independently reproduced system/Conda
 cuBLAS library mix. It does not change CUDA packages or system settings.
 

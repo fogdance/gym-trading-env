@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, run, restore and evaluate bounded GPU S3-V2 diagnostics."""
+"""Prepare, run, restore and evaluate S3-V2; CPU is for isolated C2 diagnostics."""
 import argparse
 import json
 import os
@@ -20,23 +20,52 @@ if os.environ.get('LD_LIBRARY_PATH'):
 sys.path.insert(0, str(PROJECT/'src'))
 sys.path.insert(0, str(PROJECT.parent/'dreamerv3'))
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-os.environ['JAX_PLATFORMS'] = 'cuda'
-os.environ.pop('JAX_PLATFORM_NAME', None)
 os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check'])
+    p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check', 'c2_check'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
+    p.add_argument('--device', choices=['cpu', 'gpu'],
+                   help='Only c2_check selects a backend here; runs use their immutable YAML device')
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
+    if args.command == 'c2_check':
+        if args.config or args.prepared or args.stop_at or args.authorize_training:
+            p.error('c2_check is a controlled fixture, not a prepared or formal training run')
+        device = args.device or 'cpu'
+    elif args.command == 'gpu_check':
+        if args.device:
+            p.error('gpu_check always requires GPU')
+        device = 'gpu'
+    else:
+        if args.device:
+            p.error('Run backend is selected by its immutable configuration')
+        if not args.config and not args.prepared:
+            p.error('Select --config or --prepared')
+        # The canonical reader imports no JAX. Select the backend before any
+        # model module can initialize CUDA in a CPU diagnostic process.
+        from dreamerv3.configuration import read_config_yaml
+        if args.config:
+            path = Path(args.config)
+            if not path.is_file():
+                path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
+            device = read_config_yaml(path)['device']
+        else:
+            device = json.loads((Path(args.prepared)/'settings.json').read_text())['settings']['device']
+        if device not in ('cpu', 'gpu'):
+            p.error('Unknown configured device')
+    os.environ['JAX_PLATFORMS'] = 'cpu' if device == 'cpu' else 'cuda'
+    os.environ.pop('JAX_PLATFORM_NAME', None)
+    if device == 'cpu':
+        os.environ['CUDA_VISIBLE_DEVICES'] = ''
     import gym_trading_env, dreamerv3, embodied
     if (Path(gym_trading_env.__file__).resolve().parent != PROJECT/'src/gym_trading_env'
             or Path(dreamerv3.__file__).resolve().parent != PROJECT.parent/'dreamerv3/dreamerv3'
@@ -50,6 +79,9 @@ def main():
     elif args.command == 'gpu_check':
         from gym_trading_env.research.fg_s3_v2_gpu_check import check_gpu_model
         result = check_gpu_model()
+    elif args.command == 'c2_check':
+        from gym_trading_env.research.fg_s3_v2_c2_check import check_c2_model
+        result = check_c2_model(args.run_dir, device=device)
     else:
         if not args.config and not args.prepared:
             p.error('Select --config or --prepared')

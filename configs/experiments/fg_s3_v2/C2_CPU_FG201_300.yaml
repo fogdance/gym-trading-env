@@ -1,0 +1,24 @@
+schema: FG_S3_V2_DIAGNOSTIC_CONFIG_V1
+experiment: C2_CPU_FG201_300_v1
+scope: diagnostic
+mode: c2
+device: cpu
+contract: CZCE.FG201
+dreamer_root: ../dreamerv3
+env_receipt: ../../fg-data/fg_single3_v1/env/run_20261011_04
+oracle_receipt: ../../fg-data/fg_single3_v1/oracle/run_20261011_01
+catalog: artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+source_checkpoint: artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/C2_CPU_FG201_300_v1
+run_dir: artifacts/fg_s3_v2/runs/C2_CPU_FG201_300_v1
+# Full original Replay model; authentic production Gate, no READY override.
+# Stop at 200, then resume to 300 to test own FullCheckpoint continuation.
+env_steps: 300
+collect_every: 100
+updates_per_collect: 2
+save_every: 200
+batch_size: 1
+replay_seed: 202
+beta: 1.0
+bc_lambda: 1.0

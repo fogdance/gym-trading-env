@@ -23,15 +23,24 @@ def require_training_authorization(settings, authorized):
         raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
 
+def require_device(settings):
+    device = settings['device']
+    if device not in ('cpu', 'gpu') or (device == 'cpu' and
+            (settings['mode'] != 'c2' or settings['scope'] != 'diagnostic')):
+        raise ValueError('CPU is limited to isolated C2 diagnostics; formal training requires GPU')
+    return device
+
+
 def read_settings(path):
     path = Path(path)
     if not path.is_file():
         path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
     path = path.resolve()
     s = read_config_yaml(path)
-    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2') or s['device'] != 'gpu':
-        raise ValueError('S3-V2 requires an explicit A2/C2 GPU diagnostic config')
+    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2'):
+        raise ValueError('S3-V2 requires an explicit A2/C2 config')
     s.setdefault('scope', 'diagnostic')
+    require_device(s)
     s.setdefault('contracts', None)
     s.setdefault('env_slice_bars', 1024)
     s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)

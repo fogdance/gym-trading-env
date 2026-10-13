@@ -79,7 +79,8 @@ def evaluate(prepared, run_dir, steps=1000):
     output = root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
     output.mkdir(parents=True, exist_ok=False)
     dev = prepare_dev(s, output)
-    model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device='gpu',
+    from .fg_s3_v2_experiment import require_device
+    model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device=require_device(s),
         bc_lambda=s['bc_lambda'], extra_agent_config={'s3_v2_mode': s['mode']})
     model.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
     model.sync_policy_from_train()

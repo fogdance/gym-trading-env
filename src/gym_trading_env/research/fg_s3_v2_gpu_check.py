@@ -45,7 +45,7 @@ def small_config():
         'agent.avail_always_available_index': 0}))
 
 
-def gpu_batch(agent, raw, seed):
+def model_batch(agent, raw, seed):
     from embodied.jax import internal
     data = internal.device_put(copy.deepcopy(raw), agent.train_sharded)
     return {**data, 'seed': agent._seeds(seed, agent.train_mirrored)}
@@ -99,7 +99,7 @@ def check_gpu_model(output=None):
             k.startswith('opt/state/') and '/val/' in k)
         actor = lambda k: k.startswith('pol/') or (k.startswith('opt/state/') and '/pol/' in k)
         before = parameter_digests(a.params)
-        carry, _, m = a.train(a.init_train(1), gpu_batch(a, raw, 7))
+        carry, _, m = a.train(a.init_train(1), model_batch(a, raw, 7))
         write_json(output/'a2_first_update.json', {k: float(np.asarray(v)) for k, v in m.items()
             if np.asarray(v).size == 1 and np.isfinite(v).all()})
         after = parameter_digests(a.params)
@@ -110,7 +110,7 @@ def check_gpu_model(output=None):
         assert not bool(m['v2/rl_active']) and bool(m['bc/active'])
         empty = copy.deepcopy(raw); empty['teacher_valid'][:] = False; empty['teacher_action'][:] = 1
         b = parameter_digests(a.params)
-        _, _, zero = a.train(carry, gpu_batch(a, empty, 8))
+        _, _, zero = a.train(carry, model_batch(a, empty, 8))
         z = parameter_digests(a.params)
         assert float(zero['bc/nll']) == 0 and float(zero['opt/actor_grad_norm']) == 0
         assert all(b[k] == z[k] for k in b if actor(k) or frozen(k))
@@ -120,7 +120,7 @@ def check_gpu_model(output=None):
             _, (_, _, outs, _) = a.model.wm_only(c, obs, prev, False)
             return a.model.bc_loss(outs['repfeat'], obs['action_mask'],
                 d['teacher_action'][:,1:], d['teacher_valid'][:,1:])[0]
-        data = gpu_batch(a, raw, 9); data.pop('seed')
+        data = model_batch(a, raw, 9); data.pop('seed')
         bc_modules = [m for m in a.model.modules if m is not a.model.val]
         _, (_, _, grads) = jax.jit(nj.pure(lambda c, d: nj.grad(only_bc, bc_modules)(c, d)),
             static_argnames=('create', 'modify'))(a.params, a.init_train(1), data, seed=9, create=False, modify=True)
@@ -132,7 +132,7 @@ def check_gpu_model(output=None):
         c.load_exact(initial)
         cb = parameter_digests(c.params)
         cb_values = {k: np.asarray(jax.device_get(v)).copy() for k, v in c.params.items() if frozen(k)}
-        cc, _, closed = c.train(c.init_train(1), gpu_batch(c, raw, 7))
+        cc, _, closed = c.train(c.init_train(1), model_batch(c, raw, 7))
         ca = parameter_digests(c.params)
         write_json(output/'c2_closed_update.json', dict(
             changed_frozen_keys=[k for k in cb if frozen(k) and cb[k] != ca[k]],
@@ -147,7 +147,7 @@ def check_gpu_model(output=None):
         assert all(cb[k] == ca[k] for k in cb if frozen(k))
         c.set_avail_actor_enabled(True)  # Controlled READY fixture, never a production Gate pass.
         cb = parameter_digests(c.params)
-        _, _, ready = c.train(cc, gpu_batch(c, raw, 10))
+        _, _, ready = c.train(cc, model_batch(c, raw, 10))
         ca = parameter_digests(c.params)
         assert bool(ready['v2/rl_active']) and float(ready['opt/critic_grad_norm']) > 0
         assert any(cb[k] != ca[k] for k in cb if k.startswith('val/'))
@@ -157,12 +157,12 @@ def check_gpu_model(output=None):
                                 extra_agent_config={'s3_v2_mode': 'c2'})
         zero_agent.load_exact(initial); zero_agent.set_avail_actor_enabled(True)
         checkpoint = zero_agent.save_exact()
-        _, _, zm = zero_agent.train(zero_agent.init_train(1), gpu_batch(zero_agent, raw, 12))
+        _, _, zm = zero_agent.train(zero_agent.init_train(1), model_batch(zero_agent, raw, 12))
         original = parameter_digests(zero_agent.params)
         zero_agent.load_exact(checkpoint)
         swapped = copy.deepcopy(raw); swapped['teacher_action'][:] = 1-swapped['teacher_action']
         swapped['teacher_valid'][:] = False
-        zero_agent.train(zero_agent.init_train(1), gpu_batch(zero_agent, swapped, 12))
+        zero_agent.train(zero_agent.init_train(1), model_batch(zero_agent, swapped, 12))
         assert original == parameter_digests(zero_agent.params) and float(zm['bc/nll']) == 0
 
         original_code = subprocess.check_output(['git','show','e872602:dreamerv3/agent.py'], cwd=DREAMER)
