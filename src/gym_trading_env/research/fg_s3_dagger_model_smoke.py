@@ -1,6 +1,7 @@
 """Actual CPU FullCheckpoint transfer, mixed policy and one original WM update."""
 from pathlib import Path
 import copy
+from functools import partial
 import time
 
 import numpy as np
@@ -46,9 +47,14 @@ def model_smoke(config, query, env, output):
         bridge = prove_bridge(collector, catalog)
         if parameter_digests(agent.params) != before or int(agent.n_updates) != old_updates:
             raise RuntimeError('Policy smoke changed training parameters or updates')
-        with np.load(output/'rollout/native_sample.npz') as f:
-            batch = {k: f[k] for k in f.files}
-        _, _, metrics = agent.train(agent.init_train(1), batch)
+        import embodied
+        source = embodied.streams.Consec(embodied.streams.Stateless(
+            partial(collector.replay.sample, 1)), length=64, consec=1, prefix=1, strict=True)
+        stream = agent.stream(source)
+        stream.enable_deterministic()
+        batch = next(iter(stream))
+        with stream.pause():
+            _, _, metrics = agent.train(agent.init_train(1), batch)
         after = parameter_digests(agent.params)
         changed = [k for k in before if before[k] != after[k]]
         if int(agent.n_updates) != old_updates+1:
