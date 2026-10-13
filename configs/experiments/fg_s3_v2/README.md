@@ -1,5 +1,32 @@
 # S3-V2 entries and diagnostic configurations
 
+## Current P0 A2 training preparation (2026-10-13)
+
+Use `A2_P0_GPU_SMOKE_1K` for GPU save/interruption/resume, then the independent
+`A2_P0_GPU_TRAIN_10K` diagnostic. Both start from the original admitted Online180k
+checkpoint. They use the original TRAIN account scheduler, WM + equal Oracle BC,
+and beta=1 to retain the existing funding certificate; executed scores are
+teacher-guided. Actor proposals and BC ADD recall are reported separately.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config A2_P0_GPU_SMOKE_1K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config A2_P0_GPU_SMOKE_1K --stop-at 500
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config A2_P0_GPU_SMOKE_1K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config A2_P0_GPU_TRAIN_10K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config A2_P0_GPU_TRAIN_10K
+```
+
+Replay capacity bounds native sampling. Collector snapshots retain teachers for
+every physical Replay row, plus pending execution; old decisions remain in
+`rollout/teacher_journal.jsonl`. Resume checks native owners and archives any
+uncheckpointed journal tail before continuing. This is practical consistent
+recovery, not a claim of byte-identical uninterrupted GPU execution.
+
+`A2_P0_GPU_FORMAL_1M` is a preparation template over the original TRAIN contracts.
+It uses `/data/logdir/fg_single3/s3_v2/` and requires `--authorize-training` for
+start/resume. **Do not start it without the user's separate formal authorization.**
+A2-to-C2 source migration, R1 and B2 remain deferred.
+
 ## Online A2 / C2 GPU diagnostics
 
 Use `tools/fg_s3_v2_experiment.py` for `prepare / start / resume / evaluate / report`.
@@ -33,8 +60,9 @@ Changed code/configuration needs a new preparation/run name; old outputs remain.
 
 Actor-only evaluation uses the existing FG409 DEV fold without querying Oracle
 or reading teacher labels. TRAIN collection diagnostics include mixed actions
-and are not an independent Actor-only result. The CLI limits training to
-65–10000 actual Env advances and at most 1000 updates; it cannot start formal 1M.
+and are not an independent Actor-only result. Diagnostic configurations limit
+training to 65–10000 actual Env advances and at most 1000 updates. Formal training
+uses a separate scope, path and authorization flag as described above.
 TEST, R1 comparisons and B2 are outside the current implementation scope.
 
 `gpu_check` runs a small original-network fixture on CUDA for gradient ownership,

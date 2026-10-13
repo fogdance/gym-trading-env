@@ -34,6 +34,8 @@ def main():
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
+    p.add_argument('--authorize-training', action='store_true',
+                   help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
     import gym_trading_env, dreamerv3, embodied
     if (Path(gym_trading_env.__file__).resolve().parent != PROJECT/'src/gym_trading_env'
@@ -65,7 +67,8 @@ def main():
             result = evaluate(prepared, run_dir, args.eval_steps)
         else:
             from embodied.run.fg_s3_v2_train import LiveRun
-            run = LiveRun(prepared, run_dir, resume=args.command == 'resume')
+            run = LiveRun(prepared, run_dir, resume=args.command == 'resume',
+                          authorize_training=args.authorize_training)
             try:
                 result = run.run_to(args.stop_at)
             except BaseException as e:

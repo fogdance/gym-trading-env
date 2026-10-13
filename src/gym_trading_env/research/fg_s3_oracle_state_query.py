@@ -87,6 +87,9 @@ class OracleStateQuery:
         result['proof_hash'] = fingerprint(result)
         return result
 
+    def accepts_identity(self, contract, identity_hash):
+        return contract == self.rules['contract'] and identity_hash == self.identity_hash
+
 
 def load_train_query(env_receipt, oracle_receipt, contract):
     """Reuse frozen data, while checking producer Env bytes in this worktree.

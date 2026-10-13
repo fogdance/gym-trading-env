@@ -84,7 +84,6 @@ class D0Collector:
                  beta=.5, actor_probability=.5, actor=None, agent=None,
                  source_checkpoint_identity=None, existing=False):
         embodied = self.runtime(dreamer_root)
-        import gymnasium as gym
         from embodied.envs.from_gymnasium import FromGymnasium
         from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
         if mode not in ('wait', 'scripted', 'mixed'):
@@ -92,8 +91,7 @@ class D0Collector:
         if oracle.identity['fold'] != 'TRAIN':
             raise ValueError('D0 collector is TRAIN-only')
         self.root = Path(directory).resolve()
-        allowed = Path(__file__).resolve().parents[3]/'artifacts'/self.output_directory
-        if not (self.root.is_relative_to(allowed) or self.root.is_relative_to(Path('/tmp'))):
+        if not self.output_allowed(self.root):
             raise ValueError('D0 output must be isolated from existing experiments and worktrees')
         self.root.mkdir(parents=True, exist_ok=existing)
         self.env, self.oracle = env, oracle
@@ -111,26 +109,14 @@ class D0Collector:
         self.identity_hash = fingerprint(self.identity)
         owner = self
 
-        class Observed(gym.Wrapper):
-            def reset(self, *, seed=None, options=None):
-                if options:
-                    return self.env.reset(seed=seed, options=options)
-                obs, self.last = execute_observed(self.env, seed=seed)
-                return obs, self.env._get_info()
-
-            def step(self, action):
-                obs, self.last = execute_observed(self.env, action)
-                return obs, self.last['official_reward'], self.last['is_terminal'], self.env.truncated, self.env._get_info()
-
-        self.observed = Observed(env)
+        self.observed = self.make_observed(env)
         wrapped = embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(
             FromGymnasium(self.observed, reset_seed=seed)))
         self.driver = embodied.Driver([lambda: wrapped], parallel=False)
-        self.replay = embodied.Replay(length=65, capacity=2048, online=True,
-            directory=str(self.root/'replay'), chunksize=1024, save_wait=True, seed=seed)
+        self.replay = self.make_replay(embodied, seed)
 
         def context(obs):
-            state = env.export_state()
+            state = owner.decision_env.export_state()
             one = {k: np.asarray(v[0]) for k, v in obs.items()}
             return dict(snapshot=state, state_id=fingerprint(state),
                 observation_id=observation_id(one), is_first=bool(one['is_first']),
@@ -139,7 +125,7 @@ class D0Collector:
 
         def query(ctx, mask):
             started = time.perf_counter()
-            answer = oracle.query(env, mask, snapshot=ctx['snapshot'])
+            answer = oracle.query(owner.decision_env, mask, snapshot=ctx['snapshot'])
             owner.query_seconds.append(time.perf_counter() - started)
             return answer
 
@@ -150,6 +136,32 @@ class D0Collector:
         if agent is not None:
             self.driver.reset(agent.init_policy)
         self.driver.on_step(self.capture)
+
+    def output_allowed(self, root):
+        allowed = Path(__file__).resolve().parents[3]/'artifacts'/self.output_directory
+        return root.is_relative_to(allowed) or root.is_relative_to(Path('/tmp'))
+
+    @property
+    def decision_env(self):
+        return self.env
+
+    def make_replay(self, embodied, seed):
+        return embodied.Replay(length=65, capacity=2048, online=True,
+            directory=str(self.root/'replay'), chunksize=1024, save_wait=True, seed=seed)
+
+    def make_observed(self, env):
+        import gymnasium as gym
+        class Observed(gym.Wrapper):
+            def reset(self, *, seed=None, options=None):
+                if options:
+                    return self.env.reset(seed=seed, options=options)
+                obs, self.last = execute_observed(self.env, seed=seed)
+                return obs, self.env._get_info()
+
+            def step(self, action):
+                obs, self.last = execute_observed(self.env, action)
+                return obs, self.last['official_reward'], self.last['is_terminal'], self.env.truncated, self.env._get_info()
+        return Observed(env)
 
     def _complete(self, result, next_context):
         r = self.pending
@@ -196,9 +208,10 @@ class D0Collector:
         if self.pending is None and self.records and not ctx['is_first']:
             if previous != self.records[-1]['executed_action']:
                 raise RuntimeError('Actor previous action differs from actual execution')
-        episode = fingerprint(dict(identity=self.identity_hash, account_sequence=state['account_sequence']))
+        episode = fingerprint(dict(identity=self.identity_hash, contract=state['contract'],
+                                   account_sequence=state['account_sequence']))
         self.pending = dict(protocol=self.protocol, source_type='dagger', episode_id=episode,
-            contract=self.env.contract, cursor=state['current_step'], time=state['cursor_time'],
+            contract=state['contract'], cursor=state['current_step'], time=state['cursor_time'],
             actual_observation_id=ctx['observation_id'], state_id=ctx['state_id'],
             stepid=stepid,
             action_mask=native['action_mask'].tolist(),
@@ -211,7 +224,7 @@ class D0Collector:
             q_add=None, q_wait=None, q_margin=None,
             is_first=ctx['is_first'], is_last=ctx['is_last'], is_terminal=ctx['is_terminal'],
             observation_reward=ctx['observation_reward'],
-            equity_before=str(self.env._calculate_equity()),
+            equity_before=str(self.decision_env._calculate_equity()),
             source_checkpoint_identity=self.source_checkpoint_identity)
         self.counts['native_rows'] += 1
         self.counts['resets'] += int(ctx['is_first'])

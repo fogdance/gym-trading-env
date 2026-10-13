@@ -36,6 +36,7 @@ def test_live_committed_rows_restore_preserves_native_ownership(tmp_path):
         replay = save_replay(a.replay, tmp_path/'snapshot')
         b_env = FixedDirectionEntryEnv(df=env._raw.copy(), config_path=str(folder/'env.yaml'))
         b = V2Collector(b_env, query, tmp_path/'b', DREAMER, beta=1., actor_probability=0.)
+        b.journal.write_bytes(a.journal.read_bytes()[:state['journal_bytes']])
         b.driver.load(driver)
         load_replay(b.replay, replay, tmp_path/'snapshot')
         b.load(state)

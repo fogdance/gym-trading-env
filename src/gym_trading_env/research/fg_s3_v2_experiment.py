@@ -14,6 +14,12 @@ from .fg_s3_teacher_catalog import load_catalog
 
 PROJECT = Path(__file__).resolve().parents[3]
 SCHEMA = 'FG_S3_V2_DIAGNOSTIC_CONFIG_V1'
+FORMAL_ROOT = Path('/data/logdir/fg_single3/s3_v2')
+
+
+def require_training_authorization(settings, authorized):
+    if settings['scope'] == 'formal' and not authorized:
+        raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
 
 def read_settings(path):
@@ -24,12 +30,27 @@ def read_settings(path):
     s = read_config_yaml(path)
     if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2') or s['device'] != 'gpu':
         raise ValueError('S3-V2 requires an explicit A2/C2 GPU diagnostic config')
-    for key in ('env_steps', 'collect_every', 'updates_per_collect', 'save_every', 'batch_size', 'replay_seed'):
+    s.setdefault('scope', 'diagnostic')
+    s.setdefault('contracts', None)
+    s.setdefault('env_slice_bars', 1024)
+    s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)
+    if s['scope'] not in ('diagnostic', 'formal'):
+        raise ValueError('Explicit diagnostic or formal scope required')
+    for key in ('env_steps', 'collect_every', 'updates_per_collect', 'save_every', 'batch_size',
+                'replay_seed', 'env_slice_bars', 'replay_capacity'):
         if type(s[key]) is not int or s[key] < (0 if key == 'replay_seed' else 1):
             raise ValueError('Invalid integer setting: '+key)
-    if (not 65 <= s['env_steps'] <= 10000 or s['collect_every'] < 65
+    if s['collect_every'] < 65 or s['replay_capacity'] < 65:
+        raise ValueError('Collection and Replay must provide a complete causal sequence')
+    if s['scope'] == 'diagnostic' and (not 65 <= s['env_steps'] <= 10000
             or s['updates_per_collect'] * ((s['env_steps']+s['collect_every']-1)//s['collect_every']) > 1000):
         raise ValueError('V2 diagnostics are bounded to 65..10000 real steps and at most 1000 model updates')
+    if s['scope'] == 'formal' and (s['env_steps'] != 1000000 or s['contracts'] is None):
+        raise ValueError('Formal S3-V2 requires exactly 1M actual Env advances and an explicit TRAIN pool')
+    if s['contracts'] is not None and s['contracts'] != 'ALL_TRAIN' and (
+            not isinstance(s['contracts'], list) or not s['contracts']
+            or any(not isinstance(c, str) for c in s['contracts'])):
+        raise ValueError('contracts must be ALL_TRAIN or an explicit nonempty list')
     for key in ('beta', 'bc_lambda'):
         if isinstance(s[key], bool) or not isinstance(s[key], (int, float)):
             raise ValueError('Invalid numerical setting: '+key)
@@ -40,9 +61,11 @@ def read_settings(path):
         s[key] = str((PROJECT/s[key]).resolve())
     if Path(s['dreamer_root']) != PROJECT.parent/'dreamerv3':
         raise ValueError('Foreign Dreamer worktree')
-    for key, subdir in (('prepared_dir', 'prepared'), ('run_dir', 'runs')):
-        if not Path(s[key]).is_relative_to(PROJECT/'artifacts/fg_s3_v2'/subdir):
-            raise ValueError('V2 output escaped isolated '+subdir)
+    if not Path(s['prepared_dir']).is_relative_to(PROJECT/'artifacts/fg_s3_v2/prepared'):
+        raise ValueError('Preparation escaped isolated artifacts')
+    allowed = FORMAL_ROOT if s['scope'] == 'formal' else PROJECT/'artifacts/fg_s3_v2/runs'
+    if not Path(s['run_dir']).is_relative_to(allowed):
+        raise ValueError('Run escaped its isolated '+s['scope']+' directory')
     s.update(config_path=str(path), config_sha256=file_hash(path))
     return s
 
@@ -61,9 +84,13 @@ def prepare(config):
             config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1')
         model = copy.deepcopy(spec['target_config'])
         model.update(batch_size=s['batch_size'], batch_length=64, report_length=64)
-        query, env, _, _, _ = load_train_query(s['env_receipt'], s['oracle_receipt'], s['contract'])
-        env.close()
         output.mkdir(parents=True, exist_ok=False)
+        if s['contracts'] is None:
+            query, env, _, _, _ = load_train_query(s['env_receipt'], s['oracle_receipt'], s['contract'])
+            env.close()
+        else:
+            from .fg_s3_v2_train_pool import prepare_pool
+            query = prepare_pool(s, output)
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
         write_json(output/'model_config.json', signed(dict(config=plain(model))))
@@ -77,7 +104,12 @@ def prepare(config):
                    for r in (PROJECT, PROJECT.parent/'dreamerv3')},
             files={p.name: file_hash(p) for p in output.iterdir() if p.is_file()},
             source_update_offset=spec['origin']['step'], new_environment_steps=0,
-            diagnostic=True, budget_unit='environment_advances', formal_1m='NOT_RUN'))
+            training_identity=dict(candidate='C1', pool='C1_natural_oracle',
+                dataset_sha256=catalog.manifest['source']['dataset_sha256'],
+                reward_params_hash=catalog.manifest['source']['reward_params_hash'],
+                observation_identity=catalog.manifest['observation_identity'],
+                training_hash=catalog.manifest['source']['training_hash']),
+            diagnostic=s['scope'] == 'diagnostic', budget_unit='environment_advances', formal_1m='NOT_RUN'))
         write_json(output/'manifest.json', result)
         return result
     finally:
