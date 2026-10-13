@@ -17,7 +17,7 @@ run_dir: /data/logdir/fg_single3/s3_v2/A2_GPU_FORMAL_1M_BETA_v1
 env_steps: 1000000
 collect_every: 100
 updates_per_collect: 4
-save_every: 50000
+save_every: 100000
 batch_size: 1
 replay_capacity: 8192
 replay_seed: 202

@@ -19,7 +19,7 @@ cd /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env
 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config A2_GPU_FORMAL_1M_BETA --authorize-training
 ```
 
-Checkpoints are saved every 50K steps. Review Actor-controlled ADD, certified
+Checkpoints are saved every 100K steps. Review Actor-controlled ADD, certified
 label coverage and entry outcomes at 100K. `--stop-at 100000` can make this a
 planned review boundary; do not mechanically wait for 1M if ALL_WAIT, lost
 supervision or poor entries persist. Changing a frozen schedule/source is a new
