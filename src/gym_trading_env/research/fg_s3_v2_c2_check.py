@@ -259,8 +259,10 @@ def check_c2_model(output=None, *, device='cpu'):
         run.counters.state['all_updates'] += 1
         run.counters.state['wm_updates'] += 1
         run.counters.state['gate_closed_updates'] += 1
+        run.counters.state['sampled_transitions'] += int(empty['teacher_valid'][:, 1:].size)
         run.collect(85)
         run.cp.save(final=True)
+        assert int(run.agent.n_updates) == run.counters.state['all_updates'] == 8
         result = signed(dict(status='PASS_REAL_'+device.upper()+'_C2_CONTRACTS', output=str(output),
             scope='small original-network, original Env with controlled prices and Gate metrics',
             controlled_gate=True, stateful_normalizers='fixture only; production none is unchanged',

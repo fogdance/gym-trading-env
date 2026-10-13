@@ -25,4 +25,5 @@ def test_real_cpu_c2_gradients_gate_switch_and_full_restore(tmp_path):
     assert result['actor_gradients']['bc_non_actor_grad'] == 0
     assert result['counters']['rl_actor_updates'] == result['counters']['rl_critic_updates'] == 3
     assert result['counters']['all_updates'] == 8
+    assert result['counters']['sampled_transitions'] == 512
     assert result['production_market_gate_ready'] == result['formal_1m'] == 'NOT_RUN'
