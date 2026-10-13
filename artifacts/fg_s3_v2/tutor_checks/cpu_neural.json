@@ -1,0 +1,47 @@
+{
+  "status": "PASS_SMALL_CPU_TUTOR_CONTRACTS",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "scope": "small model over previously recorded real FG201 batch",
+  "updates": 5,
+  "gate_sequence": [
+    "CLOSED",
+    "READY fixture",
+    "CLOSED"
+  ],
+  "results": [
+    {
+      "gate_ready": false,
+      "actor_grad": 0.8319618105888367,
+      "wm_grad": 8737.1767578125,
+      "pair_loss": 0.6937673091888428,
+      "pair_count": 90,
+      "critic_grad": 0.0
+    },
+    {
+      "gate_ready": true,
+      "actor_grad": 0.8229747414588928,
+      "wm_grad": 7892.63134765625,
+      "pair_loss": 0.6936228275299072,
+      "pair_count": 90,
+      "critic_grad": 0.0
+    },
+    {
+      "gate_ready": false,
+      "actor_grad": 0.8307451605796814,
+      "wm_grad": 14546.4912109375,
+      "pair_loss": 0.6930883526802063,
+      "pair_count": 90,
+      "critic_grad": 0.0
+    }
+  ],
+  "critic_and_optimizer_frozen": true,
+  "empty_teacher_actor_momentum_frozen": true,
+  "pair_only_gradient_actor_nonzero": true,
+  "teaching_gradient_outside_actor_zero": true,
+  "joint_optimizer_calls_per_update": 1,
+  "model_save_load_continue": "PASS",
+  "full_live_replay_gpu_resume": "NOT_RUN in this test",
+  "content_hash": "5834cc664c5884db8b84fa71726d55c9caf86ecfec5f2de3feda09d6d2cb49fd"
+}

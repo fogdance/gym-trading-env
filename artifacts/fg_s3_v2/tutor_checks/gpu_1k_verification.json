@@ -1,0 +1,24 @@
+{
+  "status": "PASS_ACTUAL_GPU_TUTOR_1K_AND_RESUME",
+  "run": "/home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_V0_GPU_SMOKE_1K_v1",
+  "frozen_versions": {
+    "/home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env": "e82e4dc47f97921861f2953616dc5492fc48c247",
+    "/home/v/Documents/work/research/fg-s3-tutor-dev/dreamerv3": "33636c0593392b4f6ff203109ce41bfc831225a9"
+  },
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_V0_GPU_SMOKE_1K_v1/ckpt/step_000000001000",
+  "checkpoint_manifest_sha256": "11811c114868e9d134469a83c7dab99799f2b9b4338d655fb56a7056471822d4",
+  "env_steps": 1000,
+  "updates": 40,
+  "resumed_updates": 20,
+  "pairable_updates": 40,
+  "pairable_rate": 1.0,
+  "pair_count": 11096.0,
+  "actor_and_wm_continue_learning": true,
+  "critic_rl_optimizer_frozen": true,
+  "replay_executed_action_sidecar_and_pending_consistent": true,
+  "source_unchanged": true,
+  "scope": "actual GPU FG201 1K diagnostic, not production or trading-success acceptance",
+  "formal_1m": "NOT_RUN",
+  "ten_k": "NOT_RUN",
+  "content_hash": "9da37bac0c28a105c147ecb964a55a8178bba83aa8e69ae22286abb7679001d1"
+}

@@ -1,0 +1,12 @@
+{
+  "status": "PASS_CPU_MODE_COMPATIBILITY",
+  "original_a2_unchanged": "byte-equal to pre-Tutor A2 update",
+  "original_c2_closed_unchanged": "byte-equal to pre-Tutor C2 CLOSED update",
+  "natural_only_tutor_vs_a2_max_parameter_difference": 0.0,
+  "prefix_teacher_excluded": true,
+  "pair_only_actor_update": true,
+  "no_pair_actor_momentum_frozen": true,
+  "all_zero_actor_and_optimizer_frozen": true,
+  "scope": "small CPU model, recorded real TRAIN batch",
+  "content_hash": "e76ad230ca63bba8bc5799f542ee3efe80b2599ace69211745f64b650bbf8277"
+}

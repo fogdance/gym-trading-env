@@ -3,6 +3,7 @@
 Small CPU neural tests are not GPU or production training acceptance.
 """
 import copy
+import json
 import os
 from pathlib import Path
 import pickle
@@ -23,7 +24,7 @@ from embodied.run.fg_s3_v2_train import Counters
 from dreamerv3.fg_s3_tutor_loss import agent_extensions, eligible_teacher, pair_mask, tutor_objective
 from dreamerv3.fg_s3_v2_agent import S3V2Agent
 from dreamerv3.fg_s3a_actor import parameter_digests
-from gym_trading_env.research.fg_replay import signed, write_json
+from gym_trading_env.research.fg_replay import read_manifest, signed, write_json
 from gym_trading_env.research.fg_s3_dagger_d0 import join_d0_teacher
 from gym_trading_env.research.fg_s3_v2_gpu_check import small_config, gpu_batch
 
@@ -323,3 +324,70 @@ def test_pair_only_activation_and_original_a2_c2_routes(real_batches, tmp_path):
         natural_only_tutor_vs_a2_max_parameter_difference=max_difference,
         prefix_teacher_excluded=True, pair_only_actor_update=True, no_pair_actor_momentum_frozen=True,
         all_zero_actor_and_optimizer_frozen=True, scope='small CPU model, recorded real TRAIN batch')))
+
+
+def test_actual_gpu_tutor_1k_checkpoint_resume_and_pairs():
+    """Read the actual GPU run; never substitutes an artificial checkpoint."""
+    root = PROJECT/'artifacts/fg_s3_v2/runs/TUTOR_CD_V0_GPU_SMOKE_1K_v1'
+    if not (root/'training_receipt.json').is_file():
+        pytest.skip('Requires the actual Tutor GPU 1K start/exit/resume run')
+    receipt = read_manifest(root/'training_receipt.json')
+    if receipt['env_steps'] != 1000:
+        pytest.skip('The real GPU run has not completed its 1K/resume budget')
+    identity = read_manifest(root/'run_identity.json')['identity']
+    assert identity['mode'] == 'tutor' and identity['agent_extension'] == agent_extensions({'mode': 'tutor'})
+    nodes = [root/'ckpt'/f'step_{n:012d}' for n in (0, 500, 1000)]
+    for node in nodes: validate_bundle(node, identity)
+    def load(node, name):
+        return pickle.loads((node/(name+'.pkl')).read_bytes())
+    agents = [load(node, 'agent') for node in nodes]
+    hashes = [parameter_digests(a['params']) for a in agents]
+    assert [a['counters']['updates'] for a in agents] == [21183, 21203, 21223]
+    for before, after in zip(hashes, hashes[1:]):
+        assert all(before[k] == after[k] for k in before if frozen(k))
+        assert any(before[k] != after[k] for k in before if k.startswith('pol/'))
+        assert any(before[k] != after[k] for k in before if k.startswith(('enc/', 'dyn/')))
+    for expected, node in zip((0, 20, 40), nodes):
+        c = load(node, 'v2_counters')
+        assert c['all_updates'] == c['wm_updates'] == expected
+        assert c['rl_actor_updates'] == c['rl_critic_updates'] == 0
+    boundary, final = [load(n, 'collector') for n in nodes[1:]]
+    assert boundary['records'] == final['records'][:len(boundary['records'])]
+    pending = boundary['pending']
+    resumed = final['records'][boundary['commit_seq']]
+    for k in ('state_id', 'actual_observation_id', 'executed_action', 'oracle_proof_hash', 'policy_model_update'):
+        assert pending[k] == resumed[k]
+    assert final['pending']['stepid'] is None and final['pending_native'] is not None
+    native = {}
+    for shard in load(nodes[-1], 'replay')['chunks']:
+        with np.load(nodes[-1]/'replay'/shard['name'], allow_pickle=False) as data:
+            assert not any(k.startswith(('teacher', 'oracle', 'tutor', 'difficulty', 'pair')) for k in data.files)
+            native.update((s.tobytes().hex(), int(a)) for s, a in zip(data['stepid'], data['action']))
+    assert set(native) == {r['stepid'] for r in final['records']}
+    assert all(native[r['stepid']] == r['executed_action'] for r in final['records'])
+    updates = [json.loads(x) for x in (root/'updates.jsonl').read_text().splitlines()]
+    assert len(updates) == 40 and [r['local_update'] for r in updates] == list(range(1, 41))
+    pairable = [r for r in updates if r['metrics']['tutor/pair_count'] > 0]
+    assert pairable and all(r['metrics']['tutor/pair_loss'] > 0 for r in pairable)
+    assert all(r['metrics']['opt/wm_grad_norm'] > 0 and r['metrics']['opt/critic_grad_norm'] == 0
+               and r['metrics']['v2/rl_active'] == 0 for r in updates)
+    assert all(r['metrics']['opt/actor_grad_norm'] > 0 for r in updates if r['metrics']['tutor/actor_active'])
+    counters = load(nodes[-1], 'v2_counters')
+    assert counters['pairable_batches'] == counters['pair_update_count'] == len(pairable)
+    assert counters == receipt['counters']
+    spec = read_manifest(root/'source_admission.json')
+    source = Path(spec['origin']['path'])
+    assert file_hash(source/'manifest.json') == spec['origin']['manifest_sha256']
+    assert file_hash(source/'agent.pkl') == json.loads((source/'manifest.json').read_text())['files']['agent.pkl']
+    transfer = read_manifest(root/'source_transfer.json')
+    assert hashes[0] == transfer['params_after'] and not transfer['independent_bc_optimizer_imported']
+    assert all('cuda' in d for d in receipt['devices'])
+    write_json(CHECKS/'gpu_1k_verification.json', signed(dict(status='PASS_ACTUAL_GPU_TUTOR_1K_AND_RESUME',
+        run=str(root), frozen_versions=identity['versions'], checkpoint=str(nodes[-1]),
+        checkpoint_manifest_sha256=file_hash(nodes[-1]/'manifest.json'), env_steps=1000, updates=40,
+        resumed_updates=20, pairable_updates=len(pairable), pairable_rate=len(pairable)/40,
+        pair_count=sum(r['metrics']['tutor/pair_count'] for r in updates),
+        actor_and_wm_continue_learning=True, critic_rl_optimizer_frozen=True,
+        replay_executed_action_sidecar_and_pending_consistent=True, source_unchanged=True,
+        scope='actual GPU FG201 1K diagnostic, not production or trading-success acceptance',
+        formal_1m='NOT_RUN', ten_k='NOT_RUN')))

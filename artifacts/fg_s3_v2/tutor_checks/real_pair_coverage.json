@@ -1,0 +1,27 @@
+{
+  "status": "PASS_REAL_RECORDED_TRAIN_PAIR_CONTRACT",
+  "source": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1/ckpt/step_000000001000",
+  "checkpoint_manifest_sha256": "cd36cd83f50499f4148a84dfc9fff96b28ff976912f4bb455cff690a38c06bdf",
+  "contracts": [
+    "CZCE.FG201"
+  ],
+  "committed_source_rows": 1003,
+  "sampled_batches": 100,
+  "batch_size": 1,
+  "effective_length": 64,
+  "prefix": 1,
+  "eligible_pos": 388,
+  "eligible_neg": 5401,
+  "pair_count": 19869,
+  "pairable_batches": 100,
+  "pairable_rate": 1.0,
+  "pair_count_min": 55,
+  "pair_count_max": 357,
+  "reset_containing_batches": 20,
+  "cross_reset_pairs_excluded": 687,
+  "unique_effective_owners": 314,
+  "fresh_env_collection": "NOT_RUN; reads previously completed real TRAIN native Replay",
+  "neural_training": "NOT_RUN in this test",
+  "gpu_acceptance": "NOT_RUN",
+  "content_hash": "c09718a9f25337ab69fdc6854be8b0cce05e3c4c18ece8fa747eeadf98e5d127"
+}
