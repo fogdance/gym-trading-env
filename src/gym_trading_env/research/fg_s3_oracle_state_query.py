@@ -122,7 +122,7 @@ class OracleStateQuery:
         return contract == self.rules['contract'] and identity_hash == self.identity_hash
 
 
-def load_train_query(env_receipt, oracle_receipt, contract):
+def load_train_query(env_receipt, oracle_receipt, contract, *, receipt_scope='aggregate'):
     """Reuse frozen data, while checking producer Env bytes in this worktree.
 
     Legacy receipt paths can name the authorized data symlink's target. No
@@ -131,10 +131,35 @@ def load_train_query(env_receipt, oracle_receipt, contract):
     import json
     began = time.perf_counter()
     eroot, oroot = Path(env_receipt).resolve(), Path(oracle_receipt).resolve()
-    em, om = read_manifest(eroot/'manifest.json'), read_manifest(oroot/'manifest.json')
-    if em['status'] != 'PASS' or em['stage'] != 'E' or om['status'] != 'PASS' or om['stage'] != 'O':
-        raise ValueError('D0 requires signed original E/O receipts')
-    check_files({str(eroot/'manifest.json'): om['frozen_inputs'][str(eroot/'manifest.json')]})
+    if receipt_scope not in ('aggregate', 'diagnostic_contract'):
+        raise ValueError('Unknown Oracle receipt scope')
+    em = read_manifest(eroot/'manifest.json')
+    croot = oroot/'contracts'/contract
+    cm = read_manifest(croot/'manifest.json')
+    om_path = oroot/('manifest.json' if receipt_scope == 'aggregate' else 'inputs.json')
+    om = read_manifest(om_path)
+    if em['status'] != 'PASS' or em['stage'] != 'E' or em.get('clock_protocol') != 'S3_MARKET_MINUTE':
+        raise ValueError('Oracle requires signed market-minute E evidence')
+    if receipt_scope == 'aggregate':
+        if om['status'] != 'PASS' or om['stage'] != 'O':
+            raise ValueError('Oracle requires completed aggregate O evidence')
+        parent = next(c for c in om['contracts'] if c['contract'] == contract)
+        if {k: v for k, v in cm.items() if k != 'content_hash'} != parent:
+            raise ValueError('Oracle contract receipt differs from parent')
+        frozen_o = om['frozen_inputs']
+    else:
+        # A completed original per-contract job is a bounded diagnostic input,
+        # never a fabricated PASS for the unfinished/full TRAIN fold.
+        frozen_o = om['frozen_files']
+        if cm['identity'] != om['identity']:
+            raise ValueError('Oracle contract differs from its frozen job inputs')
+    if (om['identity'].get('schema') != 'FG_SINGLE3_ORACLE_MARKET_MINUTE_V2'
+            or om['identity'].get('clock_protocol') != 'S3_MARKET_MINUTE'
+            or cm['stage'] != 'O_CONTRACT' or cm['status'] != 'PASS'
+            or cm['oracle_optimality_status'] != 'exact_proven'):
+        raise ValueError('Oracle requires new exact market-minute contract evidence')
+    check_files({str(eroot/'manifest.json'): frozen_o[str(eroot/'manifest.json')]})
+    check_files({str(croot/p): h for p, h in cm['files'].items()})
     check_files({str(eroot/'inputs/inputs.json'): em['files']['inputs/inputs.json']})
     inputs = read_manifest(eroot/'inputs/inputs.json')
     rows = [r for r in inputs['views']['C1']['rows'] if r['contract'] == contract]
@@ -154,11 +179,6 @@ def load_train_query(env_receipt, oracle_receipt, contract):
             checked_code[str(current)] = expected
     if not checked_code:
         raise ValueError('Original Env producer evidence is missing')
-    croot = oroot/'contracts'/contract
-    cm = read_manifest(croot/'manifest.json')
-    parent = next(c for c in om['contracts'] if c['contract'] == contract)
-    if {k: v for k, v in cm.items() if k != 'content_hash'} != parent:
-        raise ValueError('Oracle contract receipt differs from parent')
     files = {str(croot/f): cm['files'][f] for f in ('candidates.jsonl.gz', 'C1_H333.json')}
     check_files(files)
     with gzip.open(croot/'candidates.jsonl.gz', 'rt') as stream:
@@ -177,7 +197,9 @@ def load_train_query(env_receipt, oracle_receipt, contract):
     check_files(dependency_hashes)
     source = dict(contract=contract, market_sha256=row['sha256'],
         env_receipt_sha256=digest(eroot/'manifest.json'),
-        oracle_receipt_sha256=digest(oroot/'manifest.json'),
+        oracle_receipt_sha256=digest(om_path), receipt_scope=receipt_scope,
+        receipt_files={str(eroot/'manifest.json'): digest(eroot/'manifest.json'),
+                       str(om_path): digest(om_path), str(croot/'manifest.json'): digest(croot/'manifest.json')},
         candidate_files=files, checked_env_code=checked_code)
     source.update(training_hash=inputs['original_content_hash'], strategy_files=dependency_hashes)
     query = OracleStateQuery(env, candidates, cm['flat_end_cursor'], fold='TRAIN', source_identity=source)

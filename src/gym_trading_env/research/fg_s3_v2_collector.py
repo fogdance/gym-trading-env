@@ -18,7 +18,8 @@ class V2Collector(D0Collector):
     protocol = 'FG_S3_V2_LIVE_DAGGER_MARKET_MINUTE_V4'
     runtime = staticmethod(embodied_runtime)
 
-    def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None, **kwargs):
+    def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None,
+                 outcome_catalog=None, **kwargs):
         if type(replay_capacity) is not int or replay_capacity < 65:
             raise ValueError('Live Replay capacity must retain a complete sequence')
         if type(max_env_steps) is not int or not 65 <= max_env_steps <= 1000000:
@@ -30,10 +31,15 @@ class V2Collector(D0Collector):
         self.index = {}
         self.commit_seq = 0
         self.model_versions = set()
+        self.outcome_catalog = outcome_catalog
+        if outcome_catalog is not None:
+            self.protocol = 'FG_S3_B2_LIVE_DAGGER_MARKET_MINUTE_V1'
         initial_beta = kwargs.get('beta', .5) if kwargs.get('mode', 'mixed') == 'mixed' else 0.
         self.beta_schedule = BetaSchedule(initial_beta, beta_schedule)
         super().__init__(*args, **kwargs)
         self.identity['beta_schedule'] = self.beta_schedule.points
+        if outcome_catalog is not None:
+            self.identity['outcome_catalog'] = outcome_catalog.identity_hash
         from gym_trading_env.envs.entry_contract import fingerprint
         self.identity_hash = fingerprint(self.identity)
         self.journal = self.root/'teacher_journal.jsonl'
@@ -80,6 +86,11 @@ class V2Collector(D0Collector):
 
     def capture(self, step, worker):
         super().capture(step, worker)
+        if self.outcome_catalog is not None:
+            self.pending['outcome'] = self.outcome_catalog.query_state(
+                self.decision_env, self.pending['action_mask'],
+                snapshot=self.policy.decision['context']['snapshot'])
+            self.pending['b2_policy'] = {k: np.asarray(step[k]).tolist() for k in step if k.startswith('b2/')}
         self.pending['policy_model_update'] = int(self.agent.n_updates) if self.agent else None
         self.pending['beta_env_steps'] = self.beta_schedule.env_steps
 
@@ -106,6 +117,22 @@ class V2Collector(D0Collector):
                 if row['teacher_valid'] and row['teacher_action'] == 1:
                     self.counts['actor_oracle_ADD_tp'] += int(row['actor_proposal'] == 1)
                     self.counts['actor_oracle_ADD_fn'] += int(row['actor_proposal'] == 0)
+                if self.outcome_catalog is not None:
+                    from .fg_s3_b2_outcome_catalog import EVENTS
+                    label = row['outcome']
+                    self.counts['outcome_event_valid'] += int(label['valid_event'])
+                    self.counts['outcome_early_valid'] += int(label['valid_early'])
+                    self.counts['outcome_'+label['reason']] += 1
+                    self.counts['ambiguous_intrabar'] += int(label['ambiguous_intrabar'])
+                    if label['valid_event']:
+                        self.counts['event_'+EVENTS[label['event']]] += 1
+                    legal = all(row['action_mask']) and not row['is_last']
+                    self.counts['b2_legal_decisions'] += int(legal)
+                    if legal and row.get('b2_policy'):
+                        p = row['b2_policy']
+                        self.counts['b2_mix_active_decisions'] += int(p['b2/mix_value'] > 0)
+                        self.counts['b2_nonzero_delta_decisions'] += int(abs(p['b2/delta_logit']) > 1e-8)
+                        self.counts['b2_argmax_changed'] += int(p['b2/argmax_changed'])
             with self.journal.open('a') as stream:
                 stream.write(json.dumps(row, allow_nan=False)+'\n')
             self.pending_native = None
@@ -139,7 +166,11 @@ class V2Collector(D0Collector):
             rows = [self.index[k] for k in keys]
             if any(not self.oracle.accepts_identity(r['contract'], r['oracle_identity']) for r in rows):
                 raise ValueError('Foreign Oracle in committed sidecar')
-            return join_d0_teacher(batch, rows)
+            batch = join_d0_teacher(batch, rows)
+            if self.outcome_catalog is not None:
+                from .fg_s3_b2_outcome_catalog import attach_outcome
+                batch = attach_outcome(batch, rows, self.outcome_catalog)
+            return batch
 
     def save(self):
         with self.commit_lock:
