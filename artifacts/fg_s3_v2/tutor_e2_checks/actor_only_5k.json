@@ -1,0 +1,33 @@
+{
+  "status": "ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE",
+  "output": "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_E2_GPU_TRAIN_10K_v1/evaluations/actor_only_f8d58c0ee6",
+  "fold": "DEV",
+  "contract": "CZCE.FG409",
+  "env_steps": 5000,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_E2_GPU_TRAIN_10K_v1/ckpt/step_000000010000",
+  "checkpoint_manifest_sha256": "2ae214b7276d8f3f8b83ff382a3ec2ca095810b4c728cd193d74fedf34bd752c",
+  "devices": [
+    "cuda:0"
+  ],
+  "oracle_files_read": false,
+  "teacher_guidance": false,
+  "beta": 0.0,
+  "policy_mode": "eval_argmax",
+  "legal_decisions": 5001,
+  "actor_add_proposed": 0,
+  "add_executed": 0,
+  "entries": 0,
+  "tp_target_points": 5,
+  "tp_count": 0,
+  "sl30": 0,
+  "tp_minutes_p50": null,
+  "tp_minutes_p90": null,
+  "tp_effective_bars_p50": null,
+  "early_mae10": 0,
+  "reward": 0.0,
+  "right_censored": 0,
+  "all_wait": true,
+  "research_success": "NOT_ESTABLISHED",
+  "test": "NOT_RUN",
+  "content_hash": "f8f1690ab3f687419c97f89278c9e4ca60e9c16b101fbe23e38cd027d005627e"
+}

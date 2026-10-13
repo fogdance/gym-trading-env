@@ -1,5 +1,7 @@
 """Batch-local bounded curriculum: numerical, gradient and static compatibility."""
 from pathlib import Path
+import json
+import pickle
 import subprocess
 import types
 
@@ -11,6 +13,9 @@ import pytest
 from embodied.jax.outs import MaskedCategorical
 from dreamerv3.fg_s3_tutor_loss import agent_extensions, tutor_objective
 from gym_trading_env.research.fg_replay import signed, write_json
+from gym_trading_env.research.fg_replay import read_manifest
+from embodied.run.fg_checkpoint import file_hash, validate_bundle
+from dreamerv3.fg_s3a_actor import parameter_digests
 
 
 PROJECT = Path(__file__).resolve().parents[2]
@@ -87,3 +92,73 @@ def test_missing_class_empty_and_static_v0_equivalence():
             assert dm['tutor/pair_loss'] == 0
     assert agent_extensions({'mode': 'tutor', 'tutor_hard_kappa': 1})['tutor_hard_kappa'] == 1
     with pytest.raises(ValueError): agent_extensions({'mode': 'tutor', 'tutor_hard_kappa': -1})
+
+
+def test_actual_e2_gpu_10k_restore_and_bounded_teaching():
+    """Inspect real GPU results only, including bounded Replay retention."""
+    root = PROJECT/'artifacts/fg_s3_v2/runs/TUTOR_CD_E2_GPU_TRAIN_10K_v1'
+    path = root/'training_receipt.json'
+    if not path.is_file() or read_manifest(path)['env_steps'] != 10000:
+        pytest.skip('Needs the completed actual GPU E2 10K start/exit/resume run')
+    receipt = read_manifest(path)
+    identity = read_manifest(root/'run_identity.json')['identity']
+    assert identity['agent_extension'] == agent_extensions({'mode': 'tutor', 'tutor_hard_kappa': 1.})
+    def load(node, name):
+        return pickle.loads((node/(name+'.pkl')).read_bytes())
+    def frozen(k):
+        return k.startswith(('val/', 'slowval/', 'slowval_count/', 'retnorm/', 'valnorm/', 'advnorm/')) or (
+            k.startswith('opt/state/') and '/val/' in k)
+    nodes = [root/'ckpt'/f'step_{n:012d}' for n in (0, 5000, 10000)]
+    hashes = []
+    for n, updates in zip(nodes, (0, 200, 400)):
+        validate_bundle(n, identity)
+        a = load(n, 'agent')
+        assert a['counters']['updates'] == 21183+updates
+        c = load(n, 'v2_counters')
+        assert c['all_updates'] == c['wm_updates'] == updates
+        assert c['rl_actor_updates'] == c['rl_critic_updates'] == 0
+        hashes.append(parameter_digests(a['params']))
+    for before, after in zip(hashes, hashes[1:]):
+        assert all(before[k] == after[k] for k in before if frozen(k))
+        assert any(before[k] != after[k] for k in before if k.startswith('pol/'))
+        assert any(before[k] != after[k] for k in before if k.startswith(('enc/', 'dyn/')))
+    rows = [json.loads(x) for x in (root/'updates.jsonl').read_text().splitlines()]
+    assert [r['local_update'] for r in rows] == list(range(1, 401))
+    assert all(r['metrics']['opt/wm_grad_norm'] > 0 and r['metrics']['opt/critic_grad_norm'] == 0
+               and r['metrics']['v2/rl_active'] == 0 for r in rows)
+    active = [r for r in rows if r['metrics']['tutor/hard_balanced_active']]
+    assert active and all(1 <= r['metrics']['tutor/difficulty_weight_mean']
+                         <= r['metrics']['tutor/difficulty_weight_max'] <= 2 for r in active)
+    assert all(r['metrics']['opt/actor_grad_norm'] > 0 for r in active)
+    pairable = sum(r['metrics']['tutor/pair_count'] > 0 for r in rows)
+    assert pairable and receipt['counters']['pairable_batches'] == pairable
+    boundary, final = [load(n, 'collector') for n in nodes[1:]]
+    journal = [json.loads(x) for x in (root/'rollout/teacher_journal.jsonl').read_text().splitlines()]
+    assert len(journal) == final['commit_seq']
+    resumed = journal[boundary['commit_seq']]
+    for k in ('state_id', 'actual_observation_id', 'executed_action', 'oracle_proof_hash', 'policy_model_update'):
+        assert resumed[k] == boundary['pending'][k]
+    assert final['pending']['stepid'] is None and final['pending_native'] is not None
+    native = {}
+    for shard in load(nodes[-1], 'replay')['chunks']:
+        with np.load(nodes[-1]/'replay'/shard['name'], allow_pickle=False) as data:
+            assert not any(k.startswith(('teacher', 'oracle', 'tutor', 'difficulty', 'pair')) for k in data.files)
+            native.update((s.tobytes().hex(), int(a)) for s, a in zip(data['stepid'], data['action']))
+    assert set(native) == {r['stepid'] for r in final['records']}
+    assert all(native[r['stepid']] == r['executed_action'] for r in final['records'])
+    assert len(final['records']) < len(journal)  # Actual bounded retention, not a duplicated teacher bank.
+    spec = read_manifest(root/'source_admission.json')
+    source = Path(spec['origin']['path'])
+    assert file_hash(source/'manifest.json') == spec['origin']['manifest_sha256']
+    assert file_hash(source/'agent.pkl') == json.loads((source/'manifest.json').read_text())['files']['agent.pkl']
+    assert hashes[0] == read_manifest(root/'source_transfer.json')['params_after']
+    assert all('cuda' in d for d in receipt['devices'])
+    write_json(CHECKS/'gpu_10k_verification.json', signed(dict(status='PASS_ACTUAL_E2_GPU_10K_AND_RESUME',
+        run=str(root), frozen_versions=identity['versions'], env_steps=10000, updates=400, resumed_updates=200,
+        checkpoint=str(nodes[-1]), checkpoint_manifest_sha256=file_hash(nodes[-1]/'manifest.json'),
+        dynamic_weighted_updates=len(active), weights_bounded=True, pairable_updates=pairable,
+        pairable_rate=pairable/400, pair_count=receipt['counters']['pair_count'],
+        actor_and_wm_continue_learning=True, critic_rl_optimizer_frozen=True,
+        native_replay_sidecar_pending_consistent=True, retained_teacher_rows=len(final['records']),
+        committed_teacher_rows=len(journal), source_unchanged=True, formal_1m='NOT_RUN',
+        scope='actual GPU FG201 10K research diagnostic; not production/trading-success acceptance')))

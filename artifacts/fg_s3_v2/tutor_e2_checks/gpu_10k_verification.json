@@ -1,0 +1,27 @@
+{
+  "status": "PASS_ACTUAL_E2_GPU_10K_AND_RESUME",
+  "run": "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_E2_GPU_TRAIN_10K_v1",
+  "frozen_versions": {
+    "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env": "1588cd01beac5cb8275c987220c357ac751c538f",
+    "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/dreamerv3": "a561b09f1c10eaa73aa2834c46a2d94e6e354a36"
+  },
+  "env_steps": 10000,
+  "updates": 400,
+  "resumed_updates": 200,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_CD_E2_GPU_TRAIN_10K_v1/ckpt/step_000000010000",
+  "checkpoint_manifest_sha256": "2ae214b7276d8f3f8b83ff382a3ec2ca095810b4c728cd193d74fedf34bd752c",
+  "dynamic_weighted_updates": 400,
+  "weights_bounded": true,
+  "pairable_updates": 400,
+  "pairable_rate": 1.0,
+  "pair_count": 107118,
+  "actor_and_wm_continue_learning": true,
+  "critic_rl_optimizer_frozen": true,
+  "native_replay_sidecar_pending_consistent": true,
+  "retained_teacher_rows": 2841,
+  "committed_teacher_rows": 10009,
+  "source_unchanged": true,
+  "formal_1m": "NOT_RUN",
+  "scope": "actual GPU FG201 10K research diagnostic; not production/trading-success acceptance",
+  "content_hash": "959ee068d108dcee07148b920bdd9953fb0fc4801232ab610ccc2442c6b778c1"
+}

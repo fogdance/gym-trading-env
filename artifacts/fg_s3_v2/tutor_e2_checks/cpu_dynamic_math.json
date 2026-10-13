@@ -1,0 +1,11 @@
+{
+  "status": "PASS_DYNAMIC_TUTOR_NUMERIC_AND_STOPGRAD",
+  "hard_balanced_ce": 1.1070547103881836,
+  "bc_mix": 1.0234233140945435,
+  "weight_mean": 1.553689956665039,
+  "weight_max": 1.8286981582641602,
+  "gradient_vs_frozen_weights_max_error": 0.0,
+  "natural_bc_and_uniform_pair_unchanged": true,
+  "invalid_position_gradient_zero": true,
+  "content_hash": "2b8ce2f10c1a30620ef15abb563d201807004615e06d18b4615da894d81d4330"
+}
