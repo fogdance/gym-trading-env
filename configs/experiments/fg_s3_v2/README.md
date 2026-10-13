@@ -1,5 +1,32 @@
 # S3-V2 entries and diagnostic configurations
 
+## Tutor E2 bounded dynamic curriculum (10K authorized)
+
+Use the isolated sibling pair `research/fg-s3-tutor-e2-dev/`; the earlier static
+Tutor and frozen A2 pairs remain unchanged. `TUTOR_CD_E2_GPU_TRAIN_10K` starts
+independently from the admitted original Online180k checkpoint. It keeps beta=1,
+alpha=.8 and uniform pair lambda=.1, and uses kappa=1, weight cap=2. Difficulty is
+computed from current Actor probabilities, detached, and normalized inside each
+ADD/WAIT class of balanced BC. Natural BC remains unchanged; missing classes
+fall back to natural CE. No extra replay, curriculum cache, RNG or optimizer.
+
+`tutor/balanced_ce` continues to describe unweighted class CE;
+`tutor/hard_balanced_ce` records the actual weighted balanced objective.
+The existing model settings/run identity/checkpoint freeze kappa and the cap.
+Resume requires the same prepared snapshot and code; hyperparameter changes
+require a new run. This 10K diagnostic does not authorize Tutor formal 1M.
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config TUTOR_CD_E2_GPU_TRAIN_10K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config TUTOR_CD_E2_GPU_TRAIN_10K --stop-at 5000
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config TUTOR_CD_E2_GPU_TRAIN_10K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py evaluate --config TUTOR_CD_E2_GPU_TRAIN_10K --eval-steps 5000
+```
+
+Teacher-guided TRAIN TP5 counts remain separate from independent Actor-only DEV.
+Actual results: `docs/FG_S3_Tutor_E2_10K_20261013.md`.
+
 ## Tutor-CD V0 (independent worktree)
 
 Use `research/fg-s3-tutor-dev/` with its own sibling Dreamer. Tutor reuses the
@@ -25,8 +52,8 @@ cd /home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env
 Preparation/start refuse existing outputs. Repeat experiments require new names;
 resume validates the original frozen code, hyperparameters and complete checkpoint.
 The `TUTOR_CD_V0_GPU_TRAIN_10K` configuration is a template, requiring separate
-user permission before execution. Dynamic difficulty (nonzero hard_kappa) is
-deferred until the static research pilot has evidence; V0 rejects it explicitly.
+user permission before execution. The original static V0 worktree rejects
+nonzero hard_kappa; the independently authorized E2 worktree supports it above.
 Tests and measured results are in `docs/FG_S3_Tutor_CD_V0_Implementation_20261013.md`.
 
 ## A2 beta schedule and 18-contract path (2026-10-13)

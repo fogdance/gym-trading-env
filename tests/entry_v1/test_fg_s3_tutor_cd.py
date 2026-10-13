@@ -31,6 +31,7 @@ from gym_trading_env.research.fg_s3_v2_gpu_check import small_config, gpu_batch
 
 PROJECT = Path(__file__).resolve().parents[2]
 CHECKS = PROJECT/'artifacts/fg_s3_v2/tutor_checks'
+E2_CHECKS = PROJECT/'artifacts/fg_s3_v2/tutor_e2_checks'
 RECORDED = PROJECT.parent.parent/'fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1/ckpt/step_000000001000'
 
 
@@ -109,7 +110,7 @@ def test_frozen_tutor_settings_and_checkpointed_counters(tmp_path):
     assert ext == agent_extensions(copy.deepcopy(settings))
     assert ext['tutor_alpha'] == .8 and ext['tutor_hard_kappa'] == 0
     for changed in ({'tutor_alpha': float('nan')}, {'tutor_pair_tau': 0},
-                    {'tutor_pair_lambda': -1}, {'tutor_hard_kappa': 1}):
+                    {'tutor_pair_lambda': -1}, {'tutor_hard_kappa': -1}):
         with pytest.raises(ValueError): agent_extensions({**settings, **changed})
     with pytest.raises(PermissionError):
         require_training_authorization({**settings, 'scope': 'formal'}, True)
@@ -190,13 +191,14 @@ def actor_state(k):
     return k.startswith('pol/') or (k.startswith('opt/state/') and '/pol/' in k)
 
 
-def test_small_cpu_tutor_joint_gradients_freeze_and_restore(real_batches, tmp_path):
+@pytest.mark.parametrize('hard_kappa', [0., 1.])
+def test_small_cpu_tutor_joint_gradients_freeze_and_restore(real_batches, tmp_path, hard_kappa):
     assert all(d.platform == 'cpu' for d in jax.devices()), 'CPU test must not use the A2 GPU'
     _, _, _, batches = real_batches
     raw = next(b for b in batches if np.asarray(pair_mask(jnp.asarray(b['teacher_action'][:,1:]),
         jnp.asarray(b['teacher_valid'][:,1:]), jnp.asarray(b['is_first'][:,1:]))).any())
     a = make_agent(small_config(), tmp_path/'tutor', device='cpu', agent_cls=S3V2Agent,
-        bc_lambda=1., extra_agent_config=agent_extensions({'mode': 'tutor'}))
+        bc_lambda=1., extra_agent_config=agent_extensions({'mode': 'tutor', 'tutor_hard_kappa': hard_kappa}))
     for k, v in list(a.params.items()):
         if k.startswith('opt/state/'):
             value = 1000 if np.issubdtype(v.dtype, np.integer) else .125
@@ -214,6 +216,9 @@ def test_small_cpu_tutor_joint_gradients_freeze_and_restore(real_batches, tmp_pa
         assert m['tutor/pair_loss'] > 0 and m['tutor/pair_count'] > 0
         assert m['opt/actor_grad_norm'] > 0 and m['opt/wm_grad_norm'] > 0
         assert m['opt/critic_grad_norm'] == m['v2/rl_active'] == 0
+        if hard_kappa:
+            assert m['tutor/hard_balanced_active']
+            assert 1 <= m['tutor/difficulty_weight_mean'] <= m['tutor/difficulty_weight_max'] <= 2
         assert all(before[k] == after[k] for k in before if frozen(k))
         assert any(before[k] != after[k] for k in before if k.startswith('pol/'))
         assert any(before[k] != after[k] for k in before if k.startswith(('enc/', 'dyn/')))
@@ -246,7 +251,8 @@ def test_small_cpu_tutor_joint_gradients_freeze_and_restore(real_batches, tmp_pa
                 seed=15, create=False, modify=True)
         assert all(not np.asarray(v).any() for k, v in grads.items() if not k.startswith('pol/'))
         assert any(np.asarray(v).any() for k, v in grads.items() if k.startswith('pol/'))
-    write_json(CHECKS/'cpu_neural.json', signed(dict(status='PASS_SMALL_CPU_TUTOR_CONTRACTS',
+    write_json((E2_CHECKS if hard_kappa else CHECKS)/'cpu_neural.json', signed(dict(status='PASS_SMALL_CPU_TUTOR_CONTRACTS',
+        hard_kappa=hard_kappa,
         devices=[str(d) for d in jax.devices()], scope='small model over previously recorded real FG201 batch',
         updates=5, gate_sequence=['CLOSED', 'READY fixture', 'CLOSED'], results=results,
         critic_and_optimizer_frozen=True, empty_teacher_actor_momentum_frozen=True,
