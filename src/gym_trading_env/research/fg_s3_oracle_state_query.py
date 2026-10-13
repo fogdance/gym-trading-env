@@ -5,6 +5,7 @@ states return an invalid sentinel, never a copied P4 label or an estimated Q.
 """
 from decimal import Decimal
 import gzip
+import json
 from pathlib import Path
 import time
 
@@ -17,6 +18,7 @@ from .fg_single3_oracle import GAMMA, funds_certificate, optimize
 
 
 PROTOCOL = 'FG_S3_V2_ORACLE_STATE_QUERY_D0_V1'
+DECISION_PROTOCOL = 'FG_S3_V2_CURRENT_DECISION_STATE_V1'
 
 
 def rules_identity(env):
@@ -52,9 +54,37 @@ class OracleStateQuery:
             suffix_first_hash=fingerprint(self.first))
         self.identity_hash = fingerprint(self.identity)
 
+    def decision_state(self, env):
+        """Current financial state for labels; FullCheckpoint keeps full history.
+
+        The suffix certificate reads cursor, real availability, status, open
+        positions/reward episodes and current equity. Include these exact
+        inputs and financial balances, rather than serializing all historical
+        prices, fills and rewards for every new decision. The complete frozen
+        market is still checked separately by query(). This private descriptor
+        is never forwarded to Actor observations or carry.
+        """
+        state = dict(protocol=DECISION_PROTOCOL, contract=env.contract,
+            config_hash=env.config_hash, current_step=env.current_step,
+            cursor_time=str(env._raw.index[env.current_step]),
+            account_sequence=env.account_sequence, entry_sequence=env.entry_sequence,
+            status=env.status, terminated=env.terminated, truncated=env.truncated,
+            pending_reason=env.pending_reason, net_lots=str(env.net_lots),
+            equity=str(env._calculate_equity()), balances=env.ledger.snapshot(),
+            current_price=str(env.current_price), action_mask=env._published_mask.tolist(),
+            entries=env.entries, reward_active=sorted(env.reward_function.scorer.active),
+            long_positions=[p.to_dict() if p else None for p in env.position_manager.long_positions],
+            short_positions=[p.to_dict() if p else None for p in env.position_manager.short_positions],
+            realized_pnl=str(env.user_accounts.realized_pnl), unrealized_pnl=str(env.user_accounts.unrealized_pnl),
+            legal_add_decisions=env.legal_add_decisions, voluntary_waits=env.voluntary_waits,
+            total_reward=env.total_reward)
+        return json.loads(json.dumps(state, default=str))
+
     def query(self, env, action_mask, *, snapshot=None):
         """Read an actual Env decision state; never step, reset, or mutate it."""
         state = env.export_state() if snapshot is None else snapshot
+        current = (self.decision_state if state.get('protocol') == DECISION_PROTOCOL
+                   else lambda e: e.export_state())
         state_id = fingerprint(state)
         mask = np.asarray(action_mask)
         result = dict(action=0, valid=False, certified=False, reason='',
@@ -63,7 +93,7 @@ class OracleStateQuery:
         if (rules_identity(env) != self.rules or state['config_hash'] != env.config_hash
                 or not env._raw.equals(self.market)):
             reason = 'RULE_OR_MARKET_IDENTITY_MISMATCH'
-        elif snapshot is not None and fingerprint(env.export_state()) != state_id:
+        elif snapshot is not None and fingerprint(current(env)) != state_id:
             reason = 'STALE_ACCOUNT_SNAPSHOT'
         elif (mask.shape != (2,) or not np.isin(mask, [0, 1]).all()
               or mask[0] != 1 or not np.array_equal(mask, env._published_mask)):

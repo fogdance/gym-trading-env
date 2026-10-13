@@ -116,7 +116,7 @@ class D0Collector:
         self.replay = self.make_replay(embodied, seed)
 
         def context(obs):
-            state = owner.decision_env.export_state()
+            state = owner.context_snapshot()
             one = {k: np.asarray(v[0]) for k, v in obs.items()}
             return dict(snapshot=state, state_id=fingerprint(state),
                 observation_id=observation_id(one), is_first=bool(one['is_first']),
@@ -148,6 +148,9 @@ class D0Collector:
     def make_replay(self, embodied, seed):
         return embodied.Replay(length=65, capacity=2048, online=True,
             directory=str(self.root/'replay'), chunksize=1024, save_wait=True, seed=seed)
+
+    def context_snapshot(self):
+        return self.decision_env.export_state()
 
     def make_observed(self, env):
         import gymnasium as gym

@@ -46,6 +46,9 @@ class V2Collector(D0Collector):
         return embodied.Replay(length=65, capacity=self.replay_capacity, online=True,
             directory=str(self.root/'replay'), chunksize=1024, save_wait=True, seed=seed)
 
+    def context_snapshot(self):
+        return self.oracle.decision_state(self.decision_env)
+
     def output_allowed(self, root):
         return super().output_allowed(root) or root.is_relative_to(Path('/data/logdir/fg_single3/s3_v2'))
 

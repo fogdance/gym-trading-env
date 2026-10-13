@@ -83,6 +83,9 @@ class PoolOracleQuery:
     def accepts_identity(self, contract, identity_hash):
         return contract in self.queries and self.queries[contract].identity_hash == identity_hash
 
+    def decision_state(self, env):
+        return self.queries[env.contract].decision_state(env)
+
 
 def prepare_pool(settings, directory):
     """Read existing E/O caches; do not regenerate prices, labels or candidates."""

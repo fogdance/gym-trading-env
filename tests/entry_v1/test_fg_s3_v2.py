@@ -65,6 +65,29 @@ def test_shared_extractions_reject_changed_math_and_cuda_flags():
             audit_code_transition(old,target.replace(needle.encode(),replacement.encode()),name)
 
 
+def test_current_decision_descriptor_preserves_labels_and_rejects_stale_state(tmp_path):
+    folder = tmp_path/'fixture'; folder.mkdir()
+    env = single_env(folder, [(1000,1000,1000,1000),(1000,1000,1000,1000),(1000,1007,1000,1007)]*30,
+        candidate='C1', fees=3, chunk=90,
+        times=pd.date_range('2026-01-05 13:31', periods=90, freq='min'),
+        calendar=[dict(start='2026-01-05 13:30', end='2026-01-05 15:30')],
+        liquidation='2026-01-05 15:30')
+    query, _ = query_for(env, folder/'env.yaml')
+    env.reset(seed=202)
+    for _ in range(20):
+        full = env.export_state()
+        current = query.decision_state(env)
+        a = query.query(env, env._published_mask, snapshot=full)
+        b = query.query(env, env._published_mask, snapshot=current)
+        for key in ('action', 'valid', 'certified', 'reason', 'q_add', 'q_wait', 'q_margin'):
+            assert a[key] == b[key]
+        assert env.export_state() == full
+        stale = copy.deepcopy(current); stale['equity'] = '0'
+        assert query.query(env,env._published_mask,snapshot=stale)['reason']=='STALE_ACCOUNT_SNAPSHOT'
+        assert not any(k in current for k in ('prefix_hash','fills','reward_events','equity_history'))
+        env.step(b['action'] if b['valid'] else 0)
+
+
 def test_real_gpu_learning_contracts(tmp_path):
     from gym_trading_env.research.fg_s3_v2_gpu_check import check_gpu_model
     receipt = check_gpu_model(tmp_path/'gpu')

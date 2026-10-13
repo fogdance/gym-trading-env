@@ -1,0 +1,27 @@
+schema: FG_S3_V2_DIAGNOSTIC_CONFIG_V1
+experiment: A2_P0_GPU_TRAIN_10K_FAST_v1
+mode: a2
+scope: diagnostic
+device: gpu
+contract: CZCE.FG201
+contracts: [CZCE.FG201]
+env_slice_bars: 1000
+dreamer_root: ../dreamerv3
+env_receipt: ../../fg-data/fg_single3_v1/env/run_20261011_04
+oracle_receipt: ../../fg-data/fg_single3_v1/oracle/run_20261011_01
+catalog: artifacts/fg_s3_arch_v1/teacher_catalog_v1_final
+source_checkpoint: artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/A2_P0_GPU_TRAIN_10K_FAST_v1
+run_dir: artifacts/fg_s3_v2/runs/A2_P0_GPU_TRAIN_10K_FAST_v1
+# Independent run; 10000 actual advances and 400 joint updates.
+env_steps: 10000
+collect_every: 100
+updates_per_collect: 4
+save_every: 1000
+batch_size: 1
+replay_capacity: 2048
+replay_seed: 202
+# Protect the certified funding domain. Executed TRAIN scores are teacher-guided.
+beta: 1.0
+bc_lambda: 1.0
