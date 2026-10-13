@@ -16,6 +16,7 @@ from embodied.run.fg_checkpoint import file_hash, validate_bundle
 from embodied.run.fg_s3_source_transfer import make_agent
 from embodied.run.fg_s3_v2_train import execution_code
 from dreamerv3.fg_s3_v2_agent import S3V2Agent
+from dreamerv3.fg_s3_tutor_loss import agent_extensions
 from .fg_single3 import load_env
 from .fg_single3_evaluation import ActorPolicy, require_dev
 from .fg_replay import read_manifest, check_files, signed, write_json
@@ -75,12 +76,16 @@ def evaluate(prepared, run_dir, steps=1000):
     node = root/'ckpt'/name
     validate_bundle(node, identity)
     s = read_manifest(prepared/'settings.json')['settings']
-    cfg = read_manifest(prepared/'model_config.json')['config']
+    frozen_model = read_manifest(prepared/'model_config.json')
+    cfg = frozen_model['config']
+    extensions = agent_extensions(s)
+    if s['mode'] == 'tutor' and frozen_model['agent_extension'] != extensions:
+        raise ValueError('Frozen Tutor model configuration differs from settings')
     output = root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
     output.mkdir(parents=True, exist_ok=False)
     dev = prepare_dev(s, output)
     model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device='gpu',
-        bc_lambda=s['bc_lambda'], extra_agent_config={'s3_v2_mode': s['mode']})
+        bc_lambda=s['bc_lambda'], extra_agent_config=extensions)
     model.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
     model.sync_policy_from_train()
     model.evaluation_checkpoint_sha256 = file_hash(node/'manifest.json')

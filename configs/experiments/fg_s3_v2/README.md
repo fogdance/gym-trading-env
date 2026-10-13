@@ -1,5 +1,34 @@
 # S3-V2 entries and diagnostic configurations
 
+## Tutor-CD V0 (independent worktree)
+
+Use `research/fg-s3-tutor-dev/` with its own sibling Dreamer. Tutor reuses the
+original A2 WM/Replay/Sidecar/FullCheckpoint; one Actor forward supplies natural
+BC, balanced BC (falls back when a class is absent) and same-episode ADD/WAIT
+ranking. Critic and RL stay frozen even when the shared Gate becomes READY.
+Defaults: alpha=0.8, pair lambda=0.1, tau=1, hard_kappa=0. The frozen settings
+are loaded identically for training, resume and Actor-only DEV evaluation.
+
+The 1K smoke uses the original admitted Online180k source and beta=1 for certified
+TRAIN coverage. Teacher-controlled trades do not demonstrate autonomous trading.
+Only diagnose on GPU within the user's resource permission; leave the frozen A2
+worktree and run untouched. Tutor formal scope is rejected even with authorization.
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config TUTOR_CD_V0_GPU_SMOKE_1K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config TUTOR_CD_V0_GPU_SMOKE_1K --stop-at 500
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config TUTOR_CD_V0_GPU_SMOKE_1K
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py evaluate --config TUTOR_CD_V0_GPU_SMOKE_1K --eval-steps 1000
+```
+
+Preparation/start refuse existing outputs. Repeat experiments require new names;
+resume validates the original frozen code, hyperparameters and complete checkpoint.
+The `TUTOR_CD_V0_GPU_TRAIN_10K` configuration is a template, requiring separate
+user permission before execution. Dynamic difficulty (nonzero hard_kappa) is
+deferred until the static research pilot has evidence; V0 rejects it explicitly.
+Tests and measured results are in `docs/FG_S3_Tutor_CD_V0_Implementation_20261013.md`.
+
 ## A2 beta schedule and 18-contract path (2026-10-13)
 
 `A2_GPU_FORMAL_1M_BETA` uses the original ALL_TRAIN pool and Replay Online180k

@@ -11,6 +11,7 @@ from .fg_replay import signed, write_json, read_manifest
 from .fg_s3_oracle_state_query import load_train_query
 from .fg_s3_teacher_catalog import load_catalog
 from .fg_s3_v2_beta import BetaSchedule
+from dreamerv3.fg_s3_tutor_loss import DEFAULTS, agent_extensions
 
 
 PROJECT = Path(__file__).resolve().parents[3]
@@ -19,6 +20,8 @@ FORMAL_ROOT = Path('/data/logdir/fg_single3/s3_v2')
 
 
 def require_training_authorization(settings, authorized):
+    if settings['mode'] == 'tutor' and settings['scope'] != 'diagnostic':
+        raise PermissionError('Tutor V0 is limited to diagnostic scope, even with authorization')
     if settings['scope'] == 'formal' and not authorized:
         raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
@@ -29,9 +32,13 @@ def read_settings(path):
         path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
     path = path.resolve()
     s = read_config_yaml(path)
-    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2') or s['device'] != 'gpu':
-        raise ValueError('S3-V2 requires an explicit A2/C2 GPU diagnostic config')
+    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2', 'tutor') or s['device'] != 'gpu':
+        raise ValueError('S3-V2 requires an explicit A2/C2/Tutor GPU config')
     s.setdefault('scope', 'diagnostic')
+    if s['mode'] == 'tutor':
+        require_training_authorization(s, False)
+        extension = agent_extensions(s)
+        s.update({k: extension[k] for k in DEFAULTS})
     s.setdefault('contracts', None)
     s.setdefault('env_slice_bars', 1024)
     s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)
@@ -98,7 +105,10 @@ def prepare(config):
             query = prepare_pool(s, output)
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
-        write_json(output/'model_config.json', signed(dict(config=plain(model))))
+        frozen_model = dict(config=plain(model))
+        if s['mode'] == 'tutor':
+            frozen_model['agent_extension'] = agent_extensions(s)
+        write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
         result = signed(dict(protocol='FG_S3_V2_PREPARED_V1', status='PREPARED_NO_TRAINING',
             code=execution_code(), oracle_identity=query.identity_hash,
