@@ -1,6 +1,37 @@
 # S3-V2 entries and diagnostic configurations
 
-## Current P0 A2 training preparation (2026-10-13)
+## A2 beta schedule and 18-contract path (2026-10-13)
+
+`A2_GPU_FORMAL_1M_BETA` uses the original ALL_TRAIN pool and Replay Online180k
+source. Beta is 1 through 10K real Env advances, then decreases linearly to
+0.98 at 100K and 0.90 at 1M. Its progress, current value, points, RNG and pending
+execution are saved together by the existing FullCheckpoint. Resets and model
+updates do not advance beta. Invalid Oracle answers remain excluded from BC.
+
+Use the frozen pair in `research/fg-s3-v2-train-beta/`; preparation is saved there.
+This is a new run; the old fixed-beta preparations/runs are retained. Formal
+training still requires user authorization and has a 1M **environment-step** budget:
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start --config A2_GPU_FORMAL_1M_BETA --authorize-training
+# Same-run recovery, with its saved schedule and full training state:
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py resume --config A2_GPU_FORMAL_1M_BETA --authorize-training
+```
+
+Checkpoints are saved every 50K steps. Review Actor-controlled ADD, certified
+label coverage and entry outcomes at 100K. `--stop-at 100000` can make this a
+planned review boundary; do not mechanically wait for 1M if ALL_WAIT, lost
+supervision or poor entries persist. Changing a frozen schedule/source is a new
+experiment, not editing old snapshots to bypass recovery checks.
+
+`A2_GPU_ALL_TRAIN_BETA_8K` is the bounded GPU rotation/recovery diagnostic:
+ALL_TRAIN, the same original scheduler with 200-bar slices, and an accelerated
+beta time axis (1 through 3600, 0.98 at 5200, 0.90 at 8000). It exercises all 18
+members and saves/exits at 5000 before a separate `resume` to 8000. Its results
+do not certify the formal 10K/100K learning milestones or Actor-only performance.
+
+## Previous P0 A2 training preparation (2026-10-13)
 
 The current measured version uses `_FAST` configurations and frozen pair
 Gym `b71250c` / Dreamer `e64004e` in `research/fg-s3-v2-train/`.
