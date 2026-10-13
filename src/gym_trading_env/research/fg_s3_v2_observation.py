@@ -107,8 +107,9 @@ def actor_only_metrics(receipt):
         sl30_rate=receipt['sl30']/entries if entries else None,
         early_adverse10=receipt['early_mae10'],
         early_adverse10_rate=receipt['early_mae10']/entries if entries else None,
-        tp_minutes_p50=receipt['tp_minutes_p50'], tp_minutes_p90=receipt['tp_minutes_p90'],
-        tp_effective_bars_p50=receipt['tp_effective_bars_p50'], reward=receipt['reward'],
+        clock_protocol=receipt['clock_protocol'],
+        tp_market_minutes_p50=receipt['tp_market_minutes_p50'], tp_market_minutes_p90=receipt['tp_market_minutes_p90'],
+        reward=receipt['reward'],
         all_wait=receipt['all_wait'],
         p_add_quantiles={str(p):float(np.percentile(probabilities,p)) if probabilities else None
                          for p in (0,50,90,99,100)},

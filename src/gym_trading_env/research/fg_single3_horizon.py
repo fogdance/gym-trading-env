@@ -24,9 +24,9 @@ HORIZONS=(333,1000,3000,None)
 def gammas():return {str(h) if h else 'gamma1':1-1/h if h else 1. for h in HORIZONS}
 
 
-def discounted_feedback(feedback,decision_cursor):
+def discounted_feedback(feedback,decision_cursor,clock):
     if any(step<=decision_cursor for step,_ in feedback):raise ValueError('Feedback must follow the decision')
-    return {h:sum(g**(step-decision_cursor-1)*r for step,r in feedback) for h,g in gammas().items()}
+    return {h:sum(g**clock.reward_exponent(decision_cursor,step)*r for step,r in feedback) for h,g in gammas().items()}
 
 
 def fork_account(template,state):
@@ -61,7 +61,7 @@ def follow_p1(template,state,first_action):
         if env.current_step==cursor:break
     fills=env.fills[old_fills:]
     result=dict(first_action=first_action,starting_account_hash=initial_hash,
-        decision_cursor=before,feedback=feedback,returns=discounted_feedback(feedback,before),
+        decision_cursor=before,feedback=feedback,returns=discounted_feedback(feedback,before,env.market_clock_counter),
         subsequent_policy='frozen_causal_P1',counts=dict(counts),
         new_entry_fills=sum(f['reason']=='ENTRY' for f in fills),
         first_new_entry_time=next((f['time'] for f in fills if f['reason']=='ENTRY'),None),
@@ -125,14 +125,15 @@ def _event_analysis(trades):
                 strides=[t['exit_cursor']-t['decision_cursor'] for t in events if t.get('exit_cursor') is not None]
                 values={h:[] for h in gammas()}
                 for event in events:
-                    for h,value in discounted_feedback(event['reward_feedback'],event['decision_cursor']).items():values[h].append(value)
+                    for h,g in gammas().items():
+                        values[h].append(sum(g**s*r for s,r in event['reward_market_feedback']))
                 strata[name]=dict(count=len(events),effective_bars=distribution([t['observed_bars'] for t in events]),
-                    natural_minutes=distribution([t['duration_minutes'] for t in events]),
+                    held_market_bars=distribution([t['held_market_bars'] for t in events]),
                     env_feedback_steps=distribution(strides),
                     cross_env_chunk=sum(t['cross_env_chunk'] for t in events),
                     cross_replay_chunk=sum(t['cross_replay_chunk'] for t in events),
                     mean_local_discounted_return={h:float(np.mean(v)) for h,v in values.items()},
-                    mean_direct_exit_discount={h:float(np.mean([g**(k-1) for k in strides])) if strides else None for h,g in gammas().items()})
+                    mean_direct_exit_discount={h:float(np.mean([g**(t['held_market_bars']-1) for t in events if t.get('exit_cursor') is not None])) if strides else None for h,g in gammas().items()})
     return strata
 
 
@@ -144,7 +145,7 @@ def _report(dataset,coverage,hresults,event_stats,root):
         '每对起始完整财务/Reward/当前观察快照一致；只改变第一步动作，此后两个分支都执行同一冻结因果P1，直到真实终局或TRAIN右删失。Δ是该有限后续政策的反事实回报差，不是最优Q，不是Critic预测误差。未创建Agent，没有梯度更新。','',
         '## 折扣定义与真实退出时间','',
         '第一步真实推进反馈指数0。γ_H=1−1/H；metadata推进行计一个Env步，chunk重复reset行不计推进。自然分钟只计算TP曲线；有效bar只计算early10窗口。所有统计使用已发布的float32整步反馈。','']
-    lines+=table(['candidate_policy_exit','count','自然分钟','有效bar','Env反馈步','跨Envchunk','跨Replaychunk','H333/1000/3000/γ1局部回报均值','真实退出直接权重'],[(k,v['count'],v['natural_minutes'],v['effective_bars'],v['env_feedback_steps'],v['cross_env_chunk'],v['cross_replay_chunk'],v['mean_local_discounted_return'],v['mean_direct_exit_discount']) for k,v in sorted(event_stats.items())])
+    lines+=table(['candidate_policy_exit','count','市场分钟','有效bar','Env反馈步','跨Envchunk','跨Replaychunk','H333/1000/3000/γ1局部回报均值','真实退出直接权重'],[(k,v['count'],v['held_market_bars'],v['effective_bars'],v['env_feedback_steps'],v['cross_env_chunk'],v['cross_replay_chunk'],v['mean_local_discounted_return'],v['mean_direct_exit_discount']) for k,v in sorted(event_stats.items())])
     lines+=['','## 同状态第一步ADD/WAIT排序','']
     groups=[]
     for candidate in ('C0','C1','C2','C3'):

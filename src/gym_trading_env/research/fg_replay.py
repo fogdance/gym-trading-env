@@ -24,7 +24,7 @@ from .fg_reward_candidates import CandidateConfig, FGRewardScorer
 
 
 SCHEMA = "FG_REPLAY_R0_R2_V1"
-SINGLE3_SCHEMA = "FG_SINGLE3_REPLAY_V1"
+SINGLE3_SCHEMA = "FG_SINGLE3_REPLAY_MARKET_MINUTE_V2"
 FIELDS = {
     "market_seq": ((60, 18), np.dtype("float32")),
     "position_state": ((9,), np.dtype("float32")),
@@ -35,6 +35,7 @@ FIELDS = {
     "is_last": ((), np.dtype("bool")),
     "is_terminal": ((), np.dtype("bool")),
 }
+S3_FIELDS = {**FIELDS, 'market_advance': ((), np.dtype('int32'))}
 
 
 def cpu_runtime(dreamer_root):
@@ -266,9 +267,10 @@ def execute_observed(env, action=None, *, seed=None):
 
 
 def update_array_hash(hasher, step):
-    for key in sorted(FIELDS):
+    fields = S3_FIELDS if 'market_advance' in step else FIELDS
+    for key in sorted(fields):
         value = np.asarray(step[key])
-        shape, dtype = FIELDS[key]
+        shape, dtype = fields[key]
         if value.shape != shape or value.dtype != dtype or not np.isfinite(value).all():
             raise ValueError(f"Invalid Replay field {key}: {value.shape}/{value.dtype}")
         hasher.update(key.encode() + value.tobytes())
@@ -283,7 +285,7 @@ def iter_sidecar(directory):
 def trace_manifest(directory, *, verify=True, schema=SCHEMA):
     directory = Path(directory)
     data = read_manifest(directory / "manifest.json")
-    expected_reward = 'FG_SINGLE3_REWARD_V1' if schema==SINGLE3_SCHEMA else 'V1'
+    expected_reward = 'FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if schema==SINGLE3_SCHEMA else 'V1'
     if schema not in (SCHEMA,SINGLE3_SCHEMA) or data["schema"] != schema or data["reward_version"] != expected_reward:
         raise ValueError("Incompatible Replay/Reward identity")
     if verify:
@@ -296,15 +298,16 @@ def iter_replay_rows(directory, manifest=None):
     manifest = manifest or trace_manifest(directory)
     ordinal = 0
     seen = set()
+    fields = S3_FIELDS if manifest['schema'] == SINGLE3_SCHEMA else FIELDS
     for n, chunk in enumerate(manifest["chunks"]):
         if chunk["uuid"] in seen or (n and manifest["chunks"][n - 1]["succ"] != chunk["uuid"]):
             raise ValueError("Broken/repeated account chunk chain")
         seen.add(chunk["uuid"])
         with np.load(directory / chunk["path"], allow_pickle=False) as data:
-            if set(data.files) != set(FIELDS) | {"stepid"}:
+            if set(data.files) != set(fields) | {"stepid"}:
                 raise ValueError("Replay field set changed")
             arrays = {k: data[k] for k in data.files}
-        for k, (shape, dtype) in {**FIELDS, "stepid": ((20,), np.dtype("uint8"))}.items():
+        for k, (shape, dtype) in {**fields, "stepid": ((20,), np.dtype("uint8"))}.items():
             if arrays[k].shape != (chunk["length"], *shape) or arrays[k].dtype != dtype:
                 raise ValueError(f"Saved Replay dtype/shape mismatch: {k}")
         for index in range(chunk["length"]):
@@ -374,6 +377,8 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         with gzip.open(directory / "steps.jsonl.gz", "wt", encoding="utf-8") as stream:
             def capture(step, worker):
                 row = copy.deepcopy(observed.last)
+                if single3:
+                    step = {**step, 'market_advance': np.int32(row['valid_bar'])}
                 if row["advanced"]:
                     diagnostics = scorer.step(row['bar'],raw.terms.multiplier) if single3 else scorer.step(row["bar"])
                     score = diagnostics['total'] if single3 else diagnostics['v0']
@@ -423,9 +428,9 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         write_json(directory / "trade_diagnostics.json", trades)
         source_rows = len(raw._raw)
         payload = dict(schema=SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
-                       reward_version='FG_SINGLE3_REWARD_V1' if single3 else "V1",
+                       reward_version='FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if single3 else "V1",
                        reward_params_hash=raw.reward_config.hash if single3 else fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
-                       obs_version='FG_SINGLE3_V1_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
+                       obs_version='FG_SINGLE3_MARKET_MINUTE_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
                        contract=raw.contract, records=state["records"], advanced=state["advanced"],
                        valid_minutes=state["valid_minutes"], chunk_resets=state["chunk_resets"],
                        sequence_starts=max(0, state["records"] - 64), chunks=chunks,
@@ -484,6 +489,8 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
                     raise ValueError(f"Driver boundary mismatch: {ordinal}/{key}")
             if step["reward"] != np.float32(expected["official_reward"]):
                 raise ValueError("Replay feedback reward shifted or changed")
+            if schema == SINGLE3_SCHEMA and step['market_advance'] != int(expected['valid_bar']):
+                raise ValueError('Replay market clock is shifted from observed feedback')
             if int(step["action"]) != row["action"] or (row["action"] == 1 and not row["legal_add"]):
                 raise ValueError("Replay action changed or violates real Mask")
             if pending is not None:

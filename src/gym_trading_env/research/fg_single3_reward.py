@@ -53,7 +53,7 @@ def score_trace(job):
             reward_sum+=value;native_sum+=native
             if row['advanced']:
                 discounted+=weight*native
-                weight*=332/333
+                weight*=(332/333)**int(row['valid_bar'])
             counts['early_first5']+=components['early_first5']
             counts['early_next10']+=components['early_next10']
             counts['negative_feedback_rows']+=int(native<0)

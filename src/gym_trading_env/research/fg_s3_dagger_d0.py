@@ -59,6 +59,8 @@ def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
             raise ValueError('D0 teacher observation alignment differs')
         if int(batch['action'][pos]) != row['executed_action']:
             raise ValueError('D0 Replay action is not the executed action')
+        if int(batch['market_advance'][pos]) != row['market_advance']:
+            raise ValueError('Replay market clock differs from the committed observation')
         proof = dict(action=row['oracle_action'], valid=row['oracle_valid'],
             certified=row['oracle_certified'], reason=row['oracle_reason'],
             q_add=row['q_add'], q_wait=row['q_wait'], q_margin=row['q_margin'],
@@ -201,6 +203,7 @@ class D0Collector:
         ctx, state = choice['context'], choice['context']['snapshot']
         self._complete(self.observed.last, ctx)
         native = {k: np.asarray(step[k]) for k in FIELDS}
+        native['market_advance'] = np.int32(self.observed.last['valid_bar'])
         if int(native['action']) != choice['executed_action']:
             raise RuntimeError('Driver changed the chosen action')
         stepid = self._add_native(native, worker)
@@ -227,6 +230,7 @@ class D0Collector:
             q_add=None, q_wait=None, q_margin=None,
             is_first=ctx['is_first'], is_last=ctx['is_last'], is_terminal=ctx['is_terminal'],
             observation_reward=ctx['observation_reward'],
+            market_advance=int(native['market_advance']), clock_protocol='S3_MARKET_MINUTE',
             equity_before=str(self.decision_env._calculate_equity()),
             source_checkpoint_identity=self.source_checkpoint_identity)
         self.counts['native_rows'] += 1

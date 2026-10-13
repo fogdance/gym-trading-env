@@ -179,6 +179,8 @@ def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_siz
                       columns=COLUMNS, group_fn=None):
     """Use real Replay.load/sample; Sidecar labels are joined by actual stepid."""
     import embodied
+    from .fg_replay import SINGLE3_SCHEMA, S3_FIELDS
+    fields = S3_FIELDS if dataset.get('schema', SCHEMA) == SINGLE3_SCHEMA else FIELDS
     index = {name: n for n, name in enumerate(columns)}
     members = dataset.get("pool_members", {}).get(pool_id)
     records = ([dataset["traces"][i] for i in members] if members is not None else
@@ -207,9 +209,9 @@ def sample_statistics(root, dataset, corpus, pool_id, *, batches=1000, batch_siz
                 reproducible = all(np.array_equal(batch[k], same[k]) for k in batch)
                 if not reproducible:
                     raise RuntimeError("Fixed Uniform RNG did not reproduce the complete native batch")
-            if set(batch) != set(FIELDS) | {"stepid"}:
+            if set(batch) != set(fields) | {"stepid"}:
                 raise ValueError("Unexpected model tensor / potential future label in Replay")
-            for key, (shape, dtype) in {**FIELDS, "stepid": ((20,), np.dtype("uint8"))}.items():
+            for key, (shape, dtype) in {**fields, "stepid": ((20,), np.dtype("uint8"))}.items():
                 if batch[key].shape != (batch_size, 65, *shape) or batch[key].dtype != dtype:
                     raise ValueError(f"Sample field shape/dtype changed: {key}")
             joined = np.empty((batch_size, 65, len(columns)), np.uint16)

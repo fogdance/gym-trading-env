@@ -59,7 +59,7 @@ def _path(value):
 
 def _joint_config(path, cfg):
     _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
-                   'dreamer_root', 'model', 'paths', 'source', 'train'), 'joint experiment')
+                   'dreamer_root', 'model', 'paths', 'source', 'train', 'clock_protocol'), 'joint experiment')
     if cfg['schema'] != SCHEMA or cfg['trainer'] != 's3c':
         raise ValueError('Foreign S3-C experiment schema/trainer')
     if not isinstance(cfg['experiment'], str) or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9_.-]*', cfg['experiment']):
@@ -74,7 +74,7 @@ def _joint_config(path, cfg):
     _mapping(cfg['paths'], ('catalog', 'replay_directory'), 'joint paths')
     _mapping(cfg['source'], ('kind', 'checkpoint', 'base_checkpoint', 'features'), 'source')
     kind = cfg['source']['kind']
-    if kind not in ('direct_init', 'direct_full', 'after_bc_s3a'):
+    if kind not in ('direct_init', 'direct_full', 'after_bc_s3a', 'warm_start'):
         raise ValueError('NOT_SUPPORTED source kind: ' + str(kind))
     if kind == 'direct_init' and any(cfg['source'][k] is not None for k in ('checkpoint', 'base_checkpoint', 'features')):
         raise ValueError('direct_init cannot specify a model checkpoint or BC features')
@@ -135,10 +135,14 @@ def read_experiment(config):
         path = CONFIG_ROOT / (str(config) if path.suffix else str(config) + '.yaml')
     path = path.resolve()
     cfg = read_yaml(path)
+    if cfg.get('clock_protocol') != 'S3_MARKET_MINUTE':
+        raise ValueError('New S3 configs require S3_MARKET_MINUTE and rebuilt inputs')
     if cfg.get('trainer') == 's3c':
         return _joint_config(path, cfg)
     _mapping(cfg, ('schema', 'experiment', 'trainer', 'diagnostic', 'prepared_dir',
-                   'dreamer_root', 'model', 'paths', 'features', 'train'), 'experiment')
+                   'dreamer_root', 'model', 'paths', 'features', 'train', 'clock_protocol', 'source_kind'), 'experiment')
+    if cfg['schema'] != SOURCE_SCHEMA or cfg['source_kind'] not in ('warm_start', 'direct_full'):
+        raise ValueError('New Actor BC requires shared Catalog/SourceAdmission')
     if (cfg['schema'] not in (SCHEMA, SOURCE_SCHEMA) or cfg['trainer'] not in TRAINERS
             or (cfg['schema'] == SOURCE_SCHEMA and cfg['trainer'] not in ('s3a', 's3b'))):
         raise ValueError('Foreign S3 experiment schema/trainer')
@@ -331,7 +335,7 @@ def admission(cfg, *, feature_required=False):
         catalog = load_catalog(cfg['paths']['catalog'])
         if catalog.manifest['labels_manifest_sha256'] != digest(Path(cfg['paths']['labels']) / 'manifest.json'):
             raise ValueError('S3-A labels differ from the shared Catalog')
-        spec = inspect_source('direct_full', catalog=catalog,
+        spec = inspect_source(cfg['source_kind'], catalog=catalog,
                               path=source_path, diagnostic=cfg['diagnostic'])
         if spec['origin']['diagnostic'] and not cfg['diagnostic']:
             raise ValueError('Formal experiment cannot consume a diagnostic source or Catalog')
@@ -339,11 +343,12 @@ def admission(cfg, *, feature_required=False):
         if overrides:
             import elements
             from embodied.run.fg_checkpoint import plain
-            target = plain(elements.Config(spec['origin']['config']).update(overrides))
-            spec = inspect_source('direct_full', catalog=catalog, path=source_path,
+            target = plain(elements.Config(spec['target_config']).update(overrides))
+            spec = inspect_source(cfg['source_kind'], catalog=catalog, path=source_path,
                                   config=target, diagnostic=cfg['diagnostic'])
         source = dict(spec['origin'], config=spec['target_config'], admission_receipt=spec,
-                      identity=spec['target_model_identity'],identity_hash=spec['target_model_identity_hash'])
+                      identity=spec['target_model_identity'],identity_hash=spec['target_model_identity_hash'],
+                      step=spec['target_update_offset'])
     else:
         source = validate_source(cfg['paths']['source_checkpoint'], labels, diagnostic=cfg['diagnostic'])
     weights = None
@@ -407,7 +412,8 @@ def _joint_admission(cfg):
     resolved = elements.Config(model_defaults(cfg))
     train, source = cfg['train'], cfg['source']
     resolved = resolved.update({'seed': train['seed'], 'batch_size': train['batch_size'],
-                                'batch_length': 64, 'replay_context': 1, 'logdir': train['logdir']})
+                                'batch_length': 64, 'replay_context': 1, 'logdir': train['logdir'],
+                                'agent.s3_clock_protocol': 'S3_MARKET_MINUTE'})
     defaults = plain(resolved)
     spec = inspect_source(source['kind'], catalog=catalog, path=source['checkpoint'],
         base_checkpoint=source['base_checkpoint'], features=source['features'],

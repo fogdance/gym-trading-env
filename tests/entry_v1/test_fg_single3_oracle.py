@@ -49,7 +49,7 @@ def test_exact_dp_matches_independent_real_env_exhaustive_actions(tmp_path,side)
                     _,r,_,_,_=original.step(action)
                     total+=gamma**t*Fraction.from_float(float(np.float32(r)))
                 optimum=max(optimum,total)
-            plan=optimize(rows,index.flat_end,candidate,gamma)
+            plan=optimize(rows,index.flat_end,candidate,gamma,clock=index.clock)
             empty_at(original,0);total=Fraction(0)
             for t in range(len(prices)-1):
                 if original.truncated:original.reset()
@@ -70,10 +70,10 @@ def test_proof_failure_and_exact_tie_fail_closed(tmp_path):
                release_cursor=2,rewards={'C0':[[2,1.]]}),
           dict(cursor=1,filled=True,exit={'reason':'TAKE_PROFIT','net_trade_pnl':'282'},
                release_cursor=2,rewards={'C0':[[2,1.]]})]
-    plan=optimize(rows,2,'C0')
+    plan=optimize(rows,2,'C0',clock=env.market_clock_counter)
     assert plan['add_cursors']==[1] and plan['exact_ties']>=1
     with pytest.raises(ValueError,match='budget'):
-        optimize(rows,2,'C0',max_states=2)
+        optimize(rows,2,'C0',clock=env.market_clock_counter,max_states=2)
 
 
 def test_index_global_priority_with_metadata_and_insufficient_volume(tmp_path):
@@ -85,4 +85,4 @@ def test_index_global_priority_with_metadata_and_insufficient_volume(tmp_path):
     assert verify_candidates(index,rows,count=100)['status']=='PASS'
     assert rows[0]['exit']['reason']=='MAIN_ROLL' and rows[0]['exit_cursor']==5
     assert rows[0]['exit']['net_trade_pnl']=='-18'
-    assert optimize(rows,index.flat_end,'C2')['add_cursors']==[]
+    assert optimize(rows,index.flat_end,'C2',clock=index.clock)['add_cursors']==[]

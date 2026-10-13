@@ -104,7 +104,7 @@ def test_pair_episode_mask_does_not_pair_across_resets_or_batch_members():
 def test_frozen_tutor_settings_and_checkpointed_counters(tmp_path):
     from dreamerv3.configuration import read_config_yaml
     from gym_trading_env.research.fg_s3_v2_experiment import read_settings, require_training_authorization
-    cfg = PROJECT/'configs/experiments/fg_s3_v2/TUTOR_CD_V0_GPU_SMOKE_1K.yaml'
+    cfg = PROJECT/'configs/experiments/fg_s3_v2/TUTOR_MARKET_MINUTE_GPU_1K.yaml'
     settings = read_settings(cfg)
     ext = agent_extensions(settings)
     assert ext == agent_extensions(copy.deepcopy(settings))
@@ -113,7 +113,7 @@ def test_frozen_tutor_settings_and_checkpointed_counters(tmp_path):
                     {'tutor_pair_lambda': -1}, {'tutor_hard_kappa': -1}):
         with pytest.raises(ValueError): agent_extensions({**settings, **changed})
     with pytest.raises(PermissionError):
-        require_training_authorization({**settings, 'scope': 'formal'}, True)
+        require_training_authorization({**settings, 'scope': 'formal'}, False)
     assert agent_extensions({'mode': 'a2'}) == {'s3_v2_mode': 'a2'}
     assert agent_extensions({'mode': 'c2'}) == {'s3_v2_mode': 'c2'}
     counters = Counters('tutor'); counters.state['pair_update_count'] = 3

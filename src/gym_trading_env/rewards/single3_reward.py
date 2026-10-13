@@ -11,9 +11,10 @@ import math
 
 from gym_trading_env.envs.entry_contract import fingerprint
 from gym_trading_env.research.fg_reward_candidates import CandidateConfig, FGRewardScorer
+from gym_trading_env.utils.s3_market_clock import PROTOCOL
 
 
-SCHEMA = "FG_SINGLE3_REWARD_V1"
+SCHEMA = "FG_SINGLE3_REWARD_MARKET_MINUTE_V2"
 CANDIDATES = {"C0": (0., .4, 3.), "C1": (.5, .4, 3.),
               "C2": (1., .4, 3.), "C3": (1., .4, 6.)}
 
@@ -25,9 +26,10 @@ class Single3RewardConfig:
     rho: float = .4
     L: float = 3.
     schema: str = SCHEMA
+    clock_protocol: str = PROTOCOL
 
     def __post_init__(self):
-        if (self.schema != SCHEMA or self.candidate not in CANDIDATES or
+        if (self.schema != SCHEMA or self.clock_protocol != PROTOCOL or self.candidate not in CANDIDATES or
                 any(not math.isfinite(x) for x in (self.beta, self.rho, self.L)) or
                 (self.beta, self.rho, self.L) != CANDIDATES[self.candidate]):
             raise ValueError("Unknown or inconsistent frozen Single3 reward candidate")
@@ -44,7 +46,7 @@ class Single3RewardConfig:
 class Single3Reward:
     def __init__(self, config):
         self.config = config
-        self.v2_config = CandidateConfig(beta=config.beta, rho=config.rho)
+        self.v2_config = CandidateConfig(beta=config.beta, rho=config.rho, clock_protocol=PROTOCOL)
         self.scorer = FGRewardScorer(self.v2_config)
         self.total = 0.
 

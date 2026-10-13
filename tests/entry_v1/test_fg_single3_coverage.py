@@ -13,7 +13,7 @@ from test_fg_single3_env import single_env
 
 
 def test_real_native_sample_new_labels_and_single_reward_pool(tmp_path):
-    root=Path('/home/v/Documents/work/dreamerv3')
+    root=Path(__file__).resolve().parents[3]/'dreamerv3'
     prices=[(1000,1000,1000,1000)]*80
     prices[10]=(1000,1000,960,980)
     prices[20]=(1000,1007,1000,1007)
@@ -32,7 +32,7 @@ def test_real_native_sample_new_labels_and_single_reward_pool(tmp_path):
         write_json(directory/'reconciliation.json',signed(dict(receipt,trace_manifest_sha256=digest(directory/'manifest.json'))))
         records.append(dict(directory=candidate,candidate=candidate,policy_id='P1',contract=m['contract'],
             sequence_starts=m['sequence_starts'],reward_params_hash=m['reward_params_hash']))
-    dataset=dict(traces=records,views={'C2_natural':'C2/replay'},pool_members={'C2_natural':[1]})
+    dataset=dict(schema=SINGLE3_SCHEMA,traces=records,views={'C2_natural':'C2/replay'},pool_members={'C2_natural':[1]})
     corpus=base.corpus_statistics(tmp_path,dataset,columns=coverage.COLUMNS,label_fn=coverage.row_labels,
         trace_schema=SINGLE3_SCHEMA,group_fn=coverage.group,row_hook=coverage.row_hook,trade_finalize=coverage.finalize_trade)
     sample=base.sample_statistics(tmp_path,dataset,corpus,'C2_natural',batches=3,batch_size=16,

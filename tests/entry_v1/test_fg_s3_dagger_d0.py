@@ -31,8 +31,8 @@ def test_suffix_query_all_cursors_matches_original_env_exhaustive_actions(tmp_pa
             (1001,1003,970,995),(995,1003,994,1000)]
     env=single_env(tmp_path, prices, side=side, candidate='C1', fees=3, chunk=2)
     query, rows=query_for(env,tmp_path/'env.yaml')
-    legacy=optimize(rows,query.end,'C1')
-    extended=optimize(rows,query.end,'C1',return_suffix=True)
+    legacy=optimize(rows,query.end,'C1',clock=env.market_clock_counter)
+    extended=optimize(rows,query.end,'C1',clock=env.market_clock_counter,return_suffix=True)
     assert {k:v for k,v in extended.items() if k!='suffix'}==legacy
     for start in range(query.end):
         optimum=Fraction(0)

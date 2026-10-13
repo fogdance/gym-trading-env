@@ -30,6 +30,8 @@ SCHEMA = 'FG_SINGLE3_CPU_V1'
 
 def load_config(path):
     config = read_yaml(path)
+    if config.get('clock_protocol') != 'S3_MARKET_MINUTE':
+        raise ValueError('New Single3 preparation requires S3_MARKET_MINUTE')
     if config.get('schema') != SCHEMA or config.get('oracle_required_status') != 'exact_proven':
         raise ValueError('Explicit Single3 CPU/exact Oracle configuration required')
     for key in ('training_manifest', 'dreamer_root', 'output_root'):
@@ -124,6 +126,7 @@ def prepare_inputs(config, directory):
         frozen[str(master_path)] = digest(master_path)
         view = {k: copy.deepcopy(v) for k,v in original.items() if k not in ('content_hash','files')}
         view.update(single3_protocol=SINGLE3_PROTOCOL, reward_candidate=candidate,
+                    clock_protocol='S3_MARKET_MINUTE',
                     original_manifest=config['training_manifest'], original_content_hash=original['content_hash'],
                     direction_path=str(master_path), direction_sha256=digest(master_path), files=[])
         for row in rows:
@@ -248,7 +251,7 @@ def env_audit(config, output, contracts=('CZCE.FG809','CZCE.FG909')):
         for contract,(report,state) in zip(contracts,pool.map(_env_audit_pair,jobs)):
             write_json(output/(contract.replace('.','_')+'_account.json'),state)
             reports.append(report)
-    receipt = dict(schema=SCHEMA, stage='E', status='PASS',
+    receipt = dict(schema=SCHEMA, clock_protocol='S3_MARKET_MINUTE', stage='E', status='PASS',
         training_content_hash=inputs['original_content_hash'], config=config, provenance=code,tests=tests,
         frozen_inputs={**inputs['frozen_files'],**snapshots}, source_snapshots=snapshots,reports=reports,
         files={str(p.relative_to(output)):digest(p) for p in output.rglob('*') if p.is_file()})

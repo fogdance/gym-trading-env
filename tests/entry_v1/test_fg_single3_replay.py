@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -14,7 +16,7 @@ def test_native_single_delay_and_derived_reward_view(tmp_path):
         folder=tmp_path/candidate
         folder.mkdir(exist_ok=True)
         return single_env(folder,prices,candidate=candidate,chunk=7)
-    root='/home/v/Documents/work/dreamerv3'
+    root=str(Path(__file__).resolve().parents[3]/'dreamerv3')
     source=tmp_path/'source'
     spec=dict(id='P3',kind='single_delay',wait_minutes=15,seed_components=[0,0,4])
     manifest=collect_trace(tmp_path/'C2/env.yaml',spec,source,dict(test='single3'),root,

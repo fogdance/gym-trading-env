@@ -47,7 +47,7 @@ def test_actor_only_rates_include_censored_entries_and_reject_guidance(tmp_path)
     receipt=dict(teacher_guidance=False,beta=0.,fold='DEV',output=str(tmp_path),
         checkpoint='step',checkpoint_manifest_sha256='checkpoint',env_steps=2,policy_mode='eval_argmax',
         add_executed=1,entries=3,right_censored=1,sl30=1,early_mae10=1,
-        tp_minutes_p50=2.,tp_minutes_p90=2.,tp_effective_bars_p50=2.,reward=0.,all_wait=False)
+        clock_protocol='S3_MARKET_MINUTE',tp_market_minutes_p50=2.,tp_market_minutes_p90=2.,reward=0.,all_wait=False)
     result=actor_only_metrics(receipt)
     assert result['tp5_points_rate']==pytest.approx(1/3)
     assert result['sl30_rate']==pytest.approx(1/3)

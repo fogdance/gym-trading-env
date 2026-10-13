@@ -1,0 +1,42 @@
+schema: FG_S3_EXPERIMENT_V2
+experiment: S3B_MARKET_MINUTE
+trainer: s3b
+diagnostic: false
+prepared_dir: /data/logdir/fg_s3_market_minute/20261013_v2/prepared/S3B_MARKET_MINUTE
+dreamer_root: ../dreamerv3
+model:
+  template: ../dreamerv3/dreamerv3/configs.yaml
+  presets:
+  - defaults
+  - fg_entry_v1
+  - fg_single3_joint_offline
+  - fg_single3_1m
+  overrides:
+    agent.avail_threshold: 0.3
+paths:
+  dataset: /data/logdir/fg_s3_market_minute/20261013_v2/replay/v1
+  oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+  labels: /data/logdir/fg_s3_market_minute/20261013_v2/labels/v1
+  source_checkpoint: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+  catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+  features: /data/logdir/fg_s3_market_minute/20261013_v2/features/online_180k
+  weights: /data/logdir/fg_s3_market_minute/20261013_v2/weights/v1
+features:
+  seed: 0
+  shard_rows: 1024
+  max_rows: null
+  device: gpu
+train:
+  mode: S3B_CERTIFIED
+  seed: 0
+  batch_size: 256
+  updates: 1000
+  comparison_updates: 1000
+  save_every: 100
+  device: gpu
+  logdir: /data/logdir/fg_single3/s3_market_minute/S3B_MARKET_MINUTE
+  optimizer:
+    lr: 4.0e-05
+    agc: 0.3
+clock_protocol: S3_MARKET_MINUTE
+source_kind: warm_start

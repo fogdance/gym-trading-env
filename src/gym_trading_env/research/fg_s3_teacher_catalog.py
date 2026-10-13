@@ -17,11 +17,11 @@ from .fg_replay import (SINGLE3_SCHEMA, check_files, digest, read_manifest,
                         signed, trace_manifest, write_json)
 from .fg_s3a_labels import INDEX_DTYPE, aligned_rows, exclusion, load_labels, sources
 
-PROTOCOL = 'FG_S3_TEACHER_CATALOG_V1'
+PROTOCOL = 'FG_S3_TEACHER_CATALOG_MARKET_MINUTE_V2'
 ROW_DTYPE = np.dtype(INDEX_DTYPE.descr + [
     ('label_valid', '?'), ('exclusion_reason', 'U24'),
     ('is_last', '?'), ('is_terminal', '?'), ('replay_action', '<i4'),
-    ('position_state', '<f4', (9,))])
+    ('position_state', '<f4', (9,)), ('market_advance', '<i4')])
 
 
 class DatasetIdentityError(ValueError):
@@ -78,7 +78,7 @@ def _ownership(source, *, diagnostic):
         if (t['policy']['id'] != rec['policy_id'] or t['contract'] != rec['contract']
                 or t['reward_candidate'] != 'C1' or t['identity'] != rec['trace_identity']
                 or t['reward_params_hash'] != source['reward_params_hash']
-                or t['obs_version'] != 'FG_SINGLE3_V1_60x18_9_2'
+                or t['obs_version'] != 'FG_SINGLE3_MARKET_MINUTE_60x18_9_2'
                 or t['observation_identity'] != source['observation_identity']
                 or t['observation_identity'] != rec['observation_identity']
                 or t['protocol'] != 'fg_single3_v1'
@@ -176,7 +176,7 @@ def build_catalog(dataset, oracle_receipt, labels, output, *, diagnostic=False):
             # Invalid label is a safe sentinel, distinct from actual replay_action.
             canonical = (*canonical[:3], row['action'] if why is None else 0, *canonical[4:])
             rows.append((*canonical, why is None, why or '', row['is_last'], row['is_terminal'],
-                         row['action'], step['position_state']))
+                         row['action'], step['position_state'], int(step['market_advance'])))
         if by_id:
             fail('FOREIGN_LABEL_STEPID')
         if len(rows) != t['records']:
@@ -199,7 +199,7 @@ def build_catalog(dataset, oracle_receipt, labels, output, *, diagnostic=False):
                               'training_hash', 'reward_params_hash')},
         labels=str(Path(labels).resolve()), labels_manifest_sha256=digest(Path(labels)/'manifest.json'),
         observation_identity=lm['traces'][0]['observation_identity'],
-        obs_version='FG_SINGLE3_V1_60x18_9_2', traces=traces, counts=dict(counts),
+        obs_version='FG_SINGLE3_MARKET_MINUTE_60x18_9_2', traces=traces, counts=dict(counts),
         frozen_inputs=frozen, code_sha256=digest(__file__),
         files={p.name: digest(p) for p in pending.iterdir()}))
     write_json(pending/'manifest.json', manifest)

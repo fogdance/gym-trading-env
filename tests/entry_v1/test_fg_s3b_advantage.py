@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from test_fg_single3_env import single_env
+from gym_trading_env.utils.s3_market_clock import MarketClock
 from gym_trading_env.research.fg_single3_oracle import CandidateIndex, GAMMA
 from gym_trading_env.research.fg_s3b_advantage import (
     ExactBudget, RelaxedValues, build_value_evidence, certify_advantage,
@@ -16,7 +17,7 @@ from gym_trading_env.research.fg_s3b_advantage import (
 def candidates(env):
     index = CandidateIndex(env)
     rows = [index.candidate(t) for t in range(index.flat_end)]
-    return rows, RelaxedValues(rows, index.flat_end), funding_terms(env)
+    return rows, RelaxedValues(rows, index.flat_end, clock=index.clock), funding_terms(env)
 
 
 def prepare(env, state):
@@ -166,10 +167,10 @@ def test_exact_tie_budget_overlap_teacher_conflict_and_numeric_bounds():
                     right_censored=False, exit=dict(reason='TAKE_PROFIT', committed=True,
                         closed_quantity=3, net_trade_pnl='282'), rewards={'C1':[[2, 1.]]})
     rows = [row(0), row(1)]
-    dp = RelaxedValues(rows, 2)
+    dp = RelaxedValues(rows, 2, clock=MarketClock(np.ones(3,bool)))
     e = build_value_evidence(rows[0], dp, 300000, 1000, teacher_action=0)
     assert e['certificate'] == 'TIE_EXACT' and e['delta'] == [0.,0.]
-    dp = RelaxedValues(rows, 2, budget=ExactBudget(0,8))
+    dp = RelaxedValues(rows, 2, clock=MarketClock(np.ones(3,bool)), budget=ExactBudget(0,8))
     e = build_value_evidence(rows[0], dp, 300000, 1000, teacher_action=0)
     assert e['certificate'] == 'UNCERTIFIED' and e['margin_lower'] == 0
     assert dp.budget.exhausted > 0
@@ -182,7 +183,7 @@ def test_exact_tie_budget_overlap_teacher_conflict_and_numeric_bounds():
     assert Fraction.from_float(lo) <= GAMMA <= Fraction.from_float(hi)
     malformed = copy.deepcopy(rows); malformed[0]['rewards']['C1'] = [[0,1.]]
     with pytest.raises(ValueError, match='timing'):
-        RelaxedValues(malformed,2)
+        RelaxedValues(malformed,2,clock=MarketClock(np.ones(3,bool)))
 
 
 def test_early_penalty_plus_tp_discount_and_administrative_clock(tmp_path):
@@ -204,4 +205,4 @@ def test_early_penalty_plus_tp_discount_and_administrative_clock(tmp_path):
 
 def test_exact_budget_event_limit_fails_closed():
     b = ExactBudget(2,1)
-    assert b.difference([(1,1.),(2,2.)],[],0) is None and b.exhausted == 1
+    assert b.difference([(1,1.),(2,2.)],[],0,MarketClock(np.ones(3,bool))) is None and b.exhausted == 1

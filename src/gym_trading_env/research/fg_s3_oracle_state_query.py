@@ -17,7 +17,7 @@ from .fg_single3 import load_env
 from .fg_single3_oracle import GAMMA, funds_certificate, optimize
 
 
-PROTOCOL = 'FG_S3_V2_ORACLE_STATE_QUERY_D0_V1'
+PROTOCOL = 'FG_S3_ORACLE_STATE_QUERY_MARKET_MINUTE_V2'
 DECISION_PROTOCOL = 'FG_S3_V2_CURRENT_DECISION_STATE_V1'
 
 
@@ -39,14 +39,15 @@ class OracleStateQuery:
         if not 0 <= self.end < len(env._raw):
             raise ValueError('Oracle horizon must be the original contract boundary')
         started = time.perf_counter()
-        plan = optimize(candidates, self.end, env.reward_config.candidate, return_suffix=True)
+        plan = optimize(candidates, self.end, env.reward_config.candidate,
+                        clock=env.market_clock_counter, return_suffix=True)
         self.dp_seconds = time.perf_counter() - started
         self.first = tuple(plan.pop('suffix')['first'])
         self.plan = plan
         self.identity = dict(protocol=PROTOCOL, fold=fold, rules=self.rules,
             source=source_identity, funds_certificate=self.proof,
             market_hash=fingerprint(self.market.to_dict(orient='split')),
-            gamma_rational=[GAMMA.numerator, GAMMA.denominator],
+            gamma_rational=[GAMMA.numerator, GAMMA.denominator], clock_protocol='S3_MARKET_MINUTE',
             boundary=self.end, tie_break='WAIT',
             certified_domain='flat_active_cash_at_least_original_certificate_floor',
             query_code_sha256=digest(__file__),

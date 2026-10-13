@@ -173,7 +173,7 @@ def generate_dataset(config,output,env_receipt,reward_receipt,oracle_receipt,*,w
     for name in ('fg_replay_coverage.py','fg_single3_oracle.py'):
         path=Path(__file__).with_name(name)
         code['code_files'][str(path)]=digest(path)
-    identity=dict(schema=SINGLE3_SCHEMA,protocol='fg_single3_v1',original_training_hash=inputs['original_content_hash'],
+    identity=dict(schema=SINGLE3_SCHEMA,protocol='fg_single3_v1',clock_protocol='S3_MARKET_MINUTE',original_training_hash=inputs['original_content_hash'],
         selected_contracts=sorted(selected),code_hash=fingerprint(code['code_files']),fold='TRAIN',conditional_direction_only=True)
     if resume:
         started=read_manifest(root/'inputs.json')

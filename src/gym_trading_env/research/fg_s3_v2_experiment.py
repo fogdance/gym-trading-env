@@ -20,8 +20,6 @@ FORMAL_ROOT = Path('/data/logdir/fg_single3/s3_v2')
 
 
 def require_training_authorization(settings, authorized):
-    if settings['mode'] == 'tutor' and settings['scope'] != 'diagnostic':
-        raise PermissionError('Tutor V0 is limited to diagnostic scope, even with authorization')
     if settings['scope'] == 'formal' and not authorized:
         raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
@@ -32,11 +30,12 @@ def read_settings(path):
         path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
     path = path.resolve()
     s = read_config_yaml(path)
+    if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
+        raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
     if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2', 'tutor') or s['device'] != 'gpu':
         raise ValueError('S3-V2 requires an explicit A2/C2/Tutor GPU config')
     s.setdefault('scope', 'diagnostic')
     if s['mode'] == 'tutor':
-        require_training_authorization(s, False)
         extension = agent_extensions(s)
         s.update({k: extension[k] for k in DEFAULTS})
     s.setdefault('contracts', None)
@@ -89,10 +88,11 @@ def prepare(config):
         raise FileExistsError('Preparation retained; use a new config/preparation name')
     catalog = load_catalog(s['catalog'])
     try:
-        initial = inspect_source('direct_full', catalog=catalog, path=s['source_checkpoint'])
+        kind = s.get('source_kind', 'warm_start')
+        initial = inspect_source(kind, catalog=catalog, path=s['source_checkpoint'])
         target = copy.deepcopy(initial['target_config'])
         target['agent']['avail_threshold'] = .30
-        spec = inspect_source('direct_full', catalog=catalog, path=s['source_checkpoint'],
+        spec = inspect_source(kind, catalog=catalog, path=s['source_checkpoint'],
             config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1')
         model = copy.deepcopy(spec['target_config'])
         model.update(batch_size=s['batch_size'], batch_length=64, report_length=64)
@@ -118,7 +118,8 @@ def prepare(config):
             dirty={str(r): subprocess.check_output(['git', 'status', '--porcelain'], cwd=r, text=True).splitlines()
                    for r in (PROJECT, PROJECT.parent/'dreamerv3')},
             files={p.name: file_hash(p) for p in output.iterdir() if p.is_file()},
-            source_update_offset=spec['origin']['step'], new_environment_steps=0,
+            source_update_offset=spec['target_update_offset'], source_model_updates=spec['origin']['step'],
+            clock_protocol='S3_MARKET_MINUTE', new_environment_steps=0,
             training_identity=dict(candidate='C1', pool='C1_natural_oracle',
                 dataset_sha256=catalog.manifest['source']['dataset_sha256'],
                 reward_params_hash=catalog.manifest['source']['reward_params_hash'],

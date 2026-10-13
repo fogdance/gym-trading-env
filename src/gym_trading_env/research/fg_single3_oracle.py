@@ -30,7 +30,7 @@ from .fg_single3 import (execution_provenance, load_env, make_output, required_t
 from .fg_single3_replay import require_e, trace_job
 
 GAMMA = Fraction(332, 333)
-OBJECTIVE = 'native_float32_feedback_rational_gamma_env_advance_v1'
+OBJECTIVE = 'native_float32_feedback_rational_gamma_market_minute_v2'
 
 
 class ThresholdIndex:
@@ -117,7 +117,8 @@ class CandidateIndex:
         self.proof=funds_certificate(env)
         raw=env._raw
         self.n=len(raw)
-        self.prefix=np.concatenate(([0],np.cumsum(env.valid_fill_clock)))
+        self.clock = env.market_clock_counter
+        self.prefix = self.clock.prefix
         self.liquid=np.flatnonzero(env.valid_fill_clock & (raw.Volume.to_numpy()>=3))
         deadlines=[v for v in (env.main_exit_at,env.terms.liquidate) if v is not None]
         self.global_at=min([int(raw.index.searchsorted(v)) for v in deadlines]+[self.n])
@@ -214,7 +215,8 @@ class CandidateIndex:
             entry_time=entry['time'],entry_price=entry['price'],exit_cursor=u if event else None,
             release_cursor=u if event else None,right_censored=event is None,
             observed_until_cursor=u,exit=event,effective_bars=int(self.prefix[end]-self.prefix[i]),
-            natural_minutes=(env._raw.index[u]-env.bobs[i]).total_seconds()/60,
+            held_market_bars=self.clock.held(i, u),
+            tp_market_minutes=self.clock.held(i, u) if event and event['reason']=='TAKE_PROFIT' else None,
             first_adverse_cursor=early,first_adverse_effective_bar=int(self.prefix[early+1]-self.prefix[i]) if early is not None else None,
             MAE_points=mae,rewards=rewards)
 
@@ -229,7 +231,7 @@ def _mul(a,b):
     return (_down(min(products)),_up(max(products)))
 
 
-def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000,return_suffix=False):
+def optimize(candidates,end,candidate,gamma=GAMMA,*,clock,max_states=2000000,return_suffix=False):
     """Certified interval comparisons, exact rational fallback, WAIT on ties."""
     if end+1>max_states:raise ValueError('NOT_PROVEN: exact search state budget exceeded')
     gamma=Fraction(gamma)
@@ -237,7 +239,8 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000,return_su
     g=float(gamma)
     gb=(_down(g),_up(g)) if Fraction.from_float(g)!=gamma else (g,g)
     powers=[(1.,1.)]
-    for _ in range(end):powers.append(_mul(powers[-1],gb))
+    clock._cursor(end)
+    for _ in range(int(clock.prefix[-1])):powers.append(_mul(powers[-1],gb))
     bounds=[(0.,0.)]*(end+1)
     first=[None]*(end+1)
     next_trade={}
@@ -263,22 +266,22 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000,return_su
                 if cursor==common:break
                 for step,reward in by_cursor[cursor]['rewards'][candidate]:
                     events[step]+=sign*Fraction.from_float(reward)
-        return sum((gamma**(step-origin-1)*value for step,value in events.items()),Fraction(0))
+        return sum((gamma**clock.reward_exponent(origin,step)*value for step,value in events.items()),Fraction(0))
 
     for t in range(end-1,-1,-1):
-        wait=_mul(gb,bounds[t+1]);best=wait;head=first[t+1]
+        wait=_mul(powers[clock.advance(t,t+1)],bounds[t+1]);best=wait;head=first[t+1]
         row=by_cursor.get(t)
         if row and row['exit'] and row['exit']['reason']=='TAKE_PROFIT' and row['release_cursor']<=end:
             local=(0.,0.)
             for step,reward in row['rewards'][candidate]:
-                local=_add(local,_mul(powers[step-t-1],(reward,reward)))
+                local=_add(local,_mul(powers[clock.reward_exponent(t,step)],(reward,reward)))
             # Removing a nonpositive complete interval preserves every later decision.
             keep=local[1]>0
             if keep and local[0]<=0:
-                keep=sum((gamma**(s-t-1)*Fraction.from_float(v) for s,v in row['rewards'][candidate]),Fraction(0))>0
+                keep=sum((gamma**clock.reward_exponent(t,s)*Fraction.from_float(v) for s,v in row['rewards'][candidate]),Fraction(0))>0
             if keep:
                 u=row['release_cursor']
-                option=_add(local,_mul(powers[u-t],bounds[u]))
+                option=_add(local,_mul(powers[clock.advance(t,u)],bounds[u]))
                 take=option[0]>wait[1]
                 if not take and option[1]>=wait[0]:
                     exact_checks+=1
@@ -296,7 +299,7 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,max_states=2000000,return_su
         raise RuntimeError('Dominance proof failed to retain only cash-positive TP trades')
     result = dict(oracle_optimality_status='exact_proven',candidate=candidate,
         gamma=float(gamma),gamma_rational=[gamma.numerator,gamma.denominator],
-        objective=OBJECTIVE,tie_break='WAIT',add_cursors=schedule,
+        objective=OBJECTIVE,clock_protocol='S3_MARKET_MINUTE',tie_break='WAIT',add_cursors=schedule,
         value_interval=list(bounds[0]),search_states=end+1,exact_comparisons=exact_checks,
         exact_ties=ties,dominance_pruned=pruned,selected_trades=len(schedule),
         selected_cash_gain=sum(float(by_cursor[t]['exit']['net_trade_pnl']) for t in schedule))
@@ -394,11 +397,11 @@ def _oracle_job(job):
     plans={};diagnostics={};traces=[]
     by_cursor={r['cursor']:r for r in rows}
     for name in ('C0','C1','C2','C3'):
-        plan=optimize(rows,index.flat_end,name,max_states=job['max_states'])
+        plan=optimize(rows,index.flat_end,name,clock=index.clock,max_states=job['max_states'])
         plan.update(contract=env.contract,training_only=True,identity=job['identity'],
                     candidates_sha256=digest(root/'candidates.jsonl.gz'),funds_certificate=index.proof)
         path=root/f'{name}_H333.json';write_json(path,signed(plan));plans[name]=str(path)
-        diagnostic=optimize(rows,index.flat_end,name,Fraction(1),max_states=job['max_states'])
+        diagnostic=optimize(rows,index.flat_end,name,Fraction(1),clock=index.clock,max_states=job['max_states'])
         diagnostic.update(contract=env.contract,diagnostic_only=True,training_only=True)
         write_json(root/f'{name}_gamma1.json',signed(diagnostic));diagnostics[name]=diagnostic
         spec=dict(id='P4',kind='oracle_schedule',candidate=name,seed_components=[0,job['index'],5],
@@ -411,7 +414,7 @@ def _oracle_job(job):
             if row['advanced']:
                 if float(np.float32(row['official_reward']))!=expected_feedback.get(row['cursor'],0.):
                     raise RuntimeError('Oracle candidate and full Driver sparse feedback differ')
-                total+=weight*float(np.float32(row['official_reward']));weight*=332/333
+                total+=weight*float(np.float32(row['official_reward']));weight*=(332/333)**int(row['valid_bar'])
             for f in row['fills']:
                 if f['reason']=='ENTRY':actual.append(row['cursor']-1)
             for event in row['exits']:
@@ -458,7 +461,7 @@ def oracle_study(config,output,env_receipt,reward_receipt,*,workers=4,contracts=
     else:snapshots=source_witness(output,code)
     live={**inputs['frozen_files'],**code['code_files']}
     for path in (Path(env_receipt)/'manifest.json',Path(reward_receipt)/'manifest.json'):live[str(path.resolve())]=digest(path)
-    identity=dict(schema='FG_SINGLE3_ORACLE_V1',objective=OBJECTIVE,training_hash=inputs['original_content_hash'],
+    identity=dict(schema='FG_SINGLE3_ORACLE_MARKET_MINUTE_V2',clock_protocol='S3_MARKET_MINUTE',objective=OBJECTIVE,training_hash=inputs['original_content_hash'],
                   code_hash=fingerprint(code['code_files']),selected_contracts=sorted(selected))
     write_json(output/'inputs.json',signed(dict(config=config,identity=identity,provenance=code,
         source_snapshots=snapshots,frozen_files=live,training_views=inputs['views'])))

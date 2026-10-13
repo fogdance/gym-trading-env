@@ -30,7 +30,7 @@ def row_labels(row):
     labels[INDEX['negative_reward']]=int(row['official_reward']<0)
     for e in row['exits']:
         if e['reason']=='TAKE_PROFIT':
-            duration=base.minute_age(e['exit_time'],e['entry_time'])
+            duration=e['tp_market_minutes']
             key=('tp_le5' if duration<=5 else 'tp_5_15' if duration<=15 else
                  'tp_15_60' if duration<=60 else 'tp_60_480' if duration<480 else 'tp_ge480')
             labels[INDEX[key]]+=1
@@ -44,7 +44,7 @@ def row_hook(row,opened,active,record):
         if fill['reason']=='ENTRY':
             item=opened[fill['entry_id']]
             item.update(candidate=record['candidate'],decision_cursor=row['cursor']-1,
-                        reward_feedback=[],pending_rows=0,first_adverse_effective_bar=None)
+                        reward_feedback=[],reward_market_feedback=[],pending_rows=0,first_adverse_effective_bar=None)
     for event in row['reward_events']:
         item=opened[event['entry_id']]
         if event['reason']=='FIRST_ADVERSE10':
@@ -58,6 +58,8 @@ def row_hook(row,opened,active,record):
         if len(ids)!=1:raise ValueError('Single3 nonzero feedback has no unique real entry identity')
         item=opened[next(iter(ids))]
         item['reward_feedback'].append([row['cursor'],float(np.float32(row['official_reward']))])
+        item['reward_market_feedback'].append([item['observed_bars']-int(row['valid_bar']),
+                                               float(np.float32(row['official_reward']))])
     for event in row['exits']:
         item=opened[event['entry_id']]
         item.update(exit_cursor=row['cursor'],net_trade_pnl=float(event['net_trade_pnl']),
@@ -65,6 +67,10 @@ def row_hook(row,opened,active,record):
 
 
 def finalize_trade(item,record):
+    item.pop('duration_minutes', None)
+    item['held_market_bars'] = item['observed_bars']
+    if item.get('actual_exit') and item['actual_exit']['held_market_bars'] != item['held_market_bars']:
+        raise ValueError('Coverage/Env holding market clocks differ')
     if item['exit_reason']=='STOP_LOSS':item['status']='stop_loss'
     item['hindsight_behavior']=record['policy_id']=='P4'
     item['reward_params_hash']=record['reward_params_hash']
@@ -94,7 +100,7 @@ def _coverage_lines(dataset,corpus,samples,root):
         '', '## 分策略/候选','']
     metrics=('records','decision','legal_add_decision','add_requested','add_fill','add_rejected','voluntary_wait','restricted_wait','full_wait','tp','sl','other_exit','early_first5','early_next10','sl_pending','negative_reward')
     lines+=base.table(['group',*metrics],[(name,*[values[k] for k in metrics]) for name,values in sorted(corpus['summaries'].items())])
-    lines+=['','TP以真实TAKE_PROFIT退出计数，不以reward_events数量计数；SL是可恢复的交易失败，不是全局terminal。SL奖励只在完整真实成交反馈出现。sl_pending是观察行标志（包含重复reset行），不是SL成交次数。','', '## TP自然时长及风险条件','']
+    lines+=['','TP以真实TAKE_PROFIT退出计数，不以reward_events数量计数；SL是可恢复的交易失败，不是全局terminal。SL奖励只在完整真实成交反馈出现。sl_pending是观察行标志（包含重复reset行），不是SL成交次数。','', '## TP市场分钟及风险条件','']
     statistics=[]
     for name in sorted(corpus['summaries']):
         trades=[t for t in corpus['trades'] if t['policy_id']==name]
@@ -102,7 +108,7 @@ def _coverage_lines(dataset,corpus,samples,root):
         statistics.append((name,len(trades),len(early),sum(t['exit_reason']=='TAKE_PROFIT' for t in early)/len(early) if early else None,
             sum(t['exit_reason']=='STOP_LOSS' for t in early)/len(early) if early else None,
             sum(t['right_censored'] for t in trades),base.distribution([t['MAE_points'] for t in trades]),
-            base.distribution([t['duration_minutes'] for t in trades if t['exit_reason']=='TAKE_PROFIT'])))
+            base.distribution([t['held_market_bars'] for t in trades if t['exit_reason']=='TAKE_PROFIT'])))
     lines+=base.table(['group','trades','early10','P(TP|early10)','P(SL|early10)','censored','MAE分布','TP分钟分布'],statistics)
     reward_rows=[]
     for name in sorted(corpus['summaries']):

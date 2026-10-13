@@ -115,14 +115,7 @@ def evaluate(prepared, run_dir, steps=1000):
                 break
         exits = env.attributions
         tp = [e for e in exits if e['reason'] == 'TAKE_PROFIT']
-        minutes = [(pd.Timestamp(e['exit_time'])-pd.Timestamp(e['entry_time'])).total_seconds()/60 for e in tp]
-        # Count actual tradable bars rather than calendar gaps in TP duration.
-        frame = env._raw
-        index = frame.index
-        effective = []
-        for e in tp:
-            lo, hi = pd.Timestamp(e['entry_time']), pd.Timestamp(e['exit_time'])
-            effective.append(int(((index > lo) & (index <= hi)).sum()))
+        minutes = [e['tp_market_minutes'] for e in tp]
         legal = [r for r in rows if r['mask'][1] and not r['is_last']]
         # The final proposal is not executed at the budget boundary.
         executed = rows[:-1]
@@ -139,9 +132,9 @@ def evaluate(prepared, run_dir, steps=1000):
             actor_add_proposed=sum(r['action'] == 1 for r in legal),
             add_executed=sum(r['action'] == 1 for r in executed), entries=len(entries),
             tp_target_points=5, tp_count=len(tp), sl30=sum(e['reason'] == 'STOP_LOSS' for e in exits),
-            tp_minutes_p50=float(np.quantile(minutes,.5)) if minutes else None,
-            tp_minutes_p90=float(np.quantile(minutes,.9)) if minutes else None,
-            tp_effective_bars_p50=float(np.quantile(effective,.5)) if effective else None,
+            clock_protocol='S3_MARKET_MINUTE',
+            tp_market_minutes_p50=float(np.quantile(minutes,.5)) if minutes else None,
+            tp_market_minutes_p90=float(np.quantile(minutes,.9)) if minutes else None,
             early_mae10=sum(e['reason'] == 'FIRST_ADVERSE10' for e in env.reward_events),
             reward=float(env.total_reward), right_censored=len(env.entries),
             all_wait=bool(legal and not any(r['action'] for r in legal)),

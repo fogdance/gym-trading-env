@@ -86,7 +86,7 @@ def sources(dataset, oracle_receipt, candidate='C1'):
         t = trace_manifest(directory, schema=SINGLE3_SCHEMA)
         receipt = read_manifest(directory/'reconciliation.json')
         policy = t['policy']
-        if (t.get('protocol') != 'fg_single3_v1' or t.get('obs_version') != 'FG_SINGLE3_V1_60x18_9_2'
+        if (t.get('protocol') != 'fg_single3_v1' or t.get('obs_version') != 'FG_SINGLE3_MARKET_MINUTE_60x18_9_2'
                 or t['reward_params_hash'] != reward_hash or t['reward_candidate'] != 'C1'
                 or t['contract'] != rec['contract'] or t['identity'] != rec['trace_identity']
                 or t['records'] != rec['records'] or t['replay_trace_hash'] != rec['replay_trace_hash']

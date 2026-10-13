@@ -81,14 +81,13 @@ def analyze_trace(directory, dev, strategy):
         if fill['reason'] != 'ENTRY' or not fill['committed']:
             continue
         event = events.get(fill['entry_id'])
-        duration = ((pd.Timestamp(event['exit_time']) - pd.Timestamp(fill['time'])).total_seconds()/60
-            if event else None)
+        duration = event['held_market_bars'] if event else None
         reason = event['reason'] if event else 'RIGHT_CENSORED'
         trades.append(dict(contract=manifest['contract'],direction=fill['side'],entry_id=fill['entry_id'],
             entry_timestamp=fill['time'],entry_price=fill['price'],
             exit_timestamp=event['exit_time'] if event else None,
             exit_price=event['exit_price'] if event else None,exit_reason=reason,
-            duration_minutes=duration,tp5=bool(reason=='TAKE_PROFIT' and duration<=5),
+            held_market_bars=duration,tp5=bool(reason=='TAKE_PROFIT' and duration<=5),
             tp15=bool(reason=='TAKE_PROFIT' and duration<=15),sl30=reason=='STOP_LOSS',
             reward=reward_by_entry[fill['entry_id']],
             net_trade_pnl=float(event['net_trade_pnl']) if event else None))
@@ -129,7 +128,7 @@ def analyze_trace(directory, dev, strategy):
         p_add_max=max(probabilities) if probabilities else None,
         p_add_std=float(np.std(probabilities)) if probabilities else None,
         denominator='all actual entries, including failures and right-censored positions',
-        timing_status='NOT_ESTABLISHED',simulated_fills=True)
+        timing_status='NOT_ESTABLISHED',clock_protocol='S3_MARKET_MINUTE',simulated_fills=True)
     for key in ('tp5','tp15','sl30'):
         summary[key+'_rate'] = summary[key]/n if n else None
     if summary['illegal_add']:
@@ -142,7 +141,7 @@ def analyze_trace(directory, dev, strategy):
             sl30=sum(t['sl30'] for t in group),reward=sum(t['reward'] for t in group),
             closed_net_pnl=sum(t['net_trade_pnl'] or 0 for t in group)))
     pd.DataFrame(trades,columns=['contract','direction','entry_id','entry_timestamp','entry_price',
-        'exit_timestamp','exit_price','exit_reason','duration_minutes','tp5','tp15','sl30','reward','net_trade_pnl']).to_csv(directory/'trades.csv',index=False)
+        'exit_timestamp','exit_price','exit_reason','held_market_bars','tp5','tp15','sl30','reward','net_trade_pnl']).to_csv(directory/'trades.csv',index=False)
     pd.DataFrame(actions).to_csv(directory/'actions.csv',index=False)
     pd.DataFrame(state['equity_history']).to_csv(directory/'equity.csv',index=False)
     pd.DataFrame(strata).to_csv(directory/'strata.csv',index=False)

@@ -89,8 +89,11 @@ class CandidateConfig:
     gamma: float = 332 / 333
     risk_points: float = 10.0
     take_profit_points: float = 5.0
+    clock_protocol: str = 'LEGACY_WALL_MINUTE'
 
     def __post_init__(self):
+        if self.clock_protocol not in ('LEGACY_WALL_MINUTE', 'S3_MARKET_MINUTE'):
+            raise RewardInputError('Unknown reward time protocol')
         for key in ("beta", "rho", "lam", "alpha", "gamma", "risk_points", "take_profit_points"):
             _number(getattr(self, key), key)
         if self.beta < 0 or self.lam < 0 or self.alpha < 0 or not (0 < self.rho < 1):
@@ -113,6 +116,7 @@ class _Position:
     exit_time: str | None = None
     exit_reason: str | None = None
     tp_minutes: float | None = None
+    tp_market_minutes: int | None = None
     original_tp: float = 0.0
     timeboxed_tp: float = 0.0
     intrabar_ambiguous: bool = False
@@ -149,6 +153,7 @@ class FGRewardScorer:
 
     def __init__(self, config: CandidateConfig):
         self.config = config
+        self.SCHEMA = 2 if config.clock_protocol == 'S3_MARKET_MINUTE' else 1
         self.active: dict[str, _Position] = {}
         self.closed: dict[str, _Position] = {}
         self.seen: set[str] = set()
@@ -276,8 +281,14 @@ class FGRewardScorer:
                         (p.side == "LONG" and close < exit_price - 1e-10) or
                         (p.side == "SHORT" and close > exit_price + 1e-10)):
                     raise RewardInputError("Same-bar TP must be supported by close")
-                minutes = (stop-_clock(p.entry_time)).total_seconds()/60
-                p.tp_minutes = minutes
+                if self.config.clock_protocol == 'S3_MARKET_MINUTE':
+                    minutes = p.bars_seen
+                    p.tp_market_minutes = minutes
+                    if event.get('held_market_bars', minutes) != minutes:
+                        raise RewardInputError('Env/reward holding market clocks differ')
+                else:
+                    minutes = (stop-_clock(p.entry_time)).total_seconds()/60
+                    p.tp_minutes = minutes
                 p.original_tp = legacy_tp(minutes)
                 p.timeboxed_tp = timeboxed_tp(minutes)
                 v0 += p.original_tp
@@ -295,7 +306,9 @@ class FGRewardScorer:
         # A nonterminal 1024-step chunk does not reset the mark, active slots,
         # first-adverse flags or potential. Right-censoring is NOT a terminal.
         phi_after = _potential(self.active, close)
-        potential_basis = self.config.gamma*phi_after-phi_before
+        advance = int(valid_bar) if self.config.clock_protocol == 'S3_MARKET_MINUTE' else 1
+        discount = self.config.gamma ** advance
+        potential_basis = discount*phi_after-phi_before
         potential = self.config.alpha*potential_basis
         capacity = -self.config.lam*unit
         v2 = tp+early+potential
@@ -306,7 +319,7 @@ class FGRewardScorer:
             self.totals[key] += value
         for key in self.discounted:
             self.discounted[key] += self.discount_weight*values[key]
-        self.discount_weight *= self.config.gamma
+        self.discount_weight *= discount
         self.last_end, self.last_mark = stop, close
         self.step_number += 1
         self.ambiguities += len(ambiguous)
@@ -336,7 +349,7 @@ class FGRewardScorer:
         check = payload.pop("sha256", None)
         if check != sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest():
             raise RewardInputError("Offline scorer checkpoint hash mismatch")
-        if payload.get("schema") != cls.SCHEMA or payload.get("config") != asdict(config):
+        if payload.get("schema") != cls(config).SCHEMA or payload.get("config") != asdict(config):
             raise RewardInputError("Reward protocol/configuration mismatch")
         obj = cls(config)
         obj.active = {k:_Position(**v) for k,v in payload["active"].items()}

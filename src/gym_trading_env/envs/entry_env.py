@@ -24,6 +24,7 @@ from .entry_contract import (ContractTerms, DirectionSchedule, fingerprint,
                              read_yaml, resolve_path, timestamp)
 from gym_trading_env.utils.bar_source import CsvBarSource
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
+from gym_trading_env.utils.s3_market_clock import MarketClock, PROTOCOL as TIME_PROTOCOL
 
 
 POSITION_OBS_FIELDS = (
@@ -89,10 +90,12 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             from gym_trading_env.rewards.single3_reward import Single3RewardConfig
             self.reward_config = Single3RewardConfig(**(master['reward'] if master else raw['entry']['reward']))
             identity.update(protocol=self.protocol, fill_model=self.fill_model,
-                            reward_hash=self.reward_config.hash)
+                            reward_hash=self.reward_config.hash, clock_protocol=TIME_PROTOCOL,
+                            market_window='last_60_valid_bars', age_normalization='log1p_market_bars/43200')
         self.config_hash = fingerprint(identity)
         self.observation_identity = fingerprint(dict(protocol=self.protocol,
-            fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1'))
+            fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1',
+            **({'clock_protocol': TIME_PROTOCOL, 'market_window': 'last_60_valid_bars'} if self.single3 else {})))
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -154,22 +157,34 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         for time in raw.index:
             self.terms.at(time - pd.Timedelta(minutes=1))
             self.terms.at(time)
+        bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if 'bob' in raw else raw.index - pd.Timedelta(minutes=1)
+        durations = raw.index - bobs
+        valid = np.asarray(durations == pd.Timedelta(minutes=1))
+        if not ((durations == pd.Timedelta(minutes=1)) | (durations == pd.Timedelta(0))).all():
+            raise ValueError('Unsupported minute bob/eob interval')
+        feature_raw = raw.loc[valid] if self.single3 else raw
+        if feature_raw.empty:
+            raise ValueError('Market has no valid one-minute bars')
         if 'trading_date' in raw:
             from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
-            features=build_market_features(raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = features.reindex(raw.index).ffill().fillna(0)
             self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
         else:
+            if self.single3 and not valid.all():
+                source = CsvBarSource(self.config, df=feature_raw)
             mapping = source.store.index.get_indexer(raw.index)
-            if (mapping < 0).any():
+            if (mapping[valid if self.single3 else np.ones(len(raw), bool)] < 0).any():
                 raise ValueError("Existing market feature clock cannot represent these FG timestamps")
-            self._features = source.store.X_market_obs[mapping].astype(np.float32)
+            if self.single3:
+                features = pd.DataFrame(source.store.X_market_obs, index=source.store.index)
+                self._features = features.reindex(raw.index).ffill().fillna(0).to_numpy(dtype=np.float32)
+            else:
+                self._features = source.store.X_market_obs[mapping].astype(np.float32)
         self._raw = raw
         self.bar_source = SimpleNamespace(store=SimpleNamespace(index=raw.index, n_rows=len(raw)))
-        self.bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if "bob" in raw else raw.index - pd.Timedelta(minutes=1)
-        durations=raw.index-self.bobs
-        self.valid_fill_clock=np.asarray(durations==pd.Timedelta(minutes=1))
-        if not ((durations==pd.Timedelta(minutes=1)) | (durations==pd.Timedelta(0))).all():
-            raise ValueError("Unsupported minute bob/eob interval")
+        self.bobs, self.valid_fill_clock = bobs, valid
+        self.market_clock_counter = MarketClock(valid)
         # Existing DB contains zero-duration metadata rows: mark-only, never fills.
 
     @property
@@ -262,7 +277,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         time = self._raw.index[i]
         direction = self.direction_at(time)
         start = max(0, i - self.window_size + 1)
-        market = self._features[start:i + 1]
+        market = (self._features[self.market_clock_counter.window(i, self.window_size)]
+                  if self.single3 else self._features[start:i + 1])
         market = np.pad(market, ((self.window_size-len(market), 0), (0, 0)))
         position = np.zeros(9, np.float32)
         position[0] = {"SHORT": -1, "NO_TRADE": 0, "LONG": 1}[direction]
@@ -275,7 +291,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             if pos is None:
                 raise RuntimeError("Entry identity has no actual PositionManager position")
             held_quantity += pos.size
-            age = (time - timestamp(item["entry_time"])).total_seconds() / 60
+            age = (self.market_clock_counter.held(item['entry_cursor'], i) if self.single3 else
+                   (time - timestamp(item['entry_time'])).total_seconds() / 60)
             if age < 0:
                 raise RuntimeError("Position observation precedes the actual entry fill")
             sign = 1 if item["side"] == "LONG" else -1
@@ -355,7 +372,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     exit_pending=False, trading_day=self._trading_day(time), all_tp=True)
         self.entries[entry_id] = item
         if self.single3:
-            item.update(sl_pending=False, open_fee=str(self.trade_record_manager.trade_history[-1].fee))
+            item.update(sl_pending=False, entry_cursor=self.current_step,
+                        open_fee=str(self.trade_record_manager.trade_history[-1].fee))
         self.trade_record_manager.trade_history[-1].meta.update(entry_id=entry_id, fill_model=self.fill_model)
         self.fills.append(dict(entry_id=entry_id, time=str(time), side=side, quantity=3,
                                price=str(execution), reason="ENTRY", committed=True))
@@ -375,6 +393,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.single3 and quantity is not None and Decimal(str(quantity)) != 3:
             raise ValueError("Single3 requires an atomic full three-lot exit")
         time = timestamp(time)
+        if self.single3 and time != self._raw.index[self.current_step]:
+            raise ValueError('Exit must belong to the currently observed market bar')
         if time < timestamp(item["entry_time"]):
             raise ValueError("Exit precedes entry")
         side = item["side"]
@@ -410,6 +430,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                          close_fee=str(record.fee),
                          net_trade_pnl=str(record.pnl - record.fee - Decimal(item['open_fee'])),
                          **item.get('exit_metadata', {}))
+            event.update(entry_cursor=item['entry_cursor'], exit_cursor=self.current_step,
+                         held_market_bars=self.market_clock_counter.held(item['entry_cursor'], self.current_step),
+                         clock_protocol=TIME_PROTOCOL)
+            if event['reason'] == 'TAKE_PROFIT':
+                event['tp_market_minutes'] = event['held_market_bars']
         self.attributions.append(event)
         del self.entries[entry_id]
         return code, event
@@ -571,7 +596,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             for event in self.attributions[consumed:]:
                 if event['reason']=='TAKE_PROFIT':
                     count+=1
-                    total+=(timestamp(event['exit_time'])-timestamp(event['entry_time'])).total_seconds()/60
+                    total += event['tp_market_minutes']
             self._tp_info_cache=(len(self.attributions),count,total)
             mean=total/count if count else None
         else:
@@ -580,8 +605,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             count=len(completed)
             mean=float(np.mean(waits)) if waits else None
         return dict(status=self.status, reject_reason=getattr(self, "reject_reason", None),
+                    **({'clock_protocol': TIME_PROTOCOL, 'mean_tp_market_minutes': mean} if self.single3 else {}),
                     fill_model=self.fill_model, direction_hash=self.directions.hash,
-                    tp_count=count, mean_tp_wait_minutes=mean,
+                    tp_count=count, **({} if self.single3 else {'mean_tp_wait_minutes': mean}),
                     cumulative_speed_reward=self.total_reward, unfinished_entries=len(self.entries),
                     unfinished_lots=float(self.net_lots), max_floating_loss=self.max_floating_loss,
                     account_net_pnl=float(self._calculate_equity())-300000,
@@ -595,7 +621,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return fingerprint(self._raw.iloc[:through+1].to_dict(orient="split"))
 
     def export_state(self):
-        state = dict(schema=2 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
+        state = dict(schema=3 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
                      cursor_time=str(self._raw.index[self.current_step]), prefix_hash=self._prefix_hash(self.current_step),
                      balances=self.ledger.snapshot(), ledger_entries=[dict(timestamp=e.timestamp, memo=e.memo,
                      postings=[dict(account=p.account, amount=p.amount) for p in e.postings], meta=e.meta) for e in self.ledger.entries],
@@ -617,7 +643,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
 
     def import_state(self, state):
         state = copy.deepcopy(state)
-        if state["schema"] != (2 if self.single3 else 1) or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
+        if state["schema"] != (3 if self.single3 else 1) or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
             raise ValueError("Incompatible Entry checkpoint")
         i = int(self._raw.index.get_indexer([timestamp(state["cursor_time"])])[0])
         if i < 0 or self._prefix_hash(i) != state["prefix_hash"]:
@@ -651,6 +677,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 raise ValueError('Single3 rewarded identity mismatch')
             if set(self.reward_function.scorer.active) != set(self.entries):
                 raise ValueError('Single3 reward/financial active entry identity mismatch')
+            for entry_id, item in self.entries.items():
+                if self.reward_function.scorer.active[entry_id].bars_seen != self.market_clock_counter.held(item['entry_cursor'], i):
+                    raise ValueError('Checkpoint holding clock differs from actual market history')
         else:
             self.reward_function = FastTakeProfitReward()
             self.reward_function.rewarded = set(state["rewarded"])
@@ -665,7 +694,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def continue_data(self, df):
         """Append/backfill unprocessed data without changing already observed history."""
         state = self.export_state()
-        old = (self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock)
+        old = (self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock, self.market_clock_counter)
         try:
             self._load_market(df)
             self.import_state(state)
@@ -674,7 +703,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.status, self.truncated = "ACTIVE", False
             return self._get_obs(), self._get_info()
         except Exception:
-            self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock = old
+            self._raw, self._features, self.bar_source, self.bobs, self.valid_fill_clock, self.market_clock_counter = old
             self.import_state(state)
             raise
 

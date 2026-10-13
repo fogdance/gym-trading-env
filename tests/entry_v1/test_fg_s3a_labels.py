@@ -102,7 +102,7 @@ def test_rejects_foreign_candidate_identity_and_hash(corpus,tmp_path):
     cloned=tmp_path/'dataset';copytree(dataset,cloned)
     p=cloned/'manifest.json';m=read_manifest(p);m.pop('content_hash');m['identity']['fold']='DEV';write_json(p,signed(m))
     with pytest.raises(ValueError,match='TRAIN'):sources(cloned,oracle)
-    p.write_text(p.read_text().replace('FG_SINGLE3_REPLAY_V1','FG_REPLAY_R0_R2_V1'))
+    p.write_text(p.read_text().replace('FG_SINGLE3_REPLAY_MARKET_MINUTE_V2','FG_REPLAY_R0_R2_V1'))
     with pytest.raises(ValueError,match='integrity'):sources(cloned,oracle)
 
 

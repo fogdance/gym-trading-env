@@ -54,7 +54,7 @@ class ExactBudget:
         self.limit, self.events = comparisons, events
         self.used = self.exhausted = 0
 
-    def difference(self, left, right, origin):
+    def difference(self, left, right, origin, clock):
         if self.used >= self.limit:
             self.exhausted += 1
             return None
@@ -68,7 +68,7 @@ class ExactBudget:
                     self.exhausted += 1
                     return None
                 coefficients[step] += sign*Fraction.from_float(float(reward))
-        return sum((GAMMA**(s-origin-1)*v for s, v in coefficients.items() if v), Fraction(0))
+        return sum((GAMMA**clock.reward_exponent(origin,s)*v for s, v in coefficients.items() if v), Fraction(0))
 
 
 def rational_interval(value):
@@ -113,10 +113,12 @@ def validate_candidate(row, end):
 
 class RelaxedValues:
     """O(N) suffix bounds with feasible TP-only witnesses and capped exact work."""
-    def __init__(self, candidates, end, *, budget=None):
+    def __init__(self, candidates, end, *, clock, budget=None):
         if not isinstance(end, int) or end < 1:
             raise ValueError('Invalid TRAIN horizon')
         self.end = end
+        self.clock = clock
+        clock._cursor(end)
         candidates = list(candidates)
         self.budget = budget or ExactBudget()
         self.rows = {}
@@ -131,7 +133,7 @@ class RelaxedValues:
         # Include late global liquidation after the flat decision horizon.
         last = max([end]+[r.get('observed_until_cursor', end) for r in candidates])
         self.powers = [(1., 1.)]
-        for _ in range(last):
+        for _ in range(int(clock.prefix[-1])):
             self.powers.append(_mul(self.powers[-1], self.gamma_interval))
         self.bounds = np.zeros((end+1, 2), np.float64)
         self.solved = np.ones(end+1, bool)
@@ -139,7 +141,7 @@ class RelaxedValues:
         self.next_trade = {}
         self.local = {}
         for t in range(end-1, -1, -1):
-            wait = _mul(self.gamma_interval, self.bounds[t+1])
+            wait = _mul(self.powers[clock.advance(t,t+1)], self.bounds[t+1])
             best, head, solved = wait, int(self.head[t+1]), bool(self.solved[t+1])
             row = self.rows[t]
             if (row.get('filled') and row.get('exit')
@@ -150,7 +152,7 @@ class RelaxedValues:
                 # proven upper bound. Negative TP intervals are dominated by WAIT.
                 if local[1] > 0:
                     u = row['release_cursor']
-                    option = _add(local, _mul(self.powers[u-t], self.bounds[u]))
+                    option = _add(local, _mul(self.powers[clock.advance(t,u)], self.bounds[u]))
                     take = option[0] > wait[1]
                     reject = option[1] < wait[0]
                     diff = None
@@ -177,7 +179,7 @@ class RelaxedValues:
         if t not in self.local:
             total = (0., 0.)
             for s, reward in row['rewards']['C1']:
-                total = _add(total, _mul(self.powers[s-t-1], (reward, reward)))
+                total = _add(total, _mul(self.powers[self.clock.reward_exponent(t,s)], (reward, reward)))
             self.local[t] = total
         return self.local[t]
 
@@ -193,7 +195,7 @@ class RelaxedValues:
             self.budget.exhausted += 1
             return None
         if add_head == wait_head:
-            return self.budget.difference(self.rows[add]['rewards']['C1'], [], origin)
+            return self.budget.difference(self.rows[add]['rewards']['C1'], [], origin, self.clock)
         cap = self.budget.events
         left, right = [], []
         for route, head in ((left, add_head), (right, wait_head)):
@@ -210,7 +212,7 @@ class RelaxedValues:
                 if t == common:
                     break
                 yield from self.rows[t]['rewards']['C1']
-        return self.budget.difference(events(left), events(right), origin)
+        return self.budget.difference(events(left), events(right), origin, self.clock)
 
 
 def funding_terms(env):
@@ -268,7 +270,7 @@ def build_value_evidence(row, relaxed, actual_cash, required_cash, *, teacher_ac
     result = dict(q_add=None, q_wait=None, delta=None, margin_lower=0.,
                   certificate='UNCERTIFIED', proof='UNCERTIFIED', branch='UNKNOWN',
                   reason='START_FUNDS_UNPROVEN', cash_start=str(cash), cash_after=None)
-    wait = _mul(relaxed.gamma_interval, relaxed.bounds[t+1])
+    wait = _mul(relaxed.powers[relaxed.clock.advance(t,t+1)], relaxed.bounds[t+1])
     wait_funded = cash > bound
     # At low cash, WAIT-forever is feasible but the relaxed optimum is only an upper bound.
     result['q_wait'] = list(wait if wait_funded else (0., wait[1]))
@@ -304,7 +306,7 @@ def build_value_evidence(row, relaxed, actual_cash, required_cash, *, teacher_ac
     suffix = (0., 0.) if terminal or u >= relaxed.end else tuple(relaxed.bounds[u])
     funded = terminal or u >= relaxed.end or after > bound
     lower_suffix = suffix[0] if funded else 0.
-    add = _add(local, _mul(relaxed.powers[u-t], (lower_suffix, suffix[1])))
+    add = _add(local, _mul(relaxed.powers[relaxed.clock.advance(t,u)], (lower_suffix, suffix[1])))
     exact_q = (wait_funded and relaxed.solved[t+1]
                and funded and (terminal or u >= relaxed.end or relaxed.solved[u]))
     result.update(q_add=list(add), proof='EXACT_Q' if exact_q else 'CERTIFIED_SIGN_ONLY',
@@ -567,6 +569,7 @@ def build_values(dataset, oracle_receipt, labels, output, *, seed=202, resume=Fa
             raise ValueError('Current/static original funding proof differs from frozen Oracle')
         dp_began = time.monotonic()
         relaxed = RelaxedValues(candidates, cm['flat_end_cursor'],
+                                clock=env.market_clock_counter,
                                 budget=ExactBudget(cfg['exact_comparisons'], cfg['exact_events']))
         dp_seconds = time.monotonic()-dp_began
         if relaxed.solved[0] and list(relaxed.chain(int(relaxed.head[0]))) != plan['add_cursors']:

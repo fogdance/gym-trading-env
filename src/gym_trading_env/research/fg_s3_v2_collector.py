@@ -15,7 +15,7 @@ from .fg_single3_evaluation import embodied_runtime
 class V2Collector(D0Collector):
     output_directory = 'fg_s3_v2'
     max_env_steps = 10000  # Formal budgets additionally require entrypoint authorization.
-    protocol = 'FG_S3_V2_LIVE_DAGGER_V3'
+    protocol = 'FG_S3_V2_LIVE_DAGGER_MARKET_MINUTE_V4'
     runtime = staticmethod(embodied_runtime)
 
     def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None, **kwargs):

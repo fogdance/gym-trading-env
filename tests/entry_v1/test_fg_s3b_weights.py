@@ -44,7 +44,7 @@ def certified_native_dataset(root):
         for row in rows: f.write(json.dumps(row)+'\n')
     identity = dict(schema='FG_SINGLE3_ORACLE_V1',training_hash='synthetic_TRAIN',
                     selected_contracts=[contract],objective='native_float32_feedback_rational_gamma_env_advance_v1')
-    plan = optimize(rows,index.flat_end,'C1')
+    plan = optimize(rows,index.flat_end,'C1',clock=index.clock)
     plan.update(contract=contract,training_only=True,identity=identity,
                 candidates_sha256=digest(od/'candidates.jsonl.gz'),funds_certificate=index.proof)
     pp = od/'C1_H333.json'; write_json(pp,signed(plan))
