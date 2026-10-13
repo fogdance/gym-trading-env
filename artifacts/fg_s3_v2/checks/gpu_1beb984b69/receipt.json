@@ -1,0 +1,26 @@
+{
+  "status": "PASS_REAL_GPU_NEURAL_CONTRACTS",
+  "output": "/home/v/Documents/work/research/fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/checks/gpu_1beb984b69",
+  "scope": "small original-network and original-Env controlled fixture, not production-market acceptance",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 166.79394920301274,
+  "checks": [
+    "live_commit_and_owner",
+    "a2_wm_bc_gradients",
+    "bc_stop_gradient",
+    "critic_and_moments_frozen",
+    "empty_bc_actor_moments_frozen",
+    "c2_closed",
+    "c2_controlled_ready",
+    "lambda0_teacher_independence",
+    "wm_extraction_ast_and_poison_rejection"
+  ],
+  "a2_actor_grad": 0.39316704869270325,
+  "wm_grad": 1751.0428466796875,
+  "c2_ready_critic_grad": 2.2913689613342285,
+  "production_gate_20_windows": "NOT_RUN",
+  "formal_1m": "NOT_RUN",
+  "content_hash": "308d99880ddf9f2481bba2adc0fe340ec82d83a50434007960dd02835c1c097c"
+}

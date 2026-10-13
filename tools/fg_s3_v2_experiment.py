@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""Prepare, run, restore and evaluate bounded GPU S3-V2 diagnostics."""
+import argparse
+import json
+import os
+from pathlib import Path
+import sys
+
+
+PROJECT = Path(__file__).resolve().parents[1]
+# The CUDA-enabled environment ships a coherent set of NVIDIA libraries.
+# A host CUDA LD_LIBRARY_PATH overrides some of them and failed cuBLAS model
+# initialization in the real GPU check. Restart only this process with its
+# normal package library search; never mutate the shared environment/system.
+if os.environ.get('LD_LIBRARY_PATH'):
+    clean = dict(os.environ)
+    clean.pop('LD_LIBRARY_PATH')
+    clean['FG_S3_V2_CUDA_ENV_CLEANED'] = '1'
+    os.execve(sys.executable, [sys.executable, *sys.argv], clean)
+sys.path.insert(0, str(PROJECT/'src'))
+sys.path.insert(0, str(PROJECT.parent/'dreamerv3'))
+os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+os.environ['JAX_PLATFORMS'] = 'cuda'
+os.environ.pop('JAX_PLATFORM_NAME', None)
+os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
+os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check'])
+    p.add_argument('--config')
+    p.add_argument('--prepared')
+    p.add_argument('--run-dir')
+    p.add_argument('--stop-at', type=int)
+    p.add_argument('--eval-steps', type=int, default=1000)
+    args = p.parse_args()
+    import gym_trading_env, dreamerv3, embodied
+    if (Path(gym_trading_env.__file__).resolve().parent != PROJECT/'src/gym_trading_env'
+            or Path(dreamerv3.__file__).resolve().parent != PROJECT.parent/'dreamerv3/dreamerv3'
+            or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
+        raise ValueError('Foreign research Python imports')
+    from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
+    if args.command == 'prepare':
+        if not args.config or args.prepared:
+            p.error('prepare requires a configuration')
+        result = prepare(args.config)
+    elif args.command == 'gpu_check':
+        from gym_trading_env.research.fg_s3_v2_gpu_check import check_gpu_model
+        result = check_gpu_model()
+    else:
+        if not args.config and not args.prepared:
+            p.error('Select --config or --prepared')
+        settings = read_settings(args.config) if args.config else settings_from_prepared(args.prepared)
+        prepared = args.prepared or settings['prepared_dir']
+        frozen = settings_from_prepared(prepared)
+        if settings != frozen:
+            raise ValueError('Selected configuration differs from the prepared snapshot')
+        run_dir = args.run_dir or settings['run_dir']
+        if args.command == 'report':
+            from gym_trading_env.research.fg_replay import read_manifest
+            result = read_manifest(Path(run_dir)/'training_receipt.json')
+        elif args.command == 'evaluate':
+            from gym_trading_env.research.fg_s3_v2_evaluation import evaluate
+            result = evaluate(prepared, run_dir, args.eval_steps)
+        else:
+            from embodied.run.fg_s3_v2_train import LiveRun
+            run = LiveRun(prepared, run_dir, resume=args.command == 'resume')
+            try:
+                result = run.run_to(args.stop_at)
+            except BaseException as e:
+                from gym_trading_env.research.fg_replay import signed, write_json
+                write_json(run.root/'failure.json', signed(dict(error_type=type(e).__name__, error=str(e),
+                    env_steps=int(run.step), updates=run.counters.save())))
+                raise
+            finally:
+                run.close()
+    print(json.dumps({k: v for k, v in result.items() if k not in
+                     ('identity', 'code', 'files', 'immutable_files', 'dirty')}, indent=2, ensure_ascii=False))
+
+
+if __name__ == '__main__':
+    main()

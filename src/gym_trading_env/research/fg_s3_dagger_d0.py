@@ -75,10 +75,15 @@ def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
 
 
 class D0Collector:
+    output_directory = 'fg_s3_v2_d0'
+    max_env_steps = 1000
+    protocol = PROTOCOL
+    runtime = staticmethod(cpu_runtime)
+
     def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
                  beta=.5, actor_probability=.5, actor=None, agent=None,
-                 source_checkpoint_identity=None):
-        embodied = cpu_runtime(dreamer_root)
+                 source_checkpoint_identity=None, existing=False):
+        embodied = self.runtime(dreamer_root)
         import gymnasium as gym
         from embodied.envs.from_gymnasium import FromGymnasium
         from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
@@ -87,15 +92,15 @@ class D0Collector:
         if oracle.identity['fold'] != 'TRAIN':
             raise ValueError('D0 collector is TRAIN-only')
         self.root = Path(directory).resolve()
-        allowed = Path(__file__).resolve().parents[3]/'artifacts/fg_s3_v2_d0'
+        allowed = Path(__file__).resolve().parents[3]/'artifacts'/self.output_directory
         if not (self.root.is_relative_to(allowed) or self.root.is_relative_to(Path('/tmp'))):
             raise ValueError('D0 output must be isolated from existing experiments and worktrees')
-        self.root.mkdir(parents=True, exist_ok=False)
+        self.root.mkdir(parents=True, exist_ok=existing)
         self.env, self.oracle = env, oracle
         self.records, self.pending, self.counts = [], None, Counter()
         self.query_seconds = []
         self.source_checkpoint_identity = source_checkpoint_identity
-        self.identity = dict(protocol=PROTOCOL, oracle_identity=oracle.identity_hash,
+        self.identity = dict(protocol=self.protocol, oracle_identity=oracle.identity_hash,
             rules=oracle.rules, mode=mode, seed=seed,
             beta=beta if mode == 'mixed' else 0.,
             actor_probability=None if agent is not None else (0. if mode == 'wait' else actor_probability),
@@ -183,8 +188,7 @@ class D0Collector:
         native = {k: np.asarray(step[k]) for k in FIELDS}
         if int(native['action']) != choice['executed_action']:
             raise RuntimeError('Driver changed the chosen action')
-        self.replay.add(native, worker=worker)
-        chunk, offset = self.replay.streams[worker][-1]
+        stepid = self._add_native(native, worker)
         answer = choice['oracle']
         if answer['state_id'] != ctx['state_id']:
             raise RuntimeError('Oracle labeled a different account state')
@@ -193,10 +197,10 @@ class D0Collector:
             if previous != self.records[-1]['executed_action']:
                 raise RuntimeError('Actor previous action differs from actual execution')
         episode = fingerprint(dict(identity=self.identity_hash, account_sequence=state['account_sequence']))
-        self.pending = dict(protocol=PROTOCOL, source_type='dagger', episode_id=episode,
+        self.pending = dict(protocol=self.protocol, source_type='dagger', episode_id=episode,
             contract=self.env.contract, cursor=state['current_step'], time=state['cursor_time'],
             actual_observation_id=ctx['observation_id'], state_id=ctx['state_id'],
-            stepid=(bytes(chunk)+offset.to_bytes(4, 'big')).hex(),
+            stepid=stepid,
             action_mask=native['action_mask'].tolist(),
             actor_proposal=choice['actor_proposal'], actor_prev_action=previous,
             oracle_action=answer['action'], oracle_valid=answer['valid'],
@@ -213,12 +217,17 @@ class D0Collector:
         self.counts['resets'] += int(ctx['is_first'])
 
     def advance(self, target):
-        if not 1 <= target <= 1000 or target < self.counts['env_steps']:
+        if not 1 <= target <= self.max_env_steps or target < self.counts['env_steps']:
             raise ValueError('D0 cumulative environment budget must be 1..1000')
         while self.counts['env_steps'] < target:
             self.driver(self.policy, steps=1)
             if self.env.terminated or self.env.status in ('DATA_END', 'DATA_GAP'):
                 break
+
+    def _add_native(self, native, worker):
+        self.replay.add(native, worker=worker)
+        chunk, offset = self.replay.streams[worker][-1]
+        return (bytes(chunk)+offset.to_bytes(4, 'big')).hex()
 
     def save_collection(self, directory):
         """A D0 collection checkpoint, not a transferable Dreamer checkpoint."""
