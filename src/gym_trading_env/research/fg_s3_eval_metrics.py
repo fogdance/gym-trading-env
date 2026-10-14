@@ -44,6 +44,7 @@ def evaluation_metrics(state, receipt=None):
     metrics = dict(metric_schema=SCHEMA, **{k: None for k in WINDOWS},
                    adverse10_windows_complete=False,
                    closed_trade_net_pnl=None, closed_trade_gross_pnl=None,
+                   tp_fast_count=None,tp_mid_count=None,tp_late_count=None,tp_after_h60_count=None,
                    tp_market_minutes_p50=None, tp_market_minutes_p90=None)
     legacy = receipt.get('early_mae10')
     if legacy is not None:
@@ -70,6 +71,9 @@ def evaluation_metrics(state, receipt=None):
         if all(type(b) is int and b >= 1 for b in minutes):
             metrics['tp_market_minutes_p50'] = quantile(minutes, .5)
             metrics['tp_market_minutes_p90'] = quantile(minutes, .9)
+            metrics.update(tp_fast_count=sum(b <= 5 for b in minutes),
+                tp_mid_count=sum(6 <= b <= 15 for b in minutes),tp_late_count=sum(b > 15 for b in minutes),
+                tp_after_h60_count=sum(b > 60 for b in minutes))
         metrics.update(tp_count=len(tp), sl30=len(sl), closed_trade_count=len(attrs))
     if state.get('reward_events') is None:
         metrics['adverse10_any_hold'] = receipt.get('adverse10_any_hold', legacy)
