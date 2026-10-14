@@ -91,11 +91,13 @@ def _validate_settings(s, path):
         if s.get('source_kind') != 'direct_init' or s.get('source_checkpoint') is not None:
             raise ValueError('E fresh-init requires direct_init without source_checkpoint')
         resolve_model_init(s.get('model_init'))
+        if not isinstance(s.get('e_data_source_pool'), str) or not s['e_data_source_pool']:
+            raise ValueError('E requires explicit immutable original TRAIN source pool')
         if not s.get('catalog') or s['contracts'] is None:
             raise ValueError('E fresh-init requires an explicit TeacherCatalog TRAIN pool')
     paths = ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog',
              'prepared_dir', 'run_dir', 'dev_source_manifest')
-    paths += ('e_data_manifest',) if is_e else ('source_checkpoint',)
+    paths += ('e_data_manifest', 'e_data_source_pool') if is_e else ('source_checkpoint',)
     for key in paths:
         if key == 'catalog' and s['mode'] == 'b2' and s[key] is None:
             continue
@@ -138,6 +140,11 @@ def prepare(config):
             from embodied.run.fg_s3_e_source import make_binding
             target = resolve_model_init(s['model_init'])
             binding = make_binding(target, composition, s['e_data_manifest'])
+            if binding['data_schema'] == 'S3_E_DATA_V1':
+                from e_data_v1.sources import pool_entries
+                _, original_pool = pool_entries(s['e_data_source_pool'])
+                if original_pool['sha256'] != binding['data_source_pool_sha256']:
+                    raise ValueError('E model/source original TRAIN pool mismatch')
             spec = inspect_source(kind, seed=target['seed'], config=target,
                 diagnostic=s['scope'] == 'diagnostic', e_binding=binding,
                 gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
