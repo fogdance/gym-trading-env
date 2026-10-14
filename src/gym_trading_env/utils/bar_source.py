@@ -35,6 +35,16 @@ JUEJIN_FUT_BAR_TABLE = "fut_bar_1m_v2"
 JUEJIN_CONT_MAP_TABLE = "fut_continuous_map_v2"
 
 
+def connect_juejin_db(**options):
+    """Shared connection settings for historical and streaming bar readers."""
+    if pymysql is None:
+        raise ImportError("pymysql is required for JuejinBarSource")
+    return pymysql.connect(
+        host=DB_CONFIG.host, port=DB_CONFIG.port, user=DB_CONFIG.user,
+        password=DB_CONFIG.password, database=DB_CONFIG.db, charset="utf8mb4",
+        cursorclass=pymysql.cursors.DictCursor, autocommit=True, **options)
+
+
 def _normalize_ohlcvi_df(df: pd.DataFrame) -> pd.DataFrame:
     """
     Backward-compatible wrapper:
@@ -357,21 +367,7 @@ class JuejinBarSource(BaseBarSource):
             return df
 
     def _connect(self):
-        if pymysql is None:  # pragma: no cover
-            raise ImportError(
-                "pymysql is required for JuejinBarSource but is not installed. Please `pip install pymysql`."
-            )
-
-        return pymysql.connect(
-            host=DB_CONFIG.host,
-            port=DB_CONFIG.port,
-            user=DB_CONFIG.user,
-            password=DB_CONFIG.password,
-            database=DB_CONFIG.db,
-            charset="utf8mb4",
-            cursorclass=pymysql.cursors.DictCursor,
-            autocommit=True,
-        )
+        return connect_juejin_db()
 
     def _resolve_trading_date(self, conn, symbol: str) -> datetime.date:
         """
