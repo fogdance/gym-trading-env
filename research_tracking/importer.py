@@ -138,6 +138,8 @@ class Importer:
             config = dict(self.job_config('eval'), checkpoint_manifest_sha256=report['checkpoint_manifest_sha256'],
                 receipt_sha256=report['receipt_sha256'], eval_report_sha256=report['report_sha256'],
                 teacher_guidance=False, beta=0., contract=report['contract'], fold='DEV',
+                evaluation_kind='actor_only', metric_schema=report['metric_schema'],
+                eval_receipt_content_hash=report['receipt_content_hash'],
                 local_artifact_available=report['local_artifact_available'])
             self.store.queue('eval', report['eval_run_id'], [dict(kind='actor_only_eval', metrics=report['metrics'])],
                 config=config, artifacts=('config_preview.json', artifact))

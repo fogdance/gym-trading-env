@@ -12,6 +12,14 @@ from .io import LIMIT, TrackingError, atomic_json, digest, read_json
 from .redaction import safe_error
 
 
+def resumed_metadata(spec, cloud_run):
+    # wandb.init(tags=...) replaces tags on resume. Preserve tags and names
+    # maintained by the user or another metadata-only project.
+    tags = sorted(set(spec['tags']) | set(cloud_run.tags or ())) if cloud_run else spec['tags']
+    name = cloud_run.name if cloud_run and cloud_run.name else spec['display_name']
+    return name, tags
+
+
 def remote_history(api, entity, run_id, first, last):
     from wandb.errors import CommError
     try:
@@ -61,9 +69,10 @@ def export(spec):
     settings = wandb.Settings(disable_git=True, disable_code=True, save_code=False,
         console='off', x_disable_stats=True, x_disable_machine_info=True,
         init_timeout=30, x_file_stream_max_bytes=256 * 1024, program='fg_s3_wandb.py')
+    name, tags = resumed_metadata(spec, cloud_run)
     run = wandb.init(project=PROJECT, entity=spec.get('entity'), id=batch['run_id'],
-        group=spec['family'], job_type=batch['job_type'], name=spec['display_name'],
-        tags=spec['tags'], mode=mode, dir=str(base/'sdk'),
+        group=spec['family'], job_type=batch['job_type'], name=name,
+        tags=tags, mode=mode, dir=str(base/'sdk'),
         resume=('must' if cloud_run else 'never') if mode == 'online' else None,
         config=spec['configuration'], settings=settings)
     sent, skipped = 0, 0

@@ -20,6 +20,7 @@ from dreamerv3.fg_s3_tutor_loss import agent_extensions
 from .fg_single3 import load_env
 from .fg_single3_evaluation import ActorPolicy, require_dev
 from .fg_replay import read_manifest, check_files, signed, write_json
+from .fg_s3_eval_metrics import evaluation_metrics
 
 
 def prepare_dev(s, directory):
@@ -153,6 +154,9 @@ def evaluate(prepared, run_dir, steps=1000):
                 delta_logit_mean=float(np.mean([d['b2/delta_logit'] for d in decision])) if decision else None,
                 outcome_probabilities_source='causal RSSM predictions; no labels/Oracle queries')
             result = signed(result)
+        result = {k:v for k,v in result.items() if k != 'content_hash'}
+        result.update(evaluation_metrics(env.export_state(), result))
+        result = signed(result)
         write_json(output/'receipt.json', result)
         return result
     finally:

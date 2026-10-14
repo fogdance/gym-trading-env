@@ -20,30 +20,38 @@ if os.environ.get('LD_LIBRARY_PATH'):
 sys.path.insert(0, str(PROJECT/'src'))
 sys.path.insert(0, str(PROJECT.parent/'dreamerv3'))
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
-os.environ['JAX_PLATFORMS'] = 'cuda'
-os.environ.pop('JAX_PLATFORM_NAME', None)
-os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check'])
+    p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
+                                     'score-predictions'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
+    p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
+    p.add_argument('--output-dir', help='New isolated prediction scoring directory')
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
+    os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
+    os.environ.pop('JAX_PLATFORM_NAME', None)
+    os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
     import gym_trading_env, dreamerv3, embodied
     if (Path(gym_trading_env.__file__).resolve().parent != PROJECT/'src/gym_trading_env'
             or Path(dreamerv3.__file__).resolve().parent != PROJECT.parent/'dreamerv3/dreamerv3'
             or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
         raise ValueError('Foreign research Python imports')
     from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
-    if args.command == 'prepare':
+    if args.command == 'score-predictions':
+        if not args.eval_dir or not args.output_dir:
+            p.error('score-predictions requires --eval-dir and a new --output-dir')
+        from gym_trading_env.research.fg_s3_prediction_evaluation import score_predictions
+        result = score_predictions(args.eval_dir, args.output_dir)
+    elif args.command == 'prepare':
         if not args.config or args.prepared:
             p.error('prepare requires a configuration')
         result = prepare(args.config)

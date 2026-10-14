@@ -129,6 +129,8 @@ class SourceRun:
         """Searchable allowlist; full frozen configuration is a small artifact."""
         trace = self.trace()
         values = {'s3/mode': self.identity['mode'], 's3/clock_protocol': self.clock,
+            's3/experiment': self.settings.get('experiment'),
+            's3/research_variant': self.settings.get('research_variant'),
             'source/gym_commit': trace['versions'].get('gym-trading-env'),
             'source/dreamer_commit': trace['versions'].get('dreamerv3'),
             'source/dirty_at_prepare': trace['dirty_at_prepare'],

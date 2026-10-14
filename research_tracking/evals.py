@@ -1,7 +1,7 @@
 """Post-process immutable Actor-only receipts; never guide the Actor."""
-from decimal import Decimal
 from pathlib import Path
 
+from .eval_schema import evaluation_metrics, unique_events
 from .io import TrackingError, digest, fingerprint, read_json
 from .metrics import number
 
@@ -42,7 +42,8 @@ def parse_eval(source, receipt_path):
             metrics['eval/b2/'+key] = value
     if receipt.get('early_mae10') is not None:
         metrics['eval/adverse10_any_hold'] = receipt['early_mae10']
-    report = dict(schema='FG_S3_TRACKER_EVAL_DERIVED_V1', receipt_sha256=receipt_sha,
+    report = dict(schema='FG_S3_TRACKER_EVAL_DERIVED_V2', receipt_sha256=receipt_sha,
+        receipt_content_hash=receipt['content_hash'], metric_schema='S3_EVAL_METRIC_V2',
         checkpoint_manifest_sha256=receipt['checkpoint_manifest_sha256'],
         parent_training_run_id=source.ids['train'], local_run_id=source.run_id,
         eval_run_id=eval_id, clock_protocol=receipt.get('clock_protocol'), contract=receipt.get('contract'),
@@ -50,6 +51,7 @@ def parse_eval(source, receipt_path):
         local_artifact_available=available, derivation='READ_ONLY_OFFLINE_RECALCULATION',
         metrics=metrics, trades=[], missing=[])
     account = path.parent/'account_state.json'
+    state = None
     if not account.exists():
         report['missing'].append('account_state: no trade PnL or adverse-window reconstruction')
     else:
@@ -58,33 +60,22 @@ def parse_eval(source, receipt_path):
         except TrackingError:
             report['missing'].append('account_state exceeds metadata budget or is invalid')
         else:
-            attrs = state.get('attributions', [])
-            if (state.get('contract') != receipt.get('contract')
-                    or state.get('total_reward') != receipt.get('reward')
-                    or sum(a['reason'] == 'TAKE_PROFIT' for a in attrs) != receipt['tp_count']
-                    or sum(a['reason'] == 'STOP_LOSS' for a in attrs) != receipt['sl30']):
-                raise TrackingError('Evaluation account summary does not reconcile with receipt')
+            attrs = unique_events(state.get('attributions', []))
             report['account_state_sha256'] = digest(account)
-            net = sum((Decimal(str(a['net_trade_pnl'])) for a in attrs), Decimal(0))
-            metrics['eval/closed_trade_net_pnl'] = float(net)
-            gross = sum((Decimal(str(a['gross_trade_pnl'])) for a in attrs), Decimal(0))
-            metrics['eval/closed_trade_gross_pnl'] = float(gross)
             adverse = {e['entry_id']: e['effective_bar'] for e in state.get('reward_events', [])
                        if e.get('reason') == 'FIRST_ADVERSE10' and type(e.get('effective_bar')) is int}
-            all_events = [e for e in state.get('reward_events', []) if e.get('reason') == 'FIRST_ADVERSE10']
-            if receipt.get('clock_protocol') == 'S3_MARKET_MINUTE' and len(adverse) == len(all_events):
-                bars = list(adverse.values())
-                if any(b < 1 for b in bars) or len(bars) != receipt.get('early_mae10', len(bars)):
-                    raise TrackingError('Adverse events differ from receipt count')
-                metrics.update({'eval/adverse10_first5': sum(b <= 5 for b in bars),
-                    'eval/adverse10_6_15': sum(6 <= b <= 15 for b in bars),
-                    'eval/adverse10_after15': sum(b > 15 for b in bars)})
-            else:
-                report['missing'].append('certified market-minute adverse-window events')
             # Explicit small allowlist; no account IDs, prices, raw orders or timestamps.
             for i, attr in enumerate(attrs, 1):
                 report['trades'].append(dict(trade_index=i, exit_reason=attr['reason'],
-                    held_market_bars=attr.get('held_market_bars'), net_pnl=float(attr['net_trade_pnl']),
+                    held_market_bars=attr.get('held_market_bars'),
+                    net_pnl=float(attr['net_trade_pnl']) if attr.get('net_trade_pnl') is not None else None,
                     adverse_first_market_minute=adverse.get(attr['entry_id'])))
+    try:
+        derived = evaluation_metrics(state, receipt)
+    except ValueError as exc:
+        raise TrackingError(str(exc)) from exc
+    metrics.update({'eval/'+k: v for k, v in derived.items() if k != 'metric_schema'})
+    if not derived['adverse10_windows_complete']:
+        report['missing'].append('complete certified market-minute adverse-window events')
     report['report_sha256'] = fingerprint(report)
     return report

@@ -9,6 +9,7 @@ import time
 import numpy as np
 
 from .fg_replay import check_files, read_manifest, signed, write_json
+from .fg_s3_eval_metrics import evaluation_metrics
 
 
 NODES = (10000, 50000, 100000, 300000, 1000000)
@@ -93,7 +94,8 @@ def actor_only_metrics(receipt):
     probabilities = [r['p_add'] for r in decisions]
     tp = [e for e in state['attributions'] if e['reason'] == 'TAKE_PROFIT']
     entries = receipt['entries']
-    return dict(checkpoint=receipt['checkpoint'],
+    metrics = evaluation_metrics(state, receipt)
+    return dict(**metrics, checkpoint=receipt['checkpoint'],
         checkpoint_manifest_sha256=receipt['checkpoint_manifest_sha256'],
         evaluation_data_identity=dict(contract=data['contract'],market_sha256=data['sha256'],
             env_config_sha256=data['env_sha256'],contract_sha256=data['contract_sha256'],
@@ -103,12 +105,13 @@ def actor_only_metrics(receipt):
         actual_entries=entries, tp5_points_count=len(tp),
         tp5_points_rate=len(tp)/entries if entries else None,
         tp5_rate_denominator='all actual entries, including failures and right-censored positions',
-        right_censored=receipt['right_censored'], sl30=receipt['sl30'],
+        right_censored=receipt['right_censored'],
         sl30_rate=receipt['sl30']/entries if entries else None,
-        early_adverse10=receipt['early_mae10'],
-        early_adverse10_rate=receipt['early_mae10']/entries if entries else None,
+        adverse10_first5_rate=metrics['adverse10_first5']/entries
+            if entries and metrics['adverse10_windows_complete'] else None,
+        adverse10_any_hold_rate=metrics['adverse10_any_hold']/entries
+            if entries and metrics['adverse10_any_hold'] is not None else None,
         clock_protocol=receipt['clock_protocol'],
-        tp_market_minutes_p50=receipt['tp_market_minutes_p50'], tp_market_minutes_p90=receipt['tp_market_minutes_p90'],
         reward=receipt['reward'],
         all_wait=receipt['all_wait'],
         p_add_quantiles={str(p):float(np.percentile(probabilities,p)) if probabilities else None

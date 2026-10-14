@@ -45,7 +45,8 @@ class Writer:
         result_path = spec_path.with_name(f'result_{token}.json')
         scope = store.source.identity.get('scope') or ('diagnostic' if store.source.identity.get('diagnostic') else 'unknown')
         spec = dict(mode=mode, entity=self.entity, tracker_root=str(store.root), batch=batch,
-            family=store.source.family, display_name=store.source.family.removeprefix('s3-')+' '+batch['job_type'],
+            family=store.source.family,
+            display_name=store.source.settings.get('experiment', store.source.family.removeprefix('s3-'))+' '+batch['job_type'],
             tags=[scope, 'clock:'+(store.source.clock or 'unknown'), store.source.identity['mode'],
                 'dev' if batch['job_type'] == 'eval' else 'train',
                 'beta:schedule' if store.source.identity.get('beta_schedule') else 'beta:constant',
