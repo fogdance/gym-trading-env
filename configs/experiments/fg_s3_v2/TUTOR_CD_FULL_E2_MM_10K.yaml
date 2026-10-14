@@ -1,5 +1,5 @@
 schema: FG_S3_V2_DIAGNOSTIC_CONFIG_V1
-experiment: TUTOR_CD_FULL_E2_MM_10K_v1
+experiment: TUTOR_CD_FULL_E2_MM_10K_v2
 research_variant: tutor-full-e2
 mode: tutor
 scope: diagnostic
@@ -14,8 +14,8 @@ oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
 catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
 source_checkpoint: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
 dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
-prepared_dir: artifacts/fg_s3_v2/prepared/TUTOR_CD_FULL_E2_MM_10K_v1
-run_dir: artifacts/fg_s3_v2/runs/TUTOR_CD_FULL_E2_MM_10K_v1
+prepared_dir: artifacts/fg_s3_v2/prepared/TUTOR_CD_FULL_E2_MM_10K_v2
+run_dir: artifacts/fg_s3_v2/runs/TUTOR_CD_FULL_E2_MM_10K_v2
 env_steps: 10000
 collect_every: 100
 updates_per_collect: 4

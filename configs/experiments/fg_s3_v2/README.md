@@ -186,7 +186,64 @@ or reading teacher labels. TRAIN collection diagnostics include mixed actions
 and are not an independent Actor-only result. Diagnostic configurations limit
 training to 65–10000 actual Env advances and at most 1000 updates. Formal training
 uses a separate scope, path and authorization flag as described above.
-TEST, R1 comparisons and B2 are outside the current implementation scope.
+TEST and R1 comparisons are outside the current implementation scope.
+
+## Tutor Full E2 / B2 Full (2026-10-14)
+
+Both new diagnostic configurations use the audited Online180k parameter
+warm-start, the existing market-minute v2 TRAIN inputs, FG201, beta=1, and a
+10,000 **environment advance** budget with 400 joint updates. They have separate
+preparation/Run names ending in `v2`; development-only v1 preparations are kept.
+
+- `TUTOR_CD_FULL_E2_MM_10K`: Natural/Balanced/Pair, alpha=.8, Pair=.1,
+  hard_kappa=1, hard_wmax=2; Actor term gradients sampled every100 updates.
+- `B2_FULL_MM_10K`: event/early loss=.1 each; preheat100, ramp100,
+  minimum100 valid event updates; signed adapter cap2. A1K engineering run
+  remains at mix0 by design. Values are research recommendations, not optima.
+
+The current task authorizes CPU preparation/testing, **not these GPU commands**:
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-full-integration-dev/gym-trading-env
+PY=/home/v/miniconda3/envs/dreamerv3/bin/python
+"$PY" tools/fg_s3_v2_experiment.py prepare --config B2_FULL_MM_10K
+"$PY" tools/fg_s3_v2_experiment.py start --config B2_FULL_MM_10K --stop-at 1000
+"$PY" tools/fg_s3_v2_experiment.py resume --config B2_FULL_MM_10K
+"$PY" tools/fg_s3_v2_experiment.py evaluate --config B2_FULL_MM_10K --eval-steps 5000
+```
+
+`prepare` uses CPU and refuses to rewrite an existing snapshot; the delivered
+integration worktree already has final preparations, so start with `start` after
+Review/authorization. Replace the configuration name with Tutor's for that route.
+Every config/byte change requires a new preparation identity, not a rewritten
+old receipt. Source transfer resets optimizer/local clocks for the changed
+market-minute economics and preserves original model provenance.
+
+CPU post-processing comes **after the causal Actor-only predictions are sealed**:
+
+```bash
+"$PY" tools/fg_s3_v2_experiment.py score-predictions \
+  --eval-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/evaluations/actor_only_<id> \
+  --output-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/prediction_evaluations/dev_<new-id>
+```
+
+Scoring validates the actual Driver/account replay, original candidate/funding
+proof, and hashes. DEV labels are evaluation-only and never enter the policy,
+training Replay or teacher sidecar. Historical evaluations require external
+output directories. Old missing logits stay null. New adverse-time fields use
+`S3_EVAL_METRIC_V2`; `early_mae10` remains legacy whole-hold.
+
+Reuse `tools/fg_s3_wandb.py launch` with the original trainer command for
+automatic tracking; `import-evals` also discovers completed prediction receipts
+under `prediction_evaluations/*/receipt.json` independently of Actor-only imports.
+External receipts can be selected using `--prediction-report`. W&B's internal
+default proxy is `http://127.0.0.1:10808`; no extra shell proxy settings are needed.
+The original trainer environment/network behavior is preserved. Online failure
+falls back to offline, and the existing `sync` workflow resumes publication.
+The project remains `fg-single3-research`. Old800K milestone work is excluded.
+
+Exact commands, evidence and the T01–T12/B01–B13 matrix are in
+`docs/FG_S3_Full_Implementation_Report_20261014.md`.
 
 `gpu_check` runs a small original-network fixture on CUDA for gradient ownership,
 frozen Critic/momentum, empty BC, C2 CLOSED/controlled READY and lambda=0. It is

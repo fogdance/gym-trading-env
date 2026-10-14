@@ -1,5 +1,5 @@
 schema: FG_S3_V2_DIAGNOSTIC_CONFIG_V1
-experiment: B2_FULL_MM_10K_v1
+experiment: B2_FULL_MM_10K_v2
 research_variant: b2-full
 mode: b2
 scope: diagnostic
@@ -14,8 +14,8 @@ catalog: null
 source_kind: warm_start
 source_checkpoint: ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
 dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
-prepared_dir: artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v1
-run_dir: artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v1
+prepared_dir: artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v2
+run_dir: artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2
 clock_protocol: S3_MARKET_MINUTE
 env_steps: 10000
 collect_every: 100
