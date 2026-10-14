@@ -1,0 +1,4 @@
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+composition:
+  encoder: e_multiscale_1m15m
+  teaching: b2

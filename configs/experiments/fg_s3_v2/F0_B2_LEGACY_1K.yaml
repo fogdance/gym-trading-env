@@ -1,0 +1,42 @@
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+experiment: F0_B2_LEGACY_1K_v3
+research_variant: b2-full
+scope: diagnostic
+device: gpu
+contract: CZCE.FG201
+contracts:
+- CZCE.FG201
+env_slice_bars: 250
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+oracle_receipt_scope: aggregate
+catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+source_kind: warm_start
+source_checkpoint:
+  ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/F0_B2_LEGACY_1K_v3
+run_dir: artifacts/fg_s3_v2/runs/F0_B2_LEGACY_1K_v3
+clock_protocol: S3_MARKET_MINUTE
+env_steps: 1000
+collect_every: 100
+updates_per_collect: 4
+save_every: 500
+batch_size: 1
+replay_capacity: 512
+replay_seed: 202
+beta: 1.0
+beta_schedule:
+bc_lambda: 1.0
+b2_head_units: 128
+b2_event_lambda: 0.1
+b2_early_lambda: 0.1
+b2_coefficient_max: 2.0
+b2_delta_max: 2.0
+b2_mix_warmup: 100
+b2_mix_ramp: 100
+b2_min_event_updates: 100
+composition:
+  encoder: legacy_1m
+  teaching: b2

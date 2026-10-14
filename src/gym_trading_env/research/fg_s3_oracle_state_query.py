@@ -15,6 +15,7 @@ from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import check_files, digest, read_manifest
 from .fg_single3 import load_env
 from .fg_single3_oracle import GAMMA, funds_certificate, optimize
+from .fg_s3_reader_compat import PRODUCERS, reviewed_reader_transition
 
 
 PROTOCOL = 'FG_S3_ORACLE_STATE_QUERY_MARKET_MINUTE_V2'
@@ -195,6 +196,7 @@ def load_train_query(env_receipt, oracle_receipt, contract, *, receipt_scope='ag
     row = rows[0]
     project = Path(__file__).resolve().parents[3]
     checked_code = {}
+    reader_transitions = {}
     for old, expected in em['provenance']['code_files'].items():
         marker = '/src/gym_trading_env/'
         if marker not in old:
@@ -202,8 +204,13 @@ def load_train_query(env_receipt, oracle_receipt, contract, *, receipt_scope='ag
         rel = old.split(marker, 1)[1]
         if rel.startswith(('envs/', 'utils/')) or rel == 'rewards/single3_reward.py':
             current = project/'src/gym_trading_env'/rel
-            check_files({str(current): expected})
-            checked_code[str(current)] = expected
+            actual = digest(current)
+            name = 'gym_trading_env/'+rel
+            if actual != expected and name in PRODUCERS:
+                reader_transitions[name] = reviewed_reader_transition(project, name, expected, digest)
+            else:
+                check_files({str(current): expected})
+            checked_code[str(current)] = actual
     if not checked_code:
         raise ValueError('Original Env producer evidence is missing')
     files = {str(croot/f): cm['files'][f] for f in ('candidates.jsonl.gz', 'C1_H333.json')}
@@ -228,6 +235,8 @@ def load_train_query(env_receipt, oracle_receipt, contract, *, receipt_scope='ag
         receipt_files={str(eroot/'manifest.json'): digest(eroot/'manifest.json'),
                        str(om_path): digest(om_path), str(croot/'manifest.json'): digest(croot/'manifest.json')},
         candidate_files=files, checked_env_code=checked_code)
+    if reader_transitions:
+        source['reviewed_reader_transitions'] = reader_transitions
     source.update(training_hash=inputs['original_content_hash'], strategy_files=dependency_hashes)
     query = OracleStateQuery(env, candidates, cm['flat_end_cursor'], fold='TRAIN', source_identity=source)
     saved = read_manifest(croot/'C1_H333.json')

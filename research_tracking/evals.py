@@ -5,6 +5,7 @@ from pathlib import Path
 from .eval_schema import evaluation_metrics, unique_events
 from .io import TrackingError, digest, fingerprint, read_json
 from .metrics import number
+from .composition import validate as validate_composition
 
 
 def entry_count(state):
@@ -16,6 +17,7 @@ def entry_count(state):
 def parse_eval(source, receipt_path):
     path = Path(receipt_path).resolve()
     receipt = read_json(path, signed=True, limit=source.limit)
+    composition = validate_composition(source.settings, receipt)
     if (receipt.get('status') != 'ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE'
             or receipt.get('fold') != 'DEV' or receipt.get('teacher_guidance') is not False
             or receipt.get('oracle_files_read') is not False or receipt.get('beta') != 0
@@ -97,4 +99,7 @@ def parse_eval(source, receipt_path):
     if not derived['adverse10_windows_complete']:
         report['missing'].append('complete certified market-minute adverse-window events')
     report['report_sha256'] = fingerprint(report)
+    if composition is not None:
+        report['resolved_composition'] = composition
+        report['report_sha256'] = fingerprint({k:v for k,v in report.items() if k != 'report_sha256'})
     return report

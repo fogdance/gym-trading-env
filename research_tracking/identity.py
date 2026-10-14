@@ -9,6 +9,7 @@ import yaml
 from . import PROJECT, SCHEMA
 from .io import LIMIT, TrackingError, digest, fingerprint, read_json, small_bytes
 from .redaction import redact
+from .composition import validate as validate_composition
 
 FAMILIES = {'a2': 's3-a2', 'tutor': 's3-tutor-cd', 'b2': 's3-b2', 'e': 's3-e'}
 
@@ -75,6 +76,11 @@ class SourceRun:
         if fingerprint(self.model) != identity['model_config_sha256']:
             raise TrackingError('Run model configuration differs from frozen identity')
         self.frozen_model = read_json(self.prepared/'model_config.json', signed=True, limit=limit)
+        self.composition = validate_composition(self.settings, self.preparation,
+            self.frozen_model, self.identity)
+        if self.composition is not None:
+            source = read_json(self.prepared/'source_admission.json', signed=True, limit=limit)
+            validate_composition(self.settings, source, source['target_model_identity'])
         if self.frozen_model['config'] != self.model:
             raise TrackingError('Prepared model configuration differs from Run config')
         if identity.get('agent_extension') != self.frozen_model.get('agent_extension'):
@@ -150,6 +156,8 @@ class SourceRun:
             if name in names or name.startswith(('tutor_', 'b2_')):
                 values['s3/'+name] = value
         agent = self.model['agent']
+        if self.composition is not None:
+            values['s3/resolved_composition'] = self.composition
         rssm = agent.get('dyn', {}).get('rssm', {})
         for name in ('deter', 'stoch', 'classes', 'hidden'):
             if name in rssm:

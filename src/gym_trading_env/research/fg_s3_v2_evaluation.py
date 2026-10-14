@@ -17,6 +17,7 @@ from embodied.run.fg_s3_source_transfer import make_agent
 from embodied.run.fg_s3_v2_train import execution_code
 from dreamerv3.fg_s3_v2_agent import S3V2Agent
 from dreamerv3.fg_s3_tutor_loss import agent_extensions
+from dreamerv3.fg_s3_composition import identity_fields, settings_composition, validate_records
 from .fg_single3 import load_env
 from .fg_single3_evaluation import ActorPolicy, require_dev
 from .fg_replay import read_manifest, check_files, signed, write_json
@@ -69,8 +70,16 @@ def evaluate(prepared, run_dir, steps=1000):
         raise ValueError('Actor-only diagnosis is bounded to 1..10000 actual advances')
     prepared, root = Path(prepared).resolve(), Path(run_dir).resolve()
     preparation = read_manifest(prepared/'manifest.json')
+    s = read_manifest(prepared/'settings.json')['settings']
+    settings_composition(s)
     check_files({str(prepared/k): v for k, v in preparation['files'].items()})
     identity = read_manifest(root/'run_identity.json')['identity']
+    frozen_model = read_manifest(prepared/'model_config.json')
+    spec = read_manifest(prepared/'source_admission.json')
+    documents = [preparation, frozen_model, spec, identity]
+    if 'resolved_composition' in s:
+        documents.append(spec['target_model_identity'])
+    composition = validate_records(s, *documents)
     if identity['code'] != execution_code() or identity['preparation_sha256'] != file_hash(prepared/'manifest.json'):
         raise ValueError('Evaluation code/preparation differs from the trained run')
     name = (root/'ckpt/latest').read_text().strip()
@@ -78,8 +87,6 @@ def evaluate(prepared, run_dir, steps=1000):
         raise ValueError('Checkpoint pointer escaped run')
     node = root/'ckpt'/name
     validate_bundle(node, identity)
-    s = read_manifest(prepared/'settings.json')['settings']
-    frozen_model = read_manifest(prepared/'model_config.json')
     cfg = frozen_model['config']
     extensions = agent_extensions(s)
     if s['mode'] in ('tutor', 'b2') and frozen_model['agent_extension'] != extensions:
@@ -88,7 +95,7 @@ def evaluate(prepared, run_dir, steps=1000):
     output.mkdir(parents=True, exist_ok=False)
     dev = prepare_dev(s, output)
     model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device='gpu',
-        bc_lambda=s['bc_lambda'], extra_agent_config=extensions)
+        bc_lambda=s['bc_lambda'], extra_agent_config=extensions, composition=composition)
     model.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
     model.sync_policy_from_train()
     model.evaluation_checkpoint_sha256 = file_hash(node/'manifest.json')
@@ -165,6 +172,7 @@ def evaluate(prepared, run_dir, steps=1000):
         result['causal_prediction_files'] = {name:file_hash(output/name) for name in
             ('actions.jsonl', 'account_state.json', 'dev_manifest.json', 'dev_env.yaml')}
         result['agent_extension'] = extensions
+        result.update(identity_fields(s))
         result = signed(result)
         write_json(output/'receipt.json', result)
         return result
