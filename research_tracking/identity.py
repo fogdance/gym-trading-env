@@ -27,9 +27,10 @@ def git_info(path):
 
 
 class SourceRun:
-    def __init__(self, root, prepared=None, *, family=None, limit=LIMIT):
+    def __init__(self, root, prepared=None, *, family=None, limit=LIMIT, publication=None):
         self.root = Path(root).resolve()
         self.limit = limit
+        self.publication = publication
         self.identity_document = read_json(self.root/'run_identity.json', signed=True, limit=limit)
         self.identity = identity = self.identity_document['identity']
         if identity.get('protocol') != 'FG_S3_V2_LIVE_LEARNING_V1':
@@ -82,7 +83,13 @@ class SourceRun:
                 raise TrackingError('Frozen agent extension differs')
         self.experiment = yaml.safe_load(small_bytes(self.prepared/'experiment.yaml', limit))
         self.clock = preparation.get('clock_protocol') or self.settings.get('clock_protocol')
-        self.ids = {'train': stable_id('train', self.run_id), 'live_monitor': stable_id('live', self.run_id)}
+        self.ids = {'train': self.publishing_id('train', self.run_id),
+                    'live_monitor': self.publishing_id('live', self.run_id)}
+
+    def publishing_id(self, *parts):
+        # Explicit re-publication keeps the original source identity intact.
+        # Its new cloud mapping remains deterministic on every later invocation.
+        return stable_id(*parts, 'publication', self.publication) if self.publication else stable_id(*parts)
 
     def trace(self):
         versions = {Path(k).name: v for k, v in self.identity['versions'].items()}
@@ -90,6 +97,7 @@ class SourceRun:
         receipt_path = self.root/'training_receipt.json'
         receipt = read_json(receipt_path, signed=True, limit=self.limit) if receipt_path.exists() else {}
         return dict(schema=SCHEMA, project=PROJECT, local_run_id=self.run_id,
+            publication=self.publication,
             source_run_dir=str(self.root), source_prepared_dir=str(self.prepared),
             requested_source_alias=str(self.requested_root), family=self.family,
             mode=self.identity['mode'], scope=self.identity.get('scope'),

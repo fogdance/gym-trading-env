@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import sys
+import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -14,10 +15,12 @@ from unittest.mock import patch
 import yaml
 
 from research_tracking.evals import parse_eval
+from research_tracking.auth import proxy_environment
 from research_tracking.identity import SourceRun
 from research_tracking.importer import Importer
 from research_tracking.io import TrackingError, atomic_json, digest, fingerprint
 from research_tracking.metrics import aggregate_updates, cycle_metrics
+from research_tracking.launcher import launch
 from research_tracking.parsers import JsonLines, watermark
 from research_tracking.redaction import redact
 from research_tracking.state import Store
@@ -179,11 +182,16 @@ class TrackerTests(unittest.TestCase):
 
     def test_eval_identity_idempotency_and_small_allowlist(self):
         p=self.fixture.evaluation()
+        r=json.loads(p.read_text());r.pop('content_hash');r['all_wait']=False
+        r['b2']={'legal_argmax_changed':3,'p_add_final_mean':.2,'api_key':'NEVER_UPLOAD'}
+        atomic_json(p,signed(r))
         with Store(self.fixture.source(),self.base/'tracking') as store:
             im=Importer(store);self.assertEqual(im.evaluations(),1);self.assertEqual(im.evaluations(),0)
             batch=store.state['batches'][0];report=json.loads((store.root/batch['artifacts'][1]).read_text())
             self.assertEqual(report['metrics']['eval/closed_trade_net_pnl'],282.)
             self.assertEqual(report['metrics']['eval/entries'],1)
+            self.assertEqual(report['metrics']['eval/b2/legal_argmax_changed'],3)
+            self.assertFalse(report['metrics']['eval/all_wait'])
             self.assertNotIn('PRIVATE_ACCOUNT_ID',json.dumps(report))
             self.assertNotIn('FAKE_SENSITIVE_VALUE_NEVER_UPLOAD',(store.root/'config_preview.json').read_text())
         r=json.loads(p.read_text());r['teacher_guidance']=True;r=signed({k:v for k,v in r.items() if k!='content_hash'})
@@ -238,9 +246,29 @@ class TrackerTests(unittest.TestCase):
             self.assertEqual(Writer('disabled').export(store),[])
             self.assertEqual(store.summary()['exported_events'],0)
             with patch('research_tracking.writer.subprocess.run',side_effect=TimeoutError('network failure')):
-                with self.assertRaises(TimeoutError):Writer('offline').export(store)
+                with self.assertRaises(TrackingError):Writer('offline').export(store)
             self.assertEqual(store.summary()['queued_events'],before)
             self.assertEqual(store.summary()['exported_events'],0)
+            self.assertEqual(json.loads((store.root/'last_transport_error.json').read_text())['phase'],'export')
+
+    def test_tracker_proxy_does_not_mutate_trainer_environment(self):
+        original={'NO_PROXY':'internal.example','WANDB_MODE':'online'}
+        routed=proxy_environment('http://127.0.0.1:10808',original)
+        self.assertNotIn('HTTPS_PROXY',original)
+        self.assertEqual(routed['HTTPS_PROXY'],'http://127.0.0.1:10808')
+        self.assertIn('127.0.0.1',routed['NO_PROXY'])
+        self.assertIn('internal.example',routed['NO_PROXY'])
+        with self.assertRaises(TrackingError):proxy_environment('file:///tmp/proxy',original)
+
+    def test_explicit_republication_preserves_source_and_has_stable_new_ids(self):
+        original=self.fixture.source()
+        replacement=SourceRun(self.fixture.root,self.fixture.prepared,publication='reupload-v1')
+        repeat=SourceRun(self.fixture.root,self.fixture.prepared,publication='reupload-v1')
+        self.assertEqual(original.identity,replacement.identity)
+        self.assertNotEqual(original.ids,replacement.ids)
+        self.assertEqual(replacement.ids,repeat.ids)
+        receipt=self.fixture.evaluation()
+        self.assertNotEqual(parse_eval(original,receipt)['eval_run_id'],parse_eval(replacement,receipt)['eval_run_id'])
 
 
 class ActualInputTests(unittest.TestCase):
@@ -259,7 +287,60 @@ class ActualInputTests(unittest.TestCase):
         self.assertEqual(before,{str(x):digest(x) for x in p.parent.iterdir() if x.is_file()})
 
 
+class LauncherTests(unittest.TestCase):
+    def test_tracker_failure_does_not_stop_original_command(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            marker=Path(tmp)/'producer_completed'
+            def failed_tracker(stop):raise RuntimeError('simulated network outage')
+            command=[sys.executable,'-c','import pathlib,time; time.sleep(.05); pathlib.Path('+repr(str(marker))+').touch()']
+            result=launch(command,cwd=tmp,environment=dict(os.environ),track=failed_tracker)
+            self.assertEqual(result['producer_returncode'],0)
+            self.assertIn('simulated network outage',result['tracking_error'])
+            self.assertTrue(marker.exists())
+
+
 class OfflineSDKTests(unittest.TestCase):
+    @unittest.skipUnless(importlib.util.find_spec('wandb') is not None,'isolated W&B SDK is unavailable')
+    def test_launch_new_synthetic_source_and_automatic_offline_tracking(self):
+        # An actual subprocess/SDK test with fixture metadata, never GPU training.
+        with tempfile.TemporaryDirectory() as tmp:
+            base=Path(tmp);repo=Path(__file__).resolve().parents[2]
+            environment=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',HTTP_PROXY='http://127.0.0.1:18888')
+            code=('import sys,time,json; from pathlib import Path; sys.path.insert(0,'+repr(str(repo))+'); '
+                  'from research_tracking.tests.test_tracker import Fixture; time.sleep(.1); '
+                  'Fixture(Path('+repr(tmp)+')).evaluation(); '
+                  'import os; (Path('+repr(tmp)+')/"producer_environment.json").write_text('
+                  'json.dumps({"HTTP_PROXY":os.environ.get("HTTP_PROXY")}))')
+            command=[sys.executable,str(repo/'tools/fg_s3_wandb.py'),'launch','--run-dir',str(base/'source'),
+                '--prepared',str(base/'prepared'),'--tracker-dir',str(base/'tracking'),'--mode','offline',
+                '--trainer-cwd',tmp,'--poll-seconds','.05','--every','2','--proxy','http://127.0.0.1:10808',
+                '--',sys.executable,'-c',code]
+            result=subprocess.run(command,env=environment,capture_output=True,text=True,timeout=45)
+            self.assertEqual(result.returncode,0,result.stderr[-1500:])
+            self.assertIn('ORIGINAL_COMMAND_FINISHED',result.stdout)
+            self.assertNotIn('tracking_error',result.stdout)
+            state=json.loads(next((base/'tracking').glob('*/tracker_state.json')).read_text())
+            self.assertEqual(state['canonical']['local_update'],4)
+            self.assertEqual(len(state['evaluations']),1)
+            self.assertTrue(all(b['exported'] for b in state['batches']))
+            self.assertTrue(all(not b['synced'] for b in state['batches']))
+            self.assertEqual(json.loads((base/'producer_environment.json').read_text())['HTTP_PROXY'],
+                             'http://127.0.0.1:18888')
+
+    @unittest.skipUnless(importlib.util.find_spec('wandb') is not None,'isolated W&B SDK is unavailable')
+    def test_cloud_acknowledgement_uses_full_history_instead_of_sampled_keys(self):
+        from research_tracking.sdk_worker import remote_history
+        rows=[{'_step':i,'tracker/event_seq':i,'tracker/event_sha256':str(i)} for i in range(3)]
+        class Run:
+            def scan_history(self, **kwargs):
+                return rows[:1] if 'keys' in kwargs else rows
+        class Api:
+            def run(self, path):return Run()
+        _,confirmed=remote_history(Api(),'fixture','fixture',0,2)
+        self.assertEqual(confirmed,{i:str(i) for i in range(3)})
+        rows.append(dict(rows[0]))
+        with self.assertRaises(TrackingError):remote_history(Api(),'fixture','fixture',0,2)
+
     @unittest.skipUnless(importlib.util.find_spec('wandb') is not None,'isolated W&B SDK is unavailable')
     def test_actual_offline_sdk_and_repeat_import(self):
         with tempfile.TemporaryDirectory() as tmp:

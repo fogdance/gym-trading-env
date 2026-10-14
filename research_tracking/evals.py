@@ -2,8 +2,8 @@
 from decimal import Decimal
 from pathlib import Path
 
-from .identity import stable_id
 from .io import TrackingError, digest, fingerprint, read_json
+from .metrics import number
 
 
 def parse_eval(source, receipt_path):
@@ -29,13 +29,17 @@ def parse_eval(source, receipt_path):
     if source.clock and receipt.get('clock_protocol') and source.clock != receipt['clock_protocol']:
         raise TrackingError('Evaluation and training clock identities differ')
     receipt_sha = digest(path)
-    eval_id = stable_id('eval', str(path), receipt_sha, receipt['checkpoint_manifest_sha256'])
+    eval_id = source.publishing_id('eval', str(path), receipt_sha, receipt['checkpoint_manifest_sha256'])
     metrics = {'eval/checkpoint_env_steps': checkpoint_step}
     for key in ('env_steps', 'legal_decisions', 'actor_add_proposed', 'add_executed', 'entries',
                 'tp_count', 'tp_target_points', 'sl30', 'reward', 'tp_market_minutes_p50',
-                'tp_market_minutes_p90', 'right_censored'):
+                'tp_market_minutes_p90', 'right_censored', 'all_wait'):
         if receipt.get(key) is not None:
             metrics['eval/'+key] = receipt[key]
+    for key in ('legal_argmax_changed', 'mix_active_decisions', 'p_add_base_mean', 'p_add_final_mean', 'delta_logit_mean'):
+        value = receipt.get('b2', {}).get(key)
+        if number(value):
+            metrics['eval/b2/'+key] = value
     if receipt.get('early_mae10') is not None:
         metrics['eval/adverse10_any_hold'] = receipt['early_mae10']
     report = dict(schema='FG_S3_TRACKER_EVAL_DERIVED_V1', receipt_sha256=receipt_sha,

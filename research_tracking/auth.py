@@ -5,11 +5,27 @@ import netrc
 import os
 import urllib.error
 import urllib.request
+from urllib.parse import urlsplit
 
 from . import PROJECT
 from .io import TrackingError
 
 API = 'https://api.wandb.ai'
+
+
+def proxy_environment(proxy, environment=None):
+    """Scope proxy routing to this tracker and its transport children."""
+    env = dict(os.environ if environment is None else environment)
+    if proxy:
+        parsed = urlsplit(proxy)
+        if parsed.scheme not in ('http', 'https') or not parsed.hostname or parsed.path not in ('', '/'):
+            raise TrackingError('Tracker proxy must be an HTTP/HTTPS proxy URL')
+        for name in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
+            env[name] = proxy
+        bypass = set((env.get('NO_PROXY') or env.get('no_proxy') or '').split(','))
+        bypass.update(('localhost', '127.0.0.1', '::1'))
+        env['NO_PROXY'] = env['no_proxy'] = ','.join(sorted(bypass - {''}))
+    return env
 
 
 def credential():
@@ -23,7 +39,7 @@ def credential():
         return None
 
 
-def readiness(entity, *, private_confirmed=False):
+def readiness(entity):
     if not entity:
         raise TrackingError('Set WANDB_ENTITY or --entity to your personal/team slug')
     if os.environ.get('WANDB_BASE_URL', API).rstrip('/') != API:

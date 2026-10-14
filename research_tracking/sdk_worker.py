@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 import traceback
+import time
 
 from . import PROJECT
 from .auth import credential, readiness
@@ -12,17 +13,27 @@ from .redaction import safe_error
 
 
 def remote_history(api, entity, run_id, first, last):
+    from wandb.errors import CommError
     try:
         run = api.run(f'{entity}/{PROJECT}/{run_id}')
-    except ValueError as exc:
-        # Api.run raises ValueError for an absent run. Readiness already proved
-        # authentication and project access; all other errors remain failures.
+    except (ValueError, CommError) as exc:
+        # SDK normalizes an absent-run ValueError into CommError. Readiness
+        # already proved access; unrelated network/authentication errors fail.
         if 'Could not find run' in str(exc):
             return None, {}
         raise
-    rows = run.scan_history(keys=['tracker/event_seq', 'tracker/event_sha256'],
-        min_step=first, max_step=last+1, page_size=1000)
-    return run, {int(r['tracker/event_seq']): r['tracker/event_sha256'] for r in rows}
+    # SDK 0.19.1 routes scan_history(keys=[...]) through SampledHistoryScan;
+    # acknowledgement needs complete HistoryScan, including nonnumeric hashes.
+    rows = run.scan_history(min_step=first, max_step=last+1, page_size=1000)
+    confirmed = {}
+    for row in rows:
+        if 'tracker/event_seq' not in row or 'tracker/event_sha256' not in row:
+            raise TrackingError('Cloud history contains an unowned event without tracker markers')
+        sequence = int(row['tracker/event_seq'])
+        if sequence in confirmed or row.get('_step') != sequence:
+            raise TrackingError('Cloud publishing sequence is duplicated or differs from SDK step')
+        confirmed[sequence] = row['tracker/event_sha256']
+    return run, confirmed
 
 
 def export(spec):
@@ -49,7 +60,7 @@ def export(spec):
         cloud_run, remote = remote_history(api, spec['entity'], batch['run_id'], batch['first_seq'], batch['last_seq'])
     settings = wandb.Settings(disable_git=True, disable_code=True, save_code=False,
         console='off', x_disable_stats=True, x_disable_machine_info=True,
-        init_timeout=30, program='fg_s3_wandb.py')
+        init_timeout=30, x_file_stream_max_bytes=256 * 1024, program='fg_s3_wandb.py')
     run = wandb.init(project=PROJECT, entity=spec.get('entity'), id=batch['run_id'],
         group=spec['family'], job_type=batch['job_type'], name=spec['display_name'],
         tags=spec['tags'], mode=mode, dir=str(base/'sdk'),
@@ -110,12 +121,18 @@ def export(spec):
         sdk_directory=directory, run_id=batch['run_id'], sent_events=sent, skipped_remote_events=skipped,
         last_seq=batch['last_seq'], url=url, wandb_version=wandb.__version__)
     if mode == 'online':
-        _, confirmed = remote_history(api, spec['entity'], batch['run_id'], batch['first_seq'], batch['last_seq'])
-        if len(confirmed) != batch['count']:
-            raise TrackingError('Cloud history acknowledgement is incomplete; keep durable batch pending')
         with events.open() as stream:
-            if any(confirmed.get(e['seq']) != e['sha256'] for e in map(json.loads, stream)):
-                raise TrackingError('Cloud history acknowledgement differs')
+            expected = {e['seq']:e['sha256'] for e in map(json.loads, stream)}
+        deadline = time.monotonic() + 45
+        while True:
+            _, confirmed = remote_history(api, spec['entity'], batch['run_id'], batch['first_seq'], batch['last_seq'])
+            if any(expected.get(seq) != sha for seq, sha in confirmed.items()):
+                raise TrackingError('Cloud history acknowledgement conflicts with durable events')
+            if confirmed == expected:
+                break
+            if time.monotonic() >= deadline:
+                raise TrackingError(f'Cloud acknowledgement incomplete ({len(confirmed)}/{batch["count"]}); keep batch pending')
+            time.sleep(3)
         result['status'] = 'ONLINE_VERIFIED'
     return result
 
