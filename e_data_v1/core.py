@@ -1,7 +1,8 @@
 """Causal, real-contract 1m/15m snapshots. No account or training dependencies."""
 from __future__ import annotations
 
-from collections import deque
+from bisect import insort
+from heapq import heappop, heappush
 from copy import deepcopy
 import hashlib
 import re
@@ -224,11 +225,21 @@ class MarketData:
                         observed_minutes=len(rows)))
                 result.append(item)
         result.sort(key=lambda x: x["bucket_end"])
-        history = deque(maxlen=20)
-        previous = None
+        # A bucket's historic volume/OI features are fixed as of that bucket's
+        # *own* end, not recomputed using previous buckets that arrive later.
+        # pending is ordered by arrival; available is ordered by bucket end.
+        # This also handles delayed data arriving out of chronological order.
+        pending = []
+        available = []
         for item in result:
             if not item["complete"]:
                 continue
+            end_ns = local_timestamp(item["bucket_end"]).value
+            while pending and pending[0][0] <= end_ns:
+                _, prior_end_ns, prior = heappop(pending)
+                insort(available, (prior_end_ns, prior))
+            history = [prior for _, prior in available[-20:]]
+            previous = available[-1][1] if available else None
             ready = len(history) == 20 and previous is not None
             raw_vol = float(np.log((item["Volume"] + 1) / (np.mean([x["Volume"] for x in history]) + 1))) if len(history) == 20 else None
             raw_oi = float(np.log(item["OpenInterest"] / previous["OpenInterest"])) if previous is not None else None
@@ -240,8 +251,8 @@ class MarketData:
                 volume_baseline_bucket_ids=[x["bucket_id"] for x in history],
                 previous_OI=previous["OpenInterest"] if previous else None,
                 previous_OI_bucket_id=previous["bucket_id"] if previous else None)
-            history.append(item)
-            previous = item
+            arrival_ns = local_timestamp(item["available_at"]).value
+            heappush(pending, (arrival_ns, end_ns, item))
         return result
 
     def snapshot(self, decision):

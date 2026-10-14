@@ -116,6 +116,37 @@ def test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics(market,tmp
     assert verify_bundle(write_bundle(full,tmp_path/'late-bundle'))['status']=='PASS'
 
 
+def test_F03_late_bucket_cannot_backfill_previous_volume_or_oi_baseline(market):
+    f, schedule = market
+    f = f.iloc[:390].copy()
+    f['available_at'] = f.Date
+    # The 14:15 bucket's final minute is not visible until 15:00.
+    # Its data must not be used in the 14:30 or 14:45 historical features,
+    # even when those older buckets are inspected after 15:00.
+    f.loc[f.index[299], 'available_at'] = f.Date.iloc[344]
+    data = MarketData(f, schedule)
+    by_end = {pd.Timestamp(b['bucket_end']).strftime('%H:%M'): b
+              for b in data.complete_buckets}
+    delayed = by_end['14:15']
+    for time in ('14:30', '14:45'):
+        bucket = by_end[time]
+        assert delayed['bucket_id'] not in bucket['volume_baseline_bucket_ids']
+        assert bucket['previous_OI_bucket_id'] != delayed['bucket_id']
+        assert all(pd.Timestamp(x['available_at']) <= pd.Timestamp(bucket['bucket_end'])
+                   for x in data.complete_buckets
+                   if x['bucket_id'] in bucket['volume_baseline_bucket_ids'])
+    # The delayed bucket becomes eligible for *later* buckets after 15:00.
+    # Rebuild from the visible prefix and verify the as-of snapshot is stable.
+    cutoff = f.Date.iloc[359]
+    full = data.snapshot(Decision('CZCE.FG809', cutoff))
+    subset = f.loc[(f.Date <= cutoff) & (f.available_at <= cutoff)].copy()
+    prefix = MarketData(subset, schedule).snapshot(Decision('CZCE.FG809', cutoff))
+    for i in range(5):
+        if full[i] is not None:
+            np.testing.assert_array_equal(full[i], prefix[i])
+    assert full[5] == prefix[5]
+
+
 def test_F05_sessions_trading_date_weekend_holiday_and_contract_reset(market):
     f,schedule=market
     buckets,events=aggregate_buckets(f,schedule)
