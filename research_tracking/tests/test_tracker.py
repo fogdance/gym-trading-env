@@ -261,7 +261,7 @@ class TrackerTests(unittest.TestCase):
         self.assertEqual(default['HTTPS_PROXY'],'http://127.0.0.1:10808')
         self.assertNotIn('*',default['NO_PROXY'])
         self.assertEqual(default['FG_S3_WANDB_PROXY'],'http://127.0.0.1:10808')
-        self.assertIn('internal.example',routed['NO_PROXY'])
+        self.assertNotIn('internal.example',routed['NO_PROXY'])
         with self.assertRaises(TrackingError):proxy_environment('file:///tmp/proxy',original)
 
     def test_explicit_republication_preserves_source_and_has_stable_new_ids(self):

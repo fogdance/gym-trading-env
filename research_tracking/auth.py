@@ -59,8 +59,11 @@ def readiness(entity):
             'Authorization': 'Basic '+base64.b64encode(('api:'+key).encode()).decode()})
     try:
         routed = proxy_environment(os.getenv('FG_S3_WANDB_PROXY'))
-        opener = urllib.request.build_opener(urllib.request.ProxyHandler(
-            {'http':routed['HTTP_PROXY'],'https':routed['HTTPS_PROXY']}))
+        # Explicit request routing also works when a direct module caller has
+        # NO_PROXY='*'. Do not mutate that caller/trainer's process environment.
+        proxy = urlsplit(routed['HTTPS_PROXY'])
+        request.set_proxy(proxy.netloc,proxy.scheme)
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
         with opener.open(request, timeout=15) as response:
             result = json.loads(response.read(1024 * 1024))
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:

@@ -4,12 +4,28 @@ import json
 from pathlib import Path
 import unittest
 from types import SimpleNamespace
+from unittest.mock import patch,MagicMock
+import os
 
 from research_tracking.eval_schema import evaluation_metrics
 from research_tracking.sdk_worker import resumed_metadata
+from research_tracking.auth import readiness
 
 
 class EvaluationV2Tests(unittest.TestCase):
+    def test_direct_readiness_forces_internal_proxy_without_changing_caller_env(self):
+        opener = MagicMock()
+        opener.open.return_value.__enter__.return_value.read.return_value = json.dumps(
+            dict(data=dict(viewer=dict(username='fixture'),project=dict(access='PRIVATE')))).encode()
+        with patch.dict(os.environ,{'NO_PROXY':'*'}),patch('research_tracking.auth.credential',return_value='fixture'),\
+                patch('research_tracking.auth.urllib.request.build_opener',return_value=opener):
+            before = dict(os.environ)
+            self.assertEqual(readiness('fixture')['status'],'PRIVATE_PROJECT_AUTHENTICATED')
+            request = opener.open.call_args.args[0]
+            self.assertEqual(request.host,'127.0.0.1:10808')
+            self.assertEqual(request._tunnel_host,'api.wandb.ai')
+            self.assertEqual(dict(os.environ),before)
+
     def test_resume_keeps_existing_metadata(self):
         spec = dict(tags=['train'], display_name='default name')
         cloud = SimpleNamespace(tags=['manual-research-tag'], name='User title')

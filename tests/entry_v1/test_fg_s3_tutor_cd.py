@@ -32,7 +32,7 @@ from gym_trading_env.research.fg_s3_v2_gpu_check import small_config, gpu_batch
 PROJECT = Path(__file__).resolve().parents[2]
 CHECKS = PROJECT/'artifacts/fg_s3_v2/tutor_checks'
 E2_CHECKS = PROJECT/'artifacts/fg_s3_v2/tutor_e2_checks'
-RECORDED = PROJECT.parent.parent/'fg-s3-dev/gym-trading-env/artifacts/fg_s3_v2/runs/A2_P0_GPU_SMOKE_1K_FAST_v1/ckpt/step_000000001000'
+RECORDED = PROJECT.parent.parent/'fg-s3-clock-dev/gym-trading-env/artifacts/fg_s3_v2/runs/TUTOR_MARKET_MINUTE_GPU_1K/ckpt/step_000000001000'
 
 
 def objective(logits, y, valid, first, alpha=.8):
