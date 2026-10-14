@@ -1,9 +1,16 @@
 """Post-process immutable Actor-only receipts; never guide the Actor."""
+from decimal import Decimal
 from pathlib import Path
 
 from .eval_schema import evaluation_metrics, unique_events
 from .io import TrackingError, digest, fingerprint, read_json
 from .metrics import number
+
+
+def entry_count(state):
+    if state.get('fills') is not None:
+        return sum(f.get('reason')=='ENTRY' for f in state['fills'])
+    return len(unique_events(state.get('attributions',[])))+len(state.get('entries',{}))
 
 
 def parse_eval(source, receipt_path):
@@ -61,7 +68,19 @@ def parse_eval(source, receipt_path):
             report['missing'].append('account_state exceeds metadata budget or is invalid')
         else:
             attrs = unique_events(state.get('attributions', []))
+            entries = entry_count(state)
+            if entries != receipt['entries']:
+                raise TrackingError('Evaluation opening count differs from account evidence')
+            metrics['eval/entries_recomputed'] = entries
             report['account_state_sha256'] = digest(account)
+            if (state.get('trade_history') is not None and not state.get('entries')
+                    and all(a.get('net_trade_pnl') is not None for a in attrs)):
+                net = sum((Decimal(str(a['net_trade_pnl'])) for a in attrs), Decimal(0))
+                history_net = sum((Decimal(str(t.get('pnl') or 0))-Decimal(str(t.get('fee') or 0))
+                                   for t in state['trade_history']),Decimal(0))
+                if history_net != net:
+                    raise TrackingError('Evaluation trade history PnL/fees differ from attributions')
+                metrics['eval/history_net_pnl'] = float(history_net)
             adverse = {e['entry_id']: e['effective_bar'] for e in state.get('reward_events', [])
                        if e.get('reason') == 'FIRST_ADVERSE10' and type(e.get('effective_bar')) is int}
             # Explicit small allowlist; no account IDs, prices, raw orders or timestamps.

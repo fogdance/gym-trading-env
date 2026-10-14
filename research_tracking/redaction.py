@@ -5,7 +5,7 @@ SECRET = re.compile(r'api.?key|token|password|secret|credential|private.?key|aut
 TOKEN = re.compile(r'(?i)(?:bearer\s+\S+|(?:sk|wbd|wandb)_[a-z0-9_-]{16,}|[a-z0-9+/=_-]{40,})')
 PRIVATE_KEY = re.compile(r'-----BEGIN [^-]*PRIVATE KEY-----[\s\S]*?-----END [^-]*PRIVATE KEY-----')
 PATH = re.compile(r'(?<![\w])/(?:home|data|tmp|mnt|media|root|opt|usr)/[^\s\"\'<>;,]*')
-HASH_KEY = re.compile(r'(?:sha256|sha|hash|identity|commit|run_id|parent_training_run_id)$', re.I)
+HASH_KEY = re.compile(r'(?:sha256|sha|hash|identity|commit|run_id|parent_training_run_id|idempotency_key)$', re.I)
 EXCLUDED = {'sampled_stepids', 'code', 'immutable_files', 'rng', 'balances',
             'ledger_entries', 'equity_history', 'market_seq', 'fills', 'entries'}
 
@@ -19,6 +19,8 @@ def redact(value, key='', *, excluded=True):
     if isinstance(value, (list, tuple)):
         return [redact(v, key, excluded=excluded) for v in value]
     if isinstance(value, str):
+        if key == 'archive_id' and re.fullmatch(r'[a-z0-9][a-z0-9-]{0,120}-[0-9a-f]{12}', value):
+            return value
         if (HASH_KEY.search(key) or key in ('gym-trading-env', 'dreamerv3')) and re.fullmatch(r'[0-9a-f]{16,64}', value):
             return value
         value = PRIVATE_KEY.sub('[REDACTED_PRIVATE_KEY]', value)

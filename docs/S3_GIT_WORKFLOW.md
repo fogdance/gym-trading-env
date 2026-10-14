@@ -5,9 +5,9 @@
 ## 分支职责
 
 - `main`：经过验证的稳定版本。禁止直接开发；发布前单独 Review 和授权，不自动合并、移动或重置。
-- `integration/s3-next`：下一代 S3 唯一公共集成分支，保留 A2 Oracle BC、Tutor-CD、B2-Full、市场分钟、DAgger/Replay/FullCheckpoint 与现有 W&B。
+- `integration/s3-next`：下一代 S3 唯一公共集成分支，保留 A2 Oracle BC、Tutor-CD、B2-Full、市场分钟、DAgger/Replay/FullCheckpoint、现有 W&B 与 Research Archive V1。
 - `feat/*`：短期功能开发，从最近验收通过的 integration 双仓版本建立，完成回归和 Review 后普通 merge 回 integration；不 rebase 历史实验分支或强推。
-- 旧 `feat/fg-s3-*` 分支保留为历史来源，不再作为下一项新功能的默认起点。Archive V1 与未开发的 E 不属于当前集成基线。
+- 旧 `feat/fg-s3-*` 分支保留为历史来源，不再作为下一项新功能的默认起点。Archive V1 已通过独立集成进入基线；未开发的 E 不属于当前集成基线。
 - `feat/s3-e-data`、`feat/s3-e-model`、`feat/s3-tutor-b2` 仅在对应任务实际启动时创建，不预建空分支或无用 Worktree。
 
 ## Worktree 与训练冻结
@@ -24,6 +24,7 @@
 
 - A2、Tutor、B2 共用 `tools/fg_s3_v2_experiment.py` 和 `configs/experiments/fg_s3_v2/`；三种已有模式分别运行，不将本次集成解释为联合教学。
 - W&B 复用 `tools/fg_s3_wandb.py` / `research_tracking`，Project 固定 `fg-single3-research`；通过 `launch` 包装原训练命令，SDK 在独立环境，Trainer 不依赖网络。
+- 研究归档复用 `tools/s3_archive.py` / `s3_archive`。`inspect` 只读；`archive` 默认 dry-run；L1/L2/L3 按真实验证结果授予。`verify` CLI 会更新归档自身的版本化元数据，校验受保护的历史归档时使用只读 `s3_archive.verification.evidence`。GPU 验证和 W&B 发布分别显式执行。
 - 代理默认 `http://127.0.0.1:10808`，仅作用于 Tracker。正式指标以已完成 Checkpoint 为边界，实时数据标记 provisional；断网后保留 offline 数据，使用现有 sync 恢复。
 - 功能验收优先最小 CPU 数值/模型、配置、原账户/Replay/恢复、W&B Mock/Offline 测试。GPU 或正式训练另行授权，不抢占正在运行的实验。
 - 回归失败必须记录并修复直接相关问题；依赖缺失、SKIP 和 NOT_RUN 不能算 PASS。受控 CPU 测试不代表生产行情或策略效果验收。

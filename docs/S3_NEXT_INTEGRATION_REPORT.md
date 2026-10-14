@@ -1,5 +1,7 @@
 # integration/s3-next 实施与验收
 
+本页记录首次建立基线的验收。随后 Archive V1 已按独立任务集成，最新范围、冲突处理及测试见 `S3_NEXT_ARCHIVE_INTEGRATION_REPORT.md`；最终双仓身份以工作区 `baseline-lock.json` 为准。
+
 ## 已实施的分支与工作区
 
 两仓实际创建 `integration/s3-next`，工作区为：
