@@ -256,6 +256,40 @@ class TrackerTests(unittest.TestCase):
             self.assertEqual(store.summary()['exported_events'],0)
             self.assertEqual(json.loads((store.root/'last_transport_error.json').read_text())['phase'],'export')
 
+    def test_offline_sync_retries_after_reopen_without_changing_source(self):
+        source = self.fixture.source()
+        files = [p for root in (self.fixture.root, self.fixture.prepared)
+                 for p in root.rglob('*') if p.is_file() and p.suffix != '.pkl']
+        before = {str(p): digest(p) for p in files}
+        tracking = self.base/'tracking'
+        with Store(source, tracking) as store:
+            Importer(store).canonical()
+            with patch.object(Writer, '_transport', return_value={'status':'OFFLINE'}):
+                Writer('offline').export(store)
+            ids = [b['run_id'] for b in store.state['batches']]
+        with patch('research_tracking.writer.readiness', return_value={
+                'status':'PRIVATE_PROJECT_AUTHENTICATED'}):
+            with Store(source, tracking) as store:
+                with patch.object(Writer, '_transport', side_effect=TrackingError('mock outage')):
+                    with self.assertRaisesRegex(TrackingError, 'mock outage'):
+                        Writer('online', entity='mock-entity').sync(store)
+                self.assertTrue(all(not b['synced'] for b in store.state['batches']))
+            with Store(source, tracking) as store:
+                def transport(store, batch, mode):
+                    self.assertEqual(mode, 'online')
+                    return dict(status='ONLINE_VERIFIED', sent_events=batch['count'],
+                                skipped_remote_events=0)
+                with patch.object(Writer, '_transport', side_effect=transport) as mocked:
+                    writer = Writer('online', entity='mock-entity')
+                    self.assertEqual(len(writer.sync(store)), len(ids))
+                    self.assertEqual(writer.sync(store), [])
+                    self.assertEqual(mocked.call_count, len(ids))
+                self.assertEqual([b['run_id'] for b in store.state['batches']], ids)
+                self.assertTrue(all(b['synced'] for b in store.state['batches']))
+            with Store(source, tracking) as store:
+                self.assertTrue(all(b['synced'] for b in store.state['batches']))
+        self.assertEqual(before, {str(p): digest(p) for p in files})
+
     def test_tracker_proxy_does_not_mutate_trainer_environment(self):
         original={'NO_PROXY':'internal.example','WANDB_MODE':'online'}
         routed=proxy_environment('http://127.0.0.1:10808',original)
