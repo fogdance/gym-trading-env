@@ -110,6 +110,8 @@ def evaluate(prepared, run_dir, steps=1000):
             p_add=policy.last_diagnostics['p_add'], advanced=bool(delta)))
         if s['mode'] == 'b2':
             rows[-1]['b2'] = policy.last_diagnostics['b2']
+        if s['mode'] == 'tutor':
+            rows[-1]['tutor'] = policy.last_diagnostics['tutor']
     driver.on_step(capture)
     try:
         while advanced < steps:
