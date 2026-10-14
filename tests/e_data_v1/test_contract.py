@@ -255,6 +255,13 @@ def test_F10_only_known_market_inputs_and_no_GPU_imports(market):
     assert not {'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
 
 
+def test_F10_observation_provenance_rejects_teacher_payload(prepared):
+    d = decision(prepared, 374)
+    with pytest.raises(EDataError, match='identity fields only'):
+        prepared.build([Decision(d.source_contract, d.visible_cutoff,
+                                  original_provenance={'Teacher_score': 100})])
+
+
 def test_F11_bundle_hash_verification_tamper_and_output_isolation(prepared,tmp_path):
     bundle=prepared.build([decision(prepared,374)])
     destination=write_bundle(bundle,tmp_path/'bundle')

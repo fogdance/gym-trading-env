@@ -20,6 +20,18 @@ class EDataError(ValueError):
         self.events = list(events)
 
 
+def _observation_provenance(value):
+    """An observation identity link cannot carry labels or account payloads."""
+    if value is None or isinstance(value, str):
+        return value
+    allowed = {"observation_version", "observation_identity", "source_sha256",
+               "schema_sha256", "clock", "clock_sha256", "source_contract",
+               "source_path", "config_sha256", "gym_sha", "dreamer_sha"}
+    if not isinstance(value, dict) or set(value)-allowed or not all(isinstance(x, str) for x in value.values()):
+        raise EDataError("Original observation provenance accepts identity fields only; labels/account payloads refused")
+    return deepcopy(value)
+
+
 def _index(values, timezone):
     idx = pd.DatetimeIndex(pd.to_datetime(values, format="mixed"))
     if idx.hasnans:
@@ -380,5 +392,5 @@ def _bundle(data, decisions, items):
         np.stack([x[4] for x in items]) if config.audit_1m else None,
         bucket_manifest, [x[5] for x in items], config.schema(hashes),
         dict(clock_sha256=identity(data.schedule), legacy_sources_sha256=hashes,
-             original_observation_provenance=[deepcopy(d.original_provenance) for d in decisions],
+             original_observation_provenance=[_observation_provenance(d.original_provenance) for d in decisions],
              inputs="market OHLCVOI, explicit calendar, cutoff, original observation identity only"), events)

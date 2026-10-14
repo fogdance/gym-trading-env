@@ -35,7 +35,7 @@ OHLCVOI 聚合：O=首 O，H=max H，L=min L，C=末 C，V=sum V，OI=末 OI。�
 
 `vol_relative_j = log((V_j+1)/(mean(V_previous_20_compliant_completed_buckets)+1))`。基准只含本桶之前、同一合约、合规完成且当时可见的20个桶。`oi_change_j = log(OI_j/OI_previous_compliant_completed_bucket)`，从不求和 OI。每决策保存实际基准桶 IDs，延迟到达的历史不能追溯改写之前的基准。
 
-量仓 clip 候选为 [-6,6]、[-1,1]；已获用户允许在实际 TRAIN 通过后冻结。这是有限范围和数据分布审查，不是最优阈值研究。最终通过证据见验收报告及产物 schema；没有该证据时只有候选状态。
+量仓 clip 为 [-6,6]、[-1,1]；按用户确认条件，在本轮18个真实 TRAIN 合约验证通过后冻结，两者饱和率均为0。这是有限范围和数据分布审查，不是最优阈值研究。通过证据见验收报告及产物 schema；改变区间会产生不同 schema hash。
 
 保留最后24个完整可见桶，最早到最新。前20个量基准不足的桶占据历史位置但整行置零，valid=0；不足24个桶左填整行零。合法 OI 跳变进入诊断，不擅自裁掉真实数据。全部输入必须 finite；不以 nan_to_num 掩盖异常。
 

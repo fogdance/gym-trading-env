@@ -6,10 +6,10 @@
 
 ## 安装与运行
 
-从本 Gym worktree 根目录运行，Python 要求 3.11。当前独立环境已建立于相邻的 `.venv-e-data`，固定依赖见 `requirements-e-data.txt`。重新安装时使用独立 venv：
+从本 Gym worktree 根目录运行，Python 要求 3.11。当前独立环境已建立于相邻的 `.venv-e-data`，固定依赖见 `requirements-e-data.txt`。本机系统 python3 为3.10，重建时只读借用现有3.11解释器创建独立 venv；依赖仅安装到新 venv：
 
 ```bash
-python3.11 -m venv ../.venv-e-data
+/home/v/miniconda3/envs/dreamerv3/bin/python -m venv ../.venv-e-data
 ../.venv-e-data/bin/python -m pip install -r requirements-e-data.txt
 export CUDA_VISIBLE_DEVICES=''
 export JAX_PLATFORMS=cpu
@@ -51,7 +51,7 @@ e_inputs = {
 
 `minute_bars` 必须包含 Date/DatetimeIndex、`symbol,trading_date,bob,Open,High,Low,Close,Volume,OpenInterest`；可选 `available_at`。仅接收一个显式 `CZCE.FG` 真实合约，换月另建 prepared 对象。`schedule` 必须包含 `timezone="Asia/Shanghai"`、原 FG `segments`、`minutes_per_day=345`、事先给定的 `dated_sessions[{start,end}]`。不推断未来节假日，不以连续主力序列混合不同合约。
 
-提供原 Env 的 `market_seq` 时要求 float32、60×18、逐字节数值一致，失败则拒绝。`original_provenance` 只供观测身份链接；调用方不得把标签或账户流水当身份传入。源码实例见 `examples/e_data_v1_consumer.py`；本例只返回数组，不调用网络。
+提供原 Env 的 `market_seq` 时要求 float32、60×18、逐字节数值一致，失败则拒绝。`original_provenance` 接受原 Env 的字符串身份，或只含字符串值的身份字段字典：`observation_version,observation_identity,source_sha256,schema_sha256,clock,clock_sha256,source_contract,source_path,config_sha256,gym_sha,dreamer_sha`；其他字段或标签/账户载荷拒绝。源码实例见 `examples/e_data_v1_consumer.py`；本例只返回数组，不调用网络。
 
 ## 产物与校验
 
