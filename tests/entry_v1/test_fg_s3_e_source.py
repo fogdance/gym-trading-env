@@ -37,6 +37,7 @@ def test_EM14_size50m_canonical_recipe_and_fresh_settings_without_checkpoint(tmp
         raw['composition']=dict(encoder='e_multiscale_1m15m',teaching=mode)
         raw['model_init']=dict(seed=0,presets=['size50m'])
         raw['e_data_manifest']='artifacts/fg_s3_v2/e_data_pending/manifest.json'
+        raw['e_data_source_pool']='artifacts/fg_s3_v2/e_data_pending/train_pool.json'
         path=tmp_path/(mode+'.yaml')
         from ruamel.yaml import YAML
         YAML().dump(raw,path)

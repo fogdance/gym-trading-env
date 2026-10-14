@@ -1,0 +1,39 @@
+{
+  "protocol": "FG_S3_E_MODEL_DATA_SYNTHESIS_REVIEW_20261015_V1",
+  "formal_training": "NO_GO",
+  "source": {
+    "gym_model": "05141eefb438fd0a6038f32419e209f5fc11149f",
+    "gym_data": "720a66a",
+    "dreamer_model": "f30d8da2523eddad53aeca1540afe1c77d47b248"
+  },
+  "sandbox_commits": {
+    "gym": "5507ace1b923c184a2b4ed3d541f1755e4511f5c",
+    "dreamer": "03ea881b117196e7482c05ec99a2b7ee64c243b7"
+  },
+  "files": {
+    "FG_S3_E_DREAMER_HISTORY.bundle": {
+      "size": 7783,
+      "sha256": "94d527996d8cf09c40730485b8c35365945bc36034f5347b5d3f254d27d45700"
+    },
+    "FG_S3_E_DREAMER_MODEL_FIX.patch": {
+      "size": 15432,
+      "sha256": "dc5c5ee849fe1565268d013d7ee67f16861de5fbd4985bb0d93f2a95e264d324"
+    },
+    "FG_S3_E_GYM_DATA_TO_MODEL.patch": {
+      "size": 2631169,
+      "sha256": "08ae10c9ae49170ea418fc4b6a5fcc09e561b0f5b0f4c6239d15c822c174e6d0"
+    },
+    "FG_S3_E_GYM_HISTORY.bundle": {
+      "size": 512635,
+      "sha256": "9ec66e6d177a036462259383ecf34216283640b020d807da5885e00f60bf47da"
+    },
+    "README_APPLY_AND_GATE.md": {
+      "size": 5094,
+      "sha256": "0d5478af3935365e260b4f6185f3d5fb35022efe23e00f24b368559396a076cb"
+    },
+    "REVIEW_REPORT.md": {
+      "size": 8962,
+      "sha256": "b592c176d30bf8efd066f1fa0efda56faa4e22f341f1094deb4404f7a7486d5f"
+    }
+  }
+}

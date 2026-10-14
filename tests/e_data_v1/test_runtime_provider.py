@@ -56,3 +56,19 @@ def test_prepared_train_source_has_exact_underlying_market_identity():
         verify_training_members([sample], [sample,sample])
     with pytest.raises(ValueError,match='TRAIN'):
         verify_training_members([{**sample,'role':'dev'}], [sample])
+
+
+def test_collection_process_cache_rejects_changed_payload(prepared,tmp_path):
+    from e_data_v1.io import write_bundle,write_json,write_collection_index
+    from e_data_v1.provider import verified_collection
+    root=tmp_path/'collection';root.mkdir()
+    bundle=prepared.build([Decision(prepared.contract,prepared.frame.index[374])])
+    dest=write_bundle(bundle,root/prepared.contract)
+    report=dict(schema_sha256=bundle.schema['schema_sha256'],source_pool=dict(sha256='fixture'),
+                bundles=[dict(path=str(dest))])
+    write_json(root/'diagnostics.json',report);write_collection_index(root,report)
+    assert verified_collection(root)['status']=='PASS'
+    assert verified_collection(root)['status']=='PASS'
+    path=dest/'context_15m.npy';raw=path.read_bytes()
+    path.write_bytes(raw[:-1]+bytes([raw[-1]^1]))
+    with pytest.raises(ValueError,match='verification'):verified_collection(root)

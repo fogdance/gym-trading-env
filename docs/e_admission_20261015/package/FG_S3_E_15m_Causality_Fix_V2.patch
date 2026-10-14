@@ -1,0 +1,87 @@
+--- a/e_data_v1/core.py
++++ b/e_data_v1/core.py
+@@ -1,7 +1,8 @@
+ """Causal, real-contract 1m/15m snapshots. No account or training dependencies."""
+ from __future__ import annotations
+ 
+-from collections import deque
++from bisect import insort
++from heapq import heappop, heappush
+ from copy import deepcopy
+ import hashlib
+ import re
+@@ -224,11 +225,21 @@
+                         observed_minutes=len(rows)))
+                 result.append(item)
+         result.sort(key=lambda x: x["bucket_end"])
+-        history = deque(maxlen=20)
+-        previous = None
++        # A bucket's historic volume/OI features are fixed as of that bucket's
++        # *own* end, not recomputed using previous buckets that arrive later.
++        # pending is ordered by arrival; available is ordered by bucket end.
++        # This also handles delayed data arriving out of chronological order.
++        pending = []
++        available = []
+         for item in result:
+             if not item["complete"]:
+                 continue
++            end_ns = local_timestamp(item["bucket_end"]).value
++            while pending and pending[0][0] <= end_ns:
++                _, prior_end_ns, prior = heappop(pending)
++                insort(available, (prior_end_ns, prior))
++            history = [prior for _, prior in available[-20:]]
++            previous = available[-1][1] if available else None
+             ready = len(history) == 20 and previous is not None
+             raw_vol = float(np.log((item["Volume"] + 1) / (np.mean([x["Volume"] for x in history]) + 1))) if len(history) == 20 else None
+             raw_oi = float(np.log(item["OpenInterest"] / previous["OpenInterest"])) if previous is not None else None
+@@ -240,8 +251,8 @@
+                 volume_baseline_bucket_ids=[x["bucket_id"] for x in history],
+                 previous_OI=previous["OpenInterest"] if previous else None,
+                 previous_OI_bucket_id=previous["bucket_id"] if previous else None)
+-            history.append(item)
+-            previous = item
++            arrival_ns = local_timestamp(item["available_at"]).value
++            heappush(pending, (arrival_ns, end_ns, item))
+         return result
+ 
+     def snapshot(self, decision):
+--- a/tests/e_data_v1/test_contract.py
++++ b/tests/e_data_v1/test_contract.py
+@@ -116,6 +116,37 @@
+     assert verify_bundle(write_bundle(full,tmp_path/'late-bundle'))['status']=='PASS'
+ 
+ 
++def test_F03_late_bucket_cannot_backfill_previous_volume_or_oi_baseline(market):
++    f, schedule = market
++    f = f.iloc[:390].copy()
++    f['available_at'] = f.Date
++    # The 14:15 bucket's final minute is not visible until 15:00.
++    # Its data must not be used in the 14:30 or 14:45 historical features,
++    # even when those older buckets are inspected after 15:00.
++    f.loc[f.index[299], 'available_at'] = f.Date.iloc[344]
++    data = MarketData(f, schedule)
++    by_end = {pd.Timestamp(b['bucket_end']).strftime('%H:%M'): b
++              for b in data.complete_buckets}
++    delayed = by_end['14:15']
++    for time in ('14:30', '14:45'):
++        bucket = by_end[time]
++        assert delayed['bucket_id'] not in bucket['volume_baseline_bucket_ids']
++        assert bucket['previous_OI_bucket_id'] != delayed['bucket_id']
++        assert all(pd.Timestamp(x['available_at']) <= pd.Timestamp(bucket['bucket_end'])
++                   for x in data.complete_buckets
++                   if x['bucket_id'] in bucket['volume_baseline_bucket_ids'])
++    # The delayed bucket becomes eligible for *later* buckets after 15:00.
++    # Rebuild from the visible prefix and verify the as-of snapshot is stable.
++    cutoff = f.Date.iloc[359]
++    full = data.snapshot(Decision('CZCE.FG809', cutoff))
++    subset = f.loc[(f.Date <= cutoff) & (f.available_at <= cutoff)].copy()
++    prefix = MarketData(subset, schedule).snapshot(Decision('CZCE.FG809', cutoff))
++    for i in range(5):
++        if full[i] is not None:
++            np.testing.assert_array_equal(full[i], prefix[i])
++    assert full[5] == prefix[5]
++
++
+ def test_F05_sessions_trading_date_weekend_holiday_and_contract_reset(market):
+     f,schedule=market
+     buckets,events=aggregate_buckets(f,schedule)

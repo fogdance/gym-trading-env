@@ -17,6 +17,31 @@ from .sources import pool_entries, read_fg_source
 from .schema import identity as fingerprint
 from .reference import load_legacy
 
+_VERIFIED = {}
+
+
+def verified_collection(path):
+    """Verify once per process; reuse only while the complete file tree is stable.
+
+    Admission recomputes the same binding several times. The original verifier
+    performs the full hashes and mathematical audit on first use. Any inventory,
+    inode, size, mtime or ctime change invalidates this process-local result.
+    """
+    path = Path(path).resolve(strict=True)
+    def inventory():
+        return tuple((str(p.relative_to(path)), p.is_symlink(), *(
+            getattr(p.stat(), k) for k in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns')))
+            for p in sorted(path.rglob('*')))
+    before = inventory()
+    cached = _VERIFIED.get(path)
+    if cached is not None and cached[0] == before:
+        return cached[1]
+    report = verify_collection(path)
+    if report['status'] != 'PASS' or inventory() != before:
+        raise ValueError('E collection failed verification or changed during audit')
+    _VERIFIED[path] = before, report
+    return report
+
 
 def verify_training_members(prepared_files, original_entries):
     """Prove DAgger's selected pool is a subset of the E-Data TRAIN source.
@@ -66,7 +91,7 @@ class ETrainProvider:
         This is done only when admitting a new run, not at each Env step.
         """
         collection_dir = Path(collection_dir).resolve(strict=True)
-        report = verify_collection(collection_dir)
+        report = verified_collection(collection_dir)
         if report['status'] != 'PASS':
             raise ValueError('E real TRAIN collection failed verification')
         import json

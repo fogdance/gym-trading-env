@@ -26,6 +26,7 @@ os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
+                                     'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
                                      'score-predictions', 'simulate-online', 'describe-composition'])
     p.add_argument('--config')
     p.add_argument('--prepared')
@@ -60,7 +61,24 @@ def main():
             p.error('describe-composition requires --config')
         elif args.prepared:
             settings_composition(json.loads((Path(args.prepared)/'settings.json').read_text())['settings'])
-    os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
+    admission = args.command.startswith('admit-e-')
+    admission_device = None
+    if admission:
+        if args.authorize_training:
+            p.error('E acceptance cannot authorize formal training')
+        if args.command == 'admit-e-prepare':
+            if not args.config or args.prepared:
+                p.error('admit-e-prepare requires --config')
+            path = Path(args.config)
+            if not path.is_file():
+                path = PROJECT/'configs/experiments/fg_s3_v2'/f'{args.config}.yaml'
+            admission_device = read_config_yaml(path)['device']
+        else:
+            if not args.prepared or args.config:
+                p.error('admit-e-start/resume require --prepared')
+            admission_device = json.loads((Path(args.prepared)/'settings.json').read_text())['settings']['device']
+    os.environ['JAX_PLATFORMS'] = ('cpu' if args.command in ('prepare','report','score-predictions','admit-e-prepare')
+                                 or admission_device == 'cpu' else 'cuda')
     os.environ.pop('JAX_PLATFORM_NAME', None)
     os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
     import gym_trading_env, dreamerv3, embodied
@@ -69,7 +87,15 @@ def main():
             or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
         raise ValueError('Foreign research Python imports')
     from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
-    if args.command == 'simulate-online':
+    if admission:
+        from gym_trading_env.research import fg_s3_e_admission
+        if args.command == 'admit-e-prepare':
+            result = fg_s3_e_admission.prepare(args.config)
+        else:
+            settings = fg_s3_e_admission.read_manifest(Path(args.prepared)/'settings.json')['settings']
+            result = fg_s3_e_admission.run(args.prepared, args.run_dir or settings['run_dir'],
+                resume=args.command == 'admit-e-resume', stop_at=args.stop_at)
+    elif args.command == 'simulate-online':
         if not args.config:
             p.error('simulate-online requires --config')
         from gym_trading_env.research.fg_s3_online_simulation import simulate_online

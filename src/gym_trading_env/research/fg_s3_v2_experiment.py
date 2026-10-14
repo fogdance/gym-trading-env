@@ -35,11 +35,13 @@ def read_settings(path):
     return _validate_settings(s, path)
 
 
-def _validate_settings(s, path):
+def _validate_settings(s, path, *, admission=False):
     """Shared settings validation; public read_settings requires readiness."""
+    if not admission and 'e_admission' in s:
+        raise ValueError('E acceptance configurations require the bounded admit-e lifecycle')
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
-    if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
+    if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] not in (('cpu', 'gpu') if admission else ('gpu',)):
         raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
     s.setdefault('scope', 'diagnostic')
     if s['mode'] == 'tutor':
@@ -115,6 +117,18 @@ def _validate_settings(s, path):
 
 def prepare(config):
     s = read_settings(config)
+    return _prepare(s)
+
+
+def _prepare(s, *, admission=None, model_config=None):
+    """One preparation implementation for production and bounded E acceptance.
+
+    The public entrypoint always resolves production readiness first. Internal
+    admission runs carry a distinct protocol and cannot prepare a formal run.
+    """
+    composition = settings_composition(s) if admission is None else admission.composition(s)
+    identities = {} if composition is None else dict(resolved_composition=composition)
+    inspector = inspect_source if admission is None else admission.inspect_source
     output = Path(s['prepared_dir'])
     if output.exists():
         raise FileExistsError('Preparation retained; use a new config/preparation name')
@@ -130,7 +144,6 @@ def prepare(config):
         admission_args = dict(catalog=catalog)
         if s['mode'] == 'b2':
             admission_args['agent_extension'] = agent_extensions(s)
-    composition = settings_composition(s)
     if composition is not None:
         admission_args['composition'] = composition
     try:
@@ -138,14 +151,14 @@ def prepare(config):
         if composition is not None and composition['use_e']:
             from dreamerv3.fg_s3_e_config import resolve_model_init
             from embodied.run.fg_s3_e_source import make_binding
-            target = resolve_model_init(s['model_init'])
+            target = resolve_model_init(s['model_init']) if model_config is None else model_config
             binding = make_binding(target, composition, s['e_data_manifest'])
             if binding['data_schema'] == 'S3_E_DATA_V1':
                 from e_data_v1.sources import pool_entries
                 _, original_pool = pool_entries(s['e_data_source_pool'])
                 if original_pool['sha256'] != binding['data_source_pool_sha256']:
                     raise ValueError('E model/source original TRAIN pool mismatch')
-            spec = inspect_source(kind, seed=target['seed'], config=target,
+            spec = inspector(kind, seed=target['seed'], config=target,
                 diagnostic=s['scope'] == 'diagnostic', e_binding=binding,
                 gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
         else:
@@ -176,17 +189,18 @@ def prepare(config):
                 verify_training_members(prepared_pool['files'], original)
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
-        frozen_model = dict(config=plain(model), **identity_fields(s))
+        frozen_model = dict(config=plain(model), **identities)
         if 'e_binding' in spec:
             frozen_model['e_binding'] = spec['e_binding']
         if s['mode'] in ('tutor', 'b2'):
             frozen_model['agent_extension'] = agent_extensions(s)
         write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
-        result = signed(dict(protocol='FG_S3_V2_PREPARED_V1', status='PREPARED_NO_TRAINING',
+        result = signed(dict(protocol='FG_S3_V2_PREPARED_V1' if admission is None else admission.protocol,
+            status='PREPARED_NO_TRAINING',
             **({'e_binding': spec['e_binding']} if 'e_binding' in spec else {}),
             code=execution_code(), oracle_identity=query.identity_hash,
-            **identity_fields(s),
+            **identities,
             settings_path=str(output/'settings.json'), source_identity=spec['target_model_identity_hash'],
             versions={str(r): subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=r, text=True).strip()
                       for r in (PROJECT, PROJECT.parent/'dreamerv3')},
