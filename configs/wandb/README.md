@@ -88,7 +88,7 @@ For an authorized formal Run, retain the trainer's existing
 same-Run recovery, or `evaluate --eval-steps 5000` for Actor-only evaluation;
 keep the same Run path and publication mapping. The trainer still performs its
 own identity/admission checks. This documentation does not authorize starting
-a new formal experiment. No training command was executed for this integration.
+a new formal experiment. No real training command was executed for this integration.
 
 Existing unwrapped Runs use `follow` in a separate tmux window. This preserves
 old entry points; only future commands run through `launch` automatically start
