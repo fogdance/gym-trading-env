@@ -1,6 +1,6 @@
 # integration/s3-next 实施与验收
 
-本页记录首次建立基线的验收。随后 Archive V1 和账户轮换性能优化已按独立任务集成，分别见 `S3_NEXT_ARCHIVE_INTEGRATION_REPORT.md` 与 `S3_NEXT_COLLECTION_PERFORMANCE_INTEGRATION_REPORT.md`。历史验收范围保留；最新双仓身份及本轮测试以工作区 `baseline-lock.json` 为准。
+本页记录首次建立基线的验收。随后 Archive V1 和账户轮换性能优化已按独立任务集成，分别见 `S3_NEXT_ARCHIVE_INTEGRATION_REPORT.md` 与 `S3_NEXT_COLLECTION_PERFORMANCE_INTEGRATION_REPORT.md`。Tutor 800K LIVE 适配随后集成，见 `S3_NEXT_LIVE_INTEGRATION_REPORT.md`。历史验收范围保留；最新双仓身份及本轮测试以工作区 `baseline-lock.json` 为准。
 
 ## 已实施的分支与工作区
 
