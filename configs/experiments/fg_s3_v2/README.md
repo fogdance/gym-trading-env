@@ -1,5 +1,39 @@
 # S3-V2 shared entry and experiment configurations
 
+## Tutor-CD Full E2 formal 1M (integration/s3-next)
+
+`TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` uses the accepted integration baseline,
+the F0 composition `legacy_1m + tutor_cd`, existing Natural/Balanced/Pair loss
+and E2 difficulty (`alpha=.8`, pair lambda `.1`, tau `1`, kappa `1`, cap `2`).
+Beta stays `1`; RL/Critic stay frozen. It uses rebuilt market-minute v2 TRAIN
+Env/Oracle/TeacherCatalog and parameter warm-start from the audited Online180K.
+The 18-contract budget is 1M actual Env advances, 4 joint updates per 100 advances
+(40000 updates), Replay capacity32768 and a full checkpoint every100K.
+
+Frozen sibling worktrees: `research/fg-s3-tutor-full-train/`. Its new Run is
+`/data/logdir/fg_single3/s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014`.
+Prepare on the final clean commits before start. Use the same command with
+`resume` to recover an interrupted Run; keep its frozen source/config unchanged.
+This preparation does not start training. The user starts the formal Run:
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-tutor-full-train/gym-trading-env
+env PYTHONDONTWRITEBYTECODE=1 FG_S3_VISIBLE_GPUS=0 \
+  WANDB_ENTITY=xkm104501-none WANDB_PROJECT=fg-single3-research WANDB_MODE=online \
+  /home/v/Documents/work/research/fg-s3-wandb-env/bin/python tools/fg_s3_wandb.py launch \
+  --no-evals \
+  --run-dir /data/logdir/fg_single3/s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014 \
+  --prepared "$PWD/artifacts/fg_s3_v2/prepared/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014" \
+  --trainer-cwd "$PWD" -- \
+  /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start \
+  --config TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M --authorize-training
+```
+
+W&B tracks formal training only; `--no-evals` prevents routine evaluation imports.
+The existing tracker supplies its internal `http://127.0.0.1:10808` proxy and
+offline fallback. Preparation status/identities are in this worktree pair's
+`training-lock.json`; see `docs/S3_TUTOR_FULL_1M_PREPARATION.md`.
+
 A2, Tutor, B2 and C2 share `tools/fg_s3_v2_experiment.py` and this configuration
 directory. Use `--config` to select an experiment; reuse `prepare/start/resume`
 instead of creating another trainer or copying launch logic into artifacts.
