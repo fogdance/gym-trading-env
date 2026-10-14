@@ -11,24 +11,28 @@ import uuid
 import numpy as np
 
 from gym_trading_env.envs.entry_contract import fingerprint
-from .fg_replay import FIELDS, cpu_runtime, digest, execute_observed, read_manifest, signed, write_json
+from .fg_replay import cpu_runtime, digest, execute_observed, read_manifest, signed, write_json
 
 
 PROTOCOL = 'FG_S3_V2_DAGGER_D0_V1'
 
 
-def observation_id(obs):
+def observation_id(obs, *, observation_schema=None):
+    from .fg_s3_e_observation import fields_for
+    fields = fields_for(observation_schema)
     h = hashlib.sha256()
-    for key in sorted(k for k in FIELDS if k != 'action'):
+    for key in sorted(k for k in fields if k != 'action'):
         x = np.asarray(obs[key])
         h.update(key.encode() + str(x.dtype).encode() + str(x.shape).encode() + x.tobytes())
     return h.hexdigest()
 
 
-def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
+def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None, observation_schema=None):
     """D0 sidecar join proof; V1 TeacherCatalog is deliberately unchanged."""
     if fold != 'TRAIN' or 'teacher_action' in batch or 'teacher_valid' in batch:
         raise ValueError('D0 teacher join requires an unjoined TRAIN batch')
+    from .fg_s3_e_observation import fields_for
+    fields = fields_for(observation_schema)
     ids = np.asarray(batch['stepid'])
     if ids.dtype != np.uint8 or ids.ndim != 3 or ids.shape[-1] != 20:
         raise ValueError('Native stepid contract differs')
@@ -39,6 +43,8 @@ def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
     for pos in np.ndindex(y.shape):
         row = index.get(ids[pos].tobytes().hex())
         if row is None and catalog is not None:
+            if observation_schema is not None:
+                raise ValueError('Legacy Replay cannot supply E historical snapshots')
             # Delegate historical P4 validation to its original shared adapter.
             # Undo only Replay.sample's documented first-position reset flag.
             from embodied.run.fg_s3_teacher_adapter import attach_teacher
@@ -52,10 +58,10 @@ def join_d0_teacher(batch, records, *, fold='TRAIN', catalog=None):
             continue
         if row is None or row['source_type'] != 'dagger':
             raise ValueError('Unknown D0 Replay owner')
-        obs = {k: np.asarray(batch[k][pos]) for k in FIELDS if k != 'action'}
+        obs = {k: np.asarray(batch[k][pos]) for k in fields if k != 'action'}
         if pos[1] == 0 and bool(obs['is_first']):
             obs['is_first'] = np.asarray(row['is_first'], np.bool_)
-        if observation_id(obs) != row['actual_observation_id']:
+        if observation_id(obs, observation_schema=observation_schema) != row['actual_observation_id']:
             raise ValueError('D0 teacher observation alignment differs')
         if int(batch['action'][pos]) != row['executed_action']:
             raise ValueError('D0 Replay action is not the executed action')
@@ -84,7 +90,8 @@ class D0Collector:
 
     def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
                  beta=.5, actor_probability=.5, actor=None, agent=None,
-                 source_checkpoint_identity=None, existing=False):
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None):
         embodied = self.runtime(dreamer_root)
         from embodied.envs.from_gymnasium import FromGymnasium
         from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
@@ -92,6 +99,11 @@ class D0Collector:
             raise ValueError('Unknown D0 collector mode')
         if oracle.identity['fold'] != 'TRAIN':
             raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
         self.root = Path(directory).resolve()
         if not self.output_allowed(self.root):
             raise ValueError('D0 output must be isolated from existing experiments and worktrees')
@@ -108,10 +120,15 @@ class D0Collector:
             source_checkpoint_identity=source_checkpoint_identity,
             collector_code_sha256=digest(__file__),
             policy_code_sha256=digest(Path(dreamer_root)/'embodied/run/fg_s3_dagger_policy.py'))
+        if observation_schema is not None:
+            self.identity.update(e_observation=observation_contract(), e_data_identity=e_provider.identity)
         self.identity_hash = fingerprint(self.identity)
         owner = self
 
         self.observed = self.make_observed(env)
+        if observation_schema is not None:
+            from .fg_s3_e_observation import wrap_e_observation
+            self.observed = wrap_e_observation(self.observed, e_provider)
         wrapped = embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(
             FromGymnasium(self.observed, reset_seed=seed)))
         self.driver = embodied.Driver([lambda: wrapped], parallel=False)
@@ -121,7 +138,7 @@ class D0Collector:
             state = owner.context_snapshot()
             one = {k: np.asarray(v[0]) for k, v in obs.items()}
             return dict(snapshot=state, state_id=fingerprint(state),
-                observation_id=observation_id(one), is_first=bool(one['is_first']),
+                observation_id=observation_id(one, observation_schema=observation_schema), is_first=bool(one['is_first']),
                 is_last=bool(one['is_last']), is_terminal=bool(one['is_terminal']),
                 observation_reward=float(one['reward']))
 
@@ -133,7 +150,8 @@ class D0Collector:
 
         actor = actor or ScriptedActor(seed, 0. if mode == 'wait' else actor_probability)
         self.policy = MixedExecutionPolicy(actor, query, context,
-            beta=self.identity['beta'], seed=seed, dreamer_carry=agent is not None)
+            beta=self.identity['beta'], seed=seed, dreamer_carry=agent is not None,
+            observation_schema=observation_schema)
         self.agent = agent
         if agent is not None:
             self.driver.reset(agent.init_policy)
@@ -202,7 +220,7 @@ class D0Collector:
         choice = self.policy.decision
         ctx, state = choice['context'], choice['context']['snapshot']
         self._complete(self.observed.last, ctx)
-        native = {k: np.asarray(step[k]) for k in FIELDS}
+        native = {k: np.asarray(step[k]) for k in self.fields}
         native['market_advance'] = np.int32(self.observed.last['valid_bar'])
         if int(native['action']) != choice['executed_action']:
             raise RuntimeError('Driver changed the chosen action')
@@ -233,6 +251,8 @@ class D0Collector:
             market_advance=int(native['market_advance']), clock_protocol='S3_MARKET_MINUTE',
             equity_before=str(self.decision_env._calculate_equity()),
             source_checkpoint_identity=self.source_checkpoint_identity)
+        if self.observation_schema is not None:
+            self.pending['e_snapshot'] = copy.deepcopy(self.observed.e_snapshot)
         self.counts['native_rows'] += 1
         self.counts['resets'] += int(ctx['is_first'])
 

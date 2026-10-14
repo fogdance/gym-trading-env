@@ -32,6 +32,11 @@ def read_settings(path):
         path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
     path = path.resolve()
     s = normalize_config(read_config_yaml(path))
+    return _validate_settings(s, path)
+
+
+def _validate_settings(s, path):
+    """Shared settings validation; public read_settings requires readiness."""
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
     if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
@@ -80,7 +85,18 @@ def read_settings(path):
     schedule = BetaSchedule(s['beta'], s['beta_schedule'])
     if schedule.points is not None and schedule.points[-1][0] > s['env_steps']:
         raise ValueError('Beta schedule exceeds the frozen Env budget')
-    for key in ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog', 'source_checkpoint', 'prepared_dir', 'run_dir', 'dev_source_manifest'):
+    is_e = bool(s.get('resolved_composition', {}).get('use_e'))
+    if is_e:
+        from dreamerv3.fg_s3_e_config import resolve_model_init
+        if s.get('source_kind') != 'direct_init' or s.get('source_checkpoint') is not None:
+            raise ValueError('E fresh-init requires direct_init without source_checkpoint')
+        resolve_model_init(s.get('model_init'))
+        if not s.get('catalog') or s['contracts'] is None:
+            raise ValueError('E fresh-init requires an explicit TeacherCatalog TRAIN pool')
+    paths = ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog',
+             'prepared_dir', 'run_dir', 'dev_source_manifest')
+    paths += ('e_data_manifest',) if is_e else ('source_checkpoint',)
+    for key in paths:
         if key == 'catalog' and s['mode'] == 'b2' and s[key] is None:
             continue
         s[key] = str((PROJECT/s[key]).resolve())
@@ -117,11 +133,20 @@ def prepare(config):
         admission_args['composition'] = composition
     try:
         kind = s.get('source_kind', 'warm_start')
-        initial = inspect_source(kind, path=s['source_checkpoint'], **admission_args)
-        target = copy.deepcopy(initial['target_config'])
-        target['agent']['avail_threshold'] = .30
-        spec = inspect_source(kind, path=s['source_checkpoint'],
-            config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
+        if composition is not None and composition['use_e']:
+            from dreamerv3.fg_s3_e_config import resolve_model_init
+            from embodied.run.fg_s3_e_source import make_binding
+            target = resolve_model_init(s['model_init'])
+            binding = make_binding(target, composition, s['e_data_manifest'])
+            spec = inspect_source(kind, seed=target['seed'], config=target,
+                diagnostic=s['scope'] == 'diagnostic', e_binding=binding,
+                gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
+        else:
+            initial = inspect_source(kind, path=s['source_checkpoint'], **admission_args)
+            target = copy.deepcopy(initial['target_config'])
+            target['agent']['avail_threshold'] = .30
+            spec = inspect_source(kind, path=s['source_checkpoint'],
+                config=target, gate_protocol='FG_SINGLE3_MASK_GATE_V1', **admission_args)
         model = copy.deepcopy(spec['target_config'])
         model.update(batch_size=s['batch_size'], batch_length=64, report_length=64)
         output.mkdir(parents=True, exist_ok=False)
@@ -139,11 +164,14 @@ def prepare(config):
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
         frozen_model = dict(config=plain(model), **identity_fields(s))
+        if 'e_binding' in spec:
+            frozen_model['e_binding'] = spec['e_binding']
         if s['mode'] in ('tutor', 'b2'):
             frozen_model['agent_extension'] = agent_extensions(s)
         write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
         result = signed(dict(protocol='FG_S3_V2_PREPARED_V1', status='PREPARED_NO_TRAINING',
+            **({'e_binding': spec['e_binding']} if 'e_binding' in spec else {}),
             code=execution_code(), oracle_identity=query.identity_hash,
             **identity_fields(s),
             settings_path=str(output/'settings.json'), source_identity=spec['target_model_identity_hash'],
@@ -183,4 +211,7 @@ def settings_from_prepared(prepared):
         model = read_manifest(root/'model_config.json')
         source = read_manifest(root/'source_admission.json')
         validate_records(settings, model, source, source['target_model_identity'])
+        if settings['resolved_composition']['use_e']:
+            from embodied.run.fg_s3_e_source import validate_e_records
+            validate_e_records(manifest, model, source, source['target_model_identity'])
     return settings

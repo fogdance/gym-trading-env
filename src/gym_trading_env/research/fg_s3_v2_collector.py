@@ -166,7 +166,7 @@ class V2Collector(D0Collector):
             rows = [self.index[k] for k in keys]
             if any(not self.oracle.accepts_identity(r['contract'], r['oracle_identity']) for r in rows):
                 raise ValueError('Foreign Oracle in committed sidecar')
-            batch = join_d0_teacher(batch, rows)
+            batch = join_d0_teacher(batch, rows, observation_schema=self.observation_schema)
             if self.outcome_catalog is not None:
                 from .fg_s3_b2_outcome_catalog import attach_outcome
                 batch = attach_outcome(batch, rows, self.outcome_catalog)

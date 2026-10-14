@@ -80,6 +80,9 @@ def evaluate(prepared, run_dir, steps=1000):
     if 'resolved_composition' in s:
         documents.append(spec['target_model_identity'])
     composition = validate_records(s, *documents)
+    if composition is not None and composition['use_e']:
+        from embodied.run.fg_s3_e_source import validate_e_records
+        validate_e_records(*documents)
     if identity['code'] != execution_code() or identity['preparation_sha256'] != file_hash(prepared/'manifest.json'):
         raise ValueError('Evaluation code/preparation differs from the trained run')
     name = (root/'ckpt/latest').read_text().strip()

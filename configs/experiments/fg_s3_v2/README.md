@@ -434,3 +434,19 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
 Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
 this F0 task runs CPU admission and tests only, no GPU training. Implementation,
 identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
+## E-Model V1：目标配置，公开组合仍等待
+
+`E_MODEL_V1_A2_WAITING`、`E_MODEL_V1_TUTOR_CD_WAITING`、`E_MODEL_V1_B2_WAITING`
+使用新的 encoder 轴、原 teaching 轴及 `direct_init / model_init(seed0,size50m)`。
+三份配置的 `e_data_manifest` 是待真实联调的占位路径，不能用于训练。
+当前公开 prepare/start/resume/evaluate 仍 fail closed；只有 describe 是只读可执行。
+
+```bash
+CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
+  /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py \
+  describe-composition --config E_MODEL_V1_B2_WAITING
+```
+
+CPU 模型验收在共享内部核心与确定性合成 provider 上执行，正式 Prepared/Run 未创建。
+接口、EM01–EM18 及后置 Review 要求见 `docs/S3_E_MODEL_V1_INTERFACE.md` 和
+`docs/S3_E_MODEL_V1_IMPLEMENTATION_REPORT.md`。不把 CPU Checkpoint 当正式 E Run。
