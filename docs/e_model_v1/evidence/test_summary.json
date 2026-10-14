@@ -1,0 +1,199 @@
+{
+  "checkpoint_01": {
+    "tests": 3,
+    "passed": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "models_02": {
+    "tests": 5,
+    "passed": 1,
+    "failures": [
+      "test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[a2]",
+      "test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[tutor]",
+      "test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation",
+      "test_EM04_actual_policy_context_changes_rssm_and_actor"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "provider_regression_after": {
+    "tests": 4,
+    "passed": 4,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "source_review": {
+    "tests": 5,
+    "passed": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "models_final": {
+    "tests": 5,
+    "passed": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "observation_03": {
+    "tests": 2,
+    "passed": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "observation_initial": {
+    "tests": 38,
+    "passed": 20,
+    "failures": [],
+    "errors": [
+      "test_EM10_original_driver_dagger_native_replay_context_and_executed_action",
+      "test_EM05_schema_and_future_outcome_actor_fields_rejected",
+      "test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]",
+      "test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]",
+      "test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]",
+      "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-a2]",
+      "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd]",
+      "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-b2]",
+      "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]",
+      "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]",
+      "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-a2]",
+      "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd]",
+      "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-b2]",
+      "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]",
+      "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]",
+      "test_all_new_records_require_same_composition_and_legacy_records_stay_absent",
+      "test_source_and_model_factories_reject_waiting_before_any_data_or_model",
+      "test_model_factory_rejects_encoder_identity_mismatch_before_building"
+    ],
+    "skipped": []
+  },
+  "legacy_models_01": {
+    "tests": 26,
+    "passed": 26,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "source_01": {
+    "tests": 2,
+    "passed": 2,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "models_01": {
+    "tests": 1,
+    "passed": 0,
+    "failures": [],
+    "errors": [
+      "test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation"
+    ],
+    "skipped": []
+  },
+  "observation_02": {
+    "tests": 38,
+    "passed": 36,
+    "failures": [
+      "test_EM10_original_driver_dagger_native_replay_context_and_executed_action",
+      "test_EM05_schema_and_future_outcome_actor_fields_rejected"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "provider_regression_before": {
+    "tests": 2,
+    "passed": 0,
+    "failures": [
+      "test_EM10_provider_contract_and_decision_time_must_match_env[contract]",
+      "test_EM10_provider_contract_and_decision_time_must_match_env[time]"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "contracts_final": {
+    "tests": 50,
+    "passed": 50,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "legacy_contracts_02": {
+    "tests": 60,
+    "passed": 60,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "models_03": {
+    "tests": 5,
+    "passed": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "encoder_initial": {
+    "tests": 5,
+    "passed": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "checkpoint_final": {
+    "tests": 3,
+    "passed": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "legacy_contracts_01": {
+    "tests": 60,
+    "passed": 58,
+    "failures": [
+      "test_driver_mixing_native_replay_restore_and_no_teacher_leak",
+      "test_rejected_add_keeps_executed_prevact_and_independent_wait_label"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "source_baseline": {
+    "tests": 5,
+    "passed": 2,
+    "failures": [
+      "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "test_no_inference_source_and_frozen_snapshot",
+      "test_missing_baseline_requires_authenticated_features"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "legacy_source_01": {
+    "tests": 5,
+    "passed": 2,
+    "failures": [
+      "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "test_no_inference_source_and_frozen_snapshot",
+      "test_missing_baseline_requires_authenticated_features"
+    ],
+    "errors": [],
+    "skipped": []
+  },
+  "source_02": {
+    "tests": 5,
+    "passed": 5,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  },
+  "legacy_frozen": {
+    "tests": 3,
+    "passed": 3,
+    "failures": [],
+    "errors": [],
+    "skipped": []
+  }
+}

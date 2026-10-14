@@ -1,0 +1,59 @@
+[
+  {
+    "mode": "tutor",
+    "path": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/checkpoint_final/test_EM15_full_checkpoint_cont1/checkpoint/step_000000000070",
+    "files": {
+      "runtime.pkl": "e58eb2d5fa13e6502356c03c1226a03f82e48003e426dd6341ccd176bde86549",
+      "v2_counters.pkl": "45fb939b88dafe4b9328eb0e71e8c3285a75c8219f50800a1f21262281e4a5af",
+      "replay.pkl": "fa0ee3e0700659c4b797e85778cd01e9f492d628484822a40468c52ff85c2692",
+      "agent.pkl": "41738813aff4c5dea4b8851ec8aa03f8cfc3c10e829d61250e018b57cb14ad1b",
+      "action_mask_warmup.pkl": "6edae18d17d333b87a490cc1fca39764dcef0d8f7d42d75d7ee40b7c1d999b7b",
+      "driver.pkl": "1b9331ad70168a785343372056d5cacbdd00ebb2142d7d21be654529418ceb79",
+      "step.pkl": "58fd36012f83a8252ca1e5cb2edbddc1d4e70bfbe983a4de1a0fce44e53b605a",
+      "done": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "manifest.json": "ff68743616429417bd33dfb6baf56de5a4e414233e9b7988c62008f6ff2b26e2",
+      "collector.pkl": "ac489cdf534c0ae875b3548fbf111a7dbc73d3d86712c1dcd426e1c977b19bff",
+      "replay/2ZnV7O9vMr4HTcomM0DKAG.npz": "88f7cdda74fb57288126aa53fe14dc4c536eeefa3f7e048d441d31d6aa22c0e0"
+    },
+    "manifest_sha256": "ff68743616429417bd33dfb6baf56de5a4e414233e9b7988c62008f6ff2b26e2",
+    "scope": "CPU_SYNTHETIC_CONTRACT_ONLY"
+  },
+  {
+    "mode": "b2",
+    "path": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/checkpoint_final/test_EM15_full_checkpoint_cont2/checkpoint/step_000000000070",
+    "files": {
+      "runtime.pkl": "3deece5294122b8cf79864018b9f3c0ae0ac527c2064e2d86b2e16d244533baf",
+      "v2_counters.pkl": "f6e11f32087e195d0da5291aabc55a1d17b0dc7a7399e4aa397f8f8a44034d38",
+      "replay.pkl": "4999d608bb2d43cb11f8a4ce5f160b203b084c4d249a9de41ba6114185340046",
+      "agent.pkl": "8579d013525440466f12a03eb9212cc2d7668b6903f66d11bcaa3a16d37ddeed",
+      "action_mask_warmup.pkl": "6edae18d17d333b87a490cc1fca39764dcef0d8f7d42d75d7ee40b7c1d999b7b",
+      "driver.pkl": "1b9331ad70168a785343372056d5cacbdd00ebb2142d7d21be654529418ceb79",
+      "step.pkl": "58fd36012f83a8252ca1e5cb2edbddc1d4e70bfbe983a4de1a0fce44e53b605a",
+      "done": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "manifest.json": "cc5b4e0adef70743accc1b0813e3cc06c912cdcbb80739364ed0df0dbf20b9ec",
+      "collector.pkl": "003ae345a0575b98c4e61d3fe992d9fa8eb7b9f04d3a4a3cd76015d419003039",
+      "replay/3TW2wom07cieieQaXRbT7u.npz": "87661fb3ae407aa1e6c7bd4b667d619192cf04678823da1d6f58fa39a0768915"
+    },
+    "manifest_sha256": "cc5b4e0adef70743accc1b0813e3cc06c912cdcbb80739364ed0df0dbf20b9ec",
+    "scope": "CPU_SYNTHETIC_CONTRACT_ONLY"
+  },
+  {
+    "mode": "a2",
+    "path": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/checkpoint_final/test_EM15_full_checkpoint_cont0/checkpoint/step_000000000070",
+    "files": {
+      "runtime.pkl": "5c053f6e339cfb17d615855676ce1f73c005d8623e13ca8870fa980af8ca78c8",
+      "v2_counters.pkl": "23114172a08703e2941267ec0572619d5fa6f7f16e10eb809190bd33baf21cf7",
+      "replay.pkl": "f2b8dcd3c06bf8d0070ac570cd6a581c01fdd5e5d7102964ab3ec1520901f454",
+      "agent.pkl": "e7e5a3d66c611a82f41bb5dc8e6d06dbd270c226e06228305a94218066c85043",
+      "action_mask_warmup.pkl": "6edae18d17d333b87a490cc1fca39764dcef0d8f7d42d75d7ee40b7c1d999b7b",
+      "driver.pkl": "1b9331ad70168a785343372056d5cacbdd00ebb2142d7d21be654529418ceb79",
+      "step.pkl": "58fd36012f83a8252ca1e5cb2edbddc1d4e70bfbe983a4de1a0fce44e53b605a",
+      "done": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "manifest.json": "eb071e0fa8cf034f5c8cc9c6220df23eecfd4125879e76543851bf5116eba595",
+      "collector.pkl": "10a18f952ad5e6c11ec34de5ae8d58d4c23905ab8c60ca5932d37c0282598e2d",
+      "replay/3fNex3FGZyKVfitedl8CDS.npz": "907d46aeebe1f2908fdb76ca6528f83a0a76f8f622c7d4b8b063cdf1a20c4333"
+    },
+    "manifest_sha256": "eb071e0fa8cf034f5c8cc9c6220df23eecfd4125879e76543851bf5116eba595",
+    "scope": "CPU_SYNTHETIC_CONTRACT_ONLY"
+  }
+]

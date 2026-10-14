@@ -1,0 +1,88 @@
+{
+  "checked_files": 5686,
+  "repositories": [
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "before_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+      "current_sha": "c3a808437ef277ee87f25b0ae8803e31fa5dca74",
+      "checked_files": 1018,
+      "changed_files": [
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/configs/experiments/fg_s3_v2/README.md",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py"
+      ],
+      "disposition": "EXTERNAL_INTEGRATION_ADVANCE"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "before_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "current_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "checked_files": 201,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env",
+      "before_sha": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+      "current_sha": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+      "checked_files": 965,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3",
+      "before_sha": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76",
+      "current_sha": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76",
+      "checked_files": 198,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-tutor-full-train/gym-trading-env",
+      "before_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+      "current_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+      "checked_files": 1018,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-tutor-full-train/dreamerv3",
+      "before_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "current_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "checked_files": 201,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-tutor-800k-freeze/gym-trading-env",
+      "before_sha": "3a6f889adf65583a1ab636f244ca05218f19196f",
+      "current_sha": "3a6f889adf65583a1ab636f244ca05218f19196f",
+      "checked_files": 921,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-tutor-800k-freeze/dreamerv3",
+      "before_sha": "c18a8b5917f73110f9b6ce840495f4da1d7ca1d4",
+      "current_sha": "c18a8b5917f73110f9b6ce840495f4da1d7ca1d4",
+      "checked_files": 195,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-archive-dev/gym-trading-env",
+      "before_sha": "b7d5edb30d1dcb2f2d845593a4cef498d923536d",
+      "current_sha": "b7d5edb30d1dcb2f2d845593a4cef498d923536d",
+      "checked_files": 969,
+      "changed_files": [],
+      "disposition": "UNCHANGED"
+    }
+  ],
+  "scope": "Tracked protected files and refs; live logs/Replay grow naturally and are not compared",
+  "agent_modified_protected_files": false,
+  "not_run": [
+    "GPU",
+    "formal E",
+    "W&B online",
+    "integration merge"
+  ]
+}

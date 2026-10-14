@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="60" time="17.713" timestamp="2026-10-15T05:36:48.253051+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_suffix_query_all_cursors_matches_original_env_exhaustive_actions[LONG]" time="0.817" /><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_suffix_query_all_cursors_matches_original_env_exhaustive_actions[SHORT]" time="0.803" /><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_query_funding_forced_wait_tie_and_state_identity" time="0.520" /><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_driver_mixing_native_replay_restore_and_no_teacher_leak" time="0.960"><failure message="ValueError: D0 output must be isolated from existing experiments and worktrees">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_driver_mixing_native_repl0')
+
+    def test_driver_mixing_native_replay_restore_and_no_teacher_leak(tmp_path):
+        from gym_trading_env.research.fg_s3_dagger_d0 import D0Collector,join_d0_teacher
+        from embodied.run.fg_s3_dagger_policy import replace_prevact
+        prices=[(1000,1000,1000,1000),(1000,1000,1000,1000),
+                (1000,1007,1000,1007)]*30
+        env=single_env(tmp_path,prices,candidate='C1',fees=3,chunk=7,
+                       times=pd.date_range('2026-01-05 13:31',periods=90,freq='min'),
+                       calendar=[dict(start='2026-01-05 13:30',end='2026-01-05 15:30')],
+                       liquidation='2026-01-05 15:30')
+        query,_=query_for(env,tmp_path/'env.yaml')
+        config=str(tmp_path/'env.yaml')
+        def factory():return FixedDirectionEntryEnv(df=env._raw.copy(),config_path=config)
+&gt;       first=D0Collector(factory(),query,tmp_path/'full',DREAMER,seed=202,beta=1.)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_dagger_d0.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_dagger_d0.D0Collector object at 0x7984f7500310&gt;
+env = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7984e8336910&gt;
+oracle = &lt;gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x7984e82d8dd0&gt;
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_driver_mixing_native_repl0/full')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3')
+mode = 'mixed', seed = 202, beta = 1.0, actor_probability = 0.5, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = None, e_provider = None
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None):
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+&gt;           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:109: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_original_env_rejections_forced_wait_and_gap" time="2.394" /><testcase classname="tests.entry_v1.test_fg_s3_dagger_d0" name="test_rejected_add_keeps_executed_prevact_and_independent_wait_label" time="0.817"><failure message="ValueError: D0 output must be isolated from existing experiments and worktrees">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_rejected_add_keeps_execut0')
+
+    def test_rejected_add_keeps_executed_prevact_and_independent_wait_label(tmp_path):
+        from gym_trading_env.research.fg_s3_dagger_d0 import D0Collector,join_d0_teacher
+        env=single_env(tmp_path,[(1000,1000,1000,1000)]*4,candidate='C1',
+                       liquidation='2026-01-05 09:32',zero_duration_indices=(1,))
+        query,_=query_for(env,tmp_path/'env.yaml')
+&gt;       collector=D0Collector(env,query,tmp_path/'out',DREAMER,mode='scripted',actor_probability=1.)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_dagger_d0.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_dagger_d0.D0Collector object at 0x7984e8177fd0&gt;
+env = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7984e81673d0&gt;
+oracle = &lt;gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x7984e811a3d0&gt;
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_rejected_add_keeps_execut0/out')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3')
+mode = 'scripted', seed = 202, beta = 0.5, actor_probability = 1.0, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = None, e_provider = None
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None):
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+&gt;           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:109: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_pure_parser_runs_without_site_packages_or_jax" time="0.014" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_schema_and_legacy_mode_contracts" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]" time="0.076" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]" time="0.008" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]" time="0.009" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-a2]" time="0.368" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd]" time="0.364" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-b2]" time="0.357" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]" time="0.354" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]" time="0.349" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-a2]" time="0.006" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd]" time="0.003" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-b2]" time="0.003" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]" time="0.003" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]" time="0.003" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_new_records_require_same_composition_and_legacy_records_stay_absent" time="0.002" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_source_and_model_factories_reject_waiting_before_any_data_or_model" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_reviewed_reader_warm_start_still_rejects_unknown_changes" time="0.050" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_model_factory_rejects_encoder_identity_mismatch_before_building" time="0.001" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[1]" time="0.329" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[2]" time="0.325" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[5]" time="0.332" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[6]" time="0.335" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[15]" time="0.352" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[16]" time="0.360" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[60]" time="0.382" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[61]" time="0.378" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_closed_hours_metadata_zero_volume_and_chunk_restore[lunch]" time="0.494" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_closed_hours_metadata_zero_volume_and_chunk_restore[overnight]" time="0.720" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_zero_volume_real_bar_counts_and_censored_or_rejected_is_not_tp" time="1.154" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[5--0.5]" time="0.344" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[6--0.2]" time="0.347" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[15--0.2]" time="0.348" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[16-0.0]" time="0.356" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_metadata_discount_matches_independent_env_enumeration_and_s3b" time="0.580" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_cross_semantic_snapshot_rejected_before_model_use" time="0.338" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_model_return_uses_feedback_aligned_market_discounts" time="0.305" /></testsuite></testsuites>

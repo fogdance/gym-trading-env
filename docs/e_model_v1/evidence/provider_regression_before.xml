@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="2.979" timestamp="2026-10-15T05:41:37.891453+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_e_provider_identity" name="test_EM10_provider_contract_and_decision_time_must_match_env[contract]" time="1.176"><failure message="Failed: DID NOT RAISE ValueError">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/provider_regression_before/test_EM10_provider_contract_an0')
+fault = 'contract'
+
+    @pytest.mark.parametrize('fault',['contract','time'])
+    def test_EM10_provider_contract_and_decision_time_must_match_env(tmp_path,fault):
+        class WrongProvider(SyntheticEProvider):
+            def snapshot(self,env,obs):
+                arrays,meta=super().snapshot(env,obs)
+                if fault=='contract':meta['source_contract']='FOREIGN.CONTRACT'
+                else:meta['decision_time']=meta['visible_cutoff']='2100-01-01T00:00:00+08:00'
+                return arrays,meta
+        collector,_=collector_fixture(tmp_path,provider=WrongProvider(tmp_path))
+        try:
+&gt;           with pytest.raises(ValueError,match='E provider.*Env'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_e_provider_identity.py:16: Failed</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_e_provider_identity" name="test_EM10_provider_contract_and_decision_time_must_match_env[time]" time="0.769"><failure message="Failed: DID NOT RAISE ValueError">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/provider_regression_before/test_EM10_provider_contract_an1')
+fault = 'time'
+
+    @pytest.mark.parametrize('fault',['contract','time'])
+    def test_EM10_provider_contract_and_decision_time_must_match_env(tmp_path,fault):
+        class WrongProvider(SyntheticEProvider):
+            def snapshot(self,env,obs):
+                arrays,meta=super().snapshot(env,obs)
+                if fault=='contract':meta['source_contract']='FOREIGN.CONTRACT'
+                else:meta['decision_time']=meta['visible_cutoff']='2100-01-01T00:00:00+08:00'
+                return arrays,meta
+        collector,_=collector_fixture(tmp_path,provider=WrongProvider(tmp_path))
+        try:
+&gt;           with pytest.raises(ValueError,match='E provider.*Env'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_e_provider_identity.py:16: Failed</failure></testcase></testsuite></testsuites>

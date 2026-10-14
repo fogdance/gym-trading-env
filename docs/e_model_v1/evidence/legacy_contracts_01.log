@@ -1,0 +1,105 @@
+...F.F......................................................             [100%]
+=================================== FAILURES ===================================
+_________ test_driver_mixing_native_replay_restore_and_no_teacher_leak _________
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_driver_mixing_native_repl0')
+
+    def test_driver_mixing_native_replay_restore_and_no_teacher_leak(tmp_path):
+        from gym_trading_env.research.fg_s3_dagger_d0 import D0Collector,join_d0_teacher
+        from embodied.run.fg_s3_dagger_policy import replace_prevact
+        prices=[(1000,1000,1000,1000),(1000,1000,1000,1000),
+                (1000,1007,1000,1007)]*30
+        env=single_env(tmp_path,prices,candidate='C1',fees=3,chunk=7,
+                       times=pd.date_range('2026-01-05 13:31',periods=90,freq='min'),
+                       calendar=[dict(start='2026-01-05 13:30',end='2026-01-05 15:30')],
+                       liquidation='2026-01-05 15:30')
+        query,_=query_for(env,tmp_path/'env.yaml')
+        config=str(tmp_path/'env.yaml')
+        def factory():return FixedDirectionEntryEnv(df=env._raw.copy(),config_path=config)
+>       first=D0Collector(factory(),query,tmp_path/'full',DREAMER,seed=202,beta=1.)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_dagger_d0.py:90: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.research.fg_s3_dagger_d0.D0Collector object at 0x7984f7500310>
+env = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7984e8336910>
+oracle = <gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x7984e82d8dd0>
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_driver_mixing_native_repl0/full')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3')
+mode = 'mixed', seed = 202, beta = 1.0, actor_probability = 0.5, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = None, e_provider = None
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None):
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+>           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:109: ValueError
+_____ test_rejected_add_keeps_executed_prevact_and_independent_wait_label ______
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_rejected_add_keeps_execut0')
+
+    def test_rejected_add_keeps_executed_prevact_and_independent_wait_label(tmp_path):
+        from gym_trading_env.research.fg_s3_dagger_d0 import D0Collector,join_d0_teacher
+        env=single_env(tmp_path,[(1000,1000,1000,1000)]*4,candidate='C1',
+                       liquidation='2026-01-05 09:32',zero_duration_indices=(1,))
+        query,_=query_for(env,tmp_path/'env.yaml')
+>       collector=D0Collector(env,query,tmp_path/'out',DREAMER,mode='scripted',actor_probability=1.)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_dagger_d0.py:183: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.research.fg_s3_dagger_d0.D0Collector object at 0x7984e8177fd0>
+env = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7984e81673d0>
+oracle = <gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x7984e811a3d0>
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/legacy_contracts_01/test_rejected_add_keeps_execut0/out')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3')
+mode = 'scripted', seed = 202, beta = 0.5, actor_probability = 1.0, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = None, e_provider = None
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None):
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+>           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:109: ValueError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_dagger_d0.py::test_driver_mixing_native_replay_restore_and_no_teacher_leak
+FAILED tests/entry_v1/test_fg_s3_dagger_d0.py::test_rejected_add_keeps_executed_prevact_and_independent_wait_label
+2 failed, 58 passed in 17.71s

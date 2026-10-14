@@ -1,0 +1,34 @@
+{
+  "command": "/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest ../dreamerv3/embodied/tests/test_s3_composition.py -q -o addopts= --basetemp=/tmp/s3_e_model_cpu/legacy_frozen --junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/legacy_frozen.xml",
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-m",
+    "pytest",
+    "../dreamerv3/embodied/tests/test_s3_composition.py",
+    "-q",
+    "-o",
+    "addopts=",
+    "--basetemp=/tmp/s3_e_model_cpu/legacy_frozen",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/legacy_frozen.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "JAX_PLATFORMS": "cpu",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "src:../dreamerv3"
+  },
+  "versions": {
+    "gym-trading-env": "da7e59fb228126102e17e264db3751656fa2f500",
+    "dreamerv3": "f30d8da2523eddad53aeca1540afe1c77d47b248"
+  },
+  "dirty": {
+    "gym-trading-env": [],
+    "dreamerv3": []
+  },
+  "started_at": 1792015970.5435197,
+  "exit_code": 0,
+  "elapsed_seconds": 197.83306336402893
+}

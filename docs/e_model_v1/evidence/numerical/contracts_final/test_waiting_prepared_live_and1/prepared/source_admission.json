@@ -1,0 +1,27 @@
+{
+  "resolved_composition": {
+    "encoder": "e_multiscale_1m15m",
+    "teaching": "tutor_cd",
+    "base_oracle_bc": true,
+    "use_e": true,
+    "use_tutor": true,
+    "use_b2": false,
+    "legacy_mode": "tutor",
+    "support_state": "waiting_e",
+    "schema_version": 1
+  },
+  "target_model_identity": {
+    "resolved_composition": {
+      "encoder": "e_multiscale_1m15m",
+      "teaching": "tutor_cd",
+      "base_oracle_bc": true,
+      "use_e": true,
+      "use_tutor": true,
+      "use_b2": false,
+      "legacy_mode": "tutor",
+      "support_state": "waiting_e",
+      "schema_version": 1
+    }
+  },
+  "content_hash": "af515e91482044eabae4ca92714385869f553b64c2bbdff1785fb5d7e5fc4833"
+}

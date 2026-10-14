@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "tools/fg_s3_v2_experiment.py",
+    "describe-composition",
+    "--config",
+    "E_MODEL_V1_B2_WAITING"
+  ],
+  "returncode": 0,
+  "stdout": "{\n  \"resolved_composition\": {\n    \"encoder\": \"e_multiscale_1m15m\",\n    \"teaching\": \"b2\",\n    \"base_oracle_bc\": true,\n    \"use_e\": true,\n    \"use_tutor\": false,\n    \"use_b2\": true,\n    \"legacy_mode\": \"b2\",\n    \"support_state\": \"waiting_e\",\n    \"schema_version\": 1\n  },\n  \"legacy_c2\": false\n}\n",
+  "stderr": ""
+}

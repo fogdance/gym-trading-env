@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="38" time="5.184" timestamp="2026-10-15T05:28:29.617069+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_e_observation" name="test_EM10_original_driver_dagger_native_replay_context_and_executed_action" time="0.238"><failure message="ValueError: Existing market feature clock cannot represent these FG timestamps">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_02/test_EM10_original_driver_dagg0')
+
+    def test_EM10_original_driver_dagger_native_replay_context_and_executed_action(tmp_path):
+&gt;       collector,provider=collector_fixture(tmp_path)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_e_observation.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/e_model_fixture.py:56: in collector_fixture
+    env=env or controlled_env(root/'market')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/e_model_fixture.py:48: in controlled_env
+    return single_env(folder,prices,candidate='C1',fees=3,chunk=100,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:118: in __init__
+    self._load_market(df)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7990dd122a10&gt;
+df =                      Open  High   Low  ...  Volume  OpenInterest                 bob
+2026-01-05 13:31:00  1000  1000  ...5 15:08:00
+2026-01-05 15:10:00  1000  1000  1000  ...     100          1000 2026-01-05 15:09:00
+
+[100 rows x 7 columns]
+
+    def _load_market(self, df):
+        if df is None:
+            df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
+        input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
+        if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
+            raise ValueError("Entry market timestamps must be unique, valid and ascending")
+        required = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        if set(required)-set(df) or not np.isfinite(df[required].apply(pd.to_numeric, errors="coerce").to_numpy()).all():
+            raise ValueError("Entry requires complete numeric OHLCVOI before normalization")
+        if 'trading_date' in df:
+            # Real-clock features below replace the legacy CSV features. Keep
+            # their exact normalization without building the discarded store.
+            raw = normalize_csv_frame(df, data_tz=getattr(self.config.trading, 'data_tz', None))
+            raw = raw.sort_index().copy()
+        else:
+            source = CsvBarSource(self.config, df=df)
+            raw = source.df_raw.sort_index().copy()
+        if raw.empty or raw.index.has_duplicates or not raw.index.is_monotonic_increasing:
+            raise ValueError("Market must be nonempty and have unique ascending timestamps")
+        cols = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        values = raw[cols].to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (values[:, :4] &lt;= 0).any() or (values[:, 4:] &lt; 0).any():
+            raise ValueError("Invalid OHLCVOI values")
+        if ((raw.High &lt; raw[["Open", "Close", "Low"]].max(axis=1)) |
+                (raw.Low &gt; raw[["Open", "Close", "High"]].min(axis=1))).any():
+            raise ValueError("Inconsistent OHLC")
+        if "symbol" in raw and set(raw.symbol) != {self.contract}:
+            raise ValueError("A trading trajectory cannot mix contracts")
+        if not raw.index.isin(self.terms.calendar).all():
+            raise ValueError("Market timestamps fall outside the supplied trading calendar")
+        for time in raw.index:
+            self.terms.at(time - pd.Timedelta(minutes=1))
+            self.terms.at(time)
+        bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if 'bob' in raw else raw.index - pd.Timedelta(minutes=1)
+        durations = raw.index - bobs
+        valid = np.asarray(durations == pd.Timedelta(minutes=1))
+        if not ((durations == pd.Timedelta(minutes=1)) | (durations == pd.Timedelta(0))).all():
+            raise ValueError('Unsupported minute bob/eob interval')
+        feature_raw = raw.loc[valid] if self.single3 else raw
+        if feature_raw.empty:
+            raise ValueError('Market has no valid one-minute bars')
+        if 'trading_date' in raw:
+            from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
+            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = features.reindex(raw.index).ffill().fillna(0)
+            self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
+        else:
+            if self.single3 and not valid.all():
+                source = CsvBarSource(self.config, df=feature_raw)
+            mapping = source.store.index.get_indexer(raw.index)
+            if (mapping[valid if self.single3 else np.ones(len(raw), bool)] &lt; 0).any():
+&gt;               raise ValueError("Existing market feature clock cannot represent these FG timestamps")
+E               ValueError: Existing market feature clock cannot represent these FG timestamps
+
+src/gym_trading_env/envs/entry_env.py:187: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_e_observation" name="test_EM05_schema_and_future_outcome_actor_fields_rejected" time="0.261"><failure message="ValueError: Existing market feature clock cannot represent these FG timestamps">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_02/test_EM05_schema_and_future_ou0')
+
+    def test_EM05_schema_and_future_outcome_actor_fields_rejected(tmp_path):
+&gt;       collector,_=collector_fixture(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_e_observation.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/e_model_fixture.py:56: in collector_fixture
+    env=env or controlled_env(root/'market')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/e_model_fixture.py:48: in controlled_env
+    return single_env(folder,prices,candidate='C1',fees=3,chunk=100,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:118: in __init__
+    self._load_market(df)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7990d7b28810&gt;
+df =                      Open  High   Low  ...  Volume  OpenInterest                 bob
+2026-01-05 13:31:00  1000  1000  ...5 15:08:00
+2026-01-05 15:10:00  1000  1000  1000  ...     100          1000 2026-01-05 15:09:00
+
+[100 rows x 7 columns]
+
+    def _load_market(self, df):
+        if df is None:
+            df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
+        input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
+        if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
+            raise ValueError("Entry market timestamps must be unique, valid and ascending")
+        required = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        if set(required)-set(df) or not np.isfinite(df[required].apply(pd.to_numeric, errors="coerce").to_numpy()).all():
+            raise ValueError("Entry requires complete numeric OHLCVOI before normalization")
+        if 'trading_date' in df:
+            # Real-clock features below replace the legacy CSV features. Keep
+            # their exact normalization without building the discarded store.
+            raw = normalize_csv_frame(df, data_tz=getattr(self.config.trading, 'data_tz', None))
+            raw = raw.sort_index().copy()
+        else:
+            source = CsvBarSource(self.config, df=df)
+            raw = source.df_raw.sort_index().copy()
+        if raw.empty or raw.index.has_duplicates or not raw.index.is_monotonic_increasing:
+            raise ValueError("Market must be nonempty and have unique ascending timestamps")
+        cols = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        values = raw[cols].to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (values[:, :4] &lt;= 0).any() or (values[:, 4:] &lt; 0).any():
+            raise ValueError("Invalid OHLCVOI values")
+        if ((raw.High &lt; raw[["Open", "Close", "Low"]].max(axis=1)) |
+                (raw.Low &gt; raw[["Open", "Close", "High"]].min(axis=1))).any():
+            raise ValueError("Inconsistent OHLC")
+        if "symbol" in raw and set(raw.symbol) != {self.contract}:
+            raise ValueError("A trading trajectory cannot mix contracts")
+        if not raw.index.isin(self.terms.calendar).all():
+            raise ValueError("Market timestamps fall outside the supplied trading calendar")
+        for time in raw.index:
+            self.terms.at(time - pd.Timedelta(minutes=1))
+            self.terms.at(time)
+        bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if 'bob' in raw else raw.index - pd.Timedelta(minutes=1)
+        durations = raw.index - bobs
+        valid = np.asarray(durations == pd.Timedelta(minutes=1))
+        if not ((durations == pd.Timedelta(minutes=1)) | (durations == pd.Timedelta(0))).all():
+            raise ValueError('Unsupported minute bob/eob interval')
+        feature_raw = raw.loc[valid] if self.single3 else raw
+        if feature_raw.empty:
+            raise ValueError('Market has no valid one-minute bars')
+        if 'trading_date' in raw:
+            from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
+            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = features.reindex(raw.index).ffill().fillna(0)
+            self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
+        else:
+            if self.single3 and not valid.all():
+                source = CsvBarSource(self.config, df=feature_raw)
+            mapping = source.store.index.get_indexer(raw.index)
+            if (mapping[valid if self.single3 else np.ones(len(raw), bool)] &lt; 0).any():
+&gt;               raise ValueError("Existing market feature clock cannot represent these FG timestamps")
+E               ValueError: Existing market feature clock cannot represent these FG timestamps
+
+src/gym_trading_env/envs/entry_env.py:187: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-legacy_1m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-e_multiscale_1m15m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-legacy_1m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-e_multiscale_1m15m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-legacy_1m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-e_multiscale_1m15m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-legacy_1m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-e_multiscale_1m15m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_pure_parser_runs_without_site_packages_or_jax" time="0.022" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_schema_and_legacy_mode_contracts" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]" time="0.012" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]" time="0.011" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]" time="0.014" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-a2]" time="0.512" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd]" time="0.510" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-b2]" time="0.471" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]" time="0.511" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]" time="0.496" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-a2]" time="0.012" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd]" time="0.005" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-b2]" time="0.005" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]" time="0.005" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]" time="0.004" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_new_records_require_same_composition_and_legacy_records_stay_absent" time="0.002" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_source_and_model_factories_reject_waiting_before_any_data_or_model" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_reviewed_reader_warm_start_still_rejects_unknown_changes" time="0.074" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_model_factory_rejects_encoder_identity_mismatch_before_building" time="0.002" /></testsuite></testsuites>
