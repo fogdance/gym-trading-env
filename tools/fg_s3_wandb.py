@@ -38,13 +38,15 @@ def arguments():
     parser.add_argument('--mode', choices=['offline', 'online', 'disabled'])
     parser.add_argument('--entity')
     parser.add_argument('--project')
-    parser.add_argument('--proxy', help='Route only tracker network requests through this HTTP/HTTPS proxy')
+    parser.add_argument('--proxy', help='Tracker-only HTTP/HTTPS proxy override (internal default: http://127.0.0.1:10808)')
     parser.add_argument('--publication', help='Explicit stable namespace when re-uploading after cloud deletion')
     parser.add_argument('--tracker-dir')
     parser.add_argument('--every', type=int)
     parser.add_argument('--poll-seconds', type=float)
     parser.add_argument('--polls', type=int, default=0, help='0 follows until interrupted; bounded values aid verification')
     parser.add_argument('--no-evals', action='store_true')
+    parser.add_argument('--prediction-report', action='append', default=[],
+                        help='Verified posthoc DEV receipt outside the source Run; may be repeated')
     parser.add_argument('--discover', action='store_true')
     parser.add_argument('--experiment-note', default='')
     parser.add_argument('--research-question', default='')
@@ -93,7 +95,7 @@ def track(args, cfg, mode, entity, stop=None):
             wandb=importlib.metadata.version('wandb'), os=platform.system(),
             experiment_note=args.experiment_note, research_question=args.research_question)
         atomic_json(store.root/'tracker_provenance.json', redact(tracker))
-        importer = Importer(store, every)
+        importer = Importer(store, every, prediction_reports=args.prediction_report)
         writer = Writer(mode, entity)
         online_status = 'NOT_CHECKED' if mode == 'online' else 'NOT_APPLICABLE'
         fallback_count = 0

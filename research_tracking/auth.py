@@ -11,20 +11,23 @@ from . import PROJECT
 from .io import TrackingError
 
 API = 'https://api.wandb.ai'
+DEFAULT_PROXY = 'http://127.0.0.1:10808'
 
 
-def proxy_environment(proxy, environment=None):
+def proxy_environment(proxy=None, environment=None):
     """Scope proxy routing to this tracker and its transport children."""
     env = dict(os.environ if environment is None else environment)
+    proxy = proxy or DEFAULT_PROXY
     if proxy:
         parsed = urlsplit(proxy)
         if parsed.scheme not in ('http', 'https') or not parsed.hostname or parsed.path not in ('', '/'):
             raise TrackingError('Tracker proxy must be an HTTP/HTTPS proxy URL')
         for name in ('HTTP_PROXY', 'HTTPS_PROXY', 'http_proxy', 'https_proxy'):
             env[name] = proxy
-        bypass = set((env.get('NO_PROXY') or env.get('no_proxy') or '').split(','))
-        bypass.update(('localhost', '127.0.0.1', '::1'))
-        env['NO_PROXY'] = env['no_proxy'] = ','.join(sorted(bypass - {''}))
+        # Tracker-only cloud traffic must not inherit a wildcard/domain bypass.
+        # The SDK's local IPC remains direct; the trainer keeps its original env.
+        env['NO_PROXY'] = env['no_proxy'] = 'localhost,127.0.0.1,::1'
+        env['FG_S3_WANDB_PROXY'] = proxy
     return env
 
 
@@ -55,7 +58,10 @@ def readiness(entity):
         headers={'Content-Type': 'application/json',
             'Authorization': 'Basic '+base64.b64encode(('api:'+key).encode()).decode()})
     try:
-        with urllib.request.urlopen(request, timeout=15) as response:
+        routed = proxy_environment(os.getenv('FG_S3_WANDB_PROXY'))
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler(
+            {'http':routed['HTTP_PROXY'],'https':routed['HTTPS_PROXY']}))
+        with opener.open(request, timeout=15) as response:
             result = json.loads(response.read(1024 * 1024))
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
         raise TrackingError('W&B credential/project readiness request failed; local spool remains intact') from exc

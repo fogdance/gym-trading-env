@@ -257,6 +257,10 @@ class TrackerTests(unittest.TestCase):
         self.assertNotIn('HTTPS_PROXY',original)
         self.assertEqual(routed['HTTPS_PROXY'],'http://127.0.0.1:10808')
         self.assertIn('127.0.0.1',routed['NO_PROXY'])
+        default=proxy_environment(environment={'NO_PROXY':'*','HTTPS_PROXY':'http://unused:1'})
+        self.assertEqual(default['HTTPS_PROXY'],'http://127.0.0.1:10808')
+        self.assertNotIn('*',default['NO_PROXY'])
+        self.assertEqual(default['FG_S3_WANDB_PROXY'],'http://127.0.0.1:10808')
         self.assertIn('internal.example',routed['NO_PROXY'])
         with self.assertRaises(TrackingError):proxy_environment('file:///tmp/proxy',original)
 

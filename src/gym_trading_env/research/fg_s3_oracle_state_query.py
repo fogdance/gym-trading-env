@@ -27,6 +27,47 @@ def rules_identity(env):
                 direction_hash=env.directions.hash, reward_hash=env.reward_config.hash)
 
 
+def decision_state(env):
+    """Private causal account descriptor shared by TRAIN and offline DEV proof."""
+    state = dict(protocol=DECISION_PROTOCOL, contract=env.contract,
+        config_hash=env.config_hash, current_step=env.current_step,
+        cursor_time=str(env._raw.index[env.current_step]),
+        account_sequence=env.account_sequence, entry_sequence=env.entry_sequence,
+        status=env.status, terminated=env.terminated, truncated=env.truncated,
+        pending_reason=env.pending_reason, net_lots=str(env.net_lots),
+        equity=str(env._calculate_equity()), balances=env.ledger.snapshot(),
+        current_price=str(env.current_price), action_mask=env._published_mask.tolist(),
+        entries=env.entries, reward_active=sorted(env.reward_function.scorer.active),
+        long_positions=[p.to_dict() if p else None for p in env.position_manager.long_positions],
+        short_positions=[p.to_dict() if p else None for p in env.position_manager.short_positions],
+        realized_pnl=str(env.user_accounts.realized_pnl), unrealized_pnl=str(env.user_accounts.unrealized_pnl),
+        legal_add_decisions=env.legal_add_decisions, voluntary_waits=env.voluntary_waits,
+        total_reward=env.total_reward)
+    return json.loads(json.dumps(state, default=str))
+
+
+def outcome_account_reason(env, mask, snapshot, *, rules, market, floor, covered):
+    """Shared account proof only; this function does not publish teacher labels."""
+    actual = decision_state(env) if snapshot.get('protocol') == DECISION_PROTOCOL else env.export_state()
+    mask = np.asarray(mask)
+    if rules_identity(env) != rules or not env._raw.equals(market):
+        return 'RULE_OR_MARKET_IDENTITY_MISMATCH'
+    if fingerprint(actual) != fingerprint(snapshot):
+        return 'STALE_ACCOUNT_SNAPSHOT'
+    if (mask.shape != (2,) or not np.array_equal(mask, env._published_mask)
+            or not np.array_equal(mask, [1, 1])):
+        return 'TWO_REAL_ACTIONS_REQUIRED'
+    if env.status != 'ACTIVE' or env.terminated or env.truncated:
+        return 'INACTIVE_ACCOUNT'
+    if env.net_lots or env.entries or env.pending_reason or env.reward_function.scorer.active:
+        return 'ACTUAL_ACCOUNT_NOT_FLAT'
+    if env._calculate_equity() < floor:
+        return 'UNPROVEN_CURRENT_FUNDS'
+    if not covered:
+        return 'CONTRACT_OR_GAP_BOUNDARY'
+    return None
+
+
 class OracleStateQuery:
     def __init__(self, env, candidates, end, *, fold, source_identity):
         if fold != 'TRAIN' or not env.single3:
@@ -65,21 +106,7 @@ class OracleStateQuery:
         market is still checked separately by query(). This private descriptor
         is never forwarded to Actor observations or carry.
         """
-        state = dict(protocol=DECISION_PROTOCOL, contract=env.contract,
-            config_hash=env.config_hash, current_step=env.current_step,
-            cursor_time=str(env._raw.index[env.current_step]),
-            account_sequence=env.account_sequence, entry_sequence=env.entry_sequence,
-            status=env.status, terminated=env.terminated, truncated=env.truncated,
-            pending_reason=env.pending_reason, net_lots=str(env.net_lots),
-            equity=str(env._calculate_equity()), balances=env.ledger.snapshot(),
-            current_price=str(env.current_price), action_mask=env._published_mask.tolist(),
-            entries=env.entries, reward_active=sorted(env.reward_function.scorer.active),
-            long_positions=[p.to_dict() if p else None for p in env.position_manager.long_positions],
-            short_positions=[p.to_dict() if p else None for p in env.position_manager.short_positions],
-            realized_pnl=str(env.user_accounts.realized_pnl), unrealized_pnl=str(env.user_accounts.unrealized_pnl),
-            legal_add_decisions=env.legal_add_decisions, voluntary_waits=env.voluntary_waits,
-            total_reward=env.total_reward)
-        return json.loads(json.dumps(state, default=str))
+        return decision_state(env)
 
     def query(self, env, action_mask, *, snapshot=None):
         """Read an actual Env decision state; never step, reset, or mutate it."""

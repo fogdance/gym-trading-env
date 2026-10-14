@@ -7,7 +7,7 @@ import sys
 import uuid
 
 from . import PROJECT
-from .auth import readiness
+from .auth import readiness, proxy_environment
 from .io import TrackingError, atomic_json, read_json
 from .redaction import safe_error
 
@@ -54,7 +54,8 @@ class Writer:
                 'imported' if batch['job_type'] != 'live_monitor' else 'provisional'],
             configuration=configuration, result_path=str(result_path))
         atomic_json(spec_path, spec)
-        env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1')
+        env = proxy_environment(os.getenv('FG_S3_WANDB_PROXY'))
+        env['PYTHONDONTWRITEBYTECODE'] = '1'
         if mode == 'offline':
             env.pop('WANDB_API_KEY', None)
         process = self._process(store, [sys.executable, '-m', 'research_tracking.sdk_worker', '--spec', str(spec_path)],

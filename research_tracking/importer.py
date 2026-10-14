@@ -1,19 +1,22 @@
 """Transactional source-prefix staging and independent provisional monitoring."""
 import copy
+from pathlib import Path
 
 from .evals import parse_eval
+from .prediction_evals import parse_prediction_eval
 from .io import TrackingError, digest
 from .metrics import aggregate_updates, cycle_metrics, provisional_updates
 from .parsers import JsonLines, watermark
 
 
 class Importer:
-    def __init__(self, store, every=40):
+    def __init__(self, store, every=40, prediction_reports=()):
         if type(every) is not int or every < 1:
             raise TrackingError('Aggregation interval must be a positive integer')
         self.store = store
         self.source = store.source
         self.every = every
+        self.prediction_reports = tuple(Path(p) for p in prediction_reports)
 
     def job_config(self, job):
         return dict(parent_training_run_id=self.source.ids['train'], local_run_id=self.source.run_id,
@@ -145,6 +148,28 @@ class Importer:
                 config=config, artifacts=('config_preview.json', artifact))
             self.store.state['evaluations'][key] = dict(run_id=report['eval_run_id'],
                 checkpoint_manifest_sha256=report['checkpoint_manifest_sha256'], artifact=artifact)
+            self.store.save()
+            count += 1
+        # Forecasts may arrive after an Actor-only receipt was already imported.
+        # They have their own hash/index and never rewrite that original event.
+        paths = set((self.source.root/'prediction_evaluations').glob('*/receipt.json'))
+        paths.update(self.prediction_reports)
+        index = self.store.state.setdefault('prediction_evaluations',{})
+        for path in sorted(paths):
+            key = digest(path)
+            if key in index:
+                continue
+            report = parse_prediction_eval(self.source,path)
+            artifact = self.store.artifact('prediction_eval_'+report['eval_run_id']+'.json',report)
+            config = dict(self.job_config('eval'), evaluation_kind=report['evaluation_kind'],
+                parent_actor_eval_run_id=report['parent_actor_eval_run_id'],
+                checkpoint_manifest_sha256=report['checkpoint_manifest_sha256'],
+                receipt_sha256=report['receipt_sha256'],metric_schema=report['metric_schema'],
+                eval_receipt_content_hash=report['receipt_content_hash'],fold='DEV',
+                oracle_files_read_in_policy=False,future_data_read_posthoc=True)
+            self.store.queue('eval',report['eval_run_id'],[dict(kind='posthoc_dev_prediction_eval',metrics=report['metrics'])],
+                config=config,artifacts=('config_preview.json',artifact))
+            index[key] = dict(run_id=report['eval_run_id'],artifact=artifact)
             self.store.save()
             count += 1
         return count

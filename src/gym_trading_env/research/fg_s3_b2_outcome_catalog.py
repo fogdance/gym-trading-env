@@ -5,7 +5,7 @@ from decimal import Decimal
 import numpy as np
 
 from gym_trading_env.envs.entry_contract import fingerprint
-from .fg_s3_oracle_state_query import DECISION_PROTOCOL, rules_identity
+from .fg_s3_oracle_state_query import rules_identity, outcome_account_reason
 from .fg_replay import check_files, signed, write_json
 
 PROTOCOL = 'FG_S3_B2_OUTCOME_MARKET_MINUTE_V1'
@@ -97,25 +97,9 @@ class OutcomeCatalog:
             early10=0, valid_early=False, reason='UNPROVEN_CURRENT_ACCOUNT',
             observed_market_bars=0, first_adverse_market_bar=None,
             tp_market_minutes=None, ambiguous_intrabar=False)
-        actual = (self.query.decision_state(env) if snapshot.get('protocol') == DECISION_PROTOCOL
-                  else env.export_state())
-        mask = np.asarray(mask)
-        if rules_identity(env) != self.rules or not env._raw.equals(self.query.market):
-            reason = 'RULE_OR_MARKET_IDENTITY_MISMATCH'
-        elif fingerprint(actual) != state_id:
-            reason = 'STALE_ACCOUNT_SNAPSHOT'
-        elif (mask.shape != (2,) or not np.array_equal(mask, env._published_mask)
-              or not np.array_equal(mask, [1, 1])):
-            reason = 'TWO_REAL_ACTIONS_REQUIRED'
-        elif env.status != 'ACTIVE' or env.terminated or env.truncated:
-            reason = 'INACTIVE_ACCOUNT'
-        elif env.net_lots or env.entries or env.pending_reason or env.reward_function.scorer.active:
-            reason = 'ACTUAL_ACCOUNT_NOT_FLAT'
-        elif env._calculate_equity() < self.floor:
-            reason = 'UNPROVEN_CURRENT_FUNDS'
-        elif env.current_step not in self.rows:
-            reason = 'CONTRACT_OR_GAP_BOUNDARY'
-        else:
+        reason = outcome_account_reason(env, mask, snapshot, rules=self.rules,
+            market=self.query.market, floor=self.floor, covered=env.current_step in self.rows)
+        if reason is None:
             result.update(self.labels[env.current_step])
             c = self.rows[env.current_step]
             result['candidate_identity'] = fingerprint(c)

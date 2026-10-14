@@ -346,7 +346,7 @@ def verify_candidates(index,rows,*,seed=202,count=128):
     expected={r['cursor']:r for r in rows}
     for t in sorted(sampled):
         row=expected[t];ref=reference_candidate(index.env,t)
-        if row.get('filled',False)!=ref['filled'] or row['rewards']['C2']!=ref['rewards']:
+        if row.get('filled',False)!=ref['filled'] or row['rewards'][index.env.reward_config.candidate]!=ref['rewards']:
             raise RuntimeError(f'Indexed/reference reward mismatch at {index.env.contract}/{t}: {row} / {ref}')
         if ref['filled']:
             if row['exit_cursor']!=ref['exit_cursor']:

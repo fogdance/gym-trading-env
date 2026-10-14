@@ -21,6 +21,8 @@ from .fg_single3 import load_env
 from .fg_single3_evaluation import ActorPolicy, require_dev
 from .fg_replay import read_manifest, check_files, signed, write_json
 from .fg_s3_eval_metrics import evaluation_metrics
+from .fg_s3_oracle_state_query import decision_state
+from gym_trading_env.envs.entry_contract import fingerprint
 
 
 def prepare_dev(s, directory):
@@ -108,6 +110,8 @@ def evaluate(prepared, run_dir, steps=1000):
             mask=np.asarray(step['action_mask']).tolist(), is_first=bool(step['is_first']),
             is_last=bool(step['is_last']), reward_from_previous_action=float(step['reward']),
             p_add=policy.last_diagnostics['p_add'], advanced=bool(delta)))
+        rows[-1]['decision_state_id'] = fingerprint(decision_state(env))
+        rows[-1]['prediction_phase'] = 'CAUSAL_ACTOR_ONLY'
         if s['mode'] == 'b2':
             rows[-1]['b2'] = policy.last_diagnostics['b2']
     driver.on_step(capture)
@@ -156,6 +160,9 @@ def evaluate(prepared, run_dir, steps=1000):
             result = signed(result)
         result = {k:v for k,v in result.items() if k != 'content_hash'}
         result.update(evaluation_metrics(env.export_state(), result))
+        result['causal_prediction_files'] = {name:file_hash(output/name) for name in
+            ('actions.jsonl', 'account_state.json', 'dev_manifest.json', 'dev_env.yaml')}
+        result['agent_extension'] = extensions
         result = signed(result)
         write_json(output/'receipt.json', result)
         return result

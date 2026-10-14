@@ -7,7 +7,7 @@ import traceback
 import time
 
 from . import PROJECT
-from .auth import credential, readiness
+from .auth import credential, readiness, proxy_environment
 from .io import LIMIT, TrackingError, atomic_json, digest, read_json
 from .redaction import safe_error
 
@@ -46,6 +46,7 @@ def remote_history(api, entity, run_id, first, last):
 
 def export(spec):
     # These are this worker's environment only, never the trainer's.
+    os.environ.update(proxy_environment(os.getenv('FG_S3_WANDB_PROXY')))
     os.environ['WANDB_DISABLE_CODE'] = 'true'
     os.environ['WANDB_ERROR_REPORTING'] = 'false'
     os.environ['WANDB_CONSOLE'] = 'off'
