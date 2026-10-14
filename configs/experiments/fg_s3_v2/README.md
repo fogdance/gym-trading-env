@@ -6,6 +6,51 @@ instead of creating another trainer or copying launch logic into artifacts.
 Preparation resolves the audited source model and experiment settings using
 `dreamerv3.configuration.read_config_yaml`; resume uses the same frozen snapshot.
 
+## Tutor-CD 800K live DB simulation (FG701 SHORT)
+
+Use the isolated `research/fg-s3-tutor-online/{gym-trading-env,dreamerv3}` pair,
+created from both repositories' `integration/s3-next`. Select
+`TUTOR_CD_800K_FG701_SHORT` through the same shared entry:
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-tutor-online/gym-trading-env
+/home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py simulate-online --config TUTOR_CD_800K_FG701_SHORT --check-only --run-dir artifacts/fg_s3_online/preflight_NEW_ID
+/home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py simulate-online --config TUTOR_CD_800K_FG701_SHORT
+```
+
+The pinned checkpoint is the archived `step_000000800000`, verified against its
+manifest and frozen model configuration. Existing `latest` points to 1M and is
+not used. Source parameters and synchronized policy parameters are checked
+byte-for-byte after exact loading. The TRAIN C1 rule hash pins the market clock,
+reward and simulation economics: 300,000 CNY, three lots per ADD, max three lots,
+TP5/SL30, lot multiplier20, margin10%, fee3 per lot per side and spread1.
+
+Completed `CZCE.FG701` bars come from the existing `fut_bar_1m_v2` DB settings.
+Historical bars supply the causal feature window without executing historical
+trades. The online polling adapter reuses `FixedDirectionEntryEnv` accounting,
+the original Driver and ActorPolicy (`eval` argmax), and `continue_data`.
+No training, Oracle queries, teacher guidance or Replay collection occurs.
+Signals older than90 seconds become WAIT, including the Actor's previous-action
+carry. Missing session minutes stop the account with `DATA_GAP`.
+
+The user confirmed that the existing enabled RPC endpoint connects to a simulated
+account. Committed minute simulation fills map to existing `SHORT_OPEN0` /
+`SHORT_CLOSE0` execution enums, including TP/SL exits. RPCs are emitted when the
+next completed bar makes the simulated fill known; the receiver executes using
+its current quote. Thus simulation prices and broker prices can differ. `/health`
+and `enqueued` acknowledge the service/queue; broker fills are not reconciled by
+this adapter. The preflight emits zero orders. The fixed FG701 direction lasts
+until the user stops this run or the DB delisting date begins; no automatic
+main-contract switch is inferred.
+
+Outputs live under `/data/logdir/fg_single3/online_sim/` and include `runner.log`,
+`status.json`, `actions.jsonl`, `rpc.jsonl`, `account_state.json` and `state.pkl`.
+Resume the same configuration with `--resume-online`; it restores the Driver,
+account, market history, policy carry and counter. Concurrent launch is refused
+by a file lock. RPC errors stop with a retained outbox and
+`RPC_RECONCILIATION_REQUIRED`; pending RPCs require reconciliation before resume.
+Existing output directories and source training/archive artifacts are retained.
+
 ## B2 Outcome-Aware diagnostics (market-minute V1)
 
 Use the independent `research/fg-s3-b2-dev/` pair. New E/O and live DAgger labels,

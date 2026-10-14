@@ -1,0 +1,16 @@
+schema: FG_S3_ONLINE_SIM_V1
+experiment: TUTOR_CD_800K_FG701_SHORT_20261014_v1
+clock_protocol: S3_MARKET_MINUTE
+contract: CZCE.FG701
+direction: SHORT
+device: gpu
+checkpoint: /data/logdir/fg_single3/archives/tutor_cd_800k/run/ckpt/step_000000800000
+checkpoint_manifest_sha256: 5cf093b56ca3bb340cca9520b5579105b1cecc9f044262d5a23d17c545c6a474
+prepared: /data/logdir/fg_single3/archives/tutor_cd_800k/prepared
+rules: /data/logdir/fg_single3/archives/tutor_cd_800k/dependencies/market_minute_20261013_v2/env/v1/inputs/C1/single3.yaml
+rules_sha256: 93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738
+run_dir: /data/logdir/fg_single3/online_sim/TUTOR_CD_800K_FG701_SHORT_20261014_v1
+history_days: 14
+poll_seconds: 2
+max_signal_age_seconds: 90
+rpc_enabled: true

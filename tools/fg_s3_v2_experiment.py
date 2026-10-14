@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Prepare, run, restore and evaluate bounded GPU S3-V2 diagnostics."""
+"""Prepare, train, evaluate S3-V2 and simulate frozen Actors on live DB bars."""
 import argparse
 import json
 import os
@@ -26,7 +26,7 @@ os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
-                                     'score-predictions'])
+                                     'score-predictions', 'simulate-online'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
@@ -34,9 +34,13 @@ def main():
     p.add_argument('--eval-steps', type=int, default=1000)
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
     p.add_argument('--output-dir', help='New isolated prediction scoring directory')
+    p.add_argument('--check-only', action='store_true', help='Online DB/model/RPC preflight; emits no orders')
+    p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
+    if (args.check_only or args.resume_online) and args.command != 'simulate-online':
+        p.error('--check-only and --resume-online require simulate-online')
     os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
     os.environ.pop('JAX_PLATFORM_NAME', None)
     os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
@@ -46,7 +50,13 @@ def main():
             or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
         raise ValueError('Foreign research Python imports')
     from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
-    if args.command == 'score-predictions':
+    if args.command == 'simulate-online':
+        if not args.config:
+            p.error('simulate-online requires --config')
+        from gym_trading_env.research.fg_s3_online_simulation import simulate_online
+        result = simulate_online(args.config, run_dir=args.run_dir,
+                                 resume=args.resume_online, check_only=args.check_only)
+    elif args.command == 'score-predictions':
         if not args.eval_dir or not args.output_dir:
             p.error('score-predictions requires --eval-dir and a new --output-dir')
         from gym_trading_env.research.fg_s3_prediction_evaluation import score_predictions
