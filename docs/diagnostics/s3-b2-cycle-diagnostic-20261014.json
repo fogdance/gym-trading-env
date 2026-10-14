@@ -1,0 +1,27 @@
+{
+  "run_dir": "/data/logdir/fg_single3/s3_v2/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014",
+  "first_env_steps": 309100,
+  "last_env_steps": 359000,
+  "cycles": 500,
+  "mean_collect_s": 3.3692354726674965,
+  "mean_update_s": 0.5689487934157951,
+  "collect_fraction": 0.8555301745741721,
+  "versions": {
+    "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+    "/home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76"
+  },
+  "reset_groups": {
+    "with_reset": {
+      "count": 49,
+      "mean_collect_s": 19.62124993869493,
+      "median_collect_s": 19.596573169983458,
+      "mean_update_s": 0.5690159392020456
+    },
+    "no_reset": {
+      "count": 450,
+      "mean_collect_s": 1.5647513095881893,
+      "median_collect_s": 1.5556439115025569,
+      "mean_update_s": 0.5689711811044253
+    }
+  }
+}
