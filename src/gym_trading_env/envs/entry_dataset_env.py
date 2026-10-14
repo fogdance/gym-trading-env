@@ -6,12 +6,13 @@ from pathlib import Path
 import gymnasium as gym
 from .entry_contract import read_yaml, fingerprint, resolve_path
 from .entry_env import FixedDirectionEntryEnv
+from .entry_market_cache import EntryMarketCache
 
 
 class FGEntryDatasetEnv(gym.Env):
     metadata={'render_modes':[]}
 
-    def __init__(self,config_path,render_mode=None):
+    def __init__(self,config_path,render_mode=None,*,cache_market=True):
         raw=read_yaml(config_path)
         if raw.get('strategy_mode')!='entry_dataset' or raw.get('role')!='train':
             raise ValueError('FG dataset environment requires the explicit train role')
@@ -31,6 +32,7 @@ class FGEntryDatasetEnv(gym.Env):
         self.paths=[r['env_config'] for r in manifest['files'] if r['role']=='train' and r['eligible_for_training']]
         if not self.paths:
             raise ValueError('No complete FG train lifecycles')
+        self._market_cache = EntryMarketCache(capacity=len(self.paths)) if self.rotating and cache_market else None
         self.index=0
         self.completed=[]
         self.accounts={}
@@ -39,7 +41,7 @@ class FGEntryDatasetEnv(gym.Env):
         self.order=list(range(len(self.paths)))
         self.scheduler_seed=None
         self.slice_bars=0
-        self.env=FixedDirectionEntryEnv(config_path=self.paths[0])
+        self.env=self._new_env(0)
         self.action_space,self.observation_space=self.env.action_space,self.env.observation_space
         self.observation_identity=self.env.observation_identity
         # Equal shapes do not imply equal max-lots/pending/reward semantics.
@@ -54,6 +56,11 @@ class FGEntryDatasetEnv(gym.Env):
                         if entry.get('strategy_config') else entry['reward'])
                 if Single3RewardConfig(**reward).hash!=self.env.reward_config.hash:
                     raise ValueError('FG dataset mixes reward candidates')
+
+    def _new_env(self,index):
+        # Fresh account/runtime objects; only validated market data is reused.
+        kwargs = {} if self._market_cache is None else {'market_cache': self._market_cache}
+        return FixedDirectionEntryEnv(config_path=self.paths[index], **kwargs)
 
     def reset(self,seed=None,options=None):
         super().reset(seed=seed)
@@ -72,7 +79,7 @@ class FGEntryDatasetEnv(gym.Env):
                                        advanced_bars=self.env.current_step))
             self.env.close()
             self.index=(self.index+1)%len(self.paths)
-            self.env=FixedDirectionEntryEnv(config_path=self.paths[self.index])
+            self.env=self._new_env(self.index)
             if self.env.observation_space!=self.observation_space:
                 raise ValueError('FG dataset observation contract changed')
         return self.env.reset(seed=seed)
@@ -100,7 +107,7 @@ class FGEntryDatasetEnv(gym.Env):
         target=min(self.order,key=lambda i:self.advanced[i]/self.rows[i])
         if target!=self.index:
             self.env.close()
-            self.env=FixedDirectionEntryEnv(config_path=self.paths[target])
+            self.env=self._new_env(target)
             if self.env.observation_space!=self.observation_space:
                 raise ValueError('FG dataset observation contract changed')
             if target in self.accounts:
@@ -131,7 +138,7 @@ class FGEntryDatasetEnv(gym.Env):
                 raise ValueError('FG scheduler checkpoint mismatch')
             if self.index!=state['index']:
                 self.env.close()
-                self.env=FixedDirectionEntryEnv(config_path=self.paths[state['index']])
+                self.env=self._new_env(state['index'])
             accounts={int(k):copy.deepcopy(v) for k,v in state['accounts'].items()}
             self.env.import_state(accounts[state['index']])
             self.index=state['index']
@@ -143,10 +150,12 @@ class FGEntryDatasetEnv(gym.Env):
             raise ValueError('FG dataset checkpoint mismatch')
         if self.index!=state['index']:
             self.env.close()
-            self.env=FixedDirectionEntryEnv(config_path=self.paths[state['index']])
+            self.env=self._new_env(state['index'])
         self.env.import_state(state['account'])
         self.index=state['index']
         self.completed=copy.deepcopy(state['completed'])
 
     def close(self):
         self.env.close()
+        if self._market_cache is not None:
+            self._market_cache.clear()

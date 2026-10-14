@@ -31,7 +31,7 @@ def test_rotating_account_bank_preserves_loss_cursor_and_resume(tmp_path,monkeyp
     frames={p:e._raw.copy() for p,e in zip(paths,envs)}
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
     monkeypatch.setattr('gym_trading_env.envs.entry_dataset_env.FixedDirectionEntryEnv',
-                        lambda config_path:FixedDirectionEntryEnv(config_path=config_path,df=frames[config_path]))
+                        lambda config_path,**kwargs:FixedDirectionEntryEnv(config_path=config_path,df=frames[config_path],**kwargs))
     manifest=dict(product='FG',files=[dict(role='train',eligible_for_training=True,rows=4,env_config=p) for p in paths])
     manifest['content_hash']=fingerprint(manifest)
     mp=tmp_path/'manifest.json';mp.write_text(json.dumps(manifest))

@@ -44,6 +44,13 @@ def _normalize_ohlcvi_df(df: pd.DataFrame) -> pd.DataFrame:
     return normalize_ohlcvi(df, date_col="Date")
 
 
+def normalize_csv_frame(df: pd.DataFrame, *, data_tz=None) -> pd.DataFrame:
+    """The CSV schema and time normalization, before feature generation."""
+    frame = normalize_ohlcvi(df, date_col="Date")
+    frame.index = ensure_feature_tz_index(frame.index, assume_tz=data_tz)
+    return frame
+
+
 class BaseBarSource:
     """
     v2: env reads ONLY from self.store (numpy stable arrays).
@@ -105,10 +112,7 @@ class CsvBarSource(BaseBarSource):
             df = load_data(sym, interval)
 
         # 2) normalize columns + index
-        df = normalize_ohlcvi(df, date_col="Date")  # ensures Open/High/Low/Close/Volume/OpenInterest
-        raw_tz = getattr(self.config.trading, "data_tz", None)
-
-        df.index = ensure_feature_tz_index(df.index, assume_tz=raw_tz)
+        df = normalize_csv_frame(df, data_tz=getattr(self.config.trading, "data_tz", None))
 
         self.df_raw = df
 

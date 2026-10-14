@@ -22,7 +22,7 @@ from .trade_record import TradeRecord
 from .trading_env import CustomTradingEnv
 from .entry_contract import (ContractTerms, DirectionSchedule, fingerprint,
                              read_yaml, resolve_path, timestamp)
-from gym_trading_env.utils.bar_source import CsvBarSource
+from gym_trading_env.utils.bar_source import CsvBarSource, normalize_csv_frame
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
 from gym_trading_env.utils.s3_market_clock import MarketClock, PROTOCOL as TIME_PROTOCOL
 
@@ -42,7 +42,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
 
-    def __init__(self, df=None, config_path=None, render_mode=None):
+    def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None):
         gym.Env.__init__(self)
         if config_path is None:
             raise ValueError("Entry config_path is required")
@@ -114,7 +114,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
-        self._load_market(df)
+        if market_cache is None or df is not None:
+            self._load_market(df)
+        else:
+            market_cache.load(self)
         if self.window_size != 60 or self._features.shape[1] != 18:
             raise ValueError("FG entry market observation requires exactly (60, 18)")
         if self.main_exit_at is not None and self.main_exit_at not in self._raw.index:
@@ -139,8 +142,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         required = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
         if set(required)-set(df) or not np.isfinite(df[required].apply(pd.to_numeric, errors="coerce").to_numpy()).all():
             raise ValueError("Entry requires complete numeric OHLCVOI before normalization")
-        source = CsvBarSource(self.config, df=df)
-        raw = source.df_raw.sort_index().copy()
+        if 'trading_date' in df:
+            # Real-clock features below replace the legacy CSV features. Keep
+            # their exact normalization without building the discarded store.
+            raw = normalize_csv_frame(df, data_tz=getattr(self.config.trading, 'data_tz', None))
+            raw = raw.sort_index().copy()
+        else:
+            source = CsvBarSource(self.config, df=df)
+            raw = source.df_raw.sort_index().copy()
         if raw.empty or raw.index.has_duplicates or not raw.index.is_monotonic_increasing:
             raise ValueError("Market must be nonempty and have unique ascending timestamps")
         cols = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
