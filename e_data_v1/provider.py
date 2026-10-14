@@ -18,6 +18,30 @@ from .schema import identity as fingerprint
 from .reference import load_legacy
 
 
+def verify_training_members(prepared_files, original_entries):
+    """Prove DAgger's selected pool is a subset of the E-Data TRAIN source.
+
+    Signed manifests may have different bytes/identities because the S3-V2
+    prepared pool is a subset; never demand identical manifest SHA instead of
+    comparing the immutable underlying market/config files.
+    """
+    fields = ('contract', 'path', 'sha256', 'env_config', 'env_sha256',
+              'contract_config', 'contract_sha256')
+    reference = {r['contract']: r for r in original_entries}
+    if len(reference) != len(original_entries) or not prepared_files:
+        raise ValueError('E source contains duplicate contracts or empty prepared pool')
+    used = set()
+    for candidate in prepared_files:
+        name = candidate['contract']
+        if name not in reference or name in used or any(
+                candidate.get(k) != reference[name].get(k) for k in fields):
+            raise ValueError('Prepared S3-V2 TRAIN pool differs from E source data')
+        if candidate.get('role') != 'train' or not candidate.get('eligible_for_training'):
+            raise ValueError('E input must be TRAIN eligible')
+        used.add(name)
+    return tuple(sorted(used))
+
+
 class ETrainProvider:
     """Causal real-contract snapshots for current Env decisions, on CPU.
 

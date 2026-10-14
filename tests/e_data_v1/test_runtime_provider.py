@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 from e_data_v1 import Decision
-from e_data_v1.provider import ETrainProvider
+from e_data_v1.provider import ETrainProvider, verify_training_members
 
 
 @pytest.mark.parametrize('minute', [0, 14, 15, 40, 359, 600])
@@ -42,3 +42,17 @@ def test_provider_refuses_foreign_contract_and_drift(prepared):
     tampered=obs.copy();tampered[-1,0]+=.01
     with pytest.raises(ValueError,match='market_seq|match'):
         provider.snapshot(e,{'market_seq':tampered})
+
+
+def test_prepared_train_source_has_exact_underlying_market_identity():
+    sample=dict(contract='CZCE.FG809', role='train', eligible_for_training=True,
+        path='/readonly/FG809.csv', sha256='a'*64, env_config='/readonly/env.yaml',
+        env_sha256='b'*64, contract_config='/readonly/contract.yaml',contract_sha256='c'*64)
+    assert verify_training_members([sample], [sample]) == ('CZCE.FG809',)
+    wrong={**sample,'sha256':'d'*64}
+    with pytest.raises(ValueError,match='differs'):
+        verify_training_members([wrong], [sample])
+    with pytest.raises(ValueError,match='duplicate'):
+        verify_training_members([sample], [sample,sample])
+    with pytest.raises(ValueError,match='TRAIN'):
+        verify_training_members([{**sample,'role':'dev'}], [sample])

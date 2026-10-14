@@ -168,6 +168,12 @@ def prepare(config):
         else:
             from .fg_s3_v2_train_pool import prepare_pool
             query = prepare_pool(s, output)
+            if composition is not None and composition['use_e']:
+                from e_data_v1.provider import verify_training_members
+                from e_data_v1.sources import pool_entries
+                original, _ = pool_entries(s['e_data_source_pool'])
+                prepared_pool = read_manifest(output/'train_pool.json')
+                verify_training_members(prepared_pool['files'], original)
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
         frozen_model = dict(config=plain(model), **identity_fields(s))
