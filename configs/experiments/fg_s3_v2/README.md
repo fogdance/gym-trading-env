@@ -85,6 +85,32 @@ by a file lock. RPC errors stop with a retained outbox and
 `RPC_RECONCILIATION_REQUIRED`; pending RPCs require reconciliation before resume.
 Existing output directories and source training/archive artifacts are retained.
 
+### Live console in tmux
+
+Run the repository monitor from a development/integration worktree; keep the
+running model's frozen source untouched:
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py monitor-online \
+  --run-dir /data/logdir/fg_single3/online_sim/TUTOR_CD_800K_FG701_SHORT_20261014_v1
+```
+
+Healthy repeated samples are silent. A new decision prints one compact line;
+each new open/close, RPC acknowledgement/failure, alert and recovery is shown
+separately. Alerts repeat only after five minutes if still unresolved. Output is
+flushed to stdout for tmux and appended to the run's `console.log`. An RPC
+acknowledgement is labelled queued, not broker-filled. Trades between polls are
+read from the complete action/RPC logs, with a saved observation boundary for
+monitor restarts.
+
+The monitor uses no model, GPU, training or order submission. Sampling defaults
+to 30 seconds and continues until stopped; `--once`, `--interval`, `--until`
+and JSON events via `--json` are optional. `--runner-pid PID` adds a process
+health check; heartbeat freshness remains checked without it. Bounded audit
+samples are written under `<run-dir>/monitor/`; `--output-dir` can select an
+existing monitor directory during handover. A file lock prevents two monitors
+using that directory. Raw `runner.log` remains the separate full audit stream.
+
 ## B2 Outcome-Aware diagnostics (market-minute V1)
 
 Use the independent `research/fg-s3-b2-dev/` pair. New E/O and live DAgger labels,

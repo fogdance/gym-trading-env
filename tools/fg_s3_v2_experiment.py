@@ -26,14 +26,20 @@ os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
-                                     'score-predictions', 'simulate-online', 'describe-composition'])
+                                     'score-predictions', 'simulate-online', 'monitor-online',
+                                     'describe-composition'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
-    p.add_argument('--output-dir', help='New isolated prediction scoring directory')
+    p.add_argument('--output-dir', help='Prediction scoring directory or online monitor observations')
+    p.add_argument('--runner-pid', type=int, help='Online runner PID for optional process health checks')
+    p.add_argument('--interval', type=float, default=30, help='Online monitor sampling interval in seconds')
+    p.add_argument('--once', action='store_true', help='Sample the online monitor once')
+    p.add_argument('--json', action='store_true', help='Print online console events as JSON')
+    p.add_argument('--until', help='Optional online monitor end time (ISO); default is continuous')
     p.add_argument('--check-only', action='store_true', help='Online DB/model/RPC preflight; emits no orders')
     p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
     p.add_argument('--authorize-training', action='store_true',
@@ -41,6 +47,13 @@ def main():
     args = p.parse_args()
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
+    if args.command == 'monitor-online':
+        if not args.run_dir:
+            p.error('monitor-online requires --run-dir')
+        from gym_trading_env.research.fg_s3_online_monitor import monitor_online
+        monitor_online(args.run_dir, output_dir=args.output_dir, runner_pid=args.runner_pid,
+                       interval=args.interval, once=args.once, compact=not args.json, until=args.until)
+        return
     # Composition preflight precedes trainer imports and CUDA selection. The
     # shared pure resolver is also used by direct prepare/runtime/model callers.
     from dreamerv3.configuration import read_config_yaml
