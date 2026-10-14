@@ -1,0 +1,86 @@
+"""Post-process immutable Actor-only receipts; never guide the Actor."""
+from decimal import Decimal
+from pathlib import Path
+
+from .identity import stable_id
+from .io import TrackingError, digest, fingerprint, read_json
+
+
+def parse_eval(source, receipt_path):
+    path = Path(receipt_path).resolve()
+    receipt = read_json(path, signed=True, limit=source.limit)
+    if (receipt.get('status') != 'ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE'
+            or receipt.get('fold') != 'DEV' or receipt.get('teacher_guidance') is not False
+            or receipt.get('oracle_files_read') is not False or receipt.get('beta') != 0
+            or receipt.get('policy_mode') != 'eval_argmax'):
+        raise TrackingError('Evaluation is not an authenticated Actor-only DEV receipt')
+    node = Path(receipt['checkpoint']).resolve()
+    if not node.is_relative_to((source.root/'ckpt').resolve()):
+        raise TrackingError('Evaluation references a different training Run')
+    available = node.is_dir() and (node/'done').is_file() and (node/'manifest.json').is_file()
+    if available:
+        meta = read_json(node/'manifest.json', limit=source.limit)
+        if (meta.get('identity') != source.identity
+                or digest(node/'manifest.json') != receipt['checkpoint_manifest_sha256']):
+            raise TrackingError('Evaluation Checkpoint identity/hash differs')
+        checkpoint_step = meta['step']
+    else:
+        checkpoint_step = int(node.name.removeprefix('step_')) if node.name.startswith('step_') else None
+    if source.clock and receipt.get('clock_protocol') and source.clock != receipt['clock_protocol']:
+        raise TrackingError('Evaluation and training clock identities differ')
+    receipt_sha = digest(path)
+    eval_id = stable_id('eval', str(path), receipt_sha, receipt['checkpoint_manifest_sha256'])
+    metrics = {'eval/checkpoint_env_steps': checkpoint_step}
+    for key in ('env_steps', 'legal_decisions', 'actor_add_proposed', 'add_executed', 'entries',
+                'tp_count', 'tp_target_points', 'sl30', 'reward', 'tp_market_minutes_p50',
+                'tp_market_minutes_p90', 'right_censored'):
+        if receipt.get(key) is not None:
+            metrics['eval/'+key] = receipt[key]
+    if receipt.get('early_mae10') is not None:
+        metrics['eval/adverse10_any_hold'] = receipt['early_mae10']
+    report = dict(schema='FG_S3_TRACKER_EVAL_DERIVED_V1', receipt_sha256=receipt_sha,
+        checkpoint_manifest_sha256=receipt['checkpoint_manifest_sha256'],
+        parent_training_run_id=source.ids['train'], local_run_id=source.run_id,
+        eval_run_id=eval_id, clock_protocol=receipt.get('clock_protocol'), contract=receipt.get('contract'),
+        teacher_guidance=False, oracle_files_read=False, beta=0., policy_mode='eval_argmax',
+        local_artifact_available=available, derivation='READ_ONLY_OFFLINE_RECALCULATION',
+        metrics=metrics, trades=[], missing=[])
+    account = path.parent/'account_state.json'
+    if not account.exists():
+        report['missing'].append('account_state: no trade PnL or adverse-window reconstruction')
+    else:
+        try:
+            state = read_json(account, limit=source.limit)
+        except TrackingError:
+            report['missing'].append('account_state exceeds metadata budget or is invalid')
+        else:
+            attrs = state.get('attributions', [])
+            if (state.get('contract') != receipt.get('contract')
+                    or state.get('total_reward') != receipt.get('reward')
+                    or sum(a['reason'] == 'TAKE_PROFIT' for a in attrs) != receipt['tp_count']
+                    or sum(a['reason'] == 'STOP_LOSS' for a in attrs) != receipt['sl30']):
+                raise TrackingError('Evaluation account summary does not reconcile with receipt')
+            report['account_state_sha256'] = digest(account)
+            net = sum((Decimal(str(a['net_trade_pnl'])) for a in attrs), Decimal(0))
+            metrics['eval/closed_trade_net_pnl'] = float(net)
+            gross = sum((Decimal(str(a['gross_trade_pnl'])) for a in attrs), Decimal(0))
+            metrics['eval/closed_trade_gross_pnl'] = float(gross)
+            adverse = {e['entry_id']: e['effective_bar'] for e in state.get('reward_events', [])
+                       if e.get('reason') == 'FIRST_ADVERSE10' and type(e.get('effective_bar')) is int}
+            all_events = [e for e in state.get('reward_events', []) if e.get('reason') == 'FIRST_ADVERSE10']
+            if receipt.get('clock_protocol') == 'S3_MARKET_MINUTE' and len(adverse) == len(all_events):
+                bars = list(adverse.values())
+                if any(b < 1 for b in bars) or len(bars) != receipt.get('early_mae10', len(bars)):
+                    raise TrackingError('Adverse events differ from receipt count')
+                metrics.update({'eval/adverse10_first5': sum(b <= 5 for b in bars),
+                    'eval/adverse10_6_15': sum(6 <= b <= 15 for b in bars),
+                    'eval/adverse10_after15': sum(b > 15 for b in bars)})
+            else:
+                report['missing'].append('certified market-minute adverse-window events')
+            # Explicit small allowlist; no account IDs, prices, raw orders or timestamps.
+            for i, attr in enumerate(attrs, 1):
+                report['trades'].append(dict(trade_index=i, exit_reason=attr['reason'],
+                    held_market_bars=attr.get('held_market_bars'), net_pnl=float(attr['net_trade_pnl']),
+                    adverse_first_market_minute=adverse.get(attr['entry_id'])))
+    report['report_sha256'] = fingerprint(report)
+    return report

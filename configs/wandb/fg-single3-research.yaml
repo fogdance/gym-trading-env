@@ -1,0 +1,15 @@
+schema: FG_S3_WANDB_TRACKING_V1
+project: fg-single3-research
+entity: null
+mode: offline
+visibility: private
+tracker_dir: /data/logdir/fg_single3/experiment_tracking
+metrics_every_n_updates: 40
+poll_seconds: 15
+max_small_file_bytes: 16777216
+upload_full_checkpoint: false
+upload_replay: false
+upload_oracle_future: false
+upload_raw_account_state: false
+upload_source_patch: false
+capture_auto_code: false
