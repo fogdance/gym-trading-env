@@ -50,6 +50,11 @@ class ActorPolicy:
         if self.agent.config.get('s3_v2_mode') == 'b2':
             self.last_diagnostics['b2'] = {k: np.asarray(v[0]).tolist() for k, v in out.items()
                                            if k.startswith('b2/')}
+        if self.agent.config.get('s3_v2_mode') == 'tutor':
+            self.last_diagnostics['tutor'] = {k: np.asarray(v[0]).tolist() for k,v in out.items()
+                                             if k.startswith('tutor/')}
+            if not self.last_diagnostics['tutor']['tutor/logit_margin_defined']:
+                self.last_diagnostics['tutor']['tutor/final_logit_add_minus_wait'] = None
         # Do not add model caches or diagnostics to model observations/Replay.
         return carry, action, {}
 
