@@ -200,10 +200,15 @@ class TrackerTests(unittest.TestCase):
 
     def test_weighted_metrics_undefined_recall_counters_and_no_missing_zero(self):
         a=self.fixture.update(1,100);b=self.fixture.update(2,100)
+        a['metrics']['b2/mix_stage']=0;b['metrics']['b2/mix_stage']=1
+        a['metrics']['tutor/difficulty_weight_pos_max']=1.2
+        b['metrics']['tutor/difficulty_weight_pos_max']=1.8
         a['metrics']['tutor/pair_accuracy']=1.;a['metrics']['tutor/pair_count']=1.
         b['metrics']['tutor/pair_accuracy']=0.;b['metrics']['tutor/pair_count']=3.
         a['tutor_pair_update_count']=5;b['tutor_pair_update_count']=6
         out=aggregate_updates([a,b]);self.assertEqual(out['train/tutor/pair_accuracy'],.25)
+        self.assertEqual(out['train/b2/mix_stage'],1)
+        self.assertEqual(out['train/tutor/difficulty_weight_pos_max'],1.8)
         self.assertEqual(out['train/tutor/pair_update_count'],6)
         a['metrics'].update({'b2/count_FAST':1.,'b2/recall_FAST':1.,'b2/event_valid_count':3.,'opt/updates':1.})
         b['metrics'].update({'b2/count_FAST':3.,'b2/recall_FAST':0.,'b2/event_valid_count':5.,'opt/updates':2.})

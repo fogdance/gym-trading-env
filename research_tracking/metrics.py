@@ -35,6 +35,10 @@ def aggregate_updates(rows):
                 'tutor/pair_accuracy': 'tutor/pair_count',
                 'tutor/p_add_pos_mean': 'tutor/eligible_pos',
                 'tutor/p_add_neg_mean': 'tutor/eligible_neg',
+                'tutor/difficulty_weight_pos_mean':'tutor/eligible_pos',
+                'tutor/difficulty_weight_neg_mean':'tutor/eligible_neg',
+                'tutor/difficulty_weight_mean':'bc/valid_count',
+                'tutor/difficulty_boosted_fraction':'bc/valid_count',
                 'tutor/fn_rate': 'tutor/eligible_pos', 'tutor/fp_rate': 'tutor/eligible_neg'}
     for key in sorted(keys):
         if SECRET.search(key):
@@ -47,8 +51,11 @@ def aggregate_updates(rows):
                 or key.startswith('b2/count_') or key.endswith(('/valid_count', '/add_count', '/wait_count', '/pair_count',
                     '_valid_count', '_add_count', '_wait_count', '_pair_count', '_add_positives', '_add_true_positives'))):
             result[target] = sum(value for value, _ in pairs)
-        elif key in ('opt/updates', 'train/update_index'):
+        elif key in ('opt/updates', 'train/update_index','b2/mix_stage','b2/mix_next',
+                     'b2/schedule_updates_before','b2/schedule_event_updates_before','b2/event_preheat_ready'):
             result[target] = pairs[-1][0]
+        elif key.startswith('tutor/difficulty_weight') and key.endswith(('_max','_min')):
+            result[target] = (max if key.endswith('_max') else min)(value for value,_ in pairs)
         elif key in weighted or key.startswith('b2/recall_'):
             weight = weighted.get(key, 'b2/count_'+key.removeprefix('b2/recall_'))
             denominator = sum(m.get(weight, 0) for _, m in pairs)
