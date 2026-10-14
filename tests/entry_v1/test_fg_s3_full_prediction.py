@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from gym_trading_env.research.fg_s3_prediction_evaluation import outcome_scores, decision_scores, probability
+from gym_trading_env.research.fg_s3_prediction_evaluation import outcome_scores, decision_scores, probability,require_prediction_mode
 
 
 def test_matched_outcomes_constant_prior_and_missing_rare_class():
@@ -30,3 +30,6 @@ def test_unknown_old_logits_and_invalid_prediction_fail_closed():
     assert m['clip_saturation_fraction'] is None
     with pytest.raises(ValueError,match='Invalid sealed'):
         probability(dict(b2={'b2/outcome_probs':[1]*6,'b2/early_prob':.5}))
+    with pytest.raises(ValueError,match='model mode'):
+        require_prediction_mode([dict(p_add=.1)],'b2')
+    assert not require_prediction_mode([dict(p_add=.1)],'tutor')

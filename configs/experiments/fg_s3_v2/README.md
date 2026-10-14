@@ -193,7 +193,7 @@ TEST and R1 comparisons are outside the current implementation scope.
 Both new diagnostic configurations use the audited Online180k parameter
 warm-start, the existing market-minute v2 TRAIN inputs, FG201, beta=1, and a
 10,000 **environment advance** budget with 400 joint updates. They have separate
-preparation/Run names ending in `v2`; development-only v1 preparations are kept.
+preparation/Run names ending in `v3`; development-only v1/v2 preparations are kept.
 
 - `TUTOR_CD_FULL_E2_MM_10K`: Natural/Balanced/Pair, alpha=.8, Pair=.1,
   hard_kappa=1, hard_wmax=2; Actor term gradients sampled every100 updates.
@@ -223,8 +223,8 @@ CPU post-processing comes **after the causal Actor-only predictions are sealed**
 
 ```bash
 "$PY" tools/fg_s3_v2_experiment.py score-predictions \
-  --eval-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/evaluations/actor_only_<id> \
-  --output-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/prediction_evaluations/dev_<new-id>
+  --eval-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3/evaluations/actor_only_REPLACE_WITH_ID \
+  --output-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3/prediction_evaluations/dev_REPLACE_WITH_NEW_ID
 ```
 
 Scoring validates the actual Driver/account replay, original candidate/funding

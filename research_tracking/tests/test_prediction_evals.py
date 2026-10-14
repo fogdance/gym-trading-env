@@ -29,7 +29,7 @@ class PredictionTrackingTests(unittest.TestCase):
                 oracle_files_read_in_policy=False,policy_observations_modified=False,future_data_read_posthoc=True,
                 account_replay_exact=True,clock_protocol=source.clock,source_run_id=source.run_id,
                 source_eval_dir=str(actor_path.parent),source_eval_receipt_sha256=digest(actor_path),
-                source_eval_receipt_content_hash=actor['content_hash'],evaluation_kind='outcome_prediction',
+                source_eval_receipt_content_hash=actor['content_hash'],evaluation_kind='tutor_scoring',
                 checkpoint_manifest_sha256=actor['checkpoint_manifest_sha256'],certified_accounts=2,
                 outcome=dict(event_samples=2,event_nll=.4,event_brier=.2,event_constant_prior_nll=.69,
                     classes={'SL':dict(support=0,predictions=0,recall=None,precision=None)}),decision={},

@@ -32,6 +32,6 @@
 
 实施完成：公共评价V2、Tutor Full E2诊断、B2 Full预热与DEV预测补评、原Tracker联接/内置代理已提交并集成。详见同目录 `FG_S3_Full_Implementation_Report_20261014.md` 的25项矩阵、真实命令/结果及NOT_RUN边界。
 
-最终配置/准备与Run使用独立v2名称（开发v1准备只读保留）。两路线同为可信Online180k参数warm-start和FG201诊断10K/400更新，beta仍1。用户最后指定W&B内部默认代理为 `http://127.0.0.1:10808`，现已实现，原训练进程环境不变。
+最终配置/准备与Run使用独立v3名称（开发v1准备只读保留）。两路线同为可信Online180k参数warm-start和FG201诊断10K/400更新，beta仍1。用户最后指定W&B内部默认代理为 `http://127.0.0.1:10808`，现已实现，原训练进程环境不变。
 
 CPU神经合同、组合FullCheckpoint恢复、原Env/时间边界、真实旧B2预测补评及Offline Tracker验证已完成；新Full GPU/10K研究/1M均NOT_RUN。停止在交付版本，等待Review，不能将受控或历史录制数据补评解释为新版生产验收。

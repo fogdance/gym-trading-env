@@ -45,6 +45,7 @@
 
 - 旧 `early_mae10` 实际统计全持仓FIRST_ADVERSE10。共享纯stdlib `fg_s3_eval_metrics.py` 统一新评价器、观察工具和现有Tracker；旧字段只保留whole-hold含义。缺日志=null，缺有效分钟归因=unclassified，重复事件去重、冲突拒绝；不从时间戳推持仓分钟。
 - 旧 `b2/raw_delta_logit` 已裁剪。保留旧名称的旧含义，新增真实未裁剪值/裁剪值/应用值、base/final logits及饱和标志。预热仅改新配置，原MixSchedule计数和保存机制保留。
+- 自Review进一步加固模型身份：B2 Checkpoint必须每行都有真实Outcome预测，缺失/模式不匹配直接拒绝；Tracker评价kind必须匹配原模型mode，不能把缺B2诊断误认作Tutor。对应回归和5005条真实行模式核验通过。
 - 原CandidateIndex参考校验固定比较C2 reward。改为Env实际candidate，供原C1 DEV认证；不改Oracle优化数学/交易规则。TRAIN OracleStateQuery/OutcomeCatalog的TRAIN限制没有放宽；复用共用账户资金证明，DEV结果不能进入监督sidecar。
 - W&B0.19.1 resume传tags会替换已有tags。SDK worker现在合并现有云端tags并保留人工display name；无800K元数据操作。新预测评价拥有独立身份/索引，晚到收据不重写Actor-only历史。
 - W&B内部默认代理`http://127.0.0.1:10808`用于认证/SDK/同步；模块直接调用也强制代理，排除环境NO_PROXY=*绕行。原训练子进程环境不变。聚合保留真实B2阶段整数、最后调度计数及实际权重极值。
@@ -59,7 +60,7 @@
 | 公共Oracle/时间/评价/Tutor合同 | 37 PASS / 1 SKIP | SKIP是缺少旧GPU收据的检查，不能算PASS |
 | W&B CPU/Mock/真实Offline SDK | 20 PASS，加新模块代理回归1 PASS | 不创建云端Run；SDK本地服务需沙箱外执行 |
 | 真实B2 FG409历史预测posthoc | PASS | 5005预测行、5000实际执行决策；来源CP和账户完全复核；无重新GPU推理 |
-| Full新配置CPU prepare | PASS（最终v2见prepare收据） | 原Replay来源/可信Oracle/完整冻结配置；不初始化GPU训练 |
+| Full新配置CPU prepare | PASS（最终v3见prepare收据） | 原Replay来源/可信Oracle/完整冻结配置；不初始化GPU训练 |
 | 新Full GPU1K/10K/1M | NOT_RUN | 本任务书未授权 |
 
 B2 CPU真实梯度：Actor `0.6753884554`，RSSM `1143.5872802734`，OutcomeHead `0.4574307501`，Critic `0.0`；每次联合优化1次。100边界测试通过，恢复下一次参数完全相同。组合FullCheckpoint测试使用独立受控2/2预热以短程验证完整状态耦合，正式研究配置仍为100/100/100。
@@ -99,7 +100,7 @@ PY=/home/v/miniconda3/envs/dreamerv3/bin/python
 
 ## 启动、恢复、评价与W&B
 
-最终准备命令是CPU，启动/恢复/Actor评价会用GPU；以下GPU命令本轮未执行，先Review并另行授权。v1开发准备快照保留，最终v2独立Run尚未启动。
+最终准备命令是CPU，启动/恢复/Actor评价会用GPU；以下GPU命令本轮未执行，先Review并另行授权。v1/v2开发准备快照保留，最终v3独立Run尚未启动。
 
 ```bash
 cd /home/v/Documents/work/research/fg-s3-full-integration-dev/gym-trading-env
@@ -109,25 +110,25 @@ TRACKER_PY=/home/v/Documents/work/research/fg-s3-wandb-env/bin/python
 "$PY" tools/fg_s3_v2_experiment.py prepare --config B2_FULL_MM_10K
 # 获授权后的1K工程运行，仍mix=0：
 env WANDB_ENTITY=xkm104501-none WANDB_MODE=online "$TRACKER_PY" tools/fg_s3_wandb.py launch \
-  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2" \
-  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v2" --trainer-cwd "$PWD" -- \
+  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3" \
+  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v3" --trainer-cwd "$PWD" -- \
   "$PY" tools/fg_s3_v2_experiment.py start --config B2_FULL_MM_10K --stop-at 1000
 # 同一来源/代码/配置恢复到10K，改launch尾部为：
 "$PY" tools/fg_s3_v2_experiment.py resume --config B2_FULL_MM_10K
 "$PY" tools/fg_s3_v2_experiment.py evaluate --config B2_FULL_MM_10K --eval-steps 5000
 "$PY" tools/fg_s3_v2_experiment.py score-predictions \
-  --eval-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/evaluations/actor_only_<id> \
-  --output-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2/prediction_evaluations/dev_<new-id>
+  --eval-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3/evaluations/actor_only_REPLACE_WITH_ID \
+  --output-dir artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3/prediction_evaluations/dev_REPLACE_WITH_NEW_ID
 env WANDB_ENTITY=xkm104501-none "$TRACKER_PY" tools/fg_s3_wandb.py import-evals --mode online \
-  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2" \
-  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v2"
+  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3" \
+  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v3"
 # 断网本地outbox保留；后续恢复联网：
 env WANDB_ENTITY=xkm104501-none "$TRACKER_PY" tools/fg_s3_wandb.py sync \
-  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v2" \
-  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v2"
+  --run-dir "$PWD/artifacts/fg_s3_v2/runs/B2_FULL_MM_10K_v3" \
+  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MM_10K_v3"
 ```
 
-Tutor使用`TUTOR_CD_FULL_E2_MM_10K`与对应`TUTOR_CD_FULL_E2_MM_10K_v2`路径。所有输入/初始化来源相同，配置、teacher/head目标、Run身份独立；不叠加Loss。训练器不依赖W&B网络；代理已内置无需额外--proxy。
+Tutor使用`TUTOR_CD_FULL_E2_MM_10K`与对应`TUTOR_CD_FULL_E2_MM_10K_v3`路径。所有输入/初始化来源相同，配置、teacher/head目标、Run身份独立；不叠加Loss。训练器不依赖W&B网络；代理已内置无需额外--proxy。
 
 W&B真实只读认证确认私人项目可访问：[fg-single3-research](https://wandb.ai/xkm104501-none/fg-single3-research)。本次未创建Full云端Run，因此无新Full Run URL；800K里程碑不在本任务。
 

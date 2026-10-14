@@ -38,6 +38,16 @@ def probability(row):
     return p, e
 
 
+def require_prediction_mode(records, mode):
+    if mode not in ('b2','tutor'):
+        raise ValueError('Posthoc scorer supports the authenticated Tutor/B2 model modes')
+    is_b2 = mode == 'b2'
+    for row in records:
+        if (probability(row) is not None) != is_b2:
+            raise ValueError('Causal prediction diagnostics differ from Checkpoint model mode')
+    return is_b2
+
+
 def calibration(prob, correct):
     prob, correct = np.asarray(prob, float), np.asarray(correct, float)
     rows = []
@@ -143,6 +153,7 @@ def score_predictions(eval_dir, output_dir):
     records = [json.loads(line) for line in (source/'actions.jsonl').read_text().splitlines()]
     if not records:
         raise ValueError('No sealed causal predictions')
+    is_b2 = require_prediction_mode(records,identity['mode'])
     for r in records:
         p = probability(r)
         if not np.isfinite(r['p_add']) or not 0 <= r['p_add'] <= 1:
@@ -204,7 +215,6 @@ def score_predictions(eval_dir, output_dir):
             funds_certificate=index.proof,funding_certificate_usage_role=ROLE,
             prediction_seal_hash=seal['content_hash'], decisions=rows)))
         eligible = [r for r in rows if r['reason'] is None and r['executed']]
-        is_b2 = any('b2' in r for r in records)
         cursors = sorted({r['cursor'] for r in eligible}) if is_b2 else range(index.flat_end)
         candidates = {t:index.candidate(t) for t in cursors}
         check = verify_candidates(index,list(candidates.values()),count=8) if candidates else dict(status='NO_CERTIFIABLE_SAMPLES')

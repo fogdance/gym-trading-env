@@ -19,6 +19,9 @@ def parse_prediction_eval(source, path):
             or receipt.get('source_run_id') != source.run_id
             or receipt.get('clock_protocol') != source.clock):
         raise TrackingError('Invalid independent posthoc DEV prediction identity/role')
+    kind = {'b2':'outcome_prediction','tutor':'tutor_scoring'}.get(source.identity['mode'])
+    if kind is None or receipt.get('evaluation_kind') != kind:
+        raise TrackingError('Prediction evaluation kind differs from trained model mode')
     actor_path = Path(receipt['source_eval_dir']).resolve()/'receipt.json'
     if not actor_path.is_relative_to(source.root/'evaluations') or digest(actor_path) != receipt['source_eval_receipt_sha256']:
         raise TrackingError('Prediction evaluation refers to a different Actor-only receipt')
