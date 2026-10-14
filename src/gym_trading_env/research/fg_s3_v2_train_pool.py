@@ -87,6 +87,24 @@ class PoolOracleQuery:
         return self.queries[env.contract].decision_state(env)
 
 
+def _load_members(settings, contracts, manifest_hash):
+    queries, outcomes = {}, {}
+    for contract in contracts:
+        q, env, _, _, candidates = load_train_query(settings['env_receipt'], settings['oracle_receipt'], contract)
+        try:
+            queries[contract] = q
+            if settings['mode'] == 'b2':
+                from .fg_s3_b2_outcome_catalog import OutcomeCatalog
+                outcomes[contract] = OutcomeCatalog(q, env, candidates)
+        finally:
+            env.close()
+    query = PoolOracleQuery(queries, manifest_hash)
+    if outcomes:
+        from .fg_s3_b2_outcome_catalog import PoolOutcomeCatalog
+        query.outcome_catalog = PoolOutcomeCatalog(outcomes, query.identity_hash)
+    return query
+
+
 def prepare_pool(settings, directory):
     """Read existing E/O caches; do not regenerate prices, labels or candidates."""
     inputs = read_manifest(Path(settings['env_receipt'])/'inputs/inputs.json')
@@ -112,26 +130,20 @@ def prepare_pool(settings, directory):
     # Use the common config reader to validate the actual saved selector.
     if read_config_yaml(directory/'selector.yaml') != selector:
         raise ValueError('Resolved TRAIN selector changed type')
-    queries = {}
-    for contract in selected:
-        q, env, _, _, _ = load_train_query(settings['env_receipt'], settings['oracle_receipt'], contract)
-        queries[contract] = q
-        env.close()
-    query = PoolOracleQuery(queries, manifest['content_hash'])
+    query = _load_members(settings, selected, manifest['content_hash'])
     write_json(directory/'oracle_pool.json', signed(dict(identity=query.identity)))
+    if settings['mode'] == 'b2':
+        query.outcome_catalog.write_receipt(directory/'outcome_catalog.json')
     return query
 
 
 def load_pool(settings, directory):
     manifest = read_manifest(directory/'train_pool.json')
     expected = read_manifest(directory/'oracle_pool.json')['identity']
-    queries = {}
-    for row in manifest['files']:
-        q, env, _, _, _ = load_train_query(settings['env_receipt'], settings['oracle_receipt'], row['contract'])
-        queries[row['contract']] = q
-        env.close()
-    query = PoolOracleQuery(queries, manifest['content_hash'])
+    query = _load_members(settings, [row['contract'] for row in manifest['files']], manifest['content_hash'])
     if query.identity != expected:
         raise ValueError('Prepared Oracle pool identity changed')
+    if settings['mode'] == 'b2' and read_manifest(directory/'outcome_catalog.json')['identity_hash'] != query.outcome_catalog.identity_hash:
+        raise ValueError('Prepared Outcome pool identity changed')
     pool = ObservedTrainingPool(directory/'selector.yaml')
     return query, pool

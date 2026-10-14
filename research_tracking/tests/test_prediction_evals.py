@@ -51,6 +51,11 @@ class PredictionTrackingTests(unittest.TestCase):
                 from research_tracking.writer import Writer
                 Writer('offline').export(store)
                 self.assertTrue(all(b['exported'] for b in store.state['batches']))
+            receipt['evaluation_kind'] = 'outcome_prediction'
+            atomic_json(path,signed(receipt))
+            with self.assertRaisesRegex(TrackingError,'trained model mode'):
+                parse_prediction_eval(source,path)
+            receipt['evaluation_kind'] = 'tutor_scoring'
             receipt['checkpoint_manifest_sha256'] = '0'*64
             atomic_json(path,signed(receipt))
             with self.assertRaisesRegex(TrackingError,'Checkpoint identities'):

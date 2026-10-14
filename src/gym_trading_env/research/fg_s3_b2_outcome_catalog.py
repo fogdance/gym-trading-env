@@ -116,6 +116,31 @@ class OutcomeCatalog:
         write_json(output, signed(dict(identity=self.identity, identity_hash=self.identity_hash)))
 
 
+class PoolOutcomeCatalog:
+    """Dispatch existing certified outcomes by the active TRAIN contract."""
+    def __init__(self, catalogs, oracle_pool_identity):
+        self.catalogs = dict(catalogs)
+        if not self.catalogs or any(c.identity['fold'] != 'TRAIN' or c.rules['contract'] != contract
+                for contract, c in self.catalogs.items()):
+            raise ValueError('Outcome pool requires matching certified TRAIN members')
+        self.identity = dict(protocol='FG_S3_B2_OUTCOME_POOL_MARKET_MINUTE_V1', fold='TRAIN',
+            clock_protocol='S3_MARKET_MINUTE', horizon_market_bars=60, events=EVENTS,
+            oracle_pool_identity=oracle_pool_identity,
+            catalogs={contract: c.identity_hash for contract, c in sorted(self.catalogs.items())})
+        self.identity_hash = fingerprint(self.identity)
+
+    def query_state(self, env, mask, *, snapshot):
+        if env.contract not in self.catalogs:
+            raise ValueError('Active account escaped the admitted TRAIN Outcome pool')
+        return self.catalogs[env.contract].query_state(env, mask, snapshot=snapshot)
+
+    def accepts_identity(self, contract, identity):
+        return contract in self.catalogs and self.catalogs[contract].accepts_identity(contract, identity)
+
+    def write_receipt(self, output):
+        write_json(output, signed(dict(identity=self.identity, identity_hash=self.identity_hash)))
+
+
 def attach_outcome(batch, records, catalog):
     """Called under the existing teacher publication lock, after teacher join."""
     if any(k in batch for k in FIELDS):

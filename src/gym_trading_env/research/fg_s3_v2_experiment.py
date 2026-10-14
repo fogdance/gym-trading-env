@@ -41,16 +41,14 @@ def read_settings(path):
     if s['mode'] == 'b2':
         extension = agent_extensions(s)
         s.update({k:v for k,v in extension.items() if k != 's3_v2_mode'})
-        if s['scope'] != 'diagnostic':
-            raise ValueError('B2 V0 supports only bounded diagnostic training')
         s.setdefault('catalog', None)
     s.setdefault('oracle_receipt_scope', 'aggregate')
     if s['oracle_receipt_scope'] not in ('aggregate', 'diagnostic_contract') or (
             s['oracle_receipt_scope'] == 'diagnostic_contract' and s['scope'] != 'diagnostic'):
         raise ValueError('Contract-only Oracle evidence is diagnostic-only')
     s.setdefault('contracts', None)
-    if s['mode'] == 'b2' and s['contracts'] is not None:
-        raise ValueError('B2 V0 uses one authentic TRAIN contract per diagnostic')
+    if s['mode'] == 'b2' and s['contracts'] is not None and not s['catalog']:
+        raise ValueError('B2 pooled training requires the shared TeacherCatalog source admission')
     s.setdefault('env_slice_bars', 1024)
     s.setdefault('replay_capacity', 2048 if s['scope'] == 'diagnostic' else 32768)
     s.setdefault('beta_schedule', None)
@@ -101,7 +99,7 @@ def prepare(config):
     if output.exists():
         raise FileExistsError('Preparation retained; use a new config/preparation name')
     query, env = None, None
-    if s['mode'] == 'b2':
+    if s['mode'] == 'b2' and s['contracts'] is None:
         query, env, _, _, candidates = load_train_query(s['env_receipt'], s['oracle_receipt'],
             s['contract'], receipt_scope=s['oracle_receipt_scope'])
         catalog = None
@@ -110,6 +108,8 @@ def prepare(config):
     else:
         catalog = load_catalog(s['catalog'])
         admission_args = dict(catalog=catalog)
+        if s['mode'] == 'b2':
+            admission_args['agent_extension'] = agent_extensions(s)
     try:
         kind = s.get('source_kind', 'warm_start')
         initial = inspect_source(kind, path=s['source_checkpoint'], **admission_args)

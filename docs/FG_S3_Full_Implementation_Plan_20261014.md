@@ -2,6 +2,8 @@
 
 实施依据：`FG_S3_Tutor_B2_Full_Spec_Review_WandB_Milestone_Codex_20261014.md`，以及实际源码。用户最新补充：**800K W&B 里程碑由独立项目处理，本次不开发、不上传、不修改该里程碑。** 历史800K评价只读用于公共评价语义回归。
 
+后续授权范围：Full收尾后，准备B2正式1M配置、可信18合约输入和独立冻结训练工作树，交付命令由用户启动。继续使用A2统一入口/配置管理，不自行启动GPU或1M。核对后的统一管理规则已加入research根目录既有`AGENTS.md`。
+
 ## 已核验基线与隔离
 
 - 最新共享 Gym：`ad6490675bf853a7793763f95aa7ba7f12fa379e`；Dreamer：`d76a423dd7930756c3609cc6f7197941f583c160`。W&B工作树干净，已有 Tutor E2 和 B2；不依归档推断新HEAD。
@@ -17,6 +19,7 @@
 3. **B2 Full**：保留OutcomeHead、有符号StopGrad Adapter、原WM与Oracle BC；独立FG201 10K配置，warmup/ramp/min_event_updates均100，保持delta上限2。新增真实base/final logits、未截断/截断/实际修正和阶段统计；确保Checkpoint恢复调度状态。
 4. **独立DEV预测评价**：先封存因果预测/实际动作/账户状态，再以原Env/Oracle数学认证反事实ADD结果。独立评价角色，不放宽TRAIN监督准入；输出NLL/Brier、类别支持、early校准、SL识别、同样本常数先验和Adapter决策影响。旧B2真实5005条预测可只读做本地CPU验收，不自动上传旧B2。
 5. **W&B联接与快速验收**：扩展现有schema/指标映射以关联Full配置、Checkpoint和独立评价；离线不影响训练。保持已有Run tags/人工命名。CPU最小回归、模型梯度和恢复、Mock/Offline及旧文件hash保护验证，集成后自行Review。
+6. **B2正式准备**：沿用原18合约池、原OutcomeCatalog与共享TeacherCatalog准入，仅增加按实际合约分派和身份校验；beta仍1，100/100/100预热，1M环境步/40000联合更新、100K保存。CPU验证实际18合约轮转和Sidecar/Replay/Driver恢复，最终干净提交上创建独立冻结双树并prepare，用户手动启动。
 
 ## 已确认的研究参数与边界
 
@@ -34,4 +37,4 @@
 
 最终配置/准备与Run使用独立v3名称（开发v1准备只读保留）。两路线同为可信Online180k参数warm-start和FG201诊断10K/400更新，beta仍1。用户最后指定W&B内部默认代理为 `http://127.0.0.1:10808`，现已实现，原训练进程环境不变。
 
-CPU神经合同、组合FullCheckpoint恢复、原Env/时间边界、真实旧B2预测补评及Offline Tracker验证已完成；新Full GPU/10K研究/1M均NOT_RUN。停止在交付版本，等待Review，不能将受控或历史录制数据补评解释为新版生产验收。
+CPU神经合同、组合FullCheckpoint恢复、原Env/时间边界、真实旧B2预测补评及Offline Tracker验证已完成；新增B2正式准备见独立准备报告。新Full GPU/10K研究/1M均NOT_RUN。交付后停止，不能将受控或历史录制数据补评解释为新版生产验收。

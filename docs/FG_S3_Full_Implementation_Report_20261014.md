@@ -4,7 +4,7 @@
 
 ## 冻结代码与来源
 
-- 实现代码Gym：`29f7f93c05af9435c4f99756b1c4d175387b0b9e`；Dreamer：`0318e6d64cf0e5c9d790d3220315cb08e9e13734`。本报告之后仅文档提交的Gym最终SHA以交付时Git HEAD为准；最终准备快照记录实际双仓SHA。
+- 初次Full实现代码Gym：`29f7f93c05af9435c4f99756b1c4d175387b0b9e`；Dreamer：`0318e6d64cf0e5c9d790d3220315cb08e9e13734`。后续按用户要求补齐B2正式18合约接线；最终冻结双SHA以独立训练树准备manifest及`artifacts/fg_s3_v2/full_checks/final_delivery.json`为准。
 - 集成双工作树：`/home/v/Documents/work/research/fg-s3-full-integration-dev/{gym-trading-env,dreamerv3}`；另有独立Tutor Full/B2 Full分支双工作树，通过Git合并共享实现。
 - 基线实际Gym `ad6490675bf853a7793763f95aa7ba7f12fa379e` / Dreamer `d76a423dd7930756c3609cc6f7197941f583c160`，已有Tutor E2/B2及W&B。未机械覆盖或重新设计核心。
 - 原Tutor冻结Gym `3a6f889adf65583a1ab636f244ca05218f19196f` / Dreamer `c18a8b5917f73110f9b6ce840495f4da1d7ca1d4`；正式Run `/data/logdir/fg_single3/s3_v2/TUTOR_CD_V0_MARKET_MINUTE_FORMAL_1M_v1` 全程只读。212个既有源码/小型工件基线hash检查未变；未删除、移动或覆盖大工件。
@@ -58,9 +58,10 @@
 | B2 + Tutor CPU模型合同 | 9 PASS | 小模型、受控原Env/原生Replay；非新GPU验收 |
 | 组合FullCheckpoint恢复 | 1 PASS | 模型/优化器/Replay/Sidecar/Driver/carry/计数一起保存恢复；继续collect5和梯度更新，参数完全一致 |
 | 公共Oracle/时间/评价/Tutor合同 | 37 PASS / 1 SKIP | SKIP是缺少旧GPU收据的检查，不能算PASS |
+| B2正式配置/原合约轮转/Outcome恢复合同 | 5 PASS | 受控两合约、原Native Replay/Sidecar/Driver；CPU，无GPU |
 | W&B CPU/Mock/真实Offline SDK | 20 PASS，加新模块代理回归1 PASS | 不创建云端Run；SDK本地服务需沙箱外执行 |
 | 真实B2 FG409历史预测posthoc | PASS | 5005预测行、5000实际执行决策；来源CP和账户完全复核；无重新GPU推理 |
-| Full新配置CPU prepare | PASS（最终v3见prepare收据） | 原Replay来源/可信Oracle/完整冻结配置；不初始化GPU训练 |
+| Full新配置CPU prepare | 见各最终prepare manifest与交付索引 | 原Replay来源/可信Oracle/完整冻结配置；不初始化GPU训练 |
 | 新Full GPU1K/10K/1M | NOT_RUN | 本任务书未授权 |
 
 B2 CPU真实梯度：Actor `0.6753884554`，RSSM `1143.5872802734`，OutcomeHead `0.4574307501`，Critic `0.0`；每次联合优化1次。100边界测试通过，恢复下一次参数完全相同。组合FullCheckpoint测试使用独立受控2/2预热以短程验证完整状态耦合，正式研究配置仍为100/100/100。

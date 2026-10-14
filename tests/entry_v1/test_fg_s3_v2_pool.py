@@ -111,7 +111,7 @@ def test_pool_rotation_keeps_raw_account_and_checkpoint_owner(tmp_path,monkeypat
 
 def test_formal_budget_needs_explicit_authorization_and_isolated_root(tmp_path):
     from gym_trading_env.research.fg_s3_v2_experiment import read_settings,require_training_authorization,PROJECT
-    cfg=yaml.safe_load((PROJECT/'configs/experiments/fg_s3_v2/A2_GPU_FG201_1K.yaml').read_text())
+    cfg=yaml.safe_load((PROJECT/'configs/experiments/fg_s3_v2/A2_MARKET_MINUTE_GPU_1K.yaml').read_text())
     cfg.update(scope='formal',contracts='ALL_TRAIN',env_steps=1000000,
                run_dir='/data/logdir/fg_single3/s3_v2/unit_formal')
     path=tmp_path/'config.yaml';path.write_text(yaml.safe_dump(cfg))
@@ -126,6 +126,68 @@ def test_formal_budget_needs_explicit_authorization_and_isolated_root(tmp_path):
     path.write_text(yaml.safe_dump(cfg))
     with pytest.raises(ValueError,match='isolated'):
         read_settings(path)
+
+
+def test_b2_formal_uses_shared_catalog_and_original_authorization(tmp_path):
+    from gym_trading_env.research.fg_s3_v2_experiment import read_settings, require_training_authorization, PROJECT
+    cfg = yaml.safe_load((PROJECT/'configs/experiments/fg_s3_v2/B2_FULL_MARKET_MINUTE_FORMAL_1M.yaml').read_text())
+    path = tmp_path/'b2.yaml'; path.write_text(yaml.safe_dump(cfg))
+    settings = read_settings(path)
+    assert settings['mode'] == 'b2' and settings['contracts'] == 'ALL_TRAIN'
+    assert settings['env_steps'] == 1000000 and settings['save_every'] == 100000
+    assert settings['beta'] == 1 and settings['beta_schedule'] is None
+    assert settings['b2_mix_warmup'] == settings['b2_mix_ramp'] == settings['b2_min_event_updates'] == 100
+    with pytest.raises(PermissionError, match='authorize-training'):
+        require_training_authorization(settings, False)
+    cfg['catalog'] = None; path.write_text(yaml.safe_dump(cfg))
+    with pytest.raises(ValueError, match='shared TeacherCatalog'):
+        read_settings(path)
+    cfg.update(catalog=settings['catalog'], oracle_receipt_scope='diagnostic_contract')
+    path.write_text(yaml.safe_dump(cfg))
+    with pytest.raises(ValueError, match='diagnostic-only'):
+        read_settings(path)
+
+
+def test_b2_pool_outcome_contract_dispatch_and_restore(tmp_path, monkeypatch):
+    from gym_trading_env.research.fg_s3_b2_outcome_catalog import PoolOutcomeCatalog
+    from test_fg_s3_b2_outcome import fixture_catalog
+    from embodied.run.fg_checkpoint import save_replay, load_replay
+    selector, original = make_pool(tmp_path, monkeypatch)
+    catalogs, queries = {}, {}
+    for row in json.loads((tmp_path/'pool.json').read_text())['files']:
+        config = row['env_config']
+        contract = yaml.safe_load(Path(config).read_text())['entry']['contract']
+        env = FixedDirectionEntryEnv(config_path=config, df=original[contract].market.copy())
+        catalogs[contract], queries[contract] = fixture_catalog(env, Path(config).parent)
+        env.close()
+    oracle = PoolOracleQuery(queries, json.loads((tmp_path/'pool.json').read_text())['content_hash'])
+    outcomes = PoolOutcomeCatalog(catalogs, oracle.identity_hash)
+    a = V2Collector(ObservedTrainingPool(selector), oracle, tmp_path/'b2a', DREAMER,
+                    beta=1., outcome_catalog=outcomes)
+    b = None
+    try:
+        a.advance(70)
+        assert {r['contract'] for r in a.records} == set(catalogs)
+        assert any(r['outcome']['valid_event'] for r in a.records)
+        for row in a.records:
+            assert outcomes.accepts_identity(row['contract'], row['outcome']['catalog_identity'])
+            other = next(c for c in catalogs if c != row['contract'])
+            assert not outcomes.accepts_identity(other, row['outcome']['catalog_identity'])
+        state, driver = a.save(), a.driver.save()
+        replay = save_replay(a.replay, tmp_path/'b2snapshot')
+        b = V2Collector(ObservedTrainingPool(selector), oracle, tmp_path/'b2b', DREAMER,
+                        beta=1., outcome_catalog=outcomes)
+        b.journal.write_bytes(a.journal.read_bytes())
+        b.driver.load(driver); load_replay(b.replay, replay, tmp_path/'b2snapshot'); b.load(state)
+        a.advance(75); b.advance(75)
+        assert a.records == b.records and a.env.export_state() == b.env.export_state()
+        x, y = a.sample(1), b.sample(1)
+        for key in x: np.testing.assert_array_equal(x[key], y[key])
+        assert x['outcome_event_valid'].any() and x['teacher_valid'].any()
+        assert not any(k.startswith(('outcome', 'teacher')) for k in next(iter(a.replay.chunks.values())).data)
+    finally:
+        a.close()
+        if b: b.close()
 
 
 def test_beta_schedule_uses_env_advances_and_validates_checkpoint_boundary():

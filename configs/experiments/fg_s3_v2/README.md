@@ -1,4 +1,10 @@
-# S3-V2 entries and diagnostic configurations
+# S3-V2 shared entry and experiment configurations
+
+A2, Tutor, B2 and C2 share `tools/fg_s3_v2_experiment.py` and this configuration
+directory. Use `--config` to select an experiment; reuse `prepare/start/resume`
+instead of creating another trainer or copying launch logic into artifacts.
+Preparation resolves the audited source model and experiment settings using
+`dreamerv3.configuration.read_config_yaml`; resume uses the same frozen snapshot.
 
 ## B2 Outcome-Aware diagnostics (market-minute V1)
 
@@ -24,7 +30,8 @@ cd /home/v/Documents/work/research/fg-s3-b2-dev/gym-trading-env
 ```
 
 For a fresh standalone1K run use `B2_OUTCOME_GPU_SMOKE_1K` with the same entry.
-Formal B2 is rejected. Actual results and limitations are in
+The original B2 V0 worktree rejects formal scope; the Full version and its
+separate 1M preparation are described below. Actual V0 results and limitations are in
 `docs/B2_IMPLEMENTATION_REPORT.md`: engineering checks passed, DEV remained All-WAIT.
 Tutor's freeze and `/tmp/done_cd` release remain a separate procedure requiring
 its own regenerated data and real training/restore verification.
@@ -244,6 +251,41 @@ The project remains `fg-single3-research`. Old800K milestone work is excluded.
 
 Exact commands, evidence and the T01–T12/B01–B13 matrix are in
 `docs/FG_S3_Full_Implementation_Report_20261014.md`.
+
+## B2 Full formal 1M preparation (2026-10-14)
+
+`B2_FULL_MARKET_MINUTE_FORMAL_1M` uses the same shared entry, ALL_TRAIN
+18-contract account scheduler, rebuilt market-minute v2 Oracle and shared
+TeacherCatalog SourceAdmission. Each contract delegates to the existing
+OutcomeCatalog; the pool adds routing and identity checks only.
+
+The budget is 1,000,000 real Env advances, four joint WM/BC/Outcome updates per
+100 advances (40,000 local updates), and a complete checkpoint every100K.
+Beta stays1, warmup/ramp/minimum event updates stay100/100/100; beta decay is a
+separate research experiment. RL/Critic remain frozen. Teacher-controlled trade
+results are not Actor-only performance.
+
+The delivered CPU-prepared frozen pair is `research/fg-s3-b2-full-train/`.
+The Run directory is new and starts only when the user executes this command:
+
+```bash
+cd /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env
+env PYTHONDONTWRITEBYTECODE=1 WANDB_ENTITY=xkm104501-none WANDB_PROJECT=fg-single3-research WANDB_MODE=online \
+  /home/v/Documents/work/research/fg-s3-wandb-env/bin/python tools/fg_s3_wandb.py launch \
+  --run-dir /data/logdir/fg_single3/s3_v2/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014 \
+  --prepared "$PWD/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014" \
+  --trainer-cwd "$PWD" -- \
+  /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py start \
+  --config B2_FULL_MARKET_MINUTE_FORMAL_1M --authorize-training
+```
+
+For interrupted same-run recovery use the identical launch command with
+`resume` instead of `start`. Independent Actor-only DEV uses the same entry's
+`evaluate --config B2_FULL_MARKET_MINUTE_FORMAL_1M --eval-steps 5000`; follow it
+with sealed-prediction CPU scoring and the existing W&B `import-evals` command.
+No new Full GPU training or formal1M has been executed by the developer.
+See `docs/FG_S3_B2_Full_1M_Preparation_20261014.md` for verified source/data
+identities, CPU pool/restore evidence and exact preparation hashes.
 
 `gpu_check` runs a small original-network fixture on CUDA for gradient ownership,
 frozen Critic/momentum, empty BC, C2 CLOSED/controlled READY and lambda=0. It is
