@@ -1,0 +1,23 @@
+	Command being timed: "env CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 MPLCONFIGDIR=/tmp/s3-e-data-mpl /home/v/Documents/work/research/fg-s3-e-data-dev/.venv-e-data/bin/python -B -m e_data_v1 build --source /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json --out /home/v/Documents/work/research/fg-s3-e-data-dev/e_data_v1/train_build_20261015_final --audit-1m"
+	User time (seconds): 412.12
+	System time (seconds): 12.53
+	Percent of CPU this job got: 1102%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:38.52
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 438200
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 49
+	Minor (reclaiming a frame) page faults: 3047064
+	Voluntary context switches: 506
+	Involuntary context switches: 10649
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 2586384
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

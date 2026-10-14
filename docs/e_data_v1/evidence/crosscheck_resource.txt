@@ -1,0 +1,23 @@
+	Command being timed: "env CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 MPLCONFIGDIR=/tmp/s3-e-data-mpl /home/v/Documents/work/research/fg-s3-e-data-dev/.venv-e-data/bin/python -B -m e_data_v1.validate_real --source /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json --out /home/v/Documents/work/research/fg-s3-e-data-dev/e_data_v1/train_crosscheck_20261015_final --reference-python /home/v/miniconda3/envs/dreamerv3/bin/python --snapshot-baseline /tmp/s3-e-core-before-reuse.py"
+	User time (seconds): 1285.76
+	System time (seconds): 13.66
+	Percent of CPU this job got: 675%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 3:12.39
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 267424
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 49
+	Minor (reclaiming a frame) page faults: 1744800
+	Voluntary context switches: 3605
+	Involuntary context switches: 81215
+	Swaps: 0
+	File system inputs: 31888
+	File system outputs: 344
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
