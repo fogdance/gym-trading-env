@@ -114,7 +114,8 @@ class SourceRun:
     def configuration(self):
         return redact(dict(provenance=self.trace(), experiment=self.settings,
             frozen_experiment=self.experiment, model=self.model,
-            agent_extension=self.identity.get('agent_extension', {})), excluded=False)
+            agent_extension=self.identity.get('agent_extension', {}),
+            gate_policy=self.identity.get('gate_policy')), excluded=False)
 
     def wandb_configuration(self):
         """Searchable allowlist; full frozen configuration is a small artifact."""
