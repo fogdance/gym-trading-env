@@ -6,6 +6,12 @@ from .io import TrackingError, digest, fingerprint, read_json
 from .metrics import number
 
 
+def entry_count(state):
+    if state.get('fills') is not None:
+        return sum(f.get('reason')=='ENTRY' for f in state['fills'])
+    return len(state.get('attributions',[]))+len(state.get('entries',{}))
+
+
 def parse_eval(source, receipt_path):
     path = Path(receipt_path).resolve()
     receipt = read_json(path, signed=True, limit=source.limit)
@@ -59,6 +65,10 @@ def parse_eval(source, receipt_path):
             report['missing'].append('account_state exceeds metadata budget or is invalid')
         else:
             attrs = state.get('attributions', [])
+            entries = entry_count(state)
+            if entries != receipt['entries']:
+                raise TrackingError('Evaluation opening count differs from account evidence')
+            metrics['eval/entries_recomputed'] = entries
             if (state.get('contract') != receipt.get('contract')
                     or state.get('total_reward') != receipt.get('reward')
                     or sum(a['reason'] == 'TAKE_PROFIT' for a in attrs) != receipt['tp_count']
@@ -69,6 +79,12 @@ def parse_eval(source, receipt_path):
             metrics['eval/closed_trade_net_pnl'] = float(net)
             gross = sum((Decimal(str(a['gross_trade_pnl'])) for a in attrs), Decimal(0))
             metrics['eval/closed_trade_gross_pnl'] = float(gross)
+            if state.get('trade_history') is not None and not state.get('entries'):
+                history_net = sum((Decimal(str(t.get('pnl') or 0))-Decimal(str(t.get('fee') or 0))
+                                   for t in state['trade_history']),Decimal(0))
+                if history_net != net:
+                    raise TrackingError('Evaluation trade history PnL/fees differ from attributions')
+                metrics['eval/history_net_pnl'] = float(history_net)
             adverse = {e['entry_id']: e['effective_bar'] for e in state.get('reward_events', [])
                        if e.get('reason') == 'FIRST_ADVERSE10' and type(e.get('effective_bar')) is int}
             all_events = [e for e in state.get('reward_events', []) if e.get('reason') == 'FIRST_ADVERSE10']

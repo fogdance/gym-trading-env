@@ -10,6 +10,7 @@ from . import PROJECT
 from .auth import credential, readiness
 from .io import LIMIT, TrackingError, atomic_json, digest, read_json
 from .redaction import safe_error
+from .milestones import merge_tags
 
 
 def remote_history(api, entity, run_id, first, last):
@@ -63,7 +64,7 @@ def export(spec):
         init_timeout=30, x_file_stream_max_bytes=256 * 1024, program='fg_s3_wandb.py')
     run = wandb.init(project=PROJECT, entity=spec.get('entity'), id=batch['run_id'],
         group=spec['family'], job_type=batch['job_type'], name=spec['display_name'],
-        tags=spec['tags'], mode=mode, dir=str(base/'sdk'),
+        tags=merge_tags(cloud_run.tags if cloud_run else (), spec['tags']), mode=mode, dir=str(base/'sdk'),
         resume=('must' if cloud_run else 'never') if mode == 'online' else None,
         config=spec['configuration'], settings=settings)
     sent, skipped = 0, 0

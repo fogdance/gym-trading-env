@@ -1,0 +1,4 @@
+# Local inspection/archival only. Use the frozen trainer environment for GPU validation.
+# Publishing reuses requirements-wandb.txt and the existing isolated tracker environment.
+PyYAML>=6,<7
+numpy>=1.26,<3
