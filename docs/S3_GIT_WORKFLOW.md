@@ -23,6 +23,7 @@
 ## 入口、验收与 W&B
 
 - A2、Tutor、B2 共用 `tools/fg_s3_v2_experiment.py` 和 `configs/experiments/fg_s3_v2/`；三种已有模式分别运行，不将本次集成解释为联合教学。
+- F0 新实验使用 `FG_S3_V2_COMPOSITION_CONFIG_V1` 和 `composition.encoder/teaching`，原 mode 配置继续兼容。当前仅 Legacy+A2/Tutor/B2 就绪；E 与 Tutor+B2 组合仍在准备/启动前拒绝，不用运行参数绕过能力检查。实现和集成证据分别见 `S3_F0_COMPOSITION_IMPLEMENTATION.md` 与 `S3_NEXT_F0_INTEGRATION_REPORT.md`。
 - W&B 复用 `tools/fg_s3_wandb.py` / `research_tracking`，Project 固定 `fg-single3-research`；通过 `launch` 包装原训练命令，SDK 在独立环境，Trainer 不依赖网络。
 - 研究归档复用 `tools/s3_archive.py` / `s3_archive`。`inspect` 只读；`archive` 默认 dry-run；L1/L2/L3 按真实验证结果授予。`verify` CLI 会更新归档自身的版本化元数据，校验受保护的历史归档时使用只读 `s3_archive.verification.evidence`。GPU 验证和 W&B 发布分别显式执行。
 - 代理默认 `http://127.0.0.1:10808`，仅作用于 Tracker。正式指标以已完成 Checkpoint 为边界，实时数据标记 provisional；断网后保留 offline 数据，使用现有 sync 恢复。
