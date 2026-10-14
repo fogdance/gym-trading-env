@@ -378,3 +378,25 @@ implement A2 training, and does not update the source checkpoint.
 
 Outputs are new directories under `artifacts/fg_s3_v2_d0/`; existing outputs
 are refused. No changes are made to V1 configurations or frozen train worktrees.
+# F0 composition configuration
+
+`FG_S3_V2_COMPOSITION_CONFIG_V1` uses only `composition.encoder/teaching`; never
+write a top-level `mode` alongside it. Historical mode configs keep their original
+schema and frozen Run identity. The derived runtime mode is an adapter for the
+existing algorithms. No additional BC, Tutor or Outcome loss is introduced.
+
+`composition_fragments/` contains all eight minimal syntax examples. These are
+description fixtures, **not complete training configs**. E and Tutor+B2 remain
+NOT_IMPLEMENTED and cannot prepare/start/resume/evaluate.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py describe-composition \
+  --config configs/experiments/fg_s3_v2/composition_fragments/e_multiscale_1m15m__b2.yaml
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py prepare --config F0_B2_LEGACY_1K
+```
+
+`F0_A2_LEGACY_1K`, `F0_TUTOR_LEGACY_1K` and `F0_B2_LEGACY_1K` are independent
+diagnostic configs with the original learning parameters and 1000 Env advances.
+Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
+this F0 task runs CPU admission and tests only, no GPU training. Implementation,
+identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.

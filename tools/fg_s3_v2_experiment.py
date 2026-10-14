@@ -26,7 +26,7 @@ os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
-                                     'score-predictions', 'simulate-online'])
+                                     'score-predictions', 'simulate-online', 'describe-composition'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
@@ -41,6 +41,25 @@ def main():
     args = p.parse_args()
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
+    # Composition preflight precedes trainer imports and CUDA selection. The
+    # shared pure resolver is also used by direct prepare/runtime/model callers.
+    from dreamerv3.configuration import read_config_yaml
+    from dreamerv3.fg_s3_composition import normalize_config, resolve_composition, settings_composition
+    if args.command in ('prepare', 'start', 'resume', 'evaluate', 'report', 'describe-composition'):
+        if args.config:
+            path = Path(args.config)
+            if not path.is_file():
+                path = PROJECT/'configs/experiments/fg_s3_v2'/f'{args.config}.yaml'
+            raw = read_config_yaml(path)
+            normalize_config(raw, executable=args.command != 'describe-composition')
+            if args.command == 'describe-composition':
+                print(json.dumps(dict(resolved_composition=resolve_composition(raw),
+                    legacy_c2=raw.get('mode') == 'c2'), indent=2))
+                return
+        elif args.command == 'describe-composition':
+            p.error('describe-composition requires --config')
+        elif args.prepared:
+            settings_composition(json.loads((Path(args.prepared)/'settings.json').read_text())['settings'])
     os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
     os.environ.pop('JAX_PLATFORM_NAME', None)
     os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'

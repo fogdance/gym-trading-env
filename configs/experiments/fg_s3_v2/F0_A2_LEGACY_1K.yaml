@@ -1,0 +1,31 @@
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+experiment: F0_A2_LEGACY_1K_v3
+device: gpu
+contract: CZCE.FG201
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+source_checkpoint:
+  ../../fg-s3-dev/gym-trading-env/artifacts/fg_s3_arch_v2/online_180k_source/ckpt/step_000000180000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/F0_A2_LEGACY_1K_v3
+run_dir: artifacts/fg_s3_v2/runs/F0_A2_LEGACY_1K_v3
+env_steps: 1000
+collect_every: 100
+updates_per_collect: 4
+save_every: 500
+batch_size: 1
+replay_seed: 202
+beta: 1.0
+bc_lambda: 1.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: warm_start
+scope: diagnostic
+contracts:
+- CZCE.FG201
+env_slice_bars: 250
+replay_capacity: 512
+composition:
+  encoder: legacy_1m
+  teaching: a2

@@ -4,6 +4,8 @@ from pathlib import Path
 import subprocess
 
 from dreamerv3.configuration import read_config_yaml
+from dreamerv3.fg_s3_composition import (CONFIG_SCHEMA, normalize_config, identity_fields,
+    settings_composition, validate_records)
 from embodied.run.fg_checkpoint import plain, file_hash
 from embodied.run.fg_s3_source_admission import inspect_source, LiveOracleTraining
 from embodied.run.fg_s3_v2_train import execution_code
@@ -29,10 +31,10 @@ def read_settings(path):
     if not path.is_file():
         path = PROJECT/'configs/experiments/fg_s3_v2'/f'{path}.yaml'
     path = path.resolve()
-    s = read_config_yaml(path)
+    s = normalize_config(read_config_yaml(path))
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
-    if s['schema'] != SCHEMA or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
+    if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
         raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
     s.setdefault('scope', 'diagnostic')
     if s['mode'] == 'tutor':
@@ -110,6 +112,9 @@ def prepare(config):
         admission_args = dict(catalog=catalog)
         if s['mode'] == 'b2':
             admission_args['agent_extension'] = agent_extensions(s)
+    composition = settings_composition(s)
+    if composition is not None:
+        admission_args['composition'] = composition
     try:
         kind = s.get('source_kind', 'warm_start')
         initial = inspect_source(kind, path=s['source_checkpoint'], **admission_args)
@@ -133,13 +138,14 @@ def prepare(config):
             query = prepare_pool(s, output)
         (output/'experiment.yaml').write_bytes(Path(s['config_path']).read_bytes())
         write_json(output/'settings.json', signed(dict(settings=s)))
-        frozen_model = dict(config=plain(model))
+        frozen_model = dict(config=plain(model), **identity_fields(s))
         if s['mode'] in ('tutor', 'b2'):
             frozen_model['agent_extension'] = agent_extensions(s)
         write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
         result = signed(dict(protocol='FG_S3_V2_PREPARED_V1', status='PREPARED_NO_TRAINING',
             code=execution_code(), oracle_identity=query.identity_hash,
+            **identity_fields(s),
             settings_path=str(output/'settings.json'), source_identity=spec['target_model_identity_hash'],
             versions={str(r): subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=r, text=True).strip()
                       for r in (PROJECT, PROJECT.parent/'dreamerv3')},
@@ -168,6 +174,13 @@ def prepare(config):
 def settings_from_prepared(prepared):
     root = Path(prepared).resolve()
     manifest = read_manifest(root/'manifest.json')
+    settings = read_manifest(root/'settings.json')['settings']
+    settings_composition(settings)
     from .fg_replay import check_files
     check_files({str(root/k): v for k, v in manifest['files'].items()})
-    return read_manifest(root/'settings.json')['settings']
+    validate_records(settings, manifest)
+    if settings_composition(settings) is not None:
+        model = read_manifest(root/'model_config.json')
+        source = read_manifest(root/'source_admission.json')
+        validate_records(settings, model, source, source['target_model_identity'])
+    return settings
