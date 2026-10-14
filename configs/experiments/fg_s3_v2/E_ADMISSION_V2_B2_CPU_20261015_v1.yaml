@@ -1,4 +1,4 @@
-# Target configuration only. Public E remains waiting_e; no training authorized.
+# Bounded real TRAIN acceptance only; normal production preparation rejects this configuration.
 schema: FG_S3_V2_COMPOSITION_CONFIG_V1
 experiment: E_ADMISSION_V2_B2_CPU_20261015_v1
 device: cpu
@@ -33,10 +33,10 @@ model_init:
   seed: 0
   presets:
   - size50m
-e_data_manifest: 
+e_data_manifest:
   /home/v/Documents/work/research/fg-s3-e-model-dev/admission_20261015/e_data_causality_v2/index_manifest.json
 e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
-e_data_source_pool: 
+e_data_source_pool:
   /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
 b2_head_units: 128
 b2_event_lambda: 0.1
