@@ -80,6 +80,8 @@ def test_shared_cpu_prepare_start_resume_full_checkpoint():
     from gym_trading_env.research.fg_s3_quality_admission import checkpoint_policy,_head_updates
     from embodied.run.fg_checkpoint import file_hash
     frozen,policy_hash,meta=checkpoint_policy(node)
+    with pytest.raises(ValueError,match='final predeclared Env budget'):
+        checkpoint_policy(node.parent/'step_000000000100')
     assert frozen==read_manifest(policy_path) and policy_hash==file_hash(policy_path)
     assert meta['identity']['immutable_files'][str(root/'quality_admission_policy.json')]==policy_hash
     _head_updates(node,meta['identity'])
