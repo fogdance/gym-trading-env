@@ -202,11 +202,13 @@ def prepare_quality(settings):
         (directory/'quality_admission_policy.json').write_bytes(Path(settings['quality_admission_policy']).read_bytes())
     prediction_source=None
     if settings['quality_stage']=='CONTROLLED_FULL':
-        from .fg_s3_quality_admission import require_prediction_admission
+        from .fg_s3_quality_admission import require_prediction_admission,checkpoint_policy
         admission_path=Path(settings['quality_prediction_admission_receipt'])
         admission=require_prediction_admission(admission_path)
+        prediction_policy,prediction_policy_hash,_=checkpoint_policy(admission['checkpoint'])
         if (file_hash(admission_path)!=settings['quality_prediction_admission_sha256'] or
-                set(admission['trained_contracts'])!={row['contract'] for row in rows}):
+                prediction_policy_hash!=admission['policy_sha256'] or
+                set(prediction_policy['trained_contracts'])!={row['contract'] for row in rows}):
             raise ValueError('Controlled quality source differs from prediction admission TRAIN split')
         prediction_source=dict(admission_receipt=str(admission_path),
             admission_sha256=file_hash(admission_path),checkpoint=admission['checkpoint'],

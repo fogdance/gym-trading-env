@@ -185,13 +185,18 @@ def _forecast_support(rows,metrics,policy):
             raise ValueError('Binary prediction support/calibration failed the frozen policy')
 
 
+def _forecast_improved(a,b,name):
+    values=[a.get(k) for k in ('nll','brier','train_prior_nll','train_prior_brier')]+[b.get('nll'),b.get('brier')]
+    if (any(v is None or not math.isfinite(v) for v in values) or
+            not (a['nll']<min(a['train_prior_nll'],b['nll']) and a['brier']<min(a['train_prior_brier'],b['brier']))):
+        raise ValueError(name+' did not beat TRAIN prior and same-state reference in NLL/Brier')
+
+
 def _improvements(left,right):
     for h in range(7):
-        a,b=left['horizons'][str(h)],right['horizons'][str(h)]
-        values=[a.get(k) for k in ('nll','brier','train_prior_nll','train_prior_brier')]+[b['nll'],b['brier']]
-        if (any(v is None or not math.isfinite(v) for v in values) or
-                not (a['nll']<min(a['train_prior_nll'],b['nll']) and a['brier']<min(a['train_prior_brier'],b['brier']))):
-            raise ValueError('Outcome did not beat TRAIN prior and reference in every horizon')
+        _forecast_improved(left['horizons'][str(h)],right['horizons'][str(h)],'Outcome horizon '+str(h))
+    for name in ([f'touch_{h}_{k}' for h in range(4) for k in range(2)]+[f'adverse_{h}' for h in range(4)]):
+        _forecast_improved(left['binary_windows'].get(name,{}),right['binary_windows'].get(name,{}),name)
     values=[left.get(k) for k in ('score_mae','score_train_prior_mae')]+[right.get('score_mae')]
     if any(v is None or not math.isfinite(v) for v in values) or not values[0]<min(values[1:]):
         raise ValueError('Score did not beat TRAIN prior and reference')
@@ -317,18 +322,69 @@ def relative_action_safety(tape,audits,components,window,limits,unimix):
 
 
 def _account_risk(tape,state,context,window,minimum_entries):
-    from .fg_reward_candidates import _official_day_key
+    """Attribute BOTH SL and drawdown to complete trades entered in this fold.
+
+    A trade closed after the fold uses its complete observed follow-up. An
+    unresolved trade has no complete-cohort SL/drawdown estimate. The native
+    single-position rule makes the first-entry through last-exit span contain
+    only this entry cohort; any interleaving foreign entry is rejected.
+    An unobserved fold cutoff is reported as unknown, separately from the
+    right censoring of trades at the end of the sealed tape.
+    """
     from .fg_single3 import load_env
+    from .fg_s3_quality_teacher_v2 import official_day_index
+    from gym_trading_env.envs.entry_contract import timestamp
     env=load_env(context['rows'][0],context['frozen_inputs'])
-    inside=lambda value:window[0]<=_official_day_key(value)<=window[1]
-    entries={f['entry_id'] for f in state['fills'] if f['reason']=='ENTRY' and inside(env._trading_day(f['time']))}
-    exits={e['entry_id']:e for e in state['attributions'] if e['entry_id'] in entries}
-    if len(entries)<minimum_entries or entries-set(exits):
-        raise ValueError('Action safety has insufficient closed entries or right-censored risk')
-    equity=np.asarray([r['equity'] for r in tape if inside(r['official_trading_date'])],float)
-    if not len(equity):raise ValueError('Missing native equity in the frozen time fold')
-    return dict(sl_rate=sum(e['reason']=='STOP_LOSS' for e in exits.values())/len(entries),
-                drawdown=float((np.maximum.accumulate(equity)-equity).max()))
+    days=official_day_index(env)['days']
+    entries={f['entry_id']:f for f in state['fills'] if f['reason']=='ENTRY'}
+    closed={e['entry_id']:e for e in state['attributions']}
+    records={**state['entries'],**closed}
+    # Native entry fills use bob timestamps; equity and exits use eob. The
+    # authenticated account retains the physical entry cursor in BOTH open
+    # positions and closed attributions, including the first bar of a session.
+    cursors={}
+    for key,f in entries.items():
+        record=records.get(key,{})
+        i=record.get('entry_cursor')
+        if (type(i) is not int or not 0<=i<len(days) or env.bobs[i]!=timestamp(f['time'])):
+            raise ValueError('Native entry lacks its authenticated fill-bar cursor')
+        cursors[key]=i
+    cohort={key:f for key,f in entries.items() if window[0]<=days[cursors[key]]<=window[1]}
+    exits={key:closed[key] for key in cohort if key in closed}
+    for e in exits.values():
+        i=e['exit_cursor']
+        if not 0<=i<len(days) or env._raw.index[i]!=timestamp(e['exit_time']):
+            raise ValueError('Native exit differs from its authenticated market cursor')
+    unresolved=sorted(set(cohort)-set(exits))
+    postfold=sorted(key for key,e in exits.items() if days[e['exit_cursor']]>window[1])
+    fold_rows=[i for i,day in enumerate(days) if window[0]<=day<=window[1]]
+    cutoff_observed=bool(fold_rows and state['current_step']>=fold_rows[-1] and days[-1]>window[1])
+    result=dict(risk_basis='ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1',entry_fold=list(window),
+        status='RIGHT_CENSORED' if unresolved else 'INSUFFICIENT_CLOSED_SUPPORT',
+        entry_ids=sorted(cohort),closed_entries=len(exits),minimum_closed_entries=minimum_entries,
+        fold_cutoff_observed=cutoff_observed,
+        open_at_fold_end_entry_ids=sorted([*postfold,*unresolved]) if cutoff_observed else None,
+        post_fold_complete_entry_ids=postfold,right_censored_entry_ids=unresolved,
+        sl_rate=None,drawdown=None,equity_span=None)
+    if not cohort or unresolved:return result
+    first=min(cursors[key] for key in cohort)
+    last=max(e['exit_cursor'] for e in exits.values())
+    if any(first<=i<=last for key,i in cursors.items() if key not in cohort):
+        raise ValueError('Non-cohort trade interleaves the complete entry-fold risk span')
+    before=[r for r in tape if r['cursor']<first]
+    span=[r for r in tape if first<=r['cursor']<=last]
+    if not before or before[-1]['cursor']!=first-1:
+        raise ValueError('Missing native equity anchor immediately before cohort entry')
+    if not span or span[0]['cursor']!=first or span[-1]['cursor']!=last:
+        raise ValueError('Complete trade follow-up lacks native equity through exit')
+    equity=np.asarray([before[-1]['equity'],*[r['equity'] for r in span]],float)
+    if not np.isfinite(equity).all():raise ValueError('Nonfinite native cohort equity')
+    result.update(status='COMPLETE_COHORT' if len(exits)>=minimum_entries else 'INSUFFICIENT_CLOSED_SUPPORT',
+        sl_rate=sum(e['reason']=='STOP_LOSS' for e in exits.values())/len(cohort),
+        drawdown=float((np.maximum.accumulate(equity)-equity).max()),
+        equity_span=dict(anchor_cursor=first-1,first_entry_cursor=first,last_exit_cursor=last,
+            last_exit_official_day=days[last],samples=len(equity)))
+    return result
 
 
 def require_decision_admission(path):
@@ -392,6 +448,9 @@ def require_decision_admission(path):
         relative_action_safety(tape,audits,components,window,d,unimix)
         risk0=_account_risk(tape,state,context,window,d['minimum_closed_entries'])
         risk1=_account_risk(other[1],other[2],other[3],window,d['minimum_closed_entries'])
+        if any(r['status']!='COMPLETE_COHORT' for r in (risk0,risk1)):
+            raise ValueError('DECISION_GATE_PENDING: incomplete entry-fold trade support ('+
+                             risk0['status']+', '+risk1['status']+')')
         if (risk1['sl_rate']-risk0['sl_rate']>d['maximum_sl_rate_delta'] or
                 risk1['drawdown']-risk0['drawdown']>d['maximum_drawdown_delta']):
             raise ValueError('Native closed-loop SL/drawdown safety failed the frozen policy')
