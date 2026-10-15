@@ -30,6 +30,14 @@ NATIVE_E_TARGETS = {
     'gym_trading_env/envs/entry_market_cache.py': '1478f566cb27123efd13a974826e71454f46906bfe8c7e39c540e74714d2fe6f',
     'gym_trading_env/utils/bar_source.py': '8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667',
 }
+# E-only source authentication closes the admission/read gap. Non-E loading,
+# feature math, financial rules and the previous reviewed bundles are retained.
+# See docs/e_review_fix_20261015 for failing-before/passing-after regressions.
+NATIVE_E_IDENTITY_TARGETS = {
+    **NATIVE_E_TARGETS,
+    'gym_trading_env/envs/entry_env.py': '2f21cae850be5790eae2c806415d8fa060a66b848732e7284602d0bd11e80418',
+    'gym_trading_env/envs/entry_market_cache.py': '1f6aff8d038c8c83438106f1e314ca604a442e74639eae09d238e0594dff5bf2',
+}
 
 
 def reviewed_reader_transition(repo, name, expected, hash_file):
@@ -40,7 +48,7 @@ def reviewed_reader_transition(repo, name, expected, hash_file):
     original market/candidates, funding certificate and suffix DP results.
     """
     repo = Path(repo)
-    bundle = next((b for b in (TARGETS, NATIVE_E_TARGETS)
+    bundle = next((b for b in (TARGETS, NATIVE_E_TARGETS, NATIVE_E_IDENTITY_TARGETS)
                    if all(hash_file(repo/'src'/n) == h for n, h in b.items())), None)
     if expected != PRODUCERS.get(name) or bundle is None:
         raise ValueError('Unreviewed source reader transition: '+name)

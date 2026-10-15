@@ -35,6 +35,9 @@ class _MarketSnapshot:
     @classmethod
     def capture(cls, env):
         # Never retain an Env/account or let an Env mutate the cache payload.
+        # E's fully prepared MarketData is deliberately shared. Treat its frames,
+        # arrays, buckets and clock as read-only after construction.
+        # Mutable account/query state must stay outside that shared object.
         return cls(env._raw.copy(deep=True), env._features.copy(),
                    env.bobs.copy(deep=True), env.valid_fill_clock.copy(),
                    getattr(env, '_e_market', None))
@@ -84,6 +87,10 @@ class EntryMarketCache:
         source = Path(env.config.trading.data_path).expanduser()
         path = source.resolve(strict=True)
         digest, stat = _file_identity(path)
+        if getattr(env, '_e_profile', None) is not None:
+            # A current-byte cache key alone does not authenticate those bytes
+            # against E admission. Apply the same check before hits or misses.
+            env._validate_e_market_source(path, digest)
         key = (type(env), env.config_hash, getattr(env,'e_observation_identity',None), str(path), digest)
         snapshot = self._entries.get(key)
         if snapshot is None:

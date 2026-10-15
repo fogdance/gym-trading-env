@@ -1,4 +1,5 @@
 """Actual Env integration contract; must run on the user's real Gym venv."""
+import hashlib
 import numpy as np
 import pytest
 
@@ -10,11 +11,17 @@ from gym_trading_env.envs.entry_market_cache import EntryMarketCache
 from test_entry_market_cache import csv_env_config
 
 
+def _profile(market, identity='c'*64):
+    return SimpleNamespace(identity=identity, contracts={'CZCE.FG2701'},
+        source_receipt={'sources': {'CZCE.FG2701': {'market': {
+            'path': str(market), 'sha256': hashlib.sha256(market.read_bytes()).hexdigest()}}}})
+
+
 def test_native_e_reuses_normalized_market_feature_build_and_clock(tmp_path,monkeypatch):
     from e_data_v1 import core
     from gym_trading_env.utils import market_features
     config,market=csv_env_config(tmp_path/'single_source')
-    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'})
+    profile=_profile(market)
     original_csv=__import__('pandas').read_csv
     original_features=market_features.build_market_features
     reads=[];builds=[]
@@ -29,7 +36,8 @@ def test_native_e_reuses_normalized_market_feature_build_and_clock(tmp_path,monk
     monkeypatch.setattr(core,'normalize_bars',duplicate_normalization)
     env=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
     try:
-        assert reads==[str(market)] and builds==[1]
+        assert len(reads)==1 and builds==[1]
+        assert env.e_market_source['sha256']==profile.source_receipt['sources'][env.contract]['market']['sha256']
         assert env._e_market.market_clock_counter is env.market_clock_counter
     finally:env.close()
 
@@ -39,8 +47,8 @@ def test_native_single_env_collector_uses_env_observation(tmp_path):
     from test_fg_s3_dagger_d0 import query_for
     from gym_trading_env.research.fg_s3_v2_collector import V2Collector
     from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
-    config,_=csv_env_config(tmp_path/'single_collector')
-    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'})
+    config,market=csv_env_config(tmp_path/'single_collector')
+    profile=_profile(market)
     legacy=FixedDirectionEntryEnv(config_path=config)
     query,_=query_for(legacy,config)
     native=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
@@ -60,8 +68,8 @@ def test_native_single_env_collector_uses_env_observation(tmp_path):
 
 def test_native_profile_preserves_original_oracle_financial_rules(tmp_path):
     from test_fg_s3_dagger_d0 import query_for
-    config,_=csv_env_config(tmp_path/'oracle')
-    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'})
+    config,market=csv_env_config(tmp_path/'oracle')
+    profile=_profile(market)
     legacy=FixedDirectionEntryEnv(config_path=config)
     native=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
     try:
@@ -78,8 +86,8 @@ def test_native_collector_rejects_foreign_profile_identity(tmp_path):
     from test_fg_s3_dagger_d0 import query_for
     from gym_trading_env.research.fg_s3_v2_collector import V2Collector
     from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
-    config,_=csv_env_config(tmp_path/'foreign_profile')
-    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'})
+    config,market=csv_env_config(tmp_path/'foreign_profile')
+    profile=_profile(market)
     env=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
     query,_=query_for(env,config)
     wrong=SimpleNamespace(identity='d'*64,contracts=profile.contracts)
@@ -99,7 +107,7 @@ def test_native_env_rejects_unavailable_current_minute(tmp_path):
     frame.loc[2,'available_at']=frame.Date.iloc[5]
     frame.to_csv(path,index=False)
     env=FixedDirectionEntryEnv(config_path=config,
-        e_profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'}))
+        e_profile=_profile(path))
     try:
         env.step(0)
         with pytest.raises(EDataError,match='market_seq'):env.step(0)
@@ -107,8 +115,8 @@ def test_native_env_rejects_unavailable_current_minute(tmp_path):
 
 
 def test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18(tmp_path):
-    config, _ = csv_env_config(tmp_path/'e_input')
-    profile = SimpleNamespace(identity='b' * 64, contracts={'CZCE.FG2701'})
+    config, market = csv_env_config(tmp_path/'e_input')
+    profile = _profile(market, 'b'*64)
     legacy = FixedDirectionEntryEnv(config_path=config)
     extended = FixedDirectionEntryEnv(config_path=config, e_profile=profile)
     try:
@@ -137,9 +145,9 @@ def test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18(tmp_path):
 
 
 def test_market_cache_does_not_cross_legacy_and_e_profile(tmp_path):
-    config, _ = csv_env_config(tmp_path/'source')
+    config, market = csv_env_config(tmp_path/'source')
     cache = EntryMarketCache(capacity=2)
-    profile = SimpleNamespace(identity='b' * 64, contracts={'CZCE.FG2701'})
+    profile = _profile(market, 'b'*64)
     old = FixedDirectionEntryEnv(config_path=config, market_cache=cache)
     new = FixedDirectionEntryEnv(config_path=config, market_cache=cache,
                                  e_profile=profile)

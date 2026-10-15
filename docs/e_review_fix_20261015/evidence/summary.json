@@ -1,0 +1,85 @@
+{
+  "tests": {
+    "market_identity_after.xml": {
+      "tests": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.186
+    },
+    "market_identity_before.xml": {
+      "tests": 5,
+      "failures": 5,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.902
+    },
+    "targeted.xml": {
+      "tests": 21,
+      "failures": 2,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 15.625
+    },
+    "targeted_final.xml": {
+      "tests": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 14.465
+    },
+    "shared_hash_final.xml": {
+      "tests": 1,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.202
+    },
+    "shared_hash_reset_final.xml": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 2.207
+    }
+  },
+  "protected_original_worktrees": {
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env": {
+      "head": "871ca09000712d41408b8f72e0684624dce8659f",
+      "expected_head": "871ca09000712d41408b8f72e0684624dce8659f",
+      "head_unchanged": true,
+      "status": []
+    },
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3": {
+      "head": "730939defb1bd77b2ceca04212105ec2727c95f9",
+      "expected_head": "730939defb1bd77b2ceca04212105ec2727c95f9",
+      "head_unchanged": true,
+      "status": []
+    }
+  },
+  "source_sha256": {
+    "src/gym_trading_env/envs/entry_env.py": "2f21cae850be5790eae2c806415d8fa060a66b848732e7284602d0bd11e80418",
+    "src/gym_trading_env/envs/entry_market_cache.py": "1f6aff8d038c8c83438106f1e314ca604a442e74639eae09d238e0594dff5bf2",
+    "src/gym_trading_env/research/fg_s3_reader_compat.py": "213c121bfb09828af3db3ec1d104fb8d9443f1df5555a173c0c0514cb3157cfb"
+  },
+  "gpu_test_started": false,
+  "formal_training_started_or_stopped": false,
+  "preflight_command_error": "Initial test log redirection failed because evidence directory did not yet exist; no tests ran. Directory created before retry.",
+  "readonly_snapshot_command_error": "Initial snapshot used counters.pkl; manifest inspection identified v2_counters.pkl. Corrected without touching checkpoint.",
+  "evidence_files": {
+    "formal_run_readonly_snapshot.json": "368428f2406842c0f416ed69709d7d5e94793522842d6b274333da9aeb797bbb",
+    "market_identity_after.log": "4d2df7a96ce4a667da3ccf295f2d16c728a65ed0e861a3baa919f7bb469b02b5",
+    "market_identity_after.xml": "c74447b76ac17122e9eca6ae266d184c4d3e9d08825f22d4de86ce74f07aff33",
+    "market_identity_before.log": "9429648ea45da0de06025307f97a756cce9f0072c985e506f8098e43e88d4b24",
+    "market_identity_before.xml": "80f29bb693feace292a732b4310dbe2386c785aade7ec1cbbd823045a8985ffb",
+    "runtime_fix.patch": "291b1bc9cba8d117a49d1c203f08ebc89f080f477bb14ebd5cedef0dfb7e49ff",
+    "shared_hash_final.log": "2a5dee942fc60ee157be24c8fec0984acbd3d69b69e23e834aa90c8f7725d645",
+    "shared_hash_final.xml": "b531f70a90ab7d993710ee3f5559e893ed21baac47290636d8f8cad93b3d4cab",
+    "shared_hash_reset_final.log": "423b1d0e014eb1eab96f4420f7b344c2615be505dd574b756ac884826ca74f2d",
+    "shared_hash_reset_final.xml": "7c2d89c8b471d418d77dadab55c800e9df80ff9b673894706f4cf53f477a005c",
+    "targeted.log": "213521c17d5a3f88df3b0b41385fcd0d928076fcf2bdc463204e19f7a0ed9d02",
+    "targeted.xml": "ed5264d2fc20fdee217c886f4f316ee0b0b4ba8c17fe9cfa74c48804ee4838f6",
+    "targeted_final.log": "32faef56d0289369b1ac111e68ee0bb7b2ed1bcf92d3f33b75313bd0556c3e6f",
+    "targeted_final.xml": "da7c5277c432eda5e5668ac3ea6b3a84181f2de880d564b8bede183468c1348a"
+  }
+}

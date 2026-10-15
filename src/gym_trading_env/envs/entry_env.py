@@ -5,6 +5,8 @@ All fills are conservative minute simulations, not broker execution confirmation
 from __future__ import annotations
 
 import copy
+import hashlib
+import io
 import json
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from pathlib import Path
@@ -60,6 +62,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError('E observation profile refuses an unadmitted contract')
         self._e_profile = e_profile
         self._e_market = None
+        self.e_market_source = None
         self.e_snapshot = None
         self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
         self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
@@ -156,8 +159,31 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._initialized = False
         self.reset()
 
+    def _validate_e_market_source(self, path, digest):
+        receipt = getattr(self._e_profile, 'source_receipt', None)
+        try:
+            expected = receipt['sources'][self.contract]['market']
+        except (KeyError, TypeError):
+            raise ValueError('E admitted market source receipt missing') from None
+        if not isinstance(expected, dict) or not isinstance(expected.get('path'), str):
+            raise ValueError('E admitted market source receipt missing')
+        if Path(expected['path']).expanduser().resolve(strict=True) != path:
+            raise ValueError('E admitted market path mismatch: '+self.contract)
+        if expected.get('sha256') != digest:
+            raise ValueError('E admitted market SHA256 mismatch: '+self.contract)
+        self.e_market_source = dict(path=str(path), sha256=digest)
+
     def _load_market(self, df):
-        if df is None:
+        if self._e_profile is not None:
+            if df is not None:
+                raise ValueError('E admitted market requires CSV bytes; injected frames are unbound')
+            path = Path(self.config.trading.data_path).expanduser().resolve(strict=True)
+            # Authenticate the exact bytes passed to the single CSV parser.
+            # Reopening a pathname after hashing would leave a TOCTOU gap.
+            payload = path.read_bytes()
+            self._validate_e_market_source(path, hashlib.sha256(payload).hexdigest())
+            df = pd.read_csv(io.BytesIO(payload))
+        elif df is None:
             df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
         input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
         if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
