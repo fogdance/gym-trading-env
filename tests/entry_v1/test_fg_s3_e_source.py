@@ -123,6 +123,11 @@ def test_EM16_original_teaching_method_bodies_unchanged():
     current=ast.parse((DREAMER/'dreamerv3/fg_s3_v2_agent.py').read_text())
     old=next(n for n in original.body if isinstance(n,ast.ClassDef) and n.name=='S3V2Agent')
     new=next(n for n in current.body if isinstance(n,ast.ClassDef) and n.name=='_S3V2Model')
+    # Quality extends mode dispatch and optimizer routing. The original
+    # A2/Tutor/B2 teaching and shared loss bodies retain their exact ASTs;
+    # actual per-mode gradient/checkpoint tests cover the dispatch extensions.
+    names={'b2_predict','b2_init_loss','b2_bc_loss','wm_only','_components',
+           'v2_loss','tutor_loss','tutor_term_gradient_diagnostics'}
     methods=lambda n:{f.name:ast.dump(f,include_attributes=False) for f in n.body
-                     if isinstance(f,ast.FunctionDef) and f.name!='__init__'}
-    assert methods(old)==methods(new)
+                     if isinstance(f,ast.FunctionDef) and f.name in names}
+    assert len(methods(old))==len(names) and methods(old)==methods(new)
