@@ -1,4 +1,4 @@
-"""Fresh source/signature contracts; public E remains waiting_e."""
+"""Released E fresh source/signature contracts; formal data stays strict."""
 import ast
 import copy
 from pathlib import Path
@@ -12,10 +12,10 @@ from gym_trading_env.research.fg_replay import read_manifest, signed, write_json
 from dreamerv3.fg_s3_composition import normalize_config, resolve_composition
 from dreamerv3.fg_s3_e_config import e_target_config, resolve_model_init
 from dreamerv3.fg_s3_tutor_loss import agent_extensions
-from dreamerv3.fg_s3_v2_agent import _S3V2Model
+from dreamerv3.fg_s3_v2_agent import S3V2Agent
 from dreamerv3.fg_s3a_actor import parameter_digests
 from embodied.run.fg_s3_source_admission import _inspect_source, inspect_source, _prepare_transfer
-from embodied.run.fg_s3_source_transfer import _make_agent, _apply_and_audit_transfer
+from embodied.run.fg_s3_source_transfer import make_agent, apply_and_audit_transfer
 from embodied.run.fg_s3_e_source import make_binding, validate_e_records
 from gym_trading_env.research.fg_s3_v2_gpu_check import small_config
 from gym_trading_env.research.fg_s3_v2_experiment import _validate_settings, read_settings
@@ -42,8 +42,8 @@ def test_EM14_size50m_canonical_recipe_and_fresh_settings_without_checkpoint(tmp
         from ruamel.yaml import YAML
         YAML().dump(raw,path)
         s=_validate_settings(normalize_config(raw,executable=False),path)
-        assert 'source_checkpoint' not in s and s['resolved_composition']['support_state']=='waiting_e'
-        with pytest.raises(ValueError,match='NOT_IMPLEMENTED'):read_settings(path)
+        assert 'source_checkpoint' not in s and s['resolved_composition']['support_state']=='ready'
+        assert read_settings(path)==s
         wrong=copy.deepcopy(raw);wrong['source_checkpoint']='old/checkpoint'
         with pytest.raises(ValueError,match='without source_checkpoint'):
             _validate_settings(normalize_config(wrong,executable=False),path)
@@ -63,21 +63,21 @@ def test_EM14_authenticated_direct_init_model_and_signed_records(catalog_bundle,
     spec=_inspect_source('direct_init',**kwargs)
     assert spec['origin']['step']==spec['target_update_offset']==0
     assert _prepare_transfer(spec) is None and 'source_param_digests' not in spec
-    agent=_make_agent(cfg,tmp_path/'model',agent_cls=_S3V2Model,device='cpu',bc_lambda=1.,
+    agent=make_agent(cfg,tmp_path/'model',agent_cls=S3V2Agent,device='cpu',bc_lambda=1.,
         extra_agent_config=ext,composition=comp)
     if mode=='b2':
         from dreamerv3.agent import Agent
         with pytest.raises(ValueError,match='shared S3V2'):
-            _make_agent(cfg,tmp_path/'wrong_model',agent_cls=Agent,device='cpu',
+            make_agent(cfg,tmp_path/'wrong_model',agent_cls=Agent,device='cpu',
                 extra_agent_config=ext,composition=comp)
-    receipt=_apply_and_audit_transfer(agent,spec)
+    receipt=apply_and_audit_transfer(agent,spec)
     assert agent.save_exact()['counters']==dict(updates=0,batches=0,actions=0)
     assert int(agent.params['opt/step/value'])==0
     assert receipt['params_before']==receipt['params_after']
     assert spec['gate_transfer']['new_gate_state']['actor_enabled'] is False
     assert spec['gate_transfer']['new_gate_state']['samples']==0
     if mode=='a2':
-        peer=_make_agent(cfg,tmp_path/'same_seed',agent_cls=_S3V2Model,device='cpu',bc_lambda=1.,
+        peer=make_agent(cfg,tmp_path/'same_seed',agent_cls=S3V2Agent,device='cpu',bc_lambda=1.,
             extra_agent_config=ext,composition=comp)
         assert parameter_digests(peer.params)==parameter_digests(agent.params)
         with pytest.raises(ValueError,match='seed/Reward'):
@@ -101,13 +101,21 @@ def test_EM14_authenticated_direct_init_model_and_signed_records(catalog_bundle,
     corrupt['target_model_identity']['e_binding']=copy.deepcopy(corrupt['target_model_identity']['e_binding'])
     corrupt['target_model_identity']['e_binding']['data_identity']='foreign'
     with pytest.raises(ValueError,match='identity mismatch'):_prepare_transfer(signed(corrupt))
-    with pytest.raises(ValueError,match='NOT_IMPLEMENTED'):inspect_source('direct_init',**kwargs)
+    assert inspect_source('direct_init',**kwargs)==spec
     for key,value in (('seed',1),('agent_config_hash','foreign'),('data_manifest_sha256','foreign')):
         bad={**kwargs,'e_binding':{**binding,key:value}}
         with pytest.raises(ValueError,match='identity mismatch'):_inspect_source('direct_init',**bad)
     with pytest.raises(ValueError,match='old Encoder'):_inspect_source('warm_start',**kwargs)
     bad={**kwargs,'composition':resolve_composition({'mode':mode})}
     with pytest.raises(ValueError,match='E fresh-init'):_inspect_source('direct_init',**bad)
+
+
+def test_formal_e_binding_still_refuses_synthetic_training_data(tmp_path):
+    cfg=e_target_config(small_config())
+    provider=SyntheticEProvider(tmp_path)
+    comp=resolve_composition({'composition':dict(encoder='e_multiscale_1m15m',teaching='a2')})
+    with pytest.raises(ValueError,match='authenticated real TRAIN data'):
+        make_binding(cfg,comp,provider.manifest,diagnostic=False)
 
 
 def test_EM16_original_teaching_method_bodies_unchanged():

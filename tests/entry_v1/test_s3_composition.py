@@ -23,8 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_all_eight_compositions_have_unique_state_and_one_base_bc(encoder, teaching):
     raw = dict(schema=CONFIG_SCHEMA, composition=dict(encoder=encoder, teaching=teaching))
     resolved = resolve_composition(raw)
-    expected = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else (
-        'waiting_e' if encoder != 'legacy_1m' else 'ready')
+    expected = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else 'ready'
     assert resolved['support_state'] == expected
     assert resolved['base_oracle_bc'] is True and resolved['schema_version'] == 1
     assert resolved == normalize_config(raw, executable=False)[KEY]
@@ -85,7 +84,7 @@ def test_ready_settings_keep_all_legacy_hyperparameters(tmp_path, teaching, pres
     assert new == old
 
 
-WAITING = [(ENCODERS[1], t) for t in TEACHING[:3]] + [(e, TEACHING[3]) for e in ENCODERS]
+WAITING = [(e, TEACHING[3]) for e in ENCODERS]
 
 
 @pytest.mark.parametrize('encoder,teaching', WAITING)
