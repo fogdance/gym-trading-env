@@ -31,3 +31,10 @@
 - 旧真实CPU prepare日志确认为 `ModuleNotFoundError: e_data_v1`：统一CLI没有将Gym根目录加入sys.path。补齐根目录，保留原src与兄弟Dreamer优先级；正式路径继续复用同一入口。
 - 真实native pool测试第一轮1PASS/1FAIL：原Oracle和教师标签、2200步金融状态、跨合约、冷Driver/Replay/Sidecar、2250步继续与下一随机batch已精确相等；末尾“随机batch必须有有效15m”断言失败。原Replay文件实测1574行有效，随机batch可落在20桶预热区。改为直接验证持久化Replay有效15m覆盖，保留随机冷恢复相等断言，不更改数据/采样/预热公式。第二轮结果另记。
 - Source/Composition/观察/来源身份/受限准入合同重跑47项通过（原45项另加两项准入预算边界）。正式E仍waiting_e，正式1M未启动。
+
+## 真实模型准入迭代
+
+- v1真实A2 CPU prepare被原Single3 Gate拒绝：小模型夹具的ADD recall默认关闭。修复为小模型完整复用canonical size50m的action_mask_warmup；Gate函数/阈值不改。新增回归证明CPU与GPU的Single3 Gate策略完全相同。
+- v2三模式prepare成功，实际1100步/3联合更新并保存完整Checkpoint；随后下一步探针尝试在活跃Prefetch上load，被 `Restore prefetch before starting its worker` 正确拒绝。删除验收代码中的live-rewind：start保存后执行一个未提交探针并退出；resume由独立子进程冷加载并逐项比较下一更新，退出释放JAX状态后，父进程再次从同一Checkpoint冷加载继续。FullCheckpoint、RuntimeState、Prefetch实现不改；原恢复日志协调保留两次未提交探针尾部。
+- v2 beta0.5在初段只产生11个有效Oracle决策，后续前几批都是持仓区间；原online Replay按65步次序供应，前四批均在15m的20桶预热区。这不是Encoder缺失梯度的证据，且不足以验证B2头/Adapter。v3只调整诊断beta=1，保留原Teacher控制语义、步数和小模型预算，让真实教学分支获得认证监督；不以教师成绩声称Actor效果。
+- 新增“探针不调用活跃load”回归，连同预算和Single3 Gate合同4项通过。所有v1/v2配置、准备、Run、失败日志与Checkpoint保留；v3使用新身份重新验收。

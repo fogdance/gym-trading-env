@@ -33,6 +33,8 @@ def main():
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
+    p.add_argument('--verify-resume-only', action='store_true',
+                   help='Internal bounded E cold-resume next-update probe; publishes no checkpoint')
     p.add_argument('--eval-steps', type=int, default=1000)
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
     p.add_argument('--output-dir', help='New isolated prediction scoring directory')
@@ -41,6 +43,8 @@ def main():
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
+    if args.verify_resume_only and (args.command != 'admit-e-resume' or args.stop_at is not None):
+        p.error('--verify-resume-only requires admit-e-resume without --stop-at')
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
     # Composition preflight precedes trainer imports and CUDA selection. The
@@ -95,7 +99,8 @@ def main():
         else:
             settings = fg_s3_e_admission.read_manifest(Path(args.prepared)/'settings.json')['settings']
             result = fg_s3_e_admission.run(args.prepared, args.run_dir or settings['run_dir'],
-                resume=args.command == 'admit-e-resume', stop_at=args.stop_at)
+                resume=args.command == 'admit-e-resume', stop_at=args.stop_at,
+                verify_resume_only=args.verify_resume_only)
     elif args.command == 'simulate-online':
         if not args.config:
             p.error('simulate-online requires --config')

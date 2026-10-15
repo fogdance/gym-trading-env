@@ -51,3 +51,22 @@ def test_real_cpu_small_network_keeps_canonical_single3_safety_gate():
     assert policy == gate_policy(gpu, diagnostic=True, protocol=SINGLE3)
     assert policy['config']['enabled'] and policy['config']['add_recall_enabled']
     assert cpu['agent']['avail_actor_enabled'] is False
+
+
+def test_next_update_probe_never_rewinds_a_started_prefetch(tmp_path):
+    from types import SimpleNamespace
+    import numpy as np
+    from gym_trading_env.research.fg_s3_e_admission import _EAdmissionRun
+    (tmp_path/'manifest.json').write_text('immutable checkpoint bytes')
+    # No live load API: the actual next update is deliberately uncommitted,
+    # and a separate cold process must restore the immutable bundle later.
+    runner = SimpleNamespace(cp=SimpleNamespace(latest=lambda:tmp_path),
+        update=lambda:dict(metrics={'opt/loss':1.}),
+        last_batch={'seed':np.array([1],np.uint32)},
+        agent=SimpleNamespace(params={'enc/x':np.ones(1,np.float32)},
+            save_exact=lambda:dict(counters={'updates':4})))
+    value = _EAdmissionRun.probe(runner)
+    assert value['checkpoint'] == str(tmp_path)
+    assert value['agent_counters']['updates'] == 4
+    assert value['metrics']['opt/loss'] == 1.
+    assert (tmp_path/'manifest.json').read_text() == 'immutable checkpoint bytes'

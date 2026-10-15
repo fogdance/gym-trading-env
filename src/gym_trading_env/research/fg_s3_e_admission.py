@@ -6,6 +6,8 @@ normal prepare/start/resume paths retain their Composition readiness checks.
 from pathlib import Path
 import hashlib
 import json
+import subprocess
+import sys
 import uuid
 
 import numpy as np
@@ -18,8 +20,7 @@ from dreamerv3.fg_s3_e_diagnostics import EAcceptanceModel
 from dreamerv3.fg_s3a_actor import parameter_digests
 from embodied.run.fg_s3_source_admission import _inspect_source
 from embodied.run.fg_s3_source_transfer import _make_agent, _apply_and_audit_transfer
-from embodied.run.fg_s3_v2_train import LiveRun, execution_code, reconcile_cycles
-from embodied.run.fg_s3c_train import reconcile_update_log
+from embodied.run.fg_s3_v2_train import LiveRun, execution_code
 from embodied.run.fg_checkpoint import host, validate_bundle, file_hash
 from .fg_replay import signed, read_manifest, write_json
 from .fg_s3_v2_experiment import PROJECT, _validate_settings, _prepare
@@ -130,16 +131,17 @@ class _EAdmissionRun(LiveRun):
             raise ValueError('Production prepared snapshots cannot enter E acceptance')
 
     def probe(self):
-        """One real next sample/update, then restore the complete original bundle."""
+        """One uncommitted next update; the calling process must then exit.
+
+        FullCheckpoint restores Prefetch only before its worker starts. Keep
+        that contract: never rewind a running worker to undo this probe.
+        """
         node = self.cp.latest()
         row = self.update()
         value = dict(checkpoint=str(node), checkpoint_manifest_sha256=file_hash(node/'manifest.json'),
             next_batch_sha256=_batch_hash(self.last_batch),
             next_parameters=parameter_digests(self.agent.params), metrics=row['metrics'],
             agent_counters=self.agent.save_exact()['counters'])
-        self.cp.load(node)
-        reconcile_update_log(self.root, self.counters.state['all_updates'], self.offset)
-        reconcile_cycles(self.root, self.counters.state['cycles'], int(self.step), int(self.agent.n_updates))
         return value
 
     def finish(self, receipt, cold_resume_exact):
@@ -201,11 +203,30 @@ class _EAdmissionRun(LiveRun):
         return result
 
 
-def run(prepared, run_dir, *, resume=False, stop_at=None):
+def run(prepared, run_dir, *, resume=False, stop_at=None, verify_resume_only=False):
+    if verify_resume_only and (not resume or stop_at is not None):
+        raise ValueError('A next-update probe requires cold resume without collection')
+    if resume and not verify_resume_only:
+        # The child authenticates and cold-loads the complete original bundle,
+        # compares one actual next update, then releases all JAX/Prefetch state.
+        # The parent starts its own fresh worker from that same bundle. Normal
+        # recovery reconciliation retains each uncommitted probe log tail.
+        subprocess.run([sys.executable, str(PROJECT/'tools/fg_s3_v2_experiment.py'),
+            'admit-e-resume', '--prepared', str(Path(prepared).resolve()),
+            '--run-dir', str(Path(run_dir).resolve()), '--verify-resume-only'],
+            check=True, cwd=PROJECT)
+        proof = read_manifest(Path(run_dir)/'cold_resume_comparison.json')
+        if not proof['exact']:
+            raise ValueError('E cold resume probe did not pass')
     runner = _EAdmissionRun(prepared, run_dir, resume=resume)
     try:
         exact = False
-        if resume:
+        if resume and not verify_resume_only and (
+                proof['actual']['checkpoint'] != str(runner.cp.latest())
+                or proof['actual']['checkpoint_manifest_sha256'] != file_hash(
+                    runner.cp.latest()/'manifest.json')):
+            raise ValueError('E checkpoint changed after the cold-resume probe')
+        if verify_resume_only:
             expected = read_manifest(runner.root/'resume_probe.json')
             actual = runner.probe()
             expected.pop('content_hash')
@@ -214,6 +235,8 @@ def run(prepared, run_dir, *, resume=False, stop_at=None):
                 exact=exact, expected=expected, actual=actual)))
             if not exact:
                 raise ValueError('E cold resume next batch/model/optimizer/RNG/metrics differs')
+            return read_manifest(runner.root/'cold_resume_comparison.json')
+        exact = resume
         receipt = runner.run_to(stop_at)
         return runner.finish(receipt, exact)
     except BaseException as error:
