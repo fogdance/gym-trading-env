@@ -1,0 +1,31 @@
+{
+  "status": "PASS_READ_ONLY_DECISION_BOUNDARY_CHECKS",
+  "research_status": "DECISION_GATE_PENDING",
+  "account_support": {
+    "DEV": {
+      "status": "EXPECTED_REJECT_CLOSED_LOOP_SUPPORT",
+      "reason": "Action safety has insufficient closed entries or right-censored risk",
+      "native_fills": 1,
+      "native_exits": 0,
+      "minimum_possible_required_closed_entries": 1
+    },
+    "DIAGNOSTIC": {
+      "status": "EXPECTED_REJECT_CLOSED_LOOP_SUPPORT",
+      "reason": "Action safety has insufficient closed entries or right-censored risk",
+      "native_fills": 0,
+      "native_exits": 0,
+      "minimum_possible_required_closed_entries": 1
+    }
+  },
+  "same_state_interventions": [
+    {
+      "cursor": 7,
+      "baseline": 1,
+      "proposed": 0,
+      "native_strict_valid": true,
+      "native_strict_action": 0
+    }
+  ],
+  "training": "NOT_RUN",
+  "content_hash": "6ca38926adf627604584c9940c2cf18a59bd20c1610ae2cabb24b763d66c4914"
+}

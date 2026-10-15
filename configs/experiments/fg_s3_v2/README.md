@@ -463,6 +463,15 @@ identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.
 
 ## Quality-first V1 (2026-10-15)
 
+2026-10-16 review fixes: see `docs/FG_S3_QUALITY_FIRST_REVIEW_FIXES.md`.
+Current isolated verification uses `QUALITY_FIRST_REVIEW_CPU_FG201_v2`
+(100 CPU steps), `QUALITY_FIRST_REVIEW_POOL_CPU_v2` (two-contract CPU
+preparation/profile), and `QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v2` (CPU
+preparation only; GPU has not started). The corresponding `v1` files and
+artifacts retain development evidence; source changes invalidate their
+preparation. Every invocation must use its own experiment/path or resume
+exactly the same frozen snapshot.
+
 The accepted Gym patch and real FG201 loss-account evidence are in
 `docs/quality_first_patch_review_20261015/ACCEPTANCE.md`. The implementation
 record is `docs/FG_S3_QUALITY_FIRST_IMPLEMENTATION.md`.
@@ -501,6 +510,35 @@ disjoint TRAIN holdout evaluation with measured improvements over the TRAIN
 prior and reference, plus independent DEV evidence. Numeric Q fusion has a
 separate proof gate. None of these templates authorizes training.
 
+The new V2 admission policy has no production numerical defaults. Supply
+`quality_admission_policy: <signed-json>` before preparation for any research
+intended to admit predictions later. The initial FullCheckpoint owns its
+immutable policy hash. The plan must freeze every heldout/DEV official-day
+window, replay seed, support/calibration/risk threshold and intervention
+recipe. Tests use synthetic thresholds that are not research approvals.
+Admission requires the final predeclared Env budget, the actual initial
+reference, all seven horizons and the complete fold/contract/seed grid.
+Existing HEADS_ONLY configs without this policy remain technical experiments.
+
+Forecast admission alone cannot enable prediction-to-Actor corrections.
+`quality_decision_admitted` requires independently replayed relative WAIT/ADD
+and native closed-loop safety evidence for the exact component set.
+Numerical Q additionally requires full native proofs and the evaluated Q
+weights, revalidated at start and copied with fresh optimizer state.
+
+```bash
+python -B tools/fg_s3_v2_experiment.py evaluate --prepared <prepared> --diagnostic-components outcome,score --eval-steps 100 --output-dir <new-private-diagnostic>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind prediction --receipt <admission.json>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind decision --receipt <admission.json>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind q --receipt <admission.json>
+```
+
+Diagnostic fusion uses a private HEADS_ONLY evaluation copy, preserves the
+Checkpoint, and does not claim admitted autonomous performance. For Q, both
+baseline and candidate must also supply `--diagnostic-q-admission` with the
+same independently verified Q source. Future labels and strict audits run
+only after causal inference is sealed.
+
 Quality evaluation also supports a TRAIN contract excluded from the new
 quality-head supervision (the historical source Backbone can have seen it):
 
@@ -525,4 +563,10 @@ an unfinished trade becomes RIGHT_CENSORED with missing quality score and
 independently masked outcomes. This setting is part of the teacher identity.
 Controlled Full preparation additionally binds the actual evaluated predictor
 Checkpoint; transfer copies its four predictor parameter groups and requires
-an identical fixed base NN. Optimizer slots and Q networks remain separate.
+an identical fixed base NN. Admitted numerical Q uses its own verified source
+and copies both evaluated Q parameter groups. Optimizer slots remain fresh.
+Native strict preparation records randomized/risk-stratified candidate parity
+and every trade of the selected path; it does not claim exhaustive native
+replay of all candidates. The default financial Q domain remains 12 bars.
+`quality_build_performance.json` records real member RSS/time/holding lengths;
+parallel builders use a measured largest-member pilot and single-thread BLAS.

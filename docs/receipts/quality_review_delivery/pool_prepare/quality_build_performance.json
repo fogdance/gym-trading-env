@@ -1,0 +1,47 @@
+{
+  "protocol": "FG_S3_QUALITY_NATIVE_BUILD_COST_V1",
+  "worker_count": 1,
+  "available_memory_before_parallel_bytes": 11424780288,
+  "logical_cpus": 24,
+  "allocation": "largest-row-count pilot RSS * 1.25; 90% currently available memory",
+  "contracts": {
+    "CZCE.FG201": {
+      "candidate_cost": {
+        "candidates": 31259,
+        "filled": 31259,
+        "held_market_minutes_quantiles": [
+          1.0,
+          13.0,
+          69.0,
+          153.0,
+          316.0
+        ],
+        "sum_independent_held_market_minutes": 829560,
+        "elapsed_seconds": 163.53972521499963,
+        "peak_rss_bytes": 608239616
+      },
+      "elapsed_seconds": 174.3191175799584,
+      "peak_rss_bytes": 608239616
+    },
+    "CZCE.FG205": {
+      "candidate_cost": {
+        "candidates": 23219,
+        "filled": 23219,
+        "held_market_minutes_quantiles": [
+          1.0,
+          21.0,
+          114.0,
+          262.0,
+          483.0
+        ],
+        "sum_independent_held_market_minutes": 1001923,
+        "elapsed_seconds": 123.4600362390047,
+        "peak_rss_bytes": 493621248
+      },
+      "elapsed_seconds": 131.7896926679532,
+      "peak_rss_bytes": 493621248
+    }
+  },
+  "scope": "measured members only; no full TRAIN/1M throughput certification",
+  "content_hash": "75a94a370d83158a7f74c8cda950af8597525d0a7343e51bc936d207f450bdc2"
+}

@@ -1,12 +1,14 @@
 # Quality-first V1：实现与验收记录
 
+2026-10-16 更新：本页记录 10 月 15 日的实现基线与历史 150 项验收；当前审查修复、V2 预测/Q gate、独立决策 gate、原生严格路径重放及最新收据以 [审查修复记录](FG_S3_QUALITY_FIRST_REVIEW_FIXES.md) 为准。旧运行和旧 prepared 保留，源码变化后不得用于当前 resume 或新启动。
+
 ## Summary
 
 本实现按用户最新确认采用《Quality-first Architecture Design V1》：质量目标为 **B(t,d)**，不额外扣 MAE；先训练、评价辅助头，预测效果认证后才允许影响 Actor。原 Reviewed V1 的 Full 网络、Loss 和融合能力保留为后续受控实验。**工程接线通过 CPU 验证；预测效果、Actor 改进和 GPU 训练未认证。**
 
 开发仓库为 `fg-s3-quality-v2-dev/{gym-trading-env,dreamerv3}`；源码始于 Gym `c3a808437ef277ee87f25b0ae8803e31fa5dca74` / Dreamer `eb63de710fd693fad7ac76f797f3d9f39e331b98`。最终提交及执行代码对应关系见验收收据索引。既有 Tutor-CD、Tutor-CD Full、B2 的训练工作树及工件未修改。
 
-源码提交为 Gym `f71124a45d52b80b862cf7f813f1491d8a901de7` / Dreamer `29ac494b6e3cdbd405a262f66dfcc4a040219ef2`。[源码绑定收据](receipts/quality_first_delivery/implementation_git_binding.json) 验证全部 210 个运行源码文件逐字节匹配。后续交付文档提交不改变运行源码；最终 HEAD 与运行源码绑定另在原 Run 的 `final_git_binding.json` 保存。
+10 月 15 日基线源码提交为 Gym `f71124a45d52b80b862cf7f813f1491d8a901de7` / Dreamer `29ac494b6e3cdbd405a262f66dfcc4a040219ef2`。[历史源码绑定收据](receipts/quality_first_delivery/implementation_git_binding.json) 验证当时全部 210 个运行源码文件逐字节匹配。本轮源码及运行绑定另见审查修复记录，不改写这份历史证据。
 
 ## Evidence observed
 
@@ -74,7 +76,7 @@ Catalog 保存原执行动作与原生 stepid，按 stepid、状态、账户和�
 
 默认 `quality_stage=HEADS_ONLY`：原 C1 Reward、beta=0、BC lambda=0；原 Backbone/Actor/Critic、QualityActor 和 Q 头冻结，辅助表示梯度尺度为 0，仅 Outcome、touch/adverse、Score 头更新。实际优化器槽也冻结，防止残余动量/weight decay 改动。目标先验只从匹配 Checkpoint 的 TRAIN 样本计算。
 
-保留的 `CONTROLLED_FULL` 复用原 presets，含新 QualityActor、Q_C1/Q_V2、多任务联合 Loss、Natural/Balanced/E2、两种 Pair、Soft Teacher、单一训练/推理前向和预测→Actor logit 接线。Actor 使用停止梯度的 latent；预测修正停止梯度，mask/unimix 只施加一次；辅助表示梯度尺度恢复为原方案 .1。数学实现见 `dreamerv3/fg_s3_quality_v2.py`，当前 B 分目标使用新协议。归档的旧 S=B−1.5R 纯函数保留但不生成本 Catalog 的目标。
+保留的 `CONTROLLED_FULL` 复用原 presets，含新 QualityActor、Q_C1/Q_V2、多任务联合 Loss、Natural/Balanced/E2、两种 Pair、Soft Teacher、单一训练/推理前向和预测→Actor logit 接线。Actor 使用停止梯度的 latent；预测修正停止梯度，mask/unimix 只施加一次；辅助表示梯度尺度恢复为原方案 .1。数学实现见 `dreamerv3/fg_s3_quality_v2.py`，当前 B 分目标使用新协议。旧 S=B−1.5R 函数已在 10 月 16 日审查修复中删除，B(t,d) 只保留附件中的统一实现。
 
 Full 默认权重保持原方案：BC 混合 .8/.2；Strict Pair .1、Quality Pair .05、Soft .1、Outcome .2、Score .2、Q_C1 .1、Q_V2 .1、mono .02。QC1 的 WAIT hinge 允许平局；无真实数值证据不回归伪 Q。QV2 保留金融账户原生有界后缀证明；当前 HEADS_ONLY 不启用该研究分支，数值 Q 覆盖为 0，`FULL_Q_PENDING`。
 

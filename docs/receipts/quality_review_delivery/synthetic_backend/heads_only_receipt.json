@@ -1,0 +1,29 @@
+{
+  "status": "PASS_QUALITY_FIRST_HEADS_ONLY_SYNTHETIC_CPU",
+  "heads": {
+    "quality_event": {
+      "grad_norm": 0.07067134976387024,
+      "delta_norm": 1.1668519164231839e-06
+    },
+    "quality_touch": {
+      "grad_norm": 0.05550552159547806,
+      "delta_norm": 1.0916832025031908e-06
+    },
+    "quality_adverse": {
+      "grad_norm": 0.08518725633621216,
+      "delta_norm": 1.0537933121668175e-06
+    },
+    "quality_score": {
+      "grad_norm": 0.06815542280673981,
+      "delta_norm": 1.0027185908256797e-06
+    }
+  },
+  "frozen_model_parameter_count": 89,
+  "actor_influence": false,
+  "base_model_gradients_zero": true,
+  "q_heads_frozen": true,
+  "quality_predictions_cannot_change_policy": true,
+  "supervision": "synthetic backend test; not predictive research acceptance",
+  "gpu": "NOT_RUN",
+  "content_hash": "99f89fdc3789eaa7de99dc0ea746ea749bb652397698f0bf1cefd0649749c9ee"
+}

@@ -1,0 +1,242 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  quality_sl       Space(bool, shape=(), low=False, high=True)
+  quality_early5   Space(bool, shape=(), low=False, high=True)
+  quality_tp       Space(bool, shape=(), low=False, high=True)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_q_c1     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_c1_valid Space(bool, shape=(), low=False, high=True)
+  quality_q_v2     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_v2_valid Space(bool, shape=(), low=False, high=True)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_soft_target Space(float32, shape=(), low=-inf, high=inf)
+  quality_soft_valid Space(bool, shape=(), low=False, high=True)
+  quality_soft_source Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 59,971 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           706 quality_q_c1
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+QUALITY_V2 env=100 update=1 BC=0.690957 valid=29 ADD=1 beta=0.000000 actor_grad=0.000000
+QUALITY_V2 env=100 update=2 BC=0.690720 valid=31 ADD=1 beta=0.000000 actor_grad=0.000000
+QUALITY_V2 env=200 update=3 BC=0.691014 valid=33 ADD=1 beta=0.000000 actor_grad=0.000000
+QUALITY_V2 env=200 update=4 BC=0.691086 valid=38 ADD=3 beta=0.000000 actor_grad=0.000000
+{
+  "protocol": "FG_S3_V2_LIVE_LEARNING_V1",
+  "status": "DIAGNOSTIC_COMPLETE",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_2f58d3cc3b_uninterrupted",
+  "env_steps": 200,
+  "counters": {
+    "all_updates": 4,
+    "wm_updates": 0,
+    "bc_valid_updates": 0,
+    "bc_add_updates": 0,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 4,
+    "cycles": 2,
+    "sampled_transitions": 256,
+    "quality_actor_updates": 0,
+    "quality_event_updates": 3,
+    "quality_touch_updates": 3,
+    "quality_adverse_updates": 3,
+    "quality_score_updates": 3,
+    "quality_q_c1_updates": 0,
+    "quality_q_v2_updates": 0
+  },
+  "model_updates": 4,
+  "counts": {
+    "native_rows": 201,
+    "resets": 1,
+    "env_steps": 200,
+    "valid_market_minutes": 200,
+    "actor_ADD": 47,
+    "oracle_ADD": 8,
+    "executed_ADD": 47,
+    "entries": 47,
+    "TP": 46,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 106,
+    "learnable_decisions": 106,
+    "unproven_funds": 0,
+    "reward_sum": 43.80577778816223,
+    "published_native_rows": 200,
+    "actor_oracle_ADD_tp": 4,
+    "actor_oracle_ADD_fn": 4
+  },
+  "reward": 43.80577778816223,
+  "beta_schedule": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 0.0,
+    "points": null,
+    "env_steps": 200,
+    "beta": 0.0
+  },
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_2f58d3cc3b_uninterrupted/ckpt/step_000000000200",
+  "checkpoint_manifest_sha256": "04c13f37e87a359fc057fb485ebde8b76f7797716f177b3e2e6a6847952e3bdf",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "elapsed_seconds": 19.251021396019496,
+  "collect_seconds": 6.159391199063975,
+  "update_seconds": 12.945248556032311,
+  "core_env_steps_per_second": 10.468661150579859,
+  "process_peak_rss_mib": 830.62890625,
+  "oracle_query_recent_seconds": {
+    "50": 0.013610465975943953,
+    "95": 0.047475582046899945,
+    "99": 0.05135616799816489
+  },
+  "actor_oracle_add_recall": 0.5,
+  "retained_teacher_rows": 200,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_2f58d3cc3b_uninterrupted/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    0,
+    2
+  ],
+  "label_ratio": 0.53,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "quality": {
+    "agent_extension": {
+      "s3_v2_mode": "quality_v2",
+      "quality_variant": "FULL",
+      "quality_stage": "HEADS_ONLY",
+      "quality_prediction_admitted": false,
+      "quality_decision_admitted": false,
+      "quality_gradient_every_updates": 0,
+      "quality_alpha": 0.8,
+      "quality_kappa": 1.0,
+      "quality_wmax": 2.0,
+      "quality_strict_pair_lambda": 0.0,
+      "quality_pair_lambda": 0.0,
+      "quality_soft_lambda": 0.0,
+      "quality_outcome_lambda": 0.2,
+      "quality_score_lambda": 0.2,
+      "quality_q_c1_lambda": 0.0,
+      "quality_q_v2_lambda": 0.0,
+      "quality_mono_lambda": 0.02,
+      "quality_repr_grad_scale": 0.0,
+      "quality_pair_tau": 1.0,
+      "quality_q_scale": 1.0,
+      "quality_fuse_outcome": false,
+      "quality_fuse_score": false,
+      "quality_q_admitted": false,
+      "quality_weighting": true
+    },
+    "catalog": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_2f58d3cc3b_uninterrupted/quality_catalog_step_000000000200.json",
+    "catalog_sha256": "4e70522618944697421d3b395dff8e979a42450d77b4e299426e2c9975d13123",
+    "stage": "HEADS_ONLY",
+    "actor_influence": false,
+    "base_model_frozen": true,
+    "prediction_admission_status": "PREDICTION_GATE_PENDING",
+    "head_update_counts": {
+      "quality_actor_updates": 0,
+      "quality_event_updates": 3,
+      "quality_touch_updates": 3,
+      "quality_adverse_updates": 3,
+      "quality_score_updates": 3,
+      "quality_q_c1_updates": 0,
+      "quality_q_v2_updates": 0
+    },
+    "coverage": {
+      "protocol": "FG_S3_QUALITY_COVERAGE_V1",
+      "counts": {
+        "total_rows": 200,
+        "strict_valid": 106,
+        "completed_dual_legal_flat_decisions": 106,
+        "flat_funds/at_least_300000": 106,
+        "flat_outcome/TP5": 106,
+        "flat_entry_filled": 106,
+        "flat_quality_valid": 106,
+        "flat_strict_valid": 106,
+        "immediate_outcome_verified": 106,
+        "score_valid": 106,
+        "funds/at_least_300000": 199,
+        "soft/HEURISTIC_V2": 106,
+        "event_valid": 742,
+        "touch_valid": 848,
+        "adverse_valid": 424,
+        "q_c1_pair_valid": 0,
+        "q_v2_pair_valid": 0,
+        "event_h0/valid": 106,
+        "event_h0/TP5": 106,
+        "event_h1/valid": 106,
+        "event_h1/TP5": 106,
+        "event_h2/valid": 106,
+        "event_h2/TP5": 106,
+        "event_h3/valid": 106,
+        "event_h3/TP5": 106,
+        "event_h4/valid": 106,
+        "event_h4/TP5": 106,
+        "event_h5/valid": 106,
+        "event_h5/TP5": 106,
+        "event_h6/valid": 106,
+        "event_h6/TP5": 106,
+        "reason/STRICT_WAIT_HIGH_QUALITY_ADD": 98,
+        "funds/below_300000": 1,
+        "soft/INVALID": 94,
+        "reason/FORCED_WAIT_POSITION": 94,
+        "reason/STRICT_ADD": 8
+      },
+      "score_mean": 100.0,
+      "score_quantiles": [
+        100.0,
+        100.0,
+        100.0,
+        100.0,
+        100.0
+      ],
+      "denominator": "committed native rows; each task uses its own valid count",
+      "content_hash": "ea34502f5912cfeb8a6d38d37d4ff5ba8c7176855ae265bf7f7d27dbbbab1531"
+    },
+    "q_fusion_status": "FULL_Q_PENDING",
+    "calibration_status": "NOT_CALIBRATED",
+    "critic_rl_frozen": true,
+    "reference_actor_frozen": true,
+    "evidence_scope": "CPU_DIAGNOSTIC"
+  },
+  "content_hash": "baca68daddab11264ed6f1fa99f3eaec4e77e31c009f69723c0d9bed1fa51a7f"
+}

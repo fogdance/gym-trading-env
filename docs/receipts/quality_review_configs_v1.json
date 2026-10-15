@@ -1,0 +1,106 @@
+{
+  "training": "NOT_RUN",
+  "configs": [
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_EVENT_ONLY_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_EVENT_ONLY_PILOT_10K_v2",
+      "device": "gpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_HEADS_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_PILOT_10K_v2",
+      "device": "gpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_CPU_FG201_v1.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_REVIEW_CPU_FG201_v1",
+      "device": "cpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v1.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v1",
+      "device": "gpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_POOL_CPU_v1.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_REVIEW_POOL_CPU_v1",
+      "device": "cpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_FIRST_SCORE_ONLY_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_SCORE_ONLY_PILOT_10K_v2",
+      "device": "gpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_B1_PILOT_10K.yaml",
+      "status": "EXPECTED_CONTROLLED_RESEARCH_PENDING",
+      "error": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_B2_PILOT_10K.yaml",
+      "status": "EXPECTED_CONTROLLED_RESEARCH_PENDING",
+      "error": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_B3_PILOT_10K.yaml",
+      "status": "EXPECTED_CONTROLLED_RESEARCH_PENDING",
+      "error": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_CPU_SMOKE.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_CPU_SMOKE_v1",
+      "device": "cpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_FULL_PILOT_10K.yaml",
+      "status": "EXPECTED_CONTROLLED_RESEARCH_PENDING",
+      "error": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "path": "configs/experiments/fg_s3_v2/QUALITY_V2_GPU_1K.yaml",
+      "status": "VALID_HEADS_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_GPU_1K_v2",
+      "device": "gpu",
+      "prediction": false,
+      "decision": false,
+      "q": false,
+      "policy_frozen": false
+    }
+  ],
+  "content_hash": "3584fb85334198108a651c0088618b491e29aaccaf7f72072580525ccf0aefec"
+}

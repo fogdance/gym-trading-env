@@ -1,0 +1,14 @@
+{
+  "role": "DEV_EVALUATION_ONLY",
+  "future_labels_generated": false,
+  "source_receipt_sha256": "6ffc119c0208ffe44766cc185b7d1708709861a2cfc26acdcb932e3d63e266ce",
+  "source_files": {
+    "actions.jsonl": "0f5221743454e6602776f25cb952ecc8ab81dbd64eca79acf94da47a77b324a3",
+    "account_state.json": "dca5abc3218222b6aafe1d6fe160760c01ce777f1e93801dac670547513b4b22",
+    "dev_manifest.json": "e5034f6fc9036ff3f498c869b23e952989d7766ed2db621366b7ac5f812a246f",
+    "dev_single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "dev_env.yaml": "9a7b032b4929a0d626b92c5089a882079ad9946b79081148d5fa3c9f59645721",
+    "train_prediction_prior.json": "9ba41963efa404d94694ac22d0f2376ee711f60828c08e34d8705eb32eb025cd"
+  },
+  "content_hash": "b105bb47852ed83af57ffe3bb21d39b96eaba7c379842977c59cb0905ed43448"
+}

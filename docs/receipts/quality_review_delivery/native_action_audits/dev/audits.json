@@ -1,0 +1,101 @@
+{
+  "audits": {
+    "280b29c281d80a111c2941d56bd85edcf6bd17bd5fdaefb7ee5dcda26ce114c1": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "280b29c281d80a111c2941d56bd85edcf6bd17bd5fdaefb7ee5dcda26ce114c1",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "167087c25660e75f06b728a91c278f4c94ba29e3c66721b188e376b3ec31cf27"
+    },
+    "9f5472fd347b2a603e4afad4eda5973832d0b83630a3131e1da10442e375ee3c": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "9f5472fd347b2a603e4afad4eda5973832d0b83630a3131e1da10442e375ee3c",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "182677438399b33dff3612bffb23c0f8cc2578e187ffad9cebe073844893f189"
+    },
+    "68994343dc71a28c45c93b4ec3d99703084ee2f9f12161caa21c497b88b15813": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "68994343dc71a28c45c93b4ec3d99703084ee2f9f12161caa21c497b88b15813",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "599480b566a7c60909359bddf20efa79095841b8206eed7277391282ec0b97ad"
+    },
+    "01b8bbcbdf9cb61ea017406c195708ffaa1551cd249274697962d21f1ec98074": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "01b8bbcbdf9cb61ea017406c195708ffaa1551cd249274697962d21f1ec98074",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "6c54add9e52d86e37c709fb0a8f761eba90bdaa0bd8bf9614f30f8c99c070a7f"
+    },
+    "c8a38ceb9a67213e5f1045aff5effefb5bd014fc01e76dc05f8e1408f3af36ab": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "c8a38ceb9a67213e5f1045aff5effefb5bd014fc01e76dc05f8e1408f3af36ab",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "4750ad1295210faaad7d5f5c29d6d6f77f620fed961a41223fb59b8ea7f4e4bb"
+    },
+    "6ab644a9325ab1c1d040e837507f2cfbe20123199ba1369d2d653b8fe7e83bf2": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "6ab644a9325ab1c1d040e837507f2cfbe20123199ba1369d2d653b8fe7e83bf2",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "695b32ec22924c5f8b0fe31902fcd8b1891fdac241cf6a0ed885042959b595d1"
+    },
+    "232181364ae0a17d95fc7e35fd88ab2bff61c2d9802a463dbc8a58171766dfdd": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "232181364ae0a17d95fc7e35fd88ab2bff61c2d9802a463dbc8a58171766dfdd",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "cec1c4a3f916eaa94e35e514f222232a4b53d63dcf1d178518f193cb866f9c25"
+    },
+    "8101a2d734fe245f24bce02ac7bfc88d86b91401e699b4fbd08aa4b0dc1aebe5": {
+      "action": 0,
+      "valid": true,
+      "certified": true,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "q_add": null,
+      "q_wait": null,
+      "q_margin": null,
+      "state_id": "8101a2d734fe245f24bce02ac7bfc88d86b91401e699b4fbd08aa4b0dc1aebe5",
+      "oracle_identity": "b1ed2ecb1b5b63770358312c08fd7a1ff02ece38917b309a01c67f8646ce63e4",
+      "proof_hash": "6ecd2c8cfb25fd51b6f60034e129e37c2252c4e1cd41ab75c2fe41bf40fb264d"
+    }
+  },
+  "content_hash": "560ce3979a75127037f87d413d3ee509356c471b8d6a452d88d81703fadaead0"
+}

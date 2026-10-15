@@ -1,0 +1,49 @@
+{
+  "status": "PASS_SYNTHETIC_CPU_JOINT_UPDATE",
+  "heads": {
+    "quality_actor": {
+      "grad_norm": 0.32263126969337463,
+      "delta_norm": 9.902394140226534e-07
+    },
+    "quality_event": {
+      "grad_norm": 0.07067134976387024,
+      "delta_norm": 1.1668519164231839e-06
+    },
+    "quality_touch": {
+      "grad_norm": 0.05550552159547806,
+      "delta_norm": 1.0916832025031908e-06
+    },
+    "quality_adverse": {
+      "grad_norm": 0.08518725633621216,
+      "delta_norm": 1.0537933121668175e-06
+    },
+    "quality_score": {
+      "grad_norm": 0.06815542280673981,
+      "delta_norm": 1.0027185908256797e-06
+    },
+    "quality_q_c1": {
+      "grad_norm": 0.1172870323061943,
+      "delta_norm": 1.0152637059945846e-06
+    },
+    "quality_q_v2": {
+      "grad_norm": 0.13042894005775452,
+      "delta_norm": 1.0500295957172057e-06
+    }
+  },
+  "actor_term_gradients": {
+    "quality/grad/balanced_norm": 0.24664613604545593,
+    "quality/grad/natural_norm": 0.24672426283359528,
+    "quality/grad/quality_pair_norm": 0.08964211493730545,
+    "quality/grad/soft_norm": 0.7961714267730713,
+    "quality/grad/strict_pair_norm": 0.08756279945373535,
+    "quality/grad/total_actor_norm": 0.32263126969337463
+  },
+  "wm_delta_norm": 7.286816526175244e-06,
+  "frozen_parameter_count": 18,
+  "unsupported_head_and_optimizer_freeze": true,
+  "policy_future_label_isolation": true,
+  "exact_update_restore": true,
+  "real_TRAIN_supervision": "NOT_USED_IN_THIS_SYNTHETIC_TEST",
+  "gpu": "NOT_RUN",
+  "content_hash": "94dfda37b791398df032741b8c025f10f209dc2e4171d17fc6d2153ed6af8257"
+}
