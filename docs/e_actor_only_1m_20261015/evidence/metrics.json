@@ -1,0 +1,462 @@
+{
+  "metric_schema": "S3_EVAL_METRIC_V2",
+  "adverse10_first5": 0,
+  "adverse10_6_15": 0,
+  "adverse10_after15": 0,
+  "adverse10_any_hold": 0,
+  "adverse10_unclassified": 0,
+  "adverse10_windows_complete": true,
+  "closed_trade_net_pnl": 0.0,
+  "closed_trade_gross_pnl": 0.0,
+  "tp_fast_count": 0,
+  "tp_mid_count": 0,
+  "tp_late_count": 0,
+  "tp_after_h60_count": 0,
+  "tp_market_minutes_p50": null,
+  "tp_market_minutes_p90": null,
+  "legacy_early_mae10_any_hold": 0,
+  "tp_count": 0,
+  "sl30": 0,
+  "closed_trade_count": 0,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/ckpt/step_000001000000",
+  "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+  "evaluation_data_identity": {
+    "contract": "CZCE.FG409",
+    "market_sha256": "304e6cc2a6902e4135b6af2a506b417971247b439a899ddd2d51e5476ef08b03",
+    "env_config_sha256": "c89de9e14560d032c8088de4e9cce3ae24b9dff502938f3df7dc023a5d782590",
+    "contract_sha256": "2fea3c23ea124f217340367a90c366bedbaf19e6b399eca5b1af19edba81b4e7",
+    "start_cursor": 0,
+    "reset_seed": 0
+  },
+  "env_steps": 5000,
+  "policy_mode": "eval_argmax",
+  "beta": 0.0,
+  "teacher_guidance": false,
+  "autonomous_add_executed": 0,
+  "actual_entries": 0,
+  "tp5_points_count": 0,
+  "tp5_points_rate": null,
+  "tp5_rate_denominator": "all actual entries, including failures and right-censored positions",
+  "right_censored": 0,
+  "sl30_rate": null,
+  "adverse10_first5_rate": null,
+  "adverse10_any_hold_rate": null,
+  "clock_protocol": "S3_MARKET_MINUTE",
+  "reward": 0.0,
+  "all_wait": true,
+  "p_add_quantiles": {
+    "0": 0.08824072778224945,
+    "50": 0.09971026331186295,
+    "90": 0.19946967661380788,
+    "99": 0.3780129551887512,
+    "100": 0.4980793297290802
+  },
+  "highest_add_scores": [
+    {
+      "cursor": 2912,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4980793297290802,
+      "advanced": true,
+      "decision_state_id": "24f62a9d9b737e4ff355971e201ab5f2096a4c4e570808c4a3695160eb11f358",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.008087158203125,
+        "tutor/final_logit_add_minus_wait": -0.00768280029296875,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2546,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.49194106459617615,
+      "advanced": true,
+      "decision_state_id": "5bbabd49602449f3b25d40b7f0cf099e0bf02abea4988f75645b35f0d467e4b5",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.033935546875,
+        "tutor/final_logit_add_minus_wait": -0.032238543033599854,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2548,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4714486598968506,
+      "advanced": true,
+      "decision_state_id": "b1d8f5a739eb94a5a2e8b6f030bd7580045eb71a684db5335822c7b266622b1f",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.120361328125,
+        "tutor/final_logit_add_minus_wait": -0.11432969570159912,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2529,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4505460560321808,
+      "advanced": true,
+      "decision_state_id": "32e839680b02c8212194e4327df1f375f1d801f06f6e1bd6fc36a91cebaefa8d",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.208984375,
+        "tutor/final_logit_add_minus_wait": -0.1984645128250122,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2480,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.45020198822021484,
+      "advanced": true,
+      "decision_state_id": "fe412727f6d4be4808e6165fa732d1b6b4ea34004799cfe711348d878871f54c",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.21044921875,
+        "tutor/final_logit_add_minus_wait": -0.1998545527458191,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2552,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4432171881198883,
+      "advanced": true,
+      "decision_state_id": "9bd7677100a1d6ec03a81865d1ef2b06422147b6623fce10d70eb94cc9ece583",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.240234375,
+        "tutor/final_logit_add_minus_wait": -0.22811537981033325,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 1339,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.43136754631996155,
+      "advanced": true,
+      "decision_state_id": "d7d4f68343e8d6e4a2a2e8c70e1fca83a5099487e48d9bd9e5f59d7fcb4c5af0",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.291015625,
+        "tutor/final_logit_add_minus_wait": -0.27627384662628174,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 1377,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4281913936138153,
+      "advanced": true,
+      "decision_state_id": "85862875d8daa66bc80fd36001b7f2e7cbe9a61a384cfdde7ebffca58a4ba034",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3046875,
+        "tutor/final_logit_add_minus_wait": -0.2892339825630188,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2549,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4281913936138153,
+      "advanced": true,
+      "decision_state_id": "41dae5bf1ebb96c002b14294a793d2f8e34b8398b620310ab3a9d38820f4ce3c",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3046875,
+        "tutor/final_logit_add_minus_wait": -0.2892339825630188,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2525,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4270586669445038,
+      "advanced": true,
+      "decision_state_id": "52ecabc7705b84b234a15ec6da13d393716cb200bf13d5610e7d0508e7bcf068",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3095703125,
+        "tutor/final_logit_add_minus_wait": -0.29386186599731445,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 3129,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.42321375012397766,
+      "advanced": true,
+      "decision_state_id": "c561954647cbf8f9ad0fd532c0f75ec4d42fe4345c8f819ba82133176768ddc8",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.326171875,
+        "tutor/final_logit_add_minus_wait": -0.30959439277648926,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 4782,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.41937917470932007,
+      "advanced": true,
+      "decision_state_id": "aef197c7997a1604534b7e38dc1eb37a7412e36c5d5bbb3a5530de7d7f81291e",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3427734375,
+        "tutor/final_logit_add_minus_wait": -0.32532256841659546,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 4279,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.41847845911979675,
+      "advanced": true,
+      "decision_state_id": "b88f62be1577e77c1dc535fd3e3d62d40c63a6099f28d5879a150425a5259257",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3466796875,
+        "tutor/final_logit_add_minus_wait": -0.3290226459503174,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2553,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.41735342144966125,
+      "advanced": true,
+      "decision_state_id": "0b04354414a1bc1369399392ac366820ad417f4eed72bb490f59c2c2e46e69a1",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3515625,
+        "tutor/final_logit_add_minus_wait": -0.3336474299430847,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2547,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4151062071323395,
+      "advanced": true,
+      "decision_state_id": "cf2b9a07e9aea0f6c20ac3de4b21da1ce9640b563114eb34090d7df4ec8b1413",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.361328125,
+        "tutor/final_logit_add_minus_wait": -0.34289586544036865,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2520,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.41465723514556885,
+      "advanced": true,
+      "decision_state_id": "09874b5da7195239c69cd889f92d73d9b7d6980bf82d3a42200be360f0bec65c",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.36328125,
+        "tutor/final_logit_add_minus_wait": -0.34474533796310425,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 4779,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4124147891998291,
+      "advanced": true,
+      "decision_state_id": "990b26b1ebe32ff53e9b12cfe951d37015dcc681bac783eaceec5ce9f6f499e3",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.373046875,
+        "tutor/final_logit_add_minus_wait": -0.3539918065071106,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2521,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.41174283623695374,
+      "advanced": true,
+      "decision_state_id": "45e08ad1805a2041cd92593db32aa361fea009bc6274f8c3cb6361f227efa772",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3759765625,
+        "tutor/final_logit_add_minus_wait": -0.35676538944244385,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 1376,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.4108474552631378,
+      "advanced": true,
+      "decision_state_id": "0044c9bc7a91ad38c50ced2d6daf96158523f460a295c251f5127f321de2b714",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3798828125,
+        "tutor/final_logit_add_minus_wait": -0.3604632616043091,
+        "tutor/logit_margin_defined": true
+      }
+    },
+    {
+      "cursor": 2551,
+      "action": 0,
+      "mask": [
+        1.0,
+        1.0
+      ],
+      "is_first": false,
+      "is_last": false,
+      "reward_from_previous_action": 0.0,
+      "p_add": 0.40995267033576965,
+      "advanced": true,
+      "decision_state_id": "22c53bff9b2e5f524b517e196ba8bee52b17d29ab88385e3a9ef3872079fd96f",
+      "prediction_phase": "CAUSAL_ACTOR_ONLY",
+      "tutor": {
+        "tutor/base_logit_add_minus_wait": -0.3837890625,
+        "tutor/final_logit_add_minus_wait": -0.36416095495224,
+        "tutor/logit_margin_defined": true
+      }
+    }
+  ],
+  "net_pnl": 0.0,
+  "max_equity_drawdown": 0.0,
+  "initial_equity": 300000.0,
+  "final_equity": 300000.0,
+  "unrealized_pnl": 0.0,
+  "canonical_checkpoint": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000"
+}

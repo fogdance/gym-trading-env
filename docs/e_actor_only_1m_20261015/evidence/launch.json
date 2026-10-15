@@ -1,0 +1,21 @@
+{
+  "trained_run": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015",
+  "prepared": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015",
+  "checkpoint": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000",
+  "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+  "eval_steps": 5000,
+  "frozen_runtime": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env",
+  "adapter": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env/tools/fg_s3_v2_evaluate_frozen.py",
+  "adapter_sha256": "cabb93de7671bb34e447808a1a34ae4535b6e46fe1325614efc197768a18dcfa",
+  "protected_files": {
+    "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/run_identity.json": "868b18b3bbbd674ebc351157cfb8735d42769c4cf38a8e02abc38bcc81260e55",
+    "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/training_receipt.json": "0de8cfeab9333a93ebd8f24e4ebdb99885d4983b918d31aa92634ede5aa0d14b",
+    "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/latest": "e197907449e65c1f8550ccb49f408b9489909dd0b163d21c280c8f5e572beff2",
+    "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000/manifest.json": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/manifest.json": "3b76530c820070b12d5ee5e8272f2368c3e5ca6c8ed23f4c6fcd056b8d3faf36"
+  },
+  "env_extension": "native E DEV profile; same authenticated bytes passed as df",
+  "model_and_evaluation_loop": "unchanged frozen runtime",
+  "test": "SEALED_NOT_READ",
+  "content_hash": "302a2baa3bfca526ba900995f95a561865740c652d5952023efd1b3d03d6b0ea"
+}

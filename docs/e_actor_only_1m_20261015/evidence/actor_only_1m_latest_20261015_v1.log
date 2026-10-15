@@ -1,0 +1,245 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,933,956 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,435,776 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "receipt": {
+    "status": "ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE",
+    "output": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251",
+    "fold": "DEV",
+    "contract": "CZCE.FG409",
+    "env_steps": 5000,
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/ckpt/step_000001000000",
+    "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+    "devices": [
+      "cuda:0"
+    ],
+    "oracle_files_read": false,
+    "teacher_guidance": false,
+    "beta": 0.0,
+    "policy_mode": "eval_argmax",
+    "legal_decisions": 5001,
+    "actor_add_proposed": 0,
+    "add_executed": 0,
+    "entries": 0,
+    "tp_target_points": 5,
+    "tp_count": 0,
+    "sl30": 0,
+    "clock_protocol": "S3_MARKET_MINUTE",
+    "tp_market_minutes_p50": null,
+    "tp_market_minutes_p90": null,
+    "early_mae10": 0,
+    "reward": 0.0,
+    "right_censored": 0,
+    "all_wait": true,
+    "research_success": "NOT_ESTABLISHED",
+    "test": "NOT_RUN",
+    "metric_schema": "S3_EVAL_METRIC_V2",
+    "adverse10_first5": 0,
+    "adverse10_6_15": 0,
+    "adverse10_after15": 0,
+    "adverse10_any_hold": 0,
+    "adverse10_unclassified": 0,
+    "adverse10_windows_complete": true,
+    "closed_trade_net_pnl": 0.0,
+    "closed_trade_gross_pnl": 0.0,
+    "tp_fast_count": 0,
+    "tp_mid_count": 0,
+    "tp_late_count": 0,
+    "tp_after_h60_count": 0,
+    "legacy_early_mae10_any_hold": 0,
+    "closed_trade_count": 0,
+    "causal_prediction_files": {
+      "actions.jsonl": "7d1a2c767e6a72cb8aaabd2aa5677ecbedb0ddedbac9e7f4b17da84558bd65ec",
+      "account_state.json": "c406e57ad1d2de3a93be48936392361df864014400f2ce261f7d79d46fdaf504",
+      "dev_manifest.json": "53ad481c63f395d2d964cda48470463022808ab6f2d670260397659fbf3cc3fe",
+      "dev_env.yaml": "c89de9e14560d032c8088de4e9cce3ae24b9dff502938f3df7dc023a5d782590"
+    },
+    "agent_extension": {
+      "s3_v2_mode": "tutor",
+      "tutor_alpha": 0.8,
+      "tutor_pair_lambda": 0.1,
+      "tutor_pair_tau": 1.0,
+      "tutor_hard_kappa": 1.0,
+      "tutor_hard_wmax": 2.0,
+      "tutor_gradient_every_updates": 100
+    },
+    "resolved_composition": {
+      "encoder": "e_multiscale_1m15m",
+      "teaching": "tutor_cd",
+      "base_oracle_bc": true,
+      "use_e": true,
+      "use_tutor": true,
+      "use_b2": false,
+      "legacy_mode": "tutor",
+      "support_state": "ready",
+      "schema_version": 1
+    },
+    "content_hash": "781e0fa9da8bef9adb4e6ff20b8fbf0266eaedf40d16fb1708319fd6193ca214"
+  },
+  "verification": {
+    "status": "COMPLETE",
+    "receipt": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/receipt.json",
+    "receipt_sha256": "3df4b7dc67545fc3408034149ee48ef8731c78e98bc77eb3968410f987eb83ec",
+    "canonical_checkpoint": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000",
+    "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+    "native_e_dev_profiles": [
+      {
+        "identity": "6484abad16fe7122bb59fd4d4be49833ff1585706aa5331c78e958306fbe3ba7",
+        "source_receipt": {
+          "protocol": "FG_S3_E_DEV_OBSERVATION_V1",
+          "role": "DEV",
+          "sources": {
+            "CZCE.FG409": {
+              "market": {
+                "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0019_CZCE_FG409_main_1m.csv",
+                "sha256": "304e6cc2a6902e4135b6af2a506b417971247b439a899ddd2d51e5476ef08b03"
+              }
+            }
+          },
+          "dev_manifest_sha256": "53ad481c63f395d2d964cda48470463022808ab6f2d670260397659fbf3cc3fe",
+          "observation": {
+            "observation_schema": "FG_S3_E_OBSERVATION_V1",
+            "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V1",
+            "decoder_schema": "FG_S3_E_DECODER_V1",
+            "fields": {
+              "market_seq": {
+                "shape": [
+                  60,
+                  18
+                ],
+                "dtype": "float32"
+              },
+              "position_state": {
+                "shape": [
+                  9
+                ],
+                "dtype": "float32"
+              },
+              "action_mask": {
+                "shape": [
+                  2
+                ],
+                "dtype": "float32"
+              },
+              "action": {
+                "shape": [],
+                "dtype": "int32"
+              },
+              "reward": {
+                "shape": [],
+                "dtype": "float32"
+              },
+              "is_first": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "is_last": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "is_terminal": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "market_seq_e_shared": {
+                "shape": [
+                  60,
+                  18
+                ],
+                "dtype": "float32"
+              },
+              "market_context_15m": {
+                "shape": [
+                  24,
+                  7
+                ],
+                "dtype": "float32"
+              }
+            },
+            "encoder_keys": [
+              "market_seq_e_shared",
+              "position_state",
+              "action_mask",
+              "market_context_15m"
+            ],
+            "decoder_keys": [
+              "market_seq_e_shared",
+              "position_state"
+            ],
+            "audit_only": [
+              "market_seq"
+            ],
+            "context_fields": [
+              "rel_open",
+              "rel_high",
+              "rel_low",
+              "rel_close",
+              "vol_relative",
+              "oi_change",
+              "valid"
+            ],
+            "contract_hash": "75968be1711c3cdb92c8f507e19c0d6a595d6962acd9e577dabc76858b46b68b"
+          },
+          "training_authorization": false
+        },
+        "observation_shapes": {
+          "action_mask": [
+            2
+          ],
+          "market_context_15m": [
+            24,
+            7
+          ],
+          "market_seq": [
+            60,
+            18
+          ],
+          "market_seq_e_shared": [
+            60,
+            18
+          ],
+          "position_state": [
+            9
+          ]
+        },
+        "loaded_model_updates": 40000
+      }
+    ],
+    "denied_oracle_or_test_accesses": [],
+    "protected_training_inputs_unchanged": true,
+    "model_updates": 40000,
+    "launch_sha256": "d3101e8575655643be1ba79baaf97a53cbffb986fa58545367122cabe9291ca8",
+    "content_hash": "fd6c2511c36b94c916363d500bff709f59d00743720c91045250037980a5d566"
+  }
+}
