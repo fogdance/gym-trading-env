@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="21" time="15.625" timestamp="2026-10-15T15:38:42.768514+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[uncached]" time="0.577" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[cache_miss]" time="0.457" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[cache_hit]" time="0.593" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_e_parser_consumes_the_same_bytes_that_were_authenticated" time="0.587" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_e_admission_cannot_be_bypassed_with_injected_frame" time="0.509" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_e_market_rejects_missing_source_receipt" time="0.487" /><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_shared_e_market_content_is_stable_across_accounts_and_restore" time="0.616" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_e_reuses_normalized_market_feature_build_and_clock" time="0.495" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_single_env_collector_uses_env_observation" time="0.753"><failure message="ValueError: D0 output must be isolated from existing experiments and worktrees">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_targeted/test_native_single_env_collect0')
+
+    def test_native_single_env_collector_uses_env_observation(tmp_path):
+        from pathlib import Path
+        from test_fg_s3_dagger_d0 import query_for
+        from gym_trading_env.research.fg_s3_v2_collector import V2Collector
+        from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
+        config,market=csv_env_config(tmp_path/'single_collector')
+        profile=_profile(market)
+        legacy=FixedDirectionEntryEnv(config_path=config)
+        query,_=query_for(legacy,config)
+        native=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
+        collector=None
+        try:
+&gt;           collector=V2Collector(native,query,tmp_path/'single_native',
+                Path(__file__).resolve().parents[3]/'dreamerv3',beta=1.,
+                observation_schema=OBS_SCHEMA,e_profile=profile)
+
+tests/entry_v1/test_s3_e_native_env.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_v2_collector.py:39: in __init__
+    super().__init__(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_v2_collector.V2Collector object at 0x77ebbf644a10&gt;
+env = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x77ebd963f450&gt;
+oracle = &lt;gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x77ebbf644850&gt;
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_targeted/test_native_single_env_collect0/single_native')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3')
+mode = 'mixed', seed = 202, beta = 1.0, actor_probability = 0.5, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = 'FG_S3_E_OBSERVATION_V1'
+e_provider = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...ollect0/single_collector/market.csv', 'sha256': 'daa9e8848742dcb3071aef8112799036ce428bab0e76a2a389f231f69e614ef0'}}}})
+e_profile = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...ollect0/single_collector/market.csv', 'sha256': 'daa9e8848742dcb3071aef8112799036ce428bab0e76a2a389f231f69e614ef0'}}}})
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None, e_profile=None):
+        if e_profile is not None:
+            if e_provider is not None:
+                raise ValueError('Choose native E profile or synthetic research provider')
+            e_provider = e_profile
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+&gt;           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:113: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_profile_preserves_original_oracle_financial_rules" time="0.729" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_collector_rejects_foreign_profile_identity" time="0.606"><failure message="ValueError: D0 output must be isolated from existing experiments and worktrees">tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_targeted/test_native_collector_rejects_0')
+
+    def test_native_collector_rejects_foreign_profile_identity(tmp_path):
+        from pathlib import Path
+        from test_fg_s3_dagger_d0 import query_for
+        from gym_trading_env.research.fg_s3_v2_collector import V2Collector
+        from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
+        config,market=csv_env_config(tmp_path/'foreign_profile')
+        profile=_profile(market)
+        env=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
+        query,_=query_for(env,config)
+        wrong=SimpleNamespace(identity='d'*64,contracts=profile.contracts)
+&gt;       collector=V2Collector(env,query,tmp_path/'wrong_native',
+            Path(__file__).resolve().parents[3]/'dreamerv3',beta=1.,
+            observation_schema=OBS_SCHEMA,e_profile=wrong)
+
+tests/entry_v1/test_s3_e_native_env.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_v2_collector.py:39: in __init__
+    super().__init__(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_v2_collector.V2Collector object at 0x77ebbf750a50&gt;
+env = &lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x77ebbff41f10&gt;
+oracle = &lt;gym_trading_env.research.fg_s3_oracle_state_query.OracleStateQuery object at 0x77ebd9617e10&gt;
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_targeted/test_native_collector_rejects_0/wrong_native')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3')
+mode = 'mixed', seed = 202, beta = 1.0, actor_probability = 0.5, actor = None
+agent = None, source_checkpoint_identity = None, existing = False
+observation_schema = 'FG_S3_E_OBSERVATION_V1'
+e_provider = namespace(identity='dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', contracts={'CZCE.FG2701'})
+e_profile = namespace(identity='dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', contracts={'CZCE.FG2701'})
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None, e_profile=None):
+        if e_profile is not None:
+            if e_provider is not None:
+                raise ValueError('Choose native E profile or synthetic research provider')
+            e_provider = e_profile
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+&gt;           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+src/gym_trading_env/research/fg_s3_dagger_d0.py:113: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_env_rejects_unavailable_current_minute" time="0.829" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18" time="0.588" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_market_cache_does_not_cross_legacy_and_e_profile" time="0.602" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_real_clock_does_not_build_discarded_legacy_features" time="0.453" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_market_cache_reuses_only_market_and_owns_independent_copies" time="0.480" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_cache_rechecks_csv_bytes_and_config_identity" time="0.752" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_changed_file_during_cache_build_is_not_published" time="0.471" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_injected_frames_bypass_csv_cache_and_capacity_is_bounded" time="1.008" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_cached_pool_matches_uncached_tp_sl_and_cold_restore" time="1.809" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_reviewed_reader_warm_start_still_rejects_unknown_changes" time="0.066" /></testsuite></testsuites>

@@ -1,0 +1,9 @@
+{
+  "memory_total_bytes": 33588822016,
+  "memory_available_bytes": 12204695552,
+  "disk_research": "/dev/sdd2: 27 GiB available",
+  "disk_data": "/dev/sda1: 120 GiB available",
+  "gpu": "RTX4060Ti16GiB, 5589MiB in use by other processes; inspection only",
+  "all_model_commands": "CUDA_VISIBLE_DEVICES empty, JAX_PLATFORMS cpu",
+  "cpu_logical_threads": 24
+}

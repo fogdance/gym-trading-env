@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="18" failures="0" skipped="0" tests="38" time="2.509" timestamp="2026-10-15T05:27:38.831416+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_e_observation" name="test_EM10_original_driver_dagger_native_replay_context_and_executed_action" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_fg_s3_e_observation" name="test_EM05_schema_and_future_outcome_actor_fields_rejected" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-legacy_1m]" time="0.001" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[a2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[b2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-legacy_1m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_eight_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-e_multiscale_1m15m]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_pure_parser_runs_without_site_packages_or_jax" time="0.014" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_schema_and_legacy_mode_contracts" time="0.000" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]" time="0.001"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-a2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-a2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_all_new_records_require_same_composition_and_legacy_records_stay_absent" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_source_and_model_factories_reject_waiting_before_any_data_or_model" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase><testcase classname="tests.entry_v1.test_s3_composition" name="test_reviewed_reader_warm_start_still_rejects_unknown_changes" time="0.051" /><testcase classname="tests.entry_v1.test_s3_composition" name="test_model_factory_rejects_encoder_identity_mismatch_before_building" time="0.000"><error message="failed on setup with &quot;FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'&quot;">self = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+&gt;           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_01'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError</error></testcase></testsuite></testsuites>

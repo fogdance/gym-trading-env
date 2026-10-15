@@ -17,6 +17,7 @@ if os.environ.get('LD_LIBRARY_PATH'):
     clean.pop('LD_LIBRARY_PATH')
     clean['FG_S3_V2_CUDA_ENV_CLEANED'] = '1'
     os.execve(sys.executable, [sys.executable, *sys.argv], clean)
+sys.path.insert(0, str(PROJECT))  # Existing E mathematical/audit package.
 sys.path.insert(0, str(PROJECT/'src'))
 sys.path.insert(0, str(PROJECT.parent/'dreamerv3'))
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
@@ -26,12 +27,15 @@ os.environ.setdefault('MPLCONFIGDIR', '/tmp/fg_s3_v2_mpl')
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
+                                     'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition'])
     p.add_argument('--config')
     p.add_argument('--prepared')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
+    p.add_argument('--verify-resume-only', action='store_true',
+                   help='Internal bounded E cold-resume next-update probe; publishes no checkpoint')
     p.add_argument('--eval-steps', type=int, default=1000)
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
     p.add_argument('--output-dir', help='Prediction scoring directory or online monitor observations')
@@ -45,6 +49,8 @@ def main():
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
     args = p.parse_args()
+    if args.verify_resume_only and (args.command != 'admit-e-resume' or args.stop_at is not None):
+        p.error('--verify-resume-only requires admit-e-resume without --stop-at')
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
     if args.command == 'monitor-online':
@@ -73,7 +79,24 @@ def main():
             p.error('describe-composition requires --config')
         elif args.prepared:
             settings_composition(json.loads((Path(args.prepared)/'settings.json').read_text())['settings'])
-    os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
+    admission = args.command.startswith('admit-e-')
+    admission_device = None
+    if admission:
+        if args.authorize_training:
+            p.error('E acceptance cannot authorize formal training')
+        if args.command == 'admit-e-prepare':
+            if not args.config or args.prepared:
+                p.error('admit-e-prepare requires --config')
+            path = Path(args.config)
+            if not path.is_file():
+                path = PROJECT/'configs/experiments/fg_s3_v2'/f'{args.config}.yaml'
+            admission_device = read_config_yaml(path)['device']
+        else:
+            if not args.prepared or args.config:
+                p.error('admit-e-start/resume require --prepared')
+            admission_device = json.loads((Path(args.prepared)/'settings.json').read_text())['settings']['device']
+    os.environ['JAX_PLATFORMS'] = ('cpu' if args.command in ('prepare','report','score-predictions','admit-e-prepare')
+                                 or admission_device == 'cpu' else 'cuda')
     os.environ.pop('JAX_PLATFORM_NAME', None)
     os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
     import gym_trading_env, dreamerv3, embodied
@@ -82,7 +105,16 @@ def main():
             or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
         raise ValueError('Foreign research Python imports')
     from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
-    if args.command == 'simulate-online':
+    if admission:
+        from gym_trading_env.research import fg_s3_e_admission
+        if args.command == 'admit-e-prepare':
+            result = fg_s3_e_admission.prepare(args.config)
+        else:
+            settings = fg_s3_e_admission.read_manifest(Path(args.prepared)/'settings.json')['settings']
+            result = fg_s3_e_admission.run(args.prepared, args.run_dir or settings['run_dir'],
+                resume=args.command == 'admit-e-resume', stop_at=args.stop_at,
+                verify_resume_only=args.verify_resume_only)
+    elif args.command == 'simulate-online':
         if not args.config:
             p.error('simulate-online requires --config')
         from gym_trading_env.research.fg_s3_online_simulation import simulate_online

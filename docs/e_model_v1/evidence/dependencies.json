@@ -1,0 +1,18 @@
+{
+  "python": "3.11.11 (main, Dec 11 2024, 16:28:39) [GCC 11.2.0]",
+  "packages": {
+    "jax": "0.4.33",
+    "jaxlib": "0.4.33",
+    "ninjax": "3.5.1",
+    "elements": "3.20.0",
+    "optax": "0.2.4",
+    "chex": "0.1.88",
+    "gymnasium": "1.0.0",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "ruamel.yaml": "0.18.6",
+    "portal": "3.5.1",
+    "cloudpickle": "3.1.0",
+    "pytest": "9.1.0"
+  }
+}

@@ -1,0 +1,514 @@
+..FFF                                                                    [100%]
+=================================== FAILURES ===================================
+______ test_actual_three_modes_inherit_complete_state_and_reject_foreign _______
+
+source_bundle = {'root': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0'), 'catalog': <gym_trading_env.research.fg_s3_...pt/step_000000000000'), 'bc': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0/bc/bc_000000000002'), ...}
+
+    def test_actual_three_modes_inherit_complete_state_and_reject_foreign(source_bundle):
+        b=source_bundle;c=b['catalog']
+        target=make_agent(b['config'],b['root']/'target')
+>       initial=inspect_source('direct_init',catalog=c,seed=0,config=b['config'])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:418: in inspect_source
+    return _inspect_source(kind, catalog=catalog, live_oracle=live_oracle, path=path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kind = 'direct_init'
+catalog = <gym_trading_env.research.fg_s3_teacher_catalog.TeacherCatalog object at 0x7ddebdb492d0>
+live_oracle = None, path = None, seed = 0
+config = {'action_mask_warmup': {'add_recall_enabled': False, 'consecutive_reports': 5, 'enabled': False, 'img_fallback': 0.000...': '', 'entry_eval_version': '', 'execution_timing': '', 'matched_random_seed': 20260615, ...}, 'batch_length': 4, ...}
+base_checkpoint = None, features = None, diagnostic = False
+gate_protocol = None, agent_extension = None, composition = None
+e_binding = None
+
+    def _inspect_source(kind, *, catalog=None, live_oracle=None, path=None, seed=None, config=None,
+                        base_checkpoint=None, features=None, diagnostic=False, gate_protocol=None,
+                        agent_extension=None, composition=None, e_binding=None):
+        """Shared admission core. Waiting E is tested only with bound CPU fixtures."""
+        if composition is not None:
+            composition = validate_composition(composition)
+            if composition['use_b2'] != (agent_extension is not None):
+                raise ValueError('Composition and B2 admission extension differ')
+        is_e = bool(composition is not None and composition['use_e'])
+        if is_e:
+            if kind != 'direct_init' or config is None or path is not None:
+                raise ValueError('E architecture requires direct_init; old Encoder warm-start forbidden')
+            from embodied.run.fg_s3_e_source import validate_binding
+            validate_binding(e_binding, plain(config), composition, diagnostic)
+        elif e_binding is not None or (config is not None and config['agent']['enc']['typ'] != 'simple'):
+            raise ValueError('E fresh-init requires matching Composition identity')
+        if (catalog is None) == (live_oracle is None):
+            raise ValueError('Source requires exactly one catalog or authenticated live TRAIN binding')
+        if live_oracle is not None:
+            if not isinstance(live_oracle, LiveOracleTraining) or kind != 'warm_start' or not diagnostic:
+                raise ValueError('Live TRAIN binding supports only explicit diagnostic parameter warm-start')
+            from gym_trading_env.research.fg_replay import check_files
+            check_files(live_oracle.binding['query_identity']['source']['receipt_files'])
+            check_files(live_oracle.binding['query_identity']['source']['candidate_files'])
+            catalog = live_oracle
+        if agent_extension is not None:
+            from dreamerv3.fg_s3_b2_outcome import b2_extensions
+            if (kind != 'warm_start' and not (is_e and kind == 'direct_init')) or agent_extension != b2_extensions(agent_extension):
+                raise ValueError('Architecture extension requires the frozen B2 parameter warm-start contract')
+        if type(diagnostic) is not bool:
+            raise ValueError('diagnostic must be an explicit boolean')
+        if kind == 'resume_s3c':
+            raise ValueError('Resume must use the same run FullCheckpoint, not source transfer')
+        if kind not in ('direct_init', 'direct_full', 'after_bc_s3a', 'warm_start'):
+            raise ValueError('NOT_SUPPORTED: '+str(kind))
+        if kind == 'direct_init':
+            if path is not None or seed is None or config is None:
+                raise ValueError('direct_init requires explicit seed and config, no checkpoint')
+            cfg = plain(config)
+            if cfg['seed'] != seed or cfg['agent']['horizon'] != 333 or not cfg['agent']['contdisc']:
+                raise ValueError('Initialization seed/Reward horizon differs')
+            origin = dict(config=cfg, step=0,
+                          diagnostic=bool(catalog.manifest['diagnostic'] or diagnostic))
+        elif kind in ('direct_full', 'warm_start'):
+            if path is None:
+                raise ValueError('direct_full requires a source checkpoint')
+            origin = _full(path, catalog, warm_start=kind == 'warm_start')
+        else:
+            if path is None:
+                raise ValueError('after_bc_s3a requires an atomic S3-A package')
+            path = Path(path).resolve()
+            audited = audit_bc(path)
+            state = pickle.loads((path/'state.pkl').read_bytes())
+            identity = audited['identity']
+            if identity['label_manifest_sha256'] != catalog.manifest['labels_manifest_sha256']:
+                raise ValueError('BC/catalog label identity mismatch')
+            inherited = _managed_bc_admission(path, identity, catalog)
+            reference_identity = (inherited['origin']['identity_hash'] if inherited is not None
+                                  else identity['source_identity_hash'])
+            fm = None
+            if features:
+                fm = read_manifest(Path(features)/'manifest.json')
+                if (file_hash(Path(features)/'manifest.json') != identity['feature_manifest_sha256']
+                        or fm['source']['manifest_sha256'] != identity['source_manifest_sha256']
+                        or fm['source']['identity_hash'] not in {
+                            reference_identity, identity['source_identity_hash']}):
+                    raise ValueError('BC feature/source provenance mismatch')
+                if base_checkpoint is None and Path(fm['source']['path']).is_dir():
+                    base_checkpoint = fm['source']['path']
+            if base_checkpoint:
+                base = _full(base_checkpoint, catalog)
+                if base['manifest_sha256'] != identity['source_manifest_sha256'] or base['identity_hash'] != reference_identity:
+                    raise ValueError('BC baseline reference differs')
+                cfg = base['config']
+            else:
+                if fm is None:
+                    raise ValueError('BC transfer needs hash-bound baseline or feature provenance')
+                producer = fm['source']
+                if fingerprint(producer['identity']) != identity['source_identity_hash']:
+                    raise ValueError('BC feature producer identity differs')
+                _match_training(producer['identity'], catalog)
+                verify_producer_code(producer['identity']['code_sha256'])
+                cfg = producer['config']
+                if cfg['agent'] != producer['identity']['agent_config']:
+                    raise ValueError('BC feature config differs from producer')
+                base = None
+            # Full Agent state and proof were audited above; independent BC opt is
+            # deliberately left outside the transfer state.
+            origin = dict(path=str(path), manifest_sha256=file_hash(path/'manifest.json'),
+                          bc_identity=identity, bc_updates=state['bc_updates'],
+                          config=cfg, step=state['agent']['counters']['updates'],
+                          checkpoint_step=state['bc_updates'], checkpoint_step_unit='bc_gradient_updates',
+                          environment_steps=base.get('environment_steps') if base else producer.get('environment_steps'),
+                          diagnostic=identity['diagnostic'], baseline=base,
+                          baseline_optimizer_equality='PENDING' if base else 'NOT_VERIFIED')
+            if inherited is not None:
+                if (base is None or inherited['origin']['manifest_sha256'] != base['manifest_sha256']
+                        or inherited['origin']['identity_hash'] != base['identity_hash']):
+                    raise ValueError('Managed BC admission differs from audited baseline')
+                from dreamerv3.fg_s3a_actor import parameter_digests
+                if parameter_digests(prepare_transfer(inherited)['params']) != state['source_digests']:
+                    raise ValueError('BC source parameters differ from admitted Gate transfer')
+                origin.update(config=inherited['target_config'], inherited_admission=inherited)
+        if diagnostic or catalog.manifest['diagnostic']:
+            origin['diagnostic'] = True
+        from embodied.run.fg_s3_gate import gate_policy, target_config, transfer_policy
+        base = origin.get('baseline') if kind == 'after_bc_s3a' else origin
+        source_opening = base.get('identity', {}).get('mask_gate_opening') if base else None
+        inherited = origin.get('inherited_admission')
+        if inherited is not None:
+            source_opening = inherited['gate_policy']['opening']
+        source_policy = gate_policy(origin['config'], diagnostic=origin['diagnostic'],
+                                    source_opening=source_opening, protocol=gate_protocol)
+        source_config = plain(origin['config'])
+        if kind == 'warm_start':
+            source_config['agent']['s3_clock_protocol'] = 'S3_MARKET_MINUTE'
+        cfg = target_config(source_config, plain(config) if config is not None else None)
+        if cfg['agent'].get('s3_clock_protocol') != 'S3_MARKET_MINUTE':
+>           raise ValueError('New S3 admission requires explicit S3_MARKET_MINUTE model semantics')
+E           ValueError: New S3 admission requires explicit S3_MARKET_MINUTE model semantics
+
+../dreamerv3/embodied/run/fg_s3_source_admission.py:542: ValueError
+---------------------------- Captured stdout setup -----------------------------
+Collect P4 CZCE.FG2701: 1100 source rows, CPU Driver
+labels CZCE.FG2701: 1091 (ADD 2)
+catalog CZCE.FG2701 {'total_rows': 1102, 'valid': 1091, 'ADD': 2, 'excluded_held_forced_wait': 8, 'WAIT': 1089, 'excluded_administrative_last': 1, 'excluded_unexecuted': 1, 'excluded_terminal': 1}
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 54,468 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+_________________ test_no_inference_source_and_frozen_snapshot _________________
+
+source_bundle = {'root': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0'), 'catalog': <gym_trading_env.research.fg_s3_...pt/step_000000000000'), 'bc': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0/bc/bc_000000000002'), ...}
+tmp_path = PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/test_no_inference_source_and_f0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7dde48734c90>
+
+    def test_no_inference_source_and_frozen_snapshot(source_bundle,tmp_path,monkeypatch):
+        from embodied.run.fg_s3_source_admission import freeze_source
+        from embodied.run import fg_s3_source_transfer as transfer
+        b=source_bundle
+        frozen=freeze_source(b['base'],tmp_path/'snapshot')
+>       spec=inspect_source('direct_full',catalog=b['catalog'],path=frozen['snapshot'])
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py:134: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:418: in inspect_source
+    return _inspect_source(kind, catalog=catalog, live_oracle=live_oracle, path=path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kind = 'direct_full'
+catalog = <gym_trading_env.research.fg_s3_teacher_catalog.TeacherCatalog object at 0x7ddebdb492d0>
+live_oracle = None
+path = '/tmp/s3_e_model_cpu/legacy_source_01/test_no_inference_source_and_f0/snapshot/ckpt/step_000000000000'
+seed = None, config = None, base_checkpoint = None, features = None
+diagnostic = False, gate_protocol = None, agent_extension = None
+composition = None, e_binding = None
+
+    def _inspect_source(kind, *, catalog=None, live_oracle=None, path=None, seed=None, config=None,
+                        base_checkpoint=None, features=None, diagnostic=False, gate_protocol=None,
+                        agent_extension=None, composition=None, e_binding=None):
+        """Shared admission core. Waiting E is tested only with bound CPU fixtures."""
+        if composition is not None:
+            composition = validate_composition(composition)
+            if composition['use_b2'] != (agent_extension is not None):
+                raise ValueError('Composition and B2 admission extension differ')
+        is_e = bool(composition is not None and composition['use_e'])
+        if is_e:
+            if kind != 'direct_init' or config is None or path is not None:
+                raise ValueError('E architecture requires direct_init; old Encoder warm-start forbidden')
+            from embodied.run.fg_s3_e_source import validate_binding
+            validate_binding(e_binding, plain(config), composition, diagnostic)
+        elif e_binding is not None or (config is not None and config['agent']['enc']['typ'] != 'simple'):
+            raise ValueError('E fresh-init requires matching Composition identity')
+        if (catalog is None) == (live_oracle is None):
+            raise ValueError('Source requires exactly one catalog or authenticated live TRAIN binding')
+        if live_oracle is not None:
+            if not isinstance(live_oracle, LiveOracleTraining) or kind != 'warm_start' or not diagnostic:
+                raise ValueError('Live TRAIN binding supports only explicit diagnostic parameter warm-start')
+            from gym_trading_env.research.fg_replay import check_files
+            check_files(live_oracle.binding['query_identity']['source']['receipt_files'])
+            check_files(live_oracle.binding['query_identity']['source']['candidate_files'])
+            catalog = live_oracle
+        if agent_extension is not None:
+            from dreamerv3.fg_s3_b2_outcome import b2_extensions
+            if (kind != 'warm_start' and not (is_e and kind == 'direct_init')) or agent_extension != b2_extensions(agent_extension):
+                raise ValueError('Architecture extension requires the frozen B2 parameter warm-start contract')
+        if type(diagnostic) is not bool:
+            raise ValueError('diagnostic must be an explicit boolean')
+        if kind == 'resume_s3c':
+            raise ValueError('Resume must use the same run FullCheckpoint, not source transfer')
+        if kind not in ('direct_init', 'direct_full', 'after_bc_s3a', 'warm_start'):
+            raise ValueError('NOT_SUPPORTED: '+str(kind))
+        if kind == 'direct_init':
+            if path is not None or seed is None or config is None:
+                raise ValueError('direct_init requires explicit seed and config, no checkpoint')
+            cfg = plain(config)
+            if cfg['seed'] != seed or cfg['agent']['horizon'] != 333 or not cfg['agent']['contdisc']:
+                raise ValueError('Initialization seed/Reward horizon differs')
+            origin = dict(config=cfg, step=0,
+                          diagnostic=bool(catalog.manifest['diagnostic'] or diagnostic))
+        elif kind in ('direct_full', 'warm_start'):
+            if path is None:
+                raise ValueError('direct_full requires a source checkpoint')
+            origin = _full(path, catalog, warm_start=kind == 'warm_start')
+        else:
+            if path is None:
+                raise ValueError('after_bc_s3a requires an atomic S3-A package')
+            path = Path(path).resolve()
+            audited = audit_bc(path)
+            state = pickle.loads((path/'state.pkl').read_bytes())
+            identity = audited['identity']
+            if identity['label_manifest_sha256'] != catalog.manifest['labels_manifest_sha256']:
+                raise ValueError('BC/catalog label identity mismatch')
+            inherited = _managed_bc_admission(path, identity, catalog)
+            reference_identity = (inherited['origin']['identity_hash'] if inherited is not None
+                                  else identity['source_identity_hash'])
+            fm = None
+            if features:
+                fm = read_manifest(Path(features)/'manifest.json')
+                if (file_hash(Path(features)/'manifest.json') != identity['feature_manifest_sha256']
+                        or fm['source']['manifest_sha256'] != identity['source_manifest_sha256']
+                        or fm['source']['identity_hash'] not in {
+                            reference_identity, identity['source_identity_hash']}):
+                    raise ValueError('BC feature/source provenance mismatch')
+                if base_checkpoint is None and Path(fm['source']['path']).is_dir():
+                    base_checkpoint = fm['source']['path']
+            if base_checkpoint:
+                base = _full(base_checkpoint, catalog)
+                if base['manifest_sha256'] != identity['source_manifest_sha256'] or base['identity_hash'] != reference_identity:
+                    raise ValueError('BC baseline reference differs')
+                cfg = base['config']
+            else:
+                if fm is None:
+                    raise ValueError('BC transfer needs hash-bound baseline or feature provenance')
+                producer = fm['source']
+                if fingerprint(producer['identity']) != identity['source_identity_hash']:
+                    raise ValueError('BC feature producer identity differs')
+                _match_training(producer['identity'], catalog)
+                verify_producer_code(producer['identity']['code_sha256'])
+                cfg = producer['config']
+                if cfg['agent'] != producer['identity']['agent_config']:
+                    raise ValueError('BC feature config differs from producer')
+                base = None
+            # Full Agent state and proof were audited above; independent BC opt is
+            # deliberately left outside the transfer state.
+            origin = dict(path=str(path), manifest_sha256=file_hash(path/'manifest.json'),
+                          bc_identity=identity, bc_updates=state['bc_updates'],
+                          config=cfg, step=state['agent']['counters']['updates'],
+                          checkpoint_step=state['bc_updates'], checkpoint_step_unit='bc_gradient_updates',
+                          environment_steps=base.get('environment_steps') if base else producer.get('environment_steps'),
+                          diagnostic=identity['diagnostic'], baseline=base,
+                          baseline_optimizer_equality='PENDING' if base else 'NOT_VERIFIED')
+            if inherited is not None:
+                if (base is None or inherited['origin']['manifest_sha256'] != base['manifest_sha256']
+                        or inherited['origin']['identity_hash'] != base['identity_hash']):
+                    raise ValueError('Managed BC admission differs from audited baseline')
+                from dreamerv3.fg_s3a_actor import parameter_digests
+                if parameter_digests(prepare_transfer(inherited)['params']) != state['source_digests']:
+                    raise ValueError('BC source parameters differ from admitted Gate transfer')
+                origin.update(config=inherited['target_config'], inherited_admission=inherited)
+        if diagnostic or catalog.manifest['diagnostic']:
+            origin['diagnostic'] = True
+        from embodied.run.fg_s3_gate import gate_policy, target_config, transfer_policy
+        base = origin.get('baseline') if kind == 'after_bc_s3a' else origin
+        source_opening = base.get('identity', {}).get('mask_gate_opening') if base else None
+        inherited = origin.get('inherited_admission')
+        if inherited is not None:
+            source_opening = inherited['gate_policy']['opening']
+        source_policy = gate_policy(origin['config'], diagnostic=origin['diagnostic'],
+                                    source_opening=source_opening, protocol=gate_protocol)
+        source_config = plain(origin['config'])
+        if kind == 'warm_start':
+            source_config['agent']['s3_clock_protocol'] = 'S3_MARKET_MINUTE'
+        cfg = target_config(source_config, plain(config) if config is not None else None)
+        if cfg['agent'].get('s3_clock_protocol') != 'S3_MARKET_MINUTE':
+>           raise ValueError('New S3 admission requires explicit S3_MARKET_MINUTE model semantics')
+E           ValueError: New S3 admission requires explicit S3_MARKET_MINUTE model semantics
+
+../dreamerv3/embodied/run/fg_s3_source_admission.py:542: ValueError
+____________ test_missing_baseline_requires_authenticated_features _____________
+
+source_bundle = {'root': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0'), 'catalog': <gym_trading_env.research.fg_s3_...pt/step_000000000000'), 'bc': PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0/bc/bc_000000000002'), ...}
+tmp_path = PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/test_missing_baseline_requires0')
+
+    def test_missing_baseline_requires_authenticated_features(source_bundle,tmp_path):
+        import shutil
+        from gym_trading_env.research.fg_replay import read_manifest,write_json,signed,digest
+        b=source_bundle
+>       base=inspect_source('direct_full',catalog=b['catalog'],path=b['base'])['origin']
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py:150: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:418: in inspect_source
+    return _inspect_source(kind, catalog=catalog, live_oracle=live_oracle, path=path,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kind = 'direct_full'
+catalog = <gym_trading_env.research.fg_s3_teacher_catalog.TeacherCatalog object at 0x7ddebdb492d0>
+live_oracle = None
+path = PosixPath('/tmp/s3_e_model_cpu/legacy_source_01/actual_source0/base/ckpt/step_000000000000')
+seed = None, config = None, base_checkpoint = None, features = None
+diagnostic = False, gate_protocol = None, agent_extension = None
+composition = None, e_binding = None
+
+    def _inspect_source(kind, *, catalog=None, live_oracle=None, path=None, seed=None, config=None,
+                        base_checkpoint=None, features=None, diagnostic=False, gate_protocol=None,
+                        agent_extension=None, composition=None, e_binding=None):
+        """Shared admission core. Waiting E is tested only with bound CPU fixtures."""
+        if composition is not None:
+            composition = validate_composition(composition)
+            if composition['use_b2'] != (agent_extension is not None):
+                raise ValueError('Composition and B2 admission extension differ')
+        is_e = bool(composition is not None and composition['use_e'])
+        if is_e:
+            if kind != 'direct_init' or config is None or path is not None:
+                raise ValueError('E architecture requires direct_init; old Encoder warm-start forbidden')
+            from embodied.run.fg_s3_e_source import validate_binding
+            validate_binding(e_binding, plain(config), composition, diagnostic)
+        elif e_binding is not None or (config is not None and config['agent']['enc']['typ'] != 'simple'):
+            raise ValueError('E fresh-init requires matching Composition identity')
+        if (catalog is None) == (live_oracle is None):
+            raise ValueError('Source requires exactly one catalog or authenticated live TRAIN binding')
+        if live_oracle is not None:
+            if not isinstance(live_oracle, LiveOracleTraining) or kind != 'warm_start' or not diagnostic:
+                raise ValueError('Live TRAIN binding supports only explicit diagnostic parameter warm-start')
+            from gym_trading_env.research.fg_replay import check_files
+            check_files(live_oracle.binding['query_identity']['source']['receipt_files'])
+            check_files(live_oracle.binding['query_identity']['source']['candidate_files'])
+            catalog = live_oracle
+        if agent_extension is not None:
+            from dreamerv3.fg_s3_b2_outcome import b2_extensions
+            if (kind != 'warm_start' and not (is_e and kind == 'direct_init')) or agent_extension != b2_extensions(agent_extension):
+                raise ValueError('Architecture extension requires the frozen B2 parameter warm-start contract')
+        if type(diagnostic) is not bool:
+            raise ValueError('diagnostic must be an explicit boolean')
+        if kind == 'resume_s3c':
+            raise ValueError('Resume must use the same run FullCheckpoint, not source transfer')
+        if kind not in ('direct_init', 'direct_full', 'after_bc_s3a', 'warm_start'):
+            raise ValueError('NOT_SUPPORTED: '+str(kind))
+        if kind == 'direct_init':
+            if path is not None or seed is None or config is None:
+                raise ValueError('direct_init requires explicit seed and config, no checkpoint')
+            cfg = plain(config)
+            if cfg['seed'] != seed or cfg['agent']['horizon'] != 333 or not cfg['agent']['contdisc']:
+                raise ValueError('Initialization seed/Reward horizon differs')
+            origin = dict(config=cfg, step=0,
+                          diagnostic=bool(catalog.manifest['diagnostic'] or diagnostic))
+        elif kind in ('direct_full', 'warm_start'):
+            if path is None:
+                raise ValueError('direct_full requires a source checkpoint')
+            origin = _full(path, catalog, warm_start=kind == 'warm_start')
+        else:
+            if path is None:
+                raise ValueError('after_bc_s3a requires an atomic S3-A package')
+            path = Path(path).resolve()
+            audited = audit_bc(path)
+            state = pickle.loads((path/'state.pkl').read_bytes())
+            identity = audited['identity']
+            if identity['label_manifest_sha256'] != catalog.manifest['labels_manifest_sha256']:
+                raise ValueError('BC/catalog label identity mismatch')
+            inherited = _managed_bc_admission(path, identity, catalog)
+            reference_identity = (inherited['origin']['identity_hash'] if inherited is not None
+                                  else identity['source_identity_hash'])
+            fm = None
+            if features:
+                fm = read_manifest(Path(features)/'manifest.json')
+                if (file_hash(Path(features)/'manifest.json') != identity['feature_manifest_sha256']
+                        or fm['source']['manifest_sha256'] != identity['source_manifest_sha256']
+                        or fm['source']['identity_hash'] not in {
+                            reference_identity, identity['source_identity_hash']}):
+                    raise ValueError('BC feature/source provenance mismatch')
+                if base_checkpoint is None and Path(fm['source']['path']).is_dir():
+                    base_checkpoint = fm['source']['path']
+            if base_checkpoint:
+                base = _full(base_checkpoint, catalog)
+                if base['manifest_sha256'] != identity['source_manifest_sha256'] or base['identity_hash'] != reference_identity:
+                    raise ValueError('BC baseline reference differs')
+                cfg = base['config']
+            else:
+                if fm is None:
+                    raise ValueError('BC transfer needs hash-bound baseline or feature provenance')
+                producer = fm['source']
+                if fingerprint(producer['identity']) != identity['source_identity_hash']:
+                    raise ValueError('BC feature producer identity differs')
+                _match_training(producer['identity'], catalog)
+                verify_producer_code(producer['identity']['code_sha256'])
+                cfg = producer['config']
+                if cfg['agent'] != producer['identity']['agent_config']:
+                    raise ValueError('BC feature config differs from producer')
+                base = None
+            # Full Agent state and proof were audited above; independent BC opt is
+            # deliberately left outside the transfer state.
+            origin = dict(path=str(path), manifest_sha256=file_hash(path/'manifest.json'),
+                          bc_identity=identity, bc_updates=state['bc_updates'],
+                          config=cfg, step=state['agent']['counters']['updates'],
+                          checkpoint_step=state['bc_updates'], checkpoint_step_unit='bc_gradient_updates',
+                          environment_steps=base.get('environment_steps') if base else producer.get('environment_steps'),
+                          diagnostic=identity['diagnostic'], baseline=base,
+                          baseline_optimizer_equality='PENDING' if base else 'NOT_VERIFIED')
+            if inherited is not None:
+                if (base is None or inherited['origin']['manifest_sha256'] != base['manifest_sha256']
+                        or inherited['origin']['identity_hash'] != base['identity_hash']):
+                    raise ValueError('Managed BC admission differs from audited baseline')
+                from dreamerv3.fg_s3a_actor import parameter_digests
+                if parameter_digests(prepare_transfer(inherited)['params']) != state['source_digests']:
+                    raise ValueError('BC source parameters differ from admitted Gate transfer')
+                origin.update(config=inherited['target_config'], inherited_admission=inherited)
+        if diagnostic or catalog.manifest['diagnostic']:
+            origin['diagnostic'] = True
+        from embodied.run.fg_s3_gate import gate_policy, target_config, transfer_policy
+        base = origin.get('baseline') if kind == 'after_bc_s3a' else origin
+        source_opening = base.get('identity', {}).get('mask_gate_opening') if base else None
+        inherited = origin.get('inherited_admission')
+        if inherited is not None:
+            source_opening = inherited['gate_policy']['opening']
+        source_policy = gate_policy(origin['config'], diagnostic=origin['diagnostic'],
+                                    source_opening=source_opening, protocol=gate_protocol)
+        source_config = plain(origin['config'])
+        if kind == 'warm_start':
+            source_config['agent']['s3_clock_protocol'] = 'S3_MARKET_MINUTE'
+        cfg = target_config(source_config, plain(config) if config is not None else None)
+        if cfg['agent'].get('s3_clock_protocol') != 'S3_MARKET_MINUTE':
+>           raise ValueError('New S3 admission requires explicit S3_MARKET_MINUTE model semantics')
+E           ValueError: New S3 admission requires explicit S3_MARKET_MINUTE model semantics
+
+../dreamerv3/embodied/run/fg_s3_source_admission.py:542: ValueError
+=========================== short test summary info ============================
+FAILED ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py::test_actual_three_modes_inherit_complete_state_and_reject_foreign
+FAILED ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py::test_no_inference_source_and_frozen_snapshot
+FAILED ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py::test_missing_baseline_requires_authenticated_features
+3 failed, 2 passed in 25.81s

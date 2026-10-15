@@ -1,0 +1,96 @@
+{
+  "gym": {
+    "target_before": "c3a808437ef277ee87f25b0ae8803e31fa5dca74",
+    "source": "1fa4cff970f700536b72041cad27972dacc76958",
+    "merge_head": "1fa4cff970f700536b72041cad27972dacc76958",
+    "merge_base": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+    "overlapping_files": [
+      "configs/experiments/fg_s3_v2/README.md",
+      "tools/fg_s3_v2_experiment.py"
+    ],
+    "incoming_nonoverlap_files_unchanged": true,
+    "existing_nonoverlap_files_unchanged": true,
+    "unresolved_files": []
+  },
+  "dreamer": {
+    "head": "131e7ccd4ef0648c8230e088d95e2c6da991557c",
+    "parents": [
+      "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "730939defb1bd77b2ceca04212105ec2727c95f9"
+    ],
+    "tree_identical_to_source": true
+  },
+  "source_and_frozen_worktrees": {
+    "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env": {
+      "head": "1fa4cff970f700536b72041cad27972dacc76958",
+      "status": ""
+    },
+    "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3": {
+      "head": "730939defb1bd77b2ceca04212105ec2727c95f9",
+      "status": ""
+    },
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env": {
+      "head": "871ca09000712d41408b8f72e0684624dce8659f",
+      "status": ""
+    },
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3": {
+      "head": "730939defb1bd77b2ceca04212105ec2727c95f9",
+      "status": ""
+    }
+  },
+  "checks": [
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "returncode": 2,
+      "stdout": "docs/e_data_v1/TASK_SPEC_20261014.md:3: trailing whitespace.\n+**日期**：2026-10-14  \ndocs/e_data_v1/TASK_SPEC_20261014.md:4: trailing whitespace.\n+**状态**：设计 Review 完成；可单独授权 Codex 实施 **E-Data V1**；不代表已授权 E-Model、GPU/1M 训练或现有正式实验改动。  \ndocs/e_data_v1/TASK_SPEC_20261014.md:5: trailing whitespace.\n+**项目背景**：FG Single3 日内 SHORT 入场；Actor WAIT/ADD，TP+5、SL−30，市场分钟规则保持原状。E 是独立市场理解能力，后续可连接 A2、Tutor-CD、B2；本任务不开发任何新教师、评分、Reward 或网络。  \n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ".",
+        ":!docs/**"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "markdown_note": "The original task specification has three Markdown hard-break lines; its blob is preserved exactly. Ordinary diff check passes for all non-doc files.",
+  "test_suites": {
+    "targeted": [
+      {
+        "name": "pytest",
+        "errors": "7",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "9",
+        "time": "5.608",
+        "timestamp": "2026-10-15T23:25:35.630879+08:00",
+        "hostname": "v-X570-AORUS-PRO-WIFI"
+      }
+    ],
+    "identity_final": [
+      {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "7",
+        "time": "4.909",
+        "timestamp": "2026-10-15T23:26:29.844387+08:00",
+        "hostname": "v-X570-AORUS-PRO-WIFI"
+      }
+    ]
+  },
+  "preflight_note": "git merge-tree --write-tree returned 128: fatal: unknown rev --write-tree; used ordinary no-commit merge and inspected its single conflict."
+}

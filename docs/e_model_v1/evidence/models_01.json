@@ -1,0 +1,56 @@
+{
+  "command": "/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest ../dreamerv3/embodied/tests/test_fg_s3_e_model.py -k wm_branch -q -o addopts= --basetemp=/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_01 --junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/models_01.xml",
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-m",
+    "pytest",
+    "../dreamerv3/embodied/tests/test_fg_s3_e_model.py",
+    "-k",
+    "wm_branch",
+    "-q",
+    "-o",
+    "addopts=",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_01",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/models_01.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "JAX_PLATFORMS": "cpu",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "src:../dreamerv3"
+  },
+  "versions": {
+    "gym-trading-env": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+    "dreamerv3": "eb63de710fd693fad7ac76f797f3d9f39e331b98"
+  },
+  "dirty": {
+    "gym-trading-env": [
+      " M src/gym_trading_env/research/fg_s3_dagger_d0.py",
+      " M src/gym_trading_env/research/fg_s3_v2_collector.py",
+      " M src/gym_trading_env/research/fg_s3_v2_experiment.py",
+      "?? src/gym_trading_env/research/fg_s3_e_observation.py",
+      "?? tests/entry_v1/e_model_fixture.py",
+      "?? tests/entry_v1/test_fg_s3_e_observation.py"
+    ],
+    "dreamerv3": [
+      " M dreamerv3/agent.py",
+      " M dreamerv3/configs.yaml",
+      " M dreamerv3/fg_s3_composition.py",
+      " M dreamerv3/fg_s3_v2_agent.py",
+      " M embodied/run/fg_s3_dagger_policy.py",
+      " M embodied/run/fg_s3_source_admission.py",
+      " M embodied/run/fg_s3_source_transfer.py",
+      "?? dreamerv3/fg_s3_e_config.py",
+      "?? dreamerv3/fg_s3_e_encoder.py",
+      "?? dreamerv3/tests/test_fg_s3_e_encoder.py",
+      "?? embodied/run/fg_s3_e_source.py",
+      "?? embodied/tests/test_fg_s3_e_model.py"
+    ]
+  },
+  "started_at": 1792013408.9391847,
+  "exit_code": 1,
+  "elapsed_seconds": 2.4797046184539795
+}

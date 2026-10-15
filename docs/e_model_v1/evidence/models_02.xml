@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="5" time="67.852" timestamp="2026-10-15T05:31:25.777515+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_s3_e_model" name="test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[a2]" time="11.737"><failure message="AssertionError: (['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'outcome_early10', 'outcome_early_valid', 'outcome_event', 'outcome_event_valid', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'], ['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'])">raw_e = {'market_seq': array([[[[ 0.0000000e+00,  0.0000000e+00,  0.0000000e+00, ...,
+           0.0000000e+00,  0.0000000e+00... 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]],
+      dtype=int32), ...}
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_02/test_EM07_EM08_EM11_EM12_EM13_0')
+mode = 'a2'
+
+    @pytest.mark.parametrize('mode',['a2','tutor','b2'])
+    def test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync(raw_e,tmp_path,mode):
+        a=model(tmp_path/'model',mode)
+        assert all(d.platform=='cpu' for d in jax.devices())
+        before=parameter_digests(a.params)
+        carry=a.init_train(1)
+        metrics=[]
+        for step in range(5):
+&gt;           carry,_,m=a.train(carry,gpu_batch(a,raw_e,100+step))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.jax.agent.Agent object at 0x7d512be9f650&gt;
+carry = ({}, {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0.,...stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}, {}, {'action': Array([0], dtype=int32)})
+data = {'action': Array([[0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 1, 0...False,
+        False, False, False, False, False, False, False, False, False,
+        False, False]], dtype=bool), ...}
+
+    @elements.timer.section('jaxagent_train')
+    def train(self, carry, data):
+      seed = data.pop('seed')
+&gt;     assert sorted(data.keys()) == sorted(self.spaces.keys()), (
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          sorted(data.keys()), sorted(self.spaces.keys()))
+E     AssertionError: (['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'outcome_early10', 'outcome_early_valid', 'outcome_event', 'outcome_event_valid', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'], ['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'])
+
+../dreamerv3/embodied/jax/agent.py:267: AssertionError</failure></testcase><testcase classname="embodied.tests.test_fg_s3_e_model" name="test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[tutor]" time="9.473"><failure message="AssertionError: (['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'outcome_early10', 'outcome_early_valid', 'outcome_event', 'outcome_event_valid', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'], ['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'])">raw_e = {'market_seq': array([[[[ 0.0000000e+00,  0.0000000e+00,  0.0000000e+00, ...,
+           0.0000000e+00,  0.0000000e+00... 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]],
+      dtype=int32), ...}
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_02/test_EM07_EM08_EM11_EM12_EM13_1')
+mode = 'tutor'
+
+    @pytest.mark.parametrize('mode',['a2','tutor','b2'])
+    def test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync(raw_e,tmp_path,mode):
+        a=model(tmp_path/'model',mode)
+        assert all(d.platform=='cpu' for d in jax.devices())
+        before=parameter_digests(a.params)
+        carry=a.init_train(1)
+        metrics=[]
+        for step in range(5):
+&gt;           carry,_,m=a.train(carry,gpu_batch(a,raw_e,100+step))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.jax.agent.Agent object at 0x7d511c6c8190&gt;
+carry = ({}, {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0.,...stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}, {}, {'action': Array([0], dtype=int32)})
+data = {'action': Array([[0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 1, 0...False,
+        False, False, False, False, False, False, False, False, False,
+        False, False]], dtype=bool), ...}
+
+    @elements.timer.section('jaxagent_train')
+    def train(self, carry, data):
+      seed = data.pop('seed')
+&gt;     assert sorted(data.keys()) == sorted(self.spaces.keys()), (
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          sorted(data.keys()), sorted(self.spaces.keys()))
+E     AssertionError: (['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'outcome_early10', 'outcome_early_valid', 'outcome_event', 'outcome_event_valid', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'], ['action', 'action_mask', 'consec', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward', 'stepid', 'teacher_action', 'teacher_valid'])
+
+../dreamerv3/embodied/jax/agent.py:267: AssertionError</failure></testcase><testcase classname="embodied.tests.test_fg_s3_e_model" name="test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[b2]" time="25.284" /><testcase classname="embodied.tests.test_fg_s3_e_model" name="test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation" time="10.068"><failure message="RuntimeError: Trying to compute gradient with respect to key 'pol/head/action/logits/bias' but the differentiated function does not access it.&#10;Accessed keys: ['dyn/dynin0/kernel', 'dyn/dyngru/bias', 'dyn/obslogit/bias', 'avail/mlp/linear1/bias', 'dyn/obs0/bias', 'dyn/prior1/bias', 'enc/fusion/kernel', 'dec/vec/position_state/pred/bias', 'dyn/prior0/bias', 'con/head/logit/kernel', 'dyn/dynhid0/kernel', 'con/mlp/linear0/bias', 'dyn/dynin1/bias', 'dec/vec/market_seq_e_shared/pred/bias', 'dyn/dynin0/bias', 'rew/mlp/linear0/kernel', 'enc/minute/mlp2norm/scale', 'enc/minute/mlp1/bias', 'dyn/prior1/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp0/kernel', 'enc/context15/kernel', 'dyn/obs0/kernel', 'rew/head/logits/bias', 'enc/context15/bias', 'dyn/prior0/kernel', 'rew/mlp/norm0/scale', 'avail/head/logit/kernel', 'rew/head/logits/kernel', 'dyn/dyngru/kernel', 'enc/fusion/bias', 'enc/minute/mlp2/bias', 'avail/mlp/linear0/bias', 'dyn/dynin2/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'con/head/logit/bias', 'dyn/dynhid0norm/scale', 'dec/mlp/norm0/scale', 'con/mlp/linear0/kernel', 'enc/minute/mlp1/kernel', 'avail/mlp/linear0/kernel', 'avail/mlp/norm1/scale', 'dec/mlp/linear0/kernel', 'enc/minute/mlp0/bias', 'dyn/prior0norm/scale', 'avail/head/logit/bias', 'dyn/priorlogit/bias', 'rew/mlp/linear0/bias', 'dyn/dynin2norm/scale', 'dyn/obs0norm/scale', 'dyn/dynin1norm/scale', 'dyn/obslogit/kernel', 'dyn/dynin1/kernel', 'enc/minute/mlp2/kernel', 'avail/mlp/linear1/kernel', 'dyn/dynin0norm/scale', 'avail/mlp/norm0/scale', 'con/mlp/norm0/scale', 'dyn/dynin2/kernel', 'dec/vec/position_state/pred/kernel', 'enc/minute/mlp1norm/scale', 'dyn/priorlogit/kernel', 'dec/mlp/linear0/bias', 'dyn/prior1norm/scale', 'dyn/dynhid0/bias']&#10;Gradient keys: ['dyn/dyngru/bias', 'dyn/dyngru/kernel', 'dyn/dynhid0/bias', 'dyn/dynhid0/kernel', 'dyn/dynhid0norm/scale', 'dyn/dynin0/bias', 'dyn/dynin0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin1/bias', 'dyn/dynin1/kernel', 'dyn/dynin1norm/scale', 'dyn/dynin2/bias', 'dyn/dynin2/kernel', 'dyn/dynin2norm/scale', 'dyn/obs0/bias', 'dyn/obs0/kernel', 'dyn/obs0norm/scale', 'dyn/obslogit/bias', 'dyn/obslogit/kernel', 'dyn/prior0/bias', 'dyn/prior0/kernel', 'dyn/prior0norm/scale', 'dyn/prior1/bias', 'dyn/prior1/kernel', 'dyn/prior1norm/scale', 'dyn/priorlogit/bias', 'dyn/priorlogit/kernel', 'enc/context15/bias', 'enc/context15/kernel', 'enc/fusion/bias', 'enc/fusion/kernel', 'enc/minute/mlp0/bias', 'enc/minute/mlp0/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp1/bias', 'enc/minute/mlp1/kernel', 'enc/minute/mlp1norm/scale', 'enc/minute/mlp2/bias', 'enc/minute/mlp2/kernel', 'enc/minute/mlp2norm/scale', 'dec/mlp/linear0/bias', 'dec/mlp/linear0/kernel', 'dec/mlp/norm0/scale', 'dec/vec/market_seq_e_shared/pred/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/bias', 'dec/vec/position_state/pred/kernel', 'rew/head/logits/bias', 'rew/head/logits/kernel', 'rew/mlp/linear0/bias', 'rew/mlp/linear0/kernel', 'rew/mlp/norm0/scale', 'con/head/logit/bias', 'con/head/logit/kernel', 'con/mlp/linear0/bias', 'con/mlp/linear0/kernel', 'con/mlp/norm0/scale', 'avail/head/logit/bias', 'avail/head/logit/kernel', 'avail/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'avail/mlp/linear1/bias', 'avail/mlp/linear1/kernel', 'avail/mlp/norm0/scale', 'avail/mlp/norm1/scale', 'pol/head/action/logits/bias', 'pol/head/action/logits/kernel', 'pol/mlp/linear0/bias', 'pol/mlp/linear0/kernel', 'pol/mlp/norm0/scale']&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.">raw_e = {'market_seq': array([[[[ 0.0000000e+00,  0.0000000e+00,  0.0000000e+00, ...,
+           0.0000000e+00,  0.0000000e+00... 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]],
+      dtype=int32), ...}
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_02/test_EM06_EM07_EM09_wm_branch_0')
+
+    def test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation(raw_e,tmp_path):
+        a=model(tmp_path/'wm')
+&gt;       grads=neural_gradients(a,raw_e,'wm')
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:105: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:66: in neural_gradients
+    _,(_,_,grads)=fn(agent.params,agent.init_train(1),data,seed=31,create=False,modify=True)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:64: in &lt;lambda&gt;
+    fn=jax.jit(nj.pure(lambda c,d:nj.grad(loss,mods)(c,d)),static_argnames=('create','modify'))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (({}, {'deter': Traced&lt;ShapedArray(float32[1,32])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'stoch': Traced&lt;ShapedArray(floa...ith&lt;DynamicJaxprTrace(level=1/0)&gt;, 'is_first': Traced&lt;ShapedArray(bool[1,65])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, ...})
+kwargs = {}
+
+    @hidestack
+    def wrapper(*args, **kwargs):
+      accessed, modified = _prerun(fun, *args, **kwargs)
+    
+      strs = []
+      for target in targets:
+        if isinstance(target, Module):
+          prefix = target.path + '/'
+          matches = {k: v for k, v in ctx.items() if k.startswith(prefix)}
+        if isinstance(target, str):
+          pattern = re.compile(f'^{target}(/.*|$)')
+          matches = [k for k in ctx if pattern.match(k)]
+        if not matches:
+          existing = ', '.join(ctx.keys())
+          raise KeyError(
+              f"Gradient target '{target}' did not match any state entries. " +
+              f'Existing state entries: {existing}')
+        strs += matches
+      existing = ctx.keys()
+      assert all(key in existing for key in strs), (strs, existing)
+      x1 = {k: v for k, v in ctx.items() if k in strs}
+      x2 = {k: v for k, v in ctx.items() if k not in strs}
+      if not x1:
+        raise ValueError(
+            'No inputs to differentiate with respect to. ' +
+            f"User provided targets: '{targets}'")
+    
+      for key in x1.keys():
+        if key not in accessed:
+&gt;         raise RuntimeError(
+              f"Trying to compute gradient with respect to key '{key}' "
+              'but the differentiated function does not access it.\n'
+              f'Accessed keys: {list(accessed)}\n'
+              f'Gradient keys: {list(strs)}')
+E         RuntimeError: Trying to compute gradient with respect to key 'pol/head/action/logits/bias' but the differentiated function does not access it.
+E         Accessed keys: ['dyn/dynin0/kernel', 'dyn/dyngru/bias', 'dyn/obslogit/bias', 'avail/mlp/linear1/bias', 'dyn/obs0/bias', 'dyn/prior1/bias', 'enc/fusion/kernel', 'dec/vec/position_state/pred/bias', 'dyn/prior0/bias', 'con/head/logit/kernel', 'dyn/dynhid0/kernel', 'con/mlp/linear0/bias', 'dyn/dynin1/bias', 'dec/vec/market_seq_e_shared/pred/bias', 'dyn/dynin0/bias', 'rew/mlp/linear0/kernel', 'enc/minute/mlp2norm/scale', 'enc/minute/mlp1/bias', 'dyn/prior1/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp0/kernel', 'enc/context15/kernel', 'dyn/obs0/kernel', 'rew/head/logits/bias', 'enc/context15/bias', 'dyn/prior0/kernel', 'rew/mlp/norm0/scale', 'avail/head/logit/kernel', 'rew/head/logits/kernel', 'dyn/dyngru/kernel', 'enc/fusion/bias', 'enc/minute/mlp2/bias', 'avail/mlp/linear0/bias', 'dyn/dynin2/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'con/head/logit/bias', 'dyn/dynhid0norm/scale', 'dec/mlp/norm0/scale', 'con/mlp/linear0/kernel', 'enc/minute/mlp1/kernel', 'avail/mlp/linear0/kernel', 'avail/mlp/norm1/scale', 'dec/mlp/linear0/kernel', 'enc/minute/mlp0/bias', 'dyn/prior0norm/scale', 'avail/head/logit/bias', 'dyn/priorlogit/bias', 'rew/mlp/linear0/bias', 'dyn/dynin2norm/scale', 'dyn/obs0norm/scale', 'dyn/dynin1norm/scale', 'dyn/obslogit/kernel', 'dyn/dynin1/kernel', 'enc/minute/mlp2/kernel', 'avail/mlp/linear1/kernel', 'dyn/dynin0norm/scale', 'avail/mlp/norm0/scale', 'con/mlp/norm0/scale', 'dyn/dynin2/kernel', 'dec/vec/position_state/pred/kernel', 'enc/minute/mlp1norm/scale', 'dyn/priorlogit/kernel', 'dec/mlp/linear0/bias', 'dyn/prior1norm/scale', 'dyn/dynhid0/bias']
+E         Gradient keys: ['dyn/dyngru/bias', 'dyn/dyngru/kernel', 'dyn/dynhid0/bias', 'dyn/dynhid0/kernel', 'dyn/dynhid0norm/scale', 'dyn/dynin0/bias', 'dyn/dynin0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin1/bias', 'dyn/dynin1/kernel', 'dyn/dynin1norm/scale', 'dyn/dynin2/bias', 'dyn/dynin2/kernel', 'dyn/dynin2norm/scale', 'dyn/obs0/bias', 'dyn/obs0/kernel', 'dyn/obs0norm/scale', 'dyn/obslogit/bias', 'dyn/obslogit/kernel', 'dyn/prior0/bias', 'dyn/prior0/kernel', 'dyn/prior0norm/scale', 'dyn/prior1/bias', 'dyn/prior1/kernel', 'dyn/prior1norm/scale', 'dyn/priorlogit/bias', 'dyn/priorlogit/kernel', 'enc/context15/bias', 'enc/context15/kernel', 'enc/fusion/bias', 'enc/fusion/kernel', 'enc/minute/mlp0/bias', 'enc/minute/mlp0/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp1/bias', 'enc/minute/mlp1/kernel', 'enc/minute/mlp1norm/scale', 'enc/minute/mlp2/bias', 'enc/minute/mlp2/kernel', 'enc/minute/mlp2norm/scale', 'dec/mlp/linear0/bias', 'dec/mlp/linear0/kernel', 'dec/mlp/norm0/scale', 'dec/vec/market_seq_e_shared/pred/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/bias', 'dec/vec/position_state/pred/kernel', 'rew/head/logits/bias', 'rew/head/logits/kernel', 'rew/mlp/linear0/bias', 'rew/mlp/linear0/kernel', 'rew/mlp/norm0/scale', 'con/head/logit/bias', 'con/head/logit/kernel', 'con/mlp/linear0/bias', 'con/mlp/linear0/kernel', 'con/mlp/norm0/scale', 'avail/head/logit/bias', 'avail/head/logit/kernel', 'avail/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'avail/mlp/linear1/bias', 'avail/mlp/linear1/kernel', 'avail/mlp/norm0/scale', 'avail/mlp/norm1/scale', 'pol/head/action/logits/bias', 'pol/head/action/logits/kernel', 'pol/mlp/linear0/bias', 'pol/mlp/linear0/kernel', 'pol/mlp/norm0/scale']
+E         --------------------
+E         For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:274: RuntimeError</failure></testcase><testcase classname="embodied.tests.test_fg_s3_e_model" name="test_EM04_actual_policy_context_changes_rssm_and_actor" time="9.650"><failure message="assert not True&#10; +  where True = &lt;function array_equal at 0x7d5145015eb0&gt;([Array([-0.01471428,  0.02652422,  0.01338496,  0.03705053, -0.01478505,\n        0.01892752,  0.02340738, -0.00524339,...     -0.01609729,  0.01328829, -0.01265201,  0.02065482,  0.01829719,\n        0.05662838, -0.00076948], dtype=float32)], [Array([-0.01471428,  0.02652422,  0.01338496,  0.03705053, -0.01478505,\n        0.01892752,  0.02340738, -0.00524339,...     -0.01609729,  0.01328829, -0.01265201,  0.02065482,  0.01829719,\n        0.05662838, -0.00076948], dtype=float32)])&#10; +    where &lt;function array_equal at 0x7d5145015eb0&gt; = np.array_equal">raw_e = {'market_seq': array([[[[ 0.0000000e+00,  0.0000000e+00,  0.0000000e+00, ...,
+           0.0000000e+00,  0.0000000e+00... 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]],
+      dtype=int32), ...}
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/models_02/test_EM04_actual_policy_contex0')
+
+    def test_EM04_actual_policy_context_changes_rssm_and_actor(raw_e,tmp_path):
+        a=model(tmp_path/'policy')
+        obs={k:raw_e[k][:,40].copy() for k in a.obs_space}
+        obs['action_mask'][:]=1.
+        a.sync_policy_from_train()
+        carry=a.init_policy(1)
+        c1,_,o1=a.policy(carry,obs,mode='eval')
+        other=copy.deepcopy(obs)
+        other['market_context_15m'][...,:6]+=1.
+        c2,_,o2=a.policy(a.init_policy(1),other,mode='eval')
+&gt;       assert not np.array_equal(c1[1]['deter'],c2[1]['deter'])
+E       assert not True
+E        +  where True = &lt;function array_equal at 0x7d5145015eb0&gt;([Array([-0.01471428,  0.02652422,  0.01338496,  0.03705053, -0.01478505,\n        0.01892752,  0.02340738, -0.00524339,...     -0.01609729,  0.01328829, -0.01265201,  0.02065482,  0.01829719,\n        0.05662838, -0.00076948], dtype=float32)], [Array([-0.01471428,  0.02652422,  0.01338496,  0.03705053, -0.01478505,\n        0.01892752,  0.02340738, -0.00524339,...     -0.01609729,  0.01328829, -0.01265201,  0.02065482,  0.01829719,\n        0.05662838, -0.00076948], dtype=float32)])
+E        +    where &lt;function array_equal at 0x7d5145015eb0&gt; = np.array_equal
+
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:145: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,27 @@
+{
+  "resolved_composition": {
+    "encoder": "legacy_1m",
+    "teaching": "tutor_cd_b2",
+    "base_oracle_bc": true,
+    "use_e": false,
+    "use_tutor": true,
+    "use_b2": true,
+    "legacy_mode": null,
+    "support_state": "waiting_tutor_b2",
+    "schema_version": 1
+  },
+  "target_model_identity": {
+    "resolved_composition": {
+      "encoder": "legacy_1m",
+      "teaching": "tutor_cd_b2",
+      "base_oracle_bc": true,
+      "use_e": false,
+      "use_tutor": true,
+      "use_b2": true,
+      "legacy_mode": null,
+      "support_state": "waiting_tutor_b2",
+      "schema_version": 1
+    }
+  },
+  "content_hash": "d6faf465e9722b5a5b4b3f8c5764313d101eaa80b32b701badce590c536705c0"
+}

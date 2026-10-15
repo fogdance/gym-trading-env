@@ -1,0 +1,79 @@
+diff --git a/configs/experiments/fg_s3_v2/README.md b/configs/experiments/fg_s3_v2/README.md
+index 42a93c8..27b38af 100644
+--- a/configs/experiments/fg_s3_v2/README.md
++++ b/configs/experiments/fg_s3_v2/README.md
+@@ -95,6 +95,32 @@ by a file lock. RPC errors stop with a retained outbox and
+ `RPC_RECONCILIATION_REQUIRED`; pending RPCs require reconciliation before resume.
+ Existing output directories and source training/archive artifacts are retained.
+ 
++### Live console in tmux
++
++Run the repository monitor from a development/integration worktree; keep the
++running model's frozen source untouched:
++
++```bash
++/home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py monitor-online \
++  --run-dir /data/logdir/fg_single3/online_sim/TUTOR_CD_800K_FG701_SHORT_20261014_v1
++```
++
++Healthy repeated samples are silent. A new decision prints one compact line;
++each new open/close, RPC acknowledgement/failure, alert and recovery is shown
++separately. Alerts repeat only after five minutes if still unresolved. Output is
++flushed to stdout for tmux and appended to the run's `console.log`. An RPC
++acknowledgement is labelled queued, not broker-filled. Trades between polls are
++read from the complete action/RPC logs, with a saved observation boundary for
++monitor restarts.
++
++The monitor uses no model, GPU, training or order submission. Sampling defaults
++to 30 seconds and continues until stopped; `--once`, `--interval`, `--until`
++and JSON events via `--json` are optional. `--runner-pid PID` adds a process
++health check; heartbeat freshness remains checked without it. Bounded audit
++samples are written under `<run-dir>/monitor/`; `--output-dir` can select an
++existing monitor directory during handover. A file lock prevents two monitors
++using that directory. Raw `runner.log` remains the separate full audit stream.
++
+ ## B2 Outcome-Aware diagnostics (market-minute V1)
+ 
+ Use the independent `research/fg-s3-b2-dev/` pair. New E/O and live DAgger labels,
+diff --git a/tools/fg_s3_v2_experiment.py b/tools/fg_s3_v2_experiment.py
+index 466f52f..a8a059c 100644
+--- a/tools/fg_s3_v2_experiment.py
++++ b/tools/fg_s3_v2_experiment.py
+@@ -28,7 +28,8 @@ def main():
+     p = argparse.ArgumentParser(description=__doc__)
+     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
+                                      'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
+-                                     'score-predictions', 'simulate-online', 'describe-composition'])
++                                     'score-predictions', 'simulate-online', 'monitor-online',
++                                     'describe-composition'])
+     p.add_argument('--config')
+     p.add_argument('--prepared')
+     p.add_argument('--run-dir')
+@@ -37,7 +38,12 @@ def main():
+                    help='Internal bounded E cold-resume next-update probe; publishes no checkpoint')
+     p.add_argument('--eval-steps', type=int, default=1000)
+     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
+-    p.add_argument('--output-dir', help='New isolated prediction scoring directory')
++    p.add_argument('--output-dir', help='Prediction scoring directory or online monitor observations')
++    p.add_argument('--runner-pid', type=int, help='Online runner PID for optional process health checks')
++    p.add_argument('--interval', type=float, default=30, help='Online monitor sampling interval in seconds')
++    p.add_argument('--once', action='store_true', help='Sample the online monitor once')
++    p.add_argument('--json', action='store_true', help='Print online console events as JSON')
++    p.add_argument('--until', help='Optional online monitor end time (ISO); default is continuous')
+     p.add_argument('--check-only', action='store_true', help='Online DB/model/RPC preflight; emits no orders')
+     p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
+     p.add_argument('--authorize-training', action='store_true',
+@@ -47,6 +53,13 @@ def main():
+         p.error('--verify-resume-only requires admit-e-resume without --stop-at')
+     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
+         p.error('--check-only and --resume-online require simulate-online')
++    if args.command == 'monitor-online':
++        if not args.run_dir:
++            p.error('monitor-online requires --run-dir')
++        from gym_trading_env.research.fg_s3_online_monitor import monitor_online
++        monitor_online(args.run_dir, output_dir=args.output_dir, runner_pid=args.runner_pid,
++                       interval=args.interval, once=args.once, compact=not args.json, until=args.until)
++        return
+     # Composition preflight precedes trainer imports and CUDA selection. The
+     # shared pure resolver is also used by direct prepare/runtime/model callers.
+     from dreamerv3.configuration import read_config_yaml

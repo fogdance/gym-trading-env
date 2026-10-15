@@ -1,0 +1,135 @@
+{
+  "status": "COMPLETE",
+  "receipt": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/receipt.json",
+  "receipt_sha256": "3df4b7dc67545fc3408034149ee48ef8731c78e98bc77eb3968410f987eb83ec",
+  "canonical_checkpoint": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000",
+  "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041",
+  "native_e_dev_profiles": [
+    {
+      "identity": "6484abad16fe7122bb59fd4d4be49833ff1585706aa5331c78e958306fbe3ba7",
+      "source_receipt": {
+        "protocol": "FG_S3_E_DEV_OBSERVATION_V1",
+        "role": "DEV",
+        "sources": {
+          "CZCE.FG409": {
+            "market": {
+              "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0019_CZCE_FG409_main_1m.csv",
+              "sha256": "304e6cc2a6902e4135b6af2a506b417971247b439a899ddd2d51e5476ef08b03"
+            }
+          }
+        },
+        "dev_manifest_sha256": "53ad481c63f395d2d964cda48470463022808ab6f2d670260397659fbf3cc3fe",
+        "observation": {
+          "observation_schema": "FG_S3_E_OBSERVATION_V1",
+          "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V1",
+          "decoder_schema": "FG_S3_E_DECODER_V1",
+          "fields": {
+            "market_seq": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "position_state": {
+              "shape": [
+                9
+              ],
+              "dtype": "float32"
+            },
+            "action_mask": {
+              "shape": [
+                2
+              ],
+              "dtype": "float32"
+            },
+            "action": {
+              "shape": [],
+              "dtype": "int32"
+            },
+            "reward": {
+              "shape": [],
+              "dtype": "float32"
+            },
+            "is_first": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_last": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_terminal": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "market_seq_e_shared": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "market_context_15m": {
+              "shape": [
+                24,
+                7
+              ],
+              "dtype": "float32"
+            }
+          },
+          "encoder_keys": [
+            "market_seq_e_shared",
+            "position_state",
+            "action_mask",
+            "market_context_15m"
+          ],
+          "decoder_keys": [
+            "market_seq_e_shared",
+            "position_state"
+          ],
+          "audit_only": [
+            "market_seq"
+          ],
+          "context_fields": [
+            "rel_open",
+            "rel_high",
+            "rel_low",
+            "rel_close",
+            "vol_relative",
+            "oi_change",
+            "valid"
+          ],
+          "contract_hash": "75968be1711c3cdb92c8f507e19c0d6a595d6962acd9e577dabc76858b46b68b"
+        },
+        "training_authorization": false
+      },
+      "observation_shapes": {
+        "action_mask": [
+          2
+        ],
+        "market_context_15m": [
+          24,
+          7
+        ],
+        "market_seq": [
+          60,
+          18
+        ],
+        "market_seq_e_shared": [
+          60,
+          18
+        ],
+        "position_state": [
+          9
+        ]
+      },
+      "loaded_model_updates": 40000
+    }
+  ],
+  "denied_oracle_or_test_accesses": [],
+  "protected_training_inputs_unchanged": true,
+  "model_updates": 40000,
+  "launch_sha256": "d3101e8575655643be1ba79baaf97a53cbffb986fa58545367122cabe9291ca8",
+  "content_hash": "fd6c2511c36b94c916363d500bff709f59d00743720c91045250037980a5d566"
+}

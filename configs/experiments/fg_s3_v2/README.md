@@ -1,5 +1,15 @@
 # S3-V2 shared entry and experiment configurations
 
+## E + Tutor-CD Full formal 1M
+
+`E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` selects the native E encoder and the
+accepted Tutor Full recipe (alpha=.8, pair=.1, tau1, kappa1, cap2), fresh size50m
+initialization, all TRAIN contracts, beta1, 1M market minutes, 40000 joint updates,
+Replay32768 and full checkpoints every100K. The user explicitly released this
+entry on2026-10-15; incomplete GPU smoke is not recorded as passed. Source
+authentication, the original trading Gate and `--authorize-training` remain.
+See `docs/e_native_env_20261015/FORMAL_ENTRY_RELEASE.md` for exact commands.
+
 ## Tutor-CD Full E2 formal 1M (integration/s3-next)
 
 `TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` uses the accepted integration baseline,
@@ -460,3 +470,49 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
 Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
 this F0 task runs CPU admission and tests only, no GPU training. Implementation,
 identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
+## E-Model V1：目标配置，公开组合仍等待
+
+`E_MODEL_V1_A2_WAITING`、`E_MODEL_V1_TUTOR_CD_WAITING`、`E_MODEL_V1_B2_WAITING`
+使用新的 encoder 轴、原 teaching 轴及 `direct_init / model_init(seed0,size50m)`。
+三份配置的 `e_data_manifest` 是待真实联调的占位路径，不能用于训练。
+当前公开 prepare/start/resume/evaluate 仍 fail closed；只有 describe 是只读可执行。
+
+```bash
+CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
+  /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py \
+  describe-composition --config E_MODEL_V1_B2_WAITING
+```
+
+CPU 模型验收在共享内部核心与确定性合成 provider 上执行，正式 Prepared/Run 未创建。
+接口、EM01–EM18 及后置 Review 要求见 `docs/S3_E_MODEL_V1_INTERFACE.md` 和
+`docs/S3_E_MODEL_V1_IMPLEMENTATION_REPORT.md`。不把 CPU Checkpoint 当正式 E Run。
+
+## Native E real TRAIN acceptance (2026-10-15)
+
+`E_NATIVE_{A2,TUTOR,B2}_{CPU,GPU}_20261015_v3` uses the shared entry and
+native Env E observation profile. Admission verifies the original immutable
+18-contract TRAIN collection; these bounded runs select FG201 and FG301 to
+exercise account rotation and cold restore. The profile authenticates source
+metadata; it does not load a second market DataFrame or wrap the Env.
+Beta1 supplies certified TRAIN supervision for the engineering check; executed
+trades are teacher-controlled. Both devices retain the canonical Single3 Gate.
+
+CPU uses an explicitly small network for six joint updates over 2200 real Env
+advances. GPU uses the canonical size50m preset for 1000 joint updates over
+1000 advances. These protocols retain `waiting_e` and cannot authorize formal
+1M. Every retry requires a fresh configuration/preparation/run name. The GPU
+configuration requires matching completed CPU evidence before preparation.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-prepare --config E_NATIVE_A2_CPU_20261015_v3
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_NATIVE_A2_CPU_20261015_v3 --stop-at 1100
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_NATIVE_A2_CPU_20261015_v3
+```
+
+Resume first verifies the next sample/update in an isolated child process,
+then restores the same immutable checkpoint in a fresh training process. It
+does not rewind a running Prefetch worker. Versions v1/v2 retain failed trials.
+For GPU use the matching GPU configuration and stop at500 before a separate
+resume to1000. Raw command logs, failures, source identities and actual PASS
+receipts are archived in `docs/e_native_env_20261015/`; configuration existence
+alone is not an acceptance result. Formal1M remains a separate Review gate.

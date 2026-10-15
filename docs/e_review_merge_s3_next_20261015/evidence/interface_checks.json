@@ -1,0 +1,65 @@
+{
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "checks": [
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_v2_experiment.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: fg_s3_v2_experiment.py [-h] [--config CONFIG] [--prepared PREPARED]\n                              [--run-dir RUN_DIR] [--stop-at STOP_AT]\n                              [--verify-resume-only] [--eval-steps EVAL_STEPS]\n                              [--eval-dir EVAL_DIR] [--output-dir OUTPUT_DIR]\n                              [--runner-pid RUNNER_PID] [--interval INTERVAL]\n                              [--once] [--json] [--until UNTIL] [--check-only]\n                              [--resume-online] [--authorize-training]\n                              {prepare,start,resume,evaluate,report,gpu_check,admit-e-prepare,admit-e-start,admit-e-resume,score-predictions,simulate-online,monitor-online,describe-composition}\n\nPrepare, train, evaluate S3-V2 and simulate frozen Actors on live DB bars.\n\npositional arguments:\n  {prepare,start,resume,evaluate,report,gpu_check,admit-e-prepare,admit-e-start,admit-e-resume,score-predictions,simulate-online,monitor-online,describe-composition}\n\noptions:\n  -h, --help            show this help message and exit\n  --config CONFIG\n  --prepared PREPARED\n  --run-dir RUN_DIR\n  --stop-at STOP_AT\n  --verify-resume-only  Internal bounded E cold-resume next-update probe;\n                        publishes no checkpoint\n  --eval-steps EVAL_STEPS\n  --eval-dir EVAL_DIR   Existing sealed Actor-only evaluation for CPU post-\n                        processing\n  --output-dir OUTPUT_DIR\n                        Prediction scoring directory or online monitor\n                        observations\n  --runner-pid RUNNER_PID\n                        Online runner PID for optional process health checks\n  --interval INTERVAL   Online monitor sampling interval in seconds\n  --once                Sample the online monitor once\n  --json                Print online console events as JSON\n  --until UNTIL         Optional online monitor end time (ISO); default is\n                        continuous\n  --check-only          Online DB/model/RPC preflight; emits no orders\n  --resume-online       Restore the same online account and policy carry\n  --authorize-training  Explicit user authorization for formal 1M\n                        start/resume; diagnostics do not require it\n",
+      "stderr": "",
+      "result": "PASS"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_v2_experiment.py",
+        "describe-composition",
+        "--config",
+        "E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"resolved_composition\": {\n    \"encoder\": \"e_multiscale_1m15m\",\n    \"teaching\": \"tutor_cd\",\n    \"base_oracle_bc\": true,\n    \"use_e\": true,\n    \"use_tutor\": true,\n    \"use_b2\": false,\n    \"legacy_mode\": \"tutor\",\n    \"support_state\": \"ready\",\n    \"schema_version\": 1\n  },\n  \"legacy_c2\": false\n}\n",
+      "stderr": "",
+      "result": "PASS"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_v2_experiment.py",
+        "describe-composition",
+        "--config",
+        "E_MODEL_V1_A2_WAITING"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"resolved_composition\": {\n    \"encoder\": \"e_multiscale_1m15m\",\n    \"teaching\": \"a2\",\n    \"base_oracle_bc\": true,\n    \"use_e\": true,\n    \"use_tutor\": false,\n    \"use_b2\": false,\n    \"legacy_mode\": \"a2\",\n    \"support_state\": \"waiting_e\",\n    \"schema_version\": 1\n  },\n  \"legacy_c2\": false\n}\n",
+      "stderr": "",
+      "result": "PASS"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_v2_experiment.py",
+        "describe-composition",
+        "--config",
+        "E_MODEL_V1_B2_WAITING"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"resolved_composition\": {\n    \"encoder\": \"e_multiscale_1m15m\",\n    \"teaching\": \"b2\",\n    \"base_oracle_bc\": true,\n    \"use_e\": true,\n    \"use_tutor\": false,\n    \"use_b2\": true,\n    \"legacy_mode\": \"b2\",\n    \"support_state\": \"waiting_e\",\n    \"schema_version\": 1\n  },\n  \"legacy_c2\": false\n}\n",
+      "stderr": "",
+      "result": "PASS"
+    },
+    {
+      "check": "Tutor-CD+B2 remains NOT_IMPLEMENTED",
+      "result": "PASS",
+      "error": "S3_TUTOR_B2_NOT_IMPLEMENTED"
+    }
+  ],
+  "syntax": "PASS"
+}

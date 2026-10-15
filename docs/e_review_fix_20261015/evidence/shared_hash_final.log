@@ -1,0 +1,44 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_shared_e_market_content_is_stable_across_accounts_and_restore ______
+
+admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env/artifacts/fg_s3_v2/checks/e_ma...015/test_shared_e_market_content_i0/source/market.csv'), <e_data_v1.provider.ETrainAdmission object at 0x7daae2c48090>)
+
+    def test_shared_e_market_content_is_stable_across_accounts_and_restore(admitted):
+        config, _, profile = admitted
+        cache = EntryMarketCache(capacity=1)
+        a = FixedDirectionEntryEnv(config_path=config, e_profile=profile, market_cache=cache)
+        b = FixedDirectionEntryEnv(config_path=config, e_profile=profile, market_cache=cache)
+        try:
+            assert a._e_market is b._e_market
+            assert a.e_market_source == b.e_market_source
+            before = _market_content_hash(a._e_market)
+            state = a.export_state()
+            expected = a._get_obs()
+            a.step(1)
+            b.step(0)
+>           b.reset()
+
+tests/entry_v1/test_s3_e_market_identity.py:137: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7daae2c37bd0>
+seed = None, options = None
+
+    def reset(self, seed=None, options=None):
+        gym.Env.reset(self, seed=seed)
+        if options and "resume" in options:
+            self.import_state(options["resume"])
+            return self._get_obs(), self._get_info()
+        if self._initialized and not self.terminated:
+            if self.status == "CHUNK_END":
+                self.status, self.truncated, self.chunk_count = "ACTIVE", False, 0
+            elif self.current_step == 0 and not self.entries and not self.fills:
+                pass
+            else:
+>               raise RuntimeError("Reset would discard an unfinished account; continue or restore it")
+E               RuntimeError: Reset would discard an unfinished account; continue or restore it
+
+src/gym_trading_env/envs/entry_env.py:428: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_s3_e_market_identity.py::test_shared_e_market_content_is_stable_across_accounts_and_restore

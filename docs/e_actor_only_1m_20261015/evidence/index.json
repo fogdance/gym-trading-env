@@ -1,0 +1,78 @@
+{
+  "files": [
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/launch.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/launch.json",
+      "sha256": "d3101e8575655643be1ba79baaf97a53cbffb986fa58545367122cabe9291ca8",
+      "bytes": 2052
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/verification.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/verification.json",
+      "sha256": "bb529d1c5ce423ec0d6157683d1a84bd11857ea2ce285d02b4e95b4114294c0c",
+      "bytes": 4028
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/result.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/result.json",
+      "sha256": "3df4b7dc67545fc3408034149ee48ef8731c78e98bc77eb3968410f987eb83ec",
+      "bytes": 2465
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/metrics.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/metrics.json",
+      "sha256": "297ca27325bc8d3ece524c2e5b661c5273667f00c388ceea478032c55067dd3d",
+      "bytes": 13873
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/decision_audit.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/decision_audit.json",
+      "sha256": "6e0e393661dde26e5428f5327206924c114f0f88b16db39ba520f888865eaf16",
+      "bytes": 608
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1.log",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/actor_only_1m_latest_20261015_v1.log",
+      "sha256": "82aa9714551d1a408a2be058bbd5b7729ce19252d43fc1e866aa0cb54d974e91",
+      "bytes": 8353
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/receipt.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/receipt.json",
+      "sha256": "3df4b7dc67545fc3408034149ee48ef8731c78e98bc77eb3968410f987eb83ec",
+      "bytes": 2465
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/dev_manifest.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/dev_manifest.json",
+      "sha256": "53ad481c63f395d2d964cda48470463022808ab6f2d670260397659fbf3cc3fe",
+      "bytes": 24469
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/dev_env.yaml",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/dev_env.yaml",
+      "sha256": "c89de9e14560d032c8088de4e9cce3ae24b9dff502938f3df7dc023a5d782590",
+      "bytes": 999
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/e_dev_profile.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/e_dev_profile.json",
+      "sha256": "aefd03aa1255a083b1318dbcf670b189b97402d3a806cce1e33316d01a9cf9b2",
+      "bytes": 2796
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/actions.jsonl",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/actions.jsonl",
+      "sha256": "7d1a2c767e6a72cb8aaabd2aa5677ecbedb0ddedbac9e7f4b17da84558bd65ec",
+      "bytes": 2256403
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/actor_only_1m_latest_20261015_v1/run_view/evaluations/actor_only_9ed5a34251/account_state.json",
+      "evidence": "docs/e_actor_only_1m_20261015/evidence/account_state.json",
+      "sha256": "c406e57ad1d2de3a93be48936392361df864014400f2ce261f7d79d46fdaf504",
+      "bytes": 1578134
+    }
+  ],
+  "canonical_checkpoint": "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/ckpt/step_000001000000",
+  "checkpoint_manifest_sha256": "17c28209a087c7c1b7f77ea24fa3fccbc2d2227f703b8a91eb502e539f034041"
+}

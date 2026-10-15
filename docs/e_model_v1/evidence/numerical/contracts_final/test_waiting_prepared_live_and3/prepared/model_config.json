@@ -1,0 +1,15 @@
+{
+  "resolved_composition": {
+    "encoder": "legacy_1m",
+    "teaching": "tutor_cd_b2",
+    "base_oracle_bc": true,
+    "use_e": false,
+    "use_tutor": true,
+    "use_b2": true,
+    "legacy_mode": null,
+    "support_state": "waiting_tutor_b2",
+    "schema_version": 1
+  },
+  "config": {},
+  "content_hash": "cf54b729ee0ffca9c45f8cc8986afe1a71446ce9a41c3b95a96e0a80d22816dd"
+}

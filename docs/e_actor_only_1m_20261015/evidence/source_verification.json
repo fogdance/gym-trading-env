@@ -1,0 +1,14 @@
+{
+  "frozen_worktrees": {
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env": {
+      "sha": "871ca09000712d41408b8f72e0684624dce8659f",
+      "dirty": []
+    },
+    "/home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3": {
+      "sha": "730939defb1bd77b2ceca04212105ec2727c95f9",
+      "dirty": []
+    }
+  },
+  "adapter_sha256": "cabb93de7671bb34e447808a1a34ae4535b6e46fe1325614efc197768a18dcfa",
+  "adapter_matches_executed_bytes": true
+}

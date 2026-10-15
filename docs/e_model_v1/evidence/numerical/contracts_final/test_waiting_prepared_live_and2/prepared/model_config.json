@@ -1,0 +1,15 @@
+{
+  "resolved_composition": {
+    "encoder": "e_multiscale_1m15m",
+    "teaching": "b2",
+    "base_oracle_bc": true,
+    "use_e": true,
+    "use_tutor": false,
+    "use_b2": true,
+    "legacy_mode": "b2",
+    "support_state": "waiting_e",
+    "schema_version": 1
+  },
+  "config": {},
+  "content_hash": "b6a03316fe7cebce56f04336019dc27523fbcd434605c3e7bde0898e888a503e"
+}

@@ -1,0 +1,38 @@
+{
+  "command": "/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest tests/entry_v1/test_fg_s3_e_source.py tests/entry_v1/test_fg_s3_e_provider_identity.py tests/entry_v1/test_fg_s3_e_observation.py tests/entry_v1/test_s3_composition.py ../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py -q -o addopts= --basetemp=/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/contracts_final --junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/contracts_final.xml",
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-m",
+    "pytest",
+    "tests/entry_v1/test_fg_s3_e_source.py",
+    "tests/entry_v1/test_fg_s3_e_provider_identity.py",
+    "tests/entry_v1/test_fg_s3_e_observation.py",
+    "tests/entry_v1/test_s3_composition.py",
+    "../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py",
+    "-q",
+    "-o",
+    "addopts=",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/contracts_final",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/contracts_final.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "CUDA_VISIBLE_DEVICES": "",
+    "JAX_PLATFORMS": "cpu",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONPATH": "src:../dreamerv3"
+  },
+  "versions": {
+    "gym-trading-env": "da7e59fb228126102e17e264db3751656fa2f500",
+    "dreamerv3": "f30d8da2523eddad53aeca1540afe1c77d47b248"
+  },
+  "dirty": {
+    "gym-trading-env": [],
+    "dreamerv3": []
+  },
+  "started_at": 1792015682.6154027,
+  "exit_code": 0,
+  "elapsed_seconds": 65.43590784072876
+}

@@ -1,0 +1,180 @@
+FF....................................                                   [100%]
+=================================== FAILURES ===================================
+__ test_EM10_original_driver_dagger_native_replay_context_and_executed_action __
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_02/test_EM10_original_driver_dagg0')
+
+    def test_EM10_original_driver_dagger_native_replay_context_and_executed_action(tmp_path):
+>       collector,provider=collector_fixture(tmp_path)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_e_observation.py:13: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/e_model_fixture.py:56: in collector_fixture
+    env=env or controlled_env(root/'market')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/e_model_fixture.py:48: in controlled_env
+    return single_env(folder,prices,candidate='C1',fees=3,chunk=100,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:118: in __init__
+    self._load_market(df)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7990dd122a10>
+df =                      Open  High   Low  ...  Volume  OpenInterest                 bob
+2026-01-05 13:31:00  1000  1000  ...5 15:08:00
+2026-01-05 15:10:00  1000  1000  1000  ...     100          1000 2026-01-05 15:09:00
+
+[100 rows x 7 columns]
+
+    def _load_market(self, df):
+        if df is None:
+            df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
+        input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
+        if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
+            raise ValueError("Entry market timestamps must be unique, valid and ascending")
+        required = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        if set(required)-set(df) or not np.isfinite(df[required].apply(pd.to_numeric, errors="coerce").to_numpy()).all():
+            raise ValueError("Entry requires complete numeric OHLCVOI before normalization")
+        if 'trading_date' in df:
+            # Real-clock features below replace the legacy CSV features. Keep
+            # their exact normalization without building the discarded store.
+            raw = normalize_csv_frame(df, data_tz=getattr(self.config.trading, 'data_tz', None))
+            raw = raw.sort_index().copy()
+        else:
+            source = CsvBarSource(self.config, df=df)
+            raw = source.df_raw.sort_index().copy()
+        if raw.empty or raw.index.has_duplicates or not raw.index.is_monotonic_increasing:
+            raise ValueError("Market must be nonempty and have unique ascending timestamps")
+        cols = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        values = raw[cols].to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (values[:, :4] <= 0).any() or (values[:, 4:] < 0).any():
+            raise ValueError("Invalid OHLCVOI values")
+        if ((raw.High < raw[["Open", "Close", "Low"]].max(axis=1)) |
+                (raw.Low > raw[["Open", "Close", "High"]].min(axis=1))).any():
+            raise ValueError("Inconsistent OHLC")
+        if "symbol" in raw and set(raw.symbol) != {self.contract}:
+            raise ValueError("A trading trajectory cannot mix contracts")
+        if not raw.index.isin(self.terms.calendar).all():
+            raise ValueError("Market timestamps fall outside the supplied trading calendar")
+        for time in raw.index:
+            self.terms.at(time - pd.Timedelta(minutes=1))
+            self.terms.at(time)
+        bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if 'bob' in raw else raw.index - pd.Timedelta(minutes=1)
+        durations = raw.index - bobs
+        valid = np.asarray(durations == pd.Timedelta(minutes=1))
+        if not ((durations == pd.Timedelta(minutes=1)) | (durations == pd.Timedelta(0))).all():
+            raise ValueError('Unsupported minute bob/eob interval')
+        feature_raw = raw.loc[valid] if self.single3 else raw
+        if feature_raw.empty:
+            raise ValueError('Market has no valid one-minute bars')
+        if 'trading_date' in raw:
+            from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
+            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = features.reindex(raw.index).ffill().fillna(0)
+            self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
+        else:
+            if self.single3 and not valid.all():
+                source = CsvBarSource(self.config, df=feature_raw)
+            mapping = source.store.index.get_indexer(raw.index)
+            if (mapping[valid if self.single3 else np.ones(len(raw), bool)] < 0).any():
+>               raise ValueError("Existing market feature clock cannot represent these FG timestamps")
+E               ValueError: Existing market feature clock cannot represent these FG timestamps
+
+src/gym_trading_env/envs/entry_env.py:187: ValueError
+__________ test_EM05_schema_and_future_outcome_actor_fields_rejected ___________
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env/artifacts/fg_s3_v2/e_model_cpu/observation_02/test_EM05_schema_and_future_ou0')
+
+    def test_EM05_schema_and_future_outcome_actor_fields_rejected(tmp_path):
+>       collector,_=collector_fixture(tmp_path)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_e_observation.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/e_model_fixture.py:56: in collector_fixture
+    env=env or controlled_env(root/'market')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/e_model_fixture.py:48: in controlled_env
+    return single_env(folder,prices,candidate='C1',fees=3,chunk=100,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:118: in __init__
+    self._load_market(df)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7990d7b28810>
+df =                      Open  High   Low  ...  Volume  OpenInterest                 bob
+2026-01-05 13:31:00  1000  1000  ...5 15:08:00
+2026-01-05 15:10:00  1000  1000  1000  ...     100          1000 2026-01-05 15:09:00
+
+[100 rows x 7 columns]
+
+    def _load_market(self, df):
+        if df is None:
+            df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
+        input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
+        if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
+            raise ValueError("Entry market timestamps must be unique, valid and ascending")
+        required = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        if set(required)-set(df) or not np.isfinite(df[required].apply(pd.to_numeric, errors="coerce").to_numpy()).all():
+            raise ValueError("Entry requires complete numeric OHLCVOI before normalization")
+        if 'trading_date' in df:
+            # Real-clock features below replace the legacy CSV features. Keep
+            # their exact normalization without building the discarded store.
+            raw = normalize_csv_frame(df, data_tz=getattr(self.config.trading, 'data_tz', None))
+            raw = raw.sort_index().copy()
+        else:
+            source = CsvBarSource(self.config, df=df)
+            raw = source.df_raw.sort_index().copy()
+        if raw.empty or raw.index.has_duplicates or not raw.index.is_monotonic_increasing:
+            raise ValueError("Market must be nonempty and have unique ascending timestamps")
+        cols = ["Open", "High", "Low", "Close", "Volume", "OpenInterest"]
+        values = raw[cols].to_numpy(dtype=float)
+        if not np.isfinite(values).all() or (values[:, :4] <= 0).any() or (values[:, 4:] < 0).any():
+            raise ValueError("Invalid OHLCVOI values")
+        if ((raw.High < raw[["Open", "Close", "Low"]].max(axis=1)) |
+                (raw.Low > raw[["Open", "Close", "High"]].min(axis=1))).any():
+            raise ValueError("Inconsistent OHLC")
+        if "symbol" in raw and set(raw.symbol) != {self.contract}:
+            raise ValueError("A trading trajectory cannot mix contracts")
+        if not raw.index.isin(self.terms.calendar).all():
+            raise ValueError("Market timestamps fall outside the supplied trading calendar")
+        for time in raw.index:
+            self.terms.at(time - pd.Timedelta(minutes=1))
+            self.terms.at(time)
+        bobs = pd.DatetimeIndex([timestamp(x) for x in raw.bob]) if 'bob' in raw else raw.index - pd.Timedelta(minutes=1)
+        durations = raw.index - bobs
+        valid = np.asarray(durations == pd.Timedelta(minutes=1))
+        if not ((durations == pd.Timedelta(minutes=1)) | (durations == pd.Timedelta(0))).all():
+            raise ValueError('Unsupported minute bob/eob interval')
+        feature_raw = raw.loc[valid] if self.single3 else raw
+        if feature_raw.empty:
+            raise ValueError('Market has no valid one-minute bars')
+        if 'trading_date' in raw:
+            from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
+            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = features.reindex(raw.index).ffill().fillna(0)
+            self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
+        else:
+            if self.single3 and not valid.all():
+                source = CsvBarSource(self.config, df=feature_raw)
+            mapping = source.store.index.get_indexer(raw.index)
+            if (mapping[valid if self.single3 else np.ones(len(raw), bool)] < 0).any():
+>               raise ValueError("Existing market feature clock cannot represent these FG timestamps")
+E               ValueError: Existing market feature clock cannot represent these FG timestamps
+
+src/gym_trading_env/envs/entry_env.py:187: ValueError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_e_observation.py::test_EM10_original_driver_dagger_native_replay_context_and_executed_action
+FAILED tests/entry_v1/test_fg_s3_e_observation.py::test_EM05_schema_and_future_outcome_actor_fields_rejected
+2 failed, 36 passed in 5.19s

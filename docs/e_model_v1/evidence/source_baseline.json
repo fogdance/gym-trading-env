@@ -1,0 +1,10 @@
+{
+  "command": "/home/v/miniconda3/envs/dreamerv3/bin/python -m pytest ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py -q -o addopts= -p no:cacheprovider --basetemp=/tmp/s3_e_source_baseline_01 --junitxml=/home/v/Documents/work/research/fg-s3-e-model-dev/validation/source_baseline.xml",
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "sha": {
+    "gym-trading-env": "c3a808437ef277ee87f25b0ae8803e31fa5dca74",
+    "dreamerv3": "eb63de710fd693fad7ac76f797f3d9f39e331b98"
+  },
+  "exit_code": 1,
+  "elapsed_seconds": 27.204871892929077
+}

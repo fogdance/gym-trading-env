@@ -5,6 +5,8 @@ All fills are conservative minute simulations, not broker execution confirmation
 from __future__ import annotations
 
 import copy
+import hashlib
+import io
 import json
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from pathlib import Path
@@ -42,7 +44,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
 
-    def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None):
+    def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
         gym.Env.__init__(self)
         if config_path is None:
             raise ValueError("Entry config_path is required")
@@ -54,6 +56,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.protocol not in ("fg_entry_v1", SINGLE3_PROTOCOL):
             raise ValueError("Unknown FG entry protocol")
         self.single3 = self.protocol == SINGLE3_PROTOCOL
+        if e_profile is not None and not self.single3:
+            raise ValueError('S3 E observation is Single3-only')
+        if e_profile is not None and self.entry_config['contract'] not in e_profile.contracts:
+            raise ValueError('E observation profile refuses an unadmitted contract')
+        self._e_profile = e_profile
+        self._e_market = None
+        self.e_market_source = None
+        self.e_snapshot = None
         self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
         self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
         self.contract = self.entry_config["contract"]
@@ -82,6 +92,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
                     'close_today_fee','spread','slippage')})
         self.terms = ContractTerms(terms_raw, self.contract)
+        if e_profile is not None:
+            self._e_schedule = dict(self.market_clock or {}, dated_sessions=terms_raw['sessions'])
         identity = {"env": raw, "strategy":master,"direction": self.directions.hash,
                     "contract": self.terms.hash,
                     "position_obs": SINGLE3_POSITION_OBS_FIELDS if self.single3 else POSITION_OBS_FIELDS,
@@ -96,6 +108,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.observation_identity = fingerprint(dict(protocol=self.protocol,
             fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1',
             **({'clock_protocol': TIME_PROTOCOL, 'market_window': 'last_60_valid_bars'} if self.single3 else {})))
+        # Original financial/teacher identities remain exact. E's additional
+        # observation/source contract is authenticated separately in runs and
+        # checkpoints, and has its own market-cache identity.
+        self.e_observation_identity = None
+        if self._e_profile is not None:
+            from gym_trading_env.research.fg_s3_e_observation import observation_contract
+            self.e_observation_identity = fingerprint(dict(
+                observation=observation_contract(),data_identity=self._e_profile.identity))
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -123,18 +143,47 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.main_exit_at is not None and self.main_exit_at not in self._raw.index:
             raise ValueError("Main roll exit must be an actual old-contract minute")
         self.action_space = spaces.Discrete(2)
-        self.observation_space = spaces.Dict({
+        obs_spaces = {
             "market_seq": spaces.Box(-np.inf, np.inf, (self.window_size, self._features.shape[1]), np.float32),
             "position_state": spaces.Box(-np.inf, np.inf, (9,), np.float32),
             "action_mask": spaces.Box(0, 1, (2,), np.float32),
-        })
+        }
+        if self._e_profile is not None:
+            obs_spaces.update({
+                'market_seq_e_shared': spaces.Box(-np.inf, np.inf, (60, 18), np.float32),
+                'market_context_15m': spaces.Box(-np.inf, np.inf, (24, 7), np.float32),
+            })
+        self.observation_space = spaces.Dict(obs_spaces)
         self.completed_accounts = []
         self.account_sequence = 0
         self._initialized = False
         self.reset()
 
+    def _validate_e_market_source(self, path, digest):
+        receipt = getattr(self._e_profile, 'source_receipt', None)
+        try:
+            expected = receipt['sources'][self.contract]['market']
+        except (KeyError, TypeError):
+            raise ValueError('E admitted market source receipt missing') from None
+        if not isinstance(expected, dict) or not isinstance(expected.get('path'), str):
+            raise ValueError('E admitted market source receipt missing')
+        if Path(expected['path']).expanduser().resolve(strict=True) != path:
+            raise ValueError('E admitted market path mismatch: '+self.contract)
+        if expected.get('sha256') != digest:
+            raise ValueError('E admitted market SHA256 mismatch: '+self.contract)
+        self.e_market_source = dict(path=str(path), sha256=digest)
+
     def _load_market(self, df):
-        if df is None:
+        if self._e_profile is not None:
+            if df is not None:
+                raise ValueError('E admitted market requires CSV bytes; injected frames are unbound')
+            path = Path(self.config.trading.data_path).expanduser().resolve(strict=True)
+            # Authenticate the exact bytes passed to the single CSV parser.
+            # Reopening a pathname after hashing would leave a TOCTOU gap.
+            payload = path.read_bytes()
+            self._validate_e_market_source(path, hashlib.sha256(payload).hexdigest())
+            df = pd.read_csv(io.BytesIO(payload))
+        elif df is None:
             df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
         input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
         if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
@@ -176,8 +225,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError('Market has no valid one-minute bars')
         if 'trading_date' in raw:
             from gym_trading_env.utils.market_features import build_market_features, FEATURES_MARKET_OBS_OUTPUT
-            features=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
-            features = features.reindex(raw.index).ffill().fillna(0)
+            feature_frame=build_market_features(feature_raw,is_future=True,real_futures_clock=True,futures_schedule=self.market_clock)
+            features = feature_frame.reindex(raw.index).ffill().fillna(0)
             self._features=features[FEATURES_MARKET_OBS_OUTPUT].to_numpy(dtype=np.float32)
         else:
             if self.single3 and not valid.all():
@@ -194,6 +243,21 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.bar_source = SimpleNamespace(store=SimpleNamespace(index=raw.index, n_rows=len(raw)))
         self.bobs, self.valid_fill_clock = bobs, valid
         self.market_clock_counter = MarketClock(valid)
+        if self._e_profile is not None:
+            if 'trading_date' not in raw or self.market_clock is None:
+                raise ValueError('E requires the admitted real-clock TRAIN source')
+            from e_data_v1.core import MarketData
+            from gym_trading_env.utils.time_contract import ensure_feature_tz_index
+            from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
+            # Reuse the unpadded original feature frame including its auxiliary
+            # price columns. Prefix calculations for delayed data still call
+            # the same original feature builder on the visible prefix only.
+            self._e_market = MarketData.from_env(raw,self._e_schedule,
+                feature_frame,self.market_clock_counter,bobs,
+                feature_function=lambda frame,schedule: build_market_features(
+                    frame,is_future=True,real_futures_clock=True,futures_schedule=schedule),
+                market_clock_class=MarketClock,tz_normalizer=ensure_feature_tz_index,
+                ohlc_normalizer=normalize_ohlcvi)
         # Existing DB contains zero-duration metadata rows: mark-only, never fills.
 
     @property
@@ -314,10 +378,41 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise RuntimeError("PositionManager/account quantities lack a matching entry identity")
         mask = np.array([1, self._can_add()], np.float32)
         self._published_mask = mask.copy()
-        return {
+        obs = {
             "market_seq": np.nan_to_num(market).astype(np.float32),
             "position_state": position, "action_mask": mask,
         }
+        if self._e_profile is not None:
+            from e_data_v1.schema import Decision
+            from gym_trading_env.research.fg_s3_e_observation import (
+                context_provenance, e_array_hash)
+            # A delayed raw candle cannot be used by the original Env either;
+            # MarketData's exact-old-observation check fails closed here.
+            cutoff = self._raw.index[self.current_step]
+            context, old, shared, _, _, meta = self._e_market.snapshot(
+                Decision(self.contract, visible_cutoff=cutoff, decision_time=cutoff,
+                         market_seq=obs['market_seq']))
+            if not np.array_equal(old, obs['market_seq']):
+                raise ValueError('E observation changed the original 18 channels')
+            arrays = dict(market_seq_e_shared=shared.copy(), market_context_15m=context.copy())
+            if (arrays['market_seq_e_shared'].shape != (60, 18)
+                    or arrays['market_context_15m'].shape != (24, 7)
+                    or any(x.dtype != np.float32 or not np.isfinite(x).all()
+                           for x in arrays.values())
+                    or not np.isin(context[:, 6], (0., 1.)).all()):
+                raise ValueError('Native E Env Observation differs from signed schema')
+            if (any(pd.Timestamp(t) > cutoff for t in meta['context_available_at'])
+                    or pd.Timestamp(meta['anchor_available_at']) > cutoff
+                    or pd.Timestamp(meta['anchor_source_time']) > cutoff):
+                raise ValueError('Native E Env cannot publish a future-visible feature')
+            host = context_provenance(dict(source_contract=self.contract,
+                visible_cutoff=meta['visible_cutoff'], decision_time=meta['decision_time'],
+                data_identity=self._e_profile.identity,
+                context_available_at=meta['context_available_at'],
+                anchor_source=meta['anchor_source']))
+            self.e_snapshot = {**host, 'arrays_hash': e_array_hash(arrays)}
+            obs.update(arrays)
+        return obs
 
     def reset(self, seed=None, options=None):
         gym.Env.reset(self, seed=seed)

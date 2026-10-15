@@ -34,9 +34,9 @@ class ObservedAccount:
 
 class ObservedTrainingPool(FGEntryDatasetEnv):
     """Use the original rotation/reset/save mechanics, observing each raw call."""
-    def __init__(self, selector):
+    def __init__(self, selector, *, e_profile=None):
         self.last = None
-        super().__init__(str(selector))
+        super().__init__(str(selector), e_profile=e_profile)
 
     @property
     def env(self):
@@ -45,6 +45,10 @@ class ObservedTrainingPool(FGEntryDatasetEnv):
     @env.setter
     def env(self, raw):
         self._observed_account = ObservedAccount(raw, self.capture)
+
+    @property
+    def e_snapshot(self):
+        return self.decision_env.e_snapshot
 
     @property
     def decision_env(self):
@@ -137,7 +141,7 @@ def prepare_pool(settings, directory):
     return query
 
 
-def load_pool(settings, directory):
+def load_pool(settings, directory, *, e_profile=None):
     manifest = read_manifest(directory/'train_pool.json')
     expected = read_manifest(directory/'oracle_pool.json')['identity']
     query = _load_members(settings, [row['contract'] for row in manifest['files']], manifest['content_hash'])
@@ -145,5 +149,5 @@ def load_pool(settings, directory):
         raise ValueError('Prepared Oracle pool identity changed')
     if settings['mode'] == 'b2' and read_manifest(directory/'outcome_catalog.json')['identity_hash'] != query.outcome_catalog.identity_hash:
         raise ValueError('Prepared Outcome pool identity changed')
-    pool = ObservedTrainingPool(directory/'selector.yaml')
+    pool = ObservedTrainingPool(directory/'selector.yaml', e_profile=e_profile)
     return query, pool

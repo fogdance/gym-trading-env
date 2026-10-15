@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="5" time="4.902" timestamp="2026-10-15T15:35:27.308105+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[uncached]" time="0.715"><failure message="Failed: DID NOT RAISE ValueError">admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_before/test_env_refuses_csv_replaced_0/...ore/test_env_refuses_csv_replaced_0/source/market.csv'), &lt;e_data_v1.provider.ETrainAdmission object at 0x7e9eb682d050&gt;)
+route = 'uncached'
+
+    @pytest.mark.parametrize('route', ['uncached', 'cache_miss', 'cache_hit'])
+    def test_env_refuses_csv_replaced_after_e_admission(admitted, route):
+        config, market, profile = admitted
+        cache = None if route == 'uncached' else EntryMarketCache(capacity=1)
+        if route == 'cache_hit':
+            original = FixedDirectionEntryEnv(config_path=config, e_profile=profile, market_cache=cache)
+            original.close()
+            assert len(cache) == 1
+        frame = pd.read_csv(market)
+        frame.loc[len(frame)-1, 'Volume'] += 1
+        frame.to_csv(market, index=False)
+&gt;       with pytest.raises(ValueError, match='E admitted market SHA256 mismatch'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_s3_e_market_identity.py:60: Failed</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[cache_miss]" time="0.630"><failure message="Failed: DID NOT RAISE ValueError">admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_before/test_env_refuses_csv_replaced_1/...ore/test_env_refuses_csv_replaced_1/source/market.csv'), &lt;e_data_v1.provider.ETrainAdmission object at 0x7e9eb66d3590&gt;)
+route = 'cache_miss'
+
+    @pytest.mark.parametrize('route', ['uncached', 'cache_miss', 'cache_hit'])
+    def test_env_refuses_csv_replaced_after_e_admission(admitted, route):
+        config, market, profile = admitted
+        cache = None if route == 'uncached' else EntryMarketCache(capacity=1)
+        if route == 'cache_hit':
+            original = FixedDirectionEntryEnv(config_path=config, e_profile=profile, market_cache=cache)
+            original.close()
+            assert len(cache) == 1
+        frame = pd.read_csv(market)
+        frame.loc[len(frame)-1, 'Volume'] += 1
+        frame.to_csv(market, index=False)
+&gt;       with pytest.raises(ValueError, match='E admitted market SHA256 mismatch'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_s3_e_market_identity.py:60: Failed</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_env_refuses_csv_replaced_after_e_admission[cache_hit]" time="0.707"><failure message="Failed: DID NOT RAISE ValueError">admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_before/test_env_refuses_csv_replaced_2/...ore/test_env_refuses_csv_replaced_2/source/market.csv'), &lt;e_data_v1.provider.ETrainAdmission object at 0x7e9eb67fd8d0&gt;)
+route = 'cache_hit'
+
+    @pytest.mark.parametrize('route', ['uncached', 'cache_miss', 'cache_hit'])
+    def test_env_refuses_csv_replaced_after_e_admission(admitted, route):
+        config, market, profile = admitted
+        cache = None if route == 'uncached' else EntryMarketCache(capacity=1)
+        if route == 'cache_hit':
+            original = FixedDirectionEntryEnv(config_path=config, e_profile=profile, market_cache=cache)
+            original.close()
+            assert len(cache) == 1
+        frame = pd.read_csv(market)
+        frame.loc[len(frame)-1, 'Volume'] += 1
+        frame.to_csv(market, index=False)
+&gt;       with pytest.raises(ValueError, match='E admitted market SHA256 mismatch'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_s3_e_market_identity.py:60: Failed</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_e_parser_consumes_the_same_bytes_that_were_authenticated" time="0.582"><failure message="AssertionError: &#10;Arrays are not equal&#10;&#10;Mismatched elements: 1 / 8 (12.5%)&#10;Max absolute difference: 1.&#10;Max relative difference: 0.01&#10; x: array([100., 100., 100., 100., 100., 100., 100., 101.])&#10; y: array([100., 100., 100., 100., 100., 100., 100., 100.])">admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_before/test_e_parser_consumes_the_sam0/...ore/test_e_parser_consumes_the_sam0/source/market.csv'), &lt;e_data_v1.provider.ETrainAdmission object at 0x7e9eb66621d0&gt;)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e9eb6f76950&gt;
+
+    def test_e_parser_consumes_the_same_bytes_that_were_authenticated(admitted, monkeypatch):
+        config, market, profile = admitted
+        original = pd.read_csv
+        expected = original(market)['Volume'].to_numpy()
+        calls = []
+    
+        def replace_before_parse(source, *args, **kwargs):
+            frame = original(market)
+            frame.loc[len(frame)-1, 'Volume'] += 1
+            frame.to_csv(market, index=False)
+            calls.append(source)
+            return original(source, *args, **kwargs)
+    
+        monkeypatch.setattr(pd, 'read_csv', replace_before_parse)
+        env = FixedDirectionEntryEnv(config_path=config, e_profile=profile)
+        try:
+&gt;           np.testing.assert_array_equal(env._raw.Volume.to_numpy(), expected)
+
+tests/entry_v1/test_s3_e_market_identity.py:81: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (&lt;built-in function eq&gt;, array([100., 100., 100., 100., 100., 100., 100., 101.]), array([100., 100., 100., 100., 100., 100., 100., 100.]))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+&gt;           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 1 / 8 (12.5%)
+E           Max absolute difference: 1.
+E           Max relative difference: 0.01
+E            x: array([100., 100., 100., 100., 100., 100., 100., 101.])
+E            y: array([100., 100., 100., 100., 100., 100., 100., 100.])
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_s3_e_market_identity" name="test_e_admission_cannot_be_bypassed_with_injected_frame" time="0.599"><failure message="Failed: DID NOT RAISE ValueError">admitted = (PosixPath('/home/v/Documents/work/research/fg-s3-e-review-fix-20261015/pytest_before/test_e_admission_cannot_be_byp0/...ore/test_e_admission_cannot_be_byp0/source/market.csv'), &lt;e_data_v1.provider.ETrainAdmission object at 0x7e9eb67d8490&gt;)
+
+    def test_e_admission_cannot_be_bypassed_with_injected_frame(admitted):
+        config, market, profile = admitted
+        injected = pd.read_csv(market)
+        injected.loc[len(injected)-1, 'Volume'] += 1
+&gt;       with pytest.raises(ValueError, match='E admitted market requires CSV bytes'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_s3_e_market_identity.py:93: Failed</failure></testcase></testsuite></testsuites>

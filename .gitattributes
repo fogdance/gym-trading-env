@@ -1,0 +1,6 @@
+# Preserve byte-exact generated test output, including pytest traceback spaces.
+docs/e_model_v1/evidence/** -whitespace
+docs/e_admission_20261015/package/** -whitespace
+docs/e_admission_20261015/evidence/** -whitespace
+docs/e_review_fix_20261015/evidence/** -whitespace
+docs/e_actor_only_1m_20261015/evidence/** -whitespace

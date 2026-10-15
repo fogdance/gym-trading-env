@@ -1,0 +1,48 @@
+# Bounded real TRAIN acceptance only; normal production preparation rejects this configuration.
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+experiment: E_ADMISSION_V2_B2_CPU_20261015_v1
+device: cpu
+contract: CZCE.FG201
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/E_ADMISSION_V2_B2_CPU_20261015_v1
+run_dir: artifacts/fg_s3_v2/runs/E_ADMISSION_V2_B2_CPU_20261015_v1
+env_steps: 2200
+collect_every: 1100
+updates_per_collect: 3
+save_every: 1100
+batch_size: 1
+replay_seed: 202
+beta: 0.5
+bc_lambda: 1.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: direct_init
+scope: diagnostic
+contracts:
+- CZCE.FG201
+- CZCE.FG301
+env_slice_bars: 1024
+replay_capacity: 4096
+composition:
+  encoder: e_multiscale_1m15m
+  teaching: b2
+model_init:
+  seed: 0
+  presets:
+  - size50m
+e_data_manifest:
+  /home/v/Documents/work/research/fg-s3-e-model-dev/admission_20261015/e_data_causality_v2/index_manifest.json
+e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
+e_data_source_pool:
+  /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
+b2_head_units: 128
+b2_event_lambda: 0.1
+b2_early_lambda: 0.1
+b2_coefficient_max: 2.0
+b2_delta_max: 2.0
+b2_mix_warmup: 2
+b2_mix_ramp: 2
+b2_min_event_updates: 2

@@ -12,7 +12,7 @@ from .entry_market_cache import EntryMarketCache
 class FGEntryDatasetEnv(gym.Env):
     metadata={'render_modes':[]}
 
-    def __init__(self,config_path,render_mode=None,*,cache_market=True):
+    def __init__(self,config_path,render_mode=None,*,cache_market=True,e_profile=None):
         raw=read_yaml(config_path)
         if raw.get('strategy_mode')!='entry_dataset' or raw.get('role')!='train':
             raise ValueError('FG dataset environment requires the explicit train role')
@@ -21,6 +21,7 @@ class FGEntryDatasetEnv(gym.Env):
         if fingerprint(manifest)!=expected or manifest['product']!='FG':
             raise ValueError('Invalid frozen FG manifest')
         self.manifest_hash=expected
+        self._e_profile = e_profile
         self.scheduler=raw.get('scheduler',{})
         self.rotating=self.scheduler.get('mode')=='least_progress'
         if self.scheduler and not self.rotating:
@@ -60,6 +61,8 @@ class FGEntryDatasetEnv(gym.Env):
     def _new_env(self,index):
         # Fresh account/runtime objects; only validated market data is reused.
         kwargs = {} if self._market_cache is None else {'market_cache': self._market_cache}
+        if self._e_profile is not None:
+            kwargs['e_profile'] = self._e_profile
         return FixedDirectionEntryEnv(config_path=self.paths[index], **kwargs)
 
     def reset(self,seed=None,options=None):

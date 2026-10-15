@@ -1,0 +1,35 @@
+# Target configuration only. Public E remains waiting_e; no training authorized.
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+experiment: E_MODEL_V1_A2_WAITING
+device: gpu
+contract: CZCE.FG201
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/E_MODEL_V1_A2_WAITING
+run_dir: artifacts/fg_s3_v2/runs/E_MODEL_V1_A2_WAITING
+env_steps: 1000
+collect_every: 100
+updates_per_collect: 4
+save_every: 500
+batch_size: 1
+replay_seed: 202
+beta: 1.0
+bc_lambda: 1.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: direct_init
+scope: diagnostic
+contracts:
+- CZCE.FG201
+env_slice_bars: 250
+replay_capacity: 512
+composition:
+  encoder: e_multiscale_1m15m
+  teaching: a2
+model_init:
+  seed: 0
+  presets:
+  - size50m
+e_data_manifest: artifacts/fg_s3_v2/e_data_pending/manifest.json

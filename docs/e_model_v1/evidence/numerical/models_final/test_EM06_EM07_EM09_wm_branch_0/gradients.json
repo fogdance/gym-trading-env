@@ -1,0 +1,22 @@
+{
+  "wm_branch_norms": {
+    "enc/minute/": 584.2824192047119,
+    "enc/context15/": 57.21591758728027,
+    "enc/fusion/": 196.92453002929688
+  },
+  "bc_encoder_norm": 0.0,
+  "decoder_targets": [
+    "market_seq_e_shared",
+    "position_state"
+  ],
+  "loss_keys": [
+    "dyn",
+    "rep",
+    "rew",
+    "con",
+    "avail_post",
+    "avail_prior",
+    "market_seq_e_shared",
+    "position_state"
+  ]
+}

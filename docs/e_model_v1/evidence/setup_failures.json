@@ -1,0 +1,17 @@
+[
+  {
+    "command": "python heredoc protection snapshot",
+    "exit_code": 127,
+    "error": "python executable not found; corrected to absolute Dreamer Python"
+  },
+  {
+    "command": "dependency snapshot before mkdir",
+    "exit_code": 1,
+    "error": "validation directory absent after previous command failure; corrected in same ordered setup"
+  },
+  {
+    "command": "target config generation without PYTHONPATH",
+    "exit_code": 1,
+    "error": "ModuleNotFoundError: dreamerv3; corrected with canonical PYTHONPATH=src:../dreamerv3"
+  }
+]

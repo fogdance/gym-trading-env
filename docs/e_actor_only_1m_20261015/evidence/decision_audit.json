@@ -1,0 +1,23 @@
+{
+  "raw_proposals": 5005,
+  "executed_decisions": 5000,
+  "legal_executed_decisions": 5000,
+  "executed_add_count": 0,
+  "max_legal_p_add": 0.4980793297290802,
+  "start_equity_row": {
+    "time": "2024-04-08 21:01:00+08:00",
+    "equity": 300000.0,
+    "unrealized_pnl": 0.0,
+    "net_lots": 0.0,
+    "intrabar": false
+  },
+  "end_equity_row": {
+    "time": "2024-04-29 09:51:00+08:00",
+    "equity": 300000.0,
+    "unrealized_pnl": 0.0,
+    "net_lots": 0.0,
+    "intrabar": false
+  },
+  "current_step": 5000,
+  "read_only_verification": "fd6c2511c36b94c916363d500bff709f59d00743720c91045250037980a5d566"
+}
