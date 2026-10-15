@@ -1,5 +1,15 @@
 # S3-V2 shared entry and experiment configurations
 
+## E + Tutor-CD Full formal 1M
+
+`E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` selects the native E encoder and the
+accepted Tutor Full recipe (alpha=.8, pair=.1, tau1, kappa1, cap2), fresh size50m
+initialization, all TRAIN contracts, beta1, 1M market minutes, 40000 joint updates,
+Replay32768 and full checkpoints every100K. The user explicitly released this
+entry on2026-10-15; incomplete GPU smoke is not recorded as passed. Source
+authentication, the original trading Gate and `--authorize-training` remain.
+See `docs/e_native_env_20261015/FORMAL_ENTRY_RELEASE.md` for exact commands.
+
 ## Tutor-CD Full E2 formal 1M (integration/s3-next)
 
 `TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` uses the accepted integration baseline,

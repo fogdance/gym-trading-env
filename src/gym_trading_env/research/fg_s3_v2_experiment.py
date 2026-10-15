@@ -152,7 +152,8 @@ def _prepare(s, *, admission=None, model_config=None):
             from dreamerv3.fg_s3_e_config import resolve_model_init
             from embodied.run.fg_s3_e_source import make_binding
             target = resolve_model_init(s['model_init']) if model_config is None else model_config
-            binding = make_binding(target, composition, s['e_data_manifest'])
+            binding = make_binding(target, composition, s['e_data_manifest'],
+                                   diagnostic=s['scope'] == 'diagnostic')
             if binding['data_schema'] == 'S3_E_DATA_V1':
                 from e_data_v1.sources import pool_entries
                 _, original_pool = pool_entries(s['e_data_source_pool'])
