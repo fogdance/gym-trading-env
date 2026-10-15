@@ -22,6 +22,8 @@ FORMAL_ROOT = Path('/data/logdir/fg_single3/s3_v2')
 
 
 def require_training_authorization(settings, authorized):
+    if settings.get('mode')=='quality_v2' and settings.get('device')=='gpu' and not authorized:
+        raise PermissionError('Quality GPU research requires separate explicit authorization and --authorize-training')
     if settings['scope'] == 'formal' and not authorized:
         raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
@@ -41,9 +43,72 @@ def _validate_settings(s, path, *, admission=False):
         raise ValueError('E acceptance configurations require the bounded admit-e lifecycle')
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
-    if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] not in (('cpu', 'gpu') if admission else ('gpu',)):
+    quality = s['mode'] == 'quality_v2'
+    if (s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2','quality_v2')
+            or s['device'] not in (('cpu','gpu') if quality or admission else ('gpu',))):
         raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
     s.setdefault('scope', 'diagnostic')
+    if quality:
+        from dreamerv3.fg_s3_quality_v2 import quality_extensions
+        from gym_trading_env.rewards.single3_reward import Single3RewardConfig,QUALITY_TP_SCHEMA,SCHEMA as LEGACY_REWARD_SCHEMA
+        from dataclasses import asdict
+        reward=Single3RewardConfig(**s['reward'])
+        s['reward']=asdict(reward)
+        s.update({k:v for k,v in quality_extensions(s).items() if k!='s3_v2_mode'})
+        if s['quality_stage']=='HEADS_ONLY' and reward.schema!=LEGACY_REWARD_SCHEMA:
+            raise ValueError('Quality-first HEADS_ONLY preserves original C1; new Reward is a later axis')
+        policy_path=s.get('quality_admission_policy')
+        if policy_path:
+            from .fg_s3_quality_admission import validate_policy
+            policy_path=(PROJECT/policy_path).resolve()
+            validate_policy(read_manifest(policy_path))
+            s.update(quality_admission_policy=str(policy_path),quality_admission_policy_sha256=file_hash(policy_path))
+        else:s['quality_admission_policy']=None
+        if s['quality_stage']=='CONTROLLED_FULL':
+            from .fg_s3_quality_admission import require_prediction_admission
+            if not s.get('quality_prediction_admission_receipt'):
+                raise ValueError('CONTROLLED_FULL is PREDICTION_GATE_PENDING')
+            admission_path=Path(s['quality_prediction_admission_receipt']).resolve()
+            require_prediction_admission(admission_path)
+            s.update(quality_prediction_admission_receipt=str(admission_path),
+                     quality_prediction_admission_sha256=file_hash(admission_path))
+        s.setdefault('catalog',None);s.setdefault('source_kind','warm_start')
+        s.setdefault('source_checkpoint',None);s.setdefault('model_preset','source')
+        s.setdefault('quality_q_max_states',4096);s.setdefault('quality_q_max_seconds',2.)
+        s.setdefault('quality_q_max_suffix_bars',12)
+        s.setdefault('quality_max_market_steps',None);s.setdefault('quality_state_cache_entries',128)
+        if type(s['quality_state_cache_entries']) is not int or not 0<=s['quality_state_cache_entries']<=4096:
+            raise ValueError('Quality state cache requires 0..4096 entries')
+        if s['quality_max_market_steps'] is not None and (type(s['quality_max_market_steps']) is not int or s['quality_max_market_steps']<1):
+            raise ValueError('Quality exposure budget must be positive market minutes or null')
+        if (s['device']=='cpu' and s['scope']!='diagnostic' or
+                type(s['quality_q_max_states']) is not int or s['quality_q_max_states']<1 or
+                type(s['quality_q_max_suffix_bars']) is not int or s['quality_q_max_suffix_bars']<0 or
+                not 0<float(s['quality_q_max_seconds'])<=60):
+            raise ValueError('Quality CPU scope/Q proof budget invalid')
+        if s.get('quality_fixture_env'):
+            s['quality_fixture_env']=str((PROJECT/s['quality_fixture_env']).resolve())
+        if s['quality_q_admitted']:
+            from .fg_s3_quality_admission import require_q_admission
+            if not s.get('quality_q_admission_receipt'):
+                raise ValueError('FULL_Q_PENDING: independent native Q evidence required')
+            require_q_admission(s['quality_q_admission_receipt'])
+            s['quality_q_admission_receipt']=str(Path(s['quality_q_admission_receipt']).resolve())
+            s['quality_q_admission_sha256']=file_hash(s['quality_q_admission_receipt'])
+        if s['quality_decision_admitted']:
+            from .fg_s3_quality_admission import require_decision_admission
+            if not s.get('quality_decision_admission_receipt'):
+                raise ValueError('DECISION_GATE_PENDING: independent native action-safety evidence required')
+            decision=require_decision_admission(s['quality_decision_admission_receipt'])
+            expected=[k for k,flag in (('outcome','quality_fuse_outcome'),('score','quality_fuse_score'),('q','quality_q_admitted')) if s[flag]]
+            if decision['components']!=expected:
+                raise ValueError('Decision admission does not cover the selected fusion recipe')
+            if decision['prediction_admission_sha256']!=s['quality_prediction_admission_sha256']:
+                raise ValueError('Decision and prediction admissions selected different models')
+            if s['quality_q_admitted'] and decision.get('q_admission_sha256')!=s['quality_q_admission_sha256']:
+                raise ValueError('Decision and Q admissions selected different models')
+            s['quality_decision_admission_receipt']=str(Path(s['quality_decision_admission_receipt']).resolve())
+            s['quality_decision_admission_sha256']=file_hash(s['quality_decision_admission_receipt'])
     if s['mode'] == 'tutor':
         extension = agent_extensions(s)
         s.update({k: extension[k] for k in DEFAULTS})
@@ -101,7 +166,9 @@ def _validate_settings(s, path, *, admission=False):
              'prepared_dir', 'run_dir', 'dev_source_manifest')
     paths += ('e_data_manifest', 'e_data_source_pool') if is_e else ('source_checkpoint',)
     for key in paths:
-        if key == 'catalog' and s['mode'] == 'b2' and s[key] is None:
+        if key == 'catalog' and s['mode'] in ('b2','quality_v2') and s[key] is None:
+            continue
+        if key == 'source_checkpoint' and quality and s[key] is None:
             continue
         s[key] = str((PROJECT/s[key]).resolve())
     if Path(s['dreamer_root']) != PROJECT.parent/'dreamerv3':
@@ -117,6 +184,9 @@ def _validate_settings(s, path, *, admission=False):
 
 def prepare(config):
     s = read_settings(config)
+    if s['mode']=='quality_v2':
+        from .fg_s3_quality_experiment_v2 import prepare_quality
+        return prepare_quality(s)
     return _prepare(s)
 
 

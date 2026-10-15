@@ -1,0 +1,117 @@
+{
+  "status": "PASS_SHARED_CPU_PREPARE_START_RESUME",
+  "commands": [
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/tools/fg_s3_v2_experiment.py",
+        "prepare",
+        "--config",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/experiment.yaml"
+      ],
+      "exit_code": 0,
+      "log": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/prepare.log"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/tools/fg_s3_v2_experiment.py",
+        "start",
+        "--prepared",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc",
+        "--stop-at",
+        "100"
+      ],
+      "exit_code": 0,
+      "log": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/start100.log"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/tools/fg_s3_v2_experiment.py",
+        "resume",
+        "--prepared",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc"
+      ],
+      "exit_code": 0,
+      "log": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/resume200.log"
+    },
+    {
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/tools/fg_s3_v2_experiment.py",
+        "start",
+        "--prepared",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc",
+        "--run-dir",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc_uninterrupted"
+      ],
+      "exit_code": 0,
+      "log": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/uninterrupted200.log"
+    }
+  ],
+  "prepared": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/ckpt/step_000000000200",
+  "env_steps": 200,
+  "updates": 4,
+  "coverage": {
+    "protocol": "FG_S3_QUALITY_COVERAGE_V1",
+    "counts": {
+      "total_rows": 200,
+      "strict_valid": 106,
+      "completed_dual_legal_flat_decisions": 106,
+      "flat_funds/at_least_300000": 106,
+      "flat_outcome/TP5": 106,
+      "flat_entry_filled": 106,
+      "flat_quality_valid": 106,
+      "flat_strict_valid": 106,
+      "immediate_outcome_verified": 106,
+      "score_valid": 106,
+      "funds/at_least_300000": 199,
+      "soft/HEURISTIC_V2": 106,
+      "event_valid": 742,
+      "touch_valid": 848,
+      "adverse_valid": 424,
+      "q_c1_pair_valid": 0,
+      "q_v2_pair_valid": 0,
+      "event_h0/valid": 106,
+      "event_h0/TP5": 106,
+      "event_h1/valid": 106,
+      "event_h1/TP5": 106,
+      "event_h2/valid": 106,
+      "event_h2/TP5": 106,
+      "event_h3/valid": 106,
+      "event_h3/TP5": 106,
+      "event_h4/valid": 106,
+      "event_h4/TP5": 106,
+      "event_h5/valid": 106,
+      "event_h5/TP5": 106,
+      "event_h6/valid": 106,
+      "event_h6/TP5": 106,
+      "reason/STRICT_WAIT_HIGH_QUALITY_ADD": 98,
+      "funds/below_300000": 1,
+      "soft/INVALID": 94,
+      "reason/FORCED_WAIT_POSITION": 94,
+      "reason/STRICT_ADD": 8
+    },
+    "score_mean": 100.0,
+    "score_quantiles": [
+      100.0,
+      100.0,
+      100.0,
+      100.0,
+      100.0
+    ],
+    "denominator": "committed native rows; each task uses its own valid count",
+    "content_hash": "ea34502f5912cfeb8a6d38d37d4ff5ba8c7176855ae265bf7f7d27dbbbab1531"
+  },
+  "gpu": "NOT_RUN",
+  "supervision": "SYNTHETIC_NATIVE_ENV",
+  "unbroken_vs_resumed_gradient": "PASS; all reported gradients/losses and final parameter digests equal",
+  "content_hash": "53a485729510cc143ce00c78a223b28c992fa382d5f2bf4ef3cb0634ad341a9a"
+}

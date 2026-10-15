@@ -1,0 +1,4800 @@
+{
+  "starting_state": {
+    "schema": 3,
+    "contract": "CZCE.FG201",
+    "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+    "cursor_time": "2021-07-23 21:48:00+08:00",
+    "prefix_hash": "19eec1f8543db88e8c3366e565467b82cb897a7f3f31b1b1f31b9719cab9340d",
+    "balances": {
+      "user_cash": "299592.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "108.0",
+      "broker_pnl": "300.0"
+    },
+    "ledger_entries": [
+      {
+        "timestamp": "2021-07-23 21:01:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17937.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17928.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2988"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:03:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17928.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "-300.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "18219.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2983",
+          "pnl": "300.0"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:03:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17847.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17838.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2973"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:06:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17838.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "-300.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "18129.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2968",
+          "pnl": "300.0"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:06:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17811.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17802.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2967"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:08:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17802.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "-300.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "18093.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2962",
+          "pnl": "300.0"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:08:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17721.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17712.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2952"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:10:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17712.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "-300.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "18003.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2947",
+          "pnl": "300.0"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:10:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17685.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17676.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2946"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:12:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17676.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "-300.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "17967.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2941",
+          "pnl": "300.0"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:12:00+08:00",
+        "memo": "SHORT_OPEN",
+        "postings": [
+          {
+            "account": "user_cash",
+            "amount": "-17553.00"
+          },
+          {
+            "account": "user_margin",
+            "amount": "17544.00"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "price": "2924"
+        }
+      },
+      {
+        "timestamp": "2021-07-23 21:48:00+08:00",
+        "memo": "SHORT_CLOSE",
+        "postings": [
+          {
+            "account": "user_margin",
+            "amount": "-17544.00"
+          },
+          {
+            "account": "broker_pnl",
+            "amount": "1800.0"
+          },
+          {
+            "account": "broker_fee_income",
+            "amount": "9.0"
+          },
+          {
+            "account": "user_cash",
+            "amount": "15735.00"
+          }
+        ],
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "close_price": "2954",
+          "pnl": "-1800.0"
+        }
+      }
+    ],
+    "long_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "short_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "closed_trade_profits": [
+      "300.0",
+      "300.0",
+      "300.0",
+      "300.0",
+      "300.0",
+      "-1800.0"
+    ],
+    "realized_pnl": "-300.0",
+    "unrealized_pnl": "0",
+    "trade_history": [
+      {
+        "timestamp": "2021-07-23T21:01:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2988",
+        "close_price": "0",
+        "required_margin": "17928.00",
+        "fee": "9.0",
+        "balance": "282063.00",
+        "leverage": "1E+1",
+        "free_margin": "282063.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:1",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:03:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2988",
+        "close_price": "2983",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "300282.00",
+        "leverage": "1E+1",
+        "free_margin": "300402.00",
+        "pnl": "300.0",
+        "closed_size": "3",
+        "released_margin": "17928.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "TAKE_PROFIT",
+          "entry_id": "CZCE.FG201:1:1",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:03:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2973",
+        "close_price": "0",
+        "required_margin": "17838.00",
+        "fee": "9.0",
+        "balance": "282435.00",
+        "leverage": "1E+1",
+        "free_margin": "282435.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:2",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:06:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2973",
+        "close_price": "2968",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "300564.00",
+        "leverage": "1E+1",
+        "free_margin": "300504.00",
+        "pnl": "300.0",
+        "closed_size": "3",
+        "released_margin": "17838.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "TAKE_PROFIT",
+          "entry_id": "CZCE.FG201:1:2",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:06:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2967",
+        "close_price": "0",
+        "required_margin": "17802.00",
+        "fee": "9.0",
+        "balance": "282753.00",
+        "leverage": "1E+1",
+        "free_margin": "282753.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:3",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:08:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2967",
+        "close_price": "2962",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "300846.00",
+        "leverage": "1E+1",
+        "free_margin": "300966.00",
+        "pnl": "300.0",
+        "closed_size": "3",
+        "released_margin": "17802.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "TAKE_PROFIT",
+          "entry_id": "CZCE.FG201:1:3",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:08:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2952",
+        "close_price": "0",
+        "required_margin": "17712.00",
+        "fee": "9.0",
+        "balance": "283125.00",
+        "leverage": "1E+1",
+        "free_margin": "283125.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:4",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:10:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2952",
+        "close_price": "2947",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "301128.00",
+        "leverage": "1E+1",
+        "free_margin": "300948.00",
+        "pnl": "300.0",
+        "closed_size": "3",
+        "released_margin": "17712.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "TAKE_PROFIT",
+          "entry_id": "CZCE.FG201:1:4",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:10:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2946",
+        "close_price": "0",
+        "required_margin": "17676.00",
+        "fee": "9.0",
+        "balance": "283443.00",
+        "leverage": "1E+1",
+        "free_margin": "283443.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:5",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:12:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2946",
+        "close_price": "2941",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "301410.00",
+        "leverage": "1E+1",
+        "free_margin": "301590.00",
+        "pnl": "300.0",
+        "closed_size": "3",
+        "released_margin": "17676.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "TAKE_PROFIT",
+          "entry_id": "CZCE.FG201:1:5",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:12:00+08:00",
+        "operation_type": "SHORT_OPEN",
+        "position_size": "3",
+        "open_price": "2924",
+        "close_price": "0",
+        "required_margin": "17544.00",
+        "fee": "9.0",
+        "balance": "283857.00",
+        "leverage": "1E+1",
+        "free_margin": "283857.00",
+        "pnl": "0.0",
+        "closed_size": "0.0",
+        "released_margin": "0.0",
+        "meta": {
+          "entry_id": "CZCE.FG201:1:6",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      },
+      {
+        "timestamp": "2021-07-23T21:48:00+08:00",
+        "operation_type": "SHORT_CLOSE",
+        "position_size": "3",
+        "open_price": "2924",
+        "close_price": "2954",
+        "required_margin": "0",
+        "fee": "9.0",
+        "balance": "299592.00",
+        "leverage": "1E+1",
+        "free_margin": "297552.00",
+        "pnl": "-1800.0",
+        "closed_size": "3",
+        "released_margin": "17544.00",
+        "meta": {
+          "side": "short",
+          "slot": 0,
+          "reason": "STOP_LOSS",
+          "entry_id": "CZCE.FG201:1:6",
+          "fill_model": "minute_tp5_sl30_risk_first_v1"
+        }
+      }
+    ],
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 35399562948360463058890781895381311971,
+        "inc": 87136372517582989555478159403783844777
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    },
+    "rewarded": [
+      "CZCE.FG201:1:1",
+      "CZCE.FG201:1:2",
+      "CZCE.FG201:1:3",
+      "CZCE.FG201:1:4",
+      "CZCE.FG201:1:5",
+      "CZCE.FG201:1:6"
+    ],
+    "processed_fills": [
+      "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3",
+      "CZCE.FG201:1:2|2021-07-23 21:06:00+08:00|TAKE_PROFIT|3",
+      "CZCE.FG201:1:3|2021-07-23 21:08:00+08:00|TAKE_PROFIT|3",
+      "CZCE.FG201:1:4|2021-07-23 21:10:00+08:00|TAKE_PROFIT|3",
+      "CZCE.FG201:1:5|2021-07-23 21:12:00+08:00|TAKE_PROFIT|3",
+      "CZCE.FG201:1:6|2021-07-23 21:48:00+08:00|STOP_LOSS|3"
+    ],
+    "current_step": 47,
+    "episode_step_count": 47,
+    "chunk_count": 47,
+    "entry_sequence": 6,
+    "account_sequence": 1,
+    "current_price": "2956.0",
+    "entries": {},
+    "fills": [
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "time": "2021-07-23 21:01:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2988",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "time": "2021-07-23 21:03:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2983",
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3"
+      },
+      {
+        "entry_id": "CZCE.FG201:1:2",
+        "time": "2021-07-23 21:03:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2973",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:2",
+        "time": "2021-07-23 21:06:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2968",
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:2|2021-07-23 21:06:00+08:00|TAKE_PROFIT|3"
+      },
+      {
+        "entry_id": "CZCE.FG201:1:3",
+        "time": "2021-07-23 21:06:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2967",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:3",
+        "time": "2021-07-23 21:08:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2962",
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:3|2021-07-23 21:08:00+08:00|TAKE_PROFIT|3"
+      },
+      {
+        "entry_id": "CZCE.FG201:1:4",
+        "time": "2021-07-23 21:08:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2952",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:4",
+        "time": "2021-07-23 21:10:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2947",
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:4|2021-07-23 21:10:00+08:00|TAKE_PROFIT|3"
+      },
+      {
+        "entry_id": "CZCE.FG201:1:5",
+        "time": "2021-07-23 21:10:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2946",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:5",
+        "time": "2021-07-23 21:12:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2941",
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:5|2021-07-23 21:12:00+08:00|TAKE_PROFIT|3"
+      },
+      {
+        "entry_id": "CZCE.FG201:1:6",
+        "time": "2021-07-23 21:12:00+08:00",
+        "side": "SHORT",
+        "quantity": 3,
+        "price": "2924",
+        "reason": "ENTRY",
+        "committed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:6",
+        "time": "2021-07-23 21:48:00+08:00",
+        "side": "SHORT",
+        "quantity": "3",
+        "price": "2954",
+        "reason": "STOP_LOSS",
+        "committed": true,
+        "fill_id": "CZCE.FG201:1:6|2021-07-23 21:48:00+08:00|STOP_LOSS|3"
+      }
+    ],
+    "attributions": [
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:01:00+08:00",
+        "exit_time": "2021-07-23 21:03:00+08:00",
+        "entry_price": "2988",
+        "exit_price": "2983",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:03:00+08:00",
+        "entry_cursor": 1,
+        "exit_cursor": 2,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2
+      },
+      {
+        "entry_id": "CZCE.FG201:1:2",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:03:00+08:00",
+        "exit_time": "2021-07-23 21:06:00+08:00",
+        "entry_price": "2973",
+        "exit_price": "2968",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:06:00+08:00",
+        "entry_cursor": 3,
+        "exit_cursor": 5,
+        "held_market_bars": 3,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 3
+      },
+      {
+        "entry_id": "CZCE.FG201:1:3",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:06:00+08:00",
+        "exit_time": "2021-07-23 21:08:00+08:00",
+        "entry_price": "2967",
+        "exit_price": "2962",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:08:00+08:00",
+        "entry_cursor": 6,
+        "exit_cursor": 7,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2
+      },
+      {
+        "entry_id": "CZCE.FG201:1:4",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:08:00+08:00",
+        "exit_time": "2021-07-23 21:10:00+08:00",
+        "entry_price": "2952",
+        "exit_price": "2947",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:10:00+08:00",
+        "entry_cursor": 8,
+        "exit_cursor": 9,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2
+      },
+      {
+        "entry_id": "CZCE.FG201:1:5",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:10:00+08:00",
+        "exit_time": "2021-07-23 21:12:00+08:00",
+        "entry_price": "2946",
+        "exit_price": "2941",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:12:00+08:00",
+        "entry_cursor": 10,
+        "exit_cursor": 11,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2
+      },
+      {
+        "entry_id": "CZCE.FG201:1:6",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:12:00+08:00",
+        "exit_time": "2021-07-23 21:48:00+08:00",
+        "entry_price": "2924",
+        "exit_price": "2954",
+        "closed_quantity": 3,
+        "reason": "STOP_LOSS",
+        "committed": true,
+        "gross_trade_pnl": "-1800.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "-1818.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:48:00+08:00",
+        "sl_trigger_time": "2021-07-23 21:48:00+08:00",
+        "sl_pending_retry": false,
+        "gap_slippage_points": 0.0,
+        "entry_cursor": 12,
+        "exit_cursor": 47,
+        "held_market_bars": 36,
+        "clock_protocol": "S3_MARKET_MINUTE"
+      }
+    ],
+    "reward_events": [
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:01:00+08:00",
+        "exit_time": "2021-07-23 21:03:00+08:00",
+        "entry_price": "2988",
+        "exit_price": "2983",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:03:00+08:00",
+        "entry_cursor": 1,
+        "exit_cursor": 2,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2,
+        "reward": 0.967741935483871
+      },
+      {
+        "entry_id": "CZCE.FG201:1:2",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:03:00+08:00",
+        "exit_time": "2021-07-23 21:06:00+08:00",
+        "entry_price": "2973",
+        "exit_price": "2968",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:06:00+08:00",
+        "entry_cursor": 3,
+        "exit_cursor": 5,
+        "held_market_bars": 3,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 3,
+        "reward": 0.9523809523809523
+      },
+      {
+        "entry_id": "CZCE.FG201:1:3",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:06:00+08:00",
+        "exit_time": "2021-07-23 21:08:00+08:00",
+        "entry_price": "2967",
+        "exit_price": "2962",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:08:00+08:00",
+        "entry_cursor": 6,
+        "exit_cursor": 7,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2,
+        "reward": 0.967741935483871
+      },
+      {
+        "entry_id": "CZCE.FG201:1:4",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:08:00+08:00",
+        "exit_time": "2021-07-23 21:10:00+08:00",
+        "entry_price": "2952",
+        "exit_price": "2947",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:10:00+08:00",
+        "entry_cursor": 8,
+        "exit_cursor": 9,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2,
+        "reward": 0.967741935483871
+      },
+      {
+        "entry_id": "CZCE.FG201:1:5",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:10:00+08:00",
+        "exit_time": "2021-07-23 21:12:00+08:00",
+        "entry_price": "2946",
+        "exit_price": "2941",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:12:00+08:00",
+        "entry_cursor": 10,
+        "exit_cursor": 11,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2,
+        "reward": 0.967741935483871
+      },
+      {
+        "entry_id": "CZCE.FG201:1:6",
+        "reason": "FIRST_ADVERSE10",
+        "time": "2021-07-23 21:15:00+08:00",
+        "effective_bar": 3,
+        "reward": -0.5,
+        "observed": true
+      },
+      {
+        "entry_id": "CZCE.FG201:1:6",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:12:00+08:00",
+        "exit_time": "2021-07-23 21:48:00+08:00",
+        "entry_price": "2924",
+        "exit_price": "2954",
+        "closed_quantity": 3,
+        "reason": "STOP_LOSS",
+        "committed": true,
+        "gross_trade_pnl": "-1800.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "-1818.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:48:00+08:00",
+        "sl_trigger_time": "2021-07-23 21:48:00+08:00",
+        "sl_pending_retry": false,
+        "gap_slippage_points": 0.0,
+        "entry_cursor": 12,
+        "exit_cursor": 47,
+        "held_market_bars": 36,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "reward": -3.0
+      }
+    ],
+    "equity_history": [
+      {
+        "time": "2021-07-23 21:01:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:02:00+08:00",
+        "equity": 299691.0,
+        "unrealized_pnl": -300.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:02:00+08:00",
+        "equity": 300291.0,
+        "unrealized_pnl": 300.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:03:00+08:00",
+        "equity": 300111.0,
+        "unrealized_pnl": 120.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:03:00+08:00",
+        "equity": 300282.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:04:00+08:00",
+        "equity": 300093.0,
+        "unrealized_pnl": -180.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:04:00+08:00",
+        "equity": 300453.0,
+        "unrealized_pnl": 180.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:05:00+08:00",
+        "equity": 299973.0,
+        "unrealized_pnl": -300.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:05:00+08:00",
+        "equity": 300153.0,
+        "unrealized_pnl": -120.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:06:00+08:00",
+        "equity": 300213.0,
+        "unrealized_pnl": -60.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:06:00+08:00",
+        "equity": 300564.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:07:00+08:00",
+        "equity": 300435.0,
+        "unrealized_pnl": -120.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:07:00+08:00",
+        "equity": 300675.0,
+        "unrealized_pnl": 120.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:08:00+08:00",
+        "equity": 300675.0,
+        "unrealized_pnl": 120.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:08:00+08:00",
+        "equity": 300846.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:09:00+08:00",
+        "equity": 300477.0,
+        "unrealized_pnl": -360.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:09:00+08:00",
+        "equity": 300597.0,
+        "unrealized_pnl": -240.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:10:00+08:00",
+        "equity": 300657.0,
+        "unrealized_pnl": -180.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:10:00+08:00",
+        "equity": 301128.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:11:00+08:00",
+        "equity": 300879.0,
+        "unrealized_pnl": -240.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:11:00+08:00",
+        "equity": 301359.0,
+        "unrealized_pnl": 240.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:12:00+08:00",
+        "equity": 301299.0,
+        "unrealized_pnl": 180.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:12:00+08:00",
+        "equity": 301410.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:13:00+08:00",
+        "equity": 300861.0,
+        "unrealized_pnl": -540.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:13:00+08:00",
+        "equity": 301521.0,
+        "unrealized_pnl": 120.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:14:00+08:00",
+        "equity": 301041.0,
+        "unrealized_pnl": -360.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:14:00+08:00",
+        "equity": 301101.0,
+        "unrealized_pnl": -300.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:15:00+08:00",
+        "equity": 300681.0,
+        "unrealized_pnl": -720.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:15:00+08:00",
+        "equity": 300921.0,
+        "unrealized_pnl": -480.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:16:00+08:00",
+        "equity": 300621.0,
+        "unrealized_pnl": -780.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:16:00+08:00",
+        "equity": 300741.0,
+        "unrealized_pnl": -660.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:17:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:17:00+08:00",
+        "equity": 300501.0,
+        "unrealized_pnl": -900.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:18:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:18:00+08:00",
+        "equity": 300921.0,
+        "unrealized_pnl": -480.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:19:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:19:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:20:00+08:00",
+        "equity": 300321.0,
+        "unrealized_pnl": -1080.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:20:00+08:00",
+        "equity": 300741.0,
+        "unrealized_pnl": -660.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:21:00+08:00",
+        "equity": 300561.0,
+        "unrealized_pnl": -840.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:21:00+08:00",
+        "equity": 300681.0,
+        "unrealized_pnl": -720.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:22:00+08:00",
+        "equity": 300681.0,
+        "unrealized_pnl": -720.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:22:00+08:00",
+        "equity": 300981.0,
+        "unrealized_pnl": -420.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:23:00+08:00",
+        "equity": 300561.0,
+        "unrealized_pnl": -840.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:23:00+08:00",
+        "equity": 300681.0,
+        "unrealized_pnl": -720.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:24:00+08:00",
+        "equity": 300321.0,
+        "unrealized_pnl": -1080.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:24:00+08:00",
+        "equity": 300321.0,
+        "unrealized_pnl": -1080.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:25:00+08:00",
+        "equity": 300081.0,
+        "unrealized_pnl": -1320.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:25:00+08:00",
+        "equity": 300201.0,
+        "unrealized_pnl": -1200.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:26:00+08:00",
+        "equity": 300141.0,
+        "unrealized_pnl": -1260.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:26:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:27:00+08:00",
+        "equity": 300321.0,
+        "unrealized_pnl": -1080.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:27:00+08:00",
+        "equity": 300561.0,
+        "unrealized_pnl": -840.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:28:00+08:00",
+        "equity": 300381.0,
+        "unrealized_pnl": -1020.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:28:00+08:00",
+        "equity": 300561.0,
+        "unrealized_pnl": -840.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:29:00+08:00",
+        "equity": 300501.0,
+        "unrealized_pnl": -900.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:29:00+08:00",
+        "equity": 300741.0,
+        "unrealized_pnl": -660.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:30:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:30:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:31:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:31:00+08:00",
+        "equity": 300501.0,
+        "unrealized_pnl": -900.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:32:00+08:00",
+        "equity": 300321.0,
+        "unrealized_pnl": -1080.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:32:00+08:00",
+        "equity": 300621.0,
+        "unrealized_pnl": -780.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:33:00+08:00",
+        "equity": 300381.0,
+        "unrealized_pnl": -1020.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:33:00+08:00",
+        "equity": 300441.0,
+        "unrealized_pnl": -960.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:34:00+08:00",
+        "equity": 300081.0,
+        "unrealized_pnl": -1320.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:34:00+08:00",
+        "equity": 300141.0,
+        "unrealized_pnl": -1260.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:35:00+08:00",
+        "equity": 300081.0,
+        "unrealized_pnl": -1320.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:35:00+08:00",
+        "equity": 300141.0,
+        "unrealized_pnl": -1260.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:36:00+08:00",
+        "equity": 299721.0,
+        "unrealized_pnl": -1680.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:36:00+08:00",
+        "equity": 299841.0,
+        "unrealized_pnl": -1560.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:37:00+08:00",
+        "equity": 299721.0,
+        "unrealized_pnl": -1680.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:37:00+08:00",
+        "equity": 299781.0,
+        "unrealized_pnl": -1620.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:38:00+08:00",
+        "equity": 299721.0,
+        "unrealized_pnl": -1680.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:38:00+08:00",
+        "equity": 300081.0,
+        "unrealized_pnl": -1320.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:39:00+08:00",
+        "equity": 299961.0,
+        "unrealized_pnl": -1440.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:39:00+08:00",
+        "equity": 300141.0,
+        "unrealized_pnl": -1260.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:40:00+08:00",
+        "equity": 300141.0,
+        "unrealized_pnl": -1260.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:40:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:41:00+08:00",
+        "equity": 299961.0,
+        "unrealized_pnl": -1440.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:41:00+08:00",
+        "equity": 299961.0,
+        "unrealized_pnl": -1440.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:42:00+08:00",
+        "equity": 299961.0,
+        "unrealized_pnl": -1440.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:42:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:43:00+08:00",
+        "equity": 300201.0,
+        "unrealized_pnl": -1200.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:43:00+08:00",
+        "equity": 300201.0,
+        "unrealized_pnl": -1200.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:44:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:44:00+08:00",
+        "equity": 300381.0,
+        "unrealized_pnl": -1020.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:45:00+08:00",
+        "equity": 300201.0,
+        "unrealized_pnl": -1200.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:45:00+08:00",
+        "equity": 300261.0,
+        "unrealized_pnl": -1140.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:46:00+08:00",
+        "equity": 300021.0,
+        "unrealized_pnl": -1380.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:46:00+08:00",
+        "equity": 300021.0,
+        "unrealized_pnl": -1380.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:47:00+08:00",
+        "equity": 299781.0,
+        "unrealized_pnl": -1620.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:47:00+08:00",
+        "equity": 299781.0,
+        "unrealized_pnl": -1620.0,
+        "net_lots": 3.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:48:00+08:00",
+        "equity": 299361.0,
+        "unrealized_pnl": -2040.0,
+        "net_lots": 3.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:48:00+08:00",
+        "equity": 299592.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      }
+    ],
+    "total_reward": 1.3233486943164365,
+    "max_floating_loss": 2040.0,
+    "legal_add_decisions": 6,
+    "voluntary_waits": 0,
+    "status": "ACTIVE",
+    "terminated": false,
+    "truncated": false,
+    "pending_reason": null,
+    "completed_accounts": [],
+    "reward_state": {
+      "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+      "config": {
+        "candidate": "C1",
+        "beta": 0.5,
+        "rho": 0.4,
+        "L": 3.0,
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "clock_protocol": "S3_MARKET_MINUTE"
+      },
+      "scorer": {
+        "schema": 2,
+        "config": {
+          "beta": 0.5,
+          "rho": 0.4,
+          "lam": 0.0,
+          "alpha": 0.0,
+          "gamma": 0.996996996996997,
+          "risk_points": 10.0,
+          "take_profit_points": 5.0,
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "active": {},
+        "closed": {
+          "CZCE.FG201:1:1": {
+            "entry_id": "CZCE.FG201:1:1",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:01:00+08:00",
+            "entry_price": 2988.0,
+            "bars_seen": 2,
+            "adverse10_fired": false,
+            "adverse_first_bar": null,
+            "early_penalty": 0.0,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:03:00+08:00",
+            "exit_reason": "TAKE_PROFIT",
+            "tp_minutes": null,
+            "tp_market_minutes": 2,
+            "original_tp": 0.967741935483871,
+            "timeboxed_tp": 0.967741935483871,
+            "intrabar_ambiguous": false
+          },
+          "CZCE.FG201:1:2": {
+            "entry_id": "CZCE.FG201:1:2",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:03:00+08:00",
+            "entry_price": 2973.0,
+            "bars_seen": 3,
+            "adverse10_fired": false,
+            "adverse_first_bar": null,
+            "early_penalty": 0.0,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:06:00+08:00",
+            "exit_reason": "TAKE_PROFIT",
+            "tp_minutes": null,
+            "tp_market_minutes": 3,
+            "original_tp": 0.9523809523809523,
+            "timeboxed_tp": 0.9523809523809523,
+            "intrabar_ambiguous": false
+          },
+          "CZCE.FG201:1:3": {
+            "entry_id": "CZCE.FG201:1:3",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:06:00+08:00",
+            "entry_price": 2967.0,
+            "bars_seen": 2,
+            "adverse10_fired": false,
+            "adverse_first_bar": null,
+            "early_penalty": 0.0,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:08:00+08:00",
+            "exit_reason": "TAKE_PROFIT",
+            "tp_minutes": null,
+            "tp_market_minutes": 2,
+            "original_tp": 0.967741935483871,
+            "timeboxed_tp": 0.967741935483871,
+            "intrabar_ambiguous": false
+          },
+          "CZCE.FG201:1:4": {
+            "entry_id": "CZCE.FG201:1:4",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:08:00+08:00",
+            "entry_price": 2952.0,
+            "bars_seen": 2,
+            "adverse10_fired": false,
+            "adverse_first_bar": null,
+            "early_penalty": 0.0,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:10:00+08:00",
+            "exit_reason": "TAKE_PROFIT",
+            "tp_minutes": null,
+            "tp_market_minutes": 2,
+            "original_tp": 0.967741935483871,
+            "timeboxed_tp": 0.967741935483871,
+            "intrabar_ambiguous": false
+          },
+          "CZCE.FG201:1:5": {
+            "entry_id": "CZCE.FG201:1:5",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:10:00+08:00",
+            "entry_price": 2946.0,
+            "bars_seen": 2,
+            "adverse10_fired": false,
+            "adverse_first_bar": null,
+            "early_penalty": 0.0,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:12:00+08:00",
+            "exit_reason": "TAKE_PROFIT",
+            "tp_minutes": null,
+            "tp_market_minutes": 2,
+            "original_tp": 0.967741935483871,
+            "timeboxed_tp": 0.967741935483871,
+            "intrabar_ambiguous": false
+          },
+          "CZCE.FG201:1:6": {
+            "entry_id": "CZCE.FG201:1:6",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:12:00+08:00",
+            "entry_price": 2924.0,
+            "bars_seen": 36,
+            "adverse10_fired": true,
+            "adverse_first_bar": 3,
+            "early_penalty": -0.5,
+            "capacity_basis": 0.0,
+            "exit_time": "2021-07-23 21:48:00+08:00",
+            "exit_reason": "STOP_LOSS",
+            "tp_minutes": null,
+            "tp_market_minutes": null,
+            "original_tp": 0.0,
+            "timeboxed_tp": 0.0,
+            "intrabar_ambiguous": false
+          }
+        },
+        "seen": [
+          "CZCE.FG201:1:1",
+          "CZCE.FG201:1:2",
+          "CZCE.FG201:1:3",
+          "CZCE.FG201:1:4",
+          "CZCE.FG201:1:5",
+          "CZCE.FG201:1:6"
+        ],
+        "last_mark": 2956.0,
+        "last_end": "2021-07-23 21:48:00+08:00",
+        "step_number": 47,
+        "totals": {
+          "v0": 4.8233486943164365,
+          "tp_timeboxed": 4.8233486943164365,
+          "early": -0.5,
+          "potential": 0.0,
+          "capacity": 0.0,
+          "v2": 4.3233486943164365,
+          "v3": 4.3233486943164365,
+          "capacity_basis": 0.0
+        },
+        "discounted": {
+          "v0": 4.740069686187319,
+          "v2": 4.259241346341544,
+          "v3": 4.259241346341544
+        },
+        "discount_weight": 0.8681823636604792,
+        "ambiguities": 0,
+        "sha256": "1231b2e228e24c4266a55b8a1ebed2e63fadd2522a2469bbc9948d8684768249"
+      },
+      "total": 1.3233486943164365
+    },
+    "last_reward_components": {
+      "tp": 0.0,
+      "early": 0.0,
+      "sl": -3.0,
+      "other": 0.0,
+      "total": -3.0,
+      "legacy_tp": 0.0,
+      "early_first5": 0,
+      "early_next10": 0,
+      "penalized": [],
+      "intrabar_ambiguous": [],
+      "events": [
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:12:00+08:00",
+          "exit_time": "2021-07-23 21:48:00+08:00",
+          "entry_price": "2924",
+          "exit_price": "2954",
+          "closed_quantity": 3,
+          "reason": "STOP_LOSS",
+          "committed": true,
+          "gross_trade_pnl": "-1800.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "-1818.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:48:00+08:00",
+          "sl_trigger_time": "2021-07-23 21:48:00+08:00",
+          "sl_pending_retry": false,
+          "gap_slippage_points": 0.0,
+          "entry_cursor": 12,
+          "exit_cursor": 47,
+          "held_market_bars": 36,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "reward": -3.0
+        }
+      ]
+    }
+  },
+  "quality": {
+    "protocol": "FG_S3_QUALITY_TEACHER_POSTHOC_V1",
+    "score_protocol": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+    "fold": "TRAIN",
+    "training_action_label_allowed": false,
+    "rule_identity": {
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+    },
+    "decision_snapshot_hash": "7f166984ac0036204890ab25b3ef3e09a881ff102d5eec4ba9769041841ce6f8",
+    "decision_state_hash": "4de8ef3c92b25d74fcf1ed7f3731c8366a50a5d23e852b03cd40a8e09566e55e",
+    "decision_cursor": 47,
+    "starting_equity": "299592.00",
+    "actual_action_mask": [
+      1,
+      1
+    ],
+    "strict_decision_valid": false,
+    "strict_oracle": {
+      "valid": false,
+      "certified": false,
+      "action": null,
+      "reason": "FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE",
+      "oracle_identity": "bcd8c4750abc2f3b2fb69da78397ab94e1dc179aaed2d11f7aa833b57af54960",
+      "proof_hash": "f4a8d0a455dae85b5cc921c17ef42edc7796706d54eb96e4ac3bc6135011a11e"
+    },
+    "immediate_add_outcome_valid": true,
+    "quality_valid": true,
+    "quality_score": 95.78125,
+    "tp_event_reward_new": 0.9578125,
+    "new_reward_undiscounted": 0.7578124742839754,
+    "old_reward_undiscounted": 0.41855667531490326,
+    "outcome": "TAKE_PROFIT",
+    "reason": "OBSERVED_TP",
+    "old_tp_event_reward": 0.6185567010309279,
+    "entry_cursor": 48,
+    "exit_cursor": 84,
+    "entry_time": "2021-07-23 21:48:00+08:00",
+    "exit_time": "2021-07-23 22:25:00+08:00",
+    "market_minutes": 37,
+    "later_trading_days": 0,
+    "mae_quote_envelope_points": 14.0,
+    "net_trade_pnl": "282.0",
+    "exit_event_hash": "6fc9a5e684ae74d7a60fb9876d95c9404dac81bf17609873a3ea1142faa89176",
+    "official_entry_date": "2021-07-26",
+    "official_exit_date": "2021-07-26",
+    "add_better_than_wait": null
+  },
+  "independent_reference": {
+    "initial_state_hash": "7f166984ac0036204890ab25b3ef3e09a881ff102d5eec4ba9769041841ce6f8",
+    "feedback": [
+      [
+        48,
+        0.0
+      ],
+      [
+        49,
+        0.0
+      ],
+      [
+        50,
+        0.0
+      ],
+      [
+        51,
+        0.0
+      ],
+      [
+        52,
+        0.0
+      ],
+      [
+        53,
+        0.0
+      ],
+      [
+        54,
+        0.0
+      ],
+      [
+        55,
+        0.0
+      ],
+      [
+        56,
+        0.0
+      ],
+      [
+        57,
+        -0.20000000298023224
+      ],
+      [
+        58,
+        0.0
+      ],
+      [
+        59,
+        0.0
+      ],
+      [
+        60,
+        0.0
+      ],
+      [
+        61,
+        0.0
+      ],
+      [
+        62,
+        0.0
+      ],
+      [
+        63,
+        0.0
+      ],
+      [
+        64,
+        0.0
+      ],
+      [
+        65,
+        0.0
+      ],
+      [
+        66,
+        0.0
+      ],
+      [
+        67,
+        0.0
+      ],
+      [
+        68,
+        0.0
+      ],
+      [
+        69,
+        0.0
+      ],
+      [
+        70,
+        0.0
+      ],
+      [
+        71,
+        0.0
+      ],
+      [
+        72,
+        0.0
+      ],
+      [
+        73,
+        0.0
+      ],
+      [
+        74,
+        0.0
+      ],
+      [
+        75,
+        0.0
+      ],
+      [
+        76,
+        0.0
+      ],
+      [
+        77,
+        0.0
+      ],
+      [
+        78,
+        0.0
+      ],
+      [
+        79,
+        0.0
+      ],
+      [
+        80,
+        0.0
+      ],
+      [
+        81,
+        0.0
+      ],
+      [
+        82,
+        0.0
+      ],
+      [
+        83,
+        0.0
+      ],
+      [
+        84,
+        0.6185566782951355
+      ]
+    ],
+    "events": [
+      {
+        "entry_id": "CZCE.FG201:1:7",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:48:00+08:00",
+        "exit_time": "2021-07-23 22:25:00+08:00",
+        "entry_price": "2955",
+        "exit_price": "2950",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 22:25:00+08:00",
+        "entry_cursor": 48,
+        "exit_cursor": 84,
+        "held_market_bars": 37,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 37
+      }
+    ],
+    "final_state": {
+      "schema": 3,
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "cursor_time": "2021-07-23 22:25:00+08:00",
+      "prefix_hash": "057ff037a2725f3854c05e9bf34dd3dc4f346df2dce51224fde47cdf24408898",
+      "balances": {
+        "user_cash": "299874.00",
+        "user_margin": "0.00",
+        "broker_fee_income": "126.0",
+        "broker_pnl": "0.0"
+      },
+      "ledger_entries": [
+        {
+          "timestamp": "2021-07-23 21:01:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17937.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17928.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2988"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:03:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17928.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18219.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2983",
+            "pnl": "300.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:03:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17847.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17838.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2973"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:06:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17838.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18129.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2968",
+            "pnl": "300.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:06:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17811.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17802.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2967"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:08:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17802.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18093.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2962",
+            "pnl": "300.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:08:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17721.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17712.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2952"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:10:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17712.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18003.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2947",
+            "pnl": "300.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:10:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17685.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17676.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2946"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:12:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17676.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "17967.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2941",
+            "pnl": "300.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:12:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17553.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17544.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2924"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:48:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17544.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "1800.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "15735.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2954",
+            "pnl": "-1800.0"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:48:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17739.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17730.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2955"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 22:25:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17730.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18021.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2950",
+            "pnl": "300.0"
+          }
+        }
+      ],
+      "long_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "short_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "closed_trade_profits": [
+        "300.0",
+        "300.0",
+        "300.0",
+        "300.0",
+        "300.0",
+        "-1800.0",
+        "300.0"
+      ],
+      "realized_pnl": "0.0",
+      "unrealized_pnl": "0",
+      "trade_history": [
+        {
+          "timestamp": "2021-07-23T21:01:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2988",
+          "close_price": "0",
+          "required_margin": "17928.00",
+          "fee": "9.0",
+          "balance": "282063.00",
+          "leverage": "1E+1",
+          "free_margin": "282063.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:03:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2988",
+          "close_price": "2983",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "300282.00",
+          "leverage": "1E+1",
+          "free_margin": "300402.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17928.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:03:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2973",
+          "close_price": "0",
+          "required_margin": "17838.00",
+          "fee": "9.0",
+          "balance": "282435.00",
+          "leverage": "1E+1",
+          "free_margin": "282435.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:2",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:06:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2973",
+          "close_price": "2968",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "300564.00",
+          "leverage": "1E+1",
+          "free_margin": "300504.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17838.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:2",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:06:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2967",
+          "close_price": "0",
+          "required_margin": "17802.00",
+          "fee": "9.0",
+          "balance": "282753.00",
+          "leverage": "1E+1",
+          "free_margin": "282753.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:3",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:08:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2967",
+          "close_price": "2962",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "300846.00",
+          "leverage": "1E+1",
+          "free_margin": "300966.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17802.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:3",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:08:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2952",
+          "close_price": "0",
+          "required_margin": "17712.00",
+          "fee": "9.0",
+          "balance": "283125.00",
+          "leverage": "1E+1",
+          "free_margin": "283125.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:4",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:10:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2952",
+          "close_price": "2947",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "301128.00",
+          "leverage": "1E+1",
+          "free_margin": "300948.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17712.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:4",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:10:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2946",
+          "close_price": "0",
+          "required_margin": "17676.00",
+          "fee": "9.0",
+          "balance": "283443.00",
+          "leverage": "1E+1",
+          "free_margin": "283443.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:5",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:12:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2946",
+          "close_price": "2941",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "301410.00",
+          "leverage": "1E+1",
+          "free_margin": "301590.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17676.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:5",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:12:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2924",
+          "close_price": "0",
+          "required_margin": "17544.00",
+          "fee": "9.0",
+          "balance": "283857.00",
+          "leverage": "1E+1",
+          "free_margin": "283857.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:6",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:48:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2924",
+          "close_price": "2954",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "299592.00",
+          "leverage": "1E+1",
+          "free_margin": "297552.00",
+          "pnl": "-1800.0",
+          "closed_size": "3",
+          "released_margin": "17544.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "STOP_LOSS",
+            "entry_id": "CZCE.FG201:1:6",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:48:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2955",
+          "close_price": "0",
+          "required_margin": "17730.00",
+          "fee": "9.0",
+          "balance": "281853.00",
+          "leverage": "1E+1",
+          "free_margin": "281853.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:7",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T22:25:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2955",
+          "close_price": "2950",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "299874.00",
+          "leverage": "1E+1",
+          "free_margin": "299754.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17730.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:7",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        }
+      ],
+      "rng": {
+        "bit_generator": "PCG64",
+        "state": {
+          "state": 35399562948360463058890781895381311971,
+          "inc": 87136372517582989555478159403783844777
+        },
+        "has_uint32": 0,
+        "uinteger": 0
+      },
+      "rewarded": [
+        "CZCE.FG201:1:1",
+        "CZCE.FG201:1:2",
+        "CZCE.FG201:1:3",
+        "CZCE.FG201:1:4",
+        "CZCE.FG201:1:5",
+        "CZCE.FG201:1:6",
+        "CZCE.FG201:1:7"
+      ],
+      "processed_fills": [
+        "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3",
+        "CZCE.FG201:1:2|2021-07-23 21:06:00+08:00|TAKE_PROFIT|3",
+        "CZCE.FG201:1:3|2021-07-23 21:08:00+08:00|TAKE_PROFIT|3",
+        "CZCE.FG201:1:4|2021-07-23 21:10:00+08:00|TAKE_PROFIT|3",
+        "CZCE.FG201:1:5|2021-07-23 21:12:00+08:00|TAKE_PROFIT|3",
+        "CZCE.FG201:1:6|2021-07-23 21:48:00+08:00|STOP_LOSS|3",
+        "CZCE.FG201:1:7|2021-07-23 22:25:00+08:00|TAKE_PROFIT|3"
+      ],
+      "current_step": 84,
+      "episode_step_count": 84,
+      "chunk_count": 84,
+      "entry_sequence": 7,
+      "account_sequence": 1,
+      "current_price": "2949.0",
+      "entries": {},
+      "fills": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 21:01:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2988",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 21:03:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2983",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:2",
+          "time": "2021-07-23 21:03:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2973",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:2",
+          "time": "2021-07-23 21:06:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2968",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:2|2021-07-23 21:06:00+08:00|TAKE_PROFIT|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:3",
+          "time": "2021-07-23 21:06:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2967",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:3",
+          "time": "2021-07-23 21:08:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2962",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:3|2021-07-23 21:08:00+08:00|TAKE_PROFIT|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:4",
+          "time": "2021-07-23 21:08:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2952",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:4",
+          "time": "2021-07-23 21:10:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2947",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:4|2021-07-23 21:10:00+08:00|TAKE_PROFIT|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:5",
+          "time": "2021-07-23 21:10:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2946",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:5",
+          "time": "2021-07-23 21:12:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2941",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:5|2021-07-23 21:12:00+08:00|TAKE_PROFIT|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "time": "2021-07-23 21:12:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2924",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "time": "2021-07-23 21:48:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2954",
+          "reason": "STOP_LOSS",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:6|2021-07-23 21:48:00+08:00|STOP_LOSS|3"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:7",
+          "time": "2021-07-23 21:48:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2955",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:7",
+          "time": "2021-07-23 22:25:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2950",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:7|2021-07-23 22:25:00+08:00|TAKE_PROFIT|3"
+        }
+      ],
+      "attributions": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:01:00+08:00",
+          "exit_time": "2021-07-23 21:03:00+08:00",
+          "entry_price": "2988",
+          "exit_price": "2983",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:03:00+08:00",
+          "entry_cursor": 1,
+          "exit_cursor": 2,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2
+        },
+        {
+          "entry_id": "CZCE.FG201:1:2",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:03:00+08:00",
+          "exit_time": "2021-07-23 21:06:00+08:00",
+          "entry_price": "2973",
+          "exit_price": "2968",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:06:00+08:00",
+          "entry_cursor": 3,
+          "exit_cursor": 5,
+          "held_market_bars": 3,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 3
+        },
+        {
+          "entry_id": "CZCE.FG201:1:3",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:06:00+08:00",
+          "exit_time": "2021-07-23 21:08:00+08:00",
+          "entry_price": "2967",
+          "exit_price": "2962",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:08:00+08:00",
+          "entry_cursor": 6,
+          "exit_cursor": 7,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2
+        },
+        {
+          "entry_id": "CZCE.FG201:1:4",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:08:00+08:00",
+          "exit_time": "2021-07-23 21:10:00+08:00",
+          "entry_price": "2952",
+          "exit_price": "2947",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:10:00+08:00",
+          "entry_cursor": 8,
+          "exit_cursor": 9,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2
+        },
+        {
+          "entry_id": "CZCE.FG201:1:5",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:10:00+08:00",
+          "exit_time": "2021-07-23 21:12:00+08:00",
+          "entry_price": "2946",
+          "exit_price": "2941",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:12:00+08:00",
+          "entry_cursor": 10,
+          "exit_cursor": 11,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2
+        },
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:12:00+08:00",
+          "exit_time": "2021-07-23 21:48:00+08:00",
+          "entry_price": "2924",
+          "exit_price": "2954",
+          "closed_quantity": 3,
+          "reason": "STOP_LOSS",
+          "committed": true,
+          "gross_trade_pnl": "-1800.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "-1818.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:48:00+08:00",
+          "sl_trigger_time": "2021-07-23 21:48:00+08:00",
+          "sl_pending_retry": false,
+          "gap_slippage_points": 0.0,
+          "entry_cursor": 12,
+          "exit_cursor": 47,
+          "held_market_bars": 36,
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        {
+          "entry_id": "CZCE.FG201:1:7",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:48:00+08:00",
+          "exit_time": "2021-07-23 22:25:00+08:00",
+          "entry_price": "2955",
+          "exit_price": "2950",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:25:00+08:00",
+          "entry_cursor": 48,
+          "exit_cursor": 84,
+          "held_market_bars": 37,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 37
+        }
+      ],
+      "reward_events": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:01:00+08:00",
+          "exit_time": "2021-07-23 21:03:00+08:00",
+          "entry_price": "2988",
+          "exit_price": "2983",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:03:00+08:00",
+          "entry_cursor": 1,
+          "exit_cursor": 2,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2,
+          "reward": 0.967741935483871
+        },
+        {
+          "entry_id": "CZCE.FG201:1:2",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:03:00+08:00",
+          "exit_time": "2021-07-23 21:06:00+08:00",
+          "entry_price": "2973",
+          "exit_price": "2968",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:06:00+08:00",
+          "entry_cursor": 3,
+          "exit_cursor": 5,
+          "held_market_bars": 3,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 3,
+          "reward": 0.9523809523809523
+        },
+        {
+          "entry_id": "CZCE.FG201:1:3",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:06:00+08:00",
+          "exit_time": "2021-07-23 21:08:00+08:00",
+          "entry_price": "2967",
+          "exit_price": "2962",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:08:00+08:00",
+          "entry_cursor": 6,
+          "exit_cursor": 7,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2,
+          "reward": 0.967741935483871
+        },
+        {
+          "entry_id": "CZCE.FG201:1:4",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:08:00+08:00",
+          "exit_time": "2021-07-23 21:10:00+08:00",
+          "entry_price": "2952",
+          "exit_price": "2947",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:10:00+08:00",
+          "entry_cursor": 8,
+          "exit_cursor": 9,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2,
+          "reward": 0.967741935483871
+        },
+        {
+          "entry_id": "CZCE.FG201:1:5",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:10:00+08:00",
+          "exit_time": "2021-07-23 21:12:00+08:00",
+          "entry_price": "2946",
+          "exit_price": "2941",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:12:00+08:00",
+          "entry_cursor": 10,
+          "exit_cursor": 11,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2,
+          "reward": 0.967741935483871
+        },
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "reason": "FIRST_ADVERSE10",
+          "time": "2021-07-23 21:15:00+08:00",
+          "effective_bar": 3,
+          "reward": -0.5,
+          "observed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:6",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:12:00+08:00",
+          "exit_time": "2021-07-23 21:48:00+08:00",
+          "entry_price": "2924",
+          "exit_price": "2954",
+          "closed_quantity": 3,
+          "reason": "STOP_LOSS",
+          "committed": true,
+          "gross_trade_pnl": "-1800.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "-1818.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:48:00+08:00",
+          "sl_trigger_time": "2021-07-23 21:48:00+08:00",
+          "sl_pending_retry": false,
+          "gap_slippage_points": 0.0,
+          "entry_cursor": 12,
+          "exit_cursor": 47,
+          "held_market_bars": 36,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "reward": -3.0
+        },
+        {
+          "entry_id": "CZCE.FG201:1:7",
+          "reason": "FIRST_ADVERSE10",
+          "time": "2021-07-23 21:58:00+08:00",
+          "effective_bar": 10,
+          "reward": -0.2,
+          "observed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:7",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:48:00+08:00",
+          "exit_time": "2021-07-23 22:25:00+08:00",
+          "entry_price": "2955",
+          "exit_price": "2950",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:25:00+08:00",
+          "entry_cursor": 48,
+          "exit_cursor": 84,
+          "held_market_bars": 37,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 37,
+          "reward": 0.6185567010309279
+        }
+      ],
+      "equity_history": [
+        {
+          "time": "2021-07-23 21:01:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 300291.0,
+          "unrealized_pnl": 300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300111.0,
+          "unrealized_pnl": 120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300282.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:04:00+08:00",
+          "equity": 300093.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:04:00+08:00",
+          "equity": 300453.0,
+          "unrealized_pnl": 180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:05:00+08:00",
+          "equity": 299973.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:05:00+08:00",
+          "equity": 300153.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:06:00+08:00",
+          "equity": 300213.0,
+          "unrealized_pnl": -60.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:06:00+08:00",
+          "equity": 300564.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:07:00+08:00",
+          "equity": 300435.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:07:00+08:00",
+          "equity": 300675.0,
+          "unrealized_pnl": 120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:08:00+08:00",
+          "equity": 300675.0,
+          "unrealized_pnl": 120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:08:00+08:00",
+          "equity": 300846.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:09:00+08:00",
+          "equity": 300477.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:09:00+08:00",
+          "equity": 300597.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:10:00+08:00",
+          "equity": 300657.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:10:00+08:00",
+          "equity": 301128.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:11:00+08:00",
+          "equity": 300879.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:11:00+08:00",
+          "equity": 301359.0,
+          "unrealized_pnl": 240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:12:00+08:00",
+          "equity": 301299.0,
+          "unrealized_pnl": 180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:12:00+08:00",
+          "equity": 301410.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:13:00+08:00",
+          "equity": 300861.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:13:00+08:00",
+          "equity": 301521.0,
+          "unrealized_pnl": 120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:14:00+08:00",
+          "equity": 301041.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:14:00+08:00",
+          "equity": 301101.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:15:00+08:00",
+          "equity": 300681.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:15:00+08:00",
+          "equity": 300921.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:16:00+08:00",
+          "equity": 300621.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:16:00+08:00",
+          "equity": 300741.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:17:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:17:00+08:00",
+          "equity": 300501.0,
+          "unrealized_pnl": -900.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:18:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:18:00+08:00",
+          "equity": 300921.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:19:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:19:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:20:00+08:00",
+          "equity": 300321.0,
+          "unrealized_pnl": -1080.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:20:00+08:00",
+          "equity": 300741.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:21:00+08:00",
+          "equity": 300561.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:21:00+08:00",
+          "equity": 300681.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:22:00+08:00",
+          "equity": 300681.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:22:00+08:00",
+          "equity": 300981.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:23:00+08:00",
+          "equity": 300561.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:23:00+08:00",
+          "equity": 300681.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:24:00+08:00",
+          "equity": 300321.0,
+          "unrealized_pnl": -1080.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:24:00+08:00",
+          "equity": 300321.0,
+          "unrealized_pnl": -1080.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:25:00+08:00",
+          "equity": 300081.0,
+          "unrealized_pnl": -1320.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:25:00+08:00",
+          "equity": 300201.0,
+          "unrealized_pnl": -1200.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:26:00+08:00",
+          "equity": 300141.0,
+          "unrealized_pnl": -1260.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:26:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:27:00+08:00",
+          "equity": 300321.0,
+          "unrealized_pnl": -1080.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:27:00+08:00",
+          "equity": 300561.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:28:00+08:00",
+          "equity": 300381.0,
+          "unrealized_pnl": -1020.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:28:00+08:00",
+          "equity": 300561.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:29:00+08:00",
+          "equity": 300501.0,
+          "unrealized_pnl": -900.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:29:00+08:00",
+          "equity": 300741.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:30:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:30:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:31:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:31:00+08:00",
+          "equity": 300501.0,
+          "unrealized_pnl": -900.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:32:00+08:00",
+          "equity": 300321.0,
+          "unrealized_pnl": -1080.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:32:00+08:00",
+          "equity": 300621.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:33:00+08:00",
+          "equity": 300381.0,
+          "unrealized_pnl": -1020.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:33:00+08:00",
+          "equity": 300441.0,
+          "unrealized_pnl": -960.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:34:00+08:00",
+          "equity": 300081.0,
+          "unrealized_pnl": -1320.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:34:00+08:00",
+          "equity": 300141.0,
+          "unrealized_pnl": -1260.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:35:00+08:00",
+          "equity": 300081.0,
+          "unrealized_pnl": -1320.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:35:00+08:00",
+          "equity": 300141.0,
+          "unrealized_pnl": -1260.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:36:00+08:00",
+          "equity": 299721.0,
+          "unrealized_pnl": -1680.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:36:00+08:00",
+          "equity": 299841.0,
+          "unrealized_pnl": -1560.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:37:00+08:00",
+          "equity": 299721.0,
+          "unrealized_pnl": -1680.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:37:00+08:00",
+          "equity": 299781.0,
+          "unrealized_pnl": -1620.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:38:00+08:00",
+          "equity": 299721.0,
+          "unrealized_pnl": -1680.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:38:00+08:00",
+          "equity": 300081.0,
+          "unrealized_pnl": -1320.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:39:00+08:00",
+          "equity": 299961.0,
+          "unrealized_pnl": -1440.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:39:00+08:00",
+          "equity": 300141.0,
+          "unrealized_pnl": -1260.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:40:00+08:00",
+          "equity": 300141.0,
+          "unrealized_pnl": -1260.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:40:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:41:00+08:00",
+          "equity": 299961.0,
+          "unrealized_pnl": -1440.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:41:00+08:00",
+          "equity": 299961.0,
+          "unrealized_pnl": -1440.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:42:00+08:00",
+          "equity": 299961.0,
+          "unrealized_pnl": -1440.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:42:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:43:00+08:00",
+          "equity": 300201.0,
+          "unrealized_pnl": -1200.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:43:00+08:00",
+          "equity": 300201.0,
+          "unrealized_pnl": -1200.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:44:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:44:00+08:00",
+          "equity": 300381.0,
+          "unrealized_pnl": -1020.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:45:00+08:00",
+          "equity": 300201.0,
+          "unrealized_pnl": -1200.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:45:00+08:00",
+          "equity": 300261.0,
+          "unrealized_pnl": -1140.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:46:00+08:00",
+          "equity": 300021.0,
+          "unrealized_pnl": -1380.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:46:00+08:00",
+          "equity": 300021.0,
+          "unrealized_pnl": -1380.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:47:00+08:00",
+          "equity": 299781.0,
+          "unrealized_pnl": -1620.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:47:00+08:00",
+          "equity": 299781.0,
+          "unrealized_pnl": -1620.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:48:00+08:00",
+          "equity": 299361.0,
+          "unrealized_pnl": -2040.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:48:00+08:00",
+          "equity": 299592.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:49:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:49:00+08:00",
+          "equity": 299583.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:50:00+08:00",
+          "equity": 299523.0,
+          "unrealized_pnl": -60.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:50:00+08:00",
+          "equity": 299583.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:51:00+08:00",
+          "equity": 299523.0,
+          "unrealized_pnl": -60.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:51:00+08:00",
+          "equity": 299643.0,
+          "unrealized_pnl": 60.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:52:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:52:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:53:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:53:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:54:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:54:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:55:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:55:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:56:00+08:00",
+          "equity": 299163.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:56:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:57:00+08:00",
+          "equity": 298983.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:57:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:58:00+08:00",
+          "equity": 298863.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:58:00+08:00",
+          "equity": 298983.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:59:00+08:00",
+          "equity": 298743.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:59:00+08:00",
+          "equity": 298803.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:00:00+08:00",
+          "equity": 298803.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:00:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:01:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:01:00+08:00",
+          "equity": 299163.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:02:00+08:00",
+          "equity": 298923.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:02:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:03:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:03:00+08:00",
+          "equity": 299283.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:04:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:04:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:05:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:05:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:06:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:06:00+08:00",
+          "equity": 299163.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:07:00+08:00",
+          "equity": 299163.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:07:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:08:00+08:00",
+          "equity": 299283.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:08:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:09:00+08:00",
+          "equity": 299163.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:09:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:10:00+08:00",
+          "equity": 298983.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:10:00+08:00",
+          "equity": 298983.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:11:00+08:00",
+          "equity": 298983.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:11:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:12:00+08:00",
+          "equity": 298923.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:12:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:13:00+08:00",
+          "equity": 299043.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:13:00+08:00",
+          "equity": 299283.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:14:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:14:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:15:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:15:00+08:00",
+          "equity": 299583.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:16:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:16:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:17:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:17:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:18:00+08:00",
+          "equity": 299103.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:18:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:19:00+08:00",
+          "equity": 299223.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:19:00+08:00",
+          "equity": 299283.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:20:00+08:00",
+          "equity": 299283.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:20:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:21:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:21:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:22:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:22:00+08:00",
+          "equity": 299403.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:23:00+08:00",
+          "equity": 299343.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:23:00+08:00",
+          "equity": 299643.0,
+          "unrealized_pnl": 60.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:24:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:24:00+08:00",
+          "equity": 299583.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:25:00+08:00",
+          "equity": 299463.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:25:00+08:00",
+          "equity": 299874.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        }
+      ],
+      "total_reward": 1.7419053953473644,
+      "max_floating_loss": 2040.0,
+      "legal_add_decisions": 7,
+      "voluntary_waits": 0,
+      "status": "ACTIVE",
+      "terminated": false,
+      "truncated": false,
+      "pending_reason": null,
+      "completed_accounts": [],
+      "reward_state": {
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "config": {
+          "candidate": "C1",
+          "beta": 0.5,
+          "rho": 0.4,
+          "L": 3.0,
+          "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "scorer": {
+          "schema": 2,
+          "config": {
+            "beta": 0.5,
+            "rho": 0.4,
+            "lam": 0.0,
+            "alpha": 0.0,
+            "gamma": 0.996996996996997,
+            "risk_points": 10.0,
+            "take_profit_points": 5.0,
+            "clock_protocol": "S3_MARKET_MINUTE"
+          },
+          "active": {},
+          "closed": {
+            "CZCE.FG201:1:1": {
+              "entry_id": "CZCE.FG201:1:1",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:01:00+08:00",
+              "entry_price": 2988.0,
+              "bars_seen": 2,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:03:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 2,
+              "original_tp": 0.967741935483871,
+              "timeboxed_tp": 0.967741935483871,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:2": {
+              "entry_id": "CZCE.FG201:1:2",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:03:00+08:00",
+              "entry_price": 2973.0,
+              "bars_seen": 3,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:06:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 3,
+              "original_tp": 0.9523809523809523,
+              "timeboxed_tp": 0.9523809523809523,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:3": {
+              "entry_id": "CZCE.FG201:1:3",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:06:00+08:00",
+              "entry_price": 2967.0,
+              "bars_seen": 2,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:08:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 2,
+              "original_tp": 0.967741935483871,
+              "timeboxed_tp": 0.967741935483871,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:4": {
+              "entry_id": "CZCE.FG201:1:4",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:08:00+08:00",
+              "entry_price": 2952.0,
+              "bars_seen": 2,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:10:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 2,
+              "original_tp": 0.967741935483871,
+              "timeboxed_tp": 0.967741935483871,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:5": {
+              "entry_id": "CZCE.FG201:1:5",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:10:00+08:00",
+              "entry_price": 2946.0,
+              "bars_seen": 2,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:12:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 2,
+              "original_tp": 0.967741935483871,
+              "timeboxed_tp": 0.967741935483871,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:6": {
+              "entry_id": "CZCE.FG201:1:6",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:12:00+08:00",
+              "entry_price": 2924.0,
+              "bars_seen": 36,
+              "adverse10_fired": true,
+              "adverse_first_bar": 3,
+              "early_penalty": -0.5,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:48:00+08:00",
+              "exit_reason": "STOP_LOSS",
+              "tp_minutes": null,
+              "tp_market_minutes": null,
+              "original_tp": 0.0,
+              "timeboxed_tp": 0.0,
+              "intrabar_ambiguous": false
+            },
+            "CZCE.FG201:1:7": {
+              "entry_id": "CZCE.FG201:1:7",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:48:00+08:00",
+              "entry_price": 2955.0,
+              "bars_seen": 37,
+              "adverse10_fired": true,
+              "adverse_first_bar": 10,
+              "early_penalty": -0.2,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 22:25:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 37,
+              "original_tp": 0.6185567010309279,
+              "timeboxed_tp": 0.6185567010309279,
+              "intrabar_ambiguous": false
+            }
+          },
+          "seen": [
+            "CZCE.FG201:1:1",
+            "CZCE.FG201:1:2",
+            "CZCE.FG201:1:3",
+            "CZCE.FG201:1:4",
+            "CZCE.FG201:1:5",
+            "CZCE.FG201:1:6",
+            "CZCE.FG201:1:7"
+          ],
+          "last_mark": 2949.0,
+          "last_end": "2021-07-23 22:25:00+08:00",
+          "step_number": 84,
+          "totals": {
+            "v0": 5.441905395347364,
+            "tp_timeboxed": 5.441905395347364,
+            "early": -0.7,
+            "potential": 0.0,
+            "capacity": 0.0,
+            "v2": 4.741905395347365,
+            "v3": 4.741905395347365,
+            "capacity_basis": 0.0
+          },
+          "discounted": {
+            "v0": 5.221983175116731,
+            "v2": 4.5721552624950705,
+            "v3": 4.5721552624950705
+          },
+          "discount_weight": 0.7767538537278668,
+          "ambiguities": 0,
+          "sha256": "c152492fa0440820631aedd601692880d8ee9d6cf910f86831019f14d4e29eba"
+        },
+        "total": 1.7419053953473644
+      },
+      "last_reward_components": {
+        "tp": 0.6185567010309279,
+        "early": 0.0,
+        "sl": 0.0,
+        "other": 0.0,
+        "total": 0.6185567010309279,
+        "legacy_tp": 0.6185567010309279,
+        "early_first5": 0,
+        "early_next10": 0,
+        "penalized": [],
+        "intrabar_ambiguous": [],
+        "events": [
+          {
+            "entry_id": "CZCE.FG201:1:7",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:48:00+08:00",
+            "exit_time": "2021-07-23 22:25:00+08:00",
+            "entry_price": "2955",
+            "exit_price": "2950",
+            "closed_quantity": 3,
+            "reason": "TAKE_PROFIT",
+            "committed": true,
+            "gross_trade_pnl": "300.0",
+            "open_fee": "9.0",
+            "close_fee": "9.0",
+            "net_trade_pnl": "282.0",
+            "ambiguous_tp_sl": false,
+            "same_entry_bar": false,
+            "price_reference_time": "2021-07-23 22:25:00+08:00",
+            "entry_cursor": 48,
+            "exit_cursor": 84,
+            "held_market_bars": 37,
+            "clock_protocol": "S3_MARKET_MINUTE",
+            "tp_market_minutes": 37,
+            "reward": 0.6185567010309279
+          }
+        ]
+      }
+    }
+  },
+  "patch_final_state_hash": "c05cf6bb3cb0a599c653d9e3d1e74722d0f9416295473dbd887eb34d88ae0389",
+  "original_state_unchanged": true,
+  "observations_unchanged": true,
+  "market_and_features_unchanged": true,
+  "state_path_unchanged": true
+}

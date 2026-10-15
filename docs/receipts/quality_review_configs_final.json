@@ -1,0 +1,81 @@
+{
+  "configs": [
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_EVENT_ONLY_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_EVENT_ONLY_PILOT_10K_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_HEADS_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_HEADS_PILOT_10K_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_CPU_FG201_v1.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_CPU_FG201_v1"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_CPU_FG201_v2.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_CPU_FG201_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v1.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v1"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v2.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_POOL_CPU_v1.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_POOL_CPU_v1"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_REVIEW_POOL_CPU_v2.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_REVIEW_POOL_CPU_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_FIRST_SCORE_ONLY_PILOT_10K.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_SCORE_ONLY_PILOT_10K_v2"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_B1_PILOT_10K.yaml",
+      "status": "EXPECTED_RESEARCH_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_B2_PILOT_10K.yaml",
+      "status": "EXPECTED_RESEARCH_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_B3_PILOT_10K.yaml",
+      "status": "EXPECTED_RESEARCH_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_CPU_SMOKE.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_HEADS_CPU_SMOKE_v1"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_FULL_PILOT_10K.yaml",
+      "status": "EXPECTED_RESEARCH_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "configs/experiments/fg_s3_v2/QUALITY_V2_GPU_1K.yaml",
+      "status": "VALID_HEADS_ONLY_TECHNICAL",
+      "experiment": "QUALITY_FIRST_HEADS_GPU_1K_v2"
+    }
+  ],
+  "training": "NOT_RUN",
+  "content_hash": "504d58bafe96bce95d22b43ef107a1cce975d1dde4cc36460714972a9a8b1226"
+}

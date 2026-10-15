@@ -1,0 +1,58 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______ test_actor_only_rates_include_censored_entries_and_reject_guidance ______
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-351/test_actor_only_rates_include_0')
+
+    def test_actor_only_rates_include_censored_entries_and_reject_guidance(tmp_path):
+        state=dict(attributions=[dict(reason='TAKE_PROFIT'),dict(reason='STOP_LOSS')])
+        (tmp_path/'account_state.json').write_text(json.dumps(state))
+        write_json(tmp_path/'dev_manifest.json',signed(dict(frozen_inputs={},rows=[dict(
+            contract='CZCE.FG409',sha256='market',env_sha256='rules',contract_sha256='terms')])))
+        actions=[dict(cursor=i,action=int(i==0),mask=[1,1],is_last=False,p_add=p,advanced=i>0)
+                 for i,p in enumerate((.9,.2,.99))]
+        (tmp_path/'actions.jsonl').write_text(''.join(json.dumps(x)+'\n' for x in actions))
+        receipt=dict(teacher_guidance=False,beta=0.,fold='DEV',output=str(tmp_path),
+            checkpoint='step',checkpoint_manifest_sha256='checkpoint',env_steps=2,policy_mode='eval_argmax',
+            add_executed=1,entries=3,right_censored=1,sl30=1,early_mae10=1,
+            clock_protocol='S3_MARKET_MINUTE',tp_market_minutes_p50=2.,tp_market_minutes_p90=2.,reward=0.,all_wait=False)
+>       result=actor_only_metrics(receipt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_v2_observation.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_v2_observation.py:97: in actor_only_metrics
+    metrics = evaluation_metrics(state, receipt)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+state = {'attributions': [{'reason': 'TAKE_PROFIT'}, {'reason': 'STOP_LOSS'}]}
+receipt = {'teacher_guidance': False, 'beta': 0.0, 'fold': 'DEV', 'output': '/tmp/pytest-of-v/pytest-351/test_actor_only_rates_include_0', ...}
+
+    def evaluation_metrics(state, receipt=None):
+        """Derive fresh metrics without changing an immutable historical receipt.
+    
+        Missing logs are unknown. Missing effective_bar is explicitly unclassified;
+        timestamp differences are never a substitute for market minutes.
+        """
+        receipt = receipt or {}
+        metrics = dict(metric_schema=SCHEMA, **{k: None for k in WINDOWS},
+                       adverse10_windows_complete=False,
+                       closed_trade_net_pnl=None, closed_trade_gross_pnl=None,
+                       tp_fast_count=None,tp_mid_count=None,tp_late_count=None,tp_after_h60_count=None,
+                       tp_market_minutes_p50=None, tp_market_minutes_p90=None)
+        legacy = receipt.get('early_mae10')
+        if legacy is not None:
+            metrics['legacy_early_mae10_any_hold'] = legacy
+        if state is None:
+            metrics['adverse10_any_hold'] = receipt.get('adverse10_any_hold', legacy)
+            return metrics
+        if receipt.get('contract') and state.get('contract') != receipt['contract']:
+            raise ValueError('Evaluation account contract differs from receipt')
+        if receipt.get('reward') is not None and state.get('total_reward') != receipt['reward']:
+>           raise ValueError('Evaluation account reward differs from receipt')
+E           ValueError: Evaluation account reward differs from receipt
+
+src/gym_trading_env/research/fg_s3_eval_metrics.py:58: ValueError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_v2_observation.py::test_actor_only_rates_include_censored_entries_and_reject_guidance

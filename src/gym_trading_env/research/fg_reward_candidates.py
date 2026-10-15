@@ -74,6 +74,31 @@ def timeboxed_tp(minutes: float) -> float:
     return 0.0
 
 
+def quality_tp_reward(market_minutes: float, crossed_trading_days: int) -> float:
+    """TP5-only quality curve: normalized base score / 100, without MAE penalties.
+
+    Requires the actual count of OFFICIAL trading-day transitions, not calendar
+    dates inferred from elapsed market minutes. Only valid for committed TP5.
+    """
+    t = _number(market_minutes, "TP held market minutes")
+    if t < 1 or not t.is_integer() or type(crossed_trading_days) is not int or crossed_trading_days < 0:
+        raise RewardInputError("Invalid market minutes or official trading-day count")
+    from gym_trading_env.research.fg_s3_quality_score import tp_event_reward
+    return tp_event_reward(int(t),crossed_trading_days)
+
+
+def _official_day_key(raw: Any) -> str:
+    """Normalize a supplied exchange trading day, never infer it from wall time."""
+    value = str(raw).strip().split(' ')[0].replace('-', '')
+    if len(value) != 8 or not value.isascii() or not value.isdecimal():
+        raise RewardInputError("A certified YYYYMMDD official trading_day is required")
+    try:
+        datetime.strptime(value, '%Y%m%d')
+    except ValueError as error:
+        raise RewardInputError("Invalid official trading_day") from error
+    return value
+
+
 def capacity_units(active_slots: int) -> float:
     if not isinstance(active_slots, int) or active_slots not in (0, 1, 2):
         raise RewardInputError("FG requires 0/1/2 occupied entry slots")
@@ -151,9 +176,18 @@ class FGRewardScorer:
 
     SCHEMA = 1
 
-    def __init__(self, config: CandidateConfig):
+    def __init__(self, config: CandidateConfig, *, tp_profile: str = 'LEGACY_C1'):
+        if tp_profile not in ('LEGACY_C1', 'QUALITY_TP_V1'):
+            raise RewardInputError('Unknown TP reward profile')
+        if tp_profile == 'QUALITY_TP_V1' and config.clock_protocol != 'S3_MARKET_MINUTE':
+            raise RewardInputError('Quality TP requires S3 market-minute clock')
         self.config = config
-        self.SCHEMA = 2 if config.clock_protocol == 'S3_MARKET_MINUTE' else 1
+        self.tp_profile = tp_profile
+        self.SCHEMA = (3 if tp_profile == 'QUALITY_TP_V1' else
+                       2 if config.clock_protocol == 'S3_MARKET_MINUTE' else 1)
+        if tp_profile == 'QUALITY_TP_V1':
+            self._quality_last_day: dict[str, str] = {}
+            self._quality_crossed_days: dict[str, int] = {}
         self.active: dict[str, _Position] = {}
         self.closed: dict[str, _Position] = {}
         self.seen: set[str] = set()
@@ -175,6 +209,9 @@ class FGRewardScorer:
         clone.seen = self.seen.copy()
         clone.totals = self.totals.copy()
         clone.discounted = self.discounted.copy()
+        if self.tp_profile == 'QUALITY_TP_V1':
+            clone._quality_last_day = self._quality_last_day.copy()
+            clone._quality_crossed_days = self._quality_crossed_days.copy()
         result = clone._apply(bar)
         self.__dict__.update(clone.__dict__)
         return result
@@ -205,6 +242,23 @@ class FGRewardScorer:
             raise RewardInputError("entries/exits must be lists")
         if not valid_bar and (entries or exits):
             raise RewardInputError("Zero-duration metadata row cannot execute fills")
+        if self.tp_profile == 'QUALITY_TP_V1':
+            official_day = _official_day_key(bar.get('trading_day'))
+            if valid_bar:
+                # Record elapsed official trading days while each position is open.
+                for entry_id in self.active:
+                    previous = self._quality_last_day[entry_id]
+                    if official_day < previous:
+                        raise RewardInputError('Official trading day cannot move backwards')
+                    if official_day != previous:
+                        self._quality_crossed_days[entry_id] += 1
+                        self._quality_last_day[entry_id] = official_day
+                for fill in entries:
+                    entry_id = str(fill.get('entry_id', ''))
+                    if entry_id in self._quality_last_day:
+                        raise RewardInputError('Duplicate quality TP entry')
+                    self._quality_last_day[entry_id] = official_day
+                    self._quality_crossed_days[entry_id] = 0
         phi_before = _potential(self.active, self.last_mark)
         newly_opened: list[str] = []
         for fill in entries:
@@ -290,7 +344,10 @@ class FGRewardScorer:
                     minutes = (stop-_clock(p.entry_time)).total_seconds()/60
                     p.tp_minutes = minutes
                 p.original_tp = legacy_tp(minutes)
-                p.timeboxed_tp = timeboxed_tp(minutes)
+                p.timeboxed_tp = (
+                    quality_tp_reward(minutes, self._quality_crossed_days[entry_id])
+                    if self.tp_profile == 'QUALITY_TP_V1' else timeboxed_tp(minutes)
+                )
                 v0 += p.original_tp
                 tp += p.timeboxed_tp
                 # Only a recorded completed TP can make this bar ambiguous.
@@ -300,6 +357,9 @@ class FGRewardScorer:
                     ambiguous.append(entry_id)
             p.exit_time, p.exit_reason = str(stop), reason
             self.closed[entry_id] = self.active.pop(entry_id)
+            if self.tp_profile == 'QUALITY_TP_V1':
+                self._quality_last_day.pop(entry_id)
+                self._quality_crossed_days.pop(entry_id)
             settled.append(entry_id)
         if bar.get("true_terminal", False) and self.active:
             raise RewardInputError("True terminal cannot silently discard open entries")
@@ -340,23 +400,38 @@ class FGRewardScorer:
                        last_mark=self.last_mark,last_end=str(self.last_end) if self.last_end else None,
                        step_number=self.step_number, totals=self.totals, discounted=self.discounted,
                        discount_weight=self.discount_weight, ambiguities=self.ambiguities)
+        if self.tp_profile == 'QUALITY_TP_V1':
+            payload['tp_profile'] = self.tp_profile
+            payload['quality_last_day'] = self._quality_last_day
+            payload['quality_crossed_days'] = self._quality_crossed_days
         payload["sha256"] = sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest()
         return payload
 
     @classmethod
-    def restore(cls, state: Mapping[str, Any], config: CandidateConfig) -> "FGRewardScorer":
+    def restore(cls, state: Mapping[str, Any], config: CandidateConfig, *,
+                tp_profile: str = 'LEGACY_C1') -> "FGRewardScorer":
         payload = copy.deepcopy(dict(state))
         check = payload.pop("sha256", None)
         if check != sha256(json.dumps(payload,sort_keys=True).encode()).hexdigest():
             raise RewardInputError("Offline scorer checkpoint hash mismatch")
-        if payload.get("schema") != cls(config).SCHEMA or payload.get("config") != asdict(config):
+        if payload.get("schema") != cls(config, tp_profile=tp_profile).SCHEMA or payload.get("config") != asdict(config):
             raise RewardInputError("Reward protocol/configuration mismatch")
-        obj = cls(config)
+        obj = cls(config, tp_profile=tp_profile)
+        if tp_profile == 'QUALITY_TP_V1':
+            if payload.get('tp_profile') != tp_profile:
+                raise RewardInputError('TP profile mismatch')
+            obj._quality_last_day = dict(payload['quality_last_day'])
+            obj._quality_crossed_days = dict(payload['quality_crossed_days'])
         obj.active = {k:_Position(**v) for k,v in payload["active"].items()}
         obj.closed = {k:_Position(**v) for k,v in payload["closed"].items()}
         obj.seen = set(payload["seen"])
         if obj.seen != set(obj.active)|set(obj.closed) or len(obj.active) > 2:
             raise RewardInputError("Corrupted entry identity or capacity")
+        if tp_profile == 'QUALITY_TP_V1':
+            if (set(obj._quality_last_day) != set(obj.active) or
+                    set(obj._quality_crossed_days) != set(obj.active) or
+                    any(not isinstance(d, int) or d < 0 for d in obj._quality_crossed_days.values())):
+                raise RewardInputError('Corrupted quality TP day counts')
         obj.last_mark = payload["last_mark"]
         obj.last_end = _clock(payload["last_end"]) if payload["last_end"] else None
         obj.step_number = int(payload["step_number"])

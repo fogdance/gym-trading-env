@@ -1,0 +1,1868 @@
+{
+  "status": "QUALITY_POSTHOC_TRAIN_HOLDOUT_COMPLETE",
+  "role": "TRAIN_HOLDOUT_EVALUATION_ONLY",
+  "fold": "TRAIN_HOLDOUT",
+  "contract": "CZCE.FG401",
+  "training_labels_created": false,
+  "metrics": {
+    "role": "TRAIN_HOLDOUT_EVALUATION_ONLY",
+    "horizons": {
+      "0": {
+        "samples": 11,
+        "nll": 1.335103349824155,
+        "brier": 0.7088220747591785,
+        "train_prior_nll": 1.3862943611198906,
+        "train_prior_brier": 1.125,
+        "sl_recall": null,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 1,
+              "prediction_mean": 0.276620477437973,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 3,
+              "prediction_mean": 0.3681970238685608,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 5,
+              "prediction_mean": 0.4502671957015991,
+              "target_mean": 0.4
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 2,
+              "prediction_mean": 0.5432764887809753,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.23145404999906366
+        },
+        "class_counts": [
+          0,
+          0,
+          0,
+          11
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 2.08334616609377,
+            "brier": 1.061732462995883,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.2602790681971934,
+            "brier": 0.673531035935508,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              10
+            ]
+          }
+        }
+      },
+      "1": {
+        "samples": 11,
+        "nll": 1.5390255501739667,
+        "brier": 0.827452958809065,
+        "train_prior_nll": 1.3862943611198906,
+        "train_prior_brier": 1.125,
+        "sl_recall": null,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 2,
+              "prediction_mean": 0.2911175340414047,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 6,
+              "prediction_mean": 0.355018029610316,
+              "target_mean": 0.16666666666666666
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 3,
+              "prediction_mean": 0.4493352174758911,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.1873044452883981
+        },
+        "class_counts": [
+          0,
+          0,
+          0,
+          11
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 1.5767333346159471,
+            "brier": 0.9001241986894777,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.5352547717297687,
+            "brier": 0.8201858348210237,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              10
+            ]
+          }
+        }
+      },
+      "2": {
+        "samples": 11,
+        "nll": 1.7767324926692254,
+        "brier": 0.9393594502247823,
+        "train_prior_nll": 1.6859158943930117,
+        "train_prior_brier": 0.9457070707070706,
+        "sl_recall": null,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 6,
+              "prediction_mean": 0.3383081903060277,
+              "target_mean": 0.16666666666666666
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.42375946044921875,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 3,
+              "prediction_mean": 0.5156859954198202,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.3113114589994604
+        },
+        "class_counts": [
+          4,
+          0,
+          0,
+          7
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 2.0624209601921466,
+            "brier": 1.0875369500962129,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.7481636459169334,
+            "brier": 0.9245417002376393,
+            "sl_recall": null,
+            "class_counts": [
+              4,
+              0,
+              0,
+              6
+            ]
+          }
+        }
+      },
+      "3": {
+        "samples": 11,
+        "nll": 1.3729924974750773,
+        "brier": 0.7525099340874849,
+        "train_prior_nll": 3.372683233859547,
+        "train_prior_brier": 0.8068181818181818,
+        "sl_recall": 0.5,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 8,
+              "prediction_mean": 0.35300886631011963,
+              "target_mean": 0.25
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.4400360435247421,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.529829204082489,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.1339843679558147
+        },
+        "class_counts": [
+          4,
+          6,
+          0,
+          1
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 1.4490523689066246,
+            "brier": 0.8039843726865881,
+            "sl_recall": null,
+            "class_counts": [
+              0,
+              0,
+              0,
+              1
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.3653865103319227,
+            "brier": 0.7473624902275746,
+            "sl_recall": 0.5,
+            "class_counts": [
+              4,
+              6,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      "4": {
+        "samples": 11,
+        "nll": 1.6337423212135178,
+        "brier": 0.8317318087143556,
+        "train_prior_nll": 0.8869251389980227,
+        "train_prior_brier": 0.6704545454545454,
+        "sl_recall": 0.3333333333333333,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 1,
+              "prediction_mean": 0.2949966788291931,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 8,
+              "prediction_mean": 0.3374397084116936,
+              "target_mean": 0.25
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 1,
+              "prediction_mean": 0.4098476767539978,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.5232505798339844,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.21251084045930344
+        },
+        "class_counts": [
+          5,
+          6,
+          0,
+          0
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 3.2328885522237556,
+            "brier": 1.2313528823716131,
+            "sl_recall": null,
+            "class_counts": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.4738276981124938,
+            "brier": 0.7917697013486299,
+            "sl_recall": 0.3333333333333333,
+            "class_counts": [
+              4,
+              6,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      "5": {
+        "samples": 11,
+        "nll": 1.448754236284306,
+        "brier": 0.7768226893292518,
+        "train_prior_nll": 0.8869251389980227,
+        "train_prior_brier": 0.6704545454545454,
+        "sl_recall": 0.3333333333333333,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 1,
+              "prediction_mean": 0.2960529327392578,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 7,
+              "prediction_mean": 0.3503344825335911,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 3,
+              "prediction_mean": 0.4589247703552246,
+              "target_mean": 0.6666666666666666
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.30651090903715655
+        },
+        "class_counts": [
+          5,
+          6,
+          0,
+          0
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 1.1937144549973104,
+            "brier": 0.6716029256647096,
+            "sl_recall": null,
+            "class_counts": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.4742582144130054,
+            "brier": 0.787344665695706,
+            "sl_recall": 0.3333333333333333,
+            "class_counts": [
+              4,
+              6,
+              0,
+              0
+            ]
+          }
+        }
+      },
+      "6": {
+        "samples": 11,
+        "nll": 1.52699116421433,
+        "brier": 0.8546536638260102,
+        "train_prior_nll": 0.8869251389980227,
+        "train_prior_brier": 0.6704545454545454,
+        "sl_recall": 0.16666666666666666,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 2,
+              "prediction_mean": 0.28646594285964966,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 2,
+              "prediction_mean": 0.3053741008043289,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 3,
+              "prediction_mean": 0.4458091159661611,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 3,
+              "prediction_mean": 0.5609717965126038,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 1,
+              "prediction_mean": 0.6333720088005066,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.3287180391224948
+        },
+        "class_counts": [
+          5,
+          6,
+          0,
+          0
+        ],
+        "by_funds": {
+          "below_300000": {
+            "samples": 1,
+            "nll": 1.7117296545807954,
+            "brier": 1.023115742791608,
+            "sl_recall": null,
+            "class_counts": [
+              1,
+              0,
+              0,
+              0
+            ]
+          },
+          "at_least_300000": {
+            "samples": 10,
+            "nll": 1.5085173151776834,
+            "brier": 0.8378074559294504,
+            "sl_recall": 0.16666666666666666,
+            "class_counts": [
+              4,
+              6,
+              0,
+              0
+            ]
+          }
+        }
+      }
+    },
+    "score_samples": 11,
+    "score_mae": 49.57938546845407,
+    "p80_precision": null,
+    "p80_recall": 0.0,
+    "score_spearman": -0.32714985408376246,
+    "score_kendall": -0.21320071635561041,
+    "high_score_missed": 0.75,
+    "calibration_status": "NOT_CALIBRATED",
+    "prior_scope": "TRAIN_ONLY",
+    "q_c1_preference_accuracy": null,
+    "q_v2_regression_error": null,
+    "q_proof_samples": 0,
+    "binary_windows": {
+      "touch_0_0": {
+        "samples": 11,
+        "nll": 0.7440672826216932,
+        "brier": 0.2748167794397418,
+        "train_prior_nll": 1.394954253061468,
+        "train_prior_brier": 0.46148989898989895,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 1,
+              "prediction_mean": 0.3946167826652527,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.43892788887023926,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 7,
+              "prediction_mean": 0.5541875192097255,
+              "target_mean": 0.5714285714285714
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 1,
+              "prediction_mean": 0.6273951530456543,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.20284741033207282
+        }
+      },
+      "touch_0_1": {
+        "samples": 11,
+        "nll": 0.6767962169133761,
+        "brier": 0.24160229463254213,
+        "train_prior_nll": 1.6454469317340459,
+        "train_prior_brier": 0.633838383838384,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 2,
+              "prediction_mean": 0.27443666756153107,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 3,
+              "prediction_mean": 0.36106860637664795,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.46189287304878235,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 3,
+              "prediction_mean": 0.5426525672276815,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 1,
+              "prediction_mean": 0.6004657745361328,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.42604924602942035
+        }
+      },
+      "touch_1_0": {
+        "samples": 11,
+        "nll": 0.6942899138289048,
+        "brier": 0.24355524407938078,
+        "train_prior_nll": 0.9589732943708552,
+        "train_prior_brier": 0.30997474747474746,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 1,
+              "prediction_mean": 0.3112320601940155,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 1,
+              "prediction_mean": 0.4648990035057068,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.5441259741783142,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 6,
+              "prediction_mean": 0.6447258492310842,
+              "target_mean": 0.6666666666666666
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 1,
+              "prediction_mean": 0.7051238417625427,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 1,
+              "prediction_mean": 0.827966570854187,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.23242679238319394
+        }
+      },
+      "touch_1_1": {
+        "samples": 11,
+        "nll": 0.6998603866446157,
+        "brier": 0.25314255688497606,
+        "train_prior_nll": 0.9138842442640004,
+        "train_prior_brier": 0.3308080808080809,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 3,
+              "prediction_mean": 0.368654598792394,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 8,
+              "prediction_mean": 0.4703894667327404,
+              "target_mean": 0.625
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.12207709659229625
+        }
+      },
+      "touch_2_0": {
+        "samples": 11,
+        "nll": 0.6780718369660798,
+        "brier": 0.24102381798403474,
+        "train_prior_nll": 0.9589732943708552,
+        "train_prior_brier": 0.30997474747474746,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 1,
+              "prediction_mean": 0.4256480038166046,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 5,
+              "prediction_mean": 0.5396159887313843,
+              "target_mean": 0.8
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 4,
+              "prediction_mean": 0.6426337510347366,
+              "target_mean": 0.75
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 1,
+              "prediction_mean": 0.7041386365890503,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.26010651750998065
+        }
+      },
+      "touch_2_1": {
+        "samples": 11,
+        "nll": 0.7545924347639432,
+        "brier": 0.2791677698251679,
+        "train_prior_nll": 0.9138842442640004,
+        "train_prior_brier": 0.3308080808080809,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.487210214138031,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 6,
+              "prediction_mean": 0.5612075924873352,
+              "target_mean": 0.6666666666666666
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 2,
+              "prediction_mean": 0.607347846031189,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 1,
+              "prediction_mean": 0.7004376649856567,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.3248606703498147
+        }
+      },
+      "touch_3_0": {
+        "samples": 11,
+        "nll": 0.8088310591064759,
+        "brier": 0.30481164250772275,
+        "train_prior_nll": 0.9589732943708552,
+        "train_prior_brier": 0.30997474747474746,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 2,
+              "prediction_mean": 0.2819381058216095,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 5,
+              "prediction_mean": 0.35334267020225524,
+              "target_mean": 0.8
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 1,
+              "prediction_mean": 0.4346698522567749,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 2,
+              "prediction_mean": 0.5764833688735962,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 1,
+              "prediction_mean": 0.6340440511703491,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.4168325093659488
+        }
+      },
+      "touch_3_1": {
+        "samples": 11,
+        "nll": 0.6556814377369894,
+        "brier": 0.23225620475972641,
+        "train_prior_nll": 0.9138842442640004,
+        "train_prior_brier": 0.3308080808080809,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 1,
+              "prediction_mean": 0.3274214267730713,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 5,
+              "prediction_mean": 0.47670442461967466,
+              "target_mean": 0.6
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.576266348361969,
+              "target_mean": 0.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 4,
+              "prediction_mean": 0.6526760458946228,
+              "target_mean": 0.75
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.17358740622347052
+        }
+      },
+      "adverse_0": {
+        "samples": 11,
+        "nll": 0.6395008117484384,
+        "brier": 0.22458847281643451,
+        "train_prior_nll": 0.621259169275982,
+        "train_prior_brier": 0.2095959595959596,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 5,
+              "prediction_mean": 0.3389019250869751,
+              "target_mean": 0.2
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 3,
+              "prediction_mean": 0.4522126217683156,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 3,
+              "prediction_mean": 0.5402472416559855,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.15198992870070718
+        }
+      },
+      "adverse_1": {
+        "samples": 11,
+        "nll": 0.6496106899303943,
+        "brier": 0.22863187021331727,
+        "train_prior_nll": 0.9867989834223962,
+        "train_prior_brier": 0.3806818181818182,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.445132777094841,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 4,
+              "prediction_mean": 0.5462635308504105,
+              "target_mean": 0.75
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 4,
+              "prediction_mean": 0.6398146152496338,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 1,
+              "prediction_mean": 0.7041262984275818,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.16180113499814813
+        }
+      },
+      "adverse_2": {
+        "samples": 11,
+        "nll": 0.8607409335568154,
+        "brier": 0.3178776336846239,
+        "train_prior_nll": 0.9867989834223962,
+        "train_prior_brier": 0.3806818181818182,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 2,
+              "prediction_mean": 0.46070849895477295,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.5538037419319153,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 4,
+              "prediction_mean": 0.7430014312267303,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 3,
+              "prediction_mean": 0.8432042598724365,
+              "target_mean": 0.3333333333333333
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 1,
+              "prediction_mean": 0.9167765378952026,
+              "target_mean": 1.0
+            }
+          ],
+          "ece": 0.37360192970796063
+        }
+      },
+      "adverse_3": {
+        "samples": 11,
+        "nll": 0.8318859800078834,
+        "brier": 0.3131274472092975,
+        "train_prior_nll": 0.9867989834223962,
+        "train_prior_brier": 0.3806818181818182,
+        "calibration": {
+          "bins": [
+            {
+              "lower": 0.0,
+              "upper": 0.1,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.1,
+              "upper": 0.2,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.2,
+              "upper": 0.3,
+              "count": 3,
+              "prediction_mean": 0.2322405825058619,
+              "target_mean": 0.6666666666666666
+            },
+            {
+              "lower": 0.3,
+              "upper": 0.4,
+              "count": 4,
+              "prediction_mean": 0.3438384085893631,
+              "target_mean": 0.5
+            },
+            {
+              "lower": 0.4,
+              "upper": 0.5,
+              "count": 3,
+              "prediction_mean": 0.44532259305318195,
+              "target_mean": 0.6666666666666666
+            },
+            {
+              "lower": 0.5,
+              "upper": 0.6,
+              "count": 1,
+              "prediction_mean": 0.592255711555481,
+              "target_mean": 1.0
+            },
+            {
+              "lower": 0.6,
+              "upper": 0.7,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.7,
+              "upper": 0.8,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.8,
+              "upper": 0.9,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            },
+            {
+              "lower": 0.9,
+              "upper": 1.0,
+              "count": 0,
+              "prediction_mean": null,
+              "target_mean": null
+            }
+          ],
+          "ece": 0.27270010249181226
+        }
+      }
+    },
+    "score_train_prior_mae": 57.2064393939394,
+    "score_by_funds": {
+      "below_300000": {
+        "samples": 1,
+        "mae": 11.295786539713546
+      },
+      "at_least_300000": {
+        "samples": 10,
+        "mae": 53.407745361328125
+      }
+    },
+    "score_by_exit_type": {
+      "TP5": {
+        "samples": 5,
+        "mae": 39.513448079427086
+      },
+      "SL30": {
+        "samples": 6,
+        "mae": 57.96766662597656
+      }
+    },
+    "decision_components": {
+      "delta_O": {
+        "samples": 11,
+        "mean": 0.0,
+        "leave_one_out_argmax_changes": 0
+      },
+      "delta_S": {
+        "samples": 11,
+        "mean": 0.0,
+        "leave_one_out_argmax_changes": 0
+      },
+      "delta_Q": {
+        "samples": 11,
+        "mean": 0.0,
+        "leave_one_out_argmax_changes": 0
+      }
+    },
+    "q_c1_proof_samples": 0
+  },
+  "source_receipt_sha256": "56a9c80abb309bee5877dcbb1b0c8f6992b47167bd59ea30ca35a35f310361de",
+  "inference_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/ckpt/step_000000000000",
+  "autonomous_actor_performance": false,
+  "inference_kind": "same_state_reference",
+  "checkpoint_manifest_sha256": "1035abc7b78b790d904974dd0e9225afd1e689c579cd45b12436cb0a499142ed",
+  "train_prior_sha256": "900de077c07fd8d9d178869ca4e430ee536464dc42ab397df41e3c64037aa9de",
+  "future_labels_generated_after_prediction_seal": true,
+  "rows": 11,
+  "files": {
+    "labels_evaluation_only.jsonl": "72e95c27860282fde8855f76d8d21ad8cd3d2118be7f6ebfdfa619eae773cd44",
+    "prediction_seal.json": "9873e7f1c2361cc56e1a4e317dbae3d55c7c8b9f73f6d80d4af9b255e3d94742"
+  },
+  "content_hash": "7389c05c4f87d71cdc50d76340f9c00db94860cf9073255828d42dc6ca17e7b5"
+}

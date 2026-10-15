@@ -1,0 +1,2579 @@
+{
+  "starting_state": {
+    "schema": 3,
+    "contract": "CZCE.FG201",
+    "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+    "cursor_time": "2021-07-23 21:48:00+08:00",
+    "prefix_hash": "19eec1f8543db88e8c3366e565467b82cb897a7f3f31b1b1f31b9719cab9340d",
+    "balances": {
+      "user_cash": "300000",
+      "user_margin": "0.0",
+      "broker_fee_income": "0.0",
+      "broker_pnl": "0.0"
+    },
+    "ledger_entries": [],
+    "long_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "short_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "closed_trade_profits": [],
+    "realized_pnl": "0.0",
+    "unrealized_pnl": "0",
+    "trade_history": [],
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 35399562948360463058890781895381311971,
+        "inc": 87136372517582989555478159403783844777
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    },
+    "rewarded": [],
+    "processed_fills": [],
+    "current_step": 47,
+    "episode_step_count": 47,
+    "chunk_count": 47,
+    "entry_sequence": 0,
+    "account_sequence": 1,
+    "current_price": "2956.0",
+    "entries": {},
+    "fills": [],
+    "attributions": [],
+    "reward_events": [],
+    "equity_history": [
+      {
+        "time": "2021-07-23 21:01:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:02:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:02:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:03:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:03:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:04:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:04:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:05:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:05:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:06:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:06:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:07:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:07:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:08:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:08:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:09:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:09:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:10:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:10:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:11:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:11:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:12:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:12:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:13:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:13:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:14:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:14:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:15:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:15:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:16:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:16:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:17:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:17:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:18:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:18:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:19:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:19:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:20:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:20:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:21:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:21:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:22:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:22:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:23:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:23:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:24:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:24:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:25:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:25:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:26:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:26:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:27:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:27:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:28:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:28:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:29:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:29:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:30:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:30:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:31:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:31:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:32:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:32:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:33:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:33:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:34:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:34:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:35:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:35:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:36:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:36:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:37:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:37:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:38:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:38:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:39:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:39:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:40:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:40:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:41:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:41:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:42:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:42:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:43:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:43:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:44:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:44:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:45:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:45:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:46:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:46:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:47:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:47:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      },
+      {
+        "time": "2021-07-23 21:48:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": true
+      },
+      {
+        "time": "2021-07-23 21:48:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      }
+    ],
+    "total_reward": 0.0,
+    "max_floating_loss": 0.0,
+    "legal_add_decisions": 47,
+    "voluntary_waits": 47,
+    "status": "ACTIVE",
+    "terminated": false,
+    "truncated": false,
+    "pending_reason": null,
+    "completed_accounts": [],
+    "reward_state": {
+      "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+      "config": {
+        "candidate": "C1",
+        "beta": 0.5,
+        "rho": 0.4,
+        "L": 3.0,
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "clock_protocol": "S3_MARKET_MINUTE"
+      },
+      "scorer": {
+        "schema": 2,
+        "config": {
+          "beta": 0.5,
+          "rho": 0.4,
+          "lam": 0.0,
+          "alpha": 0.0,
+          "gamma": 0.996996996996997,
+          "risk_points": 10.0,
+          "take_profit_points": 5.0,
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "active": {},
+        "closed": {},
+        "seen": [],
+        "last_mark": 2956.0,
+        "last_end": "2021-07-23 21:48:00+08:00",
+        "step_number": 47,
+        "totals": {
+          "v0": 0.0,
+          "tp_timeboxed": 0.0,
+          "early": 0.0,
+          "potential": 0.0,
+          "capacity": 0.0,
+          "v2": 0.0,
+          "v3": 0.0,
+          "capacity_basis": 0.0
+        },
+        "discounted": {
+          "v0": 0.0,
+          "v2": 0.0,
+          "v3": 0.0
+        },
+        "discount_weight": 0.8681823636604792,
+        "ambiguities": 0,
+        "sha256": "e1292b69d37bdcaad74e968d9157e0fa148a5969ee0aa347158717001d2110e4"
+      },
+      "total": 0.0
+    },
+    "last_reward_components": {
+      "tp": 0.0,
+      "early": 0.0,
+      "sl": 0.0,
+      "other": 0.0,
+      "total": 0.0,
+      "legacy_tp": 0.0,
+      "early_first5": 0,
+      "early_next10": 0,
+      "penalized": [],
+      "intrabar_ambiguous": [],
+      "events": []
+    }
+  },
+  "quality": {
+    "protocol": "FG_S3_QUALITY_TEACHER_POSTHOC_V1",
+    "score_protocol": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+    "fold": "TRAIN",
+    "training_action_label_allowed": false,
+    "rule_identity": {
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+    },
+    "decision_snapshot_hash": "9499f1daeef6c205ddf78b771820c137cd030416fb08251ff384fea1b006d24f",
+    "decision_state_hash": "ef0c7dae20c1d47e7d93a68191d321cd5cabb6e39377a01f41a5fc2b39cafc20",
+    "decision_cursor": 47,
+    "starting_equity": "300000.0",
+    "actual_action_mask": [
+      1,
+      1
+    ],
+    "strict_decision_valid": true,
+    "strict_oracle": {
+      "valid": true,
+      "certified": true,
+      "action": 0,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "oracle_identity": "bcd8c4750abc2f3b2fb69da78397ab94e1dc179aaed2d11f7aa833b57af54960",
+      "proof_hash": "494cfe9081c36331d63375e3656683ef2365208e6c145a14df051d19a69572f8"
+    },
+    "immediate_add_outcome_valid": true,
+    "quality_valid": true,
+    "quality_score": 95.78125,
+    "tp_event_reward_new": 0.9578125,
+    "new_reward_undiscounted": 0.7578124742839754,
+    "old_reward_undiscounted": 0.41855667531490326,
+    "outcome": "TAKE_PROFIT",
+    "reason": "OBSERVED_TP",
+    "old_tp_event_reward": 0.6185567010309279,
+    "entry_cursor": 48,
+    "exit_cursor": 84,
+    "entry_time": "2021-07-23 21:48:00+08:00",
+    "exit_time": "2021-07-23 22:25:00+08:00",
+    "market_minutes": 37,
+    "later_trading_days": 0,
+    "mae_quote_envelope_points": 14.0,
+    "net_trade_pnl": "282.0",
+    "exit_event_hash": "c9f5ebcbbc0b2e16429f9447237fc37435bec01fef71ce3ddafa0557a88e985d",
+    "official_entry_date": "2021-07-26",
+    "official_exit_date": "2021-07-26",
+    "add_better_than_wait": null
+  },
+  "independent_reference": {
+    "initial_state_hash": "9499f1daeef6c205ddf78b771820c137cd030416fb08251ff384fea1b006d24f",
+    "feedback": [
+      [
+        48,
+        0.0
+      ],
+      [
+        49,
+        0.0
+      ],
+      [
+        50,
+        0.0
+      ],
+      [
+        51,
+        0.0
+      ],
+      [
+        52,
+        0.0
+      ],
+      [
+        53,
+        0.0
+      ],
+      [
+        54,
+        0.0
+      ],
+      [
+        55,
+        0.0
+      ],
+      [
+        56,
+        0.0
+      ],
+      [
+        57,
+        -0.20000000298023224
+      ],
+      [
+        58,
+        0.0
+      ],
+      [
+        59,
+        0.0
+      ],
+      [
+        60,
+        0.0
+      ],
+      [
+        61,
+        0.0
+      ],
+      [
+        62,
+        0.0
+      ],
+      [
+        63,
+        0.0
+      ],
+      [
+        64,
+        0.0
+      ],
+      [
+        65,
+        0.0
+      ],
+      [
+        66,
+        0.0
+      ],
+      [
+        67,
+        0.0
+      ],
+      [
+        68,
+        0.0
+      ],
+      [
+        69,
+        0.0
+      ],
+      [
+        70,
+        0.0
+      ],
+      [
+        71,
+        0.0
+      ],
+      [
+        72,
+        0.0
+      ],
+      [
+        73,
+        0.0
+      ],
+      [
+        74,
+        0.0
+      ],
+      [
+        75,
+        0.0
+      ],
+      [
+        76,
+        0.0
+      ],
+      [
+        77,
+        0.0
+      ],
+      [
+        78,
+        0.0
+      ],
+      [
+        79,
+        0.0
+      ],
+      [
+        80,
+        0.0
+      ],
+      [
+        81,
+        0.0
+      ],
+      [
+        82,
+        0.0
+      ],
+      [
+        83,
+        0.0
+      ],
+      [
+        84,
+        0.6185566782951355
+      ]
+    ],
+    "events": [
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:48:00+08:00",
+        "exit_time": "2021-07-23 22:25:00+08:00",
+        "entry_price": "2955",
+        "exit_price": "2950",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 22:25:00+08:00",
+        "entry_cursor": 48,
+        "exit_cursor": 84,
+        "held_market_bars": 37,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 37
+      }
+    ],
+    "final_state": {
+      "schema": 3,
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "cursor_time": "2021-07-23 22:25:00+08:00",
+      "prefix_hash": "057ff037a2725f3854c05e9bf34dd3dc4f346df2dce51224fde47cdf24408898",
+      "balances": {
+        "user_cash": "300282.00",
+        "user_margin": "0.00",
+        "broker_fee_income": "18.0",
+        "broker_pnl": "-300.0"
+      },
+      "ledger_entries": [
+        {
+          "timestamp": "2021-07-23 21:48:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17739.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17730.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2955"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 22:25:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17730.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18021.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2950",
+            "pnl": "300.0"
+          }
+        }
+      ],
+      "long_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "short_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "closed_trade_profits": [
+        "300.0"
+      ],
+      "realized_pnl": "300.0",
+      "unrealized_pnl": "0",
+      "trade_history": [
+        {
+          "timestamp": "2021-07-23T21:48:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2955",
+          "close_price": "0",
+          "required_margin": "17730.00",
+          "fee": "9.0",
+          "balance": "282261.00",
+          "leverage": "1E+1",
+          "free_margin": "282261.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T22:25:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2955",
+          "close_price": "2950",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "300282.00",
+          "leverage": "1E+1",
+          "free_margin": "300162.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17730.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        }
+      ],
+      "rng": {
+        "bit_generator": "PCG64",
+        "state": {
+          "state": 35399562948360463058890781895381311971,
+          "inc": 87136372517582989555478159403783844777
+        },
+        "has_uint32": 0,
+        "uinteger": 0
+      },
+      "rewarded": [
+        "CZCE.FG201:1:1"
+      ],
+      "processed_fills": [
+        "CZCE.FG201:1:1|2021-07-23 22:25:00+08:00|TAKE_PROFIT|3"
+      ],
+      "current_step": 84,
+      "episode_step_count": 84,
+      "chunk_count": 84,
+      "entry_sequence": 1,
+      "account_sequence": 1,
+      "current_price": "2949.0",
+      "entries": {},
+      "fills": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 21:48:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2955",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 22:25:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2950",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:1|2021-07-23 22:25:00+08:00|TAKE_PROFIT|3"
+        }
+      ],
+      "attributions": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:48:00+08:00",
+          "exit_time": "2021-07-23 22:25:00+08:00",
+          "entry_price": "2955",
+          "exit_price": "2950",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:25:00+08:00",
+          "entry_cursor": 48,
+          "exit_cursor": 84,
+          "held_market_bars": 37,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 37
+        }
+      ],
+      "reward_events": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "reason": "FIRST_ADVERSE10",
+          "time": "2021-07-23 21:58:00+08:00",
+          "effective_bar": 10,
+          "reward": -0.2,
+          "observed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:48:00+08:00",
+          "exit_time": "2021-07-23 22:25:00+08:00",
+          "entry_price": "2955",
+          "exit_price": "2950",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 22:25:00+08:00",
+          "entry_cursor": 48,
+          "exit_cursor": 84,
+          "held_market_bars": 37,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 37,
+          "reward": 0.6185567010309279
+        }
+      ],
+      "equity_history": [
+        {
+          "time": "2021-07-23 21:01:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:04:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:04:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:05:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:05:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:06:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:06:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:07:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:07:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:08:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:08:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:09:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:09:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:10:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:10:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:11:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:11:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:12:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:12:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:13:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:13:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:14:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:14:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:15:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:15:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:16:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:16:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:17:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:17:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:18:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:18:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:19:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:19:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:20:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:20:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:21:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:21:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:22:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:22:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:23:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:23:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:24:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:24:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:25:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:25:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:26:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:26:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:27:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:27:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:28:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:28:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:29:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:29:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:30:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:30:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:31:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:31:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:32:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:32:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:33:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:33:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:34:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:34:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:35:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:35:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:36:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:36:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:37:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:37:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:38:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:38:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:39:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:39:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:40:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:40:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:41:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:41:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:42:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:42:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:43:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:43:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:44:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:44:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:45:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:45:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:46:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:46:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:47:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:47:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:48:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:48:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:49:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:49:00+08:00",
+          "equity": 299991.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:50:00+08:00",
+          "equity": 299931.0,
+          "unrealized_pnl": -60.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:50:00+08:00",
+          "equity": 299991.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:51:00+08:00",
+          "equity": 299931.0,
+          "unrealized_pnl": -60.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:51:00+08:00",
+          "equity": 300051.0,
+          "unrealized_pnl": 60.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:52:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:52:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:53:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:53:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:54:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:54:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:55:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:55:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:56:00+08:00",
+          "equity": 299571.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:56:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:57:00+08:00",
+          "equity": 299391.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:57:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:58:00+08:00",
+          "equity": 299271.0,
+          "unrealized_pnl": -720.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:58:00+08:00",
+          "equity": 299391.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:59:00+08:00",
+          "equity": 299151.0,
+          "unrealized_pnl": -840.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:59:00+08:00",
+          "equity": 299211.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:00:00+08:00",
+          "equity": 299211.0,
+          "unrealized_pnl": -780.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:00:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:01:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:01:00+08:00",
+          "equity": 299571.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:02:00+08:00",
+          "equity": 299331.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:02:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:03:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:03:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:04:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:04:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:05:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:05:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:06:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:06:00+08:00",
+          "equity": 299571.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:07:00+08:00",
+          "equity": 299571.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:07:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:08:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:08:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:09:00+08:00",
+          "equity": 299571.0,
+          "unrealized_pnl": -420.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:09:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:10:00+08:00",
+          "equity": 299391.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:10:00+08:00",
+          "equity": 299391.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:11:00+08:00",
+          "equity": 299391.0,
+          "unrealized_pnl": -600.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:11:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:12:00+08:00",
+          "equity": 299331.0,
+          "unrealized_pnl": -660.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:12:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:13:00+08:00",
+          "equity": 299451.0,
+          "unrealized_pnl": -540.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:13:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:14:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:14:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:15:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:15:00+08:00",
+          "equity": 299991.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:16:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:16:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:17:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:17:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:18:00+08:00",
+          "equity": 299511.0,
+          "unrealized_pnl": -480.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:18:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:19:00+08:00",
+          "equity": 299631.0,
+          "unrealized_pnl": -360.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:19:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:20:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:20:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:21:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:21:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:22:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:22:00+08:00",
+          "equity": 299811.0,
+          "unrealized_pnl": -180.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:23:00+08:00",
+          "equity": 299751.0,
+          "unrealized_pnl": -240.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:23:00+08:00",
+          "equity": 300051.0,
+          "unrealized_pnl": 60.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:24:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:24:00+08:00",
+          "equity": 299991.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 22:25:00+08:00",
+          "equity": 299871.0,
+          "unrealized_pnl": -120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 22:25:00+08:00",
+          "equity": 300282.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        }
+      ],
+      "total_reward": 0.41855670103092785,
+      "max_floating_loss": 840.0,
+      "legal_add_decisions": 48,
+      "voluntary_waits": 47,
+      "status": "ACTIVE",
+      "terminated": false,
+      "truncated": false,
+      "pending_reason": null,
+      "completed_accounts": [],
+      "reward_state": {
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "config": {
+          "candidate": "C1",
+          "beta": 0.5,
+          "rho": 0.4,
+          "L": 3.0,
+          "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "scorer": {
+          "schema": 2,
+          "config": {
+            "beta": 0.5,
+            "rho": 0.4,
+            "lam": 0.0,
+            "alpha": 0.0,
+            "gamma": 0.996996996996997,
+            "risk_points": 10.0,
+            "take_profit_points": 5.0,
+            "clock_protocol": "S3_MARKET_MINUTE"
+          },
+          "active": {},
+          "closed": {
+            "CZCE.FG201:1:1": {
+              "entry_id": "CZCE.FG201:1:1",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:48:00+08:00",
+              "entry_price": 2955.0,
+              "bars_seen": 37,
+              "adverse10_fired": true,
+              "adverse_first_bar": 10,
+              "early_penalty": -0.2,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 22:25:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 37,
+              "original_tp": 0.6185567010309279,
+              "timeboxed_tp": 0.6185567010309279,
+              "intrabar_ambiguous": false
+            }
+          },
+          "seen": [
+            "CZCE.FG201:1:1"
+          ],
+          "last_mark": 2949.0,
+          "last_end": "2021-07-23 22:25:00+08:00",
+          "step_number": 84,
+          "totals": {
+            "v0": 0.6185567010309279,
+            "tp_timeboxed": 0.6185567010309279,
+            "early": -0.2,
+            "potential": 0.0,
+            "capacity": 0.0,
+            "v2": 0.41855670103092785,
+            "v3": 0.41855670103092785,
+            "capacity_basis": 0.0
+          },
+          "discounted": {
+            "v0": 0.4819134889294118,
+            "v2": 0.3129139161535263,
+            "v3": 0.3129139161535263
+          },
+          "discount_weight": 0.7767538537278668,
+          "ambiguities": 0,
+          "sha256": "b9debd9c56c9f4e3d522f1c56ebdb90b810781064393d0d14d9013ceee913f09"
+        },
+        "total": 0.41855670103092785
+      },
+      "last_reward_components": {
+        "tp": 0.6185567010309279,
+        "early": 0.0,
+        "sl": 0.0,
+        "other": 0.0,
+        "total": 0.6185567010309279,
+        "legacy_tp": 0.6185567010309279,
+        "early_first5": 0,
+        "early_next10": 0,
+        "penalized": [],
+        "intrabar_ambiguous": [],
+        "events": [
+          {
+            "entry_id": "CZCE.FG201:1:1",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:48:00+08:00",
+            "exit_time": "2021-07-23 22:25:00+08:00",
+            "entry_price": "2955",
+            "exit_price": "2950",
+            "closed_quantity": 3,
+            "reason": "TAKE_PROFIT",
+            "committed": true,
+            "gross_trade_pnl": "300.0",
+            "open_fee": "9.0",
+            "close_fee": "9.0",
+            "net_trade_pnl": "282.0",
+            "ambiguous_tp_sl": false,
+            "same_entry_bar": false,
+            "price_reference_time": "2021-07-23 22:25:00+08:00",
+            "entry_cursor": 48,
+            "exit_cursor": 84,
+            "held_market_bars": 37,
+            "clock_protocol": "S3_MARKET_MINUTE",
+            "tp_market_minutes": 37,
+            "reward": 0.6185567010309279
+          }
+        ]
+      }
+    }
+  },
+  "patch_final_state_hash": "e3e7027869433745141843358ef3f3bad36d215d962b73fa58332ea43a268891",
+  "original_state_unchanged": true,
+  "observations_unchanged": true,
+  "market_and_features_unchanged": true,
+  "state_path_unchanged": true
+}

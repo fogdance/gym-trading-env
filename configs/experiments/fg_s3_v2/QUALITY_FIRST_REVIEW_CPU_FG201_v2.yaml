@@ -1,0 +1,47 @@
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+research_variant: quality-first-v1
+scope: diagnostic
+device: cpu
+contract: CZCE.FG201
+contracts:
+- CZCE.FG201
+env_slice_bars: 250
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: null
+source_checkpoint: null
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+collect_every: 100
+updates_per_collect: 2
+batch_size: 1
+replay_capacity: 2048
+replay_seed: 202
+beta: 0.0
+beta_schedule: null
+bc_lambda: 0.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: direct_init
+reward:
+  candidate: C1
+  beta: 0.5
+  rho: 0.4
+  L: 3.0
+  schema: FG_SINGLE3_REWARD_MARKET_MINUTE_V2
+  clock_protocol: S3_MARKET_MINUTE
+composition:
+  encoder: legacy_1m
+  teaching: quality_v2
+quality_q_admitted: false
+quality_q_max_states: 4096
+quality_q_max_seconds: 2.0
+quality_q_max_suffix_bars: 12
+experiment: QUALITY_FIRST_REVIEW_CPU_FG201_v2
+quality_variant: FULL
+env_steps: 100
+save_every: 100
+prepared_dir: artifacts/fg_s3_v2/prepared/QUALITY_FIRST_REVIEW_CPU_FG201_v2
+run_dir: artifacts/fg_s3_v2/runs/QUALITY_FIRST_REVIEW_CPU_FG201_v2
+model_preset: cpu_smoke
+quality_stage: HEADS_ONLY
+quality_prediction_admitted: false

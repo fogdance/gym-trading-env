@@ -12,8 +12,10 @@ def number(value):
 def metric_key(key):
     if key.startswith('bc/'):
         return 'train/' + key
-    if key.startswith(('tutor/', 'b2/')):
+    if key.startswith(('tutor/', 'b2/','quality/')):
         return 'train/' + key
+    if key.startswith('opt/quality_'):
+        return 'train/optimizer/'+key.removeprefix('opt/')
     exact = {'opt/loss': 'train/optimizer/loss', 'v2/wm_loss': 'train/wm/loss',
              'opt/actor_grad_norm': 'train/actor/grad_norm',
              'opt/wm_grad_norm': 'train/wm/grad_norm',
@@ -40,6 +42,10 @@ def aggregate_updates(rows):
                 'tutor/difficulty_weight_mean':'bc/valid_count',
                 'tutor/difficulty_boosted_fraction':'bc/valid_count',
                 'tutor/fn_rate': 'tutor/eligible_pos', 'tutor/fp_rate': 'tutor/eligible_neg'}
+    weighted.update({'quality/'+key:'quality/'+count for key,count in (
+        ('event_loss','event_valid_count'),('touch_loss','touch_valid_count'),('adverse_loss','adverse_valid_count'),
+        ('score_loss','score_valid_count'),('score_mae','score_valid_count'),
+        ('q_c1_value_loss','q_c1_value_valid_count'),('q_v2_loss','q_v2_value_valid_count'))})
     for key in sorted(keys):
         if SECRET.search(key):
             continue
@@ -48,6 +54,7 @@ def aggregate_updates(rows):
             continue
         target = metric_key(key)
         if (key in counts or key in ('tutor/eligible_pos', 'tutor/eligible_neg')
+                or key.startswith('quality/') and key.endswith('_count')
                 or key.startswith('b2/count_') or key.endswith(('/valid_count', '/add_count', '/wait_count', '/pair_count',
                     '_valid_count', '_add_count', '_wait_count', '_pair_count', '_add_positives', '_add_true_positives'))):
             result[target] = sum(value for value, _ in pairs)

@@ -1,0 +1,174 @@
+FFFFFF                                                                   [100%]
+=================================== FAILURES ===================================
+_________ test_controlled_prepare_reads_train_split_from_bound_policy __________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-375/test_controlled_prepare_reads_0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7faf6bc36750>
+
+    def test_controlled_prepare_reads_train_split_from_bound_policy(tmp_path,monkeypatch):
+        """Isolate the consumer contract; upstream research acceptance is stubbed."""
+        from gym_trading_env.research import fg_s3_quality_admission as gates
+        from gym_trading_env.research import fg_s3_quality_experiment_v2 as preparation
+        from gym_trading_env.research.fg_replay import digest
+        policy=fixture_policy();policy_path=tmp_path/'policy.json';write_json(policy_path,policy)
+        admission=signed(dict(protocol=PREDICTION,status='PASS_QUALITY_PREDICTION_ADMISSION',
+            checkpoint=str(tmp_path/'checkpoint'),checkpoint_manifest_sha256='1'*64,
+            policy_sha256=digest(policy_path),evaluation_files={},comparisons=[]))
+        assert 'trained_contracts' not in admission
+        receipt_path=tmp_path/'admission.json';write_json(receipt_path,admission)
+        monkeypatch.setattr(gates,'require_prediction_admission',lambda path:admission)
+        monkeypatch.setattr(gates,'checkpoint_policy',lambda node:(policy,digest(policy_path),{}))
+        rows=[dict(contract='CZCE.FG201',calendar_complete=False)]
+        monkeypatch.setattr(preparation,'_derive_rows',lambda *args:(rows,{},'fixture',{'CZCE.FG201':{}}))
+        class ReachedNativeBuilder(Exception):pass
+        def stop_before_native_build(jobs):
+            assert jobs[0][0]['contract']=='CZCE.FG201'
+            raise ReachedNativeBuilder
+        monkeypatch.setattr(preparation,'_build_members',stop_before_native_build)
+        settings=dict(prepared_dir=str(tmp_path/'prepared'),quality_admission_policy=None,
+            quality_stage='CONTROLLED_FULL',quality_prediction_admission_receipt=str(receipt_path),
+            quality_prediction_admission_sha256=digest(receipt_path),env_slice_bars=100,
+            quality_max_market_steps=None,quality_state_cache_entries=0)
+>       with pytest.raises(ReachedNativeBuilder):preparation.prepare_quality(settings)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:139: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+settings = {'prepared_dir': '/tmp/pytest-of-v/pytest-375/test_controlled_prepare_reads_0/prepared', 'quality_admission_policy': N...ality_prediction_admission_receipt': '/tmp/pytest-of-v/pytest-375/test_controlled_prepare_reads_0/admission.json', ...}
+
+    def prepare_quality(settings):
+        from embodied.run.fg_s3_v2_train import execution_code
+        directory=Path(settings['prepared_dir'])
+        if directory.exists(): raise FileExistsError('Quality preparation retained; choose a new experiment')
+        directory.mkdir(parents=True)
+        rows,frozen,training_hash,member_files=_derive_rows(settings,directory)
+        policy_hash=None
+        if settings.get('quality_admission_policy'):
+            from .fg_s3_quality_admission import validate_policy
+            policy=validate_policy(read_manifest(settings['quality_admission_policy']))
+            policy_hash=file_hash(settings['quality_admission_policy'])
+            if (policy_hash!=settings['quality_admission_policy_sha256'] or
+                    set(policy['trained_contracts'])!={r['contract'] for r in rows}):
+                raise ValueError('Frozen admission policy changed its TRAIN plan')
+            (directory/'quality_admission_policy.json').write_bytes(Path(settings['quality_admission_policy']).read_bytes())
+        prediction_source=None
+        if settings['quality_stage']=='CONTROLLED_FULL':
+            from .fg_s3_quality_admission import require_prediction_admission
+            admission_path=Path(settings['quality_prediction_admission_receipt'])
+            admission=require_prediction_admission(admission_path)
+            if (file_hash(admission_path)!=settings['quality_prediction_admission_sha256'] or
+>                   set(admission['trained_contracts'])!={row['contract'] for row in rows}):
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E                   KeyError: 'trained_contracts'
+
+src/gym_trading_env/research/fg_s3_quality_experiment_v2.py:209: KeyError
+_ test_each_binary_window_must_beat_prior_and_same_state_reference[touch_3_1] __
+
+window = 'touch_3_1'
+
+    @pytest.mark.parametrize('window',['touch_3_1','adverse_3'])
+    def test_each_binary_window_must_beat_prior_and_same_state_reference(window):
+        rows=prediction_rows();reference=copy.deepcopy(rows)
+        prior=dict(event_counts=[[5,5,0,0]]*7,touch_counts=[[10,10]]*4,touch_positive=[[5,5]]*4,
+                   adverse_counts=[10]*4,adverse_positive=[5]*4,score_median=50)
+        for i,row in enumerate(reference):
+            p=row['prediction']
+            p['quality/outcome_probs']=[[(v+.25)/2 for v in h] for h in p['quality/outcome_probs']]
+            p['quality/score_prediction']=80 if not i else 20
+            p['quality/touch_probability']=[[.85,.15]]*4
+            p['quality/adverse_probability']=[.15 if not i else .85]*4
+        _improvements(quality_scores(rows,prior),quality_scores(reference,prior))
+        for i,row in enumerate(rows):
+            if window.startswith('touch'):row['prediction']['quality/touch_probability'][3]=[.9,.16]
+            else:row['prediction']['quality/adverse_probability'][3]=.16 if not i else .84
+        metrics=quality_scores(rows,prior)
+        _forecast_support(rows,metrics,fixture_policy())  # Still passes absolute calibration/support.
+>       with pytest.raises(ValueError,match=window):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:163: Failed
+_ test_each_binary_window_must_beat_prior_and_same_state_reference[adverse_3] __
+
+window = 'adverse_3'
+
+    @pytest.mark.parametrize('window',['touch_3_1','adverse_3'])
+    def test_each_binary_window_must_beat_prior_and_same_state_reference(window):
+        rows=prediction_rows();reference=copy.deepcopy(rows)
+        prior=dict(event_counts=[[5,5,0,0]]*7,touch_counts=[[10,10]]*4,touch_positive=[[5,5]]*4,
+                   adverse_counts=[10]*4,adverse_positive=[5]*4,score_median=50)
+        for i,row in enumerate(reference):
+            p=row['prediction']
+            p['quality/outcome_probs']=[[(v+.25)/2 for v in h] for h in p['quality/outcome_probs']]
+            p['quality/score_prediction']=80 if not i else 20
+            p['quality/touch_probability']=[[.85,.15]]*4
+            p['quality/adverse_probability']=[.15 if not i else .85]*4
+        _improvements(quality_scores(rows,prior),quality_scores(reference,prior))
+        for i,row in enumerate(rows):
+            if window.startswith('touch'):row['prediction']['quality/touch_probability'][3]=[.9,.16]
+            else:row['prediction']['quality/adverse_probability'][3]=.16 if not i else .84
+        metrics=quality_scores(rows,prior)
+        _forecast_support(rows,metrics,fixture_policy())  # Still passes absolute calibration/support.
+>       with pytest.raises(ValueError,match=window):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:163: Failed
+___ test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts ____
+
+native_fold_risk = ([{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tr...094c09faf522ee9f73a49d78cac2ef01c3ca49010'}}, PosixPath('/tmp/pytest-of-v/pytest-375/test_entry_fold_risk_follows_c0'))
+
+    def test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts(native_fold_risk):
+        tape,states,context,output=native_fold_risk
+        a=_account_risk(tape,states[-1],context,('20260105','20260105'),1)
+        b=_account_risk(tape,states[-1],context,('20260106','20260106'),2)
+>       assert a['sl_rate']==1 and a['drawdown']==1818  # The SL occurs after the entry fold.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       assert (1.0 == 1 and 9.0 == 1818)
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:206: AssertionError
+____ test_fold_cutoff_open_trade_is_distinct_from_postfold_complete_outcome ____
+
+native_fold_risk = ([{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tr...094c09faf522ee9f73a49d78cac2ef01c3ca49010'}}, PosixPath('/tmp/pytest-of-v/pytest-375/test_fold_cutoff_open_trade_is0'))
+
+    def test_fold_cutoff_open_trade_is_distinct_from_postfold_complete_outcome(native_fold_risk):
+        tape,states,context,output=native_fold_risk
+>       risk=_account_risk(tape[:2],states[1],context,('20260105','20260105'),1)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:218: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tape = [{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_trading_date': '20260105', 'equity': 299991.0, 'is_first': False}]
+state = {'schema': 3, 'contract': 'CZCE.FG2701', 'config_hash': 'fc1ba72577c14b11fed2152b351fb041fce1f80bad45e9ab88bcde166a0e8ae2', 'cursor_time': '2026-01-05 15:00:00+08:00', ...}
+context = {'rows': [{'contract': 'CZCE.FG2701', 'env_config': '/tmp/pytest-of-v/pytest-375/test_fold_cutoff_open_trade_is0/env.y.../test_fold_cutoff_open_trade_is0/directions.yaml': 'a964671207c36134d3f234f094c09faf522ee9f73a49d78cac2ef01c3ca49010'}}
+window = ('20260105', '20260105'), minimum_entries = 1
+
+    def _account_risk(tape,state,context,window,minimum_entries):
+        from .fg_reward_candidates import _official_day_key
+        from .fg_single3 import load_env
+        env=load_env(context['rows'][0],context['frozen_inputs'])
+        inside=lambda value:window[0]<=_official_day_key(value)<=window[1]
+        entries={f['entry_id'] for f in state['fills'] if f['reason']=='ENTRY' and inside(env._trading_day(f['time']))}
+        exits={e['entry_id']:e for e in state['attributions'] if e['entry_id'] in entries}
+        if len(entries)<minimum_entries or entries-set(exits):
+>           raise ValueError('Action safety has insufficient closed entries or right-censored risk')
+E           ValueError: Action safety has insufficient closed entries or right-censored risk
+
+src/gym_trading_env/research/fg_s3_quality_admission.py:327: ValueError
+___________ test_complete_cohort_requires_native_equity_before_entry ___________
+
+native_fold_risk = ([{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tr...094c09faf522ee9f73a49d78cac2ef01c3ca49010'}}, PosixPath('/tmp/pytest-of-v/pytest-375/test_complete_cohort_requires_0'))
+
+    def test_complete_cohort_requires_native_equity_before_entry(native_fold_risk):
+        tape,states,context,_=native_fold_risk
+>       with pytest.raises(ValueError,match='equity anchor'):
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:227: Failed
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_controlled_prepare_reads_train_split_from_bound_policy
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_each_binary_window_must_beat_prior_and_same_state_reference[touch_3_1]
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_each_binary_window_must_beat_prior_and_same_state_reference[adverse_3]
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_fold_cutoff_open_trade_is_distinct_from_postfold_complete_outcome
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_complete_cohort_requires_native_equity_before_entry

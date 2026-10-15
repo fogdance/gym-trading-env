@@ -1,0 +1,370 @@
+{
+  "status": "PASS_BYTE_IDENTICAL_EVIDENCE_ARCHIVE",
+  "files": {
+    "native_train_100/training_receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/training_receipt.json",
+      "sha256": "a1eb44ea568fecbea2acbc80ed1b57b928dbe3ce85072f2acc8de4252dbc5d39",
+      "bytes": 49512
+    },
+    "native_train_100/run_identity.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/run_identity.json",
+      "sha256": "105c26b19491b162e0cb0d13f538bae8bc04d839641b0982d87dca34f9301ba7",
+      "bytes": 43340
+    },
+    "native_train_100/source_admission.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/source_admission.json",
+      "sha256": "58f49c8608bb4f6caf93d60c189d9617cd683d4a74ae2f53558b8502cf397aa0",
+      "bytes": 36918
+    },
+    "native_train_100/source_transfer.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/source_transfer.json",
+      "sha256": "23c2c4afd270758a943b8c6e8794d865b7aa07cd1003acb338a5081d3b549f92",
+      "bytes": 135133
+    },
+    "native_train_100/updates.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/updates.jsonl",
+      "sha256": "24931017bfaf57bfebba5856d085521ec2b84011b6a4b7c037f3d6bc6201f4be",
+      "bytes": 22858
+    },
+    "native_train_100/cycles.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/cycles.jsonl",
+      "sha256": "d49c45a6b2034944d65c27dd029f35dc424c7e8a2158d5a932c0d954b04390a9",
+      "bytes": 3691
+    },
+    "native_train_100/train_prediction_prior.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/train_prediction_prior.json",
+      "sha256": "afa643272ed696ab44e61416d1ca53a858242685e41a537e9c2743f9574d1046",
+      "bytes": 1345
+    },
+    "native_train_100/quality_catalog_step_000000000100.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/quality_catalog_step_000000000100.json",
+      "sha256": "392e61646efcb20bc11be7d2ea24bcf966eb12b519efbacb3056272e3e0f8485",
+      "bytes": 41766
+    },
+    "native_train_100/checkpoint_manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_HEADS_CPU_FINAL_v5/ckpt/step_000000000100/manifest.json",
+      "sha256": "276efd41521d0dd7bbe1f3d276bc42e82d93bd0b8720b2c95dc9150146985e54",
+      "bytes": 44251
+    },
+    "cpu_prepared/manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/manifest.json",
+      "sha256": "bd2062236067c124c320b88770e352b001ebdbd3d8723e0b908c276dd3d842bd",
+      "bytes": 43579
+    },
+    "cpu_prepared/model_config.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/model_config.json",
+      "sha256": "09efab731e406a2d0bb575e8408a560d52ad479b2bbc5ee00c2380e26f8c48f4",
+      "bytes": 13275
+    },
+    "cpu_prepared/settings.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/settings.json",
+      "sha256": "e803c4b8b5e7a412491e45f63c27d7a2a8f3ecbaed1f57370dd357f874591e4b",
+      "bytes": 3152
+    },
+    "cpu_prepared/quality_binding.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/quality_binding.json",
+      "sha256": "751e90b98b80f54e8bf0efbe4ab69b6dda3e5e7d1cbe1137c692dc8cbdf83252",
+      "bytes": 885
+    },
+    "cpu_prepared/quality_pool.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/quality_pool.json",
+      "sha256": "1734a181a2fd2c7a17cde03000cce945ec32c3064755b12bdd947820485fb14b",
+      "bytes": 3650
+    },
+    "cpu_prepared/experiment.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/experiment.yaml",
+      "sha256": "8bbb1ff6813611c31bbfaca8cbf21104e48b9c54eb1b419c44e14ce7ce84d012",
+      "bytes": 1282
+    },
+    "native_catalog_250/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CATALOG_V5/receipt.json",
+      "sha256": "3e77808850f71e011afb3f5cc76ba42484a9ae3ee07f04c698307be03edc8a09",
+      "bytes": 2759
+    },
+    "native_catalog_250/quality_catalog.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CATALOG_V5/quality_catalog.json",
+      "sha256": "5bb819258559a1069decae72622f021b429321633e00bd38341716a5f969a8dd",
+      "bytes": 41790
+    },
+    "native_catalog_250/teacher_journal.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CATALOG_V5/rollout/teacher_journal.jsonl",
+      "sha256": "d698aebf949c214fb6983d633f6bf7af171a645a5d301a7b88121aab4a8a322c",
+      "bytes": 1242932
+    },
+    "native_train_100/catalog_validation.log": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CPU_V5/catalog_validation.log",
+      "sha256": "171ea7f95fad7ef07ebc2e39a52c5bce8e16c6e6efef9cdc1c06da92561fc2d9",
+      "bytes": 2214
+    },
+    "native_train_100/independent_catalog_validation.log": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CPU_V5/independent_catalog_validation.log",
+      "sha256": "670df40a461903b66914f5e1d945575a4336fa6b92ea9c901eb2a9c8db112045",
+      "bytes": 2245
+    },
+    "native_train_100/prepare.log": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CPU_V5/prepare.log",
+      "sha256": "3b982f86cb77cddbf93fcf49a391a00dd3dd5304d0e4508e2b7dbed439647a8c",
+      "bytes": 1576
+    },
+    "native_train_100/start.log": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_CPU_V5/start.log",
+      "sha256": "8574a77e0c949eccf1c38ccf018453eda30d47e59b718cee99f34bb12692c1dd",
+      "bytes": 9263
+    },
+    "dev/inference/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/receipt.json",
+      "sha256": "4381b6b558bb73589cc72b11988aa14f0b45c56c734f2a9b297a2b8630941f43",
+      "bytes": 3597
+    },
+    "dev/inference/actions.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/actions.jsonl",
+      "sha256": "39a825b536d00bcac42ae1f0aec3f4aeacaaa3b325fc8cb9e0da19fc4344d2ea",
+      "bytes": 170880
+    },
+    "dev/inference/account_state.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/account_state.json",
+      "sha256": "d3189a8dc0d475ba310dd88e52f35600f86ad2ce183cbf5a9e08242b96f517c9",
+      "bytes": 37970
+    },
+    "dev/inference/train_prediction_prior.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/train_prediction_prior.json",
+      "sha256": "afa643272ed696ab44e61416d1ca53a858242685e41a537e9c2743f9574d1046",
+      "bytes": 1345
+    },
+    "dev/posthoc/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_SCORED_V5/receipt.json",
+      "sha256": "154c40b3444c1f38ac55afe62a791dc331636174ee6ccebf60dc748f464fb436",
+      "bytes": 49405
+    },
+    "dev/posthoc/labels_evaluation_only.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_SCORED_V5/labels_evaluation_only.jsonl",
+      "sha256": "53ec6d27b2ba2cdbc0a0d7c67ad0fb4eca3ed7f4e8ebd430e5c96b1daa9cdd3e",
+      "bytes": 49334
+    },
+    "dev/posthoc/prediction_seal.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_SCORED_V5/prediction_seal.json",
+      "sha256": "acca8ec97f9d103e655caa5bca218c6774d8967572258417c0d2af0b769f0807",
+      "bytes": 836
+    },
+    "dev/inference/dev_env.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/dev_env.yaml",
+      "sha256": "2fae94e8caa91ebb001c070efbc3bf715860b865750b1fa3213e618693a28c96",
+      "bytes": 1071
+    },
+    "dev/inference/dev_single3.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/dev_single3.yaml",
+      "sha256": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+      "bytes": 5024
+    },
+    "dev/inference/dev_manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5/dev_manifest.json",
+      "sha256": "ae82ef90a9f1cc06db806c8361afa82b4ade034d03ad7683ae957807089a2a59",
+      "bytes": 24679
+    },
+    "holdout/inference/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/receipt.json",
+      "sha256": "5193d39fe7e48ca68f63f5b40c9d4227590bb426ef841bf5106f5729bdf98381",
+      "bytes": 3741
+    },
+    "holdout/inference/actions.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/actions.jsonl",
+      "sha256": "e837a9d7d83c560f67a8fdb87eb289a1200f58a5ddfc2b5e5266f160bfff24ac",
+      "bytes": 170988
+    },
+    "holdout/inference/account_state.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/account_state.json",
+      "sha256": "6d5d5af570e8c779707a774dc02ce5abde2fd9efcad4cf79d728b208dd159ea0",
+      "bytes": 48009
+    },
+    "holdout/inference/train_prediction_prior.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/train_prediction_prior.json",
+      "sha256": "afa643272ed696ab44e61416d1ca53a858242685e41a537e9c2743f9574d1046",
+      "bytes": 1345
+    },
+    "holdout/posthoc/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_SCORED_V5/receipt.json",
+      "sha256": "b3d367617c19788e692ae288538d08d75900176e2f6b8f619a2693acdd15e80f",
+      "bytes": 50064
+    },
+    "holdout/posthoc/labels_evaluation_only.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_SCORED_V5/labels_evaluation_only.jsonl",
+      "sha256": "822f36fb3193492cb392594e33d471c038dcc0fdcdf01a87119a66e3f1008671",
+      "bytes": 62006
+    },
+    "holdout/posthoc/prediction_seal.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_SCORED_V5/prediction_seal.json",
+      "sha256": "36183cf660e0dd8a2b9f8d5ca3f6b073e33a2f0096783c332f4d6ac475952d68",
+      "bytes": 878
+    },
+    "holdout/inference/inputs/CZCE.FG401/single3.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/inputs/CZCE.FG401/single3.yaml",
+      "sha256": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+      "bytes": 5024
+    },
+    "holdout/inference/inputs/CZCE.FG401/env.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/inputs/CZCE.FG401/env.yaml",
+      "sha256": "bb565652d7565031b842805e2b79bf282cd712e4d0d8206356a7062ee7bd2b09",
+      "bytes": 1089
+    },
+    "holdout/inference/holdout_manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5/holdout_manifest.json",
+      "sha256": "42f3e76c366d55ab7c325046ceac04d9424dd5a047643c41a347116032eff457",
+      "bytes": 3164
+    },
+    "reference/inference/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5/receipt.json",
+      "sha256": "56a9c80abb309bee5877dcbb1b0c8f6992b47167bd59ea30ca35a35f310361de",
+      "bytes": 2476
+    },
+    "reference/inference/actions.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5/actions.jsonl",
+      "sha256": "6a2c33c2cb9ad4d6b00615cf6c7e878b9138f05243b4616a593146a2728d19ab",
+      "bytes": 175257
+    },
+    "reference/inference/account_state.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5/account_state.json",
+      "sha256": "6d5d5af570e8c779707a774dc02ce5abde2fd9efcad4cf79d728b208dd159ea0",
+      "bytes": 48009
+    },
+    "reference/inference/train_prediction_prior.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5/train_prediction_prior.json",
+      "sha256": "900de077c07fd8d9d178869ca4e430ee536464dc42ab397df41e3c64037aa9de",
+      "bytes": 1444
+    },
+    "reference/posthoc/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_SCORED_V5/receipt.json",
+      "sha256": "b6496d389b9b946f8b55a601b3a8c7f7cca94e73b04b8ddf29df79119ba215a3",
+      "bytes": 50083
+    },
+    "reference/posthoc/labels_evaluation_only.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_SCORED_V5/labels_evaluation_only.jsonl",
+      "sha256": "72e95c27860282fde8855f76d8d21ad8cd3d2118be7f6ebfdfa619eae773cd44",
+      "bytes": 61980
+    },
+    "reference/posthoc/prediction_seal.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_SCORED_V5/prediction_seal.json",
+      "sha256": "9873e7f1c2361cc56e1a4e317dbae3d55c7c8b9f73f6d80d4af9b255e3d94742",
+      "bytes": 670
+    },
+    "reference/inference/holdout_manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_V5/holdout_manifest.json",
+      "sha256": "42f3e76c366d55ab7c325046ceac04d9424dd5a047643c41a347116032eff457",
+      "bytes": 3164
+    },
+    "matched_comparison/horizon_6.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_6.json",
+      "sha256": "18b104adac4a127062de6ee9ee086c4e1819a2e089fc4adfe2fb7fed0273abe3",
+      "bytes": 1749
+    },
+    "matched_comparison/horizon_2.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_2.json",
+      "sha256": "4e2b407c22362efc12c60256a9cf222236fb10fd4d796773214fe36b568fea0b",
+      "bytes": 1751
+    },
+    "matched_comparison/horizon_1.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_1.json",
+      "sha256": "bb517c52c304d0a3ee144ecbdcb5dcca958c275942229f3bdc3dda7b0edce245",
+      "bytes": 1736
+    },
+    "matched_comparison/horizon_0.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_0.json",
+      "sha256": "33c6a9f1eef0f5b5fde86b577eda181d2a9d66aa2c61756669d21b9021b87b11",
+      "bytes": 1737
+    },
+    "matched_comparison/horizon_3.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_3.json",
+      "sha256": "7d7e735f292066fbbb76622776f643c5c3aada39b2f996602d2e1792dc395d79",
+      "bytes": 1750
+    },
+    "matched_comparison/horizon_5.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_5.json",
+      "sha256": "4d046f2dc94448610486dda17a38327ea54bffa76c1816c9336ac4afa8fded03",
+      "bytes": 1750
+    },
+    "matched_comparison/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/receipt.json",
+      "sha256": "fe180c66b8bc642dab4847a291bcec6b548142676a734b68bc1917f968ff8d8c",
+      "bytes": 57040
+    },
+    "matched_comparison/horizon_4.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_COMPARISON_V5/horizon_4.json",
+      "sha256": "5940f750462b6c6910f16f87208377b7cb8720d13da9cdacd087561f61b28a26",
+      "bytes": 1750
+    },
+    "lifecycle/receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/receipt.json",
+      "sha256": "a00b10723655ce759fdd732083fa7a1916af78a5c4cf5646ee8b1f4bdf885b52",
+      "bytes": 4900
+    },
+    "lifecycle/training_receipt.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/training_receipt.json",
+      "sha256": "f3f6e1585652fa22feca97fe12c27eabe3e6c7a8bb4a69242e878dd9bfcbb0b2",
+      "bytes": 49114
+    },
+    "lifecycle/updates.jsonl": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/updates.jsonl",
+      "sha256": "b167f617b40c5ee9c75f836655164d35343200098806fd9eee88c118bea70c5f",
+      "bytes": 45953
+    },
+    "lifecycle/quality_catalog_step_000000000100.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/quality_catalog_step_000000000100.json",
+      "sha256": "59863bb59b9e3e331a19cb1d5db5c0bc97730e23de4606f53b88ebb142b308e1",
+      "bytes": 41354
+    },
+    "lifecycle/quality_catalog_step_000000000200.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_b12fbb6fcc/quality_catalog_step_000000000200.json",
+      "sha256": "f1f1dccca38448247724295e30190a15c601d9a3e59e43d2f78550800688dbd2",
+      "bytes": 41380
+    },
+    "synthetic_backend/heads_only_receipt.json": {
+      "original": "/tmp/pytest-of-v/pytest-360/test_quality_first_heads_only_0/heads_only_receipt.json",
+      "sha256": "6eb87eca5280302b23ec19bcbbebbf4eb9d6910c584b03b9aacf06bc29038864",
+      "bytes": 899
+    },
+    "synthetic_backend/warm_start_receipt.json": {
+      "original": "/tmp/pytest-of-v/pytest-360/test_quality_actor_parameter_w0/warm_start_receipt.json",
+      "sha256": "47a50fbacbc4bb307f003a5fac22bd4a8955b89300c8e6960a82864941c1df3d",
+      "bytes": 105373
+    },
+    "synthetic_backend/joint_cpu_receipt.json": {
+      "original": "/tmp/pytest-of-v/pytest-360/test_all_heads_gradient_and_ex0/joint_cpu_receipt.json",
+      "sha256": "8d1a584b2f9385239d917a48786e77b581110c79ef1bf32acc81cb007801acc5",
+      "bytes": 1587
+    },
+    "source_1m_cpu_admission/manifest.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_GPU_1K_v2/manifest.json",
+      "sha256": "357c753906a88e80862052e1dc1aa5030191c16d5eb16c5c3d2127445f8c0d1c",
+      "bytes": 43236
+    },
+    "source_1m_cpu_admission/source_admission.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_GPU_1K_v2/source_admission.json",
+      "sha256": "1c07874c30871a37fb64bbc9ac7403aae1fad7ad6511d7db6d7fab0a6ab0479e",
+      "bytes": 111754
+    },
+    "source_1m_cpu_admission/model_config.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_GPU_1K_v2/model_config.json",
+      "sha256": "01cab50975fbd9c010c66ddfcd18094d484ae03890fd6b0832c7d35a24f6ea55",
+      "bytes": 14410
+    },
+    "source_1m_cpu_admission/settings.json": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_GPU_1K_v2/settings.json",
+      "sha256": "a3a2eb9770d5f426af96aeade2c5af5170e62d4e386c43d886d8b6bc29676106",
+      "bytes": 3216
+    },
+    "source_1m_cpu_admission/experiment.yaml": {
+      "original": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_GPU_1K_v2/experiment.yaml",
+      "sha256": "4b6da1bc8b3c685546d7272fd76458654037e5a251efeb05e5ecdc0f570a8240",
+      "bytes": 1348
+    },
+    "source_1m_cpu_admission/untouched_original_checkpoint_manifest.json": {
+      "original": "/data/logdir/fg_single3/s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/ckpt/step_000001000000/manifest.json",
+      "sha256": "d6b03a8f2e3604885a7550c9bd217471e290c7840f91dd1ecc93bf93658e9098",
+      "bytes": 45871
+    }
+  },
+  "portable_market_data": false,
+  "full_checkpoints_retained_in_original_run_directories": true,
+  "original_receipts_rewritten": false,
+  "training": "CPU diagnostic only; no GPU",
+  "content_hash": "12cbf98c23b1dc2fb0e35b2e33a8e05c0b46c5293e722911f3fd8e9cd4daff87"
+}

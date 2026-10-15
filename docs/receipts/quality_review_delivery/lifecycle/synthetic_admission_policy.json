@@ -1,0 +1,90 @@
+{
+  "protocol": "FG_S3_QUALITY_ADMISSION_POLICY_V2",
+  "trained_contracts": [
+    "CZCE.FG2701"
+  ],
+  "heldout_contracts": [
+    "CZCE.FG401",
+    "CZCE.FG405"
+  ],
+  "replay_seeds": [
+    202,
+    203
+  ],
+  "target_replay_seed": 202,
+  "time_folds": [
+    {
+      "id": "early",
+      "windows": {
+        "CZCE.FG401": {
+          "start_day": "20260105",
+          "end_day": "20260106"
+        },
+        "CZCE.FG405": {
+          "start_day": "20260105",
+          "end_day": "20260106"
+        },
+        "CZCE.FG409": {
+          "start_day": "20260105",
+          "end_day": "20260106"
+        }
+      }
+    },
+    {
+      "id": "late",
+      "windows": {
+        "CZCE.FG401": {
+          "start_day": "20260107",
+          "end_day": "20260108"
+        },
+        "CZCE.FG405": {
+          "start_day": "20260107",
+          "end_day": "20260108"
+        },
+        "CZCE.FG409": {
+          "start_day": "20260107",
+          "end_day": "20260108"
+        }
+      }
+    }
+  ],
+  "prediction": {
+    "minimum_samples_per_horizon": 2,
+    "minimum_score_samples": 2,
+    "minimum_binary_samples": 2,
+    "minimum_official_days": 2,
+    "minimum_tp_per_horizon": 1,
+    "minimum_sl_per_horizon": 1,
+    "minimum_low_funds_per_horizon": 1,
+    "maximum_event_ece": 0.2,
+    "maximum_binary_ece": 0.2,
+    "minimum_sl_recall": 0.5
+  },
+  "decision": {
+    "minimum_changed_decisions": 1,
+    "minimum_strict_add": 1,
+    "minimum_strict_wait": 1,
+    "minimum_closed_entries": 2,
+    "maximum_false_add_rate_delta": 0.0,
+    "maximum_sl_rate_delta": 0.0,
+    "maximum_drawdown_delta": 0.0,
+    "require_native_relative_value": true,
+    "component_sets": [
+      [
+        "score"
+      ],
+      [
+        "outcome",
+        "score"
+      ]
+    ]
+  },
+  "q": {
+    "minimum_verified_states": 2,
+    "minimum_low_funds_states": 1,
+    "minimum_official_days": 2,
+    "maximum_value_mse": 0.1,
+    "minimum_advantage_accuracy": 0.8
+  },
+  "content_hash": "9dec548dc6185f20a3a610e7faa72cb0486896662805f68d29a3ae30f88afebb"
+}

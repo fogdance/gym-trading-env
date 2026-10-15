@@ -1,0 +1,5 @@
+CPU_FG201 CZCE.FG201 checked 254 strata 66 retained_trades 3255 advances 31259
+POOL_CPU CZCE.FG201 checked 254 strata 66 retained_trades 3255 advances 31259
+POOL_CPU CZCE.FG205 checked 248 strata 74 retained_trades 1708 advances 23219
+HEADS_GPU_1K CZCE.FG201 checked 254 strata 66 retained_trades 3255 advances 31259
+PASS: all three final preparations match 211 current runtime files

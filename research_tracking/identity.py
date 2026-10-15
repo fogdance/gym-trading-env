@@ -11,7 +11,7 @@ from .io import LIMIT, TrackingError, digest, fingerprint, read_json, small_byte
 from .redaction import redact
 from .composition import validate as validate_composition
 
-FAMILIES = {'a2': 's3-a2', 'tutor': 's3-tutor-cd', 'b2': 's3-b2', 'e': 's3-e'}
+FAMILIES = {'a2': 's3-a2', 'tutor': 's3-tutor-cd', 'b2': 's3-b2', 'e': 's3-e','quality_v2':'s3-quality-v2'}
 
 
 def stable_id(*parts):
@@ -151,9 +151,9 @@ class SourceRun:
             'source/dirty_patch_status': trace['original_dirty_patch_status']}
         names = {'beta', 'beta_schedule', 'bc_lambda', 'collect_every', 'updates_per_collect',
             'batch_size', 'save_every', 'replay_capacity', 'replay_seed', 'env_slice_bars',
-            'env_steps', 'device', 'contracts', 'scope'}
+            'env_steps', 'device', 'contracts', 'scope','reward'}
         for name, value in self.settings.items():
-            if name in names or name.startswith(('tutor_', 'b2_')):
+            if name in names or name.startswith(('tutor_', 'b2_','quality_')):
                 values['s3/'+name] = value
         agent = self.model['agent']
         if self.composition is not None:

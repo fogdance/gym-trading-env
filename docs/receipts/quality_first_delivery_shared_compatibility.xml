@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="34" time="20.013" timestamp="2026-10-15T21:10:20.731130+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_early_first_touch_boundaries_and_no_repeat" time="0.004" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_empty_wait_and_right_censoring" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_invalid_atomic_inputs_and_capacity" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_long_short_mirror" time="0.000" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_meta_rows_do_not_increase_age_or_capacity" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_no_tp_reward_after_480" time="0.000" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_potential_discounted_telescoping_chunk_restore" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_rejects_impossible_claimed_tp_and_untrusted_clocks" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_rejects_overlapping_bars_without_mutating_state" time="0.000" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_tp_and_adverse_same_bar_is_ambiguity" time="0.000" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_tp_boundary_curve_and_monotone" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_tp_one_shot_and_original_reconciliation" time="0.001" /><testcase classname="tests.unit.test_fg_reward_candidates.RewardCandidatesTests" name="test_two_slots_and_same_bar_settlement" time="0.001" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_frozen_reward_identity_cannot_be_replaced_with_same_sum" time="0.373" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_real_env_capacity_tp_chunk_restore_and_grid_agree" time="0.247" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_opportunity_uses_execution_clock_at_session_gap" time="0.175" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_delay_waits_five_valid_minutes_and_skips_metadata" time="0.174" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_cutoff_and_unfilled_force_exit_remain_distinct[False]" time="0.165" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_cutoff_and_unfilled_force_exit_remain_distinct[True]" time="0.177" /><testcase classname="tests.entry_v1.test_fg_reward_offline" name="test_replay_reuse_rejects_changed_frozen_input" time="0.176" /><testcase classname="tests.entry_v1.test_fg_s3_v2_pool" name="test_pool_rotation_keeps_raw_account_and_checkpoint_owner" time="5.700" /><testcase classname="tests.entry_v1.test_fg_s3_v2_pool" name="test_formal_budget_needs_explicit_authorization_and_isolated_root" time="0.058" /><testcase classname="tests.entry_v1.test_fg_s3_v2_pool" name="test_b2_formal_uses_shared_catalog_and_original_authorization" time="0.014" /><testcase classname="tests.entry_v1.test_fg_s3_v2_pool" name="test_b2_pool_outcome_contract_dispatch_and_restore" time="5.126" /><testcase classname="tests.entry_v1.test_fg_s3_v2_pool" name="test_beta_schedule_uses_env_advances_and_validates_checkpoint_boundary" time="0.001" /><testcase classname="tests.entry_v1.test_fg_s3_v2" name="test_live_committed_rows_restore_preserves_native_ownership" time="1.112" /><testcase classname="tests.entry_v1.test_fg_s3_v2" name="test_shared_extractions_reject_changed_math_and_cuda_flags" time="0.100" /><testcase classname="tests.entry_v1.test_fg_s3_v2" name="test_current_decision_descriptor_preserves_labels_and_rejects_stale_state" time="0.876" /><testcase classname="tests.entry_v1.test_fg_s3_v2" name="test_resume_archives_uncheckpointed_cycles" time="0.001" /><testcase classname="tests.entry_v1.test_fg_s3_v2_observation" name="test_train_proposals_are_separate_from_takeover_and_partial_rows" time="0.001" /><testcase classname="tests.entry_v1.test_fg_s3_v2_observation" name="test_actor_only_rates_include_censored_entries_and_reject_guidance" time="0.001"><failure message="ValueError: Evaluation account reward differs from receipt">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-361/test_actor_only_rates_include_0')
+
+    def test_actor_only_rates_include_censored_entries_and_reject_guidance(tmp_path):
+        state=dict(attributions=[dict(reason='TAKE_PROFIT'),dict(reason='STOP_LOSS')])
+        (tmp_path/'account_state.json').write_text(json.dumps(state))
+        write_json(tmp_path/'dev_manifest.json',signed(dict(frozen_inputs={},rows=[dict(
+            contract='CZCE.FG409',sha256='market',env_sha256='rules',contract_sha256='terms')])))
+        actions=[dict(cursor=i,action=int(i==0),mask=[1,1],is_last=False,p_add=p,advanced=i&gt;0)
+                 for i,p in enumerate((.9,.2,.99))]
+        (tmp_path/'actions.jsonl').write_text(''.join(json.dumps(x)+'\n' for x in actions))
+        receipt=dict(teacher_guidance=False,beta=0.,fold='DEV',output=str(tmp_path),
+            checkpoint='step',checkpoint_manifest_sha256='checkpoint',env_steps=2,policy_mode='eval_argmax',
+            add_executed=1,entries=3,right_censored=1,sl30=1,early_mae10=1,
+            clock_protocol='S3_MARKET_MINUTE',tp_market_minutes_p50=2.,tp_market_minutes_p90=2.,reward=0.,all_wait=False)
+&gt;       result=actor_only_metrics(receipt)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_v2_observation.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_v2_observation.py:97: in actor_only_metrics
+    metrics = evaluation_metrics(state, receipt)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+state = {'attributions': [{'reason': 'TAKE_PROFIT'}, {'reason': 'STOP_LOSS'}]}
+receipt = {'teacher_guidance': False, 'beta': 0.0, 'fold': 'DEV', 'output': '/tmp/pytest-of-v/pytest-361/test_actor_only_rates_include_0', ...}
+
+    def evaluation_metrics(state, receipt=None):
+        """Derive fresh metrics without changing an immutable historical receipt.
+    
+        Missing logs are unknown. Missing effective_bar is explicitly unclassified;
+        timestamp differences are never a substitute for market minutes.
+        """
+        receipt = receipt or {}
+        metrics = dict(metric_schema=SCHEMA, **{k: None for k in WINDOWS},
+                       adverse10_windows_complete=False,
+                       closed_trade_net_pnl=None, closed_trade_gross_pnl=None,
+                       tp_fast_count=None,tp_mid_count=None,tp_late_count=None,tp_after_h60_count=None,
+                       tp_market_minutes_p50=None, tp_market_minutes_p90=None)
+        legacy = receipt.get('early_mae10')
+        if legacy is not None:
+            metrics['legacy_early_mae10_any_hold'] = legacy
+        if state is None:
+            metrics['adverse10_any_hold'] = receipt.get('adverse10_any_hold', legacy)
+            return metrics
+        if receipt.get('contract') and state.get('contract') != receipt['contract']:
+            raise ValueError('Evaluation account contract differs from receipt')
+        if receipt.get('reward') is not None and state.get('total_reward') != receipt['reward']:
+&gt;           raise ValueError('Evaluation account reward differs from receipt')
+E           ValueError: Evaluation account reward differs from receipt
+
+src/gym_trading_env/research/fg_s3_eval_metrics.py:58: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_v2_observation" name="test_observer_selects_frozen_tools_entry_instead_of_same_named_module" time="0.002" /><testcase classname="tests.entry_v1.test_fg_s3_tutor_e2" name="test_dynamic_class_normalization_stop_gradient_and_weight_limit" time="2.770" /><testcase classname="tests.entry_v1.test_fg_s3_tutor_e2" name="test_missing_class_empty_and_static_v0_equivalence" time="1.081" /></testsuite></testsuites>

@@ -1,0 +1,1466 @@
+{
+  "protocol": "FG_S3_SOURCE_ADMISSION_V2",
+  "kind": "direct_init",
+  "origin": {
+    "config": {
+      "logdir": "~/logdir/{timestamp}",
+      "replica": 0,
+      "replicas": 1,
+      "method": "name",
+      "task": "dummy_disc",
+      "seed": 0,
+      "experiment_seed": 0,
+      "dreamer": {
+        "seed": 0
+      },
+      "fg_entry": {
+        "manifest": ""
+      },
+      "fg_single3_offline": {
+        "profile": "pilot_2k",
+        "enabled": false,
+        "authorized": false,
+        "dataset": "",
+        "coverage": "",
+        "horizon": "",
+        "candidate": "",
+        "pool": "",
+        "identity_hash": ""
+      },
+      "audit": {
+        "matched_random_seed": 20260615,
+        "entry_eval_version": "",
+        "entry_eval_config": "",
+        "split_manifest_hash": "",
+        "execution_timing": ""
+      },
+      "walk_forward_guard": {
+        "enabled": true,
+        "allow_non_holdout_training": false,
+        "data_root": "/data/logdir/trading_contracts"
+      },
+      "walk_forward_guard_result": {
+        "status": "",
+        "reason": "",
+        "role_map_source": "",
+        "entry_eval_version": "",
+        "entry_eval_config": "",
+        "split_manifest_path": "",
+        "split_manifest_hash": "",
+        "split_fold_name": "",
+        "env_config_path": "",
+        "training_market_csv": "",
+        "training_data": {
+          "path": "",
+          "min_day": 0,
+          "max_day": 0,
+          "first_timestamp": "",
+          "last_timestamp": ""
+        },
+        "roles": {
+          "train": {
+            "min_day": 0,
+            "max_day": 0,
+            "days": 0
+          },
+          "validation": {
+            "min_day": 0,
+            "max_day": 0,
+            "days": 0
+          },
+          "test": {
+            "min_day": 0,
+            "max_day": 0,
+            "days": 0
+          }
+        },
+        "execution_timing": "",
+        "manifest_execution_timing": "",
+        "validation_overlap_days": [
+          0
+        ],
+        "validation_overlap_count": 0,
+        "test_overlap_days": [
+          0
+        ],
+        "test_overlap_count": 0,
+        "training_min_before_split_train": false,
+        "training_max_exceeds_split_train": false,
+        "problems": [
+          ""
+        ]
+      },
+      "seed_protocol": {
+        "experiment_seed": 0,
+        "dreamer_seed": 0,
+        "train_env_seed": 101,
+        "replay_seed": 202,
+        "eval_env_seed": 0,
+        "matched_random_seed": 20260615,
+        "config_seed": 0,
+        "config_seed_sync": "",
+        "dreamer_seed_source": "dreamer.seed",
+        "train_env_seed_source": "experiment_seed*1000+101",
+        "replay_seed_source": "experiment_seed*1000+202",
+        "eval_env_seed_source": "env.eval_seed",
+        "matched_random_seed_source": "audit.matched_random_seed",
+        "entry_eval_version": "",
+        "entry_eval_config": "",
+        "split_manifest_hash": "",
+        "execution_timing": "",
+        "train_env_seed_usage": "",
+        "replay_seed_usage": "",
+        "eval_env_seed_usage": "",
+        "eval_policy_mode": "",
+        "matched_random_seed_usage": "",
+        "gymnasium_constructor_seed_usage": "",
+        "eval_determinism": ""
+      },
+      "script": "train",
+      "batch_size": 1,
+      "batch_length": 64,
+      "report_length": 64,
+      "consec_train": 1,
+      "consec_report": 1,
+      "replay_context": 1,
+      "random_agent": false,
+      "action_mask_warmup": {
+        "enabled": false,
+        "min_train_samples": 25000,
+        "consecutive_reports": 5,
+        "regression_reports": 5,
+        "stop_on_regression": true,
+        "post_accuracy": 0.995,
+        "post_exact": 0.99,
+        "prior_accuracy": 0.99,
+        "prior_exact": 0.98,
+        "prior_fpr": 0.005,
+        "img_fallback": 0.0001,
+        "add_recall_enabled": false,
+        "min_add_positives": 16,
+        "post_add_recall": 0.8,
+        "prior_add_recall": 0.8
+      },
+      "clock_addr": "",
+      "clock_port": "",
+      "ipv6": false,
+      "errfile": false,
+      "logger": {
+        "outputs": [
+          "tensorboard",
+          "jsonl",
+          "scope"
+        ],
+        "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+        "timer": true,
+        "fps": 15,
+        "user": ""
+      },
+      "env": {
+        "train_seed": 0,
+        "eval_seed": 0,
+        "atari": {
+          "size": [
+            96,
+            96
+          ],
+          "repeat": 4,
+          "sticky": true,
+          "gray": true,
+          "actions": "all",
+          "lives": "unused",
+          "noops": 30,
+          "autostart": false,
+          "pooling": 2,
+          "aggregate": "max",
+          "resize": "pillow",
+          "clip_reward": false
+        },
+        "procgen": {
+          "size": [
+            96,
+            96
+          ],
+          "resize": "pillow"
+        },
+        "crafter": {
+          "size": [
+            64,
+            64
+          ],
+          "logs": false
+        },
+        "atari100k": {
+          "size": [
+            64,
+            64
+          ],
+          "repeat": 4,
+          "sticky": false,
+          "gray": false,
+          "actions": "needed",
+          "lives": "unused",
+          "noops": 30,
+          "autostart": false,
+          "resize": "pillow",
+          "clip_reward": false
+        },
+        "dmlab": {
+          "size": [
+            64,
+            64
+          ],
+          "repeat": 4,
+          "episodic": true,
+          "use_seed": true
+        },
+        "minecraft": {
+          "size": [
+            64,
+            64
+          ],
+          "break_speed": 100.0,
+          "logs": false,
+          "length": 36000
+        },
+        "dmc": {
+          "size": [
+            64,
+            64
+          ],
+          "repeat": 1,
+          "proprio": true,
+          "image": true,
+          "camera": -1
+        },
+        "loconav": {
+          "size": [
+            64,
+            64
+          ],
+          "repeat": 1,
+          "camera": -1
+        },
+        "gymnasium": {
+          "config_path": ""
+        }
+      },
+      "replay": {
+        "seed": 0,
+        "size": 5000000.0,
+        "online": true,
+        "fracs": {
+          "uniform": 1.0,
+          "priority": 0.0,
+          "recency": 0.0
+        },
+        "prio": {
+          "exponent": 0.8,
+          "maxfrac": 0.5,
+          "initial": "inf",
+          "zero_on_sample": true
+        },
+        "priosignal": "model",
+        "recexp": 1.0,
+        "chunksize": 1024
+      },
+      "run": {
+        "env_checkpoint": false,
+        "fg_single3_offline": false,
+        "fg_single3_identity": "",
+        "replay_dir": "",
+        "steps": 10000000000.0,
+        "duration": 0,
+        "train_ratio": 32.0,
+        "log_every": 120,
+        "report_every": 300,
+        "save_every": 900,
+        "envs": 16,
+        "eval_envs": 4,
+        "eval_eps": 1,
+        "report_batches": 1,
+        "from_checkpoint": "",
+        "fg_stage_transfer": "",
+        "fg_source_steps": 0,
+        "fg_learning_audit": false,
+        "fg_full_checkpoint": false,
+        "fg_report_every_steps": 5000,
+        "fg_save_every_steps": 10000,
+        "fg_key_steps": [
+          70000,
+          100000,
+          700000,
+          1000000
+        ],
+        "fg_reserve_gib": 10,
+        "fg_keep_all_checkpoints": false,
+        "fg_single3_audit": false,
+        "checkpoint_retention": {
+          "enabled": false,
+          "steps": [
+            0
+          ],
+          "directory": "ckpt_retained"
+        },
+        "episode_timeout": 180,
+        "actor_addr": "localhost:{auto}",
+        "replay_addr": "localhost:{auto}",
+        "logger_addr": "localhost:{auto}",
+        "actor_batch": -1,
+        "actor_threads": 1,
+        "agent_process": false,
+        "remote_replay": false,
+        "remote_envs": false,
+        "usage": {
+          "psutil": true,
+          "nvsmi": true,
+          "gputil": false,
+          "malloc": false,
+          "gc": false
+        },
+        "debug": true
+      },
+      "jax": {
+        "platform": "cuda",
+        "compute_dtype": "float32",
+        "policy_devices": [
+          0
+        ],
+        "train_devices": [
+          0
+        ],
+        "mock_devices": 0,
+        "prealloc": true,
+        "jit": true,
+        "debug": false,
+        "expect_devices": 0,
+        "enable_policy": true,
+        "sync_train_metrics": false,
+        "precompile": true,
+        "profiler": true,
+        "coordinator_address": ""
+      },
+      "agent": {
+        "replay_context_mode": "recompute_prefix",
+        "update_diagnostics": true,
+        "loss_scales": {
+          "rec": 1.0,
+          "rew": 1.0,
+          "con": 1.0,
+          "dyn": 1.0,
+          "rep": 0.1,
+          "avail_post": 1.0,
+          "avail_prior": 1.0,
+          "policy": 1.0,
+          "value": 1.0,
+          "repval": 0.3
+        },
+        "opt": {
+          "lr": 4e-05,
+          "agc": 0.3,
+          "eps": 1e-20,
+          "beta1": 0.9,
+          "beta2": 0.999,
+          "momentum": true,
+          "wd": 0.0,
+          "schedule": "const",
+          "warmup": 1000,
+          "anneal": 0
+        },
+        "ac_grads": false,
+        "dyn": {
+          "typ": "rssm",
+          "rssm": {
+            "deter": 32,
+            "hidden": 16,
+            "stoch": 2,
+            "classes": 4,
+            "act": "silu",
+            "norm": "rms",
+            "unimix": 0.01,
+            "outscale": 1.0,
+            "winit": "trunc_normal_in",
+            "imglayers": 2,
+            "obslayers": 1,
+            "dynlayers": 1,
+            "absolute": false,
+            "blocks": 4,
+            "free_nats": 1.0
+          }
+        },
+        "enc": {
+          "typ": "simple",
+          "simple": {
+            "depth": 64,
+            "mults": [
+              2,
+              3,
+              4,
+              4
+            ],
+            "layers": 1,
+            "units": 16,
+            "act": "silu",
+            "norm": "rms",
+            "winit": "trunc_normal_in",
+            "symlog": true,
+            "outer": false,
+            "kernel": 5,
+            "strided": false
+          }
+        },
+        "dec": {
+          "typ": "simple",
+          "simple": {
+            "depth": 64,
+            "mults": [
+              2,
+              3,
+              4,
+              4
+            ],
+            "layers": 1,
+            "units": 16,
+            "act": "silu",
+            "norm": "rms",
+            "outscale": 1.0,
+            "winit": "trunc_normal_in",
+            "outer": false,
+            "kernel": 5,
+            "bspace": 8,
+            "strided": false
+          }
+        },
+        "rewhead": {
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "output": "symexp_twohot",
+          "outscale": 0.0,
+          "winit": "trunc_normal_in",
+          "bins": 255
+        },
+        "conhead": {
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "output": "binary",
+          "outscale": 1.0,
+          "winit": "trunc_normal_in"
+        },
+        "availhead": {
+          "layers": 2,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "output": "binary",
+          "outscale": 1.0,
+          "winit": "trunc_normal_in"
+        },
+        "policy": {
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "minstd": 0.2,
+          "maxstd": 1.0,
+          "outscale": 0.01,
+          "unimix": 0.05,
+          "winit": "trunc_normal_in"
+        },
+        "value": {
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "output": "symexp_twohot",
+          "outscale": 0.0,
+          "winit": "trunc_normal_in",
+          "bins": 255
+        },
+        "policy_dist_disc": "categorical",
+        "policy_dist_cont": "bounded_normal",
+        "imag_last": 0,
+        "imag_length": 3,
+        "horizon": 333,
+        "contdisc": true,
+        "imag_loss": {
+          "slowtar": false,
+          "lam": 0.95,
+          "actent": 0.01,
+          "slowreg": 1.0
+        },
+        "repl_loss": {
+          "slowtar": false,
+          "lam": 0.95,
+          "slowreg": 1.0
+        },
+        "slowvalue": {
+          "rate": 0.02,
+          "every": 1
+        },
+        "retnorm": {
+          "impl": "perc",
+          "rate": 0.01,
+          "limit": 1.0,
+          "perclo": 5.0,
+          "perchi": 95.0,
+          "debias": false
+        },
+        "valnorm": {
+          "impl": "none",
+          "rate": 0.01,
+          "limit": 1e-08
+        },
+        "advnorm": {
+          "impl": "none",
+          "rate": 0.01,
+          "limit": 1e-08
+        },
+        "reward_grad": true,
+        "avail_post_grad": true,
+        "avail_prior_grad": true,
+        "avail_threshold": 0.3,
+        "avail_always_available_index": 0,
+        "avail_actor_enabled": false,
+        "repval_loss": true,
+        "repval_grad": true,
+        "report": true,
+        "report_gradnorms": false,
+        "s3_clock_protocol": "S3_MARKET_MINUTE"
+      }
+    },
+    "step": 0,
+    "diagnostic": true,
+    "identity_hash": "66a021e924db6a7a096aa3f36d91de867c685cebfc2ca1103795c365cde5a896"
+  },
+  "target_config": {
+    "logdir": "~/logdir/{timestamp}",
+    "replica": 0,
+    "replicas": 1,
+    "method": "name",
+    "task": "dummy_disc",
+    "seed": 0,
+    "experiment_seed": 0,
+    "dreamer": {
+      "seed": 0
+    },
+    "fg_entry": {
+      "manifest": ""
+    },
+    "fg_single3_offline": {
+      "profile": "pilot_2k",
+      "enabled": false,
+      "authorized": false,
+      "dataset": "",
+      "coverage": "",
+      "horizon": "",
+      "candidate": "",
+      "pool": "",
+      "identity_hash": ""
+    },
+    "audit": {
+      "matched_random_seed": 20260615,
+      "entry_eval_version": "",
+      "entry_eval_config": "",
+      "split_manifest_hash": "",
+      "execution_timing": ""
+    },
+    "walk_forward_guard": {
+      "enabled": true,
+      "allow_non_holdout_training": false,
+      "data_root": "/data/logdir/trading_contracts"
+    },
+    "walk_forward_guard_result": {
+      "status": "",
+      "reason": "",
+      "role_map_source": "",
+      "entry_eval_version": "",
+      "entry_eval_config": "",
+      "split_manifest_path": "",
+      "split_manifest_hash": "",
+      "split_fold_name": "",
+      "env_config_path": "",
+      "training_market_csv": "",
+      "training_data": {
+        "path": "",
+        "min_day": 0,
+        "max_day": 0,
+        "first_timestamp": "",
+        "last_timestamp": ""
+      },
+      "roles": {
+        "train": {
+          "min_day": 0,
+          "max_day": 0,
+          "days": 0
+        },
+        "validation": {
+          "min_day": 0,
+          "max_day": 0,
+          "days": 0
+        },
+        "test": {
+          "min_day": 0,
+          "max_day": 0,
+          "days": 0
+        }
+      },
+      "execution_timing": "",
+      "manifest_execution_timing": "",
+      "validation_overlap_days": [
+        0
+      ],
+      "validation_overlap_count": 0,
+      "test_overlap_days": [
+        0
+      ],
+      "test_overlap_count": 0,
+      "training_min_before_split_train": false,
+      "training_max_exceeds_split_train": false,
+      "problems": [
+        ""
+      ]
+    },
+    "seed_protocol": {
+      "experiment_seed": 0,
+      "dreamer_seed": 0,
+      "train_env_seed": 101,
+      "replay_seed": 202,
+      "eval_env_seed": 0,
+      "matched_random_seed": 20260615,
+      "config_seed": 0,
+      "config_seed_sync": "",
+      "dreamer_seed_source": "dreamer.seed",
+      "train_env_seed_source": "experiment_seed*1000+101",
+      "replay_seed_source": "experiment_seed*1000+202",
+      "eval_env_seed_source": "env.eval_seed",
+      "matched_random_seed_source": "audit.matched_random_seed",
+      "entry_eval_version": "",
+      "entry_eval_config": "",
+      "split_manifest_hash": "",
+      "execution_timing": "",
+      "train_env_seed_usage": "",
+      "replay_seed_usage": "",
+      "eval_env_seed_usage": "",
+      "eval_policy_mode": "",
+      "matched_random_seed_usage": "",
+      "gymnasium_constructor_seed_usage": "",
+      "eval_determinism": ""
+    },
+    "script": "train",
+    "batch_size": 1,
+    "batch_length": 64,
+    "report_length": 64,
+    "consec_train": 1,
+    "consec_report": 1,
+    "replay_context": 1,
+    "random_agent": false,
+    "action_mask_warmup": {
+      "enabled": false,
+      "min_train_samples": 25000,
+      "consecutive_reports": 5,
+      "regression_reports": 5,
+      "stop_on_regression": true,
+      "post_accuracy": 0.995,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.99,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.005,
+      "img_fallback": 0.0001,
+      "add_recall_enabled": false,
+      "min_add_positives": 16,
+      "post_add_recall": 0.8,
+      "prior_add_recall": 0.8
+    },
+    "clock_addr": "",
+    "clock_port": "",
+    "ipv6": false,
+    "errfile": false,
+    "logger": {
+      "outputs": [
+        "tensorboard",
+        "jsonl",
+        "scope"
+      ],
+      "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+      "timer": true,
+      "fps": 15,
+      "user": ""
+    },
+    "env": {
+      "train_seed": 0,
+      "eval_seed": 0,
+      "atari": {
+        "size": [
+          96,
+          96
+        ],
+        "repeat": 4,
+        "sticky": true,
+        "gray": true,
+        "actions": "all",
+        "lives": "unused",
+        "noops": 30,
+        "autostart": false,
+        "pooling": 2,
+        "aggregate": "max",
+        "resize": "pillow",
+        "clip_reward": false
+      },
+      "procgen": {
+        "size": [
+          96,
+          96
+        ],
+        "resize": "pillow"
+      },
+      "crafter": {
+        "size": [
+          64,
+          64
+        ],
+        "logs": false
+      },
+      "atari100k": {
+        "size": [
+          64,
+          64
+        ],
+        "repeat": 4,
+        "sticky": false,
+        "gray": false,
+        "actions": "needed",
+        "lives": "unused",
+        "noops": 30,
+        "autostart": false,
+        "resize": "pillow",
+        "clip_reward": false
+      },
+      "dmlab": {
+        "size": [
+          64,
+          64
+        ],
+        "repeat": 4,
+        "episodic": true,
+        "use_seed": true
+      },
+      "minecraft": {
+        "size": [
+          64,
+          64
+        ],
+        "break_speed": 100.0,
+        "logs": false,
+        "length": 36000
+      },
+      "dmc": {
+        "size": [
+          64,
+          64
+        ],
+        "repeat": 1,
+        "proprio": true,
+        "image": true,
+        "camera": -1
+      },
+      "loconav": {
+        "size": [
+          64,
+          64
+        ],
+        "repeat": 1,
+        "camera": -1
+      },
+      "gymnasium": {
+        "config_path": ""
+      }
+    },
+    "replay": {
+      "seed": 0,
+      "size": 5000000.0,
+      "online": true,
+      "fracs": {
+        "uniform": 1.0,
+        "priority": 0.0,
+        "recency": 0.0
+      },
+      "prio": {
+        "exponent": 0.8,
+        "maxfrac": 0.5,
+        "initial": "inf",
+        "zero_on_sample": true
+      },
+      "priosignal": "model",
+      "recexp": 1.0,
+      "chunksize": 1024
+    },
+    "run": {
+      "env_checkpoint": false,
+      "fg_single3_offline": false,
+      "fg_single3_identity": "",
+      "replay_dir": "",
+      "steps": 10000000000.0,
+      "duration": 0,
+      "train_ratio": 32.0,
+      "log_every": 120,
+      "report_every": 300,
+      "save_every": 900,
+      "envs": 16,
+      "eval_envs": 4,
+      "eval_eps": 1,
+      "report_batches": 1,
+      "from_checkpoint": "",
+      "fg_stage_transfer": "",
+      "fg_source_steps": 0,
+      "fg_learning_audit": false,
+      "fg_full_checkpoint": false,
+      "fg_report_every_steps": 5000,
+      "fg_save_every_steps": 10000,
+      "fg_key_steps": [
+        70000,
+        100000,
+        700000,
+        1000000
+      ],
+      "fg_reserve_gib": 10,
+      "fg_keep_all_checkpoints": false,
+      "fg_single3_audit": false,
+      "checkpoint_retention": {
+        "enabled": false,
+        "steps": [
+          0
+        ],
+        "directory": "ckpt_retained"
+      },
+      "episode_timeout": 180,
+      "actor_addr": "localhost:{auto}",
+      "replay_addr": "localhost:{auto}",
+      "logger_addr": "localhost:{auto}",
+      "actor_batch": -1,
+      "actor_threads": 1,
+      "agent_process": false,
+      "remote_replay": false,
+      "remote_envs": false,
+      "usage": {
+        "psutil": true,
+        "nvsmi": true,
+        "gputil": false,
+        "malloc": false,
+        "gc": false
+      },
+      "debug": true
+    },
+    "jax": {
+      "platform": "cuda",
+      "compute_dtype": "float32",
+      "policy_devices": [
+        0
+      ],
+      "train_devices": [
+        0
+      ],
+      "mock_devices": 0,
+      "prealloc": true,
+      "jit": true,
+      "debug": false,
+      "expect_devices": 0,
+      "enable_policy": true,
+      "sync_train_metrics": false,
+      "precompile": true,
+      "profiler": true,
+      "coordinator_address": ""
+    },
+    "agent": {
+      "replay_context_mode": "recompute_prefix",
+      "update_diagnostics": true,
+      "loss_scales": {
+        "rec": 1.0,
+        "rew": 1.0,
+        "con": 1.0,
+        "dyn": 1.0,
+        "rep": 0.1,
+        "avail_post": 1.0,
+        "avail_prior": 1.0,
+        "policy": 1.0,
+        "value": 1.0,
+        "repval": 0.3
+      },
+      "opt": {
+        "lr": 4e-05,
+        "agc": 0.3,
+        "eps": 1e-20,
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "momentum": true,
+        "wd": 0.0,
+        "schedule": "const",
+        "warmup": 1000,
+        "anneal": 0
+      },
+      "ac_grads": false,
+      "dyn": {
+        "typ": "rssm",
+        "rssm": {
+          "deter": 32,
+          "hidden": 16,
+          "stoch": 2,
+          "classes": 4,
+          "act": "silu",
+          "norm": "rms",
+          "unimix": 0.01,
+          "outscale": 1.0,
+          "winit": "trunc_normal_in",
+          "imglayers": 2,
+          "obslayers": 1,
+          "dynlayers": 1,
+          "absolute": false,
+          "blocks": 4,
+          "free_nats": 1.0
+        }
+      },
+      "enc": {
+        "typ": "simple",
+        "simple": {
+          "depth": 64,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "winit": "trunc_normal_in",
+          "symlog": true,
+          "outer": false,
+          "kernel": 5,
+          "strided": false
+        }
+      },
+      "dec": {
+        "typ": "simple",
+        "simple": {
+          "depth": 64,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "outscale": 1.0,
+          "winit": "trunc_normal_in",
+          "outer": false,
+          "kernel": 5,
+          "bspace": 8,
+          "strided": false
+        }
+      },
+      "rewhead": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "winit": "trunc_normal_in",
+        "bins": 255
+      },
+      "conhead": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "winit": "trunc_normal_in"
+      },
+      "availhead": {
+        "layers": 2,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "winit": "trunc_normal_in"
+      },
+      "policy": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "minstd": 0.2,
+        "maxstd": 1.0,
+        "outscale": 0.01,
+        "unimix": 0.05,
+        "winit": "trunc_normal_in"
+      },
+      "value": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "winit": "trunc_normal_in",
+        "bins": 255
+      },
+      "policy_dist_disc": "categorical",
+      "policy_dist_cont": "bounded_normal",
+      "imag_last": 0,
+      "imag_length": 3,
+      "horizon": 333,
+      "contdisc": true,
+      "imag_loss": {
+        "slowtar": false,
+        "lam": 0.95,
+        "actent": 0.01,
+        "slowreg": 1.0
+      },
+      "repl_loss": {
+        "slowtar": false,
+        "lam": 0.95,
+        "slowreg": 1.0
+      },
+      "slowvalue": {
+        "rate": 0.02,
+        "every": 1
+      },
+      "retnorm": {
+        "impl": "perc",
+        "rate": 0.01,
+        "limit": 1.0,
+        "perclo": 5.0,
+        "perchi": 95.0,
+        "debias": false
+      },
+      "valnorm": {
+        "impl": "none",
+        "rate": 0.01,
+        "limit": 1e-08
+      },
+      "advnorm": {
+        "impl": "none",
+        "rate": 0.01,
+        "limit": 1e-08
+      },
+      "reward_grad": true,
+      "avail_post_grad": true,
+      "avail_prior_grad": true,
+      "avail_threshold": 0.3,
+      "avail_always_available_index": 0,
+      "avail_actor_enabled": false,
+      "repval_loss": true,
+      "repval_grad": true,
+      "report": true,
+      "report_gradnorms": false,
+      "s3_clock_protocol": "S3_MARKET_MINUTE"
+    }
+  },
+  "source_gate_policy": {
+    "protocol": "FG_S3_DIAGNOSTIC_CONFIGURED_GATE_V1",
+    "classification_threshold": 0.3,
+    "classification_rule": "float32_ge_half_legacy_boundary_v1",
+    "opening": {
+      "thresholds": {
+        "post_accuracy": 0.995,
+        "post_exact": 0.99,
+        "prior_accuracy": 0.99,
+        "prior_exact": 0.98,
+        "prior_fpr": 0.005,
+        "img_fallback": 0.0001
+      },
+      "consecutive_reports": 5
+    },
+    "source_opening": null,
+    "config": {
+      "enabled": false,
+      "min_train_samples": 25000,
+      "consecutive_reports": 5,
+      "regression_reports": 5,
+      "stop_on_regression": true,
+      "post_accuracy": 0.995,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.99,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.005,
+      "img_fallback": 0.0001,
+      "add_recall_enabled": false,
+      "min_add_positives": 16,
+      "post_add_recall": 0.8,
+      "prior_add_recall": 0.8
+    }
+  },
+  "gate_policy": {
+    "protocol": "FG_S3_DIAGNOSTIC_CONFIGURED_GATE_V1",
+    "classification_threshold": 0.3,
+    "classification_rule": "float32_ge_half_legacy_boundary_v1",
+    "opening": {
+      "thresholds": {
+        "post_accuracy": 0.995,
+        "post_exact": 0.99,
+        "prior_accuracy": 0.99,
+        "prior_exact": 0.98,
+        "prior_fpr": 0.005,
+        "img_fallback": 0.0001
+      },
+      "consecutive_reports": 5
+    },
+    "source_opening": null,
+    "config": {
+      "enabled": false,
+      "min_train_samples": 25000,
+      "consecutive_reports": 5,
+      "regression_reports": 5,
+      "stop_on_regression": true,
+      "post_accuracy": 0.995,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.99,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.005,
+      "img_fallback": 0.0001,
+      "add_recall_enabled": false,
+      "min_add_positives": 16,
+      "post_add_recall": 0.8,
+      "prior_add_recall": 0.8
+    }
+  },
+  "gate_transfer": {
+    "source_gate_threshold": 0.3,
+    "target_gate_threshold": 0.3,
+    "source_gate_protocol": "FG_S3_DIAGNOSTIC_CONFIGURED_GATE_V1",
+    "target_gate_protocol": "FG_S3_DIAGNOSTIC_CONFIGURED_GATE_V1",
+    "reset_required": false,
+    "reset_reason": null,
+    "original_gate_state": {
+      "actor_enabled": false,
+      "gate": null,
+      "samples": 0
+    },
+    "new_gate_state": {
+      "actor_enabled": false,
+      "gate": null,
+      "samples": 0
+    },
+    "original_window_present": false,
+    "new_window_present": false
+  },
+  "catalog_manifest_sha256": "751e90b98b80f54e8bf0efbe4ab69b6dda3e5e7d1cbe1137c692dc8cbdf83252",
+  "dataset_sha256": "32b4182d92b30aa091f69da5921d8cdbc5ccc2a5e029f883c9f4ad48b1c1779f",
+  "reward_params_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c",
+  "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+  "optimizer_transfer_policy": "fresh_joint_opt_all_slots; copy_reference_NN; copy_Actor_to_independent_QualityActor",
+  "clock_protocol": "S3_MARKET_MINUTE",
+  "target_update_offset": 0,
+  "code_sha256": "60588a401ea6cde2188e77f3064a6c3d4a71ee9931e8ba65ed2c3b0491128d4a",
+  "packages": {
+    "jax": "0.4.33",
+    "jaxlib": "0.4.33",
+    "ninjax": "3.5.1",
+    "optax": "0.2.4",
+    "numpy": "1.26.4",
+    "elements": "3.20.0",
+    "gymnasium": "1.0.0",
+    "pandas": "2.2.3",
+    "portal": "3.5.1",
+    "cloudpickle": "3.1.0"
+  },
+  "agent_extension": {
+    "s3_v2_mode": "quality_v2",
+    "quality_variant": "FULL",
+    "quality_stage": "HEADS_ONLY",
+    "quality_prediction_admitted": false,
+    "quality_gradient_every_updates": 0,
+    "quality_alpha": 0.8,
+    "quality_kappa": 1.0,
+    "quality_wmax": 2.0,
+    "quality_strict_pair_lambda": 0.0,
+    "quality_pair_lambda": 0.0,
+    "quality_soft_lambda": 0.0,
+    "quality_outcome_lambda": 0.2,
+    "quality_score_lambda": 0.2,
+    "quality_q_c1_lambda": 0.0,
+    "quality_q_v2_lambda": 0.0,
+    "quality_mono_lambda": 0.02,
+    "quality_repr_grad_scale": 0.0,
+    "quality_pair_tau": 1.0,
+    "quality_q_scale": 1.0,
+    "quality_fuse_outcome": false,
+    "quality_fuse_score": false,
+    "quality_q_admitted": false,
+    "quality_weighting": true
+  },
+  "target_model_identity": {
+    "protocol": "FG_S3_QUALITY_ADMITTED_MODEL_V1",
+    "kind": "direct_init",
+    "source_identity": "66a021e924db6a7a096aa3f36d91de867c685cebfc2ca1103795c365cde5a896",
+    "agent_config": {
+      "replay_context_mode": "recompute_prefix",
+      "update_diagnostics": true,
+      "loss_scales": {
+        "rec": 1.0,
+        "rew": 1.0,
+        "con": 1.0,
+        "dyn": 1.0,
+        "rep": 0.1,
+        "avail_post": 1.0,
+        "avail_prior": 1.0,
+        "policy": 1.0,
+        "value": 1.0,
+        "repval": 0.3
+      },
+      "opt": {
+        "lr": 4e-05,
+        "agc": 0.3,
+        "eps": 1e-20,
+        "beta1": 0.9,
+        "beta2": 0.999,
+        "momentum": true,
+        "wd": 0.0,
+        "schedule": "const",
+        "warmup": 1000,
+        "anneal": 0
+      },
+      "ac_grads": false,
+      "dyn": {
+        "typ": "rssm",
+        "rssm": {
+          "deter": 32,
+          "hidden": 16,
+          "stoch": 2,
+          "classes": 4,
+          "act": "silu",
+          "norm": "rms",
+          "unimix": 0.01,
+          "outscale": 1.0,
+          "winit": "trunc_normal_in",
+          "imglayers": 2,
+          "obslayers": 1,
+          "dynlayers": 1,
+          "absolute": false,
+          "blocks": 4,
+          "free_nats": 1.0
+        }
+      },
+      "enc": {
+        "typ": "simple",
+        "simple": {
+          "depth": 64,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "winit": "trunc_normal_in",
+          "symlog": true,
+          "outer": false,
+          "kernel": 5,
+          "strided": false
+        }
+      },
+      "dec": {
+        "typ": "simple",
+        "simple": {
+          "depth": 64,
+          "mults": [
+            2,
+            3,
+            4,
+            4
+          ],
+          "layers": 1,
+          "units": 16,
+          "act": "silu",
+          "norm": "rms",
+          "outscale": 1.0,
+          "winit": "trunc_normal_in",
+          "outer": false,
+          "kernel": 5,
+          "bspace": 8,
+          "strided": false
+        }
+      },
+      "rewhead": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "winit": "trunc_normal_in",
+        "bins": 255
+      },
+      "conhead": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "winit": "trunc_normal_in"
+      },
+      "availhead": {
+        "layers": 2,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "binary",
+        "outscale": 1.0,
+        "winit": "trunc_normal_in"
+      },
+      "policy": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "minstd": 0.2,
+        "maxstd": 1.0,
+        "outscale": 0.01,
+        "unimix": 0.05,
+        "winit": "trunc_normal_in"
+      },
+      "value": {
+        "layers": 1,
+        "units": 16,
+        "act": "silu",
+        "norm": "rms",
+        "output": "symexp_twohot",
+        "outscale": 0.0,
+        "winit": "trunc_normal_in",
+        "bins": 255
+      },
+      "policy_dist_disc": "categorical",
+      "policy_dist_cont": "bounded_normal",
+      "imag_last": 0,
+      "imag_length": 3,
+      "horizon": 333,
+      "contdisc": true,
+      "imag_loss": {
+        "slowtar": false,
+        "lam": 0.95,
+        "actent": 0.01,
+        "slowreg": 1.0
+      },
+      "repl_loss": {
+        "slowtar": false,
+        "lam": 0.95,
+        "slowreg": 1.0
+      },
+      "slowvalue": {
+        "rate": 0.02,
+        "every": 1
+      },
+      "retnorm": {
+        "impl": "perc",
+        "rate": 0.01,
+        "limit": 1.0,
+        "perclo": 5.0,
+        "perchi": 95.0,
+        "debias": false
+      },
+      "valnorm": {
+        "impl": "none",
+        "rate": 0.01,
+        "limit": 1e-08
+      },
+      "advnorm": {
+        "impl": "none",
+        "rate": 0.01,
+        "limit": 1e-08
+      },
+      "reward_grad": true,
+      "avail_post_grad": true,
+      "avail_prior_grad": true,
+      "avail_threshold": 0.3,
+      "avail_always_available_index": 0,
+      "avail_actor_enabled": false,
+      "repval_loss": true,
+      "repval_grad": true,
+      "report": true,
+      "report_gradnorms": false,
+      "s3_clock_protocol": "S3_MARKET_MINUTE"
+    },
+    "agent_extension": {
+      "s3_v2_mode": "quality_v2",
+      "quality_variant": "FULL",
+      "quality_stage": "HEADS_ONLY",
+      "quality_prediction_admitted": false,
+      "quality_gradient_every_updates": 0,
+      "quality_alpha": 0.8,
+      "quality_kappa": 1.0,
+      "quality_wmax": 2.0,
+      "quality_strict_pair_lambda": 0.0,
+      "quality_pair_lambda": 0.0,
+      "quality_soft_lambda": 0.0,
+      "quality_outcome_lambda": 0.2,
+      "quality_score_lambda": 0.2,
+      "quality_q_c1_lambda": 0.0,
+      "quality_q_v2_lambda": 0.0,
+      "quality_mono_lambda": 0.02,
+      "quality_repr_grad_scale": 0.0,
+      "quality_pair_tau": 1.0,
+      "quality_q_scale": 1.0,
+      "quality_fuse_outcome": false,
+      "quality_fuse_score": false,
+      "quality_q_admitted": false,
+      "quality_weighting": true
+    },
+    "target_training": {
+      "protocol": "FG_S3_QUALITY_TRAIN_BINDING_V1",
+      "fold": "TRAIN",
+      "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+      "quality_stage": "HEADS_ONLY",
+      "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+      "source": {
+        "training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+        "dataset_sha256": "32b4182d92b30aa091f69da5921d8cdbc5ccc2a5e029f883c9f4ad48b1c1779f",
+        "reward_params_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+      },
+      "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+      "diagnostic": true,
+      "oracle_identity": "b8d9e11179276bfb51de36d88941827ff744ff3aaebb8768bfd43aeba019f29b",
+      "quality_pool_hash": "1734a181a2fd2c7a17cde03000cce945ec32c3064755b12bdd947820485fb14b",
+      "content_hash": "bf18c54456dc8017476fdfabe9fb288b51cfee219bb3b2955c6a46477c30b1ec"
+    },
+    "optimizer_transfer_policy": "fresh_joint_opt_all_slots; copy_reference_NN; copy_Actor_to_independent_QualityActor",
+    "resolved_composition": {
+      "encoder": "legacy_1m",
+      "teaching": "quality_v2",
+      "base_oracle_bc": true,
+      "use_e": false,
+      "use_tutor": false,
+      "use_b2": false,
+      "legacy_mode": "quality_v2",
+      "support_state": "ready",
+      "schema_version": 1
+    }
+  },
+  "target_model_identity_hash": "a1a640d5a964d3880d379d77f56aae51e8695366159ee6bcb193866d5c14c486",
+  "teacher_source_kind": "quality_native_train",
+  "resolved_composition": {
+    "encoder": "legacy_1m",
+    "teaching": "quality_v2",
+    "base_oracle_bc": true,
+    "use_e": false,
+    "use_tutor": false,
+    "use_b2": false,
+    "legacy_mode": "quality_v2",
+    "support_state": "ready",
+    "schema_version": 1
+  },
+  "content_hash": "72c1ad65c4d5fb3b20312ff971c9fcfc454cce2b5aa847cf3381e05df59a4f3d"
+}

@@ -1,0 +1,60 @@
+{
+  "fold_a": {
+    "risk_basis": "ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1",
+    "entry_fold": [
+      "20260105",
+      "20260105"
+    ],
+    "status": "COMPLETE_COHORT",
+    "entry_ids": [
+      "CZCE.FG2701:1:1"
+    ],
+    "closed_entries": 1,
+    "minimum_closed_entries": 1,
+    "fold_cutoff_observed": true,
+    "open_at_fold_end_entry_ids": [
+      "CZCE.FG2701:1:1"
+    ],
+    "post_fold_complete_entry_ids": [
+      "CZCE.FG2701:1:1"
+    ],
+    "right_censored_entry_ids": [],
+    "sl_rate": 1.0,
+    "drawdown": 1818.0,
+    "equity_span": {
+      "anchor_cursor": 0,
+      "first_entry_cursor": 1,
+      "last_exit_cursor": 2,
+      "last_exit_official_day": "20260106",
+      "samples": 3
+    }
+  },
+  "fold_b": {
+    "risk_basis": "ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1",
+    "entry_fold": [
+      "20260106",
+      "20260106"
+    ],
+    "status": "COMPLETE_COHORT",
+    "entry_ids": [
+      "CZCE.FG2701:1:2",
+      "CZCE.FG2701:1:3"
+    ],
+    "closed_entries": 2,
+    "minimum_closed_entries": 2,
+    "fold_cutoff_observed": false,
+    "open_at_fold_end_entry_ids": null,
+    "post_fold_complete_entry_ids": [],
+    "right_censored_entry_ids": [],
+    "sl_rate": 0.5,
+    "drawdown": 1818.0,
+    "equity_span": {
+      "anchor_cursor": 2,
+      "first_entry_cursor": 3,
+      "last_exit_cursor": 6,
+      "last_exit_official_day": "20260106",
+      "samples": 5
+    }
+  },
+  "content_hash": "4c4a1238eae6ca982b5e3fd8a7f2d8d53f29c11980a46237854799bf99a758bf"
+}

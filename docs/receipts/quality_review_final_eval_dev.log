@@ -1,0 +1,162 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  quality_sl       Space(bool, shape=(), low=False, high=True)
+  quality_early5   Space(bool, shape=(), low=False, high=True)
+  quality_tp       Space(bool, shape=(), low=False, high=True)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_q_c1     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_c1_valid Space(bool, shape=(), low=False, high=True)
+  quality_q_v2     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_v2_valid Space(bool, shape=(), low=False, high=True)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_soft_target Space(float32, shape=(), low=-inf, high=inf)
+  quality_soft_valid Space(bool, shape=(), low=False, high=True)
+  quality_soft_source Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 59,971 params:
+        19,185 dec
+        17,488 enc
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 pol
+           706 quality_q_c1
+           706 quality_q_v2
+           706 quality_actor
+           689 con
+           689 quality_score
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "status": "ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE",
+  "output": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_DEV_v2",
+  "fold": "DEV",
+  "evaluation_manifest": "dev_manifest.json",
+  "contract": "CZCE.FG409",
+  "env_steps": 100,
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_FIRST_REVIEW_CPU_FG201_v2/ckpt/step_000000000100",
+  "checkpoint_manifest_sha256": "98af5da8ae651bca02b5e79b2de742f124cddf37fe277d04051576f3e31a3865",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "oracle_files_read": false,
+  "teacher_guidance": false,
+  "beta": 0.0,
+  "policy_mode": "eval_argmax",
+  "legal_decisions": 8,
+  "policy_rng": "frozen_config_seed_counter_zero",
+  "actor_add_proposed": 1,
+  "add_executed": 1,
+  "entries": 1,
+  "tp_target_points": 5,
+  "tp_count": 0,
+  "sl30": 0,
+  "clock_protocol": "S3_MARKET_MINUTE",
+  "tp_market_minutes_p50": null,
+  "tp_market_minutes_p90": null,
+  "early_mae10": 1,
+  "reward": -0.2,
+  "right_censored": 1,
+  "all_wait": false,
+  "research_success": "NOT_ESTABLISHED",
+  "test": "NOT_RUN",
+  "metric_schema": "S3_EVAL_METRIC_V2",
+  "adverse10_first5": 0,
+  "adverse10_6_15": 1,
+  "adverse10_after15": 0,
+  "adverse10_any_hold": 1,
+  "adverse10_unclassified": 0,
+  "adverse10_windows_complete": true,
+  "closed_trade_net_pnl": 0.0,
+  "closed_trade_gross_pnl": 0.0,
+  "tp_fast_count": 0,
+  "tp_mid_count": 0,
+  "tp_late_count": 0,
+  "tp_after_h60_count": 0,
+  "legacy_early_mae10_any_hold": 1,
+  "closed_trade_count": 0,
+  "quality": {
+    "run_q_admitted": false,
+    "configured_reward": -0.2,
+    "original_c1_shadow_reward": -0.2,
+    "actual_executed_trade_scores": [],
+    "causal_prediction_source": "current causal RSSM; no future labels",
+    "calibration_status": "NOT_CALIBRATED"
+  },
+  "causal_prediction_files": {
+    "actions.jsonl": "0f5221743454e6602776f25cb952ecc8ab81dbd64eca79acf94da47a77b324a3",
+    "account_state.json": "dca5abc3218222b6aafe1d6fe160760c01ce777f1e93801dac670547513b4b22",
+    "dev_manifest.json": "e5034f6fc9036ff3f498c869b23e952989d7766ed2db621366b7ac5f812a246f",
+    "dev_single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "dev_env.yaml": "9a7b032b4929a0d626b92c5089a882079ad9946b79081148d5fa3c9f59645721",
+    "train_prediction_prior.json": "9ba41963efa404d94694ac22d0f2376ee711f60828c08e34d8705eb32eb025cd"
+  },
+  "agent_extension": {
+    "s3_v2_mode": "quality_v2",
+    "quality_variant": "FULL",
+    "quality_stage": "HEADS_ONLY",
+    "quality_prediction_admitted": false,
+    "quality_decision_admitted": false,
+    "quality_gradient_every_updates": 0,
+    "quality_alpha": 0.8,
+    "quality_kappa": 1.0,
+    "quality_wmax": 2.0,
+    "quality_strict_pair_lambda": 0.0,
+    "quality_pair_lambda": 0.0,
+    "quality_soft_lambda": 0.0,
+    "quality_outcome_lambda": 0.2,
+    "quality_score_lambda": 0.2,
+    "quality_q_c1_lambda": 0.0,
+    "quality_q_v2_lambda": 0.0,
+    "quality_mono_lambda": 0.02,
+    "quality_repr_grad_scale": 0.0,
+    "quality_pair_tau": 1.0,
+    "quality_q_scale": 1.0,
+    "quality_fuse_outcome": false,
+    "quality_fuse_score": false,
+    "quality_q_admitted": false,
+    "quality_weighting": true
+  },
+  "resolved_composition": {
+    "encoder": "legacy_1m",
+    "teaching": "quality_v2",
+    "base_oracle_bc": true,
+    "use_e": false,
+    "use_tutor": false,
+    "use_b2": false,
+    "legacy_mode": "quality_v2",
+    "support_state": "ready",
+    "schema_version": 1
+  },
+  "content_hash": "1ef67d3a0c0129d50f53e1d56a018d7a2532efe244b98acaf5d69f59117f422b"
+}

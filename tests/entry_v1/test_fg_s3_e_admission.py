@@ -24,7 +24,7 @@ def test_acceptance_bounds_cannot_enable_formal_or_combined_teaching():
                       ('model_init',dict(seed=0,presets=['size1m'])),('device','gpu')]:
         bad={**s,key:value}
         with pytest.raises((ValueError,KeyError)):validate_settings(bad)
-    bad=copy.deepcopy(s);bad['resolved_composition']['support_state']='ready'
+    bad=copy.deepcopy(s);bad['resolved_composition']['support_state']='waiting_e'
     with pytest.raises(ValueError,match='IDENTITY_MISMATCH'):validate_settings(bad)
     bad=copy.deepcopy(s)
     bad['resolved_composition']=normalize_config(dict(schema=s['schema'],composition=dict(

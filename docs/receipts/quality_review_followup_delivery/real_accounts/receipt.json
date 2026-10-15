@@ -1,0 +1,72 @@
+{
+  "protocol": "FG_S3_QUALITY_RISK_FOLLOWUP_V1",
+  "status": "PASS_DIAGNOSTIC_PENDING_CLASSIFICATION",
+  "research_status": "DECISION_GATE_PENDING",
+  "source_kind": "PREVIOUSLY_SEALED_AND_NATIVE_REPLAYED_ACCOUNTS",
+  "evaluation_window": "observed tape official days; not a new admission policy",
+  "minimum_closed_entries": 1,
+  "threshold_scope": "diagnostic lower bound only; not a production policy",
+  "prediction_gate": "PENDING",
+  "q_gate": "PENDING",
+  "training": "NOT_RUN",
+  "new_inference": "NOT_RUN",
+  "results": {
+    "DEV": {
+      "inference_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_DEV_v2",
+      "inference_receipt_sha256": "6ffc119c0208ffe44766cc185b7d1708709861a2cfc26acdcb932e3d63e266ce",
+      "prior_native_replay_receipt": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_ACTION_AUDIT_dev_v2/receipt.json",
+      "prior_native_replay_receipt_sha256": "81cdf6b7eb8a2caa192146861c4d0e7352200560094002b44ecae04d73dfb9e3",
+      "final_native_state_hash": "d6cab0a5e1df875f754d4f4362ba42b11da771357ce2e3aef7f948a2cef0855b",
+      "sealed_rows": 101,
+      "risk": {
+        "risk_basis": "ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1",
+        "entry_fold": [
+          "20240409",
+          "20240409"
+        ],
+        "status": "RIGHT_CENSORED",
+        "entry_ids": [
+          "CZCE.FG409:1:1"
+        ],
+        "closed_entries": 0,
+        "minimum_closed_entries": 1,
+        "fold_cutoff_observed": false,
+        "open_at_fold_end_entry_ids": null,
+        "post_fold_complete_entry_ids": [],
+        "right_censored_entry_ids": [
+          "CZCE.FG409:1:1"
+        ],
+        "sl_rate": null,
+        "drawdown": null,
+        "equity_span": null
+      }
+    },
+    "DIAGNOSTIC": {
+      "inference_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_DIAGNOSTIC_v2",
+      "inference_receipt_sha256": "7de19ecea49dcc135600de7d5a3c3fca96804681f9016cb7202a7d8e0d8ff07b",
+      "prior_native_replay_receipt": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_ACTION_AUDIT_diagnostic_v2/receipt.json",
+      "prior_native_replay_receipt_sha256": "6a0fcca3afe25544e7f14df4c75e230ebc9b1ac98911af97cf08577036b57647",
+      "final_native_state_hash": "381cdc11b3ca354c38387b089dc24b0cb4518f40d704efd9b8225d6a4d026539",
+      "sealed_rows": 101,
+      "risk": {
+        "risk_basis": "ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1",
+        "entry_fold": [
+          "20240409",
+          "20240409"
+        ],
+        "status": "INSUFFICIENT_CLOSED_SUPPORT",
+        "entry_ids": [],
+        "closed_entries": 0,
+        "minimum_closed_entries": 1,
+        "fold_cutoff_observed": false,
+        "open_at_fold_end_entry_ids": null,
+        "post_fold_complete_entry_ids": [],
+        "right_censored_entry_ids": [],
+        "sl_rate": null,
+        "drawdown": null,
+        "equity_span": null
+      }
+    }
+  },
+  "content_hash": "84629744ac1adabdf84e2ca75e7e0a06f43e64a91f7f2eb30f7aa36b47174eb7"
+}

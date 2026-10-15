@@ -1,0 +1,12 @@
+{
+  "role": "TRAIN_HOLDOUT_EVALUATION_ONLY",
+  "future_labels_generated": false,
+  "source_receipt_sha256": "6439494ad994ba77bffc88f0d579ce260506a61585c084ddf912f73b6a76de8e",
+  "source_files": {
+    "actions.jsonl": "c0beda72ae6e43d3acd6e2efa02ab6338e9b2d03059787cbf360bc3f8a106588",
+    "account_state.json": "9a94e2b1bc44bd087fb1e3af52cae0b035d1906dd9d1ea31997549df9168b991",
+    "holdout_manifest.json": "5dc2cb184e95b978ff655ef01d74a009d74cff4b4a2e3947cd3256ca49d70a88",
+    "train_prediction_prior.json": "a2cbedad970563dbb170b16367caf51657d9bac09652a0da38435968b47e95a4"
+  },
+  "content_hash": "5f7d162627686b8238a8774f555a63102a4e25e223f2939c3e2f84b8add5eff4"
+}

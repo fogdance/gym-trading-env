@@ -1,0 +1,51 @@
+{
+  "protocol": "FG_S3_QUALITY_TRAIN_HOLDOUT_V1",
+  "role": "TRAIN_HOLDOUT",
+  "evaluation_only": true,
+  "train_join_allowed": false,
+  "trained_contracts": [
+    "CZCE.FG201"
+  ],
+  "source_training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+  "source_inputs": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/inputs.json",
+  "rows": [
+    {
+      "contract": "CZCE.FG401",
+      "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0017_CZCE_FG401_main_1m.csv",
+      "sha256": "e0edb1111ab0cabf30af86d6ff1ca5c47eb83ea31375793013230c2c7c89e8f8",
+      "env_config": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_HOLDOUT_v2/inputs/CZCE.FG401/env.yaml",
+      "env_sha256": "b3f4e7b74d19768eb89d6a9ec8cc6f612d7477a94bebc62fea7420f55fc16635",
+      "contract_config": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG401_contract.yaml",
+      "contract_sha256": "eda7ea93455b396064bac7ef31882ed9db01ed0fa8a18ec89a451aa54ef76c12",
+      "rows": 26790,
+      "first_day": "2023-08-14",
+      "last_day": "2023-12-07",
+      "trading_days": 78,
+      "direction_rows": 26790,
+      "direction_counts": {
+        "LONG": 26790,
+        "SHORT": 0,
+        "NO_TRADE": 0
+      },
+      "complete_lifecycle": true,
+      "calendar_complete": true,
+      "calendar_basis": "user_confirmed_observed_clock",
+      "first_timestamp": "2023-08-11 21:01:00+08:00",
+      "last_timestamp": "2023-12-07 15:00:00+08:00",
+      "role": "train",
+      "eligible_for_training": true
+    }
+  ],
+  "frozen_inputs": {
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_HOLDOUT_v2/inputs/CZCE.FG401/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG401_env.yaml": "929160f89b27dc10fe48ab9ddd536374f9491b64d0a075c6abdcf38a438a3a20",
+    "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0017_CZCE_FG401_main_1m.csv": "e0edb1111ab0cabf30af86d6ff1ca5c47eb83ea31375793013230c2c7c89e8f8",
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_REVIEW_HOLDOUT_v2/inputs/CZCE.FG401/env.yaml": "b3f4e7b74d19768eb89d6a9ec8cc6f612d7477a94bebc62fea7420f55fc16635",
+    "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG401_contract.yaml": "eda7ea93455b396064bac7ef31882ed9db01ed0fa8a18ec89a451aa54ef76c12",
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/inputs.json": "e3b005bdbe9f8b3c8bc62ac6ab2ac72107c052096e6abc506901181842bb776a"
+  },
+  "test_prices_accessed": false,
+  "oracle_labels_used": false,
+  "content_hash": "e7455a780b21a8cdf484d053de820a3316143ad73d7df605d4cc0f5ead09796b"
+}

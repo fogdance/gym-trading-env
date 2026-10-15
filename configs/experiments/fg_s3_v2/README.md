@@ -486,6 +486,7 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
 Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
 this F0 task runs CPU admission and tests only, no GPU training. Implementation,
 identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
+
 ## E-Model V1：早期占位配置（历史记录）
 
 `E_MODEL_V1_A2_WAITING`、`E_MODEL_V1_TUTOR_CD_WAITING`、`E_MODEL_V1_B2_WAITING`
@@ -535,3 +536,114 @@ For GPU use the matching GPU configuration and stop at500 before a separate
 resume to1000. Raw command logs, failures, source identities and actual PASS
 receipts are archived in `docs/e_native_env_20261015/`; configuration existence
 alone is not an acceptance result. Formal1M remains a separate Review gate.
+
+
+## Quality-first V1 (2026-10-15)
+
+2026-10-16 review fixes: see `docs/FG_S3_QUALITY_FIRST_REVIEW_FIXES.md`.
+Current isolated verification uses `QUALITY_FIRST_REVIEW_CPU_FG201_v2`
+(100 CPU steps), `QUALITY_FIRST_REVIEW_POOL_CPU_v2` (two-contract CPU
+preparation/profile), and `QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v2` (CPU
+preparation only; GPU has not started). The corresponding `v1` files and
+artifacts retain development evidence; source changes invalidate their
+preparation. Every invocation must use its own experiment/path or resume
+exactly the same frozen snapshot.
+
+The accepted Gym patch and real FG201 loss-account evidence are in
+`docs/quality_first_patch_review_20261015/ACCEPTANCE.md`. The implementation
+record is `docs/FG_S3_QUALITY_FIRST_IMPLEMENTATION.md`.
+
+`QUALITY_V2_CPU_SMOKE` and `QUALITY_V2_GPU_1K` now resolve to the user-confirmed
+Quality-first stage: `quality_stage: HEADS_ONLY`, original C1 Reward, `beta: 0`,
+`bc_lambda: 0`. Only Outcome/Quality auxiliary heads train. The inherited
+Encoder/RSSM/Actor/Critic and retained Full Actor/Q modules are frozen. The
+quality target is B(t,d); MAE is a separate target, with no score deduction.
+`QUALITY_FIRST_HEADS_PILOT_10K` is the corresponding proposed small research
+budget. GPU start/resume requires separate authorization and the existing
+`--authorize-training` flag, including diagnostic budgets.
+`QUALITY_FIRST_EVENT_ONLY_PILOT_10K` and
+`QUALITY_FIRST_SCORE_ONLY_PILOT_10K` isolate the auxiliary tasks. All preserve
+the original C1 Reward; the optional Quality TP Reward is a separate later axis.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py prepare --config QUALITY_V2_CPU_SMOKE
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py start --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py resume --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1 --eval-steps 100 --output-dir <new-eval-dir>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-eval-dir> --output-dir <new-posthoc-dir>
+```
+
+Use a new experiment/prepared/run name if a directory already exists. Source
+changes invalidate old preparation; preserve those receipts and prepare anew.
+The CPU-only `tools/fg_s3_quality_v2.py inspect --prepared ... --output-dir ...
+--steps 250 --beta 0` builds an independently signed TRAIN quality Catalog
+from a scripted native trajectory, without neural training. Its counterfactual
+profits overlap and must not be summed as executable PnL.
+
+The retained `QUALITY_V2_{B1,B2,B3,FULL}_PILOT_10K` files are later controlled
+experiment templates. They intentionally fail preparation while prediction
+admission is missing. Enabling `CONTROLLED_FULL` requires a checkpoint-bound,
+disjoint TRAIN holdout evaluation with measured improvements over the TRAIN
+prior and reference, plus independent DEV evidence. Numeric Q fusion has a
+separate proof gate. None of these templates authorizes training.
+
+The new V2 admission policy has no production numerical defaults. Supply
+`quality_admission_policy: <signed-json>` before preparation for any research
+intended to admit predictions later. The initial FullCheckpoint owns its
+immutable policy hash. The plan must freeze every heldout/DEV official-day
+window, replay seed, support/calibration/risk threshold and intervention
+recipe. Tests use synthetic thresholds that are not research approvals.
+Admission requires the final predeclared Env budget, the actual initial
+reference, all seven horizons and the complete fold/contract/seed grid.
+Existing HEADS_ONLY configs without this policy remain technical experiments.
+
+Forecast admission alone cannot enable prediction-to-Actor corrections.
+`quality_decision_admitted` requires independently replayed relative WAIT/ADD
+and native closed-loop safety evidence for the exact component set.
+Numerical Q additionally requires full native proofs and the evaluated Q
+weights, revalidated at start and copied with fresh optimizer state.
+
+```bash
+python -B tools/fg_s3_v2_experiment.py evaluate --prepared <prepared> --diagnostic-components outcome,score --eval-steps 100 --output-dir <new-private-diagnostic>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind prediction --receipt <admission.json>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind decision --receipt <admission.json>
+python -B tools/fg_s3_quality_v2.py validate-admission --kind q --receipt <admission.json>
+```
+
+Diagnostic fusion uses a private HEADS_ONLY evaluation copy, preserves the
+Checkpoint, and does not claim admitted autonomous performance. For Q, both
+baseline and candidate must also supply `--diagnostic-q-admission` with the
+same independently verified Q source. Future labels and strict audits run
+only after causal inference is sealed.
+
+Quality evaluation also supports a TRAIN contract excluded from the new
+quality-head supervision (the historical source Backbone can have seen it):
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate --prepared <prepared> --eval-steps 100 --holdout-contract CZCE.FG401 --output-dir <new-holdout-inference>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate-reference --eval-dir <sealed-holdout-inference> --source-checkpoint <initial-checkpoint> --eval-device cpu --output-dir <new-reference-inference>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-holdout-inference> --output-dir <new-holdout-posthoc>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-reference-inference> --output-dir <new-reference-posthoc>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py compare-predictions --eval-dir <holdout-posthoc> --reference-dir <reference-posthoc> --output-dir <new-comparison>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_quality_v2.py validate --catalog <checkpoint-catalog.json>
+```
+
+Reference predictions reconstruct their own model carry on the sealed actual
+actions; their account return is not an autonomous reference-Actor result.
+All future labels are generated after causal predictions are sealed. Catalog
+validation authenticates the committed journal prefix, TRAIN sources,
+teacher/Replay ownership, preparation, code and optional FullCheckpoint.
+
+`quality_max_market_steps` defaults to null (native replay to exit/data end).
+A positive integer bounds counterfactual exposure in valid market minutes;
+an unfinished trade becomes RIGHT_CENSORED with missing quality score and
+independently masked outcomes. This setting is part of the teacher identity.
+Controlled Full preparation additionally binds the actual evaluated predictor
+Checkpoint; transfer copies its four predictor parameter groups and requires
+an identical fixed base NN. Admitted numerical Q uses its own verified source
+and copies both evaluated Q parameter groups. Optimizer slots remain fresh.
+Native strict preparation records randomized/risk-stratified candidate parity
+and every trade of the selected path; it does not claim exhaustive native
+replay of all candidates. The default financial Q domain remains 12 bars.
+`quality_build_performance.json` records real member RSS/time/holding lengths;
+parallel builders use a measured largest-member pilot and single-thread BLAS.

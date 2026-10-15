@@ -1,0 +1,18 @@
+{
+  "protocol": "FG_S3_QUALITY_TRAIN_BINDING_V1",
+  "fold": "TRAIN",
+  "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+  "quality_stage": "HEADS_ONLY",
+  "admission_policy_sha256": null,
+  "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+  "source": {
+    "training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+    "dataset_sha256": "59e5dbdc3111f30b95193bf7a044ec6bc415088af488ea4e7630fe135eaef37b",
+    "reward_params_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+  },
+  "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+  "diagnostic": true,
+  "oracle_identity": "46ede69501c954410bc926190aca3f87f158204cad8cd78c9ebee8b94808782c",
+  "quality_pool_hash": "7050fc83935dd71fe0a8414dc81ca52c3e55515a185b926d43deb3a78a8fd267",
+  "content_hash": "9e0fdfe499cba74125b8cb8db308063d3e1f583e94f6ef364333264a2e709863"
+}

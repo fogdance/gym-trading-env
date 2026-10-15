@@ -1,0 +1,14 @@
+{
+  "role": "TRAIN_HOLDOUT_EVALUATION_ONLY",
+  "future_labels_generated": false,
+  "source_receipt_sha256": "5193d39fe7e48ca68f63f5b40c9d4227590bb426ef841bf5106f5729bdf98381",
+  "source_files": {
+    "actions.jsonl": "e837a9d7d83c560f67a8fdb87eb289a1200f58a5ddfc2b5e5266f160bfff24ac",
+    "account_state.json": "6d5d5af570e8c779707a774dc02ce5abde2fd9efcad4cf79d728b208dd159ea0",
+    "holdout_manifest.json": "42f3e76c366d55ab7c325046ceac04d9424dd5a047643c41a347116032eff457",
+    "inputs/CZCE.FG401/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "inputs/CZCE.FG401/env.yaml": "bb565652d7565031b842805e2b79bf282cd712e4d0d8206356a7062ee7bd2b09",
+    "train_prediction_prior.json": "afa643272ed696ab44e61416d1ca53a858242685e41a537e9c2743f9574d1046"
+  },
+  "content_hash": "d7cd1d1c450105464d0b91b859be4591309a2ad9edbc3adf65e1c3b649a2fc77"
+}

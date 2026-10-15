@@ -1,0 +1,70 @@
+..........F.F.....                                                       [100%]
+=================================== FAILURES ===================================
+___ test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts ____
+
+native_fold_risk = ([{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tr...-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FOLLOWUP_CONTRACTS_v1/test_entry_fold_risk_follows_c0'))
+
+    def test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts(native_fold_risk):
+        tape,states,context,output=native_fold_risk
+>       a=_account_risk(tape,states[-1],context,('20260105','20260105'),1)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:204: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tape = [{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tra....0, 'is_first': False}, {'cursor': 5, 'official_trading_date': '20260106', 'equity': 298455.0, 'is_first': False}, ...]
+state = {'schema': 3, 'contract': 'CZCE.FG2701', 'config_hash': 'da64bb96b46d4c4707d519034aab82f68586582a19240881460f131a21de3c58', 'cursor_time': '2026-01-05 21:05:00+08:00', ...}
+context = {'rows': [{'contract': 'CZCE.FG2701', 'env_config': '/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-.../test_entry_fold_risk_follows_c0/directions.yaml': 'a964671207c36134d3f234f094c09faf522ee9f73a49d78cac2ef01c3ca49010'}}
+window = ('20260105', '20260105'), minimum_entries = 1
+
+    def _account_risk(tape,state,context,window,minimum_entries):
+        """Attribute BOTH SL and drawdown to complete trades entered in this fold.
+    
+        A trade closed after the fold uses its complete observed follow-up. An
+        unresolved trade has no complete-cohort SL/drawdown estimate. The native
+        single-position rule makes the first-entry through last-exit span contain
+        only this entry cohort; any interleaving foreign entry is rejected.
+        """
+        from .fg_reward_candidates import _official_day_key
+        from .fg_single3 import load_env
+        from gym_trading_env.envs.entry_contract import timestamp
+        env=load_env(context['rows'][0],context['frozen_inputs'])
+        inside=lambda value:window[0]<=_official_day_key(value)<=window[1]
+        entries={f['entry_id']:f for f in state['fills'] if f['reason']=='ENTRY'}
+        cohort={key:f for key,f in entries.items() if inside(env._trading_day(f['time']))}
+        exits={e['entry_id']:e for e in state['attributions'] if e['entry_id'] in cohort}
+        unresolved=sorted(set(cohort)-set(exits))
+        postfold=sorted(key for key,e in exits.items() if _official_day_key(env._trading_day(e['exit_time']))>window[1])
+        result=dict(risk_basis='ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1',entry_fold=list(window),
+            status='RIGHT_CENSORED' if unresolved else 'INSUFFICIENT_CLOSED_SUPPORT',
+            entry_ids=sorted(cohort),closed_entries=len(exits),minimum_closed_entries=minimum_entries,
+            open_at_fold_end_entry_ids=sorted([*postfold,*unresolved]),
+            post_fold_complete_entry_ids=postfold,right_censored_entry_ids=unresolved,
+            sl_rate=None,drawdown=None,equity_span=None)
+        if not cohort or unresolved:return result
+        def cursor(time):
+            value=int(env._raw.index.get_indexer([timestamp(time)])[0])
+            if value<0:raise ValueError('Native trade time is outside the authenticated market')
+            return value
+        first=min(cursor(f['time']) for f in cohort.values())
+        last=max(cursor(e['exit_time']) for e in exits.values())
+        if any(first<=cursor(f['time'])<=last for key,f in entries.items() if key not in cohort):
+>           raise ValueError('Non-cohort trade interleaves the complete entry-fold risk span')
+E           ValueError: Non-cohort trade interleaves the complete entry-fold risk span
+
+src/gym_trading_env/research/fg_s3_quality_admission.py:356: ValueError
+___________ test_complete_cohort_requires_native_equity_before_entry ___________
+
+native_fold_risk = ([{'cursor': 0, 'official_trading_date': '20260105', 'equity': 300000.0, 'is_first': True}, {'cursor': 1, 'official_tr...-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FOLLOWUP_CONTRACTS_v1/test_complete_cohort_requires_0'))
+
+    def test_complete_cohort_requires_native_equity_before_entry(native_fold_risk):
+        tape,states,context,_=native_fold_risk
+>       with pytest.raises(ValueError,match='equity anchor'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'equity anchor'
+E         Actual message: 'Non-cohort trade interleaves the complete entry-fold risk span'
+
+tests/entry_v1/test_fg_s3_quality_admission_v2.py:227: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts
+FAILED tests/entry_v1/test_fg_s3_quality_admission_v2.py::test_complete_cohort_requires_native_equity_before_entry

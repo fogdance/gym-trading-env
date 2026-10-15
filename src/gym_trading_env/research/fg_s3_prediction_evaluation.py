@@ -120,6 +120,10 @@ def decision_scores(rows):
 
 
 def score_predictions(eval_dir, output_dir):
+    preliminary=read_manifest(Path(eval_dir)/'receipt.json')
+    if preliminary.get('agent_extension',{}).get('s3_v2_mode')=='quality_v2':
+        from .fg_s3_quality_prediction_evaluation import score_quality_predictions
+        return score_quality_predictions(eval_dir,output_dir)
     started = time.perf_counter()
     project = Path(__file__).resolve().parents[3]
     code = {str(Path(__file__).with_name(name)):digest(Path(__file__).with_name(name))
