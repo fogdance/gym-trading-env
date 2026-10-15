@@ -450,3 +450,28 @@ CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
 CPU 模型验收在共享内部核心与确定性合成 provider 上执行，正式 Prepared/Run 未创建。
 接口、EM01–EM18 及后置 Review 要求见 `docs/S3_E_MODEL_V1_INTERFACE.md` 和
 `docs/S3_E_MODEL_V1_IMPLEMENTATION_REPORT.md`。不把 CPU Checkpoint 当正式 E Run。
+
+## Native E real TRAIN acceptance (2026-10-15)
+
+`E_NATIVE_{A2,TUTOR,B2}_{CPU,GPU}_20261015_v1` uses the shared entry and
+native Env E observation profile. Admission verifies the original immutable
+18-contract TRAIN collection; these bounded runs select FG201 and FG301 to
+exercise account rotation and cold restore. The profile authenticates source
+metadata; it does not load a second market DataFrame or wrap the Env.
+
+CPU uses an explicitly small network for six joint updates over 2200 real Env
+advances. GPU uses the canonical size50m preset for 1000 joint updates over
+1000 advances. These protocols retain `waiting_e` and cannot authorize formal
+1M. Every retry requires a fresh configuration/preparation/run name. The GPU
+configuration requires matching completed CPU evidence before preparation.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-prepare --config E_NATIVE_A2_CPU_20261015_v1
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_NATIVE_A2_CPU_20261015_v1 --stop-at 1100
+/home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_NATIVE_A2_CPU_20261015_v1
+```
+
+For GPU use the matching GPU configuration and stop at500 before a separate
+resume to1000. Raw command logs, failures, source identities and actual PASS
+receipts are archived in `docs/e_native_env_20261015/`; configuration existence
+alone is not an acceptance result. Formal1M remains a separate Review gate.

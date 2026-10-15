@@ -17,6 +17,7 @@ if os.environ.get('LD_LIBRARY_PATH'):
     clean.pop('LD_LIBRARY_PATH')
     clean['FG_S3_V2_CUDA_ENV_CLEANED'] = '1'
     os.execve(sys.executable, [sys.executable, *sys.argv], clean)
+sys.path.insert(0, str(PROJECT))  # Existing E mathematical/audit package.
 sys.path.insert(0, str(PROJECT/'src'))
 sys.path.insert(0, str(PROJECT.parent/'dreamerv3'))
 os.environ['PYTHONDONTWRITEBYTECODE'] = '1'

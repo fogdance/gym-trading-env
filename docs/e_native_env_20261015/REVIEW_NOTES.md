@@ -22,3 +22,12 @@
 ## 用户后续澄清的边界
 
 遵循轻量目录规范；本轮是已有功能融合，不做目录迁移或 MarketStore 重设计。`e_data_v1` 保留为原数学/研究审计代码，Env 消费已计算行情与特征，正式路径不再把它用作第二个行情加载器。新代码不增加模型功能，不改变 Encoder、RSSM、Actor Loss、Oracle、Reward 或 FullCheckpoint。
+
+## 真实 TRAIN 全量证据与后续入口修复
+
+- 新 collection `e63e761cc90411a6075c7ebb0056f36557427703c608decdf62fe642fbb2ab29`，schema `1d085a5db76b9ea7162bc90bb07d992dda604e412d0f896f75efbe858071c210`。
+- `real_native_all_18/native_validation.json`：18合约、488160行、全原18维矩阵、逐帧原三个Observation、E两个数组、原step结果和最终完整金融状态全部精确匹配；每合约一次CSV/一次feature build、复用原MarketClock，54个前缀重建/未来污染检查通过。仅六个确认的重锚定通道出现变化。15workers，412.89秒；最大单进程RSS408.62MiB。
+- 原 reader 白名单实测拒绝新的 Env 文件。新增一个四文件精确 Native E bundle，保留旧 bundle、原 producer认证和未知修改拒绝。旧B2的entry_env语义校验不放宽。新增bundle依据全量对照及实际diff；Oracle仍核对原数据、funds certificate和suffix DP。
+- 旧真实CPU prepare日志确认为 `ModuleNotFoundError: e_data_v1`：统一CLI没有将Gym根目录加入sys.path。补齐根目录，保留原src与兄弟Dreamer优先级；正式路径继续复用同一入口。
+- 真实native pool测试第一轮1PASS/1FAIL：原Oracle和教师标签、2200步金融状态、跨合约、冷Driver/Replay/Sidecar、2250步继续与下一随机batch已精确相等；末尾“随机batch必须有有效15m”断言失败。原Replay文件实测1574行有效，随机batch可落在20桶预热区。改为直接验证持久化Replay有效15m覆盖，保留随机冷恢复相等断言，不更改数据/采样/预热公式。第二轮结果另记。
+- Source/Composition/观察/来源身份/受限准入合同重跑47项通过（原45项另加两项准入预算边界）。正式E仍waiting_e，正式1M未启动。

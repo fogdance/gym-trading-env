@@ -1,6 +1,6 @@
 # E 原生 Env 集成计划
 
-任务：Review 并应用 `FG_S3_E_Env_Native_Integration_Reviewed_20261015.zip`，优先验证原18维等价、Env原生E观察、缓存隔离及合约轮换。本轮不添加模型功能，不启动训练，不解除 waiting_e，不处理正式1M准入。工作仅限 research 下 Model 双仓，历史训练工作树与产物保留。
+任务：Review 并应用 `FG_S3_E_Env_Native_Integration_Reviewed_20261015.zip`，优先验证原18维等价、Env原生E观察、缓存隔离及合约轮换。用户后续明确最终目标为原生 Env 融合、模型设计一致、smoke 与正式1M准备，因此完成数据合同后继续真实三种模式CPU、SourceAdmission、完整Checkpoint冷恢复、完整size50m GPU 1K及恢复验收。工作仅限 research 下 Model 双仓，历史训练工作树与产物保留；正式1M不启动。
 
 ## 基线与补丁 Review
 
@@ -18,4 +18,7 @@
 4. 针对18个已签名 TRAIN 合约比较全部原18维特征及全部决策 E 数组，使用原 Env 已加载 `_raw` 与既有 E 审计实现逐元素比对；核验六通道、15m边界、延迟到达负例、前缀不变性、元数据截止时间。
 5. 核验每次 Env 冷加载只解析一次 CSV、只 build 一次原18维；缓存命中不再 build；覆盖原生 E 的跨合约1024截断、账户连续性、冷恢复和 native Replay/Sidecar 对账，不运行模型训练。
 6. 对新代码 schema 在隔离目录重新签发 TRAIN collection 并做元数据准入校验，保留旧 collection。CPU 模型/Checkpoint 只作必要已有合同回归，不启动 GPU。
-7. 自审双仓 diff，记录原始命令、失败、修复、测试收据、真实数据来源、最终双仓 SHA 与仍未验证项到本 docs 目录。保持正式训练 NO-GO，交用户 Review。
+7. 三种教学模式使用独立配置/产物执行真实TRAIN的CPU小模型联合更新与完整Checkpoint冷恢复，核实两分支/融合/Actor/B2头与Adapter参数更新、梯度及policy同步。原合成CPU成绩只作回归，不代替真实验收。
+8. 代码冻结后逐模式执行完整size50m GPU 1000市场分钟/1000联合更新及独立进程恢复，保留所有失败、资源/吞吐和Checkpoint收据；不覆盖现有Run、不修改其他实验、不上传W&B。
+9. 对应P0全部通过后才评审对应E组合waiting_e解除及正式配置；正式1M只准备、不启动。若任一P0未通过，明确NO-GO并列出阻断，不以prepare或smoke命令充当验收。
+10. 自审双仓diff，记录原始命令、失败、修复、测试收据、真实数据来源、最终双仓SHA与未验证项到本docs目录，交用户Review；不自动合并integration/main。
