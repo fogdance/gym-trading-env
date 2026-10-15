@@ -1,5 +1,9 @@
 # E 原生 Env 集成计划
 
+## 最新范围（用户后续选择）
+
+后续只跑 **E + Tutor-CD Full**，正式1M也只准备这一组。复用已验收Full E2配方：alpha=.8、pair=.1、tau1、kappa1、cap2，每100更新一次原Actor梯度诊断。此前三模式CPU/静态CD证据保留，不再扩展A2/B2 GPU；静态CD(kappa0)的成绩不冒充Full(kappa1)。仅补所选组合的真实联合更新/恢复与size50m1K，原算法和通用组件不再重复测试。正式1M保留准入通过后Review再启动的门槛。
+
 任务：Review 并应用 `FG_S3_E_Env_Native_Integration_Reviewed_20261015.zip`，优先验证原18维等价、Env原生E观察、缓存隔离及合约轮换。用户后续明确最终目标为原生 Env 融合、模型设计一致、smoke 与正式1M准备，因此完成数据合同后继续真实三种模式CPU、SourceAdmission、完整Checkpoint冷恢复、完整size50m GPU 1K及恢复验收。工作仅限 research 下 Model 双仓，历史训练工作树与产物保留；正式1M不启动。
 
 ## 基线与补丁 Review
