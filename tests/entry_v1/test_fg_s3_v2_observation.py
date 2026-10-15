@@ -37,7 +37,7 @@ def test_train_proposals_are_separate_from_takeover_and_partial_rows(tmp_path):
 
 
 def test_actor_only_rates_include_censored_entries_and_reject_guidance(tmp_path):
-    state=dict(attributions=[dict(reason='TAKE_PROFIT'),dict(reason='STOP_LOSS')])
+    state=dict(total_reward=0.,attributions=[dict(reason='TAKE_PROFIT'),dict(reason='STOP_LOSS')])
     (tmp_path/'account_state.json').write_text(json.dumps(state))
     write_json(tmp_path/'dev_manifest.json',signed(dict(frozen_inputs={},rows=[dict(
         contract='CZCE.FG409',sha256='market',env_sha256='rules',contract_sha256='terms')])))
@@ -52,6 +52,9 @@ def test_actor_only_rates_include_censored_entries_and_reject_guidance(tmp_path)
     assert result['tp5_points_rate']==pytest.approx(1/3)
     assert result['sl30_rate']==pytest.approx(1/3)
     assert result['highest_add_scores'][0]['p_add']==.9  # final .99 never executed
+    bad=copy.deepcopy(receipt);bad['reward']=1.
+    with pytest.raises(ValueError,match='account reward differs'):
+        actor_only_metrics(bad)
     bad=copy.deepcopy(receipt);bad['teacher_guidance']=True
     with pytest.raises(ValueError,match='Actor-only'):
         actor_only_metrics(bad)

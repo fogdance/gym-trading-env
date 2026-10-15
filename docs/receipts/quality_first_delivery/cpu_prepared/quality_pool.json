@@ -1,0 +1,46 @@
+{
+  "sources": {
+    "CZCE.FG201": {
+      "files": {
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0011_CZCE_FG201_main_1m.csv": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG201_env.yaml": "15a468456fecc658fb4df0094ba95260f71102e54302b0e1d973595fdc65893e",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG201_contract.yaml": "04169e0d4223088364dc420b77f4dd2fa6fdd02cdaac52676bd41c1fd19cbe75",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/inputs/CZCE.FG201/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+        "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/inputs/CZCE.FG201/env.yaml": "7431fa9f69ff6db4783f6e7eb7b05fcf5b3eb00fdac97e74941ae01f2c7cced6"
+      },
+      "training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+      "max_market_steps": null,
+      "calendar_complete": true,
+      "row_hash": "8ee1234d3466e0b67ce08a204ec0e0a8c0fb123beb7eb5ec052a8fd125c45df3",
+      "fold": "TRAIN"
+    }
+  },
+  "queries": {
+    "CZCE.FG201": {
+      "protocol": "FG_S3_QUALITY_FIRST_FINANCIAL_Q_V1",
+      "fold": "TRAIN",
+      "rules": {
+        "contract": "CZCE.FG201",
+        "config_hash": "e16b3cf62cde145f744e6572f573f9e256ff1fa881052605233ed4666eca25cb",
+        "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+        "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+        "reward_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+      },
+      "teacher_identity": "74dccbd06bd374c9704e9dcdf75a6847b1d15633a9c90c72ba98b58e9f67d0d2",
+      "q_identity": null,
+      "suffix_identity": "1f23bb338231c3b390c3061f43c995e8ab67516ab4aa18d7b34a3c3b1d16974c",
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "target_reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2"
+    }
+  },
+  "frozen": {
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/inputs/CZCE.FG201/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG201_env.yaml": "15a468456fecc658fb4df0094ba95260f71102e54302b0e1d973595fdc65893e",
+    "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0011_CZCE_FG201_main_1m.csv": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c",
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_FINAL_v5/inputs/CZCE.FG201/env.yaml": "7431fa9f69ff6db4783f6e7eb7b05fcf5b3eb00fdac97e74941ae01f2c7cced6",
+    "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG201_contract.yaml": "04169e0d4223088364dc420b77f4dd2fa6fdd02cdaac52676bd41c1fd19cbe75"
+  },
+  "content_hash": "b2c7f536460ff101c540c46a256766774ecb47f318a658ee05a8af3c1c4c4c54"
+}

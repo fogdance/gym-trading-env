@@ -27,14 +27,18 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
                                      'score-predictions', 'simulate-online', 'monitor-online',
-                                     'describe-composition'])
+                                     'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
     p.add_argument('--config')
     p.add_argument('--prepared')
+    p.add_argument('--source-checkpoint',help='Completed historical source for read-only reference evaluation')
+    p.add_argument('--eval-device',choices=['cpu','gpu'],default='cpu')
     p.add_argument('--run-dir')
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
+    p.add_argument('--holdout-contract',help='Whitelisted TRAIN contract excluded from quality-head training')
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
-    p.add_argument('--output-dir', help='Prediction scoring directory or online monitor observations')
+    p.add_argument('--reference-dir',help='Posthoc reference predictions on the same sealed causal tape')
+    p.add_argument('--output-dir', help='New evaluation/scoring directory or online monitor observations')
     p.add_argument('--runner-pid', type=int, help='Online runner PID for optional process health checks')
     p.add_argument('--interval', type=float, default=30, help='Online monitor sampling interval in seconds')
     p.add_argument('--once', action='store_true', help='Sample the online monitor once')
@@ -43,7 +47,7 @@ def main():
     p.add_argument('--check-only', action='store_true', help='Online DB/model/RPC preflight; emits no orders')
     p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
     p.add_argument('--authorize-training', action='store_true',
-                   help='Explicit user authorization for formal 1M start/resume; diagnostics do not require it')
+                   help='Explicit authorization for formal 1M and any new Quality GPU start/resume')
     args = p.parse_args()
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
@@ -73,7 +77,12 @@ def main():
             p.error('describe-composition requires --config')
         elif args.prepared:
             settings_composition(json.loads((Path(args.prepared)/'settings.json').read_text())['settings'])
-    os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions') else 'cuda'
+    device='gpu'
+    if args.command in ('start','resume','evaluate'):
+        selected=raw if args.config else json.loads((Path(args.prepared)/'settings.json').read_text())['settings']
+        device=selected.get('device','gpu')
+    if args.command in ('evaluate-source','evaluate-reference'): device=args.eval_device
+    os.environ['JAX_PLATFORMS'] = 'cpu' if args.command in ('prepare','report','score-predictions','compare-predictions') or device=='cpu' else 'cuda'
     os.environ.pop('JAX_PLATFORM_NAME', None)
     os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
     import gym_trading_env, dreamerv3, embodied
@@ -82,7 +91,22 @@ def main():
             or Path(embodied.__file__).resolve().parent != PROJECT.parent/'dreamerv3/embodied'):
         raise ValueError('Foreign research Python imports')
     from gym_trading_env.research.fg_s3_v2_experiment import prepare, read_settings, settings_from_prepared
-    if args.command == 'simulate-online':
+    if args.command=='evaluate-reference':
+        if not args.eval_dir or not args.source_checkpoint or not args.output_dir:
+            p.error('evaluate-reference requires --eval-dir, --source-checkpoint and new --output-dir')
+        from gym_trading_env.research.fg_s3_quality_prediction_evaluation import reference_predictions
+        result=reference_predictions(args.eval_dir,args.source_checkpoint,args.output_dir,device=args.eval_device)
+    elif args.command=='compare-predictions':
+        if not args.eval_dir or not args.reference_dir or not args.output_dir:
+            p.error('compare-predictions requires posthoc --eval-dir, --reference-dir and new --output-dir')
+        from gym_trading_env.research.fg_s3_quality_prediction_evaluation import compare_prediction_receipts
+        result=compare_prediction_receipts(args.eval_dir,args.reference_dir,args.output_dir)
+    elif args.command=='evaluate-source':
+        if not args.prepared or not args.source_checkpoint or not args.output_dir:
+            p.error('evaluate-source requires --prepared, --source-checkpoint and new --output-dir')
+        from gym_trading_env.research.fg_s3_v2_evaluation import evaluate_source
+        result=evaluate_source(args.prepared,args.source_checkpoint,args.output_dir,args.eval_steps,args.eval_device)
+    elif args.command == 'simulate-online':
         if not args.config:
             p.error('simulate-online requires --config')
         from gym_trading_env.research.fg_s3_online_simulation import simulate_online
@@ -114,7 +138,7 @@ def main():
             result = read_manifest(Path(run_dir)/'training_receipt.json')
         elif args.command == 'evaluate':
             from gym_trading_env.research.fg_s3_v2_evaluation import evaluate
-            result = evaluate(prepared, run_dir, args.eval_steps)
+            result = evaluate(prepared, run_dir, args.eval_steps,args.output_dir,args.holdout_contract)
         else:
             from embodied.run.fg_s3_v2_train import LiveRun
             run = LiveRun(prepared, run_dir, resume=args.command == 'resume',

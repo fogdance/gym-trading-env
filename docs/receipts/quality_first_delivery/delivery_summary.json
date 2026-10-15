@@ -1,0 +1,265 @@
+{
+  "status": "PASS_IMPLEMENTATION_CPU_ACCEPTANCE",
+  "primary_tests": [
+    {
+      "xml": "../quality_first_delivery_regression.xml",
+      "tests": 107,
+      "seconds": 32.308,
+      "failures": 0
+    },
+    {
+      "xml": "../quality_first_delivery_student.xml",
+      "tests": 8,
+      "seconds": 90.497,
+      "failures": 0
+    },
+    {
+      "xml": "../quality_first_delivery_lifecycle.xml",
+      "tests": 1,
+      "seconds": 105.693,
+      "failures": 0
+    },
+    {
+      "xml": "../quality_first_compatibility_fixed.xml",
+      "tests": 34,
+      "seconds": 19.849,
+      "failures": 0
+    }
+  ],
+  "total_tests": 150,
+  "patch_acceptance_tests": {
+    "attachment_baseline": 41,
+    "integration_baseline": 41,
+    "counted_separately": true
+  },
+  "compatibility": "34/34 PASS after test fixture fix; pre-fix and clean-baseline failure receipts retained",
+  "preserved_patch_files": [
+    {
+      "file": "src/gym_trading_env/research/fg_s3_quality_score.py",
+      "sha256": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+      "byte_identical_to_accepted_patch": true
+    },
+    {
+      "file": "src/gym_trading_env/research/fg_s3_quality_teacher.py",
+      "sha256": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959",
+      "byte_identical_to_accepted_patch": true
+    },
+    {
+      "file": "tests/entry_v1/test_fg_s3_quality_teacher.py",
+      "sha256": "152adb898a466d001c22933f3659846ef3dd785cc3d757a85c51eee7f7607274",
+      "byte_identical_to_accepted_patch": true
+    }
+  ],
+  "real_train_coverage": {
+    "protocol": "FG_S3_QUALITY_COVERAGE_V1",
+    "counts": {
+      "total_rows": 250,
+      "strict_valid": 7,
+      "completed_dual_legal_flat_decisions": 12,
+      "flat_funds/at_least_300000": 7,
+      "flat_outcome/TP5": 10,
+      "flat_entry_filled": 12,
+      "flat_quality_valid": 12,
+      "flat_strict_valid": 7,
+      "immediate_outcome_verified": 12,
+      "score_valid": 12,
+      "funds/at_least_300000": 50,
+      "soft/HEURISTIC_V2": 7,
+      "event_valid": 84,
+      "touch_valid": 96,
+      "adverse_valid": 48,
+      "q_c1_pair_valid": 0,
+      "q_v2_pair_valid": 0,
+      "event_h0/valid": 12,
+      "event_h0/TP5": 5,
+      "event_h1/valid": 12,
+      "event_h1/TP5": 6,
+      "event_h2/valid": 12,
+      "event_h2/TP5": 9,
+      "event_h3/valid": 12,
+      "event_h3/TP5": 10,
+      "event_h4/valid": 12,
+      "event_h4/TP5": 10,
+      "event_h5/valid": 12,
+      "event_h5/TP5": 10,
+      "event_h6/valid": 12,
+      "event_h6/TP5": 10,
+      "reason/STRICT_WAIT_HIGH_QUALITY_ADD": 4,
+      "soft/INVALID": 243,
+      "reason/FORCED_WAIT_POSITION": 238,
+      "reason/STRICT_ADD": 1,
+      "flat_outcome/SL30": 2,
+      "event_h0/OPEN": 7,
+      "event_h1/OPEN": 6,
+      "event_h2/SL30": 2,
+      "event_h3/SL30": 2,
+      "event_h4/SL30": 2,
+      "event_h5/SL30": 2,
+      "event_h6/SL30": 2,
+      "reason/STRICT_WAIT_SL30": 2,
+      "funds/below_300000": 200,
+      "flat_funds/below_300000": 5,
+      "low_funds_flat_quality_valid": 5,
+      "low_funds_flat_strict_valid": 0,
+      "reason/ORACLE_UNVERIFIED_FUNDS": 5,
+      "event_h2/OPEN": 1
+    },
+    "score_mean": 81.70572916666667,
+    "score_quantiles": [
+      0.0,
+      94.4921875,
+      98.984375,
+      100.0,
+      100.0
+    ],
+    "denominator": "committed native rows; each task uses its own valid count",
+    "content_hash": "f0e3c229e1a7db3a2e9b6e09fb49afe73b0f8feb73831f5b2cb88967fa19bfe2"
+  },
+  "low_funds_native_candidates": [
+    {
+      "cursor": 47,
+      "equity": "299592.00",
+      "score": 95.78125,
+      "strict_valid": false
+    },
+    {
+      "cursor": 84,
+      "equity": "299874.00",
+      "score": 90.625,
+      "strict_valid": false
+    },
+    {
+      "cursor": 187,
+      "equity": "298338.00",
+      "score": 98.125,
+      "strict_valid": false
+    },
+    {
+      "cursor": 209,
+      "equity": "298620.00",
+      "score": 96.09375,
+      "strict_valid": false
+    },
+    {
+      "cursor": 244,
+      "equity": "298902.00",
+      "score": 99.84375,
+      "strict_valid": false
+    }
+  ],
+  "real_neural_run": {
+    "env_steps": 100,
+    "joint_updates": 2,
+    "head_update_counts": {
+      "quality_actor_updates": 0,
+      "quality_event_updates": 1,
+      "quality_touch_updates": 1,
+      "quality_adverse_updates": 1,
+      "quality_score_updates": 1,
+      "quality_q_c1_updates": 0,
+      "quality_q_v2_updates": 0
+    },
+    "gradients": [
+      {
+        "env_steps": 100,
+        "metrics": {
+          "opt/actor_delta_norm": 0.0,
+          "opt/actor_grad_norm": 0.0,
+          "opt/critic_delta_norm": 0.0,
+          "opt/critic_grad_norm": 0.0,
+          "opt/encoder_delta_norm": 0.0,
+          "opt/encoder_grad_norm": 0.0,
+          "opt/quality_actor_delta_norm": 0.0,
+          "opt/quality_actor_grad_norm": 0.0,
+          "opt/quality_adverse_delta_norm": 0.0,
+          "opt/quality_adverse_grad_norm": 0.04967622458934784,
+          "opt/quality_event_delta_norm": 0.0,
+          "opt/quality_event_grad_norm": 0.20533280074596405,
+          "opt/quality_q_c1_delta_norm": 0.0,
+          "opt/quality_q_c1_grad_norm": 0.0,
+          "opt/quality_q_v2_delta_norm": 0.0,
+          "opt/quality_q_v2_grad_norm": 0.0,
+          "opt/quality_score_delta_norm": 0.0,
+          "opt/quality_score_grad_norm": 0.1174609437584877,
+          "opt/quality_touch_delta_norm": 0.0,
+          "opt/quality_touch_grad_norm": 0.04910765215754509,
+          "opt/reward_delta_norm": 0.0,
+          "opt/reward_grad_norm": 0.0,
+          "opt/rssm_delta_norm": 0.0,
+          "opt/rssm_grad_norm": 0.0,
+          "opt/wm_delta_norm": 0.0,
+          "opt/wm_grad_norm": 0.0
+        }
+      },
+      {
+        "env_steps": 100,
+        "metrics": {
+          "opt/actor_delta_norm": 0.0,
+          "opt/actor_grad_norm": 0.0,
+          "opt/critic_delta_norm": 0.0,
+          "opt/critic_grad_norm": 0.0,
+          "opt/encoder_delta_norm": 0.0,
+          "opt/encoder_grad_norm": 0.0,
+          "opt/quality_actor_delta_norm": 0.0,
+          "opt/quality_actor_grad_norm": 0.0,
+          "opt/quality_adverse_delta_norm": 8.938800988289586e-07,
+          "opt/quality_adverse_grad_norm": 0.0640542134642601,
+          "opt/quality_event_delta_norm": 1.183669837701018e-06,
+          "opt/quality_event_grad_norm": 0.168784499168396,
+          "opt/quality_q_c1_delta_norm": 0.0,
+          "opt/quality_q_c1_grad_norm": 0.0,
+          "opt/quality_q_v2_delta_norm": 0.0,
+          "opt/quality_q_v2_grad_norm": 0.0,
+          "opt/quality_score_delta_norm": 8.968362408268149e-07,
+          "opt/quality_score_grad_norm": 0.10213765501976013,
+          "opt/quality_touch_delta_norm": 9.885698091238737e-07,
+          "opt/quality_touch_grad_norm": 0.04275016486644745,
+          "opt/reward_delta_norm": 0.0,
+          "opt/reward_grad_norm": 0.0,
+          "opt/rssm_delta_norm": 0.0,
+          "opt/rssm_grad_norm": 0.0,
+          "opt/wm_delta_norm": 0.0,
+          "opt/wm_grad_norm": 0.0
+        }
+      }
+    ],
+    "checkpoint_zero_to_final_changed_head_keys": {
+      "quality_event/": 5,
+      "quality_touch/": 5,
+      "quality_adverse/": 5,
+      "quality_score/": 5
+    },
+    "frozen_non_optimizer_parameters": 89,
+    "all_frozen_parameter_digests_unchanged": true,
+    "checkpoint_manifest_sha256": "276efd41521d0dd7bbe1f3d276bc42e82d93bd0b8720b2c95dc9150146985e54"
+  },
+  "evaluation": {
+    "dev_score_samples": 8,
+    "dev_score_mae": 24.20571529692498,
+    "dev_train_prior_mae": 15.319746376811594,
+    "holdout_contract": "TRAIN_HOLDOUT: CZCE.FG401",
+    "matched_states": 11,
+    "holdout_score_mae": 49.57938824277935,
+    "holdout_train_prior_mae": 57.2064393939394,
+    "holdout_reference_mae": 49.57938546845407
+  },
+  "research_status": {
+    "prediction_admission": "PREDICTION_GATE_PENDING",
+    "calibration": "NOT_CALIBRATED",
+    "real_q": "FULL_Q_PENDING",
+    "gpu": "NOT_RUN",
+    "new_10k": "NOT_RUN",
+    "new_1m": "NOT_RUN",
+    "test_prices": "NOT_OPENED"
+  },
+  "unverified": [
+    "predictive improvement",
+    "calibration",
+    "multi-seed and multiple time folds",
+    "real admitted predictor migration to controlled Full",
+    "real Q training/fusion admission",
+    "full TRAIN Catalog throughput",
+    "real full-size source parameter transfer and GPU memory/throughput"
+  ],
+  "content_hash": "b06dda5005a86d46cc8818c2cd786135ac1a30feec16e8fe5ffcd65487794035"
+}

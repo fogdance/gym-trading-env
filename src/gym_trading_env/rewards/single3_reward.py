@@ -15,6 +15,7 @@ from gym_trading_env.utils.s3_market_clock import PROTOCOL
 
 
 SCHEMA = "FG_SINGLE3_REWARD_MARKET_MINUTE_V2"
+QUALITY_TP_SCHEMA = "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1"
 CANDIDATES = {"C0": (0., .4, 3.), "C1": (.5, .4, 3.),
               "C2": (1., .4, 3.), "C3": (1., .4, 6.)}
 
@@ -29,7 +30,9 @@ class Single3RewardConfig:
     clock_protocol: str = PROTOCOL
 
     def __post_init__(self):
-        if (self.schema != SCHEMA or self.clock_protocol != PROTOCOL or self.candidate not in CANDIDATES or
+        if (self.schema not in (SCHEMA, QUALITY_TP_SCHEMA) or self.clock_protocol != PROTOCOL or
+                self.candidate not in CANDIDATES or
+                (self.schema == QUALITY_TP_SCHEMA and self.candidate != 'C1') or
                 any(not math.isfinite(x) for x in (self.beta, self.rho, self.L)) or
                 (self.beta, self.rho, self.L) != CANDIDATES[self.candidate]):
             raise ValueError("Unknown or inconsistent frozen Single3 reward candidate")
@@ -47,7 +50,8 @@ class Single3Reward:
     def __init__(self, config):
         self.config = config
         self.v2_config = CandidateConfig(beta=config.beta, rho=config.rho, clock_protocol=PROTOCOL)
-        self.scorer = FGRewardScorer(self.v2_config)
+        self.tp_profile = 'QUALITY_TP_V1' if config.schema == QUALITY_TP_SCHEMA else 'LEGACY_C1'
+        self.scorer = FGRewardScorer(self.v2_config, tp_profile=self.tp_profile)
         self.total = 0.
 
     @property
@@ -99,7 +103,7 @@ class Single3Reward:
         if state["schema"] != SCHEMA or state["config"] != asdict(config):
             raise ValueError("Single3 reward checkpoint/config mismatch")
         obj = cls(config)
-        obj.scorer = FGRewardScorer.restore(state["scorer"], obj.v2_config)
+        obj.scorer = FGRewardScorer.restore(state["scorer"], obj.v2_config, tp_profile=obj.tp_profile)
         if len(obj.scorer.active) > 1:
             raise ValueError("Single3 checkpoint exceeds capacity")
         obj.total = float(state["total"])

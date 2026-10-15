@@ -1,0 +1,1656 @@
+{
+  "schema": 3,
+  "contract": "CZCE.FG409",
+  "config_hash": "f3dcb5dc92bd08d54c19580fd8aba1121582d119a3b94b7ed440e207feebf0cd",
+  "cursor_time": "2024-04-08 22:41:00+08:00",
+  "prefix_hash": "4ed5be7abaa35aebd2928e3037e76197598cca1ad80a67662897c6bbd5aeabd5",
+  "balances": {
+    "user_cash": "291039.00",
+    "user_margin": "8952.00",
+    "broker_fee_income": "9.0",
+    "broker_pnl": "0.0"
+  },
+  "ledger_entries": [
+    {
+      "timestamp": "2024-04-08 21:08:00+08:00",
+      "memo": "SHORT_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-8961.00"
+        },
+        {
+          "account": "user_margin",
+          "amount": "8952.00"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9.0"
+        }
+      ],
+      "meta": {
+        "side": "short",
+        "slot": 0,
+        "price": "1492"
+      }
+    }
+  ],
+  "long_positions": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "short_positions": [
+    {
+      "size": "3",
+      "entry_price": "1492",
+      "initial_margin": "8952.00",
+      "open_step": 8,
+      "stop_loss_price": "1522",
+      "take_profit_price": "1487"
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "closed_trade_profits": [],
+  "realized_pnl": "0.0",
+  "unrealized_pnl": "-300.0",
+  "trade_history": [
+    {
+      "timestamp": "2024-04-08T21:08:00+08:00",
+      "operation_type": "SHORT_OPEN",
+      "position_size": "3",
+      "open_price": "1492",
+      "close_price": "0",
+      "required_margin": "8952.00",
+      "fee": "9.0",
+      "balance": "291039.00",
+      "leverage": "1E+1",
+      "free_margin": "291039.00",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG409:1:1",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    }
+  ],
+  "rng": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 35399562948360463058890781895381311971,
+      "inc": 87136372517582989555478159403783844777
+    },
+    "has_uint32": 0,
+    "uinteger": 0
+  },
+  "rewarded": [],
+  "processed_fills": [],
+  "current_step": 100,
+  "episode_step_count": 100,
+  "chunk_count": 100,
+  "entry_sequence": 1,
+  "account_sequence": 1,
+  "current_price": "1497",
+  "entries": {
+    "CZCE.FG409:1:1": {
+      "entry_id": "CZCE.FG409:1:1",
+      "side": "SHORT",
+      "slot": 0,
+      "entry_time": "2024-04-08 21:08:00+08:00",
+      "obs_slot": 0,
+      "entry_price": "1492",
+      "closed_quantity": "0",
+      "exit_notional": "0",
+      "exit_pending": false,
+      "trading_day": "2024-04-09",
+      "all_tp": true,
+      "sl_pending": false,
+      "entry_cursor": 8,
+      "open_fee": "9.0",
+      "exit_metadata": {
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2024-04-08 22:41:00+08:00"
+      }
+    }
+  },
+  "fills": [
+    {
+      "entry_id": "CZCE.FG409:1:1",
+      "time": "2024-04-08 21:08:00+08:00",
+      "side": "SHORT",
+      "quantity": 3,
+      "price": "1492",
+      "reason": "ENTRY",
+      "committed": true
+    }
+  ],
+  "attributions": [],
+  "reward_events": [
+    {
+      "entry_id": "CZCE.FG409:1:1",
+      "reason": "FIRST_ADVERSE10",
+      "time": "2024-04-08 21:23:00+08:00",
+      "effective_bar": 15,
+      "reward": -0.2,
+      "observed": true
+    }
+  ],
+  "equity_history": [
+    {
+      "time": "2024-04-08 21:01:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:02:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:02:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:03:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:03:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:04:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:04:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:05:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:05:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:06:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:06:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:07:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:07:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:08:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:08:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:09:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:09:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:10:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:10:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:11:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:11:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:12:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:12:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:13:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:13:00+08:00",
+      "equity": 300051.0,
+      "unrealized_pnl": 60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:14:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:14:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:15:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:15:00+08:00",
+      "equity": 300051.0,
+      "unrealized_pnl": 60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:16:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:16:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:17:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:17:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:18:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:18:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:19:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:19:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:20:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:20:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:21:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:21:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:22:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:22:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:23:00+08:00",
+      "equity": 299331.0,
+      "unrealized_pnl": -660.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:23:00+08:00",
+      "equity": 299331.0,
+      "unrealized_pnl": -660.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:24:00+08:00",
+      "equity": 299331.0,
+      "unrealized_pnl": -660.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:24:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:25:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:25:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:26:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:26:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:27:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:27:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:28:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:28:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:29:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:29:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:30:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:30:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:31:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:31:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:32:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:32:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:33:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:33:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:34:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:34:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:35:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:35:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:36:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:36:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:37:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:37:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:38:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:38:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:39:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:39:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:40:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:40:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:41:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:41:00+08:00",
+      "equity": 300051.0,
+      "unrealized_pnl": 60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:42:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:42:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:43:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:43:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:44:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:44:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:45:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:45:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:46:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:46:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:47:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:47:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:48:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:48:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:49:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:49:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:50:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:50:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:51:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:51:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:52:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:52:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:53:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:53:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:54:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:54:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:55:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:55:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:56:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:56:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:57:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:57:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:58:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:58:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 21:59:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 21:59:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:00:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:00:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:01:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:01:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:02:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:02:00+08:00",
+      "equity": 300051.0,
+      "unrealized_pnl": 60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:03:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:03:00+08:00",
+      "equity": 299991.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:04:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:04:00+08:00",
+      "equity": 299931.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:05:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:05:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:06:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:06:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:07:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:07:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:08:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:08:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:09:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:09:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:10:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:10:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:11:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:11:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:12:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:12:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:13:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:13:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:14:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:14:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:15:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:15:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:16:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:16:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:17:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:17:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:18:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:18:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:19:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:19:00+08:00",
+      "equity": 299871.0,
+      "unrealized_pnl": -120.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:20:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:20:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:21:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:21:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:22:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:22:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:23:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:23:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:24:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:24:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:25:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:25:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:26:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:26:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:27:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:27:00+08:00",
+      "equity": 299811.0,
+      "unrealized_pnl": -180.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:28:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:28:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:29:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:29:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:30:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:30:00+08:00",
+      "equity": 299751.0,
+      "unrealized_pnl": -240.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:31:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:31:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:32:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:32:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:33:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:33:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:34:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:34:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:35:00+08:00",
+      "equity": 299451.0,
+      "unrealized_pnl": -540.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:35:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:36:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:36:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:37:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:37:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:38:00+08:00",
+      "equity": 299511.0,
+      "unrealized_pnl": -480.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:38:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:39:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:39:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:40:00+08:00",
+      "equity": 299571.0,
+      "unrealized_pnl": -420.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:40:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2024-04-08 22:41:00+08:00",
+      "equity": 299631.0,
+      "unrealized_pnl": -360.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2024-04-08 22:41:00+08:00",
+      "equity": 299691.0,
+      "unrealized_pnl": -300.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    }
+  ],
+  "total_reward": -0.2,
+  "max_floating_loss": 660.0,
+  "legal_add_decisions": 8,
+  "voluntary_waits": 7,
+  "status": "ACTIVE",
+  "terminated": false,
+  "truncated": false,
+  "pending_reason": null,
+  "completed_accounts": [],
+  "reward_state": {
+    "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+    "config": {
+      "candidate": "C1",
+      "beta": 0.5,
+      "rho": 0.4,
+      "L": 3.0,
+      "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+      "clock_protocol": "S3_MARKET_MINUTE"
+    },
+    "scorer": {
+      "schema": 2,
+      "config": {
+        "beta": 0.5,
+        "rho": 0.4,
+        "lam": 0.0,
+        "alpha": 0.0,
+        "gamma": 0.996996996996997,
+        "risk_points": 10.0,
+        "take_profit_points": 5.0,
+        "clock_protocol": "S3_MARKET_MINUTE"
+      },
+      "active": {
+        "CZCE.FG409:1:1": {
+          "entry_id": "CZCE.FG409:1:1",
+          "side": "SHORT",
+          "entry_time": "2024-04-08 21:08:00+08:00",
+          "entry_price": 1492.0,
+          "bars_seen": 93,
+          "adverse10_fired": true,
+          "adverse_first_bar": 15,
+          "early_penalty": -0.2,
+          "capacity_basis": 0.0,
+          "exit_time": null,
+          "exit_reason": null,
+          "tp_minutes": null,
+          "tp_market_minutes": null,
+          "original_tp": 0.0,
+          "timeboxed_tp": 0.0,
+          "intrabar_ambiguous": false
+        }
+      },
+      "closed": {},
+      "seen": [
+        "CZCE.FG409:1:1"
+      ],
+      "last_mark": 1496.0,
+      "last_end": "2024-04-08 22:41:00+08:00",
+      "step_number": 100,
+      "totals": {
+        "v0": 0.0,
+        "tp_timeboxed": 0.0,
+        "early": -0.2,
+        "potential": 0.0,
+        "capacity": 0.0,
+        "v2": -0.2,
+        "v3": -0.2,
+        "capacity_basis": 0.0
+      },
+      "discounted": {
+        "v0": 0.0,
+        "v2": -0.18775903729352397,
+        "v3": -0.18775903729352397
+      },
+      "discount_weight": 0.7402612560346071,
+      "ambiguities": 0,
+      "sha256": "ce508dc18a87e578aa3e0d0327268502a71d3cfcc6c08a237aed4517d76cd937"
+    },
+    "total": -0.2
+  },
+  "last_reward_components": {
+    "tp": 0.0,
+    "early": 0.0,
+    "sl": 0.0,
+    "other": 0.0,
+    "total": 0.0,
+    "legacy_tp": 0.0,
+    "early_first5": 0,
+    "early_next10": 0,
+    "penalized": [],
+    "intrabar_ambiguous": [],
+    "events": []
+  }
+}

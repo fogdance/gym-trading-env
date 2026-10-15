@@ -1,0 +1,106 @@
+{
+  "status": "PASS_QUALITY_CONFIG_VALIDATION",
+  "checks": [
+    {
+      "config": "QUALITY_V2_CPU_SMOKE",
+      "result": "PASS_CONFIG_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_CPU_SMOKE_v1",
+      "contracts": [
+        "CZCE.FG201"
+      ],
+      "env_steps": 100
+    },
+    {
+      "config": "QUALITY_V2_GPU_1K",
+      "result": "PASS_CONFIG_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_GPU_1K_v2",
+      "contracts": [
+        "CZCE.FG201"
+      ],
+      "env_steps": 1000
+    },
+    {
+      "config": "QUALITY_FIRST_HEADS_PILOT_10K",
+      "result": "PASS_CONFIG_ONLY",
+      "experiment": "QUALITY_FIRST_HEADS_PILOT_10K_v2",
+      "contracts": [
+        "CZCE.FG001",
+        "CZCE.FG005",
+        "CZCE.FG009",
+        "CZCE.FG101",
+        "CZCE.FG105",
+        "CZCE.FG109",
+        "CZCE.FG201",
+        "CZCE.FG205",
+        "CZCE.FG209",
+        "CZCE.FG301",
+        "CZCE.FG305",
+        "CZCE.FG309"
+      ],
+      "env_steps": 10000
+    },
+    {
+      "config": "QUALITY_FIRST_EVENT_ONLY_PILOT_10K",
+      "result": "PASS_CONFIG_ONLY",
+      "experiment": "QUALITY_FIRST_EVENT_ONLY_PILOT_10K_v2",
+      "contracts": [
+        "CZCE.FG001",
+        "CZCE.FG005",
+        "CZCE.FG009",
+        "CZCE.FG101",
+        "CZCE.FG105",
+        "CZCE.FG109",
+        "CZCE.FG201",
+        "CZCE.FG205",
+        "CZCE.FG209",
+        "CZCE.FG301",
+        "CZCE.FG305",
+        "CZCE.FG309"
+      ],
+      "env_steps": 10000
+    },
+    {
+      "config": "QUALITY_FIRST_SCORE_ONLY_PILOT_10K",
+      "result": "PASS_CONFIG_ONLY",
+      "experiment": "QUALITY_FIRST_SCORE_ONLY_PILOT_10K_v2",
+      "contracts": [
+        "CZCE.FG001",
+        "CZCE.FG005",
+        "CZCE.FG009",
+        "CZCE.FG101",
+        "CZCE.FG105",
+        "CZCE.FG109",
+        "CZCE.FG201",
+        "CZCE.FG205",
+        "CZCE.FG209",
+        "CZCE.FG301",
+        "CZCE.FG305",
+        "CZCE.FG309"
+      ],
+      "env_steps": 10000
+    },
+    {
+      "config": "QUALITY_V2_B1_PILOT_10K",
+      "result": "EXPECTED_PREDICTION_GATE_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "QUALITY_V2_B2_PILOT_10K",
+      "result": "EXPECTED_PREDICTION_GATE_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "QUALITY_V2_B3_PILOT_10K",
+      "result": "EXPECTED_PREDICTION_GATE_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    },
+    {
+      "config": "QUALITY_V2_FULL_PILOT_10K",
+      "result": "EXPECTED_PREDICTION_GATE_PENDING",
+      "reason": "CONTROLLED_FULL requires verified prediction admission"
+    }
+  ],
+  "gpu": "NOT_RUN",
+  "training": "NOT_RUN",
+  "content_hash": "054fa1bc13c57602b49268e1b01496c3f6ebe2fdba03f4e2b60bcf94b9b6c316"
+}

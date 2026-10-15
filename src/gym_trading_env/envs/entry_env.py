@@ -574,6 +574,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 valid_bar=bool(self.valid_fill_clock[self.current_step]), eligible_market_minute=False,
                 entries=[copy.deepcopy(f) for f in self.fills[fills_before:] if f['reason']=='ENTRY'],
                 exits=events, true_terminal=bool(self.pending_reason and not self.entries))
+            # Only the new, explicitly versioned TP profile reads official trading days.
+            # The old C1 bar dict and signed reward identity are unchanged.
+            from gym_trading_env.rewards.single3_reward import QUALITY_TP_SCHEMA
+            if self.reward_config.schema == QUALITY_TP_SCHEMA:
+                # No wall-calendar fallback for the quality TP day-boundary rule.
+                if 'trading_date' not in self._raw and 'trading_day' not in self._raw:
+                    raise ValueError('Quality TP requires exchange official trading_date')
+                bar['trading_day'] = self._trading_day(time)
             self.last_reward_components = self.reward_function.step(bar, self.terms.multiplier)
             reward = self.last_reward_components['total']
             self.reward_events.extend(copy.deepcopy(self.last_reward_components['events']))

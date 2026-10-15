@@ -22,6 +22,8 @@ FORMAL_ROOT = Path('/data/logdir/fg_single3/s3_v2')
 
 
 def require_training_authorization(settings, authorized):
+    if settings.get('mode')=='quality_v2' and settings.get('device')=='gpu' and not authorized:
+        raise PermissionError('Quality GPU research requires separate explicit authorization and --authorize-training')
     if settings['scope'] == 'formal' and not authorized:
         raise PermissionError('Formal S3-V2 training requires the explicit --authorize-training flag')
 
@@ -34,9 +36,49 @@ def read_settings(path):
     s = normalize_config(read_config_yaml(path))
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
-    if s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2') or s['device'] != 'gpu':
+    quality = s['mode'] == 'quality_v2'
+    if (s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2','quality_v2')
+            or s['device'] not in (('cpu','gpu') if quality else ('gpu',))):
         raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
     s.setdefault('scope', 'diagnostic')
+    if quality:
+        from dreamerv3.fg_s3_quality_v2 import quality_extensions
+        from gym_trading_env.rewards.single3_reward import Single3RewardConfig,QUALITY_TP_SCHEMA,SCHEMA as LEGACY_REWARD_SCHEMA
+        from dataclasses import asdict
+        reward=Single3RewardConfig(**s['reward'])
+        s['reward']=asdict(reward)
+        s.update({k:v for k,v in quality_extensions(s).items() if k!='s3_v2_mode'})
+        if s['quality_stage']=='HEADS_ONLY' and reward.schema!=LEGACY_REWARD_SCHEMA:
+            raise ValueError('Quality-first HEADS_ONLY preserves original C1; new Reward is a later axis')
+        if s['quality_stage']=='CONTROLLED_FULL':
+            from .fg_s3_quality_catalog_v2 import require_prediction_admission
+            if not s.get('quality_prediction_admission_receipt'):
+                raise ValueError('CONTROLLED_FULL is PREDICTION_GATE_PENDING')
+            admission_path=Path(s['quality_prediction_admission_receipt']).resolve()
+            require_prediction_admission(admission_path)
+            s.update(quality_prediction_admission_receipt=str(admission_path),
+                     quality_prediction_admission_sha256=file_hash(admission_path))
+        s.setdefault('catalog',None);s.setdefault('source_kind','warm_start')
+        s.setdefault('source_checkpoint',None);s.setdefault('model_preset','source')
+        s.setdefault('quality_q_max_states',4096);s.setdefault('quality_q_max_seconds',2.)
+        s.setdefault('quality_q_max_suffix_bars',12)
+        s.setdefault('quality_max_market_steps',None)
+        if s['quality_max_market_steps'] is not None and (type(s['quality_max_market_steps']) is not int or s['quality_max_market_steps']<1):
+            raise ValueError('Quality exposure budget must be positive market minutes or null')
+        if (s['device']=='cpu' and s['scope']!='diagnostic' or
+                type(s['quality_q_max_states']) is not int or s['quality_q_max_states']<1 or
+                type(s['quality_q_max_suffix_bars']) is not int or s['quality_q_max_suffix_bars']<0 or
+                not 0<float(s['quality_q_max_seconds'])<=60):
+            raise ValueError('Quality CPU scope/Q proof budget invalid')
+        if s.get('quality_fixture_env'):
+            s['quality_fixture_env']=str((PROJECT/s['quality_fixture_env']).resolve())
+        if s['quality_q_admitted']:
+            admission=read_manifest(Path(s['quality_q_admission_receipt']).resolve())
+            if (admission.get('status')!='PASS_TRAIN_Q_FUSION_ADMISSION' or admission.get('fold')!='TRAIN'
+                    or not admission.get('q_v2_pair_valid_count',0) or not admission.get('short_run_verified')):
+                raise ValueError('Quality Q fusion lacks TRAIN support and short-run admission')
+            s['quality_q_admission_receipt']=str(Path(s['quality_q_admission_receipt']).resolve())
+            s['quality_q_admission_sha256']=file_hash(s['quality_q_admission_receipt'])
     if s['mode'] == 'tutor':
         extension = agent_extensions(s)
         s.update({k: extension[k] for k in DEFAULTS})
@@ -81,7 +123,9 @@ def read_settings(path):
     if schedule.points is not None and schedule.points[-1][0] > s['env_steps']:
         raise ValueError('Beta schedule exceeds the frozen Env budget')
     for key in ('dreamer_root', 'env_receipt', 'oracle_receipt', 'catalog', 'source_checkpoint', 'prepared_dir', 'run_dir', 'dev_source_manifest'):
-        if key == 'catalog' and s['mode'] == 'b2' and s[key] is None:
+        if key == 'catalog' and s['mode'] in ('b2','quality_v2') and s[key] is None:
+            continue
+        if key == 'source_checkpoint' and quality and s[key] is None:
             continue
         s[key] = str((PROJECT/s[key]).resolve())
     if Path(s['dreamer_root']) != PROJECT.parent/'dreamerv3':
@@ -97,6 +141,9 @@ def read_settings(path):
 
 def prepare(config):
     s = read_settings(config)
+    if s['mode']=='quality_v2':
+        from .fg_s3_quality_experiment_v2 import prepare_quality
+        return prepare_quality(s)
     output = Path(s['prepared_dir'])
     if output.exists():
         raise FileExistsError('Preparation retained; use a new config/preparation name')

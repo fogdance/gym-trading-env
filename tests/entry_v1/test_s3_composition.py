@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 
 @pytest.mark.parametrize('encoder', ENCODERS)
 @pytest.mark.parametrize('teaching', TEACHING)
-def test_all_eight_compositions_have_unique_state_and_one_base_bc(encoder, teaching):
+def test_all_declared_compositions_have_unique_state_and_one_base_bc(encoder, teaching):
     raw = dict(schema=CONFIG_SCHEMA, composition=dict(encoder=encoder, teaching=teaching))
     resolved = resolve_composition(raw)
     expected = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else (
@@ -28,7 +28,8 @@ def test_all_eight_compositions_have_unique_state_and_one_base_bc(encoder, teach
     assert resolved['support_state'] == expected
     assert resolved['base_oracle_bc'] is True and resolved['schema_version'] == 1
     assert resolved == normalize_config(raw, executable=False)[KEY]
-    assert resolved['legacy_mode'] == {'a2':'a2','tutor_cd':'tutor','b2':'b2','tutor_cd_b2':None}[teaching]
+    assert resolved['legacy_mode'] == {'a2':'a2','tutor_cd':'tutor','b2':'b2','tutor_cd_b2':None,
+                                       'quality_v2':'quality_v2'}[teaching]
 
 
 def test_pure_parser_runs_without_site_packages_or_jax():
@@ -162,9 +163,12 @@ def test_source_and_model_factories_reject_waiting_before_any_data_or_model(tmp_
 def test_reviewed_reader_warm_start_still_rejects_unknown_changes(monkeypatch):
     from embodied.run import fg_s3_source_admission as admission
     from gym_trading_env.research.fg_s3_reader_compat import PRODUCERS
-    mapping={n:h for n,h in PRODUCERS.items() if not n.endswith('/entry_env.py')}
+    mapping={n:h for n,h in PRODUCERS.items() if not n.endswith(('/entry_env.py','/single3_reward.py'))}
     result=admission.verify_producer_code(mapping,warm_start=True)
     assert all(r['disposition']=='AUTHENTICATED_REVIEWED_READER_PARAMETER_WARM_START' for r in result.values())
+    reward='gym_trading_env/rewards/single3_reward.py'
+    semantic=admission.verify_producer_code({reward:PRODUCERS[reward]},warm_start=True)
+    assert semantic[reward]['disposition']=='AUTHENTICATED_PARAMETER_WARM_START_ONLY'
     with pytest.raises(ValueError):admission.verify_producer_code(mapping,warm_start=False)
     name=next(iter(mapping))
     with pytest.raises(ValueError,match='Unreviewed'):admission.verify_producer_code({name:'0'*64},warm_start=True)

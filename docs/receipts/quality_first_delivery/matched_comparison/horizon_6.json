@@ -1,0 +1,29 @@
+{
+  "protocol": "FG_S3_QUALITY_MATCHED_COMPARISON_V1",
+  "fold": "TRAIN_HOLDOUT",
+  "contract": "CZCE.FG401",
+  "samples": 11,
+  "checkpoint_manifest_sha256": "276efd41521d0dd7bbe1f3d276bc42e82d93bd0b8720b2c95dc9150146985e54",
+  "metrics": {
+    "nll": 1.5269908600967939,
+    "brier": 0.8546534853708988,
+    "train_prior_nll": 0.8869251389980227,
+    "train_prior_brier": 0.6704545454545454,
+    "reference_nll": 1.52699116421433,
+    "reference_brier": 0.8546536638260102,
+    "score_mae": 49.57938824277935,
+    "score_train_prior_mae": 57.2064393939394,
+    "score_reference_mae": 49.57938546845407
+  },
+  "horizon": 6,
+  "primary_scoring_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_SCORED_V5",
+  "reference_scoring_dir": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_SCORED_V5",
+  "comparison_code_sha256": "039ee4a32425ed948d0491ae2de2927c67fb66e90645b76fb1c7d92541a3f2be",
+  "source_receipts": {
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_SCORED_V5/receipt.json": "b3d367617c19788e692ae288538d08d75900176e2f6b8f619a2693acdd15e80f",
+    "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_REFERENCE_SCORED_V5/receipt.json": "b6496d389b9b946f8b55a601b3a8c7f7cca94e73b04b8ddf29df79119ba215a3"
+  },
+  "same_state_labels": true,
+  "reference_carry": "independent_model_on_real_executed_actions",
+  "content_hash": "b2b3fb6f74275dd3f2bbfe325ddc67faf1c8eca0dcba3fcb569506738665c01a"
+}

@@ -1,0 +1,57 @@
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+research_variant: quality-first-controlled-full-future
+scope: diagnostic
+device: gpu
+contract: CZCE.FG201
+contracts:
+- CZCE.FG001
+- CZCE.FG005
+- CZCE.FG009
+- CZCE.FG101
+- CZCE.FG105
+- CZCE.FG109
+- CZCE.FG201
+- CZCE.FG205
+- CZCE.FG209
+- CZCE.FG301
+- CZCE.FG305
+- CZCE.FG309
+env_slice_bars: 250
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: null
+source_checkpoint: /data/logdir/fg_single3/s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/ckpt/step_000001000000
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+collect_every: 100
+updates_per_collect: 4
+batch_size: 1
+replay_capacity: 2048
+replay_seed: 202
+beta: 1.0
+beta_schedule: null
+bc_lambda: 1.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: warm_start
+reward:
+  candidate: C1
+  beta: 0.5
+  rho: 0.4
+  L: 3.0
+  schema: FG_SINGLE3_REWARD_MARKET_MINUTE_V2
+  clock_protocol: S3_MARKET_MINUTE
+composition:
+  encoder: legacy_1m
+  teaching: quality_v2
+quality_q_admitted: false
+quality_q_max_states: 4096
+quality_q_max_seconds: 2.0
+quality_q_max_suffix_bars: 12
+experiment: QUALITY_V2_B1_PILOT_10K_v2
+quality_variant: B1
+env_steps: 10000
+save_every: 2000
+prepared_dir: artifacts/fg_s3_v2/prepared/QUALITY_V2_B1_PILOT_10K_v2
+run_dir: artifacts/fg_s3_v2/runs/QUALITY_V2_B1_PILOT_10K_v2
+quality_stage: CONTROLLED_FULL
+quality_prediction_admitted: false

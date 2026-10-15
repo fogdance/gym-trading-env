@@ -1,0 +1,106 @@
+{
+  "protocol": "FG_S3_QUALITY_TRAIN_PRIORS_V1",
+  "fold": "TRAIN",
+  "source_records_hash": "fccde7eda54678fe35972a8a7bb8891c711fa2637e0081eb69315e50d3d88a7c",
+  "event_counts": [
+    [
+      9,
+      0,
+      0,
+      3
+    ],
+    [
+      9,
+      0,
+      0,
+      3
+    ],
+    [
+      9,
+      2,
+      0,
+      1
+    ],
+    [
+      9,
+      3,
+      0,
+      0
+    ],
+    [
+      9,
+      3,
+      0,
+      0
+    ],
+    [
+      9,
+      3,
+      0,
+      0
+    ],
+    [
+      9,
+      3,
+      0,
+      0
+    ]
+  ],
+  "touch_counts": [
+    [
+      12,
+      12
+    ],
+    [
+      12,
+      12
+    ],
+    [
+      12,
+      12
+    ],
+    [
+      12,
+      12
+    ]
+  ],
+  "touch_positive": [
+    [
+      11,
+      10
+    ],
+    [
+      11,
+      10
+    ],
+    [
+      11,
+      10
+    ],
+    [
+      11,
+      10
+    ]
+  ],
+  "adverse_counts": [
+    12,
+    12,
+    12,
+    12
+  ],
+  "adverse_positive": [
+    2,
+    3,
+    3,
+    3
+  ],
+  "score_count": 12,
+  "score_mean": 75.0,
+  "score_median": 100.0,
+  "calibration_status": "NOT_CALIBRATED",
+  "scope": "committed training state distribution",
+  "checkpoint_manifest_sha256": "1035abc7b78b790d904974dd0e9225afd1e689c579cd45b12436cb0a499142ed",
+  "source_run_id": "babfbc13ec544db4881559af49c546cd",
+  "common_train_prior_sha256": "afa643272ed696ab44e61416d1ca53a858242685e41a537e9c2743f9574d1046",
+  "content_hash": "7f0c5c76d08dba39c9c1ea27c892f2c59b2c3fe12f9bb0a9750ee121533a6bbf"
+}

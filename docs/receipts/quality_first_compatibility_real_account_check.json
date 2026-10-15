@@ -1,0 +1,23 @@
+{
+  "status": "PASS_NATIVE_ACCOUNT_AND_EXECUTED_CODE",
+  "checks": [
+    {
+      "evaluation": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_DEV_V5",
+      "fold": "DEV",
+      "state_total_reward": -0.2,
+      "receipt_reward": -0.2,
+      "result": "PASS_NATIVE_ACCOUNT_RECONCILIATION"
+    },
+    {
+      "evaluation": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FIRST_FINAL_HOLDOUT_V5",
+      "fold": "TRAIN_HOLDOUT",
+      "state_total_reward": -2.4105263157894736,
+      "receipt_reward": -2.4105263157894736,
+      "result": "PASS_NATIVE_ACCOUNT_RECONCILIATION"
+    }
+  ],
+  "production_code_changed": false,
+  "fix_scope": "test fixture total_reward plus mismatch rejection assertion",
+  "executed_source_hashes_unchanged": true,
+  "content_hash": "01cef1512d72ddae06c6fda52ba733de5df0b5e84c1b9b85edabb77eb891f53f"
+}

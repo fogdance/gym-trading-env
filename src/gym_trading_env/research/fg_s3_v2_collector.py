@@ -19,7 +19,7 @@ class V2Collector(D0Collector):
     runtime = staticmethod(embodied_runtime)
 
     def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None,
-                 outcome_catalog=None, **kwargs):
+                 outcome_catalog=None, quality_catalog=None, **kwargs):
         if type(replay_capacity) is not int or replay_capacity < 65:
             raise ValueError('Live Replay capacity must retain a complete sequence')
         if type(max_env_steps) is not int or not 65 <= max_env_steps <= 1000000:
@@ -32,12 +32,17 @@ class V2Collector(D0Collector):
         self.commit_seq = 0
         self.model_versions = set()
         self.outcome_catalog = outcome_catalog
+        self.quality_catalog = quality_catalog
+        if quality_catalog is not None:
+            self.protocol='FG_S3_QUALITY_LIVE_DAGGER_V2_1'
         if outcome_catalog is not None:
             self.protocol = 'FG_S3_B2_LIVE_DAGGER_MARKET_MINUTE_V1'
         initial_beta = kwargs.get('beta', .5) if kwargs.get('mode', 'mixed') == 'mixed' else 0.
         self.beta_schedule = BetaSchedule(initial_beta, beta_schedule)
         super().__init__(*args, **kwargs)
         self.identity['beta_schedule'] = self.beta_schedule.points
+        if quality_catalog is not None:
+            self.identity['quality_catalog']=quality_catalog.identity_hash
         if outcome_catalog is not None:
             self.identity['outcome_catalog'] = outcome_catalog.identity_hash
         from gym_trading_env.envs.entry_contract import fingerprint
@@ -86,6 +91,9 @@ class V2Collector(D0Collector):
 
     def capture(self, step, worker):
         super().capture(step, worker)
+        if self.quality_catalog is not None:
+            self.pending['quality']=self.quality_catalog.label_for(self.decision_env,self.pending['state_id'])
+            self.pending['quality_policy']={k:np.asarray(step[k]).tolist() for k in step if k.startswith('quality/')}
         if self.outcome_catalog is not None:
             self.pending['outcome'] = self.outcome_catalog.query_state(
                 self.decision_env, self.pending['action_mask'],
@@ -170,7 +178,14 @@ class V2Collector(D0Collector):
             if self.outcome_catalog is not None:
                 from .fg_s3_b2_outcome_catalog import attach_outcome
                 batch = attach_outcome(batch, rows, self.outcome_catalog)
+            if self.quality_catalog is not None:
+                from .fg_s3_quality_catalog_v2 import attach_quality
+                batch=attach_quality(batch,rows,teacher_identities=self.quality_catalog.teacher_identities)
             return batch
+
+    def close(self):
+        super().close()
+        if self.quality_catalog is not None: self.quality_catalog.close()
 
     def save(self):
         with self.commit_lock:

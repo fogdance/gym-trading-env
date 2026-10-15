@@ -44,13 +44,20 @@ def prepare_dev(s, directory):
         raise ValueError('DEV rule snapshot is not an authenticated TRAIN input')
     check_files({str(master): inputs['frozen_files'][str(master)]})
     rules = yaml.safe_load(master.read_text())
+    original_master=master
+    if s['mode']=='quality_v2':
+        rules=copy.deepcopy(rules);rules['reward']=s['reward']
+        master=directory/'dev_single3.yaml'
+        master.write_text(yaml.safe_dump(rules,sort_keys=False))
     env = yaml.safe_load(Path(row['env_config']).read_text())
+    env['entry'].pop('state_path',None)
     env['entry'].update(protocol='fg_single3_v1', strategy_config=str(master),
                         contract_config=row['contract_config'], chunk_steps=1024)
     env['trading'].update(rules['environment']['trading'])
     config = directory/'dev_env.yaml'
     config.write_text(yaml.safe_dump(env, sort_keys=False))
     frozen = {s['dev_source_manifest']: file_hash(s['dev_source_manifest']),
+        str(original_master):file_hash(original_master),
         str(master): file_hash(master), row['path']: row['sha256'],
         row['env_config']: row['env_sha256'], row['contract_config']: row['contract_sha256'],
         str(config): file_hash(config)}
@@ -65,7 +72,53 @@ def prepare_dev(s, directory):
     return require_dev(directory/'dev_manifest.json')
 
 
-def evaluate(prepared, run_dir, steps=1000):
+def require_quality_evaluation_snapshot(path, *, identity=None):
+    """Authenticate DEV or a disjoint holdout of the new quality supervision."""
+    path=Path(path)
+    manifest=read_manifest(path)
+    if manifest.get('role')=='DEV': return require_dev(path)
+    if (manifest.get('protocol')!='FG_S3_QUALITY_TRAIN_HOLDOUT_V1' or
+            manifest.get('role')!='TRAIN_HOLDOUT' or not manifest.get('evaluation_only') or
+            manifest.get('train_join_allowed') is not False or len(manifest['rows'])!=1):
+        raise ValueError('Expected an authenticated evaluation-only TRAIN holdout')
+    check_files(manifest['frozen_inputs'])
+    inputs=read_manifest(manifest['source_inputs'])
+    contract=manifest['rows'][0]['contract']
+    whitelist={r['contract']:r for r in inputs['views']['C1']['rows']
+               if r['role']=='train' and r['eligible_for_training']}
+    trained=set(manifest['trained_contracts'])
+    if (inputs['original_content_hash']!=manifest['source_training_hash'] or
+            contract not in whitelist or contract in trained or
+            manifest['rows'][0]['sha256']!=whitelist[contract]['sha256'] or
+            manifest['rows'][0]['path']!=whitelist[contract]['path']):
+        raise ValueError('TRAIN holdout/source whitelist is not disjoint and exact')
+    if identity is not None and (trained!=set(identity['quality_training_contracts']) or
+            manifest['source_training_hash']!=identity['training_identity']['training_hash']):
+        raise ValueError('TRAIN holdout differs from the trained Checkpoint source')
+    return manifest
+
+
+def prepare_holdout(settings,directory,contract,identity):
+    """Reuse the signed TRAIN derivation, without building a TRAIN teacher."""
+    if settings['mode']!='quality_v2': raise ValueError('Holdout evaluation is Quality-only')
+    trained=identity['quality_training_contracts']
+    if contract in trained: raise ValueError('A trained quality contract cannot be its holdout')
+    if settings.get('quality_fixture_env'):
+        raise ValueError('A single diagnostic fixture is not a disjoint TRAIN holdout')
+    from .fg_s3_quality_experiment_v2 import _derive_rows
+    selected={**settings,'contracts':[contract],'contract':contract}
+    rows,frozen,training_hash,_=_derive_rows(selected,directory)
+    inputs_path=str(Path(settings['env_receipt'])/'inputs/inputs.json')
+    frozen[inputs_path]=file_hash(inputs_path)
+    manifest=signed(dict(protocol='FG_S3_QUALITY_TRAIN_HOLDOUT_V1',role='TRAIN_HOLDOUT',
+        evaluation_only=True,train_join_allowed=False,trained_contracts=trained,
+        source_training_hash=training_hash,source_inputs=inputs_path,
+        rows=rows,frozen_inputs=frozen,test_prices_accessed=False,oracle_labels_used=False))
+    path=directory/'holdout_manifest.json';write_json(path,manifest)
+    return require_quality_evaluation_snapshot(path,identity=identity)
+
+
+def evaluate(prepared, run_dir, steps=1000,output_dir=None,holdout_contract=None):
     if type(steps) is not int or not 1 <= steps <= 10000:
         raise ValueError('Actor-only diagnosis is bounded to 1..10000 actual advances')
     prepared, root = Path(prepared).resolve(), Path(run_dir).resolve()
@@ -89,18 +142,78 @@ def evaluate(prepared, run_dir, steps=1000):
     validate_bundle(node, identity)
     cfg = frozen_model['config']
     extensions = agent_extensions(s)
-    if s['mode'] in ('tutor', 'b2') and frozen_model['agent_extension'] != extensions:
+    if s['mode'] in ('tutor', 'b2','quality_v2') and frozen_model['agent_extension'] != extensions:
         raise ValueError('Frozen extended model configuration differs from settings')
-    output = root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
+    output = Path(output_dir).resolve() if output_dir else root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
+    return _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps,
+                                 holdout_contract=holdout_contract)
+
+
+def evaluate_source(prepared,checkpoint,output_dir,steps=5000,device='cpu'):
+    """Explicit baseline evaluation in current reviewed code, outside old runs.
+
+    Authenticate the original complete source, its producer bytes and prepared
+    configuration. This is a parameter-exact reference evaluation, not a claim
+    to resume its old training or reproduce another device's arithmetic.
+    """
+    if type(steps) is not int or not 1<=steps<=10000 or device not in ('cpu','gpu'):
+        raise ValueError('Invalid source Actor-only evaluation budget/device')
+    node,prepared,output=Path(checkpoint).resolve(),Path(prepared).resolve(),Path(output_dir).resolve()
+    if output.is_relative_to(node.parent.parent) or output.is_relative_to(prepared):
+        raise ValueError('Historical source/prepared artifacts are read-only')
+    meta=validate_bundle(node)
+    identity=meta['identity']
+    receipt=read_manifest(node.parent.parent/'training_receipt.json')
+    preparation=read_manifest(prepared/'manifest.json')
+    if (receipt['status'] not in ('FORMAL_COMPLETE','DIAGNOSTIC_COMPLETE') or
+            receipt['checkpoint_manifest_sha256']!=file_hash(node/'manifest.json') or
+            identity['preparation_sha256']!=file_hash(prepared/'manifest.json') or
+            receipt['identity']!=identity or identity['code']!=preparation['code']):
+        raise ValueError('Source completion/preparation/Checkpoint identities differ')
+    check_files(identity['code'])
+    check_files({str(prepared/n):h for n,h in preparation['files'].items()})
+    s=read_manifest(prepared/'settings.json')['settings']
+    if s['mode'] not in ('tutor','b2'): raise ValueError('Source baseline supports frozen Tutor/B2')
+    frozen=read_manifest(prepared/'model_config.json')
+    extensions=agent_extensions(s)
+    if extensions!=frozen['agent_extension']: raise ValueError('Source Actor extension differs')
+    s={**s,'device':device}
+    result=_run_actor_evaluation(s,node,frozen['config'],extensions,settings_composition(s),output,steps)
+    result={k:v for k,v in result.items() if k!='content_hash'}
+    result['reference_source']=dict(parameter_exact_checkpoint=True,source_prepared=str(prepared),
+        source_producer_code=identity['code'],evaluation_code=execution_code(),
+        original_checkpoint_modified=False,device_arithmetic_parity='NOT_CLAIMED',
+        role='historical reference; not a matched-budget quality ablation')
+    result=signed(result);write_json(output/'receipt.json',result)
+    return result
+
+
+def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,holdout_contract=None):
+    root=node.parent.parent
     output.mkdir(parents=True, exist_ok=False)
-    dev = prepare_dev(s, output)
-    model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device='gpu',
+    if s['mode']=='quality_v2':
+        prior=read_manifest(root/'train_prediction_prior.json')
+        if prior['checkpoint_manifest_sha256']!=file_hash(node/'manifest.json'):
+            raise ValueError('TRAIN prior is not bound to the evaluated Checkpoint')
+        write_json(output/'train_prediction_prior.json',prior)
+    identity=read_manifest(root/'run_identity.json')['identity']
+    dev = (prepare_holdout(s,output,holdout_contract,identity) if holdout_contract is not None
+           else prepare_dev(s,output))
+    fold='TRAIN_HOLDOUT' if holdout_contract is not None else 'DEV'
+    manifest_name='holdout_manifest.json' if holdout_contract is not None else 'dev_manifest.json'
+    model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device=s['device'],
         bc_lambda=s['bc_lambda'], extra_agent_config=extensions, composition=composition)
     model.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
-    model.sync_policy_from_train()
+    # New evaluation episodes use the frozen config seed at counter zero.
+    # Training/resume RNG remains untouched; this is a loaded read-only copy.
+    model.sync_policy_from_train(reset_counter=True)
     model.evaluation_checkpoint_sha256 = file_hash(node/'manifest.json')
     policy = ActorPolicy(model)
     env = load_env(dev['rows'][0], dev['frozen_inputs'])
+    shadow=None;shadow_counts=dict(fills=0,exits=0)
+    if s['mode']=='quality_v2':
+        from gym_trading_env.rewards.single3_reward import Single3Reward,Single3RewardConfig
+        shadow=Single3Reward(Single3RewardConfig.for_candidate('C1'))
     wrapped = embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(FromGymnasium(env, reset_seed=0)))
     driver = embodied.Driver([lambda: wrapped], parallel=False)
     driver.reset(model.init_policy)
@@ -113,6 +226,14 @@ def evaluate(prepared, run_dir, steps=1000):
             raise ValueError('Evaluation account chronology changed')
         advanced += delta
         cursor = env.current_step
+        if shadow is not None and delta:
+            bar=env._raw.iloc[cursor]
+            shadow.step(dict(bar_open=str(env.bobs[cursor]),bar_end=str(env._raw.index[cursor]),
+                **{k.lower():float(bar[k]) for k in ('Open','High','Low','Close')},
+                valid_bar=bool(env.valid_fill_clock[cursor]),eligible_market_minute=False,
+                entries=[f for f in env.fills[shadow_counts['fills']:] if f['reason']=='ENTRY'],
+                exits=env.attributions[shadow_counts['exits']:],true_terminal=env.terminated),env.terms.multiplier)
+            shadow_counts.update(fills=len(env.fills),exits=len(env.attributions))
         rows.append(dict(cursor=cursor, action=int(step['action']),
             mask=np.asarray(step['action_mask']).tolist(), is_first=bool(step['is_first']),
             is_last=bool(step['is_last']), reward_from_previous_action=float(step['reward']),
@@ -123,6 +244,7 @@ def evaluate(prepared, run_dir, steps=1000):
             rows[-1]['b2'] = policy.last_diagnostics['b2']
         if s['mode'] == 'tutor':
             rows[-1]['tutor'] = policy.last_diagnostics['tutor']
+        if s['mode']=='quality_v2': rows[-1]['quality']=policy.last_diagnostics['quality']
     driver.on_step(capture)
     try:
         while advanced < steps:
@@ -140,11 +262,12 @@ def evaluate(prepared, run_dir, steps=1000):
             for r in rows:
                 f.write(json.dumps(r)+'\n')
         write_json(output/'account_state.json', env.export_state())
-        result = signed(dict(status='ACTOR_ONLY_DEV_DIAGNOSTIC_COMPLETE', output=str(output),
-            fold='DEV', contract=env.contract, env_steps=advanced,
+        result = signed(dict(status='ACTOR_ONLY_'+fold+'_DIAGNOSTIC_COMPLETE', output=str(output),
+            fold=fold,evaluation_manifest=manifest_name,contract=env.contract,env_steps=advanced,
             checkpoint=str(node), checkpoint_manifest_sha256=file_hash(node/'manifest.json'),
             devices=[str(d) for d in jax.devices()], oracle_files_read=False, teacher_guidance=False,
             beta=0., policy_mode='eval_argmax', legal_decisions=len(legal),
+            policy_rng='frozen_config_seed_counter_zero',
             actor_add_proposed=sum(r['action'] == 1 for r in legal),
             add_executed=sum(r['action'] == 1 for r in executed), entries=len(entries),
             tp_target_points=5, tp_count=len(tp), sl30=sum(e['reason'] == 'STOP_LOSS' for e in exits),
@@ -169,8 +292,24 @@ def evaluate(prepared, run_dir, steps=1000):
             result = signed(result)
         result = {k:v for k,v in result.items() if k != 'content_hash'}
         result.update(evaluation_metrics(env.export_state(), result))
-        result['causal_prediction_files'] = {name:file_hash(output/name) for name in
-            ('actions.jsonl', 'account_state.json', 'dev_manifest.json', 'dev_env.yaml')}
+        if s['mode']=='quality_v2':
+            from .fg_s3_quality_teacher_v2 import trade_facts
+            actual_quality=[]
+            for event in env.attributions:
+                fill=next(f for f in env.fills if f['reason']=='ENTRY' and f['entry_id']==event['entry_id'])
+                end=int(env._raw.index.get_indexer([pd.Timestamp(event['exit_time'])])[0])
+                actual_quality.append(trade_facts(env,fill,event,end,day_complete=bool(dev['rows'][0]['calendar_complete'])))
+            result['quality']=dict(run_q_admitted=s['quality_q_admitted'],
+                configured_reward=env.total_reward,original_c1_shadow_reward=shadow.total,
+                actual_executed_trade_scores=[f['score'] for f in actual_quality],
+                causal_prediction_source='current causal RSSM; no future labels',calibration_status='NOT_CALIBRATED')
+        names=['actions.jsonl','account_state.json',manifest_name]
+        names.extend(str(Path(p).relative_to(output)) for p in dev['frozen_inputs']
+                     if Path(p).is_relative_to(output))
+        result['causal_prediction_files'] = {name:file_hash(output/name) for name in names}
+        if s['mode']=='quality_v2':
+            for name in ('train_prediction_prior.json',):
+                result['causal_prediction_files'][name]=file_hash(output/name)
         result['agent_extension'] = extensions
         result.update(identity_fields(s))
         result = signed(result)

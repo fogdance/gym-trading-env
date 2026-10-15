@@ -1,0 +1,187 @@
+schema: 2
+product: FG
+market_clock:
+  timezone: Asia/Shanghai
+  minutes_per_day: 345
+  segments:
+  - - '21:00'
+    - '23:00'
+  - - 09:00
+    - '10:15'
+  - - '10:30'
+    - '11:30'
+  - - '13:30'
+    - '15:00'
+directions:
+  date_basis: trading_date
+  intervals:
+  - contract: CZCE.FG609
+    direction: SHORT
+    end: '2026-09-12 00:00:00+08:00'
+    start: '2025-09-15 00:00:00+08:00'
+  - contract: CZCE.FG509
+    direction: SHORT
+    end: '2025-09-12 00:00:00+08:00'
+    start: '2024-09-15 00:00:00+08:00'
+  - contract: CZCE.FG409
+    direction: SHORT
+    end: '2024-09-12 00:00:00+08:00'
+    start: '2023-09-15 00:00:00+08:00'
+  - contract: CZCE.FG309
+    direction: LONG
+    end: '2023-09-12 00:00:00+08:00'
+    start: '2022-09-15 00:00:00+08:00'
+  - contract: CZCE.FG209
+    direction: SHORT
+    end: '2022-09-12 00:00:00+08:00'
+    start: '2021-09-15 00:00:00+08:00'
+  - contract: CZCE.FG109
+    direction: LONG
+    end: '2021-09-12 00:00:00+08:00'
+    start: '2020-09-15 00:00:00+08:00'
+  - contract: CZCE.FG009
+    direction: LONG
+    end: '2020-09-12 00:00:00+08:00'
+    start: '2019-09-15 00:00:00+08:00'
+  - contract: CZCE.FG909
+    direction: LONG
+    end: '2019-09-12 00:00:00+08:00'
+    start: '2018-09-15 00:00:00+08:00'
+  - contract: CZCE.FG605
+    direction: SHORT
+    end: '2026-05-20 00:00:00+08:00'
+    start: '2025-07-24 00:00:00+08:00'
+  - contract: CZCE.FG505
+    direction: SHORT
+    end: '2025-05-20 00:00:00+08:00'
+    start: '2024-05-24 00:00:00+08:00'
+  - contract: CZCE.FG405
+    direction: SHORT
+    end: '2024-05-20 00:00:00+08:00'
+    start: '2023-12-24 00:00:00+08:00'
+  - contract: CZCE.FG305
+    direction: LONG
+    end: '2023-05-20 00:00:00+08:00'
+    start: '2022-11-24 00:00:00+08:00'
+  - contract: CZCE.FG205
+    direction: SHORT
+    end: '2022-05-20 00:00:00+08:00'
+    start: '2021-05-24 00:00:00+08:00'
+  - contract: CZCE.FG105
+    direction: LONG
+    end: '2021-05-20 00:00:00+08:00'
+    start: '2020-05-24 00:00:00+08:00'
+  - contract: CZCE.FG005
+    direction: SHORT
+    end: '2020-05-20 00:00:00+08:00'
+    start: '2019-05-24 00:00:00+08:00'
+  - contract: CZCE.FG905
+    direction: SHORT
+    end: '2019-05-20 00:00:00+08:00'
+    start: '2018-05-24 00:00:00+08:00'
+  - contract: CZCE.FG805
+    direction: SHORT
+    end: '2018-05-20 00:00:00+08:00'
+    start: '2017-05-24 00:00:00+08:00'
+  - contract: CZCE.FG601
+    direction: SHORT
+    end: '2026-01-16 00:00:00+08:00'
+    start: '2025-01-16 00:00:00+08:00'
+  - contract: CZCE.FG501
+    direction: SHORT
+    end: '2025-01-16 00:00:00+08:00'
+    start: '2024-01-16 00:00:00+08:00'
+  - contract: CZCE.FG401
+    direction: LONG
+    end: '2024-01-16 00:00:00+08:00'
+    start: '2023-01-16 00:00:00+08:00'
+  - contract: CZCE.FG301
+    direction: SHORT
+    end: '2023-01-16 00:00:00+08:00'
+    start: '2022-01-16 00:00:00+08:00'
+  - contract: CZCE.FG201
+    direction: SHORT
+    end: '2022-01-16 00:00:00+08:00'
+    start: '2021-07-16 00:00:00+08:00'
+  - contract: CZCE.FG101
+    direction: LONG
+    end: '2021-01-16 00:00:00+08:00'
+    start: '2020-01-16 00:00:00+08:00'
+  - contract: CZCE.FG001
+    direction: LONG
+    end: '2020-01-16 00:00:00+08:00'
+    start: '2019-01-16 00:00:00+08:00'
+  - contract: CZCE.FG901
+    direction: SHORT
+    end: '2019-01-16 00:00:00+08:00'
+    start: '2018-01-16 00:00:00+08:00'
+  - contract: CZCE.FG801
+    direction: LONG
+    end: '2018-01-16 00:00:00+08:00'
+    start: '2017-01-16 00:00:00+08:00'
+  - contract: CZCE.FG809
+    direction: SHORT
+    start: '2018-04-11 00:00:00+08:00'
+    end: '2018-08-09 00:00:00+08:00'
+  timezone: Asia/Shanghai
+costs:
+  source_path: /home/v/Documents/work/gym-trading-env/1.yaml
+  source_sha256: 4fe160d41e692bdaf3a613dde435c7e34de285f8c6fe9e2366cfc14554893982
+  cost_basis: user_configured_constant_not_historical_exchange_schedule
+  lot_size: 20.0
+  margin_rate: 0.1
+  open_fee: 3.0
+  close_fee: 3.0
+  close_today_fee: 3.0
+  spread: 1.0
+  slippage: 0.0
+data:
+  start: '2018-04-10'
+  end_inclusive: '2025-12-31'
+  main_only: true
+  provider: JUEJIN
+  excluded_contracts:
+  - CZCE.FG805
+  quality: user_confirmed_complete
+  split:
+    mode: main_contract_boundaries
+    train_end_inclusive: 20240408
+    validation_end_inclusive: '2024-08-19'
+expiry:
+  mode: main_qualification
+  exit: old_contract_last_executable_close
+  reward: 0
+reward:
+  candidate: C1
+  beta: 0.5
+  rho: 0.4
+  L: 3.0
+  schema: FG_SINGLE3_REWARD_MARKET_MINUTE_V2
+  clock_protocol: S3_MARKET_MINUTE
+environment:
+  strategy_mode: entry_only
+  entry:
+    chunk_steps: 1024
+  trading:
+    is_future: true
+    initial_balance: 300000
+    trade_lot: 3
+    max_long_position: 3
+    max_short_position: 3
+    data_interval: 1m
+    data_tz: Asia/Shanghai
+    obs_feature_mode: obs
+    live_mode: false
+    stop_loss_enabled: true
+    session_policy:
+      force_flatten_eod: false
+      block_open_near_eod: false
+  training:
+    window_size: 60
+    randomize_start: false
+    bar_source: csv
+    episode_policy:
+      truncate_on_session_end: false
+  debug:
+    log_level: ERROR
+protocol: fg_single3_v1

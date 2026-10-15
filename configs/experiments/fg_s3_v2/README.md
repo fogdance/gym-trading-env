@@ -460,3 +460,69 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
 Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
 this F0 task runs CPU admission and tests only, no GPU training. Implementation,
 identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
+
+## Quality-first V1 (2026-10-15)
+
+The accepted Gym patch and real FG201 loss-account evidence are in
+`docs/quality_first_patch_review_20261015/ACCEPTANCE.md`. The implementation
+record is `docs/FG_S3_QUALITY_FIRST_IMPLEMENTATION.md`.
+
+`QUALITY_V2_CPU_SMOKE` and `QUALITY_V2_GPU_1K` now resolve to the user-confirmed
+Quality-first stage: `quality_stage: HEADS_ONLY`, original C1 Reward, `beta: 0`,
+`bc_lambda: 0`. Only Outcome/Quality auxiliary heads train. The inherited
+Encoder/RSSM/Actor/Critic and retained Full Actor/Q modules are frozen. The
+quality target is B(t,d); MAE is a separate target, with no score deduction.
+`QUALITY_FIRST_HEADS_PILOT_10K` is the corresponding proposed small research
+budget. GPU start/resume requires separate authorization and the existing
+`--authorize-training` flag, including diagnostic budgets.
+`QUALITY_FIRST_EVENT_ONLY_PILOT_10K` and
+`QUALITY_FIRST_SCORE_ONLY_PILOT_10K` isolate the auxiliary tasks. All preserve
+the original C1 Reward; the optional Quality TP Reward is a separate later axis.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py prepare --config QUALITY_V2_CPU_SMOKE
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py start --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py resume --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate --prepared artifacts/fg_s3_v2/prepared/QUALITY_FIRST_HEADS_CPU_SMOKE_v1 --eval-steps 100 --output-dir <new-eval-dir>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-eval-dir> --output-dir <new-posthoc-dir>
+```
+
+Use a new experiment/prepared/run name if a directory already exists. Source
+changes invalidate old preparation; preserve those receipts and prepare anew.
+The CPU-only `tools/fg_s3_quality_v2.py inspect --prepared ... --output-dir ...
+--steps 250 --beta 0` builds an independently signed TRAIN quality Catalog
+from a scripted native trajectory, without neural training. Its counterfactual
+profits overlap and must not be summed as executable PnL.
+
+The retained `QUALITY_V2_{B1,B2,B3,FULL}_PILOT_10K` files are later controlled
+experiment templates. They intentionally fail preparation while prediction
+admission is missing. Enabling `CONTROLLED_FULL` requires a checkpoint-bound,
+disjoint TRAIN holdout evaluation with measured improvements over the TRAIN
+prior and reference, plus independent DEV evidence. Numeric Q fusion has a
+separate proof gate. None of these templates authorizes training.
+
+Quality evaluation also supports a TRAIN contract excluded from the new
+quality-head supervision (the historical source Backbone can have seen it):
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate --prepared <prepared> --eval-steps 100 --holdout-contract CZCE.FG401 --output-dir <new-holdout-inference>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py evaluate-reference --eval-dir <sealed-holdout-inference> --source-checkpoint <initial-checkpoint> --eval-device cpu --output-dir <new-reference-inference>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-holdout-inference> --output-dir <new-holdout-posthoc>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py score-predictions --eval-dir <sealed-reference-inference> --output-dir <new-reference-posthoc>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py compare-predictions --eval-dir <holdout-posthoc> --reference-dir <reference-posthoc> --output-dir <new-comparison>
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_quality_v2.py validate --catalog <checkpoint-catalog.json>
+```
+
+Reference predictions reconstruct their own model carry on the sealed actual
+actions; their account return is not an autonomous reference-Actor result.
+All future labels are generated after causal predictions are sealed. Catalog
+validation authenticates the committed journal prefix, TRAIN sources,
+teacher/Replay ownership, preparation, code and optional FullCheckpoint.
+
+`quality_max_market_steps` defaults to null (native replay to exit/data end).
+A positive integer bounds counterfactual exposure in valid market minutes;
+an unfinished trade becomes RIGHT_CENSORED with missing quality score and
+independently masked outcomes. This setting is part of the teacher identity.
+Controlled Full preparation additionally binds the actual evaluated predictor
+Checkpoint; transfer copies its four predictor parameter groups and requires
+an identical fixed base NN. Optimizer slots and Q networks remain separate.
