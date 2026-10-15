@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "supplied_three_files_byte_identical": true,
+  "ast_files": [
+    "src/gym_trading_env/research/fg_s3_quality_score.py",
+    "src/gym_trading_env/research/fg_s3_quality_teacher.py",
+    "tests/entry_v1/test_fg_s3_quality_teacher.py",
+    "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py",
+    "tools/fg_s3_quality_patch_acceptance.py"
+  ],
+  "zip_sha256": "a4f1048995079ede07b3a0a3ea058862a4c7cae5f9d539b3f889fd1a90aa7a33",
+  "files": {
+    "src/gym_trading_env/research/fg_s3_quality_score.py": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+    "src/gym_trading_env/research/fg_s3_quality_teacher.py": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959",
+    "tests/entry_v1/test_fg_s3_quality_teacher.py": "152adb898a466d001c22933f3659846ef3dd785cc3d757a85c51eee7f7607274",
+    "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py": "8ce6e1ccf91f20ba06e5568dbe06b25cbc3d5418c75b4a3063a5f59654dc8d22",
+    "tools/fg_s3_quality_patch_acceptance.py": "253f5025cc4864236ea5f712361127313843e6f235f2752e43e4fbd38fc5fbdf"
+  }
+}

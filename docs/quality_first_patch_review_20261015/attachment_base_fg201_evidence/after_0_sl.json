@@ -1,0 +1,613 @@
+{
+  "starting_state": {
+    "schema": 3,
+    "contract": "CZCE.FG201",
+    "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+    "cursor_time": "2021-07-23 21:01:00+08:00",
+    "prefix_hash": "e876827a946c1928e49e6cd97158eeed5ebb9358dfbc7e1d002b396f42e81120",
+    "balances": {
+      "user_cash": "300000",
+      "user_margin": "0.0",
+      "broker_fee_income": "0.0",
+      "broker_pnl": "0.0"
+    },
+    "ledger_entries": [],
+    "long_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "short_positions": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "closed_trade_profits": [],
+    "realized_pnl": "0.0",
+    "unrealized_pnl": "0.0",
+    "trade_history": [],
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 35399562948360463058890781895381311971,
+        "inc": 87136372517582989555478159403783844777
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    },
+    "rewarded": [],
+    "processed_fills": [],
+    "current_step": 0,
+    "episode_step_count": 0,
+    "chunk_count": 0,
+    "entry_sequence": 0,
+    "account_sequence": 1,
+    "current_price": "2990.0",
+    "entries": {},
+    "fills": [],
+    "attributions": [],
+    "reward_events": [],
+    "equity_history": [
+      {
+        "time": "2021-07-23 21:01:00+08:00",
+        "equity": 300000.0,
+        "unrealized_pnl": 0.0,
+        "net_lots": 0.0,
+        "intrabar": false
+      }
+    ],
+    "total_reward": 0.0,
+    "max_floating_loss": 0.0,
+    "legal_add_decisions": 0,
+    "voluntary_waits": 0,
+    "status": "ACTIVE",
+    "terminated": false,
+    "truncated": false,
+    "pending_reason": null,
+    "completed_accounts": [],
+    "reward_state": {
+      "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+      "config": {
+        "candidate": "C1",
+        "beta": 0.5,
+        "rho": 0.4,
+        "L": 3.0,
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "clock_protocol": "S3_MARKET_MINUTE"
+      },
+      "scorer": {
+        "schema": 2,
+        "config": {
+          "beta": 0.5,
+          "rho": 0.4,
+          "lam": 0.0,
+          "alpha": 0.0,
+          "gamma": 0.996996996996997,
+          "risk_points": 10.0,
+          "take_profit_points": 5.0,
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "active": {},
+        "closed": {},
+        "seen": [],
+        "last_mark": null,
+        "last_end": null,
+        "step_number": 0,
+        "totals": {
+          "v0": 0.0,
+          "tp_timeboxed": 0.0,
+          "early": 0.0,
+          "potential": 0.0,
+          "capacity": 0.0,
+          "v2": 0.0,
+          "v3": 0.0,
+          "capacity_basis": 0.0
+        },
+        "discounted": {
+          "v0": 0.0,
+          "v2": 0.0,
+          "v3": 0.0
+        },
+        "discount_weight": 1.0,
+        "ambiguities": 0,
+        "sha256": "7c75fb8a5942a55f76ea1666a5a5867741da12a246260c536869d0cdba2ef293"
+      },
+      "total": 0.0
+    },
+    "last_reward_components": null
+  },
+  "quality": {
+    "protocol": "FG_S3_QUALITY_TEACHER_POSTHOC_V1",
+    "score_protocol": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+    "fold": "TRAIN",
+    "training_action_label_allowed": false,
+    "rule_identity": {
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6",
+      "direction_hash": "9b6ed3eb7de0e43aea6d843a7b27c50538bde6871c181f100ae31b3d154a55f9",
+      "reward_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c"
+    },
+    "decision_snapshot_hash": "de8c41ad05c088a36ecfefd8f826ab22c813fda7d4a9dc98c4553a7cda0e64c4",
+    "decision_state_hash": "a333ac2d2fe65de755602be969c32d06ae2a7db308efe7cbf4c1b333bfa94c8b",
+    "decision_cursor": 0,
+    "starting_equity": "300000.0",
+    "actual_action_mask": [
+      1,
+      1
+    ],
+    "strict_decision_valid": true,
+    "strict_oracle": {
+      "valid": true,
+      "certified": true,
+      "action": 0,
+      "reason": "CERTIFIED_SUFFIX_DOMINANCE",
+      "oracle_identity": "0255359f3dd233fcdba31dd29e6a8a70759b3ff0f970f58d12573fd2b3de7e5c",
+      "proof_hash": "aecaf1955bded773670f3cea701543acb962656b9fc61b1d7c1101b6699cb4c9"
+    },
+    "immediate_add_outcome_valid": true,
+    "quality_valid": true,
+    "quality_score": 100.0,
+    "tp_event_reward_new": 1.0,
+    "new_reward_undiscounted": 0.9999999711590428,
+    "old_reward_undiscounted": 0.9677419066429138,
+    "outcome": "TAKE_PROFIT",
+    "reason": "OBSERVED_TP",
+    "old_tp_event_reward": 0.967741935483871,
+    "entry_cursor": 1,
+    "exit_cursor": 2,
+    "entry_time": "2021-07-23 21:01:00+08:00",
+    "exit_time": "2021-07-23 21:03:00+08:00",
+    "market_minutes": 2,
+    "later_trading_days": 0,
+    "mae_quote_envelope_points": 5.0,
+    "net_trade_pnl": "282.0",
+    "exit_event_hash": "be62730fbbb9272eb7f3bfe11d3213f44ceaea0f8d04b9491c2ab8f243fc8b6b",
+    "official_entry_date": "2021-07-26",
+    "official_exit_date": "2021-07-26",
+    "add_better_than_wait": null
+  },
+  "independent_reference": {
+    "initial_state_hash": "de8c41ad05c088a36ecfefd8f826ab22c813fda7d4a9dc98c4553a7cda0e64c4",
+    "feedback": [
+      [
+        1,
+        0.0
+      ],
+      [
+        2,
+        0.9677419066429138
+      ]
+    ],
+    "events": [
+      {
+        "entry_id": "CZCE.FG201:1:1",
+        "side": "SHORT",
+        "entry_time": "2021-07-23 21:01:00+08:00",
+        "exit_time": "2021-07-23 21:03:00+08:00",
+        "entry_price": "2988",
+        "exit_price": "2983",
+        "closed_quantity": 3,
+        "reason": "TAKE_PROFIT",
+        "committed": true,
+        "gross_trade_pnl": "300.0",
+        "open_fee": "9.0",
+        "close_fee": "9.0",
+        "net_trade_pnl": "282.0",
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2021-07-23 21:03:00+08:00",
+        "entry_cursor": 1,
+        "exit_cursor": 2,
+        "held_market_bars": 2,
+        "clock_protocol": "S3_MARKET_MINUTE",
+        "tp_market_minutes": 2
+      }
+    ],
+    "final_state": {
+      "schema": 3,
+      "contract": "CZCE.FG201",
+      "config_hash": "5d37cd61b138cac61eafc4205734692d5c335ec33e58ed52acb0ca3b348cb25b",
+      "cursor_time": "2021-07-23 21:03:00+08:00",
+      "prefix_hash": "102ddeaad37d0259dc1dbe54ef6b685dc9610eec3dd4a1e806ab647f9f6b9ec7",
+      "balances": {
+        "user_cash": "300282.00",
+        "user_margin": "0.00",
+        "broker_fee_income": "18.0",
+        "broker_pnl": "-300.0"
+      },
+      "ledger_entries": [
+        {
+          "timestamp": "2021-07-23 21:01:00+08:00",
+          "memo": "SHORT_OPEN",
+          "postings": [
+            {
+              "account": "user_cash",
+              "amount": "-17937.00"
+            },
+            {
+              "account": "user_margin",
+              "amount": "17928.00"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "price": "2988"
+          }
+        },
+        {
+          "timestamp": "2021-07-23 21:03:00+08:00",
+          "memo": "SHORT_CLOSE",
+          "postings": [
+            {
+              "account": "user_margin",
+              "amount": "-17928.00"
+            },
+            {
+              "account": "broker_pnl",
+              "amount": "-300.0"
+            },
+            {
+              "account": "broker_fee_income",
+              "amount": "9.0"
+            },
+            {
+              "account": "user_cash",
+              "amount": "18219.00"
+            }
+          ],
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "close_price": "2983",
+            "pnl": "300.0"
+          }
+        }
+      ],
+      "long_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "short_positions": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "closed_trade_profits": [
+        "300.0"
+      ],
+      "realized_pnl": "300.0",
+      "unrealized_pnl": "0",
+      "trade_history": [
+        {
+          "timestamp": "2021-07-23T21:01:00+08:00",
+          "operation_type": "SHORT_OPEN",
+          "position_size": "3",
+          "open_price": "2988",
+          "close_price": "0",
+          "required_margin": "17928.00",
+          "fee": "9.0",
+          "balance": "282063.00",
+          "leverage": "1E+1",
+          "free_margin": "282063.00",
+          "pnl": "0.0",
+          "closed_size": "0.0",
+          "released_margin": "0.0",
+          "meta": {
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        },
+        {
+          "timestamp": "2021-07-23T21:03:00+08:00",
+          "operation_type": "SHORT_CLOSE",
+          "position_size": "3",
+          "open_price": "2988",
+          "close_price": "2983",
+          "required_margin": "0",
+          "fee": "9.0",
+          "balance": "300282.00",
+          "leverage": "1E+1",
+          "free_margin": "300402.00",
+          "pnl": "300.0",
+          "closed_size": "3",
+          "released_margin": "17928.00",
+          "meta": {
+            "side": "short",
+            "slot": 0,
+            "reason": "TAKE_PROFIT",
+            "entry_id": "CZCE.FG201:1:1",
+            "fill_model": "minute_tp5_sl30_risk_first_v1"
+          }
+        }
+      ],
+      "rng": {
+        "bit_generator": "PCG64",
+        "state": {
+          "state": 35399562948360463058890781895381311971,
+          "inc": 87136372517582989555478159403783844777
+        },
+        "has_uint32": 0,
+        "uinteger": 0
+      },
+      "rewarded": [
+        "CZCE.FG201:1:1"
+      ],
+      "processed_fills": [
+        "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3"
+      ],
+      "current_step": 2,
+      "episode_step_count": 2,
+      "chunk_count": 2,
+      "entry_sequence": 1,
+      "account_sequence": 1,
+      "current_price": "2973.0",
+      "entries": {},
+      "fills": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 21:01:00+08:00",
+          "side": "SHORT",
+          "quantity": 3,
+          "price": "2988",
+          "reason": "ENTRY",
+          "committed": true
+        },
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "time": "2021-07-23 21:03:00+08:00",
+          "side": "SHORT",
+          "quantity": "3",
+          "price": "2983",
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "fill_id": "CZCE.FG201:1:1|2021-07-23 21:03:00+08:00|TAKE_PROFIT|3"
+        }
+      ],
+      "attributions": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:01:00+08:00",
+          "exit_time": "2021-07-23 21:03:00+08:00",
+          "entry_price": "2988",
+          "exit_price": "2983",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:03:00+08:00",
+          "entry_cursor": 1,
+          "exit_cursor": 2,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2
+        }
+      ],
+      "reward_events": [
+        {
+          "entry_id": "CZCE.FG201:1:1",
+          "side": "SHORT",
+          "entry_time": "2021-07-23 21:01:00+08:00",
+          "exit_time": "2021-07-23 21:03:00+08:00",
+          "entry_price": "2988",
+          "exit_price": "2983",
+          "closed_quantity": 3,
+          "reason": "TAKE_PROFIT",
+          "committed": true,
+          "gross_trade_pnl": "300.0",
+          "open_fee": "9.0",
+          "close_fee": "9.0",
+          "net_trade_pnl": "282.0",
+          "ambiguous_tp_sl": false,
+          "same_entry_bar": false,
+          "price_reference_time": "2021-07-23 21:03:00+08:00",
+          "entry_cursor": 1,
+          "exit_cursor": 2,
+          "held_market_bars": 2,
+          "clock_protocol": "S3_MARKET_MINUTE",
+          "tp_market_minutes": 2,
+          "reward": 0.967741935483871
+        }
+      ],
+      "equity_history": [
+        {
+          "time": "2021-07-23 21:01:00+08:00",
+          "equity": 300000.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 299691.0,
+          "unrealized_pnl": -300.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:02:00+08:00",
+          "equity": 300291.0,
+          "unrealized_pnl": 300.0,
+          "net_lots": 3.0,
+          "intrabar": false
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300111.0,
+          "unrealized_pnl": 120.0,
+          "net_lots": 3.0,
+          "intrabar": true
+        },
+        {
+          "time": "2021-07-23 21:03:00+08:00",
+          "equity": 300282.0,
+          "unrealized_pnl": 0.0,
+          "net_lots": 0.0,
+          "intrabar": false
+        }
+      ],
+      "total_reward": 0.967741935483871,
+      "max_floating_loss": 300.0,
+      "legal_add_decisions": 1,
+      "voluntary_waits": 0,
+      "status": "ACTIVE",
+      "terminated": false,
+      "truncated": false,
+      "pending_reason": null,
+      "completed_accounts": [],
+      "reward_state": {
+        "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+        "config": {
+          "candidate": "C1",
+          "beta": 0.5,
+          "rho": 0.4,
+          "L": 3.0,
+          "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+          "clock_protocol": "S3_MARKET_MINUTE"
+        },
+        "scorer": {
+          "schema": 2,
+          "config": {
+            "beta": 0.5,
+            "rho": 0.4,
+            "lam": 0.0,
+            "alpha": 0.0,
+            "gamma": 0.996996996996997,
+            "risk_points": 10.0,
+            "take_profit_points": 5.0,
+            "clock_protocol": "S3_MARKET_MINUTE"
+          },
+          "active": {},
+          "closed": {
+            "CZCE.FG201:1:1": {
+              "entry_id": "CZCE.FG201:1:1",
+              "side": "SHORT",
+              "entry_time": "2021-07-23 21:01:00+08:00",
+              "entry_price": 2988.0,
+              "bars_seen": 2,
+              "adverse10_fired": false,
+              "adverse_first_bar": null,
+              "early_penalty": 0.0,
+              "capacity_basis": 0.0,
+              "exit_time": "2021-07-23 21:03:00+08:00",
+              "exit_reason": "TAKE_PROFIT",
+              "tp_minutes": null,
+              "tp_market_minutes": 2,
+              "original_tp": 0.967741935483871,
+              "timeboxed_tp": 0.967741935483871,
+              "intrabar_ambiguous": false
+            }
+          },
+          "seen": [
+            "CZCE.FG201:1:1"
+          ],
+          "last_mark": 2973.0,
+          "last_end": "2021-07-23 21:03:00+08:00",
+          "step_number": 2,
+          "totals": {
+            "v0": 0.967741935483871,
+            "tp_timeboxed": 0.967741935483871,
+            "early": 0.0,
+            "potential": 0.0,
+            "capacity": 0.0,
+            "v2": 0.967741935483871,
+            "v3": 0.967741935483871,
+            "capacity_basis": 0.0
+          },
+          "discounted": {
+            "v0": 0.9648358035454809,
+            "v2": 0.9648358035454809,
+            "v3": 0.9648358035454809
+          },
+          "discount_weight": 0.9940030120210299,
+          "ambiguities": 0,
+          "sha256": "3bd0fe62b42c8cb8a9057d7ec83c57f40307a63ed2ec1f62501d29cec6b28674"
+        },
+        "total": 0.967741935483871
+      },
+      "last_reward_components": {
+        "tp": 0.967741935483871,
+        "early": 0.0,
+        "sl": 0.0,
+        "other": 0.0,
+        "total": 0.967741935483871,
+        "legacy_tp": 0.967741935483871,
+        "early_first5": 0,
+        "early_next10": 0,
+        "penalized": [],
+        "intrabar_ambiguous": [],
+        "events": [
+          {
+            "entry_id": "CZCE.FG201:1:1",
+            "side": "SHORT",
+            "entry_time": "2021-07-23 21:01:00+08:00",
+            "exit_time": "2021-07-23 21:03:00+08:00",
+            "entry_price": "2988",
+            "exit_price": "2983",
+            "closed_quantity": 3,
+            "reason": "TAKE_PROFIT",
+            "committed": true,
+            "gross_trade_pnl": "300.0",
+            "open_fee": "9.0",
+            "close_fee": "9.0",
+            "net_trade_pnl": "282.0",
+            "ambiguous_tp_sl": false,
+            "same_entry_bar": false,
+            "price_reference_time": "2021-07-23 21:03:00+08:00",
+            "entry_cursor": 1,
+            "exit_cursor": 2,
+            "held_market_bars": 2,
+            "clock_protocol": "S3_MARKET_MINUTE",
+            "tp_market_minutes": 2,
+            "reward": 0.967741935483871
+          }
+        ]
+      }
+    }
+  },
+  "patch_final_state_hash": "2e9e90d8cb3cc13a614e4547856f666e59876d403c1972d28f12e1cf9802bc69",
+  "original_state_unchanged": true,
+  "observations_unchanged": true,
+  "market_and_features_unchanged": true,
+  "state_path_unchanged": true
+}
