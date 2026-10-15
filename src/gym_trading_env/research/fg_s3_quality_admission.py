@@ -95,6 +95,8 @@ def validate_policy(policy):
 def checkpoint_policy(node):
     """Policy is owned by the initial FullCheckpoint, not attached post hoc."""
     node=Path(node).resolve();meta=validate_bundle(node);identity=meta['identity']
+    if meta['step']!=identity['env_steps']:
+        raise ValueError('Admission requires the final predeclared Env budget, not a selected intermediate Checkpoint')
     if identity.get('mode')!='quality_v2' or identity.get('quality_score_policy')!='FG_S3_QUALITY_TP_MARKET_DAY_V1':
         raise ValueError('Admission Checkpoint uses a different quality protocol')
     binding=identity.get('quality_admission_policy')
@@ -255,6 +257,7 @@ def require_prediction_admission(path):
         model_origin=read_manifest(node.parent.parent/'source_admission.json')['origin']['identity_hash']
         target=meta['identity']
         if (model_origin!=origin or identity['agent_extension']!=target['agent_extension'] or
+                identity['env_steps']!=target['env_steps'] or identity['model_config_sha256']!=target['model_config_sha256'] or
                 any(identity['training_identity'][k]!=target['training_identity'][k] for k in
                     ('training_hash','reward_params_hash','observation_identity'))):
             raise ValueError('Replications changed the fixed model, reward or TRAIN source')
