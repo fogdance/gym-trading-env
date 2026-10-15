@@ -1,0 +1,149 @@
+{
+  "status": "PASS",
+  "summary": [
+    {
+      "mode": "A2",
+      "status": "PASS_FORMAL_PREPARE_AND_SOURCE_AUDIT",
+      "prepared": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016",
+      "manifest_sha256": "211d5ee450aad2cad77ca58aeaa4ad45fc307f55443a1eaaba324df443862651",
+      "content_hash": "5cd44d1aa0bdfba86689a27dcbb04e58d41cb9387621d420c542bb34d5ed4c18",
+      "versions": {
+        "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env": "a230fbe98e1c441bca4a9424bd3259ac078150f8",
+        "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/dreamerv3": "930d76446ac86fbb18b65a4f79eac263d89dafc4"
+      },
+      "scope": "REAL_TRAIN_FORMAL_E_A2_CPU_GPU_ACCEPTED",
+      "contracts": 18,
+      "kind": "direct_init",
+      "gate_actor_enabled": false,
+      "authorization": "REQUIRED",
+      "formal_1m": "NOT_RUN",
+      "new_environment_steps": 0,
+      "raw_exit_code": null,
+      "completion_evidence": "Signed receipt, complete stdout JSON, immutable files and current runtime code all verified; original exec handle lost during daemon restart."
+    },
+    {
+      "mode": "B2",
+      "status": "PASS_FORMAL_PREPARE_AND_SOURCE_AUDIT",
+      "prepared": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016",
+      "manifest_sha256": "1d5e0bc5366325eff9c0793dc1e9bb5e682079ffff9d6c5a49247cfc4b26b218",
+      "content_hash": "3f8532fbe1ccbe0d4db6e09cdfffd155180454bb4ecb60de5e6418e2b61ac003",
+      "versions": {
+        "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env": "a230fbe98e1c441bca4a9424bd3259ac078150f8",
+        "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/dreamerv3": "930d76446ac86fbb18b65a4f79eac263d89dafc4"
+      },
+      "scope": "REAL_TRAIN_FORMAL_E_B2_CPU_GPU_ACCEPTED",
+      "contracts": 18,
+      "kind": "direct_init",
+      "gate_actor_enabled": false,
+      "authorization": "REQUIRED",
+      "formal_1m": "NOT_RUN",
+      "new_environment_steps": 0,
+      "raw_exit_code": null,
+      "completion_evidence": "Signed receipt, complete stdout JSON, immutable files and current runtime code all verified; original exec handle lost during daemon restart."
+    }
+  ],
+  "files": [
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/experiment.yaml",
+      "copy": "formal/A2/experiment.yaml",
+      "sha256": "109c285182fb675c7bc0a6b47e53b47945797217e99567d3a00a2d8d67c6b260",
+      "bytes": 1407
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/manifest.json",
+      "copy": "formal/A2/manifest.json",
+      "sha256": "211d5ee450aad2cad77ca58aeaa4ad45fc307f55443a1eaaba324df443862651",
+      "bytes": 90166
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/model_config.json",
+      "copy": "formal/A2/model_config.json",
+      "sha256": "42d8857e8277384193a7a33f48c9bddeef79c564f0db887f6dc27e128a6050f8",
+      "bytes": 59002
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/oracle_pool.json",
+      "copy": "formal/A2/oracle_pool.json",
+      "sha256": "55615357b0f411008974ac4a69cd45e5660bf954eadf310face81c2263fdafce",
+      "bytes": 1869
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/selector.yaml",
+      "copy": "formal/A2/selector.yaml",
+      "sha256": "21cbf367ddd4c07379228e5a82a5902d4440eb3b3b432b4c9c1ad1fcf56ff273",
+      "bytes": 270
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/settings.json",
+      "copy": "formal/A2/settings.json",
+      "sha256": "bb4606890c860531d62a15b8e4e9056b0419d5c262b2a0d52afac81e2c6b5301",
+      "bytes": 2411
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/source_admission.json",
+      "copy": "formal/A2/source_admission.json",
+      "sha256": "ff12896ac47759d2f1249e7caf04fe252154a60b1c5a4724c991e1750dbd0e16",
+      "bytes": 130501
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/train_pool.json",
+      "copy": "formal/A2/train_pool.json",
+      "sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b",
+      "bytes": 22182
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/experiment.yaml",
+      "copy": "formal/B2/experiment.yaml",
+      "sha256": "d57a03c1dfb7b329914f34247cd6e5450c66ac12915f369b0db5f3128872bd57",
+      "bytes": 1592
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/manifest.json",
+      "copy": "formal/B2/manifest.json",
+      "sha256": "1d5e0bc5366325eff9c0793dc1e9bb5e682079ffff9d6c5a49247cfc4b26b218",
+      "bytes": 90266
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/model_config.json",
+      "copy": "formal/B2/model_config.json",
+      "sha256": "843f885ec0aae2afae4b69082c85b15a812b701041bf7c2f1a49ea13d1b305e6",
+      "bytes": 59273
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/oracle_pool.json",
+      "copy": "formal/B2/oracle_pool.json",
+      "sha256": "55615357b0f411008974ac4a69cd45e5660bf954eadf310face81c2263fdafce",
+      "bytes": 1869
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/outcome_catalog.json",
+      "copy": "formal/B2/outcome_catalog.json",
+      "sha256": "d16808805df46f0f122e3d7b72552677587eeb9ededa7598c993f45bb1ea1765",
+      "bytes": 2170
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/selector.yaml",
+      "copy": "formal/B2/selector.yaml",
+      "sha256": "6d04cbd4ecb70187ed4a8f66fd0cae2fab710145125fd1af1ba53195823f3154",
+      "bytes": 275
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/settings.json",
+      "copy": "formal/B2/settings.json",
+      "sha256": "e913b79003db5a094cde74082e747c99ba70a7f9f42278d26473240c1964448b",
+      "bytes": 2656
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/source_admission.json",
+      "copy": "formal/B2/source_admission.json",
+      "sha256": "d225a37290f39d041684ca2457a792dc14e6bb424ce948b00f7a609a68823325",
+      "bytes": 131065
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016/train_pool.json",
+      "copy": "formal/B2/train_pool.json",
+      "sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b",
+      "bytes": 22182
+    }
+  ]
+}

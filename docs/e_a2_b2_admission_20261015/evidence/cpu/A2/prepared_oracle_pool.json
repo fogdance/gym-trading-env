@@ -1,0 +1,12 @@
+{
+  "identity": {
+    "protocol": "FG_S3_V2_ORACLE_POOL_V1",
+    "fold": "TRAIN",
+    "manifest_hash": "795c19f0c55c906950ea227cfa43eaa61d3b92f53e1da6ff48c9fed53ee42bce",
+    "queries": {
+      "CZCE.FG201": "69c440cd700742aae31290364eaee87c027a633afd24625f5a49d34c141731b1",
+      "CZCE.FG301": "de24522f4c01688f0fdbe1075af3e0f4cd97512c4291e00bd9393ca2b00b0a5b"
+    }
+  },
+  "content_hash": "425e1a3e5ee8d185b4678d0e8a65a268d1e2f2943c98f154b53aaa7ef04a09c0"
+}

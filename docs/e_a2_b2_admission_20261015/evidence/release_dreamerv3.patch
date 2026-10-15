@@ -1,0 +1,77 @@
+diff --git a/dreamerv3/fg_s3_composition.py b/dreamerv3/fg_s3_composition.py
+index aa4eff9..198af32 100644
+--- a/dreamerv3/fg_s3_composition.py
++++ b/dreamerv3/fg_s3_composition.py
+@@ -33,10 +33,9 @@ def resolve_composition(config):
+         raise ValueError('Unknown encoder; select '+', '.join(ENCODERS))
+     if not isinstance(teaching, str) or teaching not in TEACHING:
+         raise ValueError('Unknown teaching; select '+', '.join(TEACHING))
+-    # The user released E + Tutor-CD for formal entry on 2026-10-15.
+-    # Other E teaching combinations retain their existing readiness gate.
+-    state = ('waiting_tutor_b2' if teaching == 'tutor_cd_b2' else
+-             'waiting_e' if encoder != 'legacy_1m' and teaching != 'tutor_cd' else 'ready')
++    # E+A2 and E+B2 passed real TRAIN CPU, size50m GPU 1K and cold resume.
++    # Tutor-CD retains its prior release; joint Tutor+B2 is still unimplemented.
++    state = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else 'ready'
+     return dict(encoder=encoder, teaching=teaching, base_oracle_bc=True,
+         use_e=encoder != 'legacy_1m', use_tutor=teaching in ('tutor_cd', 'tutor_cd_b2'),
+         use_b2=teaching in ('b2', 'tutor_cd_b2'), legacy_mode=MODES[teaching],
+diff --git a/embodied/run/fg_s3_e_source.py b/embodied/run/fg_s3_e_source.py
+index 7424fe5..f7bba41 100644
+--- a/embodied/run/fg_s3_e_source.py
++++ b/embodied/run/fg_s3_e_source.py
+@@ -14,6 +14,11 @@ SYNTHETIC = 'FG_S3_E_MODEL_SYNTHETIC_V1'
+ REAL = 'S3_E_DATA_V1'
+ REAL_SCOPE = 'REAL_TRAIN_ACCEPTANCE_ONLY_NOT_FORMAL_RELEASED'
+ FORMAL_SCOPE = 'REAL_TRAIN_FORMAL_E_TUTOR_CD_USER_RELEASED'
++FORMAL_SCOPES = {
++    'a2': 'REAL_TRAIN_FORMAL_E_A2_CPU_GPU_ACCEPTED',
++    'tutor_cd': FORMAL_SCOPE,
++    'b2': 'REAL_TRAIN_FORMAL_E_B2_CPU_GPU_ACCEPTED',
++}
+ 
+ 
+ def source_code():
+@@ -31,9 +36,9 @@ def make_binding(config, composition, data_manifest, *, diagnostic=True):
+     composition = validate_model_composition(composition, config['agent']['enc']['typ'])
+     if type(diagnostic) is not bool:
+         raise ValueError('E binding requires an explicit diagnostic boolean')
+-    if not diagnostic and (composition['teaching'] != 'tutor_cd'
++    if not diagnostic and (composition['teaching'] not in FORMAL_SCOPES
+                            or composition['support_state'] != 'ready'):
+-        raise ValueError('Formal E entry is released only for E + Tutor-CD')
++        raise ValueError('Formal E entry requires a released individual teaching mode')
+     path = Path(data_manifest).resolve(strict=True)
+     data = json.loads(path.read_text())
+     if data.get('schema') == REAL and data.get('kind') == 'collection':
+@@ -47,7 +52,7 @@ def make_binding(config, composition, data_manifest, *, diagnostic=True):
+         from e_data_v1.reference import load_legacy
+         if data['schema_sha256'] != EDataConfig().schema(load_legacy()[1])['schema_sha256']:
+             raise ValueError('E real TRAIN collection mathematical code/schema changed; rebuild required')
+-        scope = REAL_SCOPE if diagnostic else FORMAL_SCOPE
++        scope = REAL_SCOPE if diagnostic else FORMAL_SCOPES[composition['teaching']]
+         data_id = data['index_sha256']
+         schema_hash, pool_hash = data['schema_sha256'], data['source_pool_sha256']
+     elif data.get('schema') == SYNTHETIC:
+diff --git a/embodied/tests/test_fg_s3_e_checkpoint.py b/embodied/tests/test_fg_s3_e_checkpoint.py
+index dd2deec..5763544 100644
+--- a/embodied/tests/test_fg_s3_e_checkpoint.py
++++ b/embodied/tests/test_fg_s3_e_checkpoint.py
+@@ -57,7 +57,7 @@ def test_EM15_full_checkpoint_continuous_vs_interrupted_exact(mode,tmp_path):
+             counters.state['all_updates']+=1
+         a.sync_policy_from_train()
+         cp.save();node=cp.latest();manifest=validate_bundle(node,identity)
+-        assert manifest['identity']['resolved_composition']['support_state']=='waiting_e'
++        assert manifest['identity']['resolved_composition']['support_state']=='ready'
+         assert all(any(k.startswith(p) for k in a.params) for p in
+                    ('enc/minute/','enc/context15/','enc/fusion/'))
+         for wrong in ({**identity,'resolved_composition':composition('b2' if mode!='b2' else 'a2')},
+@@ -95,7 +95,7 @@ def test_EM15_full_checkpoint_continuous_vs_interrupted_exact(mode,tmp_path):
+             parameters=parameter_digests(a.params),agent_counters=a.save_exact()['counters'],
+             next_metrics=next_metrics,exact_model_optimizer=True,exact_policy=True,
+             exact_replay_sample=True,exact_driver_env_sidecar=True,exact_rng_and_counters=True,
+-            production_resume='BLOCKED_BY_E_DATA_AND_REVIEW')
++            production_resume='SYNTHETIC_CHECKPOINT_NOT_FOR_FORMAL_TRAINING')
+         (tmp_path/'checkpoint_evidence.json').write_text(json.dumps(receipt,indent=2))
+     finally:
+         ca.close()

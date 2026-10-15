@@ -1,0 +1,39 @@
+{
+  "identity": {
+    "protocol": "FG_S3_B2_OUTCOME_POOL_MARKET_MINUTE_V1",
+    "fold": "TRAIN",
+    "clock_protocol": "S3_MARKET_MINUTE",
+    "horizon_market_bars": 60,
+    "events": [
+      "TP_FAST",
+      "TP_MID",
+      "TP_LATE",
+      "SL",
+      "OTHER",
+      "OPEN_AT_H"
+    ],
+    "oracle_pool_identity": "d0ea85cfcd318f0ba11284c0dd3d38ef3923e1e67623517c71b058355be6ae9c",
+    "catalogs": {
+      "CZCE.FG001": "76bada0495c6b0c0f8bb164464246cdff3bb776b74116b234c37bd563feb1a64",
+      "CZCE.FG005": "c44ef038c4aac6e44be51e6529c1827f9e9321242edd41b1f24ea86e90afffa6",
+      "CZCE.FG009": "7d7831238af4b32da3769cec6ad94339a562530c5e162b7cb0e09e6a2428818f",
+      "CZCE.FG101": "22e5038816bcae7df6f2713a80ec1777324f2eca5950c7d4a97315aba6fee40a",
+      "CZCE.FG105": "95a382dd0c7d76c64f473e28e6cff36fc9a307b700358c221b3adc1aacb4dc7f",
+      "CZCE.FG109": "70e9e0627b12f66fe0d1735c8053a376b86133596c41d9e9e6211e2aaac315cb",
+      "CZCE.FG201": "51eccd7dc324440a63d3310c2f1cb4fd3f8354373c7b034da191482b6f31e412",
+      "CZCE.FG205": "407ff410b0db791471b58fea69c85679225e81f37a49716fa094683f26a5bee4",
+      "CZCE.FG209": "af779caa21602fa81d6dd048557b805163414466be84acec16d68c8d199c6a8c",
+      "CZCE.FG301": "9ddc2ce7c0ad92581df00ce6cd61cfe5c7e267569dcb5e741f15b07e4c1d980a",
+      "CZCE.FG305": "756ab392507498f896a0e92994607faebb2c8aa4dd78a114125ef42055b039c0",
+      "CZCE.FG309": "1dd3a486aca8b2c37df849cbd09152ac309a893457d375d5c0631d84a1da6440",
+      "CZCE.FG401": "5a2ad9c3ccf25e39282ad612dca2f986734963cf5eda3b478cc106da78dcb65a",
+      "CZCE.FG405": "05279545148387e0c9599a4cd4e7903a308068a9d51986f77462c1dff8b17d52",
+      "CZCE.FG809": "f566f6a9f0db0cbd1fd20aa8818fc238e28406c31b7c8ada58ed1c6be8761430",
+      "CZCE.FG901": "5724b0fde63cb9e69ccca1e194ee6cbc252fbfd9b363eebf635706d44c8e508d",
+      "CZCE.FG905": "54fd870f48364063c3c99b334d1ab7d1e367725686dabfaafed3bc8b99be9a1e",
+      "CZCE.FG909": "cdb0964a0a4a172bb47084ccf6dcac393af3ad69663d8079e9a7e080fd5251c4"
+    }
+  },
+  "identity_hash": "243b31ce427c8dd005b2185b5e001f47de8b436da3b8eaf40265fa63578027e3",
+  "content_hash": "f97c823e029b25004572b19574d5dea8c4b85494aabdcce90c890da47c66abec"
+}

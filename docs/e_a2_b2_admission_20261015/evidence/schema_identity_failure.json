@@ -1,0 +1,28 @@
+{
+  "legacy_sources_sha256": {
+    "old": {
+      "src/gym_trading_env/envs/entry_market_cache.py": "1478f566cb27123efd13a974826e71454f46906bfe8c7e39c540e74714d2fe6f",
+      "src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+      "src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+      "src/gym_trading_env/utils/s3_market_clock.py": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+      "src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+      "src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+      "src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+      "src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a"
+    },
+    "new": {
+      "src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+      "src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+      "src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+      "src/gym_trading_env/utils/s3_market_clock.py": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+      "src/gym_trading_env/envs/entry_market_cache.py": "1f6aff8d038c8c83438106f1e314ca604a442e74639eae09d238e0594dff5bf2",
+      "src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+      "src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+      "src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06"
+    }
+  },
+  "schema_sha256": {
+    "old": "1d085a5db76b9ea7162bc90bb07d992dda604e412d0f896f75efbe858071c210",
+    "new": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874"
+  }
+}

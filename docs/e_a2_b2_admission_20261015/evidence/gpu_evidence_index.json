@@ -1,0 +1,346 @@
+{
+  "files": [
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/acceptance.json",
+      "copy": "gpu/A2/acceptance.json",
+      "sha256": "19031b24ad8892f495cc246090cbfd5318e67d82a5dabc5ce029b46fc2440170",
+      "bytes": 221479
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/cold_resume_comparison.json",
+      "copy": "gpu/A2/cold_resume_comparison.json",
+      "sha256": "0ed45d0ee3cf23798c0d667f6548b2db7e984b4706edb33cb4e5da6b4c64469a",
+      "bytes": 70112
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/resume_probe.json",
+      "copy": "gpu/A2/resume_probe.json",
+      "sha256": "bbac0e1089ab049e9b780ae090f54e15259426acfb7ef5f9919452a30b2d7166",
+      "bytes": 34321
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/source_transfer.json",
+      "copy": "gpu/A2/source_transfer.json",
+      "sha256": "6a92a0383be6d0d258897c398f256794a0ec77a54e36fd43532edf253e08ddd6",
+      "bytes": 171372
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/run_identity.json",
+      "copy": "gpu/A2/run_identity.json",
+      "sha256": "d12f1ea8bb38533a157904076b9908f97099f5b2504cfe2ddf3794c6484eabc7",
+      "bytes": 93657
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/training_receipt.json",
+      "copy": "gpu/A2/training_receipt.json",
+      "sha256": "c090beed2d6ff48ae473bc46a9fa9c0672effbf595950dc2f9bd3829d5951658",
+      "bytes": 96013
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/updates.jsonl",
+      "copy": "gpu/A2/updates.jsonl",
+      "sha256": "e4305c694bcefefc7caf826149cb2b2d1351b989e029ae8eea9733bba114a7bf",
+      "bytes": 8066584
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/cycles.jsonl",
+      "copy": "gpu/A2/cycles.jsonl",
+      "sha256": "c723fedb77a3132cbe7d9ea011c78298d5edfa0a890c4a45b8f9d92c9510c2fb",
+      "bytes": 43761
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2/manifest.json",
+      "copy": "gpu/A2/prepared_manifest.json",
+      "sha256": "85905912e64616571ed228c9a4266d5053b6ce08b98f05cb0f6f5784e2ee191e",
+      "bytes": 91080
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2/source_admission.json",
+      "copy": "gpu/A2/prepared_source_admission.json",
+      "sha256": "d67a8c03fa2b4ceabaaa18626fffb4b27d0746276bc73d542031ed05290d94fd",
+      "bytes": 131426
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2/model_config.json",
+      "copy": "gpu/A2/prepared_model_config.json",
+      "sha256": "42ed3bd47f7a8f2e7a6fa7d3c7134cbb9e3daaef65cf73c211f87e213ab63f6a",
+      "bytes": 59465
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2/train_pool.json",
+      "copy": "gpu/A2/prepared_train_pool.json",
+      "sha256": "727b2923767d27022674762144b8cb5d2d510d88f14f065320bc13a1c0f78c9a",
+      "bytes": 2659
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2/oracle_pool.json",
+      "copy": "gpu/A2/prepared_oracle_pool.json",
+      "sha256": "26ec4a22d5dd016da3538fa8e1a927162eb7ef765567074657859f54e6ad2a25",
+      "bytes": 461
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/ckpt/step_000000000000/manifest.json",
+      "copy": "gpu/A2/checkpoint_0000_manifest.json",
+      "sha256": "1ced1d81f4269fa9a4d5162184646b9e6d736eb56d24b06893be31dad3dec957",
+      "bytes": 94458
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/ckpt/step_000000000500/manifest.json",
+      "copy": "gpu/A2/checkpoint_0500_manifest.json",
+      "sha256": "83945c698891fa4c42c7288d689e202eeaa11231a5bf961272725ad4af026013",
+      "bytes": 94569
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/ckpt/step_000000001000/manifest.json",
+      "copy": "gpu/A2/checkpoint_1000_manifest.json",
+      "sha256": "9305048ac1bedc30dc2992f441478df01288614846919948254587dafdb79e4c",
+      "bytes": 94569
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/acceptance.json",
+      "copy": "gpu/B2/acceptance.json",
+      "sha256": "e19fb4865677fbda4168314ee469c3e73e0c9ef0b6efd537b62111bf1908a395",
+      "bytes": 228227
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/cold_resume_comparison.json",
+      "copy": "gpu/B2/cold_resume_comparison.json",
+      "sha256": "cb0fdde13668eab54a0c3d4e473e6e1c489bbefce033e0065128859ea9746c33",
+      "bytes": 82408
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/resume_probe.json",
+      "copy": "gpu/B2/resume_probe.json",
+      "sha256": "1890e1544a974edea134a8b2e6c6a25d12dde6d7a6ccc5a5fd144f5f9f1d51d2",
+      "bytes": 40293
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/source_transfer.json",
+      "copy": "gpu/B2/source_transfer.json",
+      "sha256": "b72983d97f6664723f0aa421ba11766b701cc8af6a7bfede63a292877524ea72",
+      "bytes": 186683
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/run_identity.json",
+      "copy": "gpu/B2/run_identity.json",
+      "sha256": "8f8c42521e1bcc8b8558502fc0b1c3019e8729111d81dba68a88076c831f6b97",
+      "bytes": 94582
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/training_receipt.json",
+      "copy": "gpu/B2/training_receipt.json",
+      "sha256": "0305643843fc0d4d2f972730cd562b4cdd38105e96b77bb78f9f6c8a1d020877",
+      "bytes": 98117
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/updates.jsonl",
+      "copy": "gpu/B2/updates.jsonl",
+      "sha256": "6e019d56f7d0491f8d89932070f64f21916962592240ec06dcb56f52481da8e2",
+      "bytes": 10121726
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/cycles.jsonl",
+      "copy": "gpu/B2/cycles.jsonl",
+      "sha256": "837f695ebe2a8ac90f740a98334f2198c100a4034e1fb8c4d6c0f7314a3cc9ca",
+      "bytes": 53075
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/manifest.json",
+      "copy": "gpu/B2/prepared_manifest.json",
+      "sha256": "0761bf0bacd9e6260069912e280b6461411de28408126c477f01213fbd20775a",
+      "bytes": 91175
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/source_admission.json",
+      "copy": "gpu/B2/prepared_source_admission.json",
+      "sha256": "88eac3d16ba67536c4d4bdb64226b9c66e010786137acf4796f58c0a194d4214",
+      "bytes": 131990
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/model_config.json",
+      "copy": "gpu/B2/prepared_model_config.json",
+      "sha256": "0f79dc67d5a2ec0c549fa5bed7013a75ed8a5617f60c276aae0bb6000ad03d11",
+      "bytes": 59736
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/train_pool.json",
+      "copy": "gpu/B2/prepared_train_pool.json",
+      "sha256": "727b2923767d27022674762144b8cb5d2d510d88f14f065320bc13a1c0f78c9a",
+      "bytes": 2659
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/oracle_pool.json",
+      "copy": "gpu/B2/prepared_oracle_pool.json",
+      "sha256": "26ec4a22d5dd016da3538fa8e1a927162eb7ef765567074657859f54e6ad2a25",
+      "bytes": 461
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2/outcome_catalog.json",
+      "copy": "gpu/B2/prepared_outcome_catalog.json",
+      "sha256": "ce36c7149ed0369e38bfdb656b14172f9cafc603e62d3c2e8df9895a851953b9",
+      "bytes": 762
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/ckpt/step_000000000000/manifest.json",
+      "copy": "gpu/B2/checkpoint_0000_manifest.json",
+      "sha256": "07cb63c6c04e75441d7aba0cbf47372cb42b08474a8d30ee8044272114464b9b",
+      "bytes": 95383
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/ckpt/step_000000000500/manifest.json",
+      "copy": "gpu/B2/checkpoint_0500_manifest.json",
+      "sha256": "667892dda5c7aac686e1e60689f76f320318f0aa4e31076f8aecf45a60dd1248",
+      "bytes": 95494
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/ckpt/step_000000001000/manifest.json",
+      "copy": "gpu/B2/checkpoint_1000_manifest.json",
+      "sha256": "615f99c01cd9b762f6910bb69dc6de6124529facc7a8c85bf48559d891b10a46",
+      "bytes": 95494
+    }
+  ],
+  "summary": [
+    {
+      "mode": "A2",
+      "status": "PASS_GPU_SIZE50M_1K",
+      "env_steps": 1000,
+      "model_updates": 1000,
+      "cold_resume_exact": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/ckpt/step_000000001000",
+      "checkpoint_manifest_sha256": "9305048ac1bedc30dc2992f441478df01288614846919948254587dafdb79e4c",
+      "branch_gradients": {
+        "minute": 207.38211059570312,
+        "context15": 3.759103775024414,
+        "fusion": 55.223960876464844
+      },
+      "parameter_changes": {
+        "enc/minute/": 9,
+        "enc/context15/": 2,
+        "enc/fusion/": 2,
+        "pol/": 11
+      },
+      "counters": {
+        "all_updates": 1000,
+        "wm_updates": 1000,
+        "bc_valid_updates": 1000,
+        "bc_add_updates": 918,
+        "rl_actor_updates": 0,
+        "rl_critic_updates": 0,
+        "gate_closed_updates": 1000,
+        "cycles": 10,
+        "sampled_transitions": 64000
+      },
+      "counts": {
+        "native_rows": 1004,
+        "resets": 4,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 149,
+        "oracle_ADD": 68,
+        "executed_ADD": 68,
+        "entries": 68,
+        "TP": 67,
+        "SL": 0,
+        "rejects": 0,
+        "certified_labels": 872,
+        "learnable_decisions": 872,
+        "unproven_funds": 0,
+        "reward_sum": 64.04144740104675,
+        "published_native_rows": 1003,
+        "actor_oracle_ADD_tp": 14,
+        "actor_oracle_ADD_fn": 54
+      },
+      "sampled_peak_job_gpu_mib": 2196.0,
+      "sampled_peak_total_gpu_mib": 7867.0,
+      "gpu_process_wall_seconds": 687.4145140590263,
+      "collect_seconds": 31.41325121099362,
+      "update_seconds": 253.0876380019472,
+      "env_steps_per_collect_second": 31.833699520094004,
+      "updates_per_update_second": 3.9512004928202233,
+      "formal_1m_40000_update_arithmetic_estimate_hours": 11.537987980853197,
+      "rate_note": "Measured with both modes sharing one GPU; includes cold-start compile in cycles. Arithmetic estimate excludes formal checkpoint/storage overhead and is not a formal training benchmark."
+    },
+    {
+      "mode": "B2",
+      "status": "PASS_GPU_SIZE50M_1K",
+      "env_steps": 1000,
+      "model_updates": 1000,
+      "cold_resume_exact": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2/ckpt/step_000000001000",
+      "checkpoint_manifest_sha256": "615f99c01cd9b762f6910bb69dc6de6124529facc7a8c85bf48559d891b10a46",
+      "branch_gradients": {
+        "minute": 212.9451141357422,
+        "context15": 3.2927348613739014,
+        "fusion": 64.64866638183594
+      },
+      "parameter_changes": {
+        "enc/minute/": 9,
+        "enc/context15/": 2,
+        "enc/fusion/": 2,
+        "pol/": 11,
+        "b2_event/": 5,
+        "b2_early/": 5,
+        "b2_adapter/": 1
+      },
+      "counters": {
+        "all_updates": 1000,
+        "wm_updates": 1000,
+        "bc_valid_updates": 1000,
+        "bc_add_updates": 918,
+        "rl_actor_updates": 0,
+        "rl_critic_updates": 0,
+        "gate_closed_updates": 1000,
+        "cycles": 10,
+        "sampled_transitions": 64000,
+        "outcome_event_updates": 1000,
+        "outcome_early_updates": 1000,
+        "outcome_head_updates": 999,
+        "adapter_updates": 899
+      },
+      "counts": {
+        "native_rows": 1004,
+        "resets": 4,
+        "env_steps": 1000,
+        "valid_market_minutes": 1000,
+        "actor_ADD": 147,
+        "oracle_ADD": 68,
+        "executed_ADD": 68,
+        "entries": 68,
+        "TP": 67,
+        "SL": 0,
+        "rejects": 0,
+        "certified_labels": 872,
+        "learnable_decisions": 872,
+        "unproven_funds": 0,
+        "reward_sum": 64.04144740104675,
+        "outcome_event_valid": 872,
+        "outcome_early_valid": 872,
+        "outcome_CERTIFIED_EXIT_WITHIN_H": 553,
+        "ambiguous_intrabar": 0,
+        "event_TP_FAST": 118,
+        "b2_legal_decisions": 872,
+        "b2_mix_active_decisions": 706,
+        "b2_nonzero_delta_decisions": 706,
+        "b2_argmax_changed": 0,
+        "published_native_rows": 1003,
+        "actor_oracle_ADD_tp": 14,
+        "actor_oracle_ADD_fn": 54,
+        "outcome_TWO_REAL_ACTIONS_REQUIRED": 128,
+        "event_SL": 121,
+        "outcome_CERTIFIED_OPEN_AT_H": 319,
+        "event_OPEN_AT_H": 319,
+        "event_TP_LATE": 196,
+        "event_TP_MID": 118
+      },
+      "sampled_peak_job_gpu_mib": 2196.0,
+      "sampled_peak_total_gpu_mib": 7867.0,
+      "gpu_process_wall_seconds": 722.8169365339563,
+      "collect_seconds": 38.590286637016106,
+      "update_seconds": 267.8792139769066,
+      "env_steps_per_collect_second": 25.913256602784394,
+      "updates_per_update_second": 3.733025736316399,
+      "formal_1m_40000_update_arithmetic_estimate_hours": 13.695959776692325,
+      "rate_note": "Measured with both modes sharing one GPU; includes cold-start compile in cycles. Arithmetic estimate excludes formal checkpoint/storage overhead and is not a formal training benchmark."
+    }
+  ]
+}

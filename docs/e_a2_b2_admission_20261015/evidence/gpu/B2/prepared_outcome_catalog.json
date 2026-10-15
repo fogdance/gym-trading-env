@@ -1,0 +1,23 @@
+{
+  "identity": {
+    "protocol": "FG_S3_B2_OUTCOME_POOL_MARKET_MINUTE_V1",
+    "fold": "TRAIN",
+    "clock_protocol": "S3_MARKET_MINUTE",
+    "horizon_market_bars": 60,
+    "events": [
+      "TP_FAST",
+      "TP_MID",
+      "TP_LATE",
+      "SL",
+      "OTHER",
+      "OPEN_AT_H"
+    ],
+    "oracle_pool_identity": "ed3fe6e4f1e6eacbcfdc4d8243c37191211cd62a850a3e59e994e59274a579ef",
+    "catalogs": {
+      "CZCE.FG201": "c07128b8d3a6ee46079d2cf04b9edb8b6ee62f7782ceeb317f39d04fe0bd249d",
+      "CZCE.FG301": "fec993e64d1cf0b474609e4e6b99cbe23b80a5414e74a22694e492ad32f071ae"
+    }
+  },
+  "identity_hash": "03fd7c698a0f5042f565284bead56e74166ce6e87be9c072a8d85bb728c29a13",
+  "content_hash": "3bd97c1c01ea72eb897819b7d236114537ebe7179a987fe4b65b258e1a2eddbb"
+}

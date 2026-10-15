@@ -1,0 +1,893 @@
+{
+  "status": "PASS",
+  "contracts": 18,
+  "array_files": 72,
+  "byte_hashes_equal": true,
+  "old": "/home/v/Documents/work/research/fg-s3-e-model-dev/native_env_review_20261015/e_data_native_v1",
+  "new": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1",
+  "optional_audit_note": "Old export included --audit-1m; new export uses default four production data arrays. First comparison incorrectly required the optional audit_1m_ohlc_shared.npy and raised AssertionError. No data or implementation changed to correct the comparison.",
+  "results": [
+    {
+      "contract": "CZCE.FG001",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1231232,
+            "sha256": "1f204eaaaa871ff0120a3461c796a57894b6eb002b04875b9e57699ea5f737be"
+          },
+          "new": {
+            "bytes": 1231232,
+            "sha256": "1f204eaaaa871ff0120a3461c796a57894b6eb002b04875b9e57699ea5f737be"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7914368,
+            "sha256": "23aa2fcd193e176811f6e2e9359a984b88231c974340ff439ed7f24c65cb4c50"
+          },
+          "new": {
+            "bytes": 7914368,
+            "sha256": "23aa2fcd193e176811f6e2e9359a984b88231c974340ff439ed7f24c65cb4c50"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7914368,
+            "sha256": "4942191dbe5de2b418177e143e87ccf366b173095c2014175ebb85d5eaa4e5ea"
+          },
+          "new": {
+            "bytes": 7914368,
+            "sha256": "4942191dbe5de2b418177e143e87ccf366b173095c2014175ebb85d5eaa4e5ea"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14784,
+            "sha256": "809a9189d9212fc6b79c9a1c376e526af829a31fa436eecc83852cae047e0ba5"
+          },
+          "new": {
+            "bytes": 14784,
+            "sha256": "809a9189d9212fc6b79c9a1c376e526af829a31fa436eecc83852cae047e0ba5"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG005",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 919424,
+            "sha256": "f6fdf1c6b00df44e290a55dfb2dabb8ceba142995dbe9c4d74bf31cebde11aff"
+          },
+          "new": {
+            "bytes": 919424,
+            "sha256": "f6fdf1c6b00df44e290a55dfb2dabb8ceba142995dbe9c4d74bf31cebde11aff"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 5909888,
+            "sha256": "c5e85461ab13c593702764bf629107b40354cb73389a468ff0c623efca11665e"
+          },
+          "new": {
+            "bytes": 5909888,
+            "sha256": "c5e85461ab13c593702764bf629107b40354cb73389a468ff0c623efca11665e"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 5909888,
+            "sha256": "52ce04cd43ffbf3a7904216b3200ff271394d2ac723da739679b3e125b74ed5a"
+          },
+          "new": {
+            "bytes": 5909888,
+            "sha256": "52ce04cd43ffbf3a7904216b3200ff271394d2ac723da739679b3e125b74ed5a"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 11072,
+            "sha256": "ff3d8994a8ea7a3b983c74f2420676a30a139d6d97331d193ec2bc0060043eed"
+          },
+          "new": {
+            "bytes": 11072,
+            "sha256": "ff3d8994a8ea7a3b983c74f2420676a30a139d6d97331d193ec2bc0060043eed"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG009",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1237280,
+            "sha256": "a1b2da130bd652e64c49902aa85367aa9460277793cbaf1eed398cefc14ec4ab"
+          },
+          "new": {
+            "bytes": 1237280,
+            "sha256": "a1b2da130bd652e64c49902aa85367aa9460277793cbaf1eed398cefc14ec4ab"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7953248,
+            "sha256": "7a63af500e1d5496e338fbaa095157d84e9677de4f9535f55279401f8e763454"
+          },
+          "new": {
+            "bytes": 7953248,
+            "sha256": "7a63af500e1d5496e338fbaa095157d84e9677de4f9535f55279401f8e763454"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7953248,
+            "sha256": "25c0995d8e6edd69c1021b7cb9de1a11d5af9c315cac36452273343760402bf5"
+          },
+          "new": {
+            "bytes": 7953248,
+            "sha256": "25c0995d8e6edd69c1021b7cb9de1a11d5af9c315cac36452273343760402bf5"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14856,
+            "sha256": "2d171692c83b7714bcbbeec16673fdb95d604946083c8cea0f4dd12dc4792009"
+          },
+          "new": {
+            "bytes": 14856,
+            "sha256": "2d171692c83b7714bcbbeec16673fdb95d604946083c8cea0f4dd12dc4792009"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG101",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1257440,
+            "sha256": "82e0872e2926fb5ee7090dde1c51c232ff036a671948d6ce75717c4efe8960c8"
+          },
+          "new": {
+            "bytes": 1257440,
+            "sha256": "82e0872e2926fb5ee7090dde1c51c232ff036a671948d6ce75717c4efe8960c8"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 8082848,
+            "sha256": "f345e90aaf5bf1354fa30ce66f52ca7b883c395cab2f8852547876e4e759ed68"
+          },
+          "new": {
+            "bytes": 8082848,
+            "sha256": "f345e90aaf5bf1354fa30ce66f52ca7b883c395cab2f8852547876e4e759ed68"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 8082848,
+            "sha256": "ea8ca802e25e30e050e97fc81fb1a6bf2b1b1b95dc70eaf4304bc59b3cc8e151"
+          },
+          "new": {
+            "bytes": 8082848,
+            "sha256": "ea8ca802e25e30e050e97fc81fb1a6bf2b1b1b95dc70eaf4304bc59b3cc8e151"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 15096,
+            "sha256": "32baa37db999c516c5d5592d0bbe6971a9403ce256c29bbcd8e330836a1cb5e2"
+          },
+          "new": {
+            "bytes": 15096,
+            "sha256": "32baa37db999c516c5d5592d0bbe6971a9403ce256c29bbcd8e330836a1cb5e2"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG105",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1148576,
+            "sha256": "909d103040d063974c1ba5700bc70095527bf90312414c72940eda27129677a7"
+          },
+          "new": {
+            "bytes": 1148576,
+            "sha256": "909d103040d063974c1ba5700bc70095527bf90312414c72940eda27129677a7"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7383008,
+            "sha256": "88b5a59183b20d89d93c5c2033d018249c50c4ad307881f423aee58a3115669b"
+          },
+          "new": {
+            "bytes": 7383008,
+            "sha256": "88b5a59183b20d89d93c5c2033d018249c50c4ad307881f423aee58a3115669b"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7383008,
+            "sha256": "04a50a7f31b14d4ce5400e630bbbca544cad410ef181a3c91cea206b95e0ed47"
+          },
+          "new": {
+            "bytes": 7383008,
+            "sha256": "04a50a7f31b14d4ce5400e630bbbca544cad410ef181a3c91cea206b95e0ed47"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 13800,
+            "sha256": "44e89f408b1f06b30c0e0d34c20a5d184e8f180a8aa086fbc2864553d62008d7"
+          },
+          "new": {
+            "bytes": 13800,
+            "sha256": "44e89f408b1f06b30c0e0d34c20a5d184e8f180a8aa086fbc2864553d62008d7"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG109",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1118336,
+            "sha256": "0d9a68c4cf25c6d19dfa1e0eb89880e26fc220e38b02a417272c2d12ed029f8b"
+          },
+          "new": {
+            "bytes": 1118336,
+            "sha256": "0d9a68c4cf25c6d19dfa1e0eb89880e26fc220e38b02a417272c2d12ed029f8b"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7188608,
+            "sha256": "a14886bd1454f77392272488878b348c8e6bc1a8c7191660a4f8bbe7c3733d56"
+          },
+          "new": {
+            "bytes": 7188608,
+            "sha256": "a14886bd1454f77392272488878b348c8e6bc1a8c7191660a4f8bbe7c3733d56"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7188608,
+            "sha256": "aafc5ed3a8f3be5da202a3c2bfa2f50f1b286bc0fda6c570731465dd282fbc01"
+          },
+          "new": {
+            "bytes": 7188608,
+            "sha256": "aafc5ed3a8f3be5da202a3c2bfa2f50f1b286bc0fda6c570731465dd282fbc01"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 13440,
+            "sha256": "a770f26b5b22f9a146aba55e0bba778201d4706d32ca9fdddbb37d3e44e8dc19"
+          },
+          "new": {
+            "bytes": 13440,
+            "sha256": "a770f26b5b22f9a146aba55e0bba778201d4706d32ca9fdddbb37d3e44e8dc19"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG201",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1401248,
+            "sha256": "14f01f8ee8ac981797311f903f48c17274ed1d281c743845daf9667530c8afb3"
+          },
+          "new": {
+            "bytes": 1401248,
+            "sha256": "14f01f8ee8ac981797311f903f48c17274ed1d281c743845daf9667530c8afb3"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 9007328,
+            "sha256": "cb62a81453c1929ccab0e490dffbbca499ebbefe99e0afbe2667a29f1df64c8e"
+          },
+          "new": {
+            "bytes": 9007328,
+            "sha256": "cb62a81453c1929ccab0e490dffbbca499ebbefe99e0afbe2667a29f1df64c8e"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 9007328,
+            "sha256": "dc0755be524dec160a1811e6376cdaef87dfbb7abf4e1f7560d21798c642eba9"
+          },
+          "new": {
+            "bytes": 9007328,
+            "sha256": "dc0755be524dec160a1811e6376cdaef87dfbb7abf4e1f7560d21798c642eba9"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 16808,
+            "sha256": "14a03828964532b67858fbd14f3841a74eae5b4dccd71a0c0366d5c43aa70791"
+          },
+          "new": {
+            "bytes": 16808,
+            "sha256": "14a03828964532b67858fbd14f3841a74eae5b4dccd71a0c0366d5c43aa70791"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG205",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1041056,
+            "sha256": "032f24aff869746b6194a4e1c1019d528618e014d56933a3d39c6a8714a03f94"
+          },
+          "new": {
+            "bytes": 1041056,
+            "sha256": "032f24aff869746b6194a4e1c1019d528618e014d56933a3d39c6a8714a03f94"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 6691808,
+            "sha256": "af2d70e40b1cb42759ab340b9cea431e4484523bfb7a89506abed829ab6bf7d3"
+          },
+          "new": {
+            "bytes": 6691808,
+            "sha256": "af2d70e40b1cb42759ab340b9cea431e4484523bfb7a89506abed829ab6bf7d3"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 6691808,
+            "sha256": "8e2d004c00071168bc40d42b6dca51974e58800c93750fc0c5955ec3b8fd4f12"
+          },
+          "new": {
+            "bytes": 6691808,
+            "sha256": "8e2d004c00071168bc40d42b6dca51974e58800c93750fc0c5955ec3b8fd4f12"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 12520,
+            "sha256": "e1080e12e34161de1258813cb78e13645a863a449db7d3a99188098f39128572"
+          },
+          "new": {
+            "bytes": 12520,
+            "sha256": "e1080e12e34161de1258813cb78e13645a863a449db7d3a99188098f39128572"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG209",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1432160,
+            "sha256": "0aed05074e75be628e8be9b2a44f2ec7ba24c12360aac2909f1f17881c21dde0"
+          },
+          "new": {
+            "bytes": 1432160,
+            "sha256": "0aed05074e75be628e8be9b2a44f2ec7ba24c12360aac2909f1f17881c21dde0"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 9206048,
+            "sha256": "fc0e683b4e210bda491578f0eaa84b64b453f51c578ac6f4d5e28422cb02e922"
+          },
+          "new": {
+            "bytes": 9206048,
+            "sha256": "fc0e683b4e210bda491578f0eaa84b64b453f51c578ac6f4d5e28422cb02e922"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 9206048,
+            "sha256": "b6bb8c3e8c7fdf29dcdcc7be8290cb032539f9feb65b17ea8ec631ee8828f6ae"
+          },
+          "new": {
+            "bytes": 9206048,
+            "sha256": "b6bb8c3e8c7fdf29dcdcc7be8290cb032539f9feb65b17ea8ec631ee8828f6ae"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 17176,
+            "sha256": "a4fe6493aaecb76e33afd66aad44bd99b993879a7b0a2fbbf0b64bfd2fc57aee"
+          },
+          "new": {
+            "bytes": 17176,
+            "sha256": "a4fe6493aaecb76e33afd66aad44bd99b993879a7b0a2fbbf0b64bfd2fc57aee"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG301",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1241984,
+            "sha256": "f5adcce93e9d6aaa0a71ec285d32e02d7ae2c0a7a13e5a51a9fa3ed30050ba62"
+          },
+          "new": {
+            "bytes": 1241984,
+            "sha256": "f5adcce93e9d6aaa0a71ec285d32e02d7ae2c0a7a13e5a51a9fa3ed30050ba62"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7983488,
+            "sha256": "ed7811714cf5296807732f07e8116b18e889b2bfe7cbdb4a391834f486e38a8f"
+          },
+          "new": {
+            "bytes": 7983488,
+            "sha256": "ed7811714cf5296807732f07e8116b18e889b2bfe7cbdb4a391834f486e38a8f"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7983488,
+            "sha256": "544ebbc9803d0215da8a158a35bfcdecefe1410bf3845bf862e51a40d199b7df"
+          },
+          "new": {
+            "bytes": 7983488,
+            "sha256": "544ebbc9803d0215da8a158a35bfcdecefe1410bf3845bf862e51a40d199b7df"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14912,
+            "sha256": "7aab01d15e72207c42d6741d5b985ab31f17df34cac22d65bc0507fbabec38bc"
+          },
+          "new": {
+            "bytes": 14912,
+            "sha256": "7aab01d15e72207c42d6741d5b985ab31f17df34cac22d65bc0507fbabec38bc"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG305",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1205696,
+            "sha256": "c854db036f8865e4dda73f0535d7a990df76539ab0aaf56d54d8afd3b6d98de4"
+          },
+          "new": {
+            "bytes": 1205696,
+            "sha256": "c854db036f8865e4dda73f0535d7a990df76539ab0aaf56d54d8afd3b6d98de4"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7750208,
+            "sha256": "c612d581a2769c934a59f3bbdc97deeddcee8387805f3f5ecf547e771d5c2f2a"
+          },
+          "new": {
+            "bytes": 7750208,
+            "sha256": "c612d581a2769c934a59f3bbdc97deeddcee8387805f3f5ecf547e771d5c2f2a"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7750208,
+            "sha256": "5c68ab42454dd7da9b7aac0653b553e4db2a79f5f73d9a27c678cff236c128f8"
+          },
+          "new": {
+            "bytes": 7750208,
+            "sha256": "5c68ab42454dd7da9b7aac0653b553e4db2a79f5f73d9a27c678cff236c128f8"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14480,
+            "sha256": "ddf167ca845c3deb670e7ede310f32a34f202bef85653a42803f99a3af9e8ab8"
+          },
+          "new": {
+            "bytes": 14480,
+            "sha256": "ddf167ca845c3deb670e7ede310f32a34f202bef85653a42803f99a3af9e8ab8"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG309",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1288352,
+            "sha256": "849719f57f3f46831f9cc3ab1438697fdccb56d5ee5c11bdc7761d311cfb5cac"
+          },
+          "new": {
+            "bytes": 1288352,
+            "sha256": "849719f57f3f46831f9cc3ab1438697fdccb56d5ee5c11bdc7761d311cfb5cac"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 8281568,
+            "sha256": "483a215fdddea42688ecac92170adf3ecfac1b22dbb4f35281547fbfdb1abf0f"
+          },
+          "new": {
+            "bytes": 8281568,
+            "sha256": "483a215fdddea42688ecac92170adf3ecfac1b22dbb4f35281547fbfdb1abf0f"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 8281568,
+            "sha256": "19709629074903c1015ac83ea53eb425f07667aee334d3f7869d13fe502a4123"
+          },
+          "new": {
+            "bytes": 8281568,
+            "sha256": "19709629074903c1015ac83ea53eb425f07667aee334d3f7869d13fe502a4123"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 15464,
+            "sha256": "ef18e1f2927ed6cf6403c7c80db3badd308645c3422d2507d45f0273e1f8f14a"
+          },
+          "new": {
+            "bytes": 15464,
+            "sha256": "ef18e1f2927ed6cf6403c7c80db3badd308645c3422d2507d45f0273e1f8f14a"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG401",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1200992,
+            "sha256": "0a5d28efe8b9f6d2de2ed78d0cf81565c39932c60fb84b5d9c9e199cc0445dd0"
+          },
+          "new": {
+            "bytes": 1200992,
+            "sha256": "0a5d28efe8b9f6d2de2ed78d0cf81565c39932c60fb84b5d9c9e199cc0445dd0"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7719968,
+            "sha256": "d182a33bfcfa3f4afa70e9a069c9c1d89bdcb6b21e5b1dff6f0fc4bd2049a385"
+          },
+          "new": {
+            "bytes": 7719968,
+            "sha256": "d182a33bfcfa3f4afa70e9a069c9c1d89bdcb6b21e5b1dff6f0fc4bd2049a385"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7719968,
+            "sha256": "fde748e3264800f1f51ec6780c5718534c9f93b3f01db66287c2de6526621495"
+          },
+          "new": {
+            "bytes": 7719968,
+            "sha256": "fde748e3264800f1f51ec6780c5718534c9f93b3f01db66287c2de6526621495"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14424,
+            "sha256": "39d51f19992bb38872b90dbc4bd5534d05358b434831b2366d2644cb4e6557a3"
+          },
+          "new": {
+            "bytes": 14424,
+            "sha256": "39d51f19992bb38872b90dbc4bd5534d05358b434831b2366d2644cb4e6557a3"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG405",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1184864,
+            "sha256": "6e1f2f0144718b28f3ed6aeaa9828dd072ad9ad69eaea3bdeb38bd216fa391cc"
+          },
+          "new": {
+            "bytes": 1184864,
+            "sha256": "6e1f2f0144718b28f3ed6aeaa9828dd072ad9ad69eaea3bdeb38bd216fa391cc"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7616288,
+            "sha256": "45260c6cb5e0507493f0a20115dd046c185ac133dad9baae984eaa590b11a5aa"
+          },
+          "new": {
+            "bytes": 7616288,
+            "sha256": "45260c6cb5e0507493f0a20115dd046c185ac133dad9baae984eaa590b11a5aa"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7616288,
+            "sha256": "8bd09da4263a7055096a32bcc0344f210fb106112982d84937d3a79fd2059bd8"
+          },
+          "new": {
+            "bytes": 7616288,
+            "sha256": "8bd09da4263a7055096a32bcc0344f210fb106112982d84937d3a79fd2059bd8"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14232,
+            "sha256": "b64be509c03ad5d191b77f245671b7aebce5d553424daa9f8a2b7558a571e573"
+          },
+          "new": {
+            "bytes": 14232,
+            "sha256": "b64be509c03ad5d191b77f245671b7aebce5d553424daa9f8a2b7558a571e573"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG809",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1267520,
+            "sha256": "932a399640929b7f57435cf19ce9c591a6ebbb5811f015ede30a19900872b3d7"
+          },
+          "new": {
+            "bytes": 1267520,
+            "sha256": "932a399640929b7f57435cf19ce9c591a6ebbb5811f015ede30a19900872b3d7"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 8147648,
+            "sha256": "13c740242a37e3234b673626cc7295c30354fefc948e337cc6a119a430cb29c8"
+          },
+          "new": {
+            "bytes": 8147648,
+            "sha256": "13c740242a37e3234b673626cc7295c30354fefc948e337cc6a119a430cb29c8"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 8147648,
+            "sha256": "50350ec28d2e023ba0299f1d66347834fe525d7ede7c6b79a58e329f4221f02e"
+          },
+          "new": {
+            "bytes": 8147648,
+            "sha256": "50350ec28d2e023ba0299f1d66347834fe525d7ede7c6b79a58e329f4221f02e"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 15216,
+            "sha256": "90e54a4944ad90f614ca58c5b4c25982fc3bcbf39c84eb1099e14c3c20fe553d"
+          },
+          "new": {
+            "bytes": 15216,
+            "sha256": "90e54a4944ad90f614ca58c5b4c25982fc3bcbf39c84eb1099e14c3c20fe553d"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG901",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1318592,
+            "sha256": "da258c2d72218a6f73a543188c52ec80caedaf1c8c1bb3bfd9fb0c7a5987296d"
+          },
+          "new": {
+            "bytes": 1318592,
+            "sha256": "da258c2d72218a6f73a543188c52ec80caedaf1c8c1bb3bfd9fb0c7a5987296d"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 8475968,
+            "sha256": "708b25feacef7da669a46be31e438b2ce51d488acd13d133f5649c76005bf915"
+          },
+          "new": {
+            "bytes": 8475968,
+            "sha256": "708b25feacef7da669a46be31e438b2ce51d488acd13d133f5649c76005bf915"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 8475968,
+            "sha256": "9c26a51533722c3223ad48e07b146085d7c4777160dcab241f00066e616e3c23"
+          },
+          "new": {
+            "bytes": 8475968,
+            "sha256": "9c26a51533722c3223ad48e07b146085d7c4777160dcab241f00066e616e3c23"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 15824,
+            "sha256": "3df56a37af40a668605674f060bf51d2668d627d58223fd3d6c4544bd4535842"
+          },
+          "new": {
+            "bytes": 15824,
+            "sha256": "3df56a37af40a668605674f060bf51d2668d627d58223fd3d6c4544bd4535842"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG905",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1200320,
+            "sha256": "06676b7268f33d6995312f319bf8b422d37289c83a1573ef7b68b64e9b6de413"
+          },
+          "new": {
+            "bytes": 1200320,
+            "sha256": "06676b7268f33d6995312f319bf8b422d37289c83a1573ef7b68b64e9b6de413"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7715648,
+            "sha256": "96d22eb32260da6fb7b1b92b51fdfd169b9a975f79feec9d006fd4e16721dc89"
+          },
+          "new": {
+            "bytes": 7715648,
+            "sha256": "96d22eb32260da6fb7b1b92b51fdfd169b9a975f79feec9d006fd4e16721dc89"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7715648,
+            "sha256": "5452f5983da3f8f3fb5ef4e45df4c3bbc1f064195a981d9f2799606affe6567e"
+          },
+          "new": {
+            "bytes": 7715648,
+            "sha256": "5452f5983da3f8f3fb5ef4e45df4c3bbc1f064195a981d9f2799606affe6567e"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14416,
+            "sha256": "c49680be3bb8ce80276e3ea3b76efd6aa7f380c2f7aa71cab2b21ec001b97a51"
+          },
+          "new": {
+            "bytes": 14416,
+            "sha256": "c49680be3bb8ce80276e3ea3b76efd6aa7f380c2f7aa71cab2b21ec001b97a51"
+          },
+          "equal": true
+        }
+      }
+    },
+    {
+      "contract": "CZCE.FG909",
+      "arrays": {
+        "context_15m.npy": {
+          "old": {
+            "bytes": 1190240,
+            "sha256": "fb62d1a7710551d6dac114b942d215e4451c778df052fbeb2265be5ba90e4bbd"
+          },
+          "new": {
+            "bytes": 1190240,
+            "sha256": "fb62d1a7710551d6dac114b942d215e4451c778df052fbeb2265be5ba90e4bbd"
+          },
+          "equal": true
+        },
+        "market_seq.npy": {
+          "old": {
+            "bytes": 7650848,
+            "sha256": "1d44f4ec920aa1a6974b0b77a888062a111d97aaf5b6f404134de427383bea47"
+          },
+          "new": {
+            "bytes": 7650848,
+            "sha256": "1d44f4ec920aa1a6974b0b77a888062a111d97aaf5b6f404134de427383bea47"
+          },
+          "equal": true
+        },
+        "market_seq_e_shared.npy": {
+          "old": {
+            "bytes": 7650848,
+            "sha256": "abe5540acc17b1be5598bf1694e07d794bc45e78d49f943986b318db39f97649"
+          },
+          "new": {
+            "bytes": 7650848,
+            "sha256": "abe5540acc17b1be5598bf1694e07d794bc45e78d49f943986b318db39f97649"
+          },
+          "equal": true
+        },
+        "price_anchor.npy": {
+          "old": {
+            "bytes": 14296,
+            "sha256": "7fbe09f4835e161e638061f7e9ce9d961175a254572807a723a2448548c36927"
+          },
+          "new": {
+            "bytes": 14296,
+            "sha256": "7fbe09f4835e161e638061f7e9ce9d961175a254572807a723a2448548c36927"
+          },
+          "equal": true
+        }
+      }
+    }
+  ]
+}

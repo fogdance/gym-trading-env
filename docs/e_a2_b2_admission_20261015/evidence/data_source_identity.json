@@ -1,0 +1,209 @@
+{
+  "collection": {
+    "bundles": {
+      "CZCE.FG001": "c9431eb87f4837872d185fcde2922eeeda474fb654d0f0950997d200cdf70eb3",
+      "CZCE.FG005": "a5be3ed8bf696116c294a794539360c21e8eff51b8b0c917af4e0b97bb1bafb7",
+      "CZCE.FG009": "ab2e107b62d5aba6d9f81a044b7a1f6c5f8409548ce9695d983053c7a4ea90a8",
+      "CZCE.FG101": "63da4ec62dbfb06010a01d4a7519d8c229ae4d88d4079a1db92a49797426adb9",
+      "CZCE.FG105": "9cf47d77daf591d1a09b60ac926f9a7a63fad7a74bfa308f11c5641b865b738f",
+      "CZCE.FG109": "d9fabe2917b0df17a5289c0f352a88d261f7aa150d465f39eb09b78ac9cb9bcb",
+      "CZCE.FG201": "074ac158a1cb7af2c9039c20c9137e6b3c9f254946072440b07b0bd82ea3a096",
+      "CZCE.FG205": "4f18a89d0a6b8802e16da3690a99ee01957298d85ad245e3266d7a18d284e0bb",
+      "CZCE.FG209": "1c8765aa7d63a2305f0ebbf04473ead27ed912ee87d667688508272999e438fe",
+      "CZCE.FG301": "57beb6bfc3fd6325daaac15f130c61d00696addcabe0c0079739fed25bdaef98",
+      "CZCE.FG305": "c1a0343b45192235788e910b8622d97369c188090bee8d6ee8577f5c7bcc7156",
+      "CZCE.FG309": "56527b95b54a27c08e03dd8da725fe5ccac316672ef6b17c49edb921293c0ebc",
+      "CZCE.FG401": "32b158db6f30b5ddd78998ae502c66c19d7b45352a9b2f371390dfffad858b7d",
+      "CZCE.FG405": "aa23958e54280cc4578f713820e8520558db5bcc429109f6be4d39f508ec943e",
+      "CZCE.FG809": "dc5ef760eb247752b2dd03d20abe3582b69a65390f320d111b5f3749ed963949",
+      "CZCE.FG901": "bc0b8d8059c6663e5eac539abf318a7bc1162c0fef5d7bda75a867f70f07a855",
+      "CZCE.FG905": "db66a0a08c278fc552c5aafbe8399a21ddcf6280d737022f50aad667fcd9c682",
+      "CZCE.FG909": "ce20667cb0bf7aea571f2f0776d140754ce6b14e2a225eddf649f18e98be3044"
+    },
+    "diagnostics_sha256": "afb9a97520c551193176ab2cebb05d64cc3fedac30ad13927dd788be00a0306f",
+    "index_sha256": "e39ee50aa1dbdb95e41ed3d151aad27d0dbc3b5879eaca1a5c2acb28dcc01d24",
+    "kind": "collection",
+    "schema": "S3_E_DATA_V1",
+    "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+    "source_pool_sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b"
+  },
+  "source_rows": 488160,
+  "source_contracts": 18,
+  "build_seconds": 34.10524603101658,
+  "worker_budget": {
+    "available_bytes": 12677091328,
+    "logical_cpus": 24,
+    "per_worker_budget_bytes": 805306368,
+    "reserve_bytes": 1610612736,
+    "workers": 13
+  },
+  "verification": {
+    "status": "PASS",
+    "index_sha256": "e39ee50aa1dbdb95e41ed3d151aad27d0dbc3b5879eaca1a5c2acb28dcc01d24",
+    "bundles": [
+      {
+        "source_contract": "CZCE.FG001",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "87c2cfbb306d10000921f36a61f1a9cd3e97fd665ccb9b07ed22af2f48febdad",
+        "checks_count": 1226766,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG005",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "c7aa05b3d240f87b04753b0313d6516335c9606017605a72f0c5bce7a631a95f",
+        "checks_count": 912174,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG009",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "037e8578e322e052c5cf6a7bcfe6f68906682ab134dcb36301dc4728dbb529f9",
+        "checks_count": 1232868,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG101",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "91c25eeebb194d52a4f37804666358718bd7e1a3bc03c70e047a50a43239f91b",
+        "checks_count": 1253208,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG105",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "e05a2fd0fbdbde4c7783bf3ac8c0919bac04f6a351f35891ce49ea45283a649b",
+        "checks_count": 1143372,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG109",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "d8551a61bf71459e3de9f0dc4a80b8aa1f4a0d75b01e643eafbe391a1365dfb8",
+        "checks_count": 1112862,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG201",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "5ff158f9811acc599b7bdb2bc2ebf2bef540cf6162f494955f456c1073520a11",
+        "checks_count": 1398300,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG205",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "dfbd893f71cbe052248dbc4e3d9ee8eee65e0dc42e32a5547a456339a431256f",
+        "checks_count": 1034892,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG209",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "7312059f337df9e969da94d77a497b50b31a8198d8aca83fa74d14142398ffcc",
+        "checks_count": 1429488,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG301",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "8428d13662a3e8d20e308c516dd2b8f48665ebfd856dd0b919432ec26bbb2d6e",
+        "checks_count": 1237614,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG305",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "6f57f13bcc1a1346fd22cb559441b224220e6736eabbbf956f361ed4a7956792",
+        "checks_count": 1201002,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG309",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "b4dd0fe025998de4f25b65efa8482bac165db5636fce03cab68682609521f44b",
+        "checks_count": 1284396,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG401",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "7e830c0ed0e1513b2456155cb3066212731fe8a2f89fafd767c2c795bbe2a5ab",
+        "checks_count": 1196256,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG405",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "08602e56daf8ade1fc8e3484daeb1676fe578017338953ac2dcba2127dcd4e6c",
+        "checks_count": 1179984,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG809",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "cda0cac3ebd69e591de115a829e00f852815c7ac3d8551b5d46bc930f33e31dd",
+        "checks_count": 1263378,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG901",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "d65ba105d67385ccb2ad379ebcb7ee4b3fe60e7d1fa0eb784bc28192bc526498",
+        "checks_count": 1314906,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG905",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "f8b03bc260fa6368ef7f0c693d90d8e097f6ab968f509ad544da440fa9a1a705",
+        "checks_count": 1194910,
+        "errors": []
+      },
+      {
+        "source_contract": "CZCE.FG909",
+        "status": "PASS",
+        "checked_files": 9,
+        "schema_sha256": "a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874",
+        "manifest_sha256": "608cc9ce7a9d2018468c5f0ae2105ff791036f777d4d36509ccc7a28742c109e",
+        "checks_count": 1184961,
+        "errors": []
+      }
+    ]
+  },
+  "model_array_numeric_comparison": "data_numeric_identity.json"
+}

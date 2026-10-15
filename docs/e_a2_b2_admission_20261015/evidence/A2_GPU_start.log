@@ -1,0 +1,611 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [cuda:0]
+Policy devices: cuda:0
+Train devices:  cuda:0
+Initializing parameters...
+Optimizer opt has 42,933,956 params:
+    23,098,368 dyn
+     3,707,457 dec
+     3,279,615 val
+     3,149,826 pol
+     2,886,658 avail
+     2,753,279 rew
+     2,622,977 con
+     1,435,776 enc
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2 env=100 update=1 BC=0.693445 valid=56 ADD=9 beta=1.000000 actor_grad=4.508582
+A2 env=100 update=2 BC=0.693511 valid=57 ADD=7 beta=1.000000 actor_grad=4.988319
+A2 env=100 update=3 BC=0.692681 valid=57 ADD=7 beta=1.000000 actor_grad=4.947318
+A2 env=100 update=4 BC=0.692148 valid=54 ADD=7 beta=1.000000 actor_grad=4.964237
+A2 env=100 update=5 BC=0.693707 valid=54 ADD=7 beta=1.000000 actor_grad=4.904995
+A2 env=100 update=6 BC=0.693906 valid=57 ADD=7 beta=1.000000 actor_grad=5.013608
+A2 env=100 update=7 BC=0.693813 valid=53 ADD=5 beta=1.000000 actor_grad=5.145143
+A2 env=100 update=8 BC=0.693249 valid=58 ADD=7 beta=1.000000 actor_grad=4.887764
+A2 env=100 update=9 BC=0.692847 valid=51 ADD=5 beta=1.000000 actor_grad=5.202234
+A2 env=100 update=10 BC=0.693053 valid=56 ADD=8 beta=1.000000 actor_grad=4.849714
+A2 env=100 update=11 BC=0.692969 valid=57 ADD=6 beta=1.000000 actor_grad=5.149748
+A2 env=100 update=12 BC=0.693678 valid=57 ADD=6 beta=1.000000 actor_grad=5.155402
+A2 env=100 update=13 BC=0.692540 valid=54 ADD=7 beta=1.000000 actor_grad=4.932041
+A2 env=100 update=14 BC=0.692126 valid=57 ADD=6 beta=1.000000 actor_grad=5.148896
+A2 env=100 update=15 BC=0.692555 valid=52 ADD=6 beta=1.000000 actor_grad=5.028458
+A2 env=100 update=16 BC=0.692706 valid=53 ADD=6 beta=1.000000 actor_grad=4.970128
+A2 env=100 update=17 BC=0.692030 valid=53 ADD=6 beta=1.000000 actor_grad=4.986595
+A2 env=100 update=18 BC=0.692891 valid=50 ADD=6 beta=1.000000 actor_grad=4.998207
+A2 env=100 update=19 BC=0.691728 valid=57 ADD=6 beta=1.000000 actor_grad=5.124215
+A2 env=100 update=20 BC=0.691604 valid=50 ADD=6 beta=1.000000 actor_grad=4.886866
+A2 env=100 update=21 BC=0.691481 valid=51 ADD=6 beta=1.000000 actor_grad=4.893713
+A2 env=100 update=22 BC=0.691588 valid=53 ADD=6 beta=1.000000 actor_grad=4.965347
+A2 env=100 update=23 BC=0.690827 valid=57 ADD=6 beta=1.000000 actor_grad=5.158879
+A2 env=100 update=24 BC=0.690875 valid=57 ADD=7 beta=1.000000 actor_grad=5.003627
+A2 env=100 update=25 BC=0.689374 valid=53 ADD=5 beta=1.000000 actor_grad=5.173683
+A2 env=100 update=26 BC=0.690300 valid=51 ADD=6 beta=1.000000 actor_grad=5.100267
+A2 env=100 update=27 BC=0.689667 valid=52 ADD=5 beta=1.000000 actor_grad=5.273286
+A2 env=100 update=28 BC=0.689444 valid=51 ADD=6 beta=1.000000 actor_grad=5.010777
+A2 env=100 update=29 BC=0.690013 valid=57 ADD=7 beta=1.000000 actor_grad=4.880362
+A2 env=100 update=30 BC=0.689810 valid=54 ADD=7 beta=1.000000 actor_grad=4.960447
+A2 env=100 update=31 BC=0.689398 valid=52 ADD=6 beta=1.000000 actor_grad=5.002708
+A2 env=100 update=32 BC=0.688724 valid=53 ADD=6 beta=1.000000 actor_grad=5.128737
+A2 env=100 update=33 BC=0.687811 valid=52 ADD=6 beta=1.000000 actor_grad=5.131341
+A2 env=100 update=34 BC=0.687565 valid=51 ADD=5 beta=1.000000 actor_grad=5.253293
+A2 env=100 update=35 BC=0.687809 valid=57 ADD=8 beta=1.000000 actor_grad=4.977082
+A2 env=100 update=36 BC=0.687642 valid=56 ADD=8 beta=1.000000 actor_grad=4.840134
+A2 env=100 update=37 BC=0.687251 valid=53 ADD=6 beta=1.000000 actor_grad=5.170007
+A2 env=100 update=38 BC=0.686566 valid=52 ADD=6 beta=1.000000 actor_grad=5.164617
+A2 env=100 update=39 BC=0.685892 valid=50 ADD=6 beta=1.000000 actor_grad=5.024404
+A2 env=100 update=40 BC=0.687391 valid=56 ADD=10 beta=1.000000 actor_grad=4.317490
+A2 env=100 update=41 BC=0.685837 valid=51 ADD=6 beta=1.000000 actor_grad=5.133031
+A2 env=100 update=42 BC=0.685802 valid=49 ADD=6 beta=1.000000 actor_grad=5.049320
+A2 env=100 update=43 BC=0.684782 valid=56 ADD=8 beta=1.000000 actor_grad=4.912448
+A2 env=100 update=44 BC=0.684622 valid=53 ADD=6 beta=1.000000 actor_grad=5.126018
+A2 env=100 update=45 BC=0.684056 valid=52 ADD=5 beta=1.000000 actor_grad=5.378468
+A2 env=100 update=46 BC=0.683594 valid=57 ADD=6 beta=1.000000 actor_grad=5.322619
+A2 env=100 update=47 BC=0.683296 valid=52 ADD=5 beta=1.000000 actor_grad=5.409834
+A2 env=100 update=48 BC=0.683026 valid=52 ADD=6 beta=1.000000 actor_grad=5.186402
+A2 env=100 update=49 BC=0.682473 valid=52 ADD=6 beta=1.000000 actor_grad=5.205433
+A2 env=100 update=50 BC=0.680596 valid=52 ADD=5 beta=1.000000 actor_grad=5.590948
+A2 env=100 update=51 BC=0.682873 valid=56 ADD=9 beta=1.000000 actor_grad=4.578953
+A2 env=100 update=52 BC=0.680759 valid=53 ADD=5 beta=1.000000 actor_grad=5.380779
+A2 env=100 update=53 BC=0.681258 valid=53 ADD=6 beta=1.000000 actor_grad=5.113532
+A2 env=100 update=54 BC=0.679812 valid=52 ADD=6 beta=1.000000 actor_grad=5.319891
+A2 env=100 update=55 BC=0.679834 valid=57 ADD=6 beta=1.000000 actor_grad=5.333218
+A2 env=100 update=56 BC=0.679610 valid=57 ADD=7 beta=1.000000 actor_grad=5.276702
+A2 env=100 update=57 BC=0.678853 valid=53 ADD=6 beta=1.000000 actor_grad=5.173533
+A2 env=100 update=58 BC=0.677135 valid=53 ADD=5 beta=1.000000 actor_grad=5.613321
+A2 env=100 update=59 BC=0.678556 valid=56 ADD=7 beta=1.000000 actor_grad=5.207743
+A2 env=100 update=60 BC=0.678610 valid=56 ADD=9 beta=1.000000 actor_grad=4.790404
+A2 env=100 update=61 BC=0.676474 valid=55 ADD=7 beta=1.000000 actor_grad=5.240207
+A2 env=100 update=62 BC=0.675723 valid=57 ADD=7 beta=1.000000 actor_grad=5.213960
+A2 env=100 update=63 BC=0.675025 valid=50 ADD=6 beta=1.000000 actor_grad=5.299013
+A2 env=100 update=64 BC=0.674292 valid=57 ADD=7 beta=1.000000 actor_grad=5.394645
+A2 env=100 update=65 BC=0.674024 valid=50 ADD=6 beta=1.000000 actor_grad=5.280462
+A2 env=100 update=66 BC=0.675587 valid=56 ADD=10 beta=1.000000 actor_grad=4.576952
+A2 env=100 update=67 BC=0.672203 valid=57 ADD=7 beta=1.000000 actor_grad=5.404973
+A2 env=100 update=68 BC=0.671249 valid=52 ADD=6 beta=1.000000 actor_grad=5.487535
+A2 env=100 update=69 BC=0.670912 valid=58 ADD=7 beta=1.000000 actor_grad=5.409149
+A2 env=100 update=70 BC=0.671325 valid=57 ADD=8 beta=1.000000 actor_grad=5.253468
+A2 env=100 update=71 BC=0.668975 valid=48 ADD=6 beta=1.000000 actor_grad=5.510192
+A2 env=100 update=72 BC=0.668065 valid=57 ADD=6 beta=1.000000 actor_grad=5.614511
+A2 env=100 update=73 BC=0.668196 valid=52 ADD=6 beta=1.000000 actor_grad=5.539895
+A2 env=100 update=74 BC=0.666659 valid=53 ADD=6 beta=1.000000 actor_grad=5.600083
+A2 env=100 update=75 BC=0.665376 valid=51 ADD=5 beta=1.000000 actor_grad=5.886328
+A2 env=100 update=76 BC=0.664897 valid=51 ADD=6 beta=1.000000 actor_grad=5.635714
+A2 env=100 update=77 BC=0.664179 valid=51 ADD=6 beta=1.000000 actor_grad=5.617899
+A2 env=100 update=78 BC=0.660991 valid=52 ADD=5 beta=1.000000 actor_grad=6.101165
+A2 env=100 update=79 BC=0.663046 valid=56 ADD=8 beta=1.000000 actor_grad=5.511722
+A2 env=100 update=80 BC=0.660625 valid=53 ADD=6 beta=1.000000 actor_grad=5.828300
+A2 env=100 update=81 BC=0.659591 valid=53 ADD=6 beta=1.000000 actor_grad=5.863233
+A2 env=100 update=82 BC=0.659246 valid=52 ADD=6 beta=1.000000 actor_grad=5.835365
+A2 env=100 update=83 BC=0.662330 valid=56 ADD=9 beta=1.000000 actor_grad=5.148659
+A2 env=100 update=84 BC=0.657202 valid=50 ADD=6 beta=1.000000 actor_grad=5.850550
+A2 env=100 update=85 BC=0.661300 valid=56 ADD=10 beta=1.000000 actor_grad=5.024438
+A2 env=100 update=86 BC=0.658242 valid=56 ADD=9 beta=1.000000 actor_grad=5.454384
+A2 env=100 update=87 BC=0.659684 valid=56 ADD=10 beta=1.000000 actor_grad=5.032427
+A2 env=100 update=88 BC=0.652607 valid=57 ADD=7 beta=1.000000 actor_grad=6.081730
+A2 env=100 update=89 BC=0.649528 valid=52 ADD=5 beta=1.000000 actor_grad=6.387396
+A2 env=100 update=90 BC=0.650670 valid=53 ADD=6 beta=1.000000 actor_grad=6.146504
+A2 env=100 update=91 BC=0.652457 valid=56 ADD=9 beta=1.000000 actor_grad=5.619298
+A2 env=100 update=92 BC=0.646140 valid=53 ADD=5 beta=1.000000 actor_grad=6.453764
+A2 env=100 update=93 BC=0.652108 valid=56 ADD=9 beta=1.000000 actor_grad=5.488184
+A2 env=100 update=94 BC=0.645660 valid=48 ADD=6 beta=1.000000 actor_grad=6.283911
+A2 env=100 update=95 BC=0.648862 valid=56 ADD=9 beta=1.000000 actor_grad=5.679002
+A2 env=100 update=96 BC=0.641125 valid=52 ADD=5 beta=1.000000 actor_grad=6.659925
+A2 env=100 update=97 BC=0.639437 valid=52 ADD=5 beta=1.000000 actor_grad=6.728731
+A2 env=100 update=98 BC=0.639458 valid=57 ADD=6 beta=1.000000 actor_grad=6.609431
+A2 env=100 update=99 BC=0.639820 valid=51 ADD=6 beta=1.000000 actor_grad=6.437012
+A2 env=100 update=100 BC=0.640264 valid=58 ADD=7 beta=1.000000 actor_grad=6.314748
+A2 env=200 update=101 BC=0.635071 valid=57 ADD=6 beta=1.000000 actor_grad=6.762042
+A2 env=200 update=102 BC=0.641895 valid=48 ADD=7 beta=1.000000 actor_grad=5.887825
+A2 env=200 update=103 BC=0.634719 valid=53 ADD=6 beta=1.000000 actor_grad=6.598901
+A2 env=200 update=104 BC=0.641405 valid=56 ADD=9 beta=1.000000 actor_grad=5.726704
+A2 env=200 update=105 BC=0.628524 valid=56 ADD=5 beta=1.000000 actor_grad=7.084566
+A2 env=200 update=106 BC=0.637143 valid=49 ADD=7 beta=1.000000 actor_grad=5.998720
+A2 env=200 update=107 BC=0.627375 valid=51 ADD=5 beta=1.000000 actor_grad=6.985528
+A2 env=200 update=108 BC=0.632991 valid=59 ADD=8 beta=1.000000 actor_grad=6.248135
+A2 env=200 update=109 BC=0.629997 valid=48 ADD=6 beta=1.000000 actor_grad=6.456626
+A2 env=200 update=110 BC=0.627281 valid=58 ADD=7 beta=1.000000 actor_grad=6.625507
+A2 env=200 update=111 BC=0.628184 valid=54 ADD=7 beta=1.000000 actor_grad=6.429913
+A2 env=200 update=112 BC=0.621680 valid=50 ADD=5 beta=1.000000 actor_grad=6.979085
+A2 env=200 update=113 BC=0.625629 valid=54 ADD=7 beta=1.000000 actor_grad=6.465056
+A2 env=200 update=114 BC=0.619960 valid=57 ADD=6 beta=1.000000 actor_grad=6.953788
+A2 env=200 update=115 BC=0.616367 valid=53 ADD=5 beta=1.000000 actor_grad=7.157320
+A2 env=200 update=116 BC=0.624143 valid=49 ADD=7 beta=1.000000 actor_grad=6.303671
+A2 env=200 update=117 BC=0.613270 valid=53 ADD=5 beta=1.000000 actor_grad=7.220216
+A2 env=200 update=118 BC=0.619712 valid=52 ADD=7 beta=1.000000 actor_grad=6.539245
+A2 env=200 update=119 BC=0.615833 valid=49 ADD=6 beta=1.000000 actor_grad=6.788391
+A2 env=200 update=120 BC=0.621045 valid=48 ADD=7 beta=1.000000 actor_grad=6.179848
+A2 env=200 update=121 BC=0.617086 valid=50 ADD=7 beta=1.000000 actor_grad=6.441710
+A2 env=200 update=122 BC=0.610425 valid=54 ADD=6 beta=1.000000 actor_grad=6.942414
+A2 env=200 update=123 BC=0.613520 valid=54 ADD=7 beta=1.000000 actor_grad=6.581120
+A2 env=200 update=124 BC=0.609406 valid=59 ADD=7 beta=1.000000 actor_grad=6.828668
+A2 env=200 update=125 BC=0.606104 valid=51 ADD=6 beta=1.000000 actor_grad=7.024131
+A2 env=200 update=126 BC=0.600933 valid=53 ADD=5 beta=1.000000 actor_grad=7.334766
+A2 env=200 update=127 BC=0.612865 valid=48 ADD=7 beta=1.000000 actor_grad=6.250582
+A2 env=200 update=128 BC=0.603028 valid=51 ADD=6 beta=1.000000 actor_grad=6.966956
+A2 env=200 update=129 BC=0.601473 valid=53 ADD=6 beta=1.000000 actor_grad=6.981063
+A2 env=200 update=130 BC=0.595228 valid=51 ADD=5 beta=1.000000 actor_grad=7.357858
+A2 env=200 update=131 BC=0.600091 valid=59 ADD=7 beta=1.000000 actor_grad=6.856776
+A2 env=200 update=132 BC=0.598628 valid=51 ADD=6 beta=1.000000 actor_grad=6.905187
+A2 env=200 update=133 BC=0.599245 valid=49 ADD=6 beta=1.000000 actor_grad=6.761574
+A2 env=200 update=134 BC=0.595374 valid=57 ADD=7 beta=1.000000 actor_grad=6.900985
+A2 env=200 update=135 BC=0.594209 valid=51 ADD=6 beta=1.000000 actor_grad=6.883409
+A2 env=200 update=136 BC=0.594428 valid=56 ADD=7 beta=1.000000 actor_grad=6.745721
+A2 env=200 update=137 BC=0.600649 valid=54 ADD=8 beta=1.000000 actor_grad=6.157288
+A2 env=200 update=138 BC=0.588849 valid=53 ADD=6 beta=1.000000 actor_grad=6.943186
+A2 env=200 update=139 BC=0.602535 valid=49 ADD=8 beta=1.000000 actor_grad=5.835299
+A2 env=200 update=140 BC=0.600937 valid=56 ADD=9 beta=1.000000 actor_grad=5.871337
+A2 env=200 update=141 BC=0.595528 valid=54 ADD=8 beta=1.000000 actor_grad=6.165394
+A2 env=200 update=142 BC=0.577606 valid=53 ADD=5 beta=1.000000 actor_grad=7.340206
+A2 env=200 update=143 BC=0.576305 valid=53 ADD=5 beta=1.000000 actor_grad=7.319942
+A2 env=200 update=144 BC=0.576606 valid=50 ADD=5 beta=1.000000 actor_grad=7.183127
+A2 env=200 update=145 BC=0.575604 valid=48 ADD=5 beta=1.000000 actor_grad=7.109770
+A2 env=200 update=146 BC=0.577913 valid=52 ADD=6 beta=1.000000 actor_grad=6.848781
+A2 env=200 update=147 BC=0.571799 valid=50 ADD=5 beta=1.000000 actor_grad=7.177117
+A2 env=200 update=148 BC=0.568361 valid=51 ADD=5 beta=1.000000 actor_grad=7.244066
+A2 env=200 update=149 BC=0.579271 valid=54 ADD=7 beta=1.000000 actor_grad=6.442960
+A2 env=200 update=150 BC=0.573007 valid=51 ADD=6 beta=1.000000 actor_grad=6.738264
+A2 env=200 update=151 BC=0.565903 valid=50 ADD=5 beta=1.000000 actor_grad=7.096239
+A2 env=200 update=152 BC=0.564320 valid=48 ADD=5 beta=1.000000 actor_grad=7.037097
+A2 env=200 update=153 BC=0.577785 valid=54 ADD=8 beta=1.000000 actor_grad=6.104744
+A2 env=200 update=154 BC=0.561301 valid=48 ADD=5 beta=1.000000 actor_grad=7.019213
+A2 env=200 update=155 BC=0.570135 valid=54 ADD=7 beta=1.000000 actor_grad=6.381033
+A2 env=200 update=156 BC=0.557190 valid=50 ADD=5 beta=1.000000 actor_grad=7.067682
+A2 env=200 update=157 BC=0.574168 valid=54 ADD=8 beta=1.000000 actor_grad=5.945724
+A2 env=200 update=158 BC=0.562375 valid=49 ADD=6 beta=1.000000 actor_grad=6.474683
+A2 env=200 update=159 BC=0.570689 valid=48 ADD=7 beta=1.000000 actor_grad=5.911035
+A2 env=200 update=160 BC=0.576975 valid=48 ADD=8 beta=1.000000 actor_grad=5.442988
+A2 env=200 update=161 BC=0.556074 valid=59 ADD=7 beta=1.000000 actor_grad=6.516135
+A2 env=200 update=162 BC=0.552454 valid=53 ADD=6 beta=1.000000 actor_grad=6.636875
+A2 env=200 update=163 BC=0.564919 valid=48 ADD=7 beta=1.000000 actor_grad=5.825968
+A2 env=200 update=164 BC=0.543640 valid=50 ADD=5 beta=1.000000 actor_grad=6.890126
+A2 env=200 update=165 BC=0.550836 valid=48 ADD=6 beta=1.000000 actor_grad=6.395093
+A2 env=200 update=166 BC=0.541284 valid=48 ADD=5 beta=1.000000 actor_grad=6.793089
+A2 env=200 update=167 BC=0.559122 valid=48 ADD=7 beta=1.000000 actor_grad=5.739548
+A2 env=200 update=168 BC=0.557362 valid=48 ADD=7 beta=1.000000 actor_grad=5.752110
+A2 env=200 update=169 BC=0.555823 valid=54 ADD=8 beta=1.000000 actor_grad=5.739880
+A2 env=200 update=170 BC=0.562928 valid=49 ADD=8 beta=1.000000 actor_grad=5.286357
+A2 env=200 update=171 BC=0.537687 valid=53 ADD=6 beta=1.000000 actor_grad=6.457185
+A2 env=200 update=172 BC=0.561832 valid=48 ADD=8 beta=1.000000 actor_grad=5.174988
+A2 env=200 update=173 BC=0.537463 valid=59 ADD=7 beta=1.000000 actor_grad=6.272884
+A2 env=200 update=174 BC=0.535808 valid=59 ADD=7 beta=1.000000 actor_grad=6.246071
+A2 env=200 update=175 BC=0.547527 valid=48 ADD=7 beta=1.000000 actor_grad=5.577343
+A2 env=200 update=176 BC=0.523361 valid=50 ADD=5 beta=1.000000 actor_grad=6.624084
+A2 env=200 update=177 BC=0.524821 valid=55 ADD=6 beta=1.000000 actor_grad=6.433525
+A2 env=200 update=178 BC=0.541298 valid=49 ADD=7 beta=1.000000 actor_grad=5.561558
+A2 env=200 update=179 BC=0.551339 valid=48 ADD=8 beta=1.000000 actor_grad=4.993327
+A2 env=200 update=180 BC=0.528639 valid=49 ADD=6 beta=1.000000 actor_grad=5.942932
+A2 env=200 update=181 BC=0.528508 valid=54 ADD=7 beta=1.000000 actor_grad=5.842294
+A2 env=200 update=182 BC=0.525563 valid=56 ADD=7 beta=1.000000 actor_grad=5.852196
+A2 env=200 update=183 BC=0.509161 valid=51 ADD=5 beta=1.000000 actor_grad=6.479145
+A2 env=200 update=184 BC=0.509310 valid=50 ADD=5 beta=1.000000 actor_grad=6.384037
+A2 env=200 update=185 BC=0.504785 valid=52 ADD=5 beta=1.000000 actor_grad=6.454455
+A2 env=200 update=186 BC=0.511340 valid=54 ADD=6 beta=1.000000 actor_grad=6.065693
+A2 env=200 update=187 BC=0.530407 valid=48 ADD=7 beta=1.000000 actor_grad=5.163324
+A2 env=200 update=188 BC=0.526729 valid=49 ADD=7 beta=1.000000 actor_grad=5.227272
+A2 env=200 update=189 BC=0.544983 valid=56 ADD=10 beta=1.000000 actor_grad=4.381068
+A2 env=200 update=190 BC=0.515987 valid=54 ADD=7 beta=1.000000 actor_grad=5.465131
+A2 env=200 update=191 BC=0.524122 valid=48 ADD=7 beta=1.000000 actor_grad=5.031754
+A2 env=200 update=192 BC=0.503009 valid=53 ADD=6 beta=1.000000 actor_grad=5.780660
+A2 env=200 update=193 BC=0.509085 valid=55 ADD=7 beta=1.000000 actor_grad=5.431322
+A2 env=200 update=194 BC=0.487340 valid=53 ADD=5 beta=1.000000 actor_grad=6.172213
+A2 env=200 update=195 BC=0.506484 valid=55 ADD=7 beta=1.000000 actor_grad=5.316286
+A2 env=200 update=196 BC=0.492149 valid=56 ADD=6 beta=1.000000 actor_grad=5.775126
+A2 env=200 update=197 BC=0.497800 valid=59 ADD=7 beta=1.000000 actor_grad=5.463373
+A2 env=200 update=198 BC=0.502224 valid=54 ADD=7 beta=1.000000 actor_grad=5.176092
+A2 env=200 update=199 BC=0.512634 valid=48 ADD=7 beta=1.000000 actor_grad=4.713650
+A2 env=200 update=200 BC=0.498775 valid=54 ADD=7 beta=1.000000 actor_grad=5.095259
+A2 env=300 update=201 BC=0.486570 valid=52 ADD=6 beta=1.000000 actor_grad=5.445569
+A2 env=300 update=202 BC=0.476990 valid=52 ADD=5 beta=1.000000 actor_grad=5.753317
+A2 env=300 update=203 BC=0.457554 valid=52 ADD=4 beta=1.000000 actor_grad=6.255592
+A2 env=300 update=204 BC=0.458609 valid=52 ADD=4 beta=1.000000 actor_grad=6.159748
+A2 env=300 update=205 BC=0.440781 valid=50 ADD=3 beta=1.000000 actor_grad=6.590011
+A2 env=300 update=206 BC=0.497921 valid=44 ADD=6 beta=1.000000 actor_grad=4.609173
+A2 env=300 update=207 BC=0.481195 valid=50 ADD=6 beta=1.000000 actor_grad=5.036850
+A2 env=300 update=208 BC=0.470972 valid=55 ADD=6 beta=1.000000 actor_grad=5.267003
+A2 env=300 update=209 BC=0.475725 valid=51 ADD=6 beta=1.000000 actor_grad=5.003447
+A2 env=300 update=210 BC=0.486711 valid=52 ADD=7 beta=1.000000 actor_grad=4.537145
+A2 env=300 update=211 BC=0.496227 valid=54 ADD=8 beta=1.000000 actor_grad=4.146676
+A2 env=300 update=212 BC=0.474282 valid=57 ADD=7 beta=1.000000 actor_grad=4.742857
+A2 env=300 update=213 BC=0.458572 valid=50 ADD=5 beta=1.000000 actor_grad=5.200250
+A2 env=300 update=214 BC=0.439567 valid=50 ADD=4 beta=1.000000 actor_grad=5.662711
+A2 env=300 update=215 BC=0.434394 valid=51 ADD=4 beta=1.000000 actor_grad=5.677155
+A2 env=300 update=216 BC=0.466244 valid=50 ADD=6 beta=1.000000 actor_grad=4.612953
+A2 env=300 update=217 BC=0.458981 valid=53 ADD=6 beta=1.000000 actor_grad=4.737064
+A2 env=300 update=218 BC=0.446649 valid=50 ADD=5 beta=1.000000 actor_grad=5.007288
+A2 env=300 update=219 BC=0.448579 valid=57 ADD=6 beta=1.000000 actor_grad=4.846420
+A2 env=300 update=220 BC=0.461027 valid=49 ADD=6 beta=1.000000 actor_grad=4.350843
+A2 env=300 update=221 BC=0.421706 valid=51 ADD=4 beta=1.000000 actor_grad=5.375933
+A2 env=300 update=222 BC=0.457262 valid=50 ADD=6 beta=1.000000 actor_grad=4.311079
+A2 env=300 update=223 BC=0.447700 valid=53 ADD=6 beta=1.000000 actor_grad=4.452156
+A2 env=300 update=224 BC=0.398484 valid=50 ADD=3 beta=1.000000 actor_grad=5.687211
+A2 env=300 update=225 BC=0.434503 valid=50 ADD=5 beta=1.000000 actor_grad=4.652112
+A2 env=300 update=226 BC=0.491444 valid=43 ADD=7 beta=1.000000 actor_grad=3.050342
+A2 env=300 update=227 BC=0.443771 valid=53 ADD=6 beta=1.000000 actor_grad=4.218822
+A2 env=300 update=228 BC=0.470132 valid=49 ADD=7 beta=1.000000 actor_grad=3.458452
+A2 env=300 update=229 BC=0.481690 valid=56 ADD=9 beta=1.000000 actor_grad=3.016809
+A2 env=300 update=230 BC=0.436068 valid=53 ADD=6 beta=1.000000 actor_grad=4.112437
+A2 env=300 update=231 BC=0.383555 valid=50 ADD=3 beta=1.000000 actor_grad=5.360097
+A2 env=300 update=232 BC=0.465061 valid=48 ADD=7 beta=1.000000 actor_grad=3.198595
+A2 env=300 update=233 BC=0.440890 valid=49 ADD=6 beta=1.000000 actor_grad=3.741094
+A2 env=300 update=234 BC=0.395940 valid=51 ADD=4 beta=1.000000 actor_grad=4.769270
+A2 env=300 update=235 BC=0.417753 valid=50 ADD=5 beta=1.000000 actor_grad=4.160426
+A2 env=300 update=236 BC=0.434506 valid=50 ADD=6 beta=1.000000 actor_grad=3.670181
+A2 env=300 update=237 BC=0.425339 valid=53 ADD=6 beta=1.000000 actor_grad=3.754733
+A2 env=300 update=238 BC=0.412728 valid=50 ADD=5 beta=1.000000 actor_grad=4.022474
+A2 env=300 update=239 BC=0.366542 valid=51 ADD=3 beta=1.000000 actor_grad=4.978221
+A2 env=300 update=240 BC=0.429179 valid=57 ADD=7 beta=1.000000 actor_grad=3.404064
+A2 env=300 update=241 BC=0.428728 valid=49 ADD=6 beta=1.000000 actor_grad=3.324083
+A2 env=300 update=242 BC=0.471652 valid=43 ADD=7 beta=1.000000 actor_grad=2.300913
+A2 env=300 update=243 BC=0.422074 valid=59 ADD=7 beta=1.000000 actor_grad=3.318841
+A2 env=300 update=244 BC=0.420732 valid=59 ADD=7 beta=1.000000 actor_grad=3.262452
+A2 env=300 update=245 BC=0.388893 valid=55 ADD=5 beta=1.000000 actor_grad=3.884252
+A2 env=300 update=246 BC=0.421551 valid=49 ADD=6 beta=1.000000 actor_grad=3.074152
+A2 env=300 update=247 BC=0.416508 valid=59 ADD=7 beta=1.000000 actor_grad=3.111509
+A2 env=300 update=248 BC=0.445859 valid=48 ADD=7 beta=1.000000 actor_grad=2.387805
+A2 env=300 update=249 BC=0.404474 valid=54 ADD=6 beta=1.000000 actor_grad=3.204818
+A2 env=300 update=250 BC=0.452508 valid=46 ADD=7 beta=1.000000 actor_grad=2.158433
+A2 env=300 update=251 BC=0.415513 valid=49 ADD=6 beta=1.000000 actor_grad=2.829339
+A2 env=300 update=252 BC=0.464475 valid=48 ADD=8 beta=1.000000 actor_grad=1.739349
+A2 env=300 update=253 BC=0.441737 valid=54 ADD=8 beta=1.000000 actor_grad=2.134979
+A2 env=300 update=254 BC=0.414317 valid=56 ADD=7 beta=1.000000 actor_grad=2.608345
+A2 env=300 update=255 BC=0.335046 valid=51 ADD=3 beta=1.000000 actor_grad=4.144610
+A2 env=300 update=256 BC=0.400745 valid=52 ADD=6 beta=1.000000 actor_grad=2.742449
+A2 env=300 update=257 BC=0.354033 valid=51 ADD=4 beta=1.000000 actor_grad=3.578943
+A2 env=300 update=258 BC=0.427751 valid=57 ADD=8 beta=1.000000 actor_grad=2.061951
+A2 env=300 update=259 BC=0.437337 valid=54 ADD=8 beta=1.000000 actor_grad=1.815684
+A2 env=300 update=260 BC=0.324756 valid=51 ADD=3 beta=1.000000 actor_grad=3.887531
+A2 env=300 update=261 BC=0.367399 valid=53 ADD=5 beta=1.000000 actor_grad=2.993232
+A2 env=300 update=262 BC=0.405258 valid=56 ADD=7 beta=1.000000 actor_grad=2.196242
+A2 env=300 update=263 BC=0.408853 valid=54 ADD=7 beta=1.000000 actor_grad=2.063360
+A2 env=300 update=264 BC=0.426285 valid=49 ADD=7 beta=1.000000 actor_grad=1.678787
+A2 env=300 update=265 BC=0.422837 valid=43 ADD=6 beta=1.000000 actor_grad=1.723127
+A2 env=300 update=266 BC=0.365396 valid=51 ADD=5 beta=1.000000 actor_grad=2.651617
+A2 env=300 update=267 BC=0.338032 valid=51 ADD=4 beta=1.000000 actor_grad=3.072185
+A2 env=300 update=268 BC=0.430290 valid=54 ADD=8 beta=1.000000 actor_grad=1.368485
+A2 env=300 update=269 BC=0.364383 valid=50 ADD=5 beta=1.000000 actor_grad=2.449573
+A2 env=300 update=270 BC=0.403853 valid=54 ADD=7 beta=1.000000 actor_grad=1.702801
+A2 env=300 update=271 BC=0.376634 valid=54 ADD=6 beta=1.000000 actor_grad=2.092984
+A2 env=300 update=272 BC=0.416330 valid=50 ADD=7 beta=1.000000 actor_grad=1.362733
+A2 env=300 update=273 BC=0.448359 valid=49 ADD=8 beta=1.000000 actor_grad=0.785728
+A2 env=300 update=274 BC=0.384643 valid=59 ADD=7 beta=1.000000 actor_grad=1.766877
+A2 env=300 update=275 BC=0.321961 valid=53 ADD=4 beta=1.000000 actor_grad=2.723917
+A2 env=300 update=276 BC=0.382997 valid=59 ADD=7 beta=1.000000 actor_grad=1.694498
+A2 env=300 update=277 BC=0.397051 valid=54 ADD=7 beta=1.000000 actor_grad=1.388821
+A2 env=300 update=278 BC=0.447973 valid=43 ADD=7 beta=1.000000 actor_grad=0.576359
+A2 env=300 update=279 BC=0.320777 valid=51 ADD=4 beta=1.000000 actor_grad=2.476357
+A2 env=300 update=280 BC=0.351688 valid=50 ADD=5 beta=1.000000 actor_grad=1.919401
+A2 env=300 update=281 BC=0.378435 valid=59 ADD=7 beta=1.000000 actor_grad=1.422518
+A2 env=300 update=282 BC=0.380659 valid=50 ADD=6 beta=1.000000 actor_grad=1.373264
+A2 env=300 update=283 BC=0.376178 valid=51 ADD=6 beta=1.000000 actor_grad=1.359164
+A2 env=300 update=284 BC=0.313619 valid=51 ADD=4 beta=1.000000 actor_grad=2.219521
+A2 env=300 update=285 BC=0.354117 valid=57 ADD=6 beta=1.000000 actor_grad=1.555481
+A2 env=300 update=286 BC=0.283054 valid=50 ADD=3 beta=1.000000 actor_grad=2.557960
+A2 env=300 update=287 BC=0.310132 valid=51 ADD=4 beta=1.000000 actor_grad=2.077165
+A2 env=300 update=288 BC=0.418812 valid=48 ADD=7 beta=1.000000 actor_grad=0.519890
+A2 env=300 update=289 BC=0.275894 valid=51 ADD=3 beta=1.000000 actor_grad=2.435369
+A2 env=300 update=290 BC=0.378654 valid=49 ADD=6 beta=1.000000 actor_grad=0.942484
+A2 env=300 update=291 BC=0.446336 valid=43 ADD=7 beta=1.000000 actor_grad=0.142168
+A2 env=300 update=292 BC=0.445932 valid=43 ADD=7 beta=1.000000 actor_grad=0.177886
+A2 env=300 update=293 BC=0.450278 valid=48 ADD=8 beta=1.000000 actor_grad=0.224734
+A2 env=300 update=294 BC=0.388884 valid=54 ADD=7 beta=1.000000 actor_grad=0.639511
+A2 env=300 update=295 BC=0.445878 valid=43 ADD=7 beta=1.000000 actor_grad=0.202875
+A2 env=300 update=296 BC=0.400956 valid=44 ADD=6 beta=1.000000 actor_grad=0.472179
+A2 env=300 update=297 BC=0.422621 valid=47 ADD=7 beta=1.000000 actor_grad=0.209775
+A2 env=300 update=298 BC=0.415631 valid=48 ADD=7 beta=1.000000 actor_grad=0.220402
+A2 env=300 update=299 BC=0.416982 valid=48 ADD=7 beta=1.000000 actor_grad=0.216984
+A2 env=300 update=300 BC=0.415913 valid=48 ADD=7 beta=1.000000 actor_grad=0.183675
+A2 env=400 update=301 BC=0.410328 valid=49 ADD=7 beta=1.000000 actor_grad=0.213172
+A2 env=400 update=302 BC=0.298398 valid=51 ADD=4 beta=1.000000 actor_grad=1.618878
+A2 env=400 update=303 BC=0.229557 valid=51 ADD=2 beta=1.000000 actor_grad=2.469395
+A2 env=400 update=304 BC=0.262972 valid=51 ADD=3 beta=1.000000 actor_grad=1.988573
+A2 env=400 update=305 BC=0.266444 valid=49 ADD=3 beta=1.000000 actor_grad=1.907066
+A2 env=400 update=306 BC=0.335070 valid=50 ADD=5 beta=1.000000 actor_grad=1.022154
+A2 env=400 update=307 BC=0.260240 valid=51 ADD=3 beta=1.000000 actor_grad=1.888232
+A2 env=400 update=308 BC=0.323257 valid=53 ADD=5 beta=1.000000 actor_grad=1.070380
+A2 env=400 update=309 BC=0.184572 valid=55 ADD=1 beta=1.000000 actor_grad=2.723564
+A2 env=400 update=310 BC=0.446515 valid=49 ADD=8 beta=1.000000 actor_grad=0.525528
+A2 env=400 update=311 BC=0.292046 valid=51 ADD=4 beta=1.000000 actor_grad=1.349327
+A2 env=400 update=312 BC=0.428860 valid=46 ADD=7 beta=1.000000 actor_grad=0.329856
+A2 env=400 update=313 BC=0.415573 valid=48 ADD=7 beta=1.000000 actor_grad=0.230795
+A2 env=400 update=314 BC=0.417207 valid=48 ADD=7 beta=1.000000 actor_grad=0.233519
+A2 env=400 update=315 BC=0.257070 valid=50 ADD=3 beta=1.000000 actor_grad=1.680594
+A2 env=400 update=316 BC=0.289042 valid=52 ADD=4 beta=1.000000 actor_grad=1.300657
+A2 env=400 update=317 BC=0.355399 valid=53 ADD=6 beta=1.000000 actor_grad=0.479082
+A2 env=400 update=318 BC=0.293776 valid=50 ADD=4 beta=1.000000 actor_grad=1.211664
+A2 env=400 update=319 BC=0.214053 valid=53 ADD=2 beta=1.000000 actor_grad=2.084571
+A2 env=400 update=320 BC=0.334627 valid=49 ADD=5 beta=1.000000 actor_grad=0.688745
+A2 env=400 update=321 BC=0.399860 valid=51 ADD=7 beta=1.000000 actor_grad=0.172765
+A2 env=400 update=322 BC=0.256089 valid=49 ADD=3 beta=1.000000 actor_grad=1.526727
+A2 env=400 update=323 BC=0.260808 valid=47 ADD=3 beta=1.000000 actor_grad=1.451538
+A2 env=400 update=324 BC=0.386000 valid=54 ADD=7 beta=1.000000 actor_grad=0.109836
+A2 env=400 update=325 BC=0.355421 valid=53 ADD=6 beta=1.000000 actor_grad=0.356896
+A2 env=400 update=326 BC=0.287433 valid=51 ADD=4 beta=1.000000 actor_grad=1.062045
+A2 env=400 update=327 BC=0.354473 valid=53 ADD=6 beta=1.000000 actor_grad=0.319181
+A2 env=400 update=328 BC=0.285898 valid=51 ADD=4 beta=1.000000 actor_grad=1.029409
+A2 env=400 update=329 BC=0.364663 valid=59 ADD=7 beta=1.000000 actor_grad=0.147476
+A2 env=400 update=330 BC=0.250044 valid=50 ADD=3 beta=1.000000 actor_grad=1.373462
+A2 env=400 update=331 BC=0.452097 valid=43 ADD=7 beta=1.000000 actor_grad=0.851191
+A2 env=400 update=332 BC=0.352645 valid=53 ADD=6 beta=1.000000 actor_grad=0.228760
+A2 env=400 update=333 BC=0.418061 valid=48 ADD=7 beta=1.000000 actor_grad=0.533880
+A2 env=400 update=334 BC=0.266883 valid=43 ADD=3 beta=1.000000 actor_grad=1.085754
+A2 env=400 update=335 BC=0.381785 valid=47 ADD=6 beta=1.000000 actor_grad=0.182836
+A2 env=400 update=336 BC=0.250002 valid=49 ADD=3 beta=1.000000 actor_grad=1.240924
+A2 env=400 update=337 BC=0.453591 valid=49 ADD=8 beta=1.000000 actor_grad=0.954857
+A2 env=400 update=338 BC=0.453524 valid=43 ADD=7 beta=1.000000 actor_grad=0.948001
+A2 env=400 update=339 BC=0.385801 valid=54 ADD=7 beta=1.000000 actor_grad=0.254953
+A2 env=400 update=340 BC=0.244135 valid=51 ADD=3 beta=1.000000 actor_grad=1.270707
+A2 env=400 update=341 BC=0.165354 valid=51 ADD=1 beta=1.000000 actor_grad=2.095558
+A2 env=400 update=342 BC=0.243696 valid=51 ADD=3 beta=1.000000 actor_grad=1.263349
+A2 env=400 update=343 BC=0.315573 valid=53 ADD=5 beta=1.000000 actor_grad=0.495193
+A2 env=400 update=344 BC=0.282356 valid=51 ADD=4 beta=1.000000 actor_grad=0.827854
+A2 env=400 update=345 BC=0.243055 valid=51 ADD=3 beta=1.000000 actor_grad=1.221431
+A2 env=400 update=346 BC=0.372397 valid=49 ADD=6 beta=1.000000 actor_grad=0.176279
+A2 env=400 update=347 BC=0.326489 valid=50 ADD=5 beta=1.000000 actor_grad=0.331222
+A2 env=400 update=348 BC=0.376332 valid=48 ADD=6 beta=1.000000 actor_grad=0.248496
+A2 env=400 update=349 BC=0.376528 valid=48 ADD=6 beta=1.000000 actor_grad=0.246674
+A2 env=400 update=350 BC=0.408001 valid=50 ADD=7 beta=1.000000 actor_grad=0.561137
+A2 env=400 update=351 BC=0.279642 valid=52 ADD=4 beta=1.000000 actor_grad=0.792640
+A2 env=400 update=352 BC=0.280886 valid=51 ADD=4 beta=1.000000 actor_grad=0.753008
+A2 env=400 update=353 BC=0.420139 valid=48 ADD=7 beta=1.000000 actor_grad=0.686133
+A2 env=400 update=354 BC=0.313682 valid=53 ADD=5 beta=1.000000 actor_grad=0.420725
+A2 env=400 update=355 BC=0.456524 valid=43 ADD=7 beta=1.000000 actor_grad=1.055002
+A2 env=400 update=356 BC=0.372493 valid=49 ADD=6 beta=1.000000 actor_grad=0.224754
+A2 env=400 update=357 BC=0.326230 valid=50 ADD=5 beta=1.000000 actor_grad=0.279830
+A2 env=400 update=358 BC=0.244159 valid=50 ADD=3 beta=1.000000 actor_grad=1.118000
+A2 env=400 update=359 BC=0.425529 valid=54 ADD=8 beta=1.000000 actor_grad=0.744274
+A2 env=400 update=360 BC=0.284380 valid=50 ADD=4 beta=1.000000 actor_grad=0.713633
+A2 env=400 update=361 BC=0.348824 valid=54 ADD=6 beta=1.000000 actor_grad=0.089709
+A2 env=400 update=362 BC=0.326253 valid=50 ADD=5 beta=1.000000 actor_grad=0.276686
+A2 env=400 update=363 BC=0.245969 valid=49 ADD=3 beta=1.000000 actor_grad=1.068003
+A2 env=400 update=364 BC=0.421415 valid=48 ADD=7 beta=1.000000 actor_grad=0.722647
+A2 env=400 update=365 BC=0.457271 valid=43 ADD=7 beta=1.000000 actor_grad=1.067836
+A2 env=400 update=366 BC=0.253821 valid=46 ADD=3 beta=1.000000 actor_grad=0.970130
+A2 env=400 update=367 BC=0.240235 valid=51 ADD=3 beta=1.000000 actor_grad=1.101156
+A2 env=400 update=368 BC=0.463573 valid=48 ADD=8 beta=1.000000 actor_grad=1.162295
+A2 env=400 update=369 BC=0.279311 valid=51 ADD=4 beta=1.000000 actor_grad=0.692966
+A2 env=400 update=370 BC=0.442725 valid=45 ADD=7 beta=1.000000 actor_grad=0.936287
+A2 env=400 update=371 BC=0.326288 valid=50 ADD=5 beta=1.000000 actor_grad=0.248089
+A2 env=400 update=372 BC=0.279615 valid=51 ADD=4 beta=1.000000 actor_grad=0.671721
+A2 env=400 update=373 BC=0.457962 valid=43 ADD=7 beta=1.000000 actor_grad=1.095078
+A2 env=400 update=374 BC=0.464404 valid=48 ADD=8 beta=1.000000 actor_grad=1.180790
+A2 env=400 update=375 BC=0.287287 valid=49 ADD=4 beta=1.000000 actor_grad=0.598370
+A2 env=400 update=376 BC=0.362325 valid=51 ADD=6 beta=1.000000 actor_grad=0.196117
+A2 env=400 update=377 BC=0.330726 valid=49 ADD=5 beta=1.000000 actor_grad=0.207638
+A2 env=400 update=378 BC=0.195503 valid=53 ADD=2 beta=1.000000 actor_grad=1.498050
+A2 env=400 update=379 BC=0.356838 valid=52 ADD=6 beta=1.000000 actor_grad=0.154568
+A2 env=400 update=380 BC=0.204986 valid=47 ADD=2 beta=1.000000 actor_grad=1.389087
+A2 env=400 update=381 BC=0.244388 valid=49 ADD=3 beta=1.000000 actor_grad=1.000810
+A2 env=400 update=382 BC=0.372762 valid=49 ADD=6 beta=1.000000 actor_grad=0.302722
+A2 env=400 update=383 BC=0.208332 valid=45 ADD=2 beta=1.000000 actor_grad=1.327899
+A2 env=400 update=384 BC=0.196728 valid=51 ADD=2 beta=1.000000 actor_grad=1.430387
+A2 env=400 update=385 BC=0.415419 valid=56 ADD=8 beta=1.000000 actor_grad=0.726480
+A2 env=400 update=386 BC=0.261426 valid=43 ADD=3 beta=1.000000 actor_grad=0.784390
+A2 env=400 update=387 BC=0.194850 valid=52 ADD=2 beta=1.000000 actor_grad=1.410005
+A2 env=400 update=388 BC=0.330467 valid=49 ADD=5 beta=1.000000 actor_grad=0.148547
+A2 env=400 update=389 BC=0.423306 valid=48 ADD=7 beta=1.000000 actor_grad=0.829370
+A2 env=400 update=390 BC=0.365431 valid=59 ADD=7 beta=1.000000 actor_grad=0.279636
+A2 env=400 update=391 BC=0.354157 valid=53 ADD=6 beta=1.000000 actor_grad=0.178986
+A2 env=400 update=392 BC=0.379108 valid=56 ADD=7 beta=1.000000 actor_grad=0.412263
+A2 env=400 update=393 BC=0.401475 valid=59 ADD=8 beta=1.000000 actor_grad=0.624620
+A2 env=400 update=394 BC=0.401169 valid=59 ADD=8 beta=1.000000 actor_grad=0.616324
+A2 env=400 update=395 BC=0.238040 valid=51 ADD=3 beta=1.000000 actor_grad=0.980471
+A2 env=400 update=396 BC=0.416501 valid=49 ADD=7 beta=1.000000 actor_grad=0.760106
+A2 env=400 update=397 BC=0.241717 valid=49 ADD=3 beta=1.000000 actor_grad=0.943274
+A2 env=400 update=398 BC=0.241205 valid=50 ADD=3 beta=1.000000 actor_grad=0.967577
+A2 env=400 update=399 BC=0.321289 valid=51 ADD=5 beta=1.000000 actor_grad=0.197051
+A2 env=400 update=400 BC=0.245760 valid=48 ADD=3 beta=1.000000 actor_grad=0.904184
+A2 env=500 update=401 BC=0.199135 valid=49 ADD=2 beta=1.000000 actor_grad=1.346335
+A2 env=500 update=402 BC=0.111962 valid=64 ADD=0 beta=1.000000 actor_grad=2.171971
+A2 env=500 update=403 BC=0.354244 valid=53 ADD=6 beta=1.000000 actor_grad=0.174639
+A2 env=500 update=404 BC=0.145661 valid=60 ADD=1 beta=1.000000 actor_grad=1.815002
+A2 env=500 update=405 BC=0.328829 valid=49 ADD=5 beta=1.000000 actor_grad=0.124905
+A2 env=500 update=406 BC=0.237326 valid=51 ADD=3 beta=1.000000 actor_grad=0.934956
+A2 env=500 update=407 BC=0.149974 valid=53 ADD=1 beta=1.000000 actor_grad=1.723073
+A2 env=500 update=408 BC=0.190646 valid=53 ADD=2 beta=1.000000 actor_grad=1.328569
+A2 env=500 update=409 BC=0.354557 valid=53 ADD=6 beta=1.000000 actor_grad=0.224786
+A2 env=500 update=410 BC=0.238047 valid=50 ADD=3 beta=1.000000 actor_grad=0.850516
+A2 env=500 update=411 BC=0.340841 valid=56 ADD=6 beta=1.000000 actor_grad=0.138012
+A2 env=500 update=412 BC=0.106501 valid=64 ADD=0 beta=1.000000 actor_grad=2.044229
+A2 env=500 update=413 BC=0.106340 valid=64 ADD=0 beta=1.000000 actor_grad=2.043089
+A2 env=500 update=414 BC=0.401993 valid=52 ADD=7 beta=1.000000 actor_grad=0.688863
+A2 env=500 update=415 BC=0.105220 valid=64 ADD=0 beta=1.000000 actor_grad=2.016951
+A2 env=500 update=416 BC=0.105005 valid=64 ADD=0 beta=1.000000 actor_grad=2.007288
+A2 env=500 update=417 BC=0.427246 valid=48 ADD=7 beta=1.000000 actor_grad=0.931130
+A2 env=500 update=418 BC=0.276504 valid=51 ADD=4 beta=1.000000 actor_grad=0.430496
+A2 env=500 update=419 BC=0.277476 valid=51 ADD=4 beta=1.000000 actor_grad=0.408895
+A2 env=500 update=420 BC=0.427397 valid=48 ADD=7 beta=1.000000 actor_grad=0.954694
+A2 env=500 update=421 BC=0.391198 valid=54 ADD=7 beta=1.000000 actor_grad=0.639723
+A2 env=500 update=422 BC=0.145834 valid=51 ADD=1 beta=1.000000 actor_grad=1.548005
+A2 env=500 update=423 BC=0.203359 valid=44 ADD=2 beta=1.000000 actor_grad=1.022271
+A2 env=500 update=424 BC=0.101676 valid=64 ADD=0 beta=1.000000 actor_grad=1.924010
+A2 env=500 update=425 BC=0.334874 valid=48 ADD=5 beta=1.000000 actor_grad=0.178582
+A2 env=500 update=426 BC=0.138010 valid=60 ADD=1 beta=1.000000 actor_grad=1.572616
+A2 env=500 update=427 BC=0.386103 valid=55 ADD=7 beta=1.000000 actor_grad=0.636721
+A2 env=500 update=428 BC=0.100407 valid=64 ADD=0 beta=1.000000 actor_grad=1.893658
+A2 env=500 update=429 BC=0.099801 valid=64 ADD=0 beta=1.000000 actor_grad=1.879922
+A2 env=500 update=430 BC=0.364916 valid=51 ADD=6 beta=1.000000 actor_grad=0.464321
+A2 env=500 update=431 BC=0.325452 valid=50 ADD=5 beta=1.000000 actor_grad=0.128430
+A2 env=500 update=432 BC=0.376282 valid=49 ADD=6 beta=1.000000 actor_grad=0.559031
+A2 env=500 update=433 BC=0.345967 valid=55 ADD=6 beta=1.000000 actor_grad=0.290357
+A2 env=500 update=434 BC=0.274065 valid=52 ADD=4 beta=1.000000 actor_grad=0.363484
+A2 env=500 update=435 BC=0.468117 valid=43 ADD=7 beta=1.000000 actor_grad=1.341836
+A2 env=500 update=436 BC=0.099489 valid=64 ADD=0 beta=1.000000 actor_grad=1.873120
+A2 env=500 update=437 BC=0.312520 valid=53 ADD=5 beta=1.000000 actor_grad=0.082935
+A2 env=500 update=438 BC=0.137059 valid=60 ADD=1 beta=1.000000 actor_grad=1.532060
+A2 env=500 update=439 BC=0.099288 valid=64 ADD=0 beta=1.000000 actor_grad=1.869035
+A2 env=500 update=440 BC=0.098607 valid=64 ADD=0 beta=1.000000 actor_grad=1.852001
+A2 env=500 update=441 BC=0.237440 valid=49 ADD=3 beta=1.000000 actor_grad=0.645075
+A2 env=500 update=442 BC=0.304777 valid=55 ADD=5 beta=1.000000 actor_grad=0.084043
+A2 env=500 update=443 BC=0.186676 valid=51 ADD=2 beta=1.000000 actor_grad=1.048360
+A2 env=500 update=444 BC=0.416224 valid=57 ADD=8 beta=1.000000 actor_grad=0.933682
+A2 env=500 update=445 BC=0.182837 valid=53 ADD=2 beta=1.000000 actor_grad=1.050446
+A2 env=500 update=446 BC=0.096131 valid=64 ADD=0 beta=1.000000 actor_grad=1.792599
+A2 env=500 update=447 BC=0.095378 valid=64 ADD=0 beta=1.000000 actor_grad=1.774974
+A2 env=500 update=448 BC=0.230717 valid=51 ADD=3 beta=1.000000 actor_grad=0.625545
+A2 env=500 update=449 BC=0.094274 valid=64 ADD=0 beta=1.000000 actor_grad=1.746138
+A2 env=500 update=450 BC=0.300969 valid=56 ADD=5 beta=1.000000 actor_grad=0.078040
+A2 env=500 update=451 BC=0.377815 valid=49 ADD=6 beta=1.000000 actor_grad=0.651638
+A2 env=500 update=452 BC=0.131591 valid=60 ADD=1 beta=1.000000 actor_grad=1.379414
+A2 env=500 update=453 BC=0.394799 valid=54 ADD=7 beta=1.000000 actor_grad=0.802207
+A2 env=500 update=454 BC=0.232423 valid=50 ADD=3 beta=1.000000 actor_grad=0.529869
+A2 env=500 update=455 BC=0.426180 valid=49 ADD=7 beta=1.000000 actor_grad=1.057794
+A2 env=500 update=456 BC=0.253584 valid=43 ADD=3 beta=1.000000 actor_grad=0.351706
+A2 env=500 update=457 BC=0.347855 valid=55 ADD=6 beta=1.000000 actor_grad=0.421491
+A2 env=500 update=458 BC=0.090774 valid=64 ADD=0 beta=1.000000 actor_grad=1.657712
+A2 env=500 update=459 BC=0.232096 valid=50 ADD=3 beta=1.000000 actor_grad=0.507377
+A2 env=500 update=460 BC=0.395400 valid=54 ADD=7 beta=1.000000 actor_grad=0.820904
+A2 env=500 update=461 BC=0.229317 valid=51 ADD=3 beta=1.000000 actor_grad=0.526041
+A2 env=500 update=462 BC=0.231739 valid=50 ADD=3 beta=1.000000 actor_grad=0.487229
+A2 env=500 update=463 BC=0.325567 valid=50 ADD=5 beta=1.000000 actor_grad=0.293918
+A2 env=500 update=464 BC=0.089112 valid=64 ADD=0 beta=1.000000 actor_grad=1.613550
+A2 env=500 update=465 BC=0.274572 valid=51 ADD=4 beta=1.000000 actor_grad=0.153969
+A2 env=500 update=466 BC=0.088335 valid=64 ADD=0 beta=1.000000 actor_grad=1.591518
+A2 env=500 update=467 BC=0.358959 valid=53 ADD=6 beta=1.000000 actor_grad=0.539202
+A2 env=500 update=468 BC=0.127571 valid=60 ADD=1 beta=1.000000 actor_grad=1.262542
+A2 env=500 update=469 BC=0.278579 valid=50 ADD=4 beta=1.000000 actor_grad=0.134718
+A2 env=500 update=470 BC=0.087127 valid=64 ADD=0 beta=1.000000 actor_grad=1.563412
+A2 env=500 update=471 BC=0.126634 valid=60 ADD=1 beta=1.000000 actor_grad=1.242682
+A2 env=500 update=472 BC=0.371994 valid=59 ADD=7 beta=1.000000 actor_grad=0.672208
+A2 env=500 update=473 BC=0.085654 valid=64 ADD=0 beta=1.000000 actor_grad=1.526737
+A2 env=500 update=474 BC=0.381440 valid=49 ADD=6 beta=1.000000 actor_grad=0.757253
+A2 env=500 update=475 BC=0.180054 valid=51 ADD=2 beta=1.000000 actor_grad=0.788454
+A2 env=500 update=476 BC=0.275082 valid=51 ADD=4 beta=1.000000 actor_grad=0.087633
+A2 env=500 update=477 BC=0.472789 valid=44 ADD=7 beta=1.000000 actor_grad=1.441898
+A2 env=500 update=478 BC=0.224057 valid=52 ADD=3 beta=1.000000 actor_grad=0.406993
+A2 env=500 update=479 BC=0.431613 valid=49 ADD=7 beta=1.000000 actor_grad=1.150361
+A2 env=500 update=480 BC=0.399372 valid=54 ADD=7 beta=1.000000 actor_grad=0.900771
+A2 env=500 update=481 BC=0.381605 valid=49 ADD=6 beta=1.000000 actor_grad=0.769648
+A2 env=500 update=482 BC=0.084496 valid=64 ADD=0 beta=1.000000 actor_grad=1.498767
+A2 env=500 update=483 BC=0.232971 valid=49 ADD=3 beta=1.000000 actor_grad=0.352539
+A2 env=500 update=484 BC=0.327398 valid=50 ADD=5 beta=1.000000 actor_grad=0.377829
+A2 env=500 update=485 BC=0.249885 valid=44 ADD=3 beta=1.000000 actor_grad=0.231070
+A2 env=500 update=486 BC=0.436692 valid=48 ADD=7 beta=1.000000 actor_grad=1.171071
+A2 env=500 update=487 BC=0.380713 valid=49 ADD=6 beta=1.000000 actor_grad=0.728155
+A2 env=500 update=488 BC=0.326131 valid=50 ADD=5 beta=1.000000 actor_grad=0.293931
+A2 env=500 update=489 BC=0.085304 valid=64 ADD=0 beta=1.000000 actor_grad=1.517609
+A2 env=500 update=490 BC=0.460828 valid=45 ADD=7 beta=1.000000 actor_grad=1.333270
+A2 env=500 update=491 BC=0.253259 valid=43 ADD=3 beta=1.000000 actor_grad=0.262022
+A2 env=500 update=492 BC=0.182205 valid=50 ADD=2 beta=1.000000 actor_grad=0.784782
+A2 env=500 update=493 BC=0.377596 valid=49 ADD=6 beta=1.000000 actor_grad=0.623088
+A2 env=500 update=494 BC=0.239961 valid=47 ADD=3 beta=1.000000 actor_grad=0.364473
+A2 env=500 update=495 BC=0.087062 valid=64 ADD=0 beta=1.000000 actor_grad=1.558457
+A2 env=500 update=496 BC=0.125989 valid=60 ADD=1 beta=1.000000 actor_grad=1.227510
+A2 env=500 update=497 BC=0.085484 valid=64 ADD=0 beta=1.000000 actor_grad=1.521221
+A2 env=500 update=498 BC=0.333222 valid=49 ADD=5 beta=1.000000 actor_grad=0.401849
+A2 env=500 update=499 BC=0.191191 valid=45 ADD=2 beta=1.000000 actor_grad=0.630716
+A2 env=500 update=500 BC=0.275964 valid=51 ADD=4 beta=1.000000 actor_grad=0.240504
+A2 env=500 update=501 BC=0.122427 valid=60 ADD=1 beta=1.000000 actor_grad=1.116743
+{
+  "protocol": "FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1",
+  "status": "DIAGNOSTIC_STOPPED",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2",
+  "env_steps": 500,
+  "counters": {
+    "all_updates": 500,
+    "wm_updates": 500,
+    "bc_valid_updates": 500,
+    "bc_add_updates": 477,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 500,
+    "cycles": 5,
+    "sampled_transitions": 32000
+  },
+  "model_updates": 500,
+  "counts": {
+    "native_rows": 502,
+    "resets": 2,
+    "env_steps": 500,
+    "valid_market_minutes": 500,
+    "actor_ADD": 117,
+    "oracle_ADD": 34,
+    "executed_ADD": 34,
+    "entries": 34,
+    "TP": 34,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 426,
+    "learnable_decisions": 426,
+    "unproven_funds": 0,
+    "reward_sum": 32.3355867266655,
+    "published_native_rows": 501,
+    "actor_oracle_ADD_tp": 13,
+    "actor_oracle_ADD_fn": 21
+  },
+  "reward": 32.3355867266655,
+  "beta_schedule": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 1.0,
+    "points": null,
+    "env_steps": 500,
+    "beta": 1.0
+  },
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/ckpt/step_000000000500",
+  "checkpoint_manifest_sha256": "83945c698891fa4c42c7288d689e202eeaa11231a5bf961272725ad4af026013",
+  "devices": [
+    "cuda:0"
+  ],
+  "elapsed_seconds": 154.32662319997326,
+  "collect_seconds": 21.594453618919943,
+  "update_seconds": 127.0755692649982,
+  "core_env_steps_per_second": 3.3631527748563075,
+  "process_peak_rss_mib": 4111.92578125,
+  "oracle_query_recent_seconds": {
+    "50": 0.003879297524690628,
+    "95": 0.004878950855345465,
+    "99": 0.005548430168419147
+  },
+  "actor_oracle_add_recall": 0.38235294117647056,
+  "retained_teacher_rows": 501,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    0,
+    100,
+    200,
+    300,
+    400
+  ],
+  "label_ratio": 0.852,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "2089c39b26219cc32cd49b48522316717d9c32bd53a8a8b895091d4903e82e63"
+}

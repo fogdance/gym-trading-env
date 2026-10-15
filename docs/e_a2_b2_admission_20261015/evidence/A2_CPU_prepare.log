@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/tools/fg_s3_v2_experiment.py", line 168, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/tools/fg_s3_v2_experiment.py", line 111, in main
+    result = fg_s3_e_admission.prepare(args.config)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/src/gym_trading_env/research/fg_s3_e_admission.py", line 108, in prepare
+    return _prepare(settings, admission=_Admission, model_config=acceptance_model_config(settings))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_experiment.py", line 155, in _prepare
+    binding = make_binding(target, composition, s['e_data_manifest'],
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3/embodied/run/fg_s3_e_source.py", line 49, in make_binding
+    raise ValueError('E real TRAIN collection mathematical code/schema changed; rebuild required')
+ValueError: E real TRAIN collection mathematical code/schema changed; rebuild required

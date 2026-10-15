@@ -1,0 +1,92 @@
+"""Audit one existing command; training stays in the shared S3 entrypoint."""
+import csv
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+prefix, separator, *command = sys.argv[1:]
+assert separator == '--' and command
+directory = Path(__file__).resolve().parent
+environment = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', OMP_NUM_THREADS='12',
+    OPENBLAS_NUM_THREADS='1', CUDA_VISIBLE_DEVICES='0', FG_S3_VISIBLE_GPUS='0',
+    PYTHONPATH='src:.:../dreamerv3',
+    JAX_COMPILATION_CACHE_DIR=str(directory.parents[3]/'jax_cache'))
+started = time.monotonic()
+launch = dict(command=command, cwd=os.getcwd(), started_at=datetime.datetime.now(
+    datetime.timezone.utc).isoformat(), wrapper_sha256=hashlib.sha256(
+    Path(__file__).read_bytes()).hexdigest(), environment={k:environment[k] for k in
+    ('PYTHONDONTWRITEBYTECODE','OMP_NUM_THREADS','OPENBLAS_NUM_THREADS',
+     'CUDA_VISIBLE_DEVICES','FG_S3_VISIBLE_GPUS','PYTHONPATH','JAX_COMPILATION_CACHE_DIR')})
+(directory/(prefix+'_command.json')).write_text(json.dumps(launch,indent=2)+'\n')
+peak_gpu, peak_job, peak_rss, samples = 0., 0., 0., 0
+
+def descendants(root_pid):
+    result = {root_pid}
+    pending = [root_pid]
+    while pending:
+        parent = pending.pop()
+        try:
+            children = (Path('/proc')/str(parent)/'task'/str(parent)/'children').read_text().split()
+        except OSError:
+            continue
+        for child in map(int, children):
+            if child not in result:
+                result.add(child)
+                pending.append(child)
+    return result
+
+with (directory/(prefix+'.log')).open('x') as output, (
+        directory/(prefix+'_resources.jsonl')).open('x') as resources:
+    process = subprocess.Popen(command, stdout=output, stderr=subprocess.STDOUT,
+                               env=environment)
+    launch['pid'] = process.pid
+    (directory/(prefix+'_command.json')).write_text(json.dumps(launch,indent=2)+'\n')
+    # Start the real requested command first. Samples audit its resource use.
+    while process.poll() is None:
+        time.sleep(5)
+        pids = descendants(process.pid)
+        gpu = subprocess.run(['nvidia-smi','--query-gpu=timestamp,utilization.gpu,memory.used,memory.total',
+            '--format=csv,noheader,nounits'], text=True, capture_output=True, timeout=15)
+        apps = subprocess.run(['nvidia-smi','--query-compute-apps=pid,used_gpu_memory',
+            '--format=csv,noheader,nounits'], text=True, capture_output=True, timeout=15)
+        rss = 0.
+        for pid in pids:
+            try:
+                lines = (Path('/proc')/str(pid)/'status').read_text().splitlines()
+                rss += next(float(x.split()[1])/1024 for x in lines if x.startswith('VmRSS:'))
+            except (OSError, StopIteration):
+                pass
+        job_memory = 0.
+        if apps.returncode == 0:
+            for row in csv.reader(apps.stdout.splitlines()):
+                try:
+                    if int(row[0].strip()) in pids:
+                        job_memory += float(row[1].strip())
+                except (ValueError, IndexError):
+                    pass
+        if gpu.returncode == 0:
+            for row in csv.reader(gpu.stdout.splitlines()):
+                try:
+                    peak_gpu = max(peak_gpu, float(row[2].strip()))
+                except (ValueError, IndexError):
+                    pass
+        peak_job, peak_rss = max(peak_job, job_memory), max(peak_rss, rss)
+        resources.write(json.dumps(dict(elapsed_seconds=time.monotonic()-started,
+            pids=sorted(pids), gpu_returncode=gpu.returncode,gpu=gpu.stdout,gpu_stderr=gpu.stderr,
+            apps_returncode=apps.returncode,apps=apps.stdout,apps_stderr=apps.stderr,
+            process_tree_gpu_mib=job_memory,process_tree_rss_mib=rss))+'\n')
+        resources.flush()
+        samples += 1
+    code = process.wait()
+receipt = dict(**launch, returncode=code, elapsed_seconds=time.monotonic()-started,
+    sampling_interval_seconds=5, samples=samples, peak_total_gpu_mib_sampled=peak_gpu,
+    peak_process_tree_gpu_mib_sampled=peak_job,peak_process_tree_rss_mib_sampled=peak_rss,
+    note='Sampled peaks; total GPU includes existing processes. RSS sums process RSS, not private physical memory.')
+(directory/(prefix+'_resource_receipt.json')).write_text(json.dumps(receipt,indent=2)+'\n')
+print(json.dumps(receipt))
+sys.exit(code if code >= 0 else 128-code)

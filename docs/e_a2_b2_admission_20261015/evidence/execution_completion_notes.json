@@ -1,0 +1,14 @@
+[
+  {
+    "name": "A2_formal_prepare",
+    "raw_exit_code": null,
+    "completion_evidence": "Signed receipt, complete stdout JSON, immutable files and current runtime code all verified; original exec handle lost during daemon restart.",
+    "manifest_sha256": "211d5ee450aad2cad77ca58aeaa4ad45fc307f55443a1eaaba324df443862651"
+  },
+  {
+    "name": "B2_formal_prepare",
+    "raw_exit_code": null,
+    "completion_evidence": "Signed receipt, complete stdout JSON, immutable files and current runtime code all verified; original exec handle lost during daemon restart.",
+    "manifest_sha256": "1d5e0bc5366325eff9c0793dc1e9bb5e682079ffff9d6c5a49247cfc4b26b218"
+  }
+]

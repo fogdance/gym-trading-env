@@ -1,0 +1,59 @@
+{
+  "product": "FG",
+  "files": [
+    {
+      "contract": "CZCE.FG201",
+      "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0011_CZCE_FG201_main_1m.csv",
+      "sha256": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c",
+      "env_config": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG201_env.yaml",
+      "env_sha256": "15a468456fecc658fb4df0094ba95260f71102e54302b0e1d973595fdc65893e",
+      "contract_config": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG201_contract.yaml",
+      "contract_sha256": "04169e0d4223088364dc420b77f4dd2fa6fdd02cdaac52676bd41c1fd19cbe75",
+      "rows": 31260,
+      "first_day": "2021-07-26",
+      "last_day": "2021-12-09",
+      "trading_days": 92,
+      "direction_rows": 31260,
+      "direction_counts": {
+        "LONG": 0,
+        "SHORT": 31260,
+        "NO_TRADE": 0
+      },
+      "complete_lifecycle": true,
+      "calendar_complete": true,
+      "calendar_basis": "user_confirmed_observed_clock",
+      "first_timestamp": "2021-07-23 21:01:00+08:00",
+      "last_timestamp": "2021-12-09 15:00:00+08:00",
+      "role": "train",
+      "eligible_for_training": true
+    },
+    {
+      "contract": "CZCE.FG301",
+      "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0014_CZCE_FG301_main_1m.csv",
+      "sha256": "e0cff3524bf34b77d9cabd034c7eb850ae49e5f7163f8c2937da856ef891239a",
+      "env_config": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG301_env.yaml",
+      "env_sha256": "e09a1fca2d7d8671cfcdfd1162082411705a699c309ca79fa41997c22cbce229",
+      "contract_config": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG301_contract.yaml",
+      "contract_sha256": "12617af839acfa373fcdceb5c77856a19124260fed952496be96620fba189631",
+      "rows": 27703,
+      "first_day": "2022-08-11",
+      "last_day": "2022-12-09",
+      "trading_days": 81,
+      "direction_rows": 27703,
+      "direction_counts": {
+        "LONG": 0,
+        "SHORT": 27703,
+        "NO_TRADE": 0
+      },
+      "complete_lifecycle": true,
+      "calendar_complete": true,
+      "calendar_basis": "user_confirmed_observed_clock",
+      "first_timestamp": "2022-08-10 21:01:00+08:00",
+      "last_timestamp": "2022-12-09 15:00:00+08:00",
+      "role": "train",
+      "eligible_for_training": true
+    }
+  ],
+  "source_training_hash": "ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e10009a",
+  "content_hash": "795c19f0c55c906950ea227cfa43eaa61d3b92f53e1da6ff48c9fed53ee42bce"
+}

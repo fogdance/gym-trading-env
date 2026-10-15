@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "runtime_differences": [
+    "dreamerv3/dreamerv3/fg_s3_composition.py",
+    "dreamerv3/embodied/run/fg_s3_e_source.py"
+  ],
+  "model_loss_env_reward_oracle_gate_checkpoint_files_identical": true,
+  "formal_configs": [
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/configs/experiments/fg_s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M.yaml",
+      "sha256": "109c285182fb675c7bc0a6b47e53b47945797217e99567d3a00a2d8d67c6b260",
+      "experiment": "E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016"
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/configs/experiments/fg_s3_v2/E_B2_FULL_MARKET_MINUTE_FORMAL_1M.yaml",
+      "sha256": "d57a03c1dfb7b329914f34247cd6e5450c66ac12915f369b0db5f3128872bd57",
+      "experiment": "E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016"
+    }
+  ],
+  "frozen_gym": "9c7defbdec12f91c6ebadcbb6585ff55f7b18ade",
+  "frozen_dreamer": "131e7ccd4ef0648c8230e088d95e2c6da991557c"
+}

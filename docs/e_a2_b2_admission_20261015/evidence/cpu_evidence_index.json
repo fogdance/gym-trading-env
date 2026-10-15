@@ -1,0 +1,193 @@
+{
+  "files": [
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/acceptance.json",
+      "copy": "cpu/A2/acceptance.json",
+      "sha256": "e753f4f67659d7f8f6c9970280728db30d9bc436cd51b213563934dd14edafab",
+      "bytes": 214000
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/cold_resume_comparison.json",
+      "copy": "cpu/A2/cold_resume_comparison.json",
+      "sha256": "626b59a05ae748321167d57789a89aff0fc814861919974978b6c497d90f0a1c",
+      "bytes": 57274
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/resume_probe.json",
+      "copy": "cpu/A2/resume_probe.json",
+      "sha256": "8a1898bf543623444123e829bb595e650bf53b89fb6c5ba51f9f62833e06cd89",
+      "bytes": 28022
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/source_transfer.json",
+      "copy": "cpu/A2/source_transfer.json",
+      "sha256": "19e3ae954f3c68e2228954e4eed5522133674b79e6529a45eecf7380c993d834",
+      "bytes": 146722
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/run_identity.json",
+      "copy": "cpu/A2/run_identity.json",
+      "sha256": "7ef941f854a8fa126bc86cc4e000572e7a8609d57630d413f49a87e3ee632744",
+      "bytes": 93657
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/training_receipt.json",
+      "copy": "cpu/A2/training_receipt.json",
+      "sha256": "f6fea24bd00c7ee35c2d51b629419f7b318400eb07c8d1f712904a968df20757",
+      "bytes": 95930
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2/manifest.json",
+      "copy": "cpu/A2/prepared_manifest.json",
+      "sha256": "3a5ffdab1f113671a7623bee12833631ff17b17f4cb33e6f1fcd63e8ea5123f8",
+      "bytes": 91080
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2/source_admission.json",
+      "copy": "cpu/A2/prepared_source_admission.json",
+      "sha256": "fa6b66137b530ef3f476a67e76b64f23a6b8a1247cf61c3e302e5f65c7845819",
+      "bytes": 131380
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2/model_config.json",
+      "copy": "cpu/A2/prepared_model_config.json",
+      "sha256": "20c731a4e030992b3f006b31d20266ab252f4551b1118a152ee0db09716b3a16",
+      "bytes": 59450
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2/train_pool.json",
+      "copy": "cpu/A2/prepared_train_pool.json",
+      "sha256": "727b2923767d27022674762144b8cb5d2d510d88f14f065320bc13a1c0f78c9a",
+      "bytes": 2659
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2/oracle_pool.json",
+      "copy": "cpu/A2/prepared_oracle_pool.json",
+      "sha256": "26ec4a22d5dd016da3538fa8e1a927162eb7ef765567074657859f54e6ad2a25",
+      "bytes": 461
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/ckpt/step_000000002200/manifest.json",
+      "copy": "cpu/A2/checkpoint_manifest.json",
+      "sha256": "09770bcd499cf1f96375b30c4be91cdb27f4f3e0264bd1e6d85f5b98071e60d3",
+      "bytes": 94787
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/acceptance.json",
+      "copy": "cpu/B2/acceptance.json",
+      "sha256": "060393beb1a824331e8f3f7c1f9fdfcf656f2500dbd20659353699472eaf62fa",
+      "bytes": 220739
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/cold_resume_comparison.json",
+      "copy": "cpu/B2/cold_resume_comparison.json",
+      "sha256": "00cd23deaee4b02c4aaa56261e2fa0047690934fd4aecb92a6555b00716f525c",
+      "bytes": 69656
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/resume_probe.json",
+      "copy": "cpu/B2/resume_probe.json",
+      "sha256": "47284b2bd31ef68e47fbc1d094c750cfedf8a1cb380e44db5698dd86cf1f496f",
+      "bytes": 34037
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/source_transfer.json",
+      "copy": "cpu/B2/source_transfer.json",
+      "sha256": "3c43d0551b6757b2e9b488a69f3bfb6e9c5bde87fc0a083385f3af94d22cabe8",
+      "bytes": 162033
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/run_identity.json",
+      "copy": "cpu/B2/run_identity.json",
+      "sha256": "fd10f6467b23be8829457baea17f5326cf86eccf0747ba86565803e046a2e917",
+      "bytes": 94576
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/training_receipt.json",
+      "copy": "cpu/B2/training_receipt.json",
+      "sha256": "1c0f7f8a624d9ef8773f16a833cc8cb466d8e547fb4bf2f5805f4af71b4fe048",
+      "bytes": 98011
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2/manifest.json",
+      "copy": "cpu/B2/prepared_manifest.json",
+      "sha256": "ef9bad08ed7685b57cd8788e1ec966951a9ec6d78a9b54435c8ef14c11c9b932",
+      "bytes": 91175
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2/source_admission.json",
+      "copy": "cpu/B2/prepared_source_admission.json",
+      "sha256": "0908eb4b011c313fda7d718f2cdbf99c5759cd63817434e3ad24ae51f3c61740",
+      "bytes": 131932
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2/model_config.json",
+      "copy": "cpu/B2/prepared_model_config.json",
+      "sha256": "2bc127016b8b74d0cdbf6688df170a3619c016dfc4c60bea9d24c5156751895f",
+      "bytes": 59715
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2/train_pool.json",
+      "copy": "cpu/B2/prepared_train_pool.json",
+      "sha256": "727b2923767d27022674762144b8cb5d2d510d88f14f065320bc13a1c0f78c9a",
+      "bytes": 2659
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2/oracle_pool.json",
+      "copy": "cpu/B2/prepared_oracle_pool.json",
+      "sha256": "26ec4a22d5dd016da3538fa8e1a927162eb7ef765567074657859f54e6ad2a25",
+      "bytes": 461
+    },
+    {
+      "source": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/ckpt/step_000000002200/manifest.json",
+      "copy": "cpu/B2/checkpoint_manifest.json",
+      "sha256": "f34a2c084a011efe50988dee34d3c4fe4c2f0ad204c7b38bc6c0b899e8e50564",
+      "bytes": 95706
+    }
+  ],
+  "summary": [
+    {
+      "mode": "a2",
+      "status": "PASS_CPU_REAL_TRAIN",
+      "env_steps": 2200,
+      "model_updates": 6,
+      "cold_resume_exact": true,
+      "branch_gradients": {
+        "minute": 695.1702270507812,
+        "context15": 70.58992004394531,
+        "fusion": 192.00352478027344
+      },
+      "parameter_changes": {
+        "enc/minute/": 9,
+        "enc/context15/": 2,
+        "enc/fusion/": 2,
+        "pol/": 5
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/ckpt/step_000000002200",
+      "checkpoint_manifest_sha256": "09770bcd499cf1f96375b30c4be91cdb27f4f3e0264bd1e6d85f5b98071e60d3"
+    },
+    {
+      "mode": "b2",
+      "status": "PASS_CPU_REAL_TRAIN",
+      "env_steps": 2200,
+      "model_updates": 6,
+      "cold_resume_exact": true,
+      "branch_gradients": {
+        "minute": 695.1443481445312,
+        "context15": 70.59098815917969,
+        "fusion": 192.01129150390625
+      },
+      "parameter_changes": {
+        "enc/minute/": 9,
+        "enc/context15/": 2,
+        "enc/fusion/": 2,
+        "pol/": 5,
+        "b2_event/": 5,
+        "b2_early/": 5,
+        "b2_adapter/": 1
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/ckpt/step_000000002200",
+      "checkpoint_manifest_sha256": "f34a2c084a011efe50988dee34d3c4fe4c2f0ad204c7b38bc6c0b899e8e50564"
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+[
+  {
+    "name": "A2_CPU_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_A2_CPU_20261015_v1 > docs/e_a2_b2_admission_20261015/evidence/A2_CPU_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "3b82f1",
+      "wall_time_seconds": 1.00163599,
+      "session_id": 81684,
+      "original_token_count": 0,
+      "output": "",
+      "exit_code": 1
+    }
+  },
+  {
+    "name": "B2_CPU_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_B2_CPU_20261015_v1 > docs/e_a2_b2_admission_20261015/evidence/B2_CPU_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "c7ffdd",
+      "wall_time_seconds": 1.000622239,
+      "session_id": 57129,
+      "original_token_count": 0,
+      "output": "",
+      "exit_code": 1
+    }
+  },
+  {
+    "name": "data_build",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -u -m e_data_v1 build --source /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json --out /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1 --stride 15 > docs/e_a2_b2_admission_20261015/evidence/data_build.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "fcb7a5",
+      "wall_time_seconds": 1.000518664,
+      "session_id": 33801,
+      "original_token_count": 0,
+      "output": "",
+      "exit_code": 0
+    }
+  },
+  {
+    "name": "data_verify",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 /home/v/miniconda3/envs/dreamerv3/bin/python -u -m e_data_v1 verify --bundle /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1 > docs/e_a2_b2_admission_20261015/evidence/data_verify.json 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "9b5ab4",
+      "wall_time_seconds": 0.000012764,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_CPU_prepare_v2",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_A2_CPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/A2_CPU_prepare_v2.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "b2bcd3",
+      "wall_time_seconds": 0.000009328,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "B2_CPU_prepare_v2",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_B2_CPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/B2_CPU_prepare_v2.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "71b7c6",
+      "wall_time_seconds": 0.000013346,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_CPU_start",
+    "cmd": "taskset -c 0-11 env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES= JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2 --stop-at 1100 > docs/e_a2_b2_admission_20261015/evidence/A2_CPU_start.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "37e44e",
+      "wall_time_seconds": 0.000009087,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "B2_CPU_start",
+    "cmd": "taskset -c 12-23 env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES= JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2 --stop-at 1100 > docs/e_a2_b2_admission_20261015/evidence/B2_CPU_start.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "831a66",
+      "wall_time_seconds": 0.000006974,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_CPU_resume",
+    "cmd": "taskset -c 0-11 env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES= JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/A2_CPU_resume.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "444fed",
+      "wall_time_seconds": 0.000019056,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "B2_CPU_resume",
+    "cmd": "taskset -c 12-23 env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 CUDA_VISIBLE_DEVICES= JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/B2_CPU_resume.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "f53933",
+      "wall_time_seconds": 0.000008225,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_GPU_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_A2_GPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/A2_GPU_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "e3aa9b",
+      "wall_time_seconds": 0.000014888,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "B2_GPU_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 JAX_COMPILATION_CACHE_DIR=/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-prepare --config E_READY_B2_GPU_20261015_v2 > docs/e_a2_b2_admission_20261015/evidence/B2_GPU_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "38d6a4",
+      "wall_time_seconds": 4.726896448,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_GPU_start",
+    "cmd": "/home/v/miniconda3/envs/dreamerv3/bin/python -u docs/e_a2_b2_admission_20261015/evidence/GPU_RESOURCE_AUDIT.py.txt A2_GPU_start -- taskset -c 0-11 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2 --stop-at 500",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "776096",
+      "wall_time_seconds": 0.000011722,
+      "exit_code": 0,
+      "original_token_count": 282,
+      "output": "{\"command\": [\"taskset\", \"-c\", \"0-11\", \"/home/v/miniconda3/envs/dreamerv3/bin/python\", \"-u\", \"tools/fg_s3_v2_experiment.py\", \"admit-e-start\", \"--prepared\", \"artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2\", \"--stop-at\", \"500\"], \"cwd\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\", \"started_at\": \"2026-10-15T15:50:17.424314+00:00\", \"wrapper_sha256\": \"5190651f9f9cefc92919dffdac74b774eb0fdb8e341599148d38d0b1228df970\", \"environment\": {\"PYTHONDONTWRITEBYTECODE\": \"1\", \"OMP_NUM_THREADS\": \"12\", \"OPENBLAS_NUM_THREADS\": \"1\", \"CUDA_VISIBLE_DEVICES\": \"0\", \"FG_S3_VISIBLE_GPUS\": \"0\", \"PYTHONPATH\": \"src:.:../dreamerv3\", \"JAX_COMPILATION_CACHE_DIR\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache\"}, \"pid\": 1810745, \"returncode\": 0, \"elapsed_seconds\": 262.9226088100113, \"sampling_interval_seconds\": 5, \"samples\": 52, \"peak_total_gpu_mib_sampled\": 7867.0, \"peak_process_tree_gpu_mib_sampled\": 2196.0, \"peak_process_tree_rss_mib_sampled\": 3781.73828125, \"note\": \"Sampled peaks; total GPU includes existing processes. RSS sums process RSS, not private physical memory.\"}\n"
+    }
+  },
+  {
+    "name": "B2_GPU_start",
+    "cmd": "/home/v/miniconda3/envs/dreamerv3/bin/python -u docs/e_a2_b2_admission_20261015/evidence/GPU_RESOURCE_AUDIT.py.txt B2_GPU_start -- taskset -c 12-23 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-start --prepared artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2 --stop-at 500",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "221cfb",
+      "wall_time_seconds": 0.000014146,
+      "exit_code": 0,
+      "original_token_count": 282,
+      "output": "{\"command\": [\"taskset\", \"-c\", \"12-23\", \"/home/v/miniconda3/envs/dreamerv3/bin/python\", \"-u\", \"tools/fg_s3_v2_experiment.py\", \"admit-e-start\", \"--prepared\", \"artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2\", \"--stop-at\", \"500\"], \"cwd\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\", \"started_at\": \"2026-10-15T15:50:19.632839+00:00\", \"wrapper_sha256\": \"5190651f9f9cefc92919dffdac74b774eb0fdb8e341599148d38d0b1228df970\", \"environment\": {\"PYTHONDONTWRITEBYTECODE\": \"1\", \"OMP_NUM_THREADS\": \"12\", \"OPENBLAS_NUM_THREADS\": \"1\", \"CUDA_VISIBLE_DEVICES\": \"0\", \"FG_S3_VISIBLE_GPUS\": \"0\", \"PYTHONPATH\": \"src:.:../dreamerv3\", \"JAX_COMPILATION_CACHE_DIR\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache\"}, \"pid\": 1810814, \"returncode\": 0, \"elapsed_seconds\": 283.1018008699757, \"sampling_interval_seconds\": 5, \"samples\": 56, \"peak_total_gpu_mib_sampled\": 7867.0, \"peak_process_tree_gpu_mib_sampled\": 2196.0, \"peak_process_tree_rss_mib_sampled\": 4267.5234375, \"note\": \"Sampled peaks; total GPU includes existing processes. RSS sums process RSS, not private physical memory.\"}\n"
+    }
+  },
+  {
+    "name": "A2_GPU_resume",
+    "cmd": "/home/v/miniconda3/envs/dreamerv3/bin/python -u docs/e_a2_b2_admission_20261015/evidence/GPU_RESOURCE_AUDIT.py.txt A2_GPU_resume -- taskset -c 0-11 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "0da4bc",
+      "wall_time_seconds": 0.000009828,
+      "exit_code": 0,
+      "original_token_count": 277,
+      "output": "{\"command\": [\"taskset\", \"-c\", \"0-11\", \"/home/v/miniconda3/envs/dreamerv3/bin/python\", \"-u\", \"tools/fg_s3_v2_experiment.py\", \"admit-e-resume\", \"--prepared\", \"artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2\"], \"cwd\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\", \"started_at\": \"2026-10-15T15:55:28.349219+00:00\", \"wrapper_sha256\": \"5190651f9f9cefc92919dffdac74b774eb0fdb8e341599148d38d0b1228df970\", \"environment\": {\"PYTHONDONTWRITEBYTECODE\": \"1\", \"OMP_NUM_THREADS\": \"12\", \"OPENBLAS_NUM_THREADS\": \"1\", \"CUDA_VISIBLE_DEVICES\": \"0\", \"FG_S3_VISIBLE_GPUS\": \"0\", \"PYTHONPATH\": \"src:.:../dreamerv3\", \"JAX_COMPILATION_CACHE_DIR\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache\"}, \"pid\": 1814755, \"returncode\": 0, \"elapsed_seconds\": 424.49190524901496, \"sampling_interval_seconds\": 5, \"samples\": 84, \"peak_total_gpu_mib_sampled\": 7841.0, \"peak_process_tree_gpu_mib_sampled\": 2196.0, \"peak_process_tree_rss_mib_sampled\": 3381.42578125, \"note\": \"Sampled peaks; total GPU includes existing processes. RSS sums process RSS, not private physical memory.\"}\n"
+    }
+  },
+  {
+    "name": "B2_GPU_resume",
+    "cmd": "/home/v/miniconda3/envs/dreamerv3/bin/python -u docs/e_a2_b2_admission_20261015/evidence/GPU_RESOURCE_AUDIT.py.txt B2_GPU_resume -- taskset -c 12-23 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py admit-e-resume --prepared artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+    "result": {
+      "chunk_id": "27b53d",
+      "wall_time_seconds": 0.000006863,
+      "exit_code": 0,
+      "original_token_count": 277,
+      "output": "{\"command\": [\"taskset\", \"-c\", \"12-23\", \"/home/v/miniconda3/envs/dreamerv3/bin/python\", \"-u\", \"tools/fg_s3_v2_experiment.py\", \"admit-e-resume\", \"--prepared\", \"artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2\"], \"cwd\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\", \"started_at\": \"2026-10-15T15:55:30.053182+00:00\", \"wrapper_sha256\": \"5190651f9f9cefc92919dffdac74b774eb0fdb8e341599148d38d0b1228df970\", \"environment\": {\"PYTHONDONTWRITEBYTECODE\": \"1\", \"OMP_NUM_THREADS\": \"12\", \"OPENBLAS_NUM_THREADS\": \"1\", \"CUDA_VISIBLE_DEVICES\": \"0\", \"FG_S3_VISIBLE_GPUS\": \"0\", \"PYTHONPATH\": \"src:.:../dreamerv3\", \"JAX_COMPILATION_CACHE_DIR\": \"/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache\"}, \"pid\": 1814783, \"returncode\": 0, \"elapsed_seconds\": 439.7151356639806, \"sampling_interval_seconds\": 5, \"samples\": 87, \"peak_total_gpu_mib_sampled\": 7841.0, \"peak_process_tree_gpu_mib_sampled\": 2196.0, \"peak_process_tree_rss_mib_sampled\": 3879.8359375, \"note\": \"Sampled peaks; total GPU includes existing processes. RSS sums process RSS, not private physical memory.\"}\n"
+    }
+  },
+  {
+    "name": "release_contracts",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=24 OPENBLAS_NUM_THREADS=1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest -q tests/entry_v1/test_s3_composition.py tests/entry_v1/test_fg_s3_e_source.py --basetemp=artifacts/fg_s3_v2/checks/e_ab_release_20261016 --junitxml=docs/e_a2_b2_admission_20261015/evidence/release_contracts.xml > docs/e_a2_b2_admission_20261015/evidence/release_contracts.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env",
+    "result": {
+      "chunk_id": "fdaf9a",
+      "wall_time_seconds": 0.000015579,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "A2_formal_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py prepare --config E_A2_MARKET_MINUTE_FORMAL_1M > docs/e_a2_b2_admission_20261015/evidence/A2_formal_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env",
+    "result": {
+      "chunk_id": "cdd7bd",
+      "wall_time_seconds": 5.000978243,
+      "session_id": 66020,
+      "original_token_count": 0,
+      "output": ""
+    }
+  },
+  {
+    "name": "B2_formal_prepare",
+    "cmd": "env PYTHONDONTWRITEBYTECODE=1 OMP_NUM_THREADS=12 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:.:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -u tools/fg_s3_v2_experiment.py prepare --config E_B2_FULL_MARKET_MINUTE_FORMAL_1M > docs/e_a2_b2_admission_20261015/evidence/B2_formal_prepare.log 2>&1",
+    "workdir": "/home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env",
+    "result": {
+      "chunk_id": "7c66b2",
+      "wall_time_seconds": 5.001449005,
+      "session_id": 14437,
+      "original_token_count": 0,
+      "output": ""
+    }
+  }
+]

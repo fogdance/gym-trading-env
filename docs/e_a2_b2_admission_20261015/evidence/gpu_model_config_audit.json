@@ -1,0 +1,104 @@
+[
+  {
+    "mode": "A2",
+    "preset": "size50m",
+    "encoder": "e_multiscale_1m15m",
+    "e_encoder": {
+      "units": 512,
+      "norm": "rms",
+      "act": "silu",
+      "symlog": true,
+      "winit": "trunc_normal_in",
+      "layers": 3,
+      "context_units": 128
+    },
+    "rssm": {
+      "deter": 4096,
+      "hidden": 512,
+      "stoch": 32,
+      "classes": 32,
+      "act": "silu",
+      "norm": "rms",
+      "unimix": 0.01,
+      "outscale": 1.0,
+      "winit": "trunc_normal_in",
+      "imglayers": 2,
+      "obslayers": 1,
+      "dynlayers": 1,
+      "absolute": false,
+      "blocks": 8,
+      "free_nats": 1.0
+    },
+    "compute_dtype": "bfloat16",
+    "seed": 0,
+    "kind": "direct_init",
+    "gate_state": {
+      "actor_enabled": false,
+      "gate": null,
+      "samples": 0
+    },
+    "b2_extension": null,
+    "scope": "REAL_TRAIN_ACCEPTANCE_ONLY_NOT_FORMAL_RELEASED",
+    "binding_sha256": "2a55406a77080d25df5ae22acab7080064f0cbab116490038e62806adb139cd9",
+    "versions": {
+      "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env": "9c7defbdec12f91c6ebadcbb6585ff55f7b18ade",
+      "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3": "131e7ccd4ef0648c8230e088d95e2c6da991557c"
+    }
+  },
+  {
+    "mode": "B2",
+    "preset": "size50m",
+    "encoder": "e_multiscale_1m15m",
+    "e_encoder": {
+      "units": 512,
+      "norm": "rms",
+      "act": "silu",
+      "symlog": true,
+      "winit": "trunc_normal_in",
+      "layers": 3,
+      "context_units": 128
+    },
+    "rssm": {
+      "deter": 4096,
+      "hidden": 512,
+      "stoch": 32,
+      "classes": 32,
+      "act": "silu",
+      "norm": "rms",
+      "unimix": 0.01,
+      "outscale": 1.0,
+      "winit": "trunc_normal_in",
+      "imglayers": 2,
+      "obslayers": 1,
+      "dynlayers": 1,
+      "absolute": false,
+      "blocks": 8,
+      "free_nats": 1.0
+    },
+    "compute_dtype": "bfloat16",
+    "seed": 0,
+    "kind": "direct_init",
+    "gate_state": {
+      "actor_enabled": false,
+      "gate": null,
+      "samples": 0
+    },
+    "b2_extension": {
+      "s3_v2_mode": "b2",
+      "b2_head_units": 128,
+      "b2_event_lambda": 0.1,
+      "b2_early_lambda": 0.1,
+      "b2_coefficient_max": 2.0,
+      "b2_delta_max": 2.0,
+      "b2_mix_warmup": 100,
+      "b2_mix_ramp": 100,
+      "b2_min_event_updates": 100
+    },
+    "scope": "REAL_TRAIN_ACCEPTANCE_ONLY_NOT_FORMAL_RELEASED",
+    "binding_sha256": "081f7e4a62ee31ce7082a828fe1267d6250dcf8e830fc2cb9df4889ef06fef00",
+    "versions": {
+      "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env": "9c7defbdec12f91c6ebadcbb6585ff55f7b18ade",
+      "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3": "131e7ccd4ef0648c8230e088d95e2c6da991557c"
+    }
+  }
+]

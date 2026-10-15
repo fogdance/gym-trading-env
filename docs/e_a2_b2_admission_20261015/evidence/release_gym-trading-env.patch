@@ -1,0 +1,674 @@
+diff --git a/configs/experiments/fg_s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M.yaml b/configs/experiments/fg_s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M.yaml
+new file mode 100644
+index 0000000..da9c08a
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M.yaml
+@@ -0,0 +1,37 @@
++# Real CPU / size50m GPU 1K / exact cold-resume accepted; formal start needs authorization.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016
++research_variant: e-a2
++scope: formal
++device: gpu
++contract: CZCE.FG201
++contracts: ALL_TRAIN
++env_slice_bars: 1000
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016
++run_dir: /data/logdir/fg_single3/s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016
++env_steps: 1000000
++collect_every: 100
++updates_per_collect: 4
++save_every: 100000
++batch_size: 1
++replay_capacity: 32768
++replay_seed: 202
++beta: 1.0
++beta_schedule: null
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: a2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
+diff --git a/configs/experiments/fg_s3_v2/E_B2_FULL_MARKET_MINUTE_FORMAL_1M.yaml b/configs/experiments/fg_s3_v2/E_B2_FULL_MARKET_MINUTE_FORMAL_1M.yaml
+new file mode 100644
+index 0000000..8b5d73d
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_B2_FULL_MARKET_MINUTE_FORMAL_1M.yaml
+@@ -0,0 +1,45 @@
++# Real CPU / size50m GPU 1K / exact cold-resume accepted; formal start needs authorization.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016
++research_variant: e-b2-full
++scope: formal
++device: gpu
++contract: CZCE.FG201
++contracts: ALL_TRAIN
++env_slice_bars: 1000
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016
++run_dir: /data/logdir/fg_single3/s3_v2/E_B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261016
++env_steps: 1000000
++collect_every: 100
++updates_per_collect: 4
++save_every: 100000
++batch_size: 1
++replay_capacity: 32768
++replay_seed: 202
++beta: 1.0
++beta_schedule: null
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: b2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++b2_head_units: 128
++b2_event_lambda: 0.1
++b2_early_lambda: 0.1
++b2_coefficient_max: 2.0
++b2_delta_max: 2.0
++b2_mix_warmup: 100
++b2_mix_ramp: 100
++b2_min_event_updates: 100
+diff --git a/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v1.yaml b/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v1.yaml
+new file mode 100644
+index 0000000..4d29d9e
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v1.yaml
+@@ -0,0 +1,38 @@
++# Frozen merged-code acceptance; original native E protocol and safety Gate.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_A2_CPU_20261015_v1
++device: cpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v1
++run_dir: artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v1
++env_steps: 2200
++collect_every: 1100
++updates_per_collect: 3
++save_every: 1100
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 1024
++replay_capacity: 4096
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: a2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-model-dev/native_env_review_20261015/e_data_native_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
+diff --git a/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v2.yaml b/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v2.yaml
+new file mode 100644
+index 0000000..b7b2743
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_A2_CPU_20261015_v2.yaml
+@@ -0,0 +1,38 @@
++# Native E acceptance with collection matching final cache SHA256 identity.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_A2_CPU_20261015_v2
++device: cpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_A2_CPU_20261015_v2
++run_dir: artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2
++env_steps: 2200
++collect_every: 1100
++updates_per_collect: 3
++save_every: 1100
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 1024
++replay_capacity: 4096
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: a2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
+diff --git a/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v1.yaml b/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v1.yaml
+new file mode 100644
+index 0000000..2a7f816
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v1.yaml
+@@ -0,0 +1,39 @@
++# Frozen merged-code acceptance; original native E protocol and safety Gate.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_A2_GPU_20261015_v1
++device: gpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v1
++run_dir: artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v1
++env_steps: 1000
++collect_every: 100
++updates_per_collect: 100
++save_every: 500
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 250
++replay_capacity: 2048
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: a2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-model-dev/native_env_review_20261015/e_data_native_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++e_cpu_evidence: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v1/acceptance.json
+diff --git a/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v2.yaml b/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v2.yaml
+new file mode 100644
+index 0000000..b8c9184
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_A2_GPU_20261015_v2.yaml
+@@ -0,0 +1,39 @@
++# Native E acceptance with collection matching final cache SHA256 identity.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_A2_GPU_20261015_v2
++device: gpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2
++run_dir: artifacts/fg_s3_v2/runs/E_READY_A2_GPU_20261015_v2
++env_steps: 1000
++collect_every: 100
++updates_per_collect: 100
++save_every: 500
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 250
++replay_capacity: 2048
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: a2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++e_cpu_evidence: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_A2_CPU_20261015_v2/acceptance.json
+diff --git a/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v1.yaml b/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v1.yaml
+new file mode 100644
+index 0000000..7cf0aea
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v1.yaml
+@@ -0,0 +1,46 @@
++# Frozen merged-code acceptance; original native E protocol and safety Gate.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_B2_CPU_20261015_v1
++device: cpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v1
++run_dir: artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v1
++env_steps: 2200
++collect_every: 1100
++updates_per_collect: 3
++save_every: 1100
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 1024
++replay_capacity: 4096
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: b2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-model-dev/native_env_review_20261015/e_data_native_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++b2_head_units: 128
++b2_event_lambda: 0.1
++b2_early_lambda: 0.1
++b2_coefficient_max: 2.0
++b2_delta_max: 2.0
++b2_mix_warmup: 2
++b2_mix_ramp: 2
++b2_min_event_updates: 2
+diff --git a/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v2.yaml b/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v2.yaml
+new file mode 100644
+index 0000000..4689337
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_B2_CPU_20261015_v2.yaml
+@@ -0,0 +1,46 @@
++# Native E acceptance with collection matching final cache SHA256 identity.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_B2_CPU_20261015_v2
++device: cpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_B2_CPU_20261015_v2
++run_dir: artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2
++env_steps: 2200
++collect_every: 1100
++updates_per_collect: 3
++save_every: 1100
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 1024
++replay_capacity: 4096
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: b2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++b2_head_units: 128
++b2_event_lambda: 0.1
++b2_early_lambda: 0.1
++b2_coefficient_max: 2.0
++b2_delta_max: 2.0
++b2_mix_warmup: 2
++b2_mix_ramp: 2
++b2_min_event_updates: 2
+diff --git a/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v1.yaml b/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v1.yaml
+new file mode 100644
+index 0000000..b2fb9b5
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v1.yaml
+@@ -0,0 +1,47 @@
++# Frozen merged-code acceptance; original native E protocol and safety Gate.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_B2_GPU_20261015_v1
++device: gpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v1
++run_dir: artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v1
++env_steps: 1000
++collect_every: 100
++updates_per_collect: 100
++save_every: 500
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 250
++replay_capacity: 2048
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: b2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-model-dev/native_env_review_20261015/e_data_native_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++e_cpu_evidence: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v1/acceptance.json
++b2_head_units: 128
++b2_event_lambda: 0.1
++b2_early_lambda: 0.1
++b2_coefficient_max: 2.0
++b2_delta_max: 2.0
++b2_mix_warmup: 100
++b2_mix_ramp: 100
++b2_min_event_updates: 100
+diff --git a/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v2.yaml b/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v2.yaml
+new file mode 100644
+index 0000000..19bc598
+--- /dev/null
++++ b/configs/experiments/fg_s3_v2/E_READY_B2_GPU_20261015_v2.yaml
+@@ -0,0 +1,47 @@
++# Native E acceptance with collection matching final cache SHA256 identity.
++schema: FG_S3_V2_COMPOSITION_CONFIG_V1
++experiment: E_READY_B2_GPU_20261015_v2
++device: gpu
++contract: CZCE.FG201
++dreamer_root: ../dreamerv3
++env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
++oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
++catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
++dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
++prepared_dir: artifacts/fg_s3_v2/prepared/E_READY_B2_GPU_20261015_v2
++run_dir: artifacts/fg_s3_v2/runs/E_READY_B2_GPU_20261015_v2
++env_steps: 1000
++collect_every: 100
++updates_per_collect: 100
++save_every: 500
++batch_size: 1
++replay_seed: 202
++beta: 1.0
++bc_lambda: 1.0
++clock_protocol: S3_MARKET_MINUTE
++source_kind: direct_init
++scope: diagnostic
++contracts:
++- CZCE.FG201
++- CZCE.FG301
++env_slice_bars: 250
++replay_capacity: 2048
++composition:
++  encoder: e_multiscale_1m15m
++  teaching: b2
++model_init:
++  seed: 0
++  presets:
++  - size50m
++e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
++e_admission: FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1
++e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
++e_cpu_evidence: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env/artifacts/fg_s3_v2/runs/E_READY_B2_CPU_20261015_v2/acceptance.json
++b2_head_units: 128
++b2_event_lambda: 0.1
++b2_early_lambda: 0.1
++b2_coefficient_max: 2.0
++b2_delta_max: 2.0
++b2_mix_warmup: 100
++b2_mix_ramp: 100
++b2_min_event_updates: 100
+diff --git a/configs/experiments/fg_s3_v2/README.md b/configs/experiments/fg_s3_v2/README.md
+index 27b38af..b801474 100644
+--- a/configs/experiments/fg_s3_v2/README.md
++++ b/configs/experiments/fg_s3_v2/README.md
+@@ -1,5 +1,21 @@
+ # S3-V2 shared entry and experiment configurations
+ 
++## E + A2 / E + B2 Full formal entry (2026-10-16)
++
++`E_A2_MARKET_MINUTE_FORMAL_1M` and `E_B2_FULL_MARKET_MINUTE_FORMAL_1M` use
++fresh seed0 size50m E initialization, the authenticated current TRAIN collection,
++all 18 TRAIN contracts and the existing 1M/40000-update schedule. B2 retains the
++accepted Full head/adapter recipe. Both modes completed real CPU acceptance,
++GPU 1000 updates and exact independent cold resume before readiness release.
++Tutor-CD+B2 remains NOT_IMPLEMENTED. Historical `*_WAITING` placeholders and old
++acceptance snapshots are retained; use the new formal configurations for new runs.
++
++Prepare/start/resume use `tools/fg_s3_v2_experiment.py`. Formal start/resume still
++require explicit user authorization and `--authorize-training`. The checked
++preparations belong to the separate frozen `fg-s3-e-ab-release-20261016` pair;
++run them from that pair, preserving its code and configs. No formal 1M was started.
++Receipts and source/checkpoint evidence: `docs/e_a2_b2_admission_20261015/REPORT.md`.
++
+ ## E + Tutor-CD Full formal 1M
+ 
+ `E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` selects the native E encoder and the
+@@ -470,12 +486,13 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
+ Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
+ this F0 task runs CPU admission and tests only, no GPU training. Implementation,
+ identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
+-## E-Model V1：目标配置，公开组合仍等待
++## E-Model V1：早期占位配置（历史记录）
+ 
+ `E_MODEL_V1_A2_WAITING`、`E_MODEL_V1_TUTOR_CD_WAITING`、`E_MODEL_V1_B2_WAITING`
+ 使用新的 encoder 轴、原 teaching 轴及 `direct_init / model_init(seed0,size50m)`。
+ 三份配置的 `e_data_manifest` 是待真实联调的占位路径，不能用于训练。
+-当前公开 prepare/start/resume/evaluate 仍 fail closed；只有 describe 是只读可执行。
++这些占位来源不能用于 prepare/start/resume/evaluate；describe 可只读查看组合。
++当前正式能力与真实来源配置见本文件顶部，不能将占位路径当作已认证数据。
+ 
+ ```bash
+ CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
+@@ -483,7 +500,7 @@ CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
+   describe-composition --config E_MODEL_V1_B2_WAITING
+ ```
+ 
+-CPU 模型验收在共享内部核心与确定性合成 provider 上执行，正式 Prepared/Run 未创建。
++初始 CPU 模型验收在共享内部核心与确定性合成 provider 上执行，当时未创建正式 Prepared/Run。
+ 接口、EM01–EM18 及后置 Review 要求见 `docs/S3_E_MODEL_V1_INTERFACE.md` 和
+ `docs/S3_E_MODEL_V1_IMPLEMENTATION_REPORT.md`。不把 CPU Checkpoint 当正式 E Run。
+ 
+@@ -502,6 +519,8 @@ advances. GPU uses the canonical size50m preset for 1000 joint updates over
+ 1000 advances. These protocols retain `waiting_e` and cannot authorize formal
+ 1M. Every retry requires a fresh configuration/preparation/run name. The GPU
+ configuration requires matching completed CPU evidence before preparation.
++These are historical bounded configurations; current production readiness is
++documented in the formal-entry sections above.
+ 
+ ```bash
+ /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-prepare --config E_NATIVE_A2_CPU_20261015_v3
+diff --git a/docs/e_a2_b2_admission_20261015/PLAN.md b/docs/e_a2_b2_admission_20261015/PLAN.md
+new file mode 100644
+index 0000000..713b1fd
+--- /dev/null
++++ b/docs/e_a2_b2_admission_20261015/PLAN.md
+@@ -0,0 +1,19 @@
++# E+A2 / E+B2 正式准入验收计划
++
++基线：Gym `6a176392becf7464213c48d05ddbf29399603954`、Dreamer `131e7ccd4ef0648c8230e088d95e2c6da991557c`，均为已合并的 `integration/s3-next`。独立验收双仓分支 `verify/s3-e-a2-b2-20261015`；运行前提交四份新命名配置并冻结，不改旧 Run / prepared / Checkpoint。
++
++1. 复用旧 CPU 已通过的协议和完整 E TRAIN collection，不重建 15m 数学或 Provider；因最终 Env SHA256 修复和源码身份不同，补发当前版本两模式 CPU 收据。
++2. CPU 每模式真实 FG201/FG301 共 2200 分钟、6 次联合更新，在 1100 分钟保存并退出，独立冷进程核对下一批次、参数、优化器、RNG、指标完全一致，再完成后半程。B2 必须包含 OutcomeHead 和 Adapter 更新。
++3. CPU 完成后，每模式原 size50m GPU 1000 分钟 / 1000 更新，在 500 保存并退出，独立冷恢复到 1000。保留三分支非零梯度、参数变化、策略同步、完整 Checkpoint、真实来源、显存及速度收据。使用真实 GPU 命令直接提权；GPU 监测只用于运行时资源审计。
++4. 两模式均 PASS 后，审查最小准入状态变更；保持 E 与 teaching 正交，保留真实数据认证、direct_init、原 Gate / Reward / Oracle / TP5-SL30 / Mask 和旧 B2 warm-start 严格认证。Tutor-CD+B2 保持 NOT_IMPLEMENTED。只执行必要配置/身份回归，不启动正式 1M。
++5. 报告、所有失败及原始收据写入 docs。正式 1M 仍须另外授权并使用冻结新代码和新 prepared。
++
++当前证据：旧 A2 / B2 CPU 收据均为 PASS_CPU_REAL_TRAIN、2200 分钟 / 6 更新 / cold_resume_exact=true，但旧代码与当前不同，不能充当当前 GPU 准入收据。原模型功能不重做、不扩展测试矩阵。
++
++资源只读观测：可用内存 12892389376 字节；项目 /dev/sdd2 可用 22206763008 字节；/data /dev/sda1 可用 104071180288 字节。既有完整 size50m Checkpoint 约 947772259 字节。CPU 两模式按可用资源并行，GPU 单卡串行，所有新增产物使用独立路径。
++
++## v1 准入实际失败与 v2 数据身份
++
++两模式 v1 prepare 均退出 1：`E real TRAIN collection mathematical code/schema changed; rebuild required`，尚未创建 prepared / Run。逐字段对照确认旧/新 schema 差异仅为 `legacy_sources_sha256` 中 `entry_market_cache.py` 指纹及派生 schema SHA；数学模块和七个其他 legacy 文件完全相同。新 schema 为 `a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874`。
++
++使用原 `python -m e_data_v1 build`、原完整 18 合约 TRAIN pool、stride15 创建 `fg-s3-e-ab-admission-20261015/e_data_current_v1`。运行时仍由 Env 每分钟计算，stride15 仅为已有研究 collection 的审计导出。保留旧 collection，四份 v1 配置和原失败日志；四份 v2 配置引用独立新 collection。构建后核对新旧数值文件并执行原 collection verify，不修改或绕过 schema。
+diff --git a/tests/entry_v1/test_fg_s3_e_source.py b/tests/entry_v1/test_fg_s3_e_source.py
+index 256f3eb..6d3188b 100644
+--- a/tests/entry_v1/test_fg_s3_e_source.py
++++ b/tests/entry_v1/test_fg_s3_e_source.py
+@@ -1,4 +1,4 @@
+-"""Fresh source/signature contracts; public E remains waiting_e."""
++"""Released E fresh source/signature contracts; formal data stays strict."""
+ import ast
+ import copy
+ from pathlib import Path
+@@ -12,10 +12,10 @@ from gym_trading_env.research.fg_replay import read_manifest, signed, write_json
+ from dreamerv3.fg_s3_composition import normalize_config, resolve_composition
+ from dreamerv3.fg_s3_e_config import e_target_config, resolve_model_init
+ from dreamerv3.fg_s3_tutor_loss import agent_extensions
+-from dreamerv3.fg_s3_v2_agent import _S3V2Model
++from dreamerv3.fg_s3_v2_agent import S3V2Agent
+ from dreamerv3.fg_s3a_actor import parameter_digests
+ from embodied.run.fg_s3_source_admission import _inspect_source, inspect_source, _prepare_transfer
+-from embodied.run.fg_s3_source_transfer import _make_agent, _apply_and_audit_transfer
++from embodied.run.fg_s3_source_transfer import make_agent, apply_and_audit_transfer
+ from embodied.run.fg_s3_e_source import make_binding, validate_e_records
+ from gym_trading_env.research.fg_s3_v2_gpu_check import small_config
+ from gym_trading_env.research.fg_s3_v2_experiment import _validate_settings, read_settings
+@@ -42,8 +42,8 @@ def test_EM14_size50m_canonical_recipe_and_fresh_settings_without_checkpoint(tmp
+         from ruamel.yaml import YAML
+         YAML().dump(raw,path)
+         s=_validate_settings(normalize_config(raw,executable=False),path)
+-        assert 'source_checkpoint' not in s and s['resolved_composition']['support_state']=='waiting_e'
+-        with pytest.raises(ValueError,match='NOT_IMPLEMENTED'):read_settings(path)
++        assert 'source_checkpoint' not in s and s['resolved_composition']['support_state']=='ready'
++        assert read_settings(path)==s
+         wrong=copy.deepcopy(raw);wrong['source_checkpoint']='old/checkpoint'
+         with pytest.raises(ValueError,match='without source_checkpoint'):
+             _validate_settings(normalize_config(wrong,executable=False),path)
+@@ -63,21 +63,21 @@ def test_EM14_authenticated_direct_init_model_and_signed_records(catalog_bundle,
+     spec=_inspect_source('direct_init',**kwargs)
+     assert spec['origin']['step']==spec['target_update_offset']==0
+     assert _prepare_transfer(spec) is None and 'source_param_digests' not in spec
+-    agent=_make_agent(cfg,tmp_path/'model',agent_cls=_S3V2Model,device='cpu',bc_lambda=1.,
++    agent=make_agent(cfg,tmp_path/'model',agent_cls=S3V2Agent,device='cpu',bc_lambda=1.,
+         extra_agent_config=ext,composition=comp)
+     if mode=='b2':
+         from dreamerv3.agent import Agent
+         with pytest.raises(ValueError,match='shared S3V2'):
+-            _make_agent(cfg,tmp_path/'wrong_model',agent_cls=Agent,device='cpu',
++            make_agent(cfg,tmp_path/'wrong_model',agent_cls=Agent,device='cpu',
+                 extra_agent_config=ext,composition=comp)
+-    receipt=_apply_and_audit_transfer(agent,spec)
++    receipt=apply_and_audit_transfer(agent,spec)
+     assert agent.save_exact()['counters']==dict(updates=0,batches=0,actions=0)
+     assert int(agent.params['opt/step/value'])==0
+     assert receipt['params_before']==receipt['params_after']
+     assert spec['gate_transfer']['new_gate_state']['actor_enabled'] is False
+     assert spec['gate_transfer']['new_gate_state']['samples']==0
+     if mode=='a2':
+-        peer=_make_agent(cfg,tmp_path/'same_seed',agent_cls=_S3V2Model,device='cpu',bc_lambda=1.,
++        peer=make_agent(cfg,tmp_path/'same_seed',agent_cls=S3V2Agent,device='cpu',bc_lambda=1.,
+             extra_agent_config=ext,composition=comp)
+         assert parameter_digests(peer.params)==parameter_digests(agent.params)
+         with pytest.raises(ValueError,match='seed/Reward'):
+@@ -101,7 +101,7 @@ def test_EM14_authenticated_direct_init_model_and_signed_records(catalog_bundle,
+     corrupt['target_model_identity']['e_binding']=copy.deepcopy(corrupt['target_model_identity']['e_binding'])
+     corrupt['target_model_identity']['e_binding']['data_identity']='foreign'
+     with pytest.raises(ValueError,match='identity mismatch'):_prepare_transfer(signed(corrupt))
+-    with pytest.raises(ValueError,match='NOT_IMPLEMENTED'):inspect_source('direct_init',**kwargs)
++    assert inspect_source('direct_init',**kwargs)==spec
+     for key,value in (('seed',1),('agent_config_hash','foreign'),('data_manifest_sha256','foreign')):
+         bad={**kwargs,'e_binding':{**binding,key:value}}
+         with pytest.raises(ValueError,match='identity mismatch'):_inspect_source('direct_init',**bad)
+@@ -110,6 +110,14 @@ def test_EM14_authenticated_direct_init_model_and_signed_records(catalog_bundle,
+     with pytest.raises(ValueError,match='E fresh-init'):_inspect_source('direct_init',**bad)
+ 
+ 
++def test_formal_e_binding_still_refuses_synthetic_training_data(tmp_path):
++    cfg=e_target_config(small_config())
++    provider=SyntheticEProvider(tmp_path)
++    comp=resolve_composition({'composition':dict(encoder='e_multiscale_1m15m',teaching='a2')})
++    with pytest.raises(ValueError,match='authenticated real TRAIN data'):
++        make_binding(cfg,comp,provider.manifest,diagnostic=False)
++
++
+ def test_EM16_original_teaching_method_bodies_unchanged():
+     original=ast.parse(subprocess.check_output(['git','show','eb63de7:dreamerv3/fg_s3_v2_agent.py'],cwd=DREAMER))
+     current=ast.parse((DREAMER/'dreamerv3/fg_s3_v2_agent.py').read_text())
+diff --git a/tests/entry_v1/test_s3_composition.py b/tests/entry_v1/test_s3_composition.py
+index 3ab66b1..987ccec 100644
+--- a/tests/entry_v1/test_s3_composition.py
++++ b/tests/entry_v1/test_s3_composition.py
+@@ -23,8 +23,7 @@ ROOT = Path(__file__).resolve().parents[2]
+ def test_all_eight_compositions_have_unique_state_and_one_base_bc(encoder, teaching):
+     raw = dict(schema=CONFIG_SCHEMA, composition=dict(encoder=encoder, teaching=teaching))
+     resolved = resolve_composition(raw)
+-    expected = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else (
+-        'waiting_e' if encoder != 'legacy_1m' else 'ready')
++    expected = 'waiting_tutor_b2' if teaching == 'tutor_cd_b2' else 'ready'
+     assert resolved['support_state'] == expected
+     assert resolved['base_oracle_bc'] is True and resolved['schema_version'] == 1
+     assert resolved == normalize_config(raw, executable=False)[KEY]
+@@ -85,7 +84,7 @@ def test_ready_settings_keep_all_legacy_hyperparameters(tmp_path, teaching, pres
+     assert new == old
+ 
+ 
+-WAITING = [(ENCODERS[1], t) for t in TEACHING[:3]] + [(e, TEACHING[3]) for e in ENCODERS]
++WAITING = [(e, TEACHING[3]) for e in ENCODERS]
+ 
+ 
+ @pytest.mark.parametrize('encoder,teaching', WAITING)

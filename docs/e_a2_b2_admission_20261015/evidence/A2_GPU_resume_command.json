@@ -1,0 +1,26 @@
+{
+  "command": [
+    "taskset",
+    "-c",
+    "0-11",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-u",
+    "tools/fg_s3_v2_experiment.py",
+    "admit-e-resume",
+    "--prepared",
+    "artifacts/fg_s3_v2/prepared/E_READY_A2_GPU_20261015_v2"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env",
+  "started_at": "2026-10-15T15:55:28.349219+00:00",
+  "wrapper_sha256": "5190651f9f9cefc92919dffdac74b774eb0fdb8e341599148d38d0b1228df970",
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OMP_NUM_THREADS": "12",
+    "OPENBLAS_NUM_THREADS": "1",
+    "CUDA_VISIBLE_DEVICES": "0",
+    "FG_S3_VISIBLE_GPUS": "0",
+    "PYTHONPATH": "src:.:../dreamerv3",
+    "JAX_COMPILATION_CACHE_DIR": "/home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/jax_cache"
+  },
+  "pid": 1814755
+}

@@ -1,5 +1,21 @@
 # S3-V2 shared entry and experiment configurations
 
+## E + A2 / E + B2 Full formal entry (2026-10-16)
+
+`E_A2_MARKET_MINUTE_FORMAL_1M` and `E_B2_FULL_MARKET_MINUTE_FORMAL_1M` use
+fresh seed0 size50m E initialization, the authenticated current TRAIN collection,
+all 18 TRAIN contracts and the existing 1M/40000-update schedule. B2 retains the
+accepted Full head/adapter recipe. Both modes completed real CPU acceptance,
+GPU 1000 updates and exact independent cold resume before readiness release.
+Tutor-CD+B2 remains NOT_IMPLEMENTED. Historical `*_WAITING` placeholders and old
+acceptance snapshots are retained; use the new formal configurations for new runs.
+
+Prepare/start/resume use `tools/fg_s3_v2_experiment.py`. Formal start/resume still
+require explicit user authorization and `--authorize-training`. The checked
+preparations belong to the separate frozen `fg-s3-e-ab-release-20261016` pair;
+run them from that pair, preserving its code and configs. No formal 1M was started.
+Receipts and source/checkpoint evidence: `docs/e_a2_b2_admission_20261015/REPORT.md`.
+
 ## E + Tutor-CD Full formal 1M
 
 `E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M` selects the native E encoder and the
@@ -470,12 +486,13 @@ diagnostic configs with the original learning parameters and 1000 Env advances.
 Their common start/resume/evaluate entry remains `tools/fg_s3_v2_experiment.py`;
 this F0 task runs CPU admission and tests only, no GPU training. Implementation,
 identity contracts and C01-C12 evidence: `docs/S3_F0_COMPOSITION_IMPLEMENTATION.md`.
-## E-Model V1：目标配置，公开组合仍等待
+## E-Model V1：早期占位配置（历史记录）
 
 `E_MODEL_V1_A2_WAITING`、`E_MODEL_V1_TUTOR_CD_WAITING`、`E_MODEL_V1_B2_WAITING`
 使用新的 encoder 轴、原 teaching 轴及 `direct_init / model_init(seed0,size50m)`。
 三份配置的 `e_data_manifest` 是待真实联调的占位路径，不能用于训练。
-当前公开 prepare/start/resume/evaluate 仍 fail closed；只有 describe 是只读可执行。
+这些占位来源不能用于 prepare/start/resume/evaluate；describe 可只读查看组合。
+当前正式能力与真实来源配置见本文件顶部，不能将占位路径当作已认证数据。
 
 ```bash
 CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
@@ -483,7 +500,7 @@ CUDA_VISIBLE_DEVICES='' JAX_PLATFORMS=cpu \
   describe-composition --config E_MODEL_V1_B2_WAITING
 ```
 
-CPU 模型验收在共享内部核心与确定性合成 provider 上执行，正式 Prepared/Run 未创建。
+初始 CPU 模型验收在共享内部核心与确定性合成 provider 上执行，当时未创建正式 Prepared/Run。
 接口、EM01–EM18 及后置 Review 要求见 `docs/S3_E_MODEL_V1_INTERFACE.md` 和
 `docs/S3_E_MODEL_V1_IMPLEMENTATION_REPORT.md`。不把 CPU Checkpoint 当正式 E Run。
 
@@ -502,6 +519,8 @@ advances. GPU uses the canonical size50m preset for 1000 joint updates over
 1000 advances. These protocols retain `waiting_e` and cannot authorize formal
 1M. Every retry requires a fresh configuration/preparation/run name. The GPU
 configuration requires matching completed CPU evidence before preparation.
+These are historical bounded configurations; current production readiness is
+documented in the formal-entry sections above.
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python tools/fg_s3_v2_experiment.py admit-e-prepare --config E_NATIVE_A2_CPU_20261015_v3

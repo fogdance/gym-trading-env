@@ -1,0 +1,6 @@
+strategy_mode: entry_dataset
+role: train
+manifest_path: /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env/artifacts/fg_s3_v2/prepared/E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016/train_pool.json
+scheduler:
+  mode: least_progress
+  chunk_bars: 1000
