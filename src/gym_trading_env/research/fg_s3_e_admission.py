@@ -88,15 +88,23 @@ def read_settings(config):
     return settings
 
 
-def prepare(config):
-    settings = read_settings(config)
+def acceptance_model_config(settings):
+    model = resolve_model_init(settings['model_init'])
     if settings['device'] == 'cpu':
         # Explicit small CPU architecture; never a substitute for size50m GPU.
         from .fg_s3_v2_gpu_check import small_config
-        model = e_target_config(small_config())
-    else:
-        model = resolve_model_init(settings['model_init'])
-    return _prepare(settings, admission=_Admission, model_config=model)
+        small = e_target_config(small_config())
+        # Reduce only the CPU network, retaining the canonical Single3 Gate.
+        # The generic GPU unit fixture intentionally disables ADD recall;
+        # real TRAIN acceptance must not inherit that diagnostic relaxation.
+        small['action_mask_warmup'] = model['action_mask_warmup']
+        model = small
+    return model
+
+
+def prepare(config):
+    settings = read_settings(config)
+    return _prepare(settings, admission=_Admission, model_config=acceptance_model_config(settings))
 
 
 def _batch_hash(batch):

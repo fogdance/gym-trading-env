@@ -4,7 +4,8 @@ import copy
 import pytest
 
 from dreamerv3.fg_s3_composition import normalize_config
-from gym_trading_env.research.fg_s3_e_admission import PROTOCOL, validate_settings, _Admission
+from gym_trading_env.research.fg_s3_e_admission import (
+    PROTOCOL, validate_settings, _Admission, acceptance_model_config)
 from gym_trading_env.research.fg_s3_v2_experiment import _validate_settings
 
 
@@ -37,3 +38,16 @@ def test_gpu_acceptance_requires_completed_cpu_full_checkpoint(tmp_path):
         updates_per_collect=100,env_slice_bars=250,replay_capacity=2048,
         e_cpu_evidence=str(tmp_path/'absent.json'))
     with pytest.raises(FileNotFoundError):validate_settings(s)
+
+
+def test_real_cpu_small_network_keeps_canonical_single3_safety_gate():
+    from embodied.run.fg_s3_gate import SINGLE3, gate_policy
+    cpu = acceptance_model_config(settings())
+    gpu = acceptance_model_config({**settings(), 'device': 'gpu'})
+    assert cpu['agent']['dyn']['rssm']['deter'] == 32
+    assert gpu['agent']['dyn']['rssm']['deter'] == 4096
+    assert cpu['action_mask_warmup'] == gpu['action_mask_warmup']
+    policy = gate_policy(cpu, diagnostic=True, protocol=SINGLE3)
+    assert policy == gate_policy(gpu, diagnostic=True, protocol=SINGLE3)
+    assert policy['config']['enabled'] and policy['config']['add_recall_enabled']
+    assert cpu['agent']['avail_actor_enabled'] is False
