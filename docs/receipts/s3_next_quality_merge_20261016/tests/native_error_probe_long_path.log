@@ -1,0 +1,14 @@
+E                                                                        [100%]
+==================================== ERRORS ====================================
+________ ERROR at setup of test_e_market_rejects_missing_source_receipt ________
+tests/entry_v1/test_s3_e_market_identity.py:42: in admitted
+    dest = write_bundle(bundle, collection/data.contract)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+e_data_v1/io.py:47: in independent_output
+    raise ValueError("Output must be independent of formal training/archive paths")
+E   ValueError: Output must be independent of formal training/archive paths
+=========================== short test summary info ============================
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_e_market_rejects_missing_source_receipt

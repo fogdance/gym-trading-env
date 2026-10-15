@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "scope": "REAL_TRAIN_NATIVE_ENV_DRIVER_REPLAY_NO_MODEL",
+  "source_pool_sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b",
+  "e_profile_identity": "df17e899c5879b9e053a9b1dad41817af7e059f2eca44005cccd510b9583ace2",
+  "collection_identity": "e39ee50aa1dbdb95e41ed3d151aad27d0dbc3b5879eaca1a5c2acb28dcc01d24",
+  "original_oracle_identities": {
+    "CZCE.FG201": "964136cff92f11205613341246f735ac7fcc786de1d5d6e812fe7551a7e98dcb",
+    "CZCE.FG301": "81ceccff116bf3031182fea580d87102576b8041705e8eb2378f6d876a584d07"
+  },
+  "env_steps_saved": 2200,
+  "env_steps_after": 2250,
+  "contracts": [
+    "CZCE.FG201",
+    "CZCE.FG301"
+  ],
+  "counts": {
+    "native_rows": 2253,
+    "resets": 3,
+    "env_steps": 2250,
+    "valid_market_minutes": 2250,
+    "actor_ADD": 953,
+    "oracle_ADD": 156,
+    "executed_ADD": 156,
+    "entries": 156,
+    "TP": 154,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 1916,
+    "learnable_decisions": 1916,
+    "unproven_funds": 0,
+    "reward_sum": 146.66120946407318,
+    "published_native_rows": 2252,
+    "actor_oracle_ADD_tp": 84,
+    "actor_oracle_ADD_fn": 72
+  },
+  "resets": 3,
+  "exact_financial_state_vs_legacy": true,
+  "exact_original_teacher_labels": true,
+  "exact_cold_driver_env_replay_sidecar_rng": true,
+  "exact_next_batch": true,
+  "replay_rows_with_valid_15m_context": 1574,
+  "model_optimizer": "NOT_PART_OF_THIS_DATA_CONTRACT",
+  "formal_1m": "NOT_RUN",
+  "test": "SEALED_NOT_READ",
+  "content_hash": "d9527883a4522cd8d951d9aff46e278c2dce4f2aaafca78966e39299bd238e91"
+}

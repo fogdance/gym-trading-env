@@ -1,0 +1,24 @@
+.............F.....................                                      [100%]
+=================================== FAILURES ===================================
+_____________ test_EM16_original_teaching_method_bodies_unchanged ______________
+
+    def test_EM16_original_teaching_method_bodies_unchanged():
+        original=ast.parse(subprocess.check_output(['git','show','eb63de7:dreamerv3/fg_s3_v2_agent.py'],cwd=DREAMER))
+        current=ast.parse((DREAMER/'dreamerv3/fg_s3_v2_agent.py').read_text())
+        old=next(n for n in original.body if isinstance(n,ast.ClassDef) and n.name=='S3V2Agent')
+        new=next(n for n in current.body if isinstance(n,ast.ClassDef) and n.name=='_S3V2Model')
+        methods=lambda n:{f.name:ast.dump(f,include_attributes=False) for f in n.body
+                         if isinstance(f,ast.FunctionDef) and f.name!='__init__'}
+>       assert methods(old)==methods(new)
+E       assert {'training_lo...ist=[])', ...} == {'training_lo...ist=[])', ...}
+E         
+E         Omitting 8 identical items, use -vv to show
+E         Differing items:
+E         {'policy_keys': "FunctionDef(name='policy_keys', args=arguments(posonlyargs=[], args=[arg(arg='self')], kwonlyargs=[],...=Load()), args=[], keywords=[]), attr='policy_keys', ctx=Load()))], decorator_list=[Name(id='property', ctx=Load())])"} != {'policy_keys': "FunctionDef(name='policy_keys', args=arguments(posonlyargs=[], args=[arg(arg='self')], kwonlyargs=[],...=Load()), args=[], keywords=[]), attr='policy_keys', ctx=Load()))], decorator_list=[Name(id='property', ctx=Load())])"}
+E         {'train': "FunctionDef(name='trai...
+E         
+E         ...Full output truncated (417 lines hidden), use '-vv' to show
+
+tests/entry_v1/test_fg_s3_e_source.py:128: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_e_source.py::test_EM16_original_teaching_method_bodies_unchanged

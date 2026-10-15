@@ -2,12 +2,14 @@
 
 项目根目录：`/home/v/Documents/work/research`。Gym 与 DreamerV3 是两个独立仓库；源码必须使用同一工作区内的兄弟目录。
 
+Quality-first 的最新合并复核与实际验收见 [集成 Review](S3_NEXT_QUALITY_FIRST_INTEGRATION_REVIEW_20261016.md)。
+
 ## 分支职责
 
 - `main`：经过验证的稳定版本。禁止直接开发；发布前单独 Review 和授权，不自动合并、移动或重置。
 - `integration/s3-next`：下一代 S3 唯一公共集成分支，保留 A2 Oracle BC、Tutor-CD、B2-Full、市场分钟、DAgger/Replay/FullCheckpoint、现有 W&B 与 Research Archive V1。
 - `feat/*`：短期功能开发，从最近验收通过的 integration 双仓版本建立，完成回归和 Review 后普通 merge 回 integration；不 rebase 历史实验分支或强推。
-- 旧 `feat/fg-s3-*` 分支保留为历史来源，不再作为下一项新功能的默认起点。Archive V1 已通过独立集成进入基线；未开发的 E 不属于当前集成基线。
+- 旧 `feat/fg-s3-*` 分支保留为历史来源，不再作为下一项新功能的默认起点。Archive V1、已准入 E 与 Quality-first 已按各自证据进入基线；当前精确能力、限制及双仓版本以工作区版本锁与最新集成 Review 为准。
 - `feat/s3-e-data`、`feat/s3-e-model`、`feat/s3-tutor-b2` 仅在对应任务实际启动时创建，不预建空分支或无用 Worktree。
 
 ## Worktree 与训练冻结
@@ -23,7 +25,7 @@
 ## 入口、验收与 W&B
 
 - A2、Tutor、B2 共用 `tools/fg_s3_v2_experiment.py` 和 `configs/experiments/fg_s3_v2/`；三种已有模式分别运行，不将本次集成解释为联合教学。
-- F0 新实验使用 `FG_S3_V2_COMPOSITION_CONFIG_V1` 和 `composition.encoder/teaching`，原 mode 配置继续兼容。当前仅 Legacy+A2/Tutor/B2 就绪；E 与 Tutor+B2 组合仍在准备/启动前拒绝，不用运行参数绕过能力检查。实现和集成证据分别见 `S3_F0_COMPOSITION_IMPLEMENTATION.md` 与 `S3_NEXT_F0_INTEGRATION_REPORT.md`。
+- F0 新实验使用 `FG_S3_V2_COMPOSITION_CONFIG_V1` 和 `composition.encoder/teaching`，原 mode 配置继续兼容。当前保留 Legacy+A2/Tutor/B2、已准入 E+A2/Tutor/B2 及 Legacy+Quality。E+Quality 与 Tutor+B2 在准备/启动前拒绝；Quality 的预测、Q 和决策安全准入独立，工程合并不代表 Full 研究 GO。实现和集成证据分别见 `S3_F0_COMPOSITION_IMPLEMENTATION.md` 与 `S3_NEXT_F0_INTEGRATION_REPORT.md`。
 - W&B 复用 `tools/fg_s3_wandb.py` / `research_tracking`，Project 固定 `fg-single3-research`；通过 `launch` 包装原训练命令，SDK 在独立环境，Trainer 不依赖网络。
 - 研究归档复用 `tools/s3_archive.py` / `s3_archive`。`inspect` 只读；`archive` 默认 dry-run；L1/L2/L3 按真实验证结果授予。`verify` CLI 会更新归档自身的版本化元数据，校验受保护的历史归档时使用只读 `s3_archive.verification.evidence`。GPU 验证和 W&B 发布分别显式执行。
 - 代理默认 `http://127.0.0.1:10808`，仅作用于 Tracker。正式指标以已完成 Checkpoint 为边界，实时数据标记 provisional；断网后保留 offline 数据，使用现有 sync 恢复。

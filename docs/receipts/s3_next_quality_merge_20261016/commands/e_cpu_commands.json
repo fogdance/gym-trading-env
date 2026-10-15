@@ -1,0 +1,40 @@
+[
+  {
+    "command": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "admit-e-prepare",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_cpu_config.yaml"
+    ],
+    "exit_code": 0,
+    "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_prepare.log"
+  },
+  {
+    "command": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "admit-e-start",
+      "--prepared",
+      "artifacts/fg_s3_v2/prepared/S3_NEXT_E_A2_CPU_MERGE_REVIEW_20261016_v1",
+      "--stop-at",
+      "1100"
+    ],
+    "exit_code": 0,
+    "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_start1100.log"
+  },
+  {
+    "command": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "admit-e-resume",
+      "--prepared",
+      "artifacts/fg_s3_v2/prepared/S3_NEXT_E_A2_CPU_MERGE_REVIEW_20261016_v1"
+    ],
+    "exit_code": 0,
+    "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_resume2200.log"
+  }
+]

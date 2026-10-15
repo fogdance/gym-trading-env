@@ -1,0 +1,58 @@
+{
+  "status": "PASS_MERGED_ENGINEERING_CPU_REVIEW",
+  "distinct_tests": 235,
+  "test_count_scope": "latest successful receipt per test identity; prior failures retained",
+  "quality_full": "NOT_GO",
+  "prediction_gate": "PENDING",
+  "q_gate": "PENDING",
+  "decision_gate": "PENDING",
+  "merged_code": {
+    "gym": "c31ed89c3b3100fc46e37459dd909b692e1b417f",
+    "dreamer": "6403cd68fdcc4e61f9036a7d06f30ac7a4448312"
+  },
+  "accepted_sources": {
+    "gym": "9d2bf64f02db742d631a5556f5547c1378cec5cc",
+    "dreamer": "d33985cb2989dcf2e3fe6dc06584ffb757011c3d"
+  },
+  "quality_lifecycle": {
+    "env_steps": 200,
+    "updates": 4,
+    "supervision": "SYNTHETIC_NATIVE_ENV",
+    "exact_resume": true
+  },
+  "e_cli": {
+    "status": "PASS_CPU_REAL_TRAIN",
+    "env_steps": 2200,
+    "updates": 6,
+    "contracts": [
+      "CZCE.FG201",
+      "CZCE.FG301"
+    ],
+    "e_rows": 2202,
+    "cold_resume_exact": true,
+    "branch_gradients": {
+      "minute": 695.1702270507812,
+      "context15": 70.58992004394531,
+      "fusion": 192.00352478027344
+    },
+    "parameter_changes": {
+      "enc/minute/": 9,
+      "enc/context15/": 2,
+      "enc/fusion/": 2,
+      "pol/": 5
+    },
+    "teacher_beta": 1,
+    "actor_only_performance": "NOT_CLAIMED",
+    "network": "existing small CPU acceptance network; canonical Single3 Gate"
+  },
+  "actual_1m_quality_source": "CPU_PREPARED_ONLY",
+  "gpu": "NOT_RUN",
+  "quality_10k": "NOT_RUN",
+  "quality_1m": "NOT_RUN",
+  "wandb_cloud": "NOT_RUN",
+  "runtime_files": 231,
+  "quality_core_files_unchanged": 9,
+  "protection": "Only integration/s3-next refs changed; full before/after parent and other-ref audit in review/",
+  "final_version_lock": "/home/v/Documents/work/research/fg-s3-next-integration/baseline-lock.json",
+  "content_hash": "d80c251e52fc5d74a7c340cef202f46c3a6ef1f2ba639efbe8e3a7532447106e"
+}

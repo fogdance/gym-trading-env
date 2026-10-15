@@ -1,0 +1,6 @@
+{
+  "dreamer_before_merge": "13f03938686a34b8f641c698da3198fb2d74b6cd",
+  "e_a2_support_state": "ready",
+  "old_negative_test_mutation_changes_nothing": true,
+  "resolution": "Change negative fixture to an actually invalid waiting_e flag; keep production readiness"
+}

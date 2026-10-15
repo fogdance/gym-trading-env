@@ -1,0 +1,555 @@
+........................................................................ [ 36%]
+........................................................................ [ 72%]
+...EEEEEEE...............F............F.F............FF                  [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_env_refuses_csv_replaced_after_e_admission[uncached] __
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_0')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_0/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+_ ERROR at setup of test_env_refuses_csv_replaced_after_e_admission[cache_miss] _
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_1')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_1/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+_ ERROR at setup of test_env_refuses_csv_replaced_after_e_admission[primed_cache] _
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_2')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_env_refuses_csv_replaced_2/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+_ ERROR at setup of test_e_parser_consumes_the_same_bytes_that_were_authenticated _
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_parser_consumes_the_sam0')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_parser_consumes_the_sam0/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+__ ERROR at setup of test_e_admission_cannot_be_bypassed_with_injected_frame ___
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_admission_cannot_be_byp0')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_admission_cannot_be_byp0/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+________ ERROR at setup of test_e_market_rejects_missing_source_receipt ________
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_market_rejects_missing_0')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_e_market_rejects_missing_0/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+_ ERROR at setup of test_shared_e_market_content_is_stable_across_accounts_and_restore _
+
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_shared_e_market_content_i0')
+
+    @pytest.fixture
+    def admitted(tmp_path):
+        # Real admission code, isolated synthetic market/config bytes. No TRAIN
+        # input is modified and this fixture does not authorize model training.
+        config, market = csv_env_config(tmp_path/'source')
+        raw = yaml.safe_load(config.read_text())
+        terms = config.parent/'contract.yaml'
+        schedule = dict(raw['entry']['market_clock'],
+                        dated_sessions=yaml.safe_load(terms.read_text())['sessions'])
+        data = MarketData(pd.read_csv(market), schedule)
+        sources = dict(market=stable_identity(market), env=stable_identity(config),
+                       contract=stable_identity(terms), master=None)
+        row = dict(contract=data.contract, role='train', eligible_for_training=True,
+            path=str(market), sha256=sha256(market), env_config=str(config),
+            env_sha256=sha256(config), contract_config=str(terms), contract_sha256=sha256(terms))
+        pool = tmp_path/'pool.json'
+        write_json(pool, signed(dict(product='FG', files=[row])))
+        bundle = data.build([Decision(data.contract, data.frame.index[-1])])
+        bundle.provenance.update(sources)
+        collection = tmp_path/'collection'
+        collection.mkdir()
+>       dest = write_bundle(bundle, collection/data.contract)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_e_market_identity.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_shared_e_market_content_i0/collection/CZCE.FG2701')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+=================================== FAILURES ===================================
+______ test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics _______
+
+market = (                         Date  ...                       bob
+0   2026-01-05 21:01:00+08:00  ... 2026-01-05 21:00:00+0...'end': '2026-01-06T23:00:00+08:00'}, {'start': '2026-01-07T09:00:00+08:00', 'end': '2026-01-07T10:15:00+08:00'}, ...]})
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F03_late_historical_bucke0')
+
+    def test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics(market,tmp_path):
+        f,schedule=market; f=f.iloc[:360].copy()
+        f['available_at']=f.Date
+        f.loc[f.index[299],'available_at']=f.Date.iloc[344]
+        data=MarketData(f,schedule)
+        earlier=f.Date.iloc[314]; later=f.Date.iloc[344]
+        full=data.build([Decision('CZCE.FG809',earlier),Decision('CZCE.FG809',later)])
+        prefix=build_e_data_v1(f.loc[(f.Date<=earlier)&(f.available_at<=earlier)],
+                              [Decision('CZCE.FG809',earlier)],schedule)
+        np.testing.assert_array_equal(full.context_15m[0],prefix.context_15m[0])
+        assert full.decision_meta[0]==prefix.decision_meta[0]
+>       assert verify_bundle(write_bundle(full,tmp_path/'late-bundle'))['status']=='PASS'
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e_data_v1/test_contract.py:117: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F03_late_historical_bucke0/late-bundle')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+________ test_F11_bundle_hash_verification_tamper_and_output_isolation _________
+
+prepared = <e_data_v1.core.MarketData object at 0x7932d271a5d0>
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F11_bundle_hash_verificat0')
+
+    def test_F11_bundle_hash_verification_tamper_and_output_isolation(prepared,tmp_path):
+        bundle=prepared.build([decision(prepared,374)])
+>       destination=write_bundle(bundle,tmp_path/'bundle')
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e_data_v1/test_contract.py:309: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F11_bundle_hash_verificat0/bundle')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+___________ test_F11_collection_index_seals_diagnostics_and_bundles ____________
+
+prepared = <e_data_v1.core.MarketData object at 0x7932d271a5d0>
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F11_collection_index_seal0')
+
+    def test_F11_collection_index_seals_diagnostics_and_bundles(prepared,tmp_path):
+        bundle=prepared.build([decision(prepared,374)])
+        root=tmp_path/'collection';root.mkdir()
+>       destination=write_bundle(bundle,root/prepared.contract)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e_data_v1/test_contract.py:328: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_F11_collection_index_seal0/collection/CZCE.FG809')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+____________ test_collection_process_cache_rejects_changed_payload _____________
+
+prepared = <e_data_v1.core.MarketData object at 0x7932c12fd510>
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_collection_process_cache_0')
+
+    def test_collection_process_cache_rejects_changed_payload(prepared,tmp_path):
+        from e_data_v1.io import write_bundle,write_json,write_collection_index
+        from e_data_v1.provider import verified_collection
+        root=tmp_path/'collection';root.mkdir()
+        bundle=prepared.build([Decision(prepared.contract,prepared.frame.index[374])])
+>       dest=write_bundle(bundle,root/prepared.contract)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e_data_v1/test_runtime_provider.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_collection_process_cache_0/collection/CZCE.FG809')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+________ test_native_admission_hashes_sources_without_parsing_train_csv ________
+
+prepared = <e_data_v1.core.MarketData object at 0x7932c12fd510>
+tmp_path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_native_admission_hashes_s0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7932cb75f750>
+
+    def test_native_admission_hashes_sources_without_parsing_train_csv(prepared,tmp_path,monkeypatch):
+        from e_data_v1.io import write_bundle,write_json,write_collection_index,sha256,stable_identity
+        from e_data_v1.provider import ETrainAdmission
+        from gym_trading_env.research.fg_replay import signed
+        market=tmp_path/'market.csv';market.write_text('opaque immutable TRAIN bytes\n')
+        env=tmp_path/'env.yaml';env.write_text('env: fixture\n')
+        terms=tmp_path/'terms.yaml';terms.write_text('contract: fixture\n')
+        row=dict(contract=prepared.contract,role='train',eligible_for_training=True,
+            path=str(market),sha256=sha256(market),env_config=str(env),env_sha256=sha256(env),
+            contract_config=str(terms),contract_sha256=sha256(terms))
+        pool=tmp_path/'pool.json';write_json(pool,signed(dict(product='FG',files=[row])))
+        bundle=prepared.build([Decision(prepared.contract,prepared.frame.index[374])])
+        bundle.provenance.update(market=stable_identity(market),env=stable_identity(env),
+                                 contract=stable_identity(terms),master=None)
+>       root=tmp_path/'collection';root.mkdir();dest=write_bundle(bundle,root/prepared.contract)
+                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/e_data_v1/test_runtime_provider.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+e_data_v1/io.py:64: in write_bundle
+    path = independent_output(path, inputs=inputs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/quality_checks/S3_NEXT_QUALITY_NATIVE_v1_20261016/test_native_admission_hashes_s0/collection/CZCE.FG809')
+inputs = ()
+
+    def independent_output(path, *, inputs=()):
+        """Reject formal run paths, source files and existing symlink destinations."""
+        path = Path(path).expanduser()
+        resolved = path.resolve()
+        parts = resolved.parts
+        forbidden = ("fg-s3-b2-full-train", "fg-s3-tutor-mm-train", "fg-s3-tutor-800k-freeze",
+                     "fg-s3-tutor-full-train", "fg-s3-archive-dev", "fg-s3-wandb-dev", "fg-s3-next-integration")
+        if any(x in parts for x in forbidden) or str(resolved).startswith("/data/logdir/fg_single3/"):
+>           raise ValueError("Output must be independent of formal training/archive paths")
+E           ValueError: Output must be independent of formal training/archive paths
+
+e_data_v1/io.py:47: ValueError
+=========================== short test summary info ============================
+FAILED tests/e_data_v1/test_contract.py::test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics
+FAILED tests/e_data_v1/test_contract.py::test_F11_bundle_hash_verification_tamper_and_output_isolation
+FAILED tests/e_data_v1/test_contract.py::test_F11_collection_index_seals_diagnostics_and_bundles
+FAILED tests/e_data_v1/test_runtime_provider.py::test_collection_process_cache_rejects_changed_payload
+FAILED tests/e_data_v1/test_runtime_provider.py::test_native_admission_hashes_sources_without_parsing_train_csv
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_env_refuses_csv_replaced_after_e_admission[uncached]
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_env_refuses_csv_replaced_after_e_admission[cache_miss]
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_env_refuses_csv_replaced_after_e_admission[primed_cache]
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_e_parser_consumes_the_same_bytes_that_were_authenticated
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_e_admission_cannot_be_bypassed_with_injected_frame
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_e_market_rejects_missing_source_receipt
+ERROR tests/entry_v1/test_s3_e_market_identity.py::test_shared_e_market_content_is_stable_across_accounts_and_restore

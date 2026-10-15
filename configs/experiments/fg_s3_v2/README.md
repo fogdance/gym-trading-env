@@ -540,6 +540,12 @@ alone is not an acceptance result. Formal1M remains a separate Review gate.
 
 ## Quality-first V1 (2026-10-15)
 
+2026-10-16: merged into `integration/s3-next`; see
+`docs/S3_NEXT_QUALITY_FIRST_INTEGRATION_REVIEW_20261016.md` for both-parent
+review and actual CPU receipts. Quality uses the admitted legacy encoder;
+E+Quality remains unimplemented. Reprepare in a new frozen workspace before
+any separately authorized GPU/research run.
+
 2026-10-16 review fixes: see `docs/FG_S3_QUALITY_FIRST_REVIEW_FIXES.md`.
 Current isolated verification uses `QUALITY_FIRST_REVIEW_CPU_FG201_v2`
 (100 CPU steps), `QUALITY_FIRST_REVIEW_POOL_CPU_v2` (two-contract CPU

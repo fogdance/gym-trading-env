@@ -1,0 +1,56 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+________ test_quality_e_requires_separate_admission_before_preparation _________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-376/test_quality_e_requires_separa0')
+
+    def test_quality_e_requires_separate_admission_before_preparation(tmp_path):
+        raw=dict(schema=CONFIG_SCHEMA,composition=dict(encoder='e_multiscale_1m15m',teaching='quality_v2'))
+>       assert normalize_config(raw,executable=False)[KEY]['support_state']=='waiting_quality_e'
+E       AssertionError: assert 'ready' == 'waiting_quality_e'
+E         
+E         - waiting_quality_e
+E         + ready
+
+tests/entry_v1/test_s3_composition.py:45: AssertionError
+________ test_reviewed_reader_warm_start_still_rejects_unknown_changes _________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7a161d0b01d0>
+
+    def test_reviewed_reader_warm_start_still_rejects_unknown_changes(monkeypatch):
+        from embodied.run import fg_s3_source_admission as admission
+        from gym_trading_env.research.fg_s3_reader_compat import PRODUCERS
+        mapping={n:h for n,h in PRODUCERS.items() if not n.endswith(('/entry_env.py','/single3_reward.py'))}
+>       result=admission.verify_producer_code(mapping,warm_start=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_s3_composition.py:178: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:212: in verify_producer_code
+    result[name] = reviewed_reader_transition(root.parent/'gym-trading-env', name, expected, file_hash)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+repo = PosixPath('/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env')
+name = 'gym_trading_env/envs/entry_dataset_env.py'
+expected = '2647dd96dd4e7b3648262b52415d2e84a2f5ecea46959e01a1ece83b9794d4a8'
+hash_file = <function file_hash at 0x7a161f7ab920>
+
+    def reviewed_reader_transition(repo, name, expected, hash_file):
+        """Authenticate both producer bytes and the complete current reader bundle.
+    
+        Callers opt into this seam only for parameter warm-start or loading the
+        original Oracle receipts, never exact resume. Oracle loading also checks
+        original market/candidates, funding certificate and suffix DP results.
+        """
+        repo = Path(repo)
+        bundle = next((b for b in (TARGETS, NATIVE_E_TARGETS, NATIVE_E_IDENTITY_TARGETS)
+                       if all(hash_file(repo/'src'/n) == h for n, h in b.items())), None)
+        if expected != PRODUCERS.get(name) or bundle is None:
+>           raise ValueError('Unreviewed source reader transition: '+name)
+E           ValueError: Unreviewed source reader transition: gym_trading_env/envs/entry_dataset_env.py
+
+src/gym_trading_env/research/fg_s3_reader_compat.py:58: ValueError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_s3_composition.py::test_quality_e_requires_separate_admission_before_preparation
+FAILED tests/entry_v1/test_s3_composition.py::test_reviewed_reader_warm_start_still_rejects_unknown_changes

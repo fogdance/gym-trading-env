@@ -1,0 +1,29 @@
+{
+  "protocol": "FG_S3_QUALITY_NATIVE_BUILD_COST_V1",
+  "worker_count": 1,
+  "available_memory_before_parallel_bytes": 12997718016,
+  "logical_cpus": 24,
+  "allocation": "largest-row-count pilot RSS * 1.25; 90% currently available memory",
+  "contracts": {
+    "CZCE.FG201": {
+      "candidate_cost": {
+        "candidates": 31259,
+        "filled": 31259,
+        "held_market_minutes_quantiles": [
+          1.0,
+          13.0,
+          69.0,
+          153.0,
+          316.0
+        ],
+        "sum_independent_held_market_minutes": 829560,
+        "elapsed_seconds": 173.984234404983,
+        "peak_rss_bytes": 561111040
+      },
+      "elapsed_seconds": 185.1268891050131,
+      "peak_rss_bytes": 561111040
+    }
+  },
+  "scope": "measured members only; no full TRAIN/1M throughput certification",
+  "content_hash": "ed06713d7c8ee10fcf054667a1d2aac3e4377fb9e166accc808f6b92c9430871"
+}

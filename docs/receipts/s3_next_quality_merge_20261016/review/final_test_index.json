@@ -1,0 +1,1487 @@
+{
+  "status": "PASS_CURRENT_FINAL_RESULTS",
+  "distinct_tests": 235,
+  "selection": "last measured result per test identity; failed attempts retained, targeted runs not added to totals",
+  "attempts": {
+    "native": {
+      "tests": 199,
+      "failures": 5,
+      "errors": 7,
+      "skipped": 0
+    },
+    "models": {
+      "tests": 35,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    "lifecycle": {
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "native_v2": {
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "e_source_v2": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "files": [
+    {
+      "name": "native",
+      "tests": 199,
+      "failures": 5,
+      "errors": 7,
+      "skipped": 0
+    },
+    {
+      "name": "models",
+      "tests": 35,
+      "failures": 1,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "lifecycle",
+      "tests": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "native_v2",
+      "tests": 198,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "name": "e_source_v2",
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  ],
+  "tests": [
+    {
+      "classname": "tests.unit.test_quality_tp_reward_v1.QualityTPRewardTests",
+      "name": "test_anchors_and_legacy_unchanged",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_quality_tp_reward_v1.QualityTPRewardTests",
+      "name": "test_day_order_atomicity_and_snapshot_profile_isolation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_quality_tp_reward_v1.QualityTPRewardTests",
+      "name": "test_native_bar_scorer_with_exact_restore",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_quality_tp_reward_v1.QualityTPRewardTests",
+      "name": "test_score_and_reward_share_the_frozen_curve",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[4-100]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[10-100]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[30-96.875]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[60-92.1875]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[74-90]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[120-85]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[240-75]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_score_anchor[480-62.03002924854919]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_cross_day_and_refuse_invalid",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_real_env_tp_no_oracle_and_no_mutation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_real_env_sl_and_losing_state_continues_to_grade",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_no_label_for_unexecuted_or_live_position_and_test_fold",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_official_trading_dates_night_session_not_wall_midnight",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher",
+      "name": "test_quality_can_be_valid_when_strict_oracle_rejects",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_chunk_metadata_and_censor_are_not_failed_entry_labels",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_native_official_day_and_session_break[False]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_native_official_day_and_session_break[True]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_other_exit_is_observed_but_unscored[MAIN_ROLL]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_other_exit_is_observed_but_unscored[MARGIN_CALL]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_rejected_fill_never_becomes_negative_teacher",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_patch_acceptance",
+      "name": "test_missing_official_day_and_e_profile_fail_closed",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_censor_unknown_and_independent_horizons",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_original_env_parity_funds_boundary_and_forced_wait",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_q_native_suffix_and_weak_wait_tie",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_cross_official_day_precedes_market_time_curve",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_q_censor_and_budget_are_not_numeric_targets",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_rebuilt_new_reward_strict_suffix_matches_native",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_quality_first_layers_low_funds_and_native_replay_join",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_quality_first_source_guard_detects_input_mutation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_quality_first_explicitly_refuses_unadmitted_e_profile",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_bounded_native_exposure_is_censored_and_calendar_is_private",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_full_state_cache_is_private_and_never_aliases_returned_labels",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_teacher_v2",
+      "name": "test_strict_parity_rejects_a_candidate_outside_old_uniform_sample",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_prediction_v2",
+      "name": "test_prediction_metrics_compare_to_train_prior_and_keep_censor_missing",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_prediction_v2",
+      "name": "test_soft_teacher_source_and_low_funds_do_not_create_strict_labels",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_prediction_v2",
+      "name": "test_first_quality_gpu_smoke_requires_explicit_authorization",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_prediction_v2",
+      "name": "test_same_state_reference_keeps_own_carry_and_actual_previous_action",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_prediction_v2",
+      "name": "test_holdout_snapshot_uses_exact_disjoint_train_members",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_policy_requires_explicit_multifold_replicated_risk_thresholds",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_status_and_positive_counts_alone_cannot_admit[require_prediction_admission-FG_S3_QUALITY_PREDICTION_ADMISSION_V2-PASS_QUALITY_PREDICTION_ADMISSION]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_status_and_positive_counts_alone_cannot_admit[require_decision_admission-FG_S3_QUALITY_DECISION_ADMISSION_V1-PASS_QUALITY_DECISION_ADMISSION]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_status_and_positive_counts_alone_cannot_admit[require_q_admission-FG_S3_QUALITY_Q_ADMISSION_V2-PASS_TRAIN_Q_FUSION_ADMISSION]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_every_horizon_needs_sl_funds_days_and_calibration_support",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_native_q_proof_repeats_exactly_and_rejects_changed_value_or_account",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_high_predicted_score_does_not_override_native_strict_wait_or_tie",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_controlled_prepare_reads_train_split_from_bound_policy",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_each_binary_window_must_beat_prior_and_same_state_reference[touch_3_1]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_each_binary_window_must_beat_prior_and_same_state_reference[adverse_3]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_entry_fold_risk_follows_complete_trades_and_excludes_other_cohorts",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_fold_cutoff_open_trade_is_distinct_from_postfold_complete_outcome",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_admission_v2",
+      "name": "test_complete_cohort_requires_native_equity_before_entry",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_single_capacity_sl_double_touch_and_release[LONG]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_single_capacity_sl_double_touch_and_release[SHORT]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_pending_no_liquidity_recovery_mask_and_resume",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_gap_uses_actual_quote_and_real_fees[LONG]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_gap_uses_actual_quote_and_real_fees[SHORT]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_tp_reward_and_other_exit_proportion",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_partial_exit_rejected_before_account_mutation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_metadata_and_right_censor_do_not_invent_exit",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_single_checkpoint_cannot_resume_legacy_or_another_reward",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_margin_call_has_priority_over_sl_and_tp",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_atomic_sl_rejection_keeps_slot_and_retries_once",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_main_roll_overrides_pending_sl_without_stale_metadata",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_duplicate_fill_rejected_before_mutation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_dataset_rejects_same_shape_different_semantics[legacy]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_env",
+      "name": "test_dataset_rejects_same_shape_different_semantics[C3]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_oracle",
+      "name": "test_index_pending_gap_and_reference_boundaries",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_oracle",
+      "name": "test_exact_dp_matches_independent_real_env_exhaustive_actions[LONG]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_oracle",
+      "name": "test_exact_dp_matches_independent_real_env_exhaustive_actions[SHORT]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_oracle",
+      "name": "test_proof_failure_and_exact_tie_fail_closed",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_single3_oracle",
+      "name": "test_index_global_priority_with_metadata_and_insufficient_volume",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[a2-legacy_1m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[a2-e_multiscale_1m15m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[tutor_cd-legacy_1m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[tutor_cd-e_multiscale_1m15m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[b2-legacy_1m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[b2-e_multiscale_1m15m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-legacy_1m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[tutor_cd_b2-e_multiscale_1m15m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[quality_v2-legacy_1m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_one_base_bc[quality_v2-e_multiscale_1m15m]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_pure_parser_runs_without_site_packages_or_jax",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_quality_e_requires_separate_admission_before_preparation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_schema_and_legacy_mode_contracts",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_new_records_require_same_composition_and_legacy_records_stay_absent",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_source_and_model_factories_reject_waiting_before_any_data_or_model",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_reviewed_reader_warm_start_still_rejects_unknown_changes",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_model_factory_rejects_encoder_identity_mismatch_before_building",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "research_tracking.tests.test_quality",
+      "name": "test_quality_metrics_keep_task_denominators_and_missing_gradient",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_early_first_touch_boundaries_and_no_repeat",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_empty_wait_and_right_censoring",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_invalid_atomic_inputs_and_capacity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_long_short_mirror",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_meta_rows_do_not_increase_age_or_capacity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_no_tp_reward_after_480",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_potential_discounted_telescoping_chunk_restore",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_rejects_impossible_claimed_tp_and_untrusted_clocks",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_rejects_overlapping_bars_without_mutating_state",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_tp_and_adverse_same_bar_is_ambiguity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_tp_boundary_curve_and_monotone",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_tp_one_shot_and_original_reconciliation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.unit.test_fg_reward_candidates.RewardCandidatesTests",
+      "name": "test_two_slots_and_same_bar_settlement",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_frozen_reward_identity_cannot_be_replaced_with_same_sum",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_real_env_capacity_tp_chunk_restore_and_grid_agree",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_opportunity_uses_execution_clock_at_session_gap",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_delay_waits_five_valid_minutes_and_skips_metadata",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_cutoff_and_unfilled_force_exit_remain_distinct[False]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_cutoff_and_unfilled_force_exit_remain_distinct[True]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_reward_offline",
+      "name": "test_replay_reuse_rejects_changed_frozen_input",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_pool_rotation_keeps_raw_account_and_checkpoint_owner",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_formal_budget_needs_explicit_authorization_and_isolated_root",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_b2_formal_uses_shared_catalog_and_original_authorization",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_b2_pool_outcome_contract_dispatch_and_restore",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_beta_schedule_uses_env_advances_and_validates_checkpoint_boundary",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_live_committed_rows_restore_preserves_native_ownership",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_shared_extractions_reject_changed_math_and_cuda_flags",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_current_decision_descriptor_preserves_labels_and_rejects_stale_state",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_resume_archives_uncheckpointed_cycles",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_observation",
+      "name": "test_train_proposals_are_separate_from_takeover_and_partial_rows",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_observation",
+      "name": "test_actor_only_rates_include_censored_entries_and_reject_guidance",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_observation",
+      "name": "test_observer_selects_frozen_tools_entry_instead_of_same_named_module",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_tutor_e2",
+      "name": "test_dynamic_class_normalization_stop_gradient_and_weight_limit",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_tutor_e2",
+      "name": "test_missing_class_empty_and_static_v0_equivalence",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_acceptance_bounds_cannot_enable_formal_or_combined_teaching",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_gpu_acceptance_requires_completed_cpu_full_checkpoint",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_real_cpu_small_network_keeps_canonical_single3_safety_gate",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_next_update_probe_never_rewinds_a_started_prefetch",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_env_refuses_csv_replaced_after_e_admission[uncached]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_env_refuses_csv_replaced_after_e_admission[cache_miss]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_env_refuses_csv_replaced_after_e_admission[primed_cache]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_e_parser_consumes_the_same_bytes_that_were_authenticated",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_e_admission_cannot_be_bypassed_with_injected_frame",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_e_market_rejects_missing_source_receipt",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_market_identity",
+      "name": "test_shared_e_market_content_is_stable_across_accounts_and_restore",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_native_e_reuses_normalized_market_feature_build_and_clock",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_native_single_env_collector_uses_env_observation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_native_profile_preserves_original_oracle_financial_rules",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_native_collector_rejects_foreign_profile_identity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_native_env_rejects_unavailable_current_minute",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_env",
+      "name": "test_market_cache_does_not_cross_legacy_and_e_profile",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_e_native_real_train",
+      "name": "test_real_native_pool_original_oracle_and_exact_replay_cold_resume",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_observation",
+      "name": "test_EM10_original_driver_dagger_native_replay_context_and_executed_action",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_observation",
+      "name": "test_EM05_schema_and_future_outcome_actor_fields_rejected",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F01_common_price_coordinate_and_near_high_relationship",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F02_original_18_bytes_mask_order_provenance_and_readonly_input",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F03_full_prefix_and_all_future_tampering_are_identical",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F04_fourteenth_fifteenth_and_next_minute",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F04_delayed_arrival_and_prefix_metadata",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F03_late_bucket_cannot_backfill_previous_volume_or_oi_baseline",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F05_sessions_trading_date_weekend_holiday_and_contract_reset",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F06_exact_ohlc_volume_sum_and_OI_last",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F06_missing_duplicate_conflicting_and_zero_volume_minutes",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F07_prior_20_volume_adjacent_OI_and_reordering",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_reuses_original_clock_and_one_feature_calculation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F07_invalid_OI_and_candle_fail_closed",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F08_shapes_order_padding_warmup_dtype_finite",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F09_cross_day_anchor_six_channel_differences",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F09_opening_mark_has_no_future_first_close_anchor",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F10_only_known_market_inputs_and_no_GPU_imports",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F10_observation_provenance_rejects_teacher_payload",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F11_bundle_hash_verification_tamper_and_output_isolation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F11_CLI_help_and_existing_output_refusal",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F11_collection_index_seals_diagnostics_and_bundles",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F02_real_original_Env_bytes_and_identity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_contract",
+      "name": "test_F04_real_Env_cutoff_boundary",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_native_integration",
+      "name": "test_e_market_from_existing_feature_clock_is_identical",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_native_integration",
+      "name": "test_original_delay_causality_survives_feature_injection",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[0]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[14]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[15]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[40]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[359]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_consumes_current_cutoff_and_exact_market_seq[600]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_provider_refuses_foreign_contract_and_drift",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_prepared_train_source_has_exact_underlying_market_identity",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_collection_process_cache_rejects_changed_payload",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.e_data_v1.test_runtime_provider",
+      "name": "test_native_admission_hashes_sources_without_parsing_train_csv",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/native_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_actor_same_forward_bounds_and_prediction_stop_gradient",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_pair_identity_soft_targets_and_empty_gradients",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_q_weak_wait_and_independent_prediction_masks",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_subunit_quality_weights_cancel_inside_single_member_class",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_all_heads_gradient_and_exact_model_restore_cpu",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_quality_actor_parameter_warm_start_and_fresh_joint_optimizer",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_controlled_prediction_transfer_requires_evaluated_weights",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+      "name": "test_quality_first_heads_only_updates_and_actor_isolation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM14_size50m_canonical_recipe_and_fresh_settings_without_checkpoint",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM14_authenticated_direct_init_model_and_signed_records[a2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM14_authenticated_direct_init_model_and_signed_records[tutor]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM14_authenticated_direct_init_model_and_signed_records[b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_formal_e_binding_still_refuses_synthetic_training_data",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM16_original_teaching_method_bodies_unchanged",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/e_source_v2.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[a2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[tutor]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM04_actual_policy_context_changes_rssm_and_actor",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM15_full_checkpoint_continuous_vs_interrupted_exact[a2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM15_full_checkpoint_continuous_vs_interrupted_exact[tutor]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM15_full_checkpoint_continuous_vs_interrupted_exact[b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM03_EM04_shapes_registered_branches_and_context_effect[False]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM03_EM04_shapes_registered_branches_and_context_effect[True]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM05_invalid_rows_and_all_invalid_ignore_values_and_bias",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM05_shape_dtype_future_keys_and_jit_nonfinite_rejected",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_EM07_wm_style_gradient_reaches_all_three_branches",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_online_model_and_environment_counters_have_separate_domains",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_no_inference_source_and_frozen_snapshot",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_missing_baseline_requires_authenticated_features",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[a2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[tutor]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[b2]",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/models.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_quality_lifecycle_v2",
+      "name": "test_shared_cpu_prepare_start_resume_full_checkpoint",
+      "status": "passed",
+      "receipt": "/home/v/Documents/work/research/fg-s3-next-integration/validation/quality-first-merge-20261016/lifecycle.xml"
+    }
+  ],
+  "content_hash": "1be89b6c00145393eda06754899c5926948570a6caee82570caf313d37633b3f"
+}

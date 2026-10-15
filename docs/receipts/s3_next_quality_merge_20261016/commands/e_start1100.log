@@ -1,0 +1,110 @@
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 78,996 params:
+        42,016 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+A2 env=1100 update=1 BC=0.693580 valid=56 ADD=9 beta=1.000000 actor_grad=0.791970
+A2 env=1100 update=2 BC=0.693754 valid=48 ADD=7 beta=1.000000 actor_grad=0.844187
+A2 env=1100 update=3 BC=0.693443 valid=53 ADD=6 beta=1.000000 actor_grad=0.869930
+A2 env=1100 update=4 BC=0.693877 valid=53 ADD=5 beta=1.000000 actor_grad=0.985086
+{
+  "protocol": "FG_S3_E_REAL_TRAIN_ACCEPTANCE_V1",
+  "status": "DIAGNOSTIC_STOPPED",
+  "run_dir": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/runs/S3_NEXT_E_A2_CPU_MERGE_REVIEW_20261016_v1",
+  "env_steps": 1100,
+  "counters": {
+    "all_updates": 3,
+    "wm_updates": 3,
+    "bc_valid_updates": 3,
+    "bc_add_updates": 3,
+    "rl_actor_updates": 0,
+    "rl_critic_updates": 0,
+    "gate_closed_updates": 3,
+    "cycles": 1,
+    "sampled_transitions": 192
+  },
+  "model_updates": 3,
+  "counts": {
+    "native_rows": 1102,
+    "resets": 2,
+    "env_steps": 1100,
+    "valid_market_minutes": 1100,
+    "actor_ADD": 462,
+    "oracle_ADD": 113,
+    "executed_ADD": 113,
+    "entries": 113,
+    "TP": 113,
+    "SL": 0,
+    "rejects": 0,
+    "certified_labels": 945,
+    "learnable_decisions": 945,
+    "unproven_funds": 0,
+    "reward_sum": 108.78895688056946,
+    "published_native_rows": 1101,
+    "actor_oracle_ADD_tp": 51,
+    "actor_oracle_ADD_fn": 62
+  },
+  "reward": 108.78895688056946,
+  "beta_schedule": {
+    "protocol": "FG_S3_V2_BETA_SCHEDULE_V1",
+    "initial_beta": 1.0,
+    "points": null,
+    "env_steps": 1100,
+    "beta": 1.0
+  },
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/runs/S3_NEXT_E_A2_CPU_MERGE_REVIEW_20261016_v1/ckpt/step_000000001100",
+  "checkpoint_manifest_sha256": "312b60a313f8e8be9f6850c6f9c61844ed75bef8d776e57090d889e147e6953d",
+  "devices": [
+    "TFRT_CPU_0"
+  ],
+  "elapsed_seconds": 37.25978591601597,
+  "collect_seconds": 24.49581972300075,
+  "update_seconds": 12.531942365982104,
+  "core_env_steps_per_second": 29.70743944385694,
+  "process_peak_rss_mib": 889.44140625,
+  "oracle_query_recent_seconds": {
+    "50": 0.003727114002685994,
+    "95": 0.004286620471975766,
+    "99": 0.0048507405299460515
+  },
+  "actor_oracle_add_recall": 0.45132743362831856,
+  "retained_teacher_rows": 1101,
+  "teacher_journal": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/runs/S3_NEXT_E_A2_CPU_MERGE_REVIEW_20261016_v1/rollout/teacher_journal.jsonl",
+  "actor_proposal_versions": [
+    0
+  ],
+  "label_ratio": 0.8590909090909091,
+  "formal_1m": "NOT_RUN",
+  "test": "NOT_RUN",
+  "independent_actor_success": "NOT_ESTABLISHED",
+  "content_hash": "05f6084243142e51c0a2a338c7d19eb85e7ec7cf4dcad191fae80a3fa3298884"
+}

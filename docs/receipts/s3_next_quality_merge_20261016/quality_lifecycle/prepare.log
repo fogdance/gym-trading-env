@@ -1,0 +1,39 @@
+{
+  "protocol": "FG_S3_V2_PREPARED_V1",
+  "status": "PREPARED_NO_TRAINING",
+  "oracle_identity": "f3150bff131748698521262e216e90f1d68662af94396587aefd6c765efdc2bc",
+  "resolved_composition": {
+    "encoder": "legacy_1m",
+    "teaching": "quality_v2",
+    "base_oracle_bc": true,
+    "use_e": false,
+    "use_tutor": false,
+    "use_b2": false,
+    "legacy_mode": "quality_v2",
+    "support_state": "ready",
+    "schema_version": 1
+  },
+  "versions": {
+    "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env": "c31ed89c3b3100fc46e37459dd909b692e1b417f",
+    "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3": "6403cd68fdcc4e61f9036a7d06f30ac7a4448312"
+  },
+  "source_update_offset": 0,
+  "source_model_updates": 0,
+  "clock_protocol": "S3_MARKET_MINUTE",
+  "new_environment_steps": 0,
+  "training_identity": {
+    "candidate": "C1",
+    "pool": "QUALITY_TRAIN",
+    "teacher_source_kind": "quality_native_train",
+    "training_hash": "fad51e10e79937394f341d18e1fa5459ceb642bf5ccc44fdc4be70a0f35c26bb",
+    "dataset_sha256": "d6a3fa1f03e7055baeb0f40753e7d80af5bc4cf4a577aadb7f5d30c9c49e40f5",
+    "reward_params_hash": "6a44ade43ea7168318c479ac2b17f1058590259f33ef463035d3ece2f20cca8c",
+    "observation_identity": "a4a205df98c611f282b782b0355729bf35a347afb325c75d9b008d0a2fa413d6"
+  },
+  "diagnostic": true,
+  "budget_unit": "environment_advances",
+  "formal_1m": "NOT_RUN",
+  "calibration_status": "NOT_CALIBRATED",
+  "q_fusion_status": "FULL_Q_PENDING",
+  "content_hash": "d7f4cc63284c616cbe743a59955c894c8d107ae31701ddb99a8c4ceaeb9dcd8d"
+}

@@ -1,0 +1,17 @@
+.................................F................                       [100%]
+=================================== FAILURES ===================================
+_______ test_acceptance_bounds_cannot_enable_formal_or_combined_teaching _______
+
+    def test_acceptance_bounds_cannot_enable_formal_or_combined_teaching():
+        s=settings();validate_settings(s)
+        for key,value in [('scope','formal'),('env_steps',1000000),('updates_per_collect',1001),
+                          ('model_init',dict(seed=0,presets=['size1m'])),('device','gpu')]:
+            bad={**s,key:value}
+            with pytest.raises((ValueError,KeyError)):validate_settings(bad)
+        bad=copy.deepcopy(s);bad['resolved_composition']['support_state']='ready'
+>       with pytest.raises(ValueError,match='IDENTITY_MISMATCH'):validate_settings(bad)
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_fg_s3_e_admission.py:28: Failed
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_fg_s3_e_admission.py::test_acceptance_bounds_cannot_enable_formal_or_combined_teaching

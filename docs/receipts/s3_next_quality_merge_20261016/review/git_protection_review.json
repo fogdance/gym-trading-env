@@ -1,0 +1,26 @@
+{
+  "gym-trading-env": {
+    "changed_refs": {
+      "refs/heads/integration/s3-next": [
+        "d05b50c990fe472be711a93531f4d9ce4b1fe186",
+        "bcf6e792e878cceef4667b101a3e9ef56e22f14d"
+      ]
+    },
+    "all_other_branch_and_tag_refs_unchanged": true,
+    "target_parent_is_ancestor": true,
+    "reviewed_feature_head_is_ancestor": true,
+    "status": ""
+  },
+  "dreamerv3": {
+    "changed_refs": {
+      "refs/heads/integration/s3-next": [
+        "13f03938686a34b8f641c698da3198fb2d74b6cd",
+        "6403cd68fdcc4e61f9036a7d06f30ac7a4448312"
+      ]
+    },
+    "all_other_branch_and_tag_refs_unchanged": true,
+    "target_parent_is_ancestor": true,
+    "reviewed_feature_head_is_ancestor": true,
+    "status": ""
+  }
+}

@@ -1,0 +1,865 @@
+{
+  "schema": "S3_DUAL_REPO_BASELINE_V1",
+  "baseline": "integration/s3-next",
+  "status": "ACCEPTED_CONFIG_CPU_PREPARATION",
+  "created_at": "2026-10-14T11:52:42.490896+00:00",
+  "repositories": {
+    "gym-trading-env": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "sha": "c3a808437ef277ee87f25b0ae8803e31fa5dca74",
+      "branch": "integration/s3-next",
+      "dirty": false,
+      "start_sha": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+      "main_sha_unchanged": "1eef479b7c3a2fafc8c9c792f874a671c8fc2b4a",
+      "changes_from_start": [
+        "configs/experiments/fg_s3_v2/F0_A2_LEGACY_1K.yaml",
+        "configs/experiments/fg_s3_v2/F0_B2_LEGACY_1K.yaml",
+        "configs/experiments/fg_s3_v2/F0_TUTOR_LEGACY_1K.yaml",
+        "configs/experiments/fg_s3_v2/README.md",
+        "configs/experiments/fg_s3_v2/TUTOR_CD_800K_FG701_SHORT.yaml",
+        "configs/experiments/fg_s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/e_multiscale_1m15m__a2.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/e_multiscale_1m15m__b2.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/e_multiscale_1m15m__tutor_cd.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/e_multiscale_1m15m__tutor_cd_b2.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/legacy_1m__a2.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/legacy_1m__b2.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/legacy_1m__tutor_cd.yaml",
+        "configs/experiments/fg_s3_v2/composition_fragments/legacy_1m__tutor_cd_b2.yaml",
+        "docs/S3_ARCHIVE_V1_README.md",
+        "docs/S3_ARCHIVE_V1_SOURCE_FACTS.md",
+        "docs/S3_ARCHIVE_V1_TEST_REPORT.md",
+        "docs/S3_COLLECTION_PERFORMANCE_20261014.md",
+        "docs/S3_F0_COMPOSITION_IMPLEMENTATION.md",
+        "docs/S3_GIT_WORKFLOW.md",
+        "docs/S3_NEXT_ARCHIVE_INTEGRATION_REPORT.md",
+        "docs/S3_NEXT_COLLECTION_PERFORMANCE_INTEGRATION_REPORT.md",
+        "docs/S3_NEXT_F0_INTEGRATION_REPORT.md",
+        "docs/S3_NEXT_INTEGRATION_REPORT.md",
+        "docs/S3_NEXT_LIVE_INTEGRATION_REPORT.md",
+        "docs/S3_Research_Archive_Standard_V1_20261014.md",
+        "docs/S3_TUTOR_FULL_1M_PREPARATION.md",
+        "docs/TUTOR_CD_CONFIG_COMPARISON.md",
+        "docs/diagnostics/S3_B2_GPU_DIAGNOSTIC_20261014.md",
+        "docs/diagnostics/s3-b2-cycle-diagnostic-20261014.json",
+        "docs/diagnostics/s3-b2-gpu-diagnostic-20261014.json",
+        "requirements-archive.txt",
+        "research_tracking/composition.py",
+        "research_tracking/evals.py",
+        "research_tracking/identity.py",
+        "research_tracking/milestones.py",
+        "research_tracking/redaction.py",
+        "research_tracking/tests/test_composition.py",
+        "research_tracking/tests/test_tracker.py",
+        "s3_archive/__init__.py",
+        "s3_archive/archive.py",
+        "s3_archive/inspection.py",
+        "s3_archive/io.py",
+        "s3_archive/isolation.py",
+        "s3_archive/publication.py",
+        "s3_archive/source.py",
+        "s3_archive/tests/__init__.py",
+        "s3_archive/tests/test_archive.py",
+        "s3_archive/validation_worker.py",
+        "s3_archive/verification.py",
+        "src/gym_trading_env/envs/entry_dataset_env.py",
+        "src/gym_trading_env/envs/entry_env.py",
+        "src/gym_trading_env/envs/entry_market_cache.py",
+        "src/gym_trading_env/research/fg_s3_online_monitor.py",
+        "src/gym_trading_env/research/fg_s3_online_simulation.py",
+        "src/gym_trading_env/research/fg_s3_oracle_state_query.py",
+        "src/gym_trading_env/research/fg_s3_reader_compat.py",
+        "src/gym_trading_env/research/fg_s3_v2_evaluation.py",
+        "src/gym_trading_env/research/fg_s3_v2_experiment.py",
+        "src/gym_trading_env/utils/bar_source.py",
+        "tests/entry_v1/test_entry_market_cache.py",
+        "tests/entry_v1/test_fg_abcd.py",
+        "tests/entry_v1/test_fg_s3_online_monitor.py",
+        "tests/entry_v1/test_fg_s3_online_simulation.py",
+        "tests/entry_v1/test_fg_s3_v2_pool.py",
+        "tests/entry_v1/test_s3_collection_benchmark.py",
+        "tests/entry_v1/test_s3_composition.py",
+        "tools/benchmark_s3_collection.py",
+        "tools/fg_s3_v2_experiment.py",
+        "tools/s3_archive.py"
+      ]
+    },
+    "dreamerv3": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+      "branch": "integration/s3-next",
+      "dirty": false,
+      "start_sha": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76",
+      "main_sha_unchanged": "e01491fad6434b2245a3b8ca201dd7faedcc458c",
+      "changes_from_start": [
+        "docs/S3_GIT_WORKFLOW.md",
+        "dreamerv3/fg_s3_composition.py",
+        "dreamerv3/fg_s3_v2_agent.py",
+        "embodied/run/fg_s3_source_admission.py",
+        "embodied/run/fg_s3_source_transfer.py",
+        "embodied/run/fg_s3_v2_train.py",
+        "embodied/tests/test_fg_s3_b2.py",
+        "embodied/tests/test_s3_composition.py"
+      ]
+    }
+  },
+  "capabilities": [
+    "a2_oracle_bc",
+    "tutor_natural_balanced_pair_e2",
+    "b2_outcome_adapter_100_100_100",
+    "s3_market_minute",
+    "native_replay_dagger_full_checkpoint",
+    "wandb_tracking",
+    "research_archive_v1",
+    "validated_market_cache_rotation",
+    "frozen_tutor_800k_live_db_single3_rpc",
+    "composition_f0_versioned_identity",
+    "reviewed_reader_parameter_and_oracle_admission"
+  ],
+  "wandb": {
+    "sdk_environment": "/home/v/Documents/work/research/fg-s3-wandb-env",
+    "sdk_version": "0.19.1",
+    "project": "fg-single3-research",
+    "entry": "gym-trading-env/tools/fg_s3_wandb.py",
+    "tracking_source_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+    "original_branch_gym_sha": "ad6490675bf853a7793763f95aa7ba7f12fa379e",
+    "original_branch_dreamer_sha": "d76a423dd7930756c3609cc6f7197941f583c160",
+    "default_proxy": "http://127.0.0.1:10808",
+    "second_tracker_created": false,
+    "online_test": "NOT_RUN"
+  },
+  "not_run": [
+    "GPU training or new isolated model evaluation/resume smoke",
+    "formal training",
+    "online W&B cloud writes",
+    "C2 and other historical branch integration",
+    "E development",
+    "Tutor+B2 joint teaching",
+    "GPU throughput or GPU utilization of the optimized source",
+    "18-contract real-data long-running performance benchmark",
+    "Live RPC sends and broker-fill reconciliation on integrated source",
+    "GPU policy inference on integrated source",
+    "Fresh numerical/model/FullCheckpoint training tests on integration worktree; verified identical F0 source evidence is inherited"
+  ],
+  "acceptance_scope": "9 CPU console tests and 11 existing live/CLI contracts; merged source equals tested source. Live monitor uses repository shared entry; training and model processes untouched. Tutor configuration comparison uses actual frozen settings and runtime evidence.",
+  "updated_at": "2026-10-14T21:29:35.241282+00:00",
+  "previous_baseline": {
+    "lock": "validation/console_integration_20261015/baseline-before.json",
+    "sha256": "9ca22d5710c8bf5c47252b869bc2581a2731f547489904ca775f76201285f0e5",
+    "repositories": {
+      "gym-trading-env": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+      "dreamerv3": "eb63de710fd693fad7ac76f797f3d9f39e331b98"
+    }
+  },
+  "inherited_evidence": {
+    "acceptance_scope": "Real CPU small-model gradients and restore; controlled Env/Oracle/Replay contracts; Mock and real Offline SDK; real Tutor/B2 artifact read-only identity/hash checks and temporary L1 copies. No new GPU L2/L3 or trading-quality acceptance.",
+    "tests": [
+      {
+        "name": "archive_tracking_cpu_mock_offline",
+        "command": "env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= /home/v/Documents/work/research/fg-s3-wandb-env/bin/python -m unittest s3_archive.tests.test_archive research_tracking.tests.test_tracker research_tracking.tests.test_eval_v2 research_tracking.tests.test_prediction_evals -v",
+        "cwd": "/home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env",
+        "exit_code": 0,
+        "passed": 48,
+        "skipped": 0,
+        "log": "validation/archive_v1/archive_tracking_host.log",
+        "host_authorization": "approved; real Offline SDK local IPC only; no cloud upload",
+        "log_sha256": "5c9c0b696e4fef504c87f7ed21419a45fba1cba0eed6b3eb8e824cc1c80045c4"
+      },
+      {
+        "name": "cpu_models_checkpoint",
+        "command": "env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu MPLCONFIGDIR=/tmp/s3_archive_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest ../dreamerv3/embodied/tests/test_fg_s3_b2.py ../dreamerv3/embodied/tests/test_fg_s3_tutor_full.py ../dreamerv3/embodied/tests/test_fg_full_checkpoint.py -q",
+        "cwd": "/home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env",
+        "exit_code": 0,
+        "passed": 20,
+        "skipped": 0,
+        "log": "validation/archive_v1/models_checkpoint.log",
+        "log_sha256": "b511b2b8419456b2a1d7d1d47e1fb655ed371ce9e61b567b9883a833e25e99a5"
+      },
+      {
+        "name": "public_contracts",
+        "command": "env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu MPLCONFIGDIR=/tmp/s3_archive_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest tests/entry_v1/test_s3_market_minute.py tests/entry_v1/test_fg_s3_b2_outcome.py tests/entry_v1/test_fg_s3_tutor_cd.py tests/entry_v1/test_fg_s3_tutor_e2.py tests/entry_v1/test_fg_s3_v2_pool.py tests/entry_v1/test_fg_s3_v2.py -k 'not small_cpu and not real_native and not actual_gpu and not real_original and not real_gpu' -q",
+        "cwd": "/home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env",
+        "exit_code": 0,
+        "passed": 44,
+        "skipped": 1,
+        "log": "validation/archive_v1/contracts.log",
+        "skip_reason": "Needs the completed actual GPU E2 10K start/exit/resume run; receipt absent from temporary worktree",
+        "log_sha256": "40bf32f55756654b5d3dab3ad1e09a2ddba1343416e99241f221804d7fc0a3e7"
+      }
+    ],
+    "test_totals": {
+      "passed": 112,
+      "skipped": 1,
+      "failed_final": 0,
+      "archive_tests": 26,
+      "tracking_tests": 22,
+      "model_tests": 20,
+      "contract_tests": 44
+    },
+    "archive": {
+      "source_branch": "feat/fg-s3-research-archive",
+      "source_sha": "b7d5edb30d1dcb2f2d845593a4cef498d923536d",
+      "integration_commit": "e7df18931bbb384282d602de8009208ca33d1de1",
+      "source_is_ancestor": true,
+      "temporary_branch": "feat/s3-next-archive-integration",
+      "temporary_worktree": "/home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env",
+      "temporary_dreamer_worktree": "/home/v/Documents/work/research/fg-s3-next-archive-integration/dreamerv3",
+      "entry": "gym-trading-env/tools/s3_archive.py",
+      "model_validation_this_task": "NOT_RUN",
+      "online_publication_this_task": "NOT_RUN",
+      "existing_tutor_archive_read_only_files_verified": 7542,
+      "temporary_archives": {
+        "tutor": {
+          "path": "/tmp/s3_archive_integration_tutor/s3-tutor-cd-800000-735fe1b4e482",
+          "achieved_level": "EVIDENCE",
+          "publication": "PENDING_OFFLINE"
+        },
+        "b2": {
+          "path": "/tmp/s3_archive_integration_b2/s3-b2-200000-c822c0959ad0",
+          "achieved_level": "EVIDENCE"
+        }
+      },
+      "real_sources": {
+        "tutor_800k": {
+          "checkpoint_manifest_sha256": "5cf093b56ca3bb340cca9520b5579105b1cecc9f044262d5a23d17c545c6a474",
+          "eval_receipt_sha256": "b1665c584aedbd7629494a0fd5ad68fe6e52d1649a03de602687d583530e05f9",
+          "ready": true,
+          "missing": [],
+          "wandb_mapping": {
+            "tracker_dir": "/data/logdir/fg_single3/experiment_tracking/3dc57d410d9b50601120",
+            "entity": "xkm104501-none",
+            "train_id": "3dc57d410d9b50601120",
+            "eval_id": "9832f27f1b038b84fb58"
+          }
+        },
+        "b2_200k": {
+          "checkpoint_manifest_sha256": "b0a67e6ff61df3c56cf1ee904e038f1b0ce00c50fe0e9decb587fbf3b70f0eaf",
+          "eval_receipt_sha256": "13c5fbf61bc4e0ba7607961ee5b7602c93b2f733bf9a7853eb25abd3166aadc1",
+          "ready": true,
+          "missing": [],
+          "wandb_mapping": {
+            "tracker_dir": "/data/logdir/fg_single3/experiment_tracking/de770b0df7f952eb0aeb",
+            "entity": "xkm104501-none",
+            "train_id": "de770b0df7f952eb0aeb",
+            "eval_id": "0409dbc8f221ee65a3f8"
+          }
+        }
+      },
+      "conflict_resolution": [
+        "retain S3_EVAL_METRIC_V2; add Archive entry-count and trade-history reconciliation",
+        "retain current sdk_worker metadata and proxy implementation unchanged"
+      ],
+      "direct_fixes": [
+        "V2 duplicate attribution deduplication in archive verification",
+        "inspect JSON output isolation protects Prepared and Eval"
+      ],
+      "trainer_source_diff": [],
+      "dreamer_source_diff": []
+    },
+    "config_import": {
+      "status": "PASS_CPU_CONFIG_AND_IMPORT_CHECK",
+      "receipt": "validation/archive_v1/config_import.json",
+      "sha256": "31bf7fafd2702b132efde52d11bafdfe0d5920dc97d81633132e4af13b8522b9",
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "numpy": "1.26.4",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3"
+      },
+      "command_file": "validation/archive_v1/config_import_command.txt",
+      "command_sha256": "a3529b9cdda1ac7b281a106734226f714a109ec63bbf1293a21fe7cecbdb2ad5",
+      "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env"
+    },
+    "note": "Historical checks are preserved in the previous lock; not counted as tests rerun for this merge.",
+    "before_live_integration": {
+      "acceptance_scope": "Merged collection performance changes: 90 real CPU unit/public-contract tests; 48 Archive/W&B Mock/Offline regressions; merged core source hashes match the previously executed two-contract real TRAIN benchmark. Historical model tests are inherited evidence, not rerun.",
+      "test_totals": {
+        "passed": 138,
+        "skipped": 0,
+        "failed_final": 0,
+        "collection_tests": 90,
+        "archive_tracking_tests": 48
+      },
+      "tests": [
+        {
+          "suite": "collection",
+          "command": [
+            "/home/v/miniconda3/envs/dreamerv3/bin/python",
+            "-m",
+            "pytest",
+            "tests/entry_v1/test_entry_market_cache.py",
+            "tests/entry_v1/test_s3_collection_benchmark.py",
+            "tests/entry_v1/test_fg_abcd.py",
+            "tests/entry_v1/test_fg_s3_v2_pool.py",
+            "tests/entry_v1/test_entry_contract.py",
+            "tests/entry_v1/test_fg_single3_env.py",
+            "tests/entry_v1/test_s3_market_minute.py",
+            "tests/unit/test_futures_sessions.py",
+            "tests/unit/test_build_market_fx_features.py",
+            "-rA",
+            "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/validation/collection_perf_20261014/collection.xml"
+          ],
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "gym_sha": "03a72b91958c4de9cb5f98c4a8444e8df6c6d8e3",
+          "started_at": "2026-10-14T12:55:07.529879+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 45.01274152001133,
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/collection_perf_20261014/collection.log",
+          "log_sha256": "f615326b6d7ccffa645479f809b772ed9c27fbe3ddcc4cea23b4422852fcfd07",
+          "gpu_visible": false,
+          "official_training_started": false,
+          "name": "collection_performance_public_contracts",
+          "passed": 90,
+          "skipped": 0,
+          "validation_scope": "CPU only; no model GPU, official training or online W&B writes"
+        },
+        {
+          "suite": "archive_tracking",
+          "command": [
+            "/home/v/Documents/work/research/fg-s3-wandb-env/bin/python",
+            "-m",
+            "unittest",
+            "s3_archive.tests.test_archive",
+            "research_tracking.tests.test_tracker",
+            "research_tracking.tests.test_eval_v2",
+            "research_tracking.tests.test_prediction_evals",
+            "-v"
+          ],
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "gym_sha": "03a72b91958c4de9cb5f98c4a8444e8df6c6d8e3",
+          "started_at": "2026-10-14T12:55:08.175406+00:00",
+          "exit_code": 0,
+          "elapsed_seconds": 21.454348555998877,
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/collection_perf_20261014/archive_tracking.log",
+          "log_sha256": "0d00bfaa8927e71a1eebe855b96c72cf7f0ba855c380a61d137cd6a9b7c8dc0c",
+          "gpu_visible": false,
+          "official_training_started": false,
+          "name": "archive_tracking_cpu_mock_offline",
+          "passed": 48,
+          "skipped": 0,
+          "validation_scope": "CPU only; no model GPU, official training or online W&B writes"
+        }
+      ],
+      "baseline_lock": {
+        "lock": "validation/live_integration_20261014_2114/baseline-before.json",
+        "lock_sha256": "c487da8d0deb0b2bffe11d90c81ab4e363ae623328640a59cb9907b3d5fe6b6e",
+        "content_hash": "6838c9eb5df53238aeb895dd68ec5c16be91be35418a8064047edb945fb03fa2",
+        "repositories": {
+          "gym-trading-env": "ee03bdd76cdae7d5d46c2fd51286172412d45d68",
+          "dreamerv3": "d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d"
+        }
+      }
+    },
+    "before_f0_integration": {
+      "acceptance_scope": "Tutor 800K LIVE merge: 6 online simulation and 46 shared-contract CPU tests; mock feed/Actor/RPC and shared CLI help. Earlier Archive/performance/model results are inherited evidence, not rerun. No live RPC or broker-fill validation performed.",
+      "tests": [
+        {
+          "name": "online_simulation",
+          "passed": 6,
+          "skipped": 0,
+          "failed": 0,
+          "exit_code": 0,
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "gym_sha": "4a78feb7f0187752742a512de6d39f47b6ab9f3f",
+          "dreamer_sha": "d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d",
+          "source_files_sha256": {
+            "configs/experiments/fg_s3_v2/README.md": "6b77a5c0609767db31f7182f41a17ba21ab474cfdccc6a96d434aa867c2313a4",
+            "configs/experiments/fg_s3_v2/TUTOR_CD_800K_FG701_SHORT.yaml": "e76d1c150238841e5ec639334b50cf4f4f7e5f16e816a4811253870c20b7179a",
+            "src/gym_trading_env/research/fg_s3_online_simulation.py": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e",
+            "src/gym_trading_env/utils/bar_source.py": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667",
+            "tests/entry_v1/test_fg_s3_online_simulation.py": "957ba56d51a772504cfbb1df7e36bc62b745aa1ae82049c53ce297389cb7bf1f",
+            "tools/fg_s3_v2_experiment.py": "5b335a429ce6e1209f01077e3224ddbb3f282160ac9f8f1516751c4d5ec82611"
+          },
+          "environment": {
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "CUDA_VISIBLE_DEVICES": "",
+            "JAX_PLATFORMS": "cpu",
+            "MPLCONFIGDIR": "/tmp/s3_next_live_mpl",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONPATH": "src:../dreamerv3"
+          },
+          "started_at": "2026-10-14T21:14:00.548542+08:00",
+          "pytest_elapsed_seconds": 6.193,
+          "command": [
+            "/home/v/miniconda3/envs/dreamerv3/bin/python",
+            "-m",
+            "pytest",
+            "tests/entry_v1/test_fg_s3_online_simulation.py",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "--basetemp=/tmp/s3_next_live_targeted_20261014",
+            "--junitxml=/tmp/s3_next_live_targeted_20261014.xml"
+          ],
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/live_integration_20261014_2114/online_simulation.log",
+          "log_sha256": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+          "gpu_visible": false,
+          "official_training_started": false,
+          "validation_scope": "CPU, mocked feed/Actor/RPC; no live orders"
+        },
+        {
+          "name": "shared_contracts",
+          "passed": 46,
+          "skipped": 0,
+          "failed": 0,
+          "exit_code": 0,
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "gym_sha": "4a78feb7f0187752742a512de6d39f47b6ab9f3f",
+          "dreamer_sha": "d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d",
+          "source_files_sha256": {
+            "configs/experiments/fg_s3_v2/README.md": "6b77a5c0609767db31f7182f41a17ba21ab474cfdccc6a96d434aa867c2313a4",
+            "configs/experiments/fg_s3_v2/TUTOR_CD_800K_FG701_SHORT.yaml": "e76d1c150238841e5ec639334b50cf4f4f7e5f16e816a4811253870c20b7179a",
+            "src/gym_trading_env/research/fg_s3_online_simulation.py": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e",
+            "src/gym_trading_env/utils/bar_source.py": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667",
+            "tests/entry_v1/test_fg_s3_online_simulation.py": "957ba56d51a772504cfbb1df7e36bc62b745aa1ae82049c53ce297389cb7bf1f",
+            "tools/fg_s3_v2_experiment.py": "5b335a429ce6e1209f01077e3224ddbb3f282160ac9f8f1516751c4d5ec82611"
+          },
+          "environment": {
+            "PYTHONDONTWRITEBYTECODE": "1",
+            "CUDA_VISIBLE_DEVICES": "",
+            "JAX_PLATFORMS": "cpu",
+            "MPLCONFIGDIR": "/tmp/s3_next_live_mpl",
+            "OMP_NUM_THREADS": "1",
+            "OPENBLAS_NUM_THREADS": "1",
+            "PYTHONPATH": "src:../dreamerv3"
+          },
+          "started_at": "2026-10-14T21:15:26.517996+08:00",
+          "pytest_elapsed_seconds": 33.426,
+          "command": [
+            "/home/v/miniconda3/envs/dreamerv3/bin/python",
+            "-m",
+            "pytest",
+            "tests/entry_v1/test_entry_market_cache.py",
+            "tests/entry_v1/test_s3_market_minute.py",
+            "tests/entry_v1/test_fg_s3_v2_pool.py",
+            "tests/entry_v1/test_fg_single3_env.py",
+            "tests/unit/test_rpc_payload_contract.py",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "--basetemp=/tmp/s3_next_live_contracts_20261014",
+            "--junitxml=/tmp/s3_next_live_contracts_20261014.xml"
+          ],
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/live_integration_20261014_2114/shared_contracts.log",
+          "log_sha256": "2fdbfd8ca4b1f03517583a95c9d797258bdf9116d64cf90fbdaa175b61869611",
+          "gpu_visible": false,
+          "official_training_started": false,
+          "validation_scope": "CPU, mocked feed/Actor/RPC; no live orders"
+        }
+      ],
+      "test_totals": {
+        "passed": 52,
+        "skipped": 0,
+        "failed_final": 0
+      },
+      "not_run": [
+        "GPU training or new isolated model evaluation/resume smoke",
+        "formal training",
+        "online W&B cloud writes",
+        "C2 and other historical branch integration",
+        "Composition F0",
+        "E development",
+        "Tutor+B2 joint teaching",
+        "GPU throughput or GPU utilization of the optimized source",
+        "New FullCheckpoint model restore acceptance on the merged source",
+        "18-contract real-data long-running performance benchmark",
+        "Live RPC sends and broker-fill reconciliation on integrated source",
+        "GPU policy inference on integrated source"
+      ],
+      "baseline_lock_sha256": "81bf4bf8d7498430a1775914387673186623441b8186a522ccb9688a9082e81c"
+    },
+    "before_tutor_full_1m_preparation": {
+      "acceptance_scope": "F0 conflict-free merge: exact feature Git trees; 36 CPU composition/identity and 1 W&B metadata tests rerun in integration. Prior actual CPU numerical/FullCheckpoint and clean real TRAIN preparation evidence inherited, not rerun. No GPU or cloud writes.",
+      "tests": [
+        {
+          "name": "f0_composition_contracts",
+          "passed": 36,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0,
+          "command": "env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= JAX_PLATFORMS=cpu MPLCONFIGDIR=/tmp/s3_f0_merge_mpl OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=src:../dreamerv3 /home/v/miniconda3/envs/dreamerv3/bin/python -m pytest tests/entry_v1/test_s3_composition.py -q -o addopts='' --junitxml=/home/v/Documents/work/research/fg-s3-next-integration/validation/f0_merge_20261014_225630/composition.xml",
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/f0_merge_20261014_225630/composition.log",
+          "log_sha256": "4035fb324f7eca56c48f7c6bf30ac313465aa15e5409796b093d08a51987a5e6",
+          "validation_scope": "CPU composition/identity/fail-closed; no GPU/model training"
+        },
+        {
+          "name": "wandb_composition_identity",
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "exit_code": 0,
+          "command": "env PYTHONDONTWRITEBYTECODE=1 CUDA_VISIBLE_DEVICES= /home/v/Documents/work/research/fg-s3-wandb-env/bin/python -m unittest research_tracking.tests.test_composition -v",
+          "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "log": "/home/v/Documents/work/research/fg-s3-next-integration/validation/f0_merge_20261014_225630/tracking_composition.log",
+          "log_sha256": "fece1bb1d2d6716c2451beb2c39cd417735a2c8246c831ace20746af31e58957",
+          "validation_scope": "CPU synthetic signed metadata; no online W&B"
+        }
+      ],
+      "test_totals": {
+        "passed": 37,
+        "skipped": 0,
+        "failed_final": 0
+      },
+      "not_run": [
+        "GPU training or new isolated model evaluation/resume smoke",
+        "formal training",
+        "online W&B cloud writes",
+        "C2 and other historical branch integration",
+        "E development",
+        "Tutor+B2 joint teaching",
+        "GPU throughput or GPU utilization of the optimized source",
+        "18-contract real-data long-running performance benchmark",
+        "Live RPC sends and broker-fill reconciliation on integrated source",
+        "GPU policy inference on integrated source",
+        "Fresh numerical/model/FullCheckpoint training tests on integration worktree; verified identical F0 source evidence is inherited"
+      ]
+    },
+    "before_console_integration": {
+      "tests": [
+        {
+          "name": "Tutor Full official config resolver and 18-contract prepare",
+          "verification": {
+            "status": "PASS_CONFIG_AND_REAL_CPU_PREPARATION",
+            "source_branch": "integration/s3-next",
+            "source_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+            "dreamer_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+            "configuration_types_composition_budget": "PASS",
+            "exact_resolved_candidate_parameters": "PASS",
+            "real_18_contract_cpu_admission": "PASS",
+            "new_model_or_gpu_tests": "NOT_RUN",
+            "formal_1m": "NOT_RUN",
+            "prepared_manifest_sha256": "9711a1b03a9f202363c835ed110261810a18ec0d91bbd54a0e5a58de7afbca47",
+            "training_lock": "/home/v/Documents/work/research/fg-s3-tutor-full-train/training-lock.json",
+            "training_lock_sha256": "240ef11f7cc4bde3326ff3de1c46767a4f796931cae25c6fd3596a1e9c63e3ca",
+            "prepare_log": "/home/v/Documents/work/research/fg-s3-tutor-full-train/validation/prepare.log",
+            "prepare_log_sha256": "d628278f27f6657b790d0ed5f3190e9decaea076098fe2e7df1f0580d1da5eae",
+            "loss": "L_WM + 1.0*(0.8*Natural_BC + 0.2*E2_Balanced_BC) + 0.1*Pair_Ranking",
+            "beta_schedule": null,
+            "no_original_run_modified": true,
+            "wandb_upload": "formal training only; --no-evals"
+          }
+        }
+      ],
+      "test_totals": {
+        "new_unit_tests": 0,
+        "cpu_preparation_passed": 1,
+        "gpu_tests": 0,
+        "formal_training_started": false,
+        "note": "Earlier 37 integration tests and F0 model tests are inherited evidence, not counted as rerun"
+      },
+      "acceptance_scope": "Tutor Full formal config-only addition: actual resolved composition/types/1M budget plus completed 18-contract real CPU preparation in clean frozen worktrees. All trainer/model source bytes unchanged from accepted F0 integration; numerical/GPU tests not rerun."
+    }
+  },
+  "collection_performance": {
+    "source_commit": "c14fcdc257d84f2c9859030859898baff71b8bd0",
+    "merge_commit": "03a72b91958c4de9cb5f98c4a8444e8df6c6d8e3",
+    "final_documentation_commit": "ee03bdd76cdae7d5d46c2fd51286172412d45d68",
+    "source_branch": "perf/s3-env-rotation",
+    "benchmark_report": "/home/v/Documents/work/research/fg-s3-collection-perf-dev/gym-trading-env/artifacts/fg_s3_v2/collection_perf_20261014/report.json",
+    "benchmark_report_sha256": "60e42b566e6a6c77f3e8f3304f11052f2e85fccc137872d283917aca9e815c3b",
+    "scope": "Process-local validated market cache and removal of discarded legacy feature construction; financial semantics unchanged."
+  },
+  "tests": [
+    {
+      "name": "monitor",
+      "passed": 9,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "tests/entry_v1/test_fg_s3_online_monitor.py",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/tmp/s3-online-console-integration/monitor.xml"
+      ],
+      "cwd": "/tmp/s3-online-console-integration/gym-trading-env",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "JAX_PLATFORMS": "cpu",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "PYTHONPATH": "src:../dreamerv3"
+      },
+      "junit": "validation/console_integration_20261015/monitor.xml"
+    },
+    {
+      "name": "shared_cli",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-m",
+        "pytest",
+        "tests/entry_v1/test_fg_s3_online_simulation.py",
+        "tests/entry_v1/test_s3_composition.py",
+        "-k",
+        "online or config_cli",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--junitxml=/tmp/s3-online-console-integration/shared_cli.xml"
+      ],
+      "cwd": "/tmp/s3-online-console-integration/gym-trading-env",
+      "environment": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "CUDA_VISIBLE_DEVICES": "",
+        "JAX_PLATFORMS": "cpu",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "PYTHONPATH": "src:../dreamerv3"
+      },
+      "junit": "validation/console_integration_20261015/shared_cli.xml"
+    }
+  ],
+  "test_totals": {
+    "passed": 20,
+    "skipped": 0,
+    "failed_final": 0
+  },
+  "protection": {
+    "status": "PASS",
+    "repositories": {
+      "gym-trading-env": {
+        "sha": "914989b2776a87e4a7715946e266bfa8573ee412",
+        "branch": "integration/s3-next",
+        "status": "clean",
+        "merge_sha": "01ccbd4b43b74c0308910a91dc99972931c030e0",
+        "feature_sha": "5ab3712a235d2dced57e049f447203903a9a3f4d",
+        "merged_tree_matches_feature": true,
+        "post_merge_changes": [
+          "docs/S3_GIT_WORKFLOW.md",
+          "docs/S3_NEXT_F0_INTEGRATION_REPORT.md"
+        ]
+      },
+      "dreamerv3": {
+        "sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+        "branch": "integration/s3-next",
+        "status": "clean",
+        "merge_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+        "feature_sha": "632a870d6c7de042f962c327cc984efb03aee2cf",
+        "merged_tree_matches_feature": true,
+        "post_merge_changes": []
+      }
+    },
+    "changed_protected_files": [],
+    "protected_files": 1191,
+    "protected_worktrees": 5,
+    "main_unchanged": true,
+    "feature_branches_unchanged": true,
+    "formal_training_started": false,
+    "GPU_used": false
+  },
+  "evidence": {
+    "validation/collection_perf_20261014/collection.xml": "fdc8c0d95acb71f661b899d9f27f238210985813f5f9bdf6d9e016438e2584b4",
+    "validation/collection_perf_20261014/protection.json": "5143b8c61daf91636ce6fad7549ceab8b406297891e15136bc2a9d25589d17de",
+    "validation/collection_perf_20261014/archive_tracking.log": "0d00bfaa8927e71a1eebe855b96c72cf7f0ba855c380a61d137cd6a9b7c8dc0c",
+    "validation/collection_perf_20261014/collection.json": "7e9c2d1c3210ffd71b525e0bc5aa1266e2a90d5d19a830a3c8f910c3af0517d1",
+    "validation/collection_perf_20261014/baseline-before.json": "64a94d4216ae1a5cc9e075bf8f44f8c419e502bb3bc757371352e5a13f7e8d6a",
+    "validation/collection_perf_20261014/collection.log": "f615326b6d7ccffa645479f809b772ed9c27fbe3ddcc4cea23b4422852fcfd07",
+    "validation/collection_perf_20261014/archive_tracking.json": "570fd026fedd0ed64546299215abe0a1c12390db089af0a6aa9432ca2aecebb5",
+    "validation/live_integration_20261014_2114/baseline-before.json": "c487da8d0deb0b2bffe11d90c81ab4e363ae623328640a59cb9907b3d5fe6b6e",
+    "validation/live_integration_20261014_2114/cli-help.log": "175e197bcaae70043e20d22e9e918bf5c1d43020e118c48738dc1627babfed13",
+    "validation/live_integration_20261014_2114/online_simulation.json": "a24ed67ee44d1b1cfcebee6699cbefcbd0719b5f69ede10d2c4cd55e9297ea1d",
+    "validation/live_integration_20261014_2114/online_simulation.log": "700bc0322b00f8e8db3ce495047983b54ab27ab59ed1fedac05f3aeba47dae24",
+    "validation/live_integration_20261014_2114/online_simulation.xml": "44c0f5863c5acfa8bc68582176b90851958bd6b79f920af839d737f36d8de00d",
+    "validation/live_integration_20261014_2114/shared_contracts.json": "ddb994e1e14ebebddd1d2f1398910772b30d6f5cb6262dae9d939bdb7c79fb83",
+    "validation/live_integration_20261014_2114/shared_contracts.log": "2fdbfd8ca4b1f03517583a95c9d797258bdf9116d64cf90fbdaa175b61869611",
+    "validation/live_integration_20261014_2114/shared_contracts.xml": "d250e4bcc804079c0cb5bb7bf410429e94e47321362cb0944b481d595f29dc95",
+    "validation/live_integration_20261014_2114/verification.json": "6ab450f8a6185d36655bdc240f76e4b51716004b6c916668e18affc2e5553a87",
+    "validation/f0_merge_20261014_225630/before.json": "2ff3314bb797a4f6ab30b9b8db26eb2ac4b85679a3fc50fae2d95c8c3b709614",
+    "validation/f0_merge_20261014_225630/verification.json": "811aac9b70beb38de4224d0d14e48f7cb92216500b899204c006a671244208d3",
+    "validation/f0_merge_20261014_225630/gym-trading-env-git-status.txt": "d6aa9a43113b32b204682934f770a3bff68edeaaabca15fa8f76c584e1261081",
+    "validation/f0_merge_20261014_225630/gym-trading-env-git-worktrees.txt": "509b214a9da867b9e731c8ec5c98090cd0267f038e65a8190c5583eacf079d21",
+    "validation/f0_merge_20261014_225630/composition.log": "4035fb324f7eca56c48f7c6bf30ac313465aa15e5409796b093d08a51987a5e6",
+    "validation/f0_merge_20261014_225630/tests.json": "64b296fec500bd35a9386528745649a20543cc7a942d7ba1974742445e933144",
+    "validation/f0_merge_20261014_225630/baseline-before.json": "81bf4bf8d7498430a1775914387673186623441b8186a522ccb9688a9082e81c",
+    "validation/f0_merge_20261014_225630/tracking_composition.log": "fece1bb1d2d6716c2451beb2c39cd417735a2c8246c831ace20746af31e58957",
+    "validation/f0_merge_20261014_225630/composition.xml": "b5a92cda3ba6d5d23e0f9ebb1170823032b9d49a94bc4fa46de974e132ee65fa",
+    "validation/f0_merge_20261014_225630/dreamerv3-git-branches.txt": "7272f043dd8305f405b692146223b221106627ac8d650f84a51e7e2c1d08bedd",
+    "validation/f0_merge_20261014_225630/dreamerv3-git-status.txt": "d6aa9a43113b32b204682934f770a3bff68edeaaabca15fa8f76c584e1261081",
+    "validation/f0_merge_20261014_225630/gym-trading-env-git-branches.txt": "d8fead38a338cf49d35295ef6c4e8accd84a793ef29b366305588713e4f64f44",
+    "validation/f0_merge_20261014_225630/dreamerv3-git-worktrees.txt": "3517c2f1751bdd2d7e900325ed11a84f91d4dd9d3c14eec59f97f0cf0ed3ddd9",
+    "validation/tutor_full_preparation_20261014_234236/verification.json": "11eea3f827c3e52bee6e577ddc894ba932fdc0b8631ea6b4d03671344908475f",
+    "validation/tutor_full_preparation_20261014_234236/baseline-before.json": "7bc41f578dd6a392b02490120c91d51424db19fd042c3273bdd798a3501060c3",
+    "validation/console_integration_20261015/monitor.xml": "10d4c751bcd69d0171c57e5482eb650230b82ef6eb8ddfb65bc85e7ed0cc58b8",
+    "validation/console_integration_20261015/monitor_state.json": "01fb3d35a01fff7f726cad2c0e316118185ef5cccfd8b4e53c03bce40c23a6b5",
+    "validation/console_integration_20261015/verification.json": "58360c8e521293f78951051b366e8b0abc0ff9f49c4e0cc74c3237ec916c2bac",
+    "validation/console_integration_20261015/baseline-before.json": "9ca22d5710c8bf5c47252b869bc2581a2731f547489904ca775f76201285f0e5",
+    "validation/console_integration_20261015/tutor_comparison.json": "d4df31a2f9dc8737d74966be2ec0113534857e134ffd1ff2255d776bfebcdd1f",
+    "validation/console_integration_20261015/shared_cli.xml": "881b572d98799ff6508d633f6fd466329cb58ad99d1b970a2f26e800d02629cc"
+  },
+  "inherited_protection_before_live": {
+    "merged_core_matches_real_data_benchmark": true,
+    "benchmark_report": "/home/v/Documents/work/research/fg-s3-collection-perf-dev/gym-trading-env/artifacts/fg_s3_v2/collection_perf_20261014/report.json",
+    "benchmark_report_sha256": "60e42b566e6a6c77f3e8f3304f11052f2e85fccc137872d283917aca9e815c3b",
+    "formal_B2_protected_files": 200,
+    "changed": [],
+    "formal_B2_versions": {
+      "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+      "/home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76"
+    },
+    "frozen_worktrees": {
+      "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env": {
+        "sha": "3970e6ec69f67fb2d02f30456a077ea5a31fd05d",
+        "status": ""
+      },
+      "/home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3": {
+        "sha": "5fd4ebdeb590fd8433338300bd82c7f2f520bf76",
+        "status": ""
+      }
+    },
+    "main_unchanged": true
+  },
+  "live_simulation": {
+    "merge_commit": "4a78feb7f0187752742a512de6d39f47b6ab9f3f",
+    "source_commit": "9eba965040b6660e6d4655712624353f90990999",
+    "contract": "CZCE.FG701",
+    "direction": "SHORT",
+    "monitoring_paused": true,
+    "source_live_run_restarted": false,
+    "integrated_source_live_rpc_verified": false,
+    "broker_fills_verified": false
+  },
+  "composition_f0": {
+    "schema": "FG_S3_V2_COMPOSITION_CONFIG_V1",
+    "normalized_schema_version": 1,
+    "source_branches": "feat/s3-f0-composition",
+    "source_shas": {
+      "gym-trading-env": "5ab3712a235d2dced57e049f447203903a9a3f4d",
+      "dreamerv3": "632a870d6c7de042f962c327cc984efb03aee2cf"
+    },
+    "merge_shas": {
+      "gym-trading-env": "01ccbd4b43b74c0308910a91dc99972931c030e0",
+      "dreamerv3": "eb63de710fd693fad7ac76f797f3d9f39e331b98"
+    },
+    "ready": [
+      "legacy_1m+a2",
+      "legacy_1m+tutor_cd",
+      "legacy_1m+b2"
+    ],
+    "waiting_e": [
+      "e_multiscale_1m15m+a2",
+      "e_multiscale_1m15m+tutor_cd",
+      "e_multiscale_1m15m+b2"
+    ],
+    "waiting_tutor_b2": [
+      "legacy_1m+tutor_cd_b2",
+      "e_multiscale_1m15m+tutor_cd_b2"
+    ],
+    "feature_baseline_lock": "/home/v/Documents/work/research/fg-s3-f0-dev/baseline-lock.json",
+    "feature_baseline_lock_sha256": "0c0fa63245c61fb21470fd6ca3e5fc4f40c098717a443677f3a16fae7c13472f",
+    "inherited_test_results": {
+      "reader_contracts_final": {
+        "tests": 48,
+        "passed": 48,
+        "failed": [],
+        "skipped": [],
+        "xml_sha256": "f0844f92e437023dcaf7a21e7e950b62c70541287117d3a9d1c7e910ddee7995",
+        "log_sha256": "6b75341a7b738ce42aa575ecafc648dfd39db0d01a528e219ee7a050f9a2296e"
+      },
+      "models_final": {
+        "tests": 3,
+        "passed": 3,
+        "failed": [],
+        "skipped": [],
+        "xml_sha256": "57e47f9b33c628bc259456848d7e2a5be5573c64e1e2fd0111f9714d367ceacc",
+        "log_sha256": "d3765cd3d324848bf0a6ded928257cebbe7150de3a81a84611ac19222e33dd06"
+      },
+      "models_regression": {
+        "tests": 24,
+        "passed": 24,
+        "failed": [],
+        "skipped": [],
+        "xml_sha256": "83744fb4a098efec839a138f49336e71def59b23e50478bb38bae34366d2533c",
+        "log_sha256": "5243c84385668598e616a9b7f779597582f5d4278592bf66ab282a4e4069374d"
+      },
+      "contracts": {
+        "tests": 79,
+        "passed": 79,
+        "failed": [],
+        "skipped": [],
+        "xml_sha256": "82b50d8a4ea514182b35cf55137c7f0cfc1228a3dc248ee7c7854faa83fa8d27",
+        "log_sha256": "06e4bf2b49aa881620a765c8679d09e5ab186db864c61401db616b502e690a26"
+      },
+      "source_transfer": {
+        "tests": 5,
+        "passed": 2,
+        "failed": [
+          "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+          "test_no_inference_source_and_frozen_snapshot",
+          "test_missing_baseline_requires_authenticated_features"
+        ],
+        "skipped": [],
+        "xml_sha256": "f0ccbf2fd3e914a81d8732c069ae73186c2751aa703d70a081f9c56f97359c13",
+        "log_sha256": "fbd35a53ff629aa720374ba386e34fb1f927070f4adf409de48df7faf4fc508c"
+      },
+      "source_transfer_baseline": {
+        "tests": 5,
+        "passed": 2,
+        "failed": [
+          "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+          "test_no_inference_source_and_frozen_snapshot",
+          "test_missing_baseline_requires_authenticated_features"
+        ],
+        "skipped": [],
+        "xml_sha256": "bc9b2bd0e8bd8bd9b6414f4f00cadbf063fc462aa38afef2363c7ea0bd23022a",
+        "log_sha256": "052eb3f98ec7175ef3fc5d67554dea49e93cf95667a89e1acc2d3fb1d61a8dd8"
+      }
+    },
+    "inherited_clean_cpu_preparation": "/home/v/Documents/work/research/fg-s3-f0-dev/validation/frozen_preparation.json",
+    "inherited_clean_cpu_preparation_sha256": "3c19b675f0b8150f99c33d1f6f7e3843145b3c4750739b5446a216097e8e541e",
+    "known_baseline_failures": {
+      "count": 3,
+      "reason": "Legacy source-transfer fixtures omit explicit S3_MARKET_MINUTE identity",
+      "same_cases_fail_in_unmodified_integration": true
+    },
+    "integration_report": "gym-trading-env/docs/S3_NEXT_F0_INTEGRATION_REPORT.md"
+  },
+  "tutor_full_1m_preparation": {
+    "status": "PASS_CONFIG_AND_REAL_CPU_PREPARATION",
+    "source_branch": "integration/s3-next",
+    "source_sha": "cc6ba78f3a2016eb280135f7730d0a1f68d4512e",
+    "dreamer_sha": "eb63de710fd693fad7ac76f797f3d9f39e331b98",
+    "configuration_types_composition_budget": "PASS",
+    "exact_resolved_candidate_parameters": "PASS",
+    "real_18_contract_cpu_admission": "PASS",
+    "new_model_or_gpu_tests": "NOT_RUN",
+    "formal_1m": "NOT_RUN",
+    "prepared_manifest_sha256": "9711a1b03a9f202363c835ed110261810a18ec0d91bbd54a0e5a58de7afbca47",
+    "training_lock": "/home/v/Documents/work/research/fg-s3-tutor-full-train/training-lock.json",
+    "training_lock_sha256": "240ef11f7cc4bde3326ff3de1c46767a4f796931cae25c6fd3596a1e9c63e3ca",
+    "prepare_log": "/home/v/Documents/work/research/fg-s3-tutor-full-train/validation/prepare.log",
+    "prepare_log_sha256": "d628278f27f6657b790d0ed5f3190e9decaea076098fe2e7df1f0580d1da5eae",
+    "loss": "L_WM + 1.0*(0.8*Natural_BC + 0.2*E2_Balanced_BC) + 0.1*Pair_Ranking",
+    "beta_schedule": null,
+    "no_original_run_modified": true,
+    "wandb_upload": "formal training only; --no-evals"
+  },
+  "console_monitor": {
+    "merge_commit": "c3a808437ef277ee87f25b0ae8803e31fa5dca74",
+    "source_branch": "fix/s3-online-console",
+    "source_commit": "8a8f2514cb6b1065a665dcfa50a063be43bb8832",
+    "verification": "validation/console_integration_20261015/verification.json",
+    "deployed_from": "integration/s3-next",
+    "monitor_pid": 748343,
+    "runner_pid": 45614
+  },
+  "tutor_configuration_comparison": {
+    "document": "docs/TUTOR_CD_CONFIG_COMPARISON.md",
+    "evidence": "validation/console_integration_20261015/tutor_comparison.json"
+  },
+  "content_hash": "2d96dd7cdda048003159f7458cd7347941fd59e4d5e7c9fa585fb16142cf1cf2"
+}
