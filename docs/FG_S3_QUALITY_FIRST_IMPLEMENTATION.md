@@ -6,6 +6,8 @@
 
 开发仓库为 `fg-s3-quality-v2-dev/{gym-trading-env,dreamerv3}`；源码始于 Gym `c3a808437ef277ee87f25b0ae8803e31fa5dca74` / Dreamer `eb63de710fd693fad7ac76f797f3d9f39e331b98`。最终提交及执行代码对应关系见验收收据索引。既有 Tutor-CD、Tutor-CD Full、B2 的训练工作树及工件未修改。
 
+源码提交为 Gym `f71124a45d52b80b862cf7f813f1491d8a901de7` / Dreamer `29ac494b6e3cdbd405a262f66dfcc4a040219ef2`。[源码绑定收据](receipts/quality_first_delivery/implementation_git_binding.json) 验证全部 210 个运行源码文件逐字节匹配。后续交付文档提交不改变运行源码；最终 HEAD 与运行源码绑定另在原 Run 的 `final_git_binding.json` 保存。
+
 ## Evidence observed
 
 ### 先验收附件，再开发 Catalog / Student

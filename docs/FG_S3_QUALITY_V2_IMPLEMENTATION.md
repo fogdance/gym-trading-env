@@ -6,8 +6,9 @@ and auxiliary-only training precedes Actor influence. This file retains the
 initial D0 audit; current evidence and limitations are recorded in
 [FG_S3_QUALITY_FIRST_IMPLEMENTATION.md](FG_S3_QUALITY_FIRST_IMPLEMENTATION.md).
 
-This document is a living implementation record. A completed section requires
-the linked command output or signed receipt; planned checks are not passes.
+This is the archived initial D0 audit. Reward, score and activation defaults
+below describe that initial review; the amendment above and the current
+Quality-first implementation record define the final behavior.
 
 ## D0 source audit (2026-10-15)
 
@@ -57,7 +58,9 @@ Frozen initialization candidate:
 
 ## Acceptance status
 
-D1–D7: IN_PROGRESS. GPU smoke / pilots / formal training: NOT_RUN and require
+At the end of this archived D0 audit, D1–D7 were IN_PROGRESS; see the current
+Quality-first receipt index for completed implementation and CPU verification.
+GPU smoke / pilots / formal training: NOT_RUN and require
 separate authorization. Calibration: NOT_CALIBRATED until a legitimate fixed
 TRAIN-only calibration split is supplied. E encoder is not part of this
 legacy_1m implementation acceptance.

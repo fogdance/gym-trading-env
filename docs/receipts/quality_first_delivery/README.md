@@ -4,6 +4,7 @@
 
 - [机器可读交付摘要](delivery_summary.json)：150 项测试、实际覆盖、低资金候选、梯度／参数变化、预测指标和未认证项。
 - [210 个运行源码文件的实际哈希](executed_source_match.json)：最终 CPU Run 与真实 1M 来源 CPU prepare 的代码逐一一致。最终 Git 绑定另在原运行的 `final_git_binding.json` 生成，交付 SHA 见最终答复。
+- [源码提交绑定](implementation_git_binding.json)：运行文件与 Gym `f71124a45d52b80b862cf7f813f1491d8a901de7` / Dreamer `29ac494b6e3cdbd405a262f66dfcc4a040219ef2` 逐字节相等；最终文档提交保留该源码。
 - [实施记录](../../FG_S3_QUALITY_FIRST_IMPLEMENTATION.md)、[回归根因与清单](../../FG_S3_QUALITY_REGRESSION_FIX.md)、[研究启动提案](../../FG_S3_QUALITY_FIRST_RESEARCH_LAUNCH_PLAN.md)。
 
 ## 测试

@@ -14,7 +14,7 @@
 - [x] 共享 prepare／start／resume／evaluate、SourceAdmission、FullCheckpoint 与共用 Tracker 接线。
 - [x] CPU 100→200 步 resume 与连续 200 步参数、更新指标逐项相等。
 - [x] 实际 1M Tutor Full 来源只读 CPU 准入；无 GPU 更新。
-- [x] 最新教师／预测边界专项测试 24 项通过，见 `receipts/quality_first_current_teacher_prediction.xml`。
+- [x] 最终数学、教师／预测边界、原 Env／Oracle 等 107 项通过，见 `receipts/quality_first_delivery_regression.xml`。
 
 ## 当前收尾 TODO
 
@@ -22,7 +22,7 @@
 - [x] DEV 与互斥 TRAIN 合约 FG401 的 Actor-only 评价及封存后补评。
 - [x] 使用初始 Checkpoint、独立模型 carry 和相同实际动作历史完成参考预测比较，记录真实样本数和预测指标。
 - [x] 最终专项回归、实际 Student 后端和 FullCheckpoint 恢复测试：116 项通过；旧测试夹具更新后 34 项通过，总计 150 项，保留修复前失败证据。
-- [ ] 最终源码自审、两仓提交与实际 SHA；测试收据、执行代码哈希和提交映射。
+- [x] 最终源码自审、两仓源码提交与实际 SHA；210 个运行源码文件与提交逐一核对，见 [源码提交绑定](receipts/quality_first_delivery/implementation_git_binding.json)。
 - [x] 更新启动方案与对照矩阵，首次 GPU／10K／1M 的授权审阅材料已在 docs；未启动训练。
 
 现有合同回归六组清单、提交级根因和修复后 34／34 结果见 [专项记录](FG_S3_QUALITY_REGRESSION_FIX.md)。完整收据与 D0–D7 状态见 [交付索引](receipts/quality_first_delivery/README.md)。
