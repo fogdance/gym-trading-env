@@ -1,0 +1,15 @@
+{
+  "status": "PASS_INDEPENDENT_PARAMETER_DIGEST_AUDIT",
+  "source_evidence_sha256": "0058abc5fea736c2808da70b9710c684cb97e1301202f1aeb6aa374df74b21f5",
+  "changed_predictor_nonoptimizer_keys": 20,
+  "unchanged_other_nonoptimizer_keys": 89,
+  "allowed_changed_prefixes": [
+    "quality_event/",
+    "quality_touch/",
+    "quality_adverse/",
+    "quality_score/"
+  ],
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_7c0ca2e2c5/ckpt/step_000000000200",
+  "initial_checkpoint": "/home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/runs/QUALITY_CPU_ACCEPTANCE_7c0ca2e2c5/ckpt/step_000000000000",
+  "content_hash": "462fa62d288fe2d9e7382240405f9a2bc83e9dcd6c92c07930cc7c1d1bce06a3"
+}

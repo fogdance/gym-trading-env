@@ -1,0 +1,25 @@
+{
+  "risk_basis": "ENTRY_FOLD_COMPLETE_TRADE_COHORT_V1",
+  "entry_fold": [
+    "20260105",
+    "20260105"
+  ],
+  "status": "RIGHT_CENSORED",
+  "entry_ids": [
+    "CZCE.FG2701:1:1"
+  ],
+  "closed_entries": 0,
+  "minimum_closed_entries": 1,
+  "fold_cutoff_observed": true,
+  "open_at_fold_end_entry_ids": [
+    "CZCE.FG2701:1:1"
+  ],
+  "post_fold_complete_entry_ids": [],
+  "right_censored_entry_ids": [
+    "CZCE.FG2701:1:1"
+  ],
+  "sl_rate": null,
+  "drawdown": null,
+  "equity_span": null,
+  "content_hash": "1f21bd7886e60101a154407b756450f3103c98385d7bf2ce974095289fce7c5f"
+}

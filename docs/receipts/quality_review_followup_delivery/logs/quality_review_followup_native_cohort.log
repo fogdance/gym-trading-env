@@ -1,0 +1,5 @@
+native exits [(1, 2, 'STOP_LOSS', '-1818'), (3, 4, 'TAKE_PROFIT', '282'), (5, 6, 'STOP_LOSS', '-1818')]
+fold A COMPLETE_COHORT 1.0 1818.0
+fold B COMPLETE_COHORT 0.5 1818.0
+censored RIGHT_CENSORED None None
+RECEIPT /home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env/artifacts/fg_s3_v2/quality_checks/QUALITY_FOLLOWUP_NATIVE_COHORT_v1/receipt.json sha256 1d39799d18de42374e53a812997a245891d568973f04d7f50d49c16558e225f3

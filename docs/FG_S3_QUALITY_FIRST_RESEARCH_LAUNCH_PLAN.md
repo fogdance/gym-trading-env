@@ -4,6 +4,8 @@
 
 2026-10-16 审查修复后，以 [修复记录](FG_S3_QUALITY_FIRST_REVIEW_FIXES.md) 的 V2 证据合同为准。此前 prepared 失效；首个 GPU 技术验收改用 `QUALITY_FIRST_REVIEW_HEADS_GPU_1K_v2.yaml`，只完成 CPU prepare。`...v1` 是保留的开发验收快照。科学 10K 前必须冻结生产准入 policy；现有旧 YAML 未提供该 policy，因此只能用于技术准备，不能事后附加 policy 获得 Actor 接入资格。
 
+同日[后续复审修复](FG_S3_QUALITY_FIRST_FOLLOWUP_FIXES.md)还要求全部八个 Touch／四个 Adverse 窗口的 NLL、Brier 逐一优于 TRAIN prior 与实际初始同状态参考。决策安全按完整交易的入场 Fold 归属统一 SL／收盘权益回撤，单列跨 Fold 完整结果与右删失；右删失／闭环支持不足不放行。`CONTROLLED_FULL` 从收据绑定的不可变 Policy 读取 TRAIN 合约。这些变更后需在新冻结提交上重新 prepare，不能直接启动上述旧诊断快照。
+
 ## 固定合同
 
 固定源为完成的 Tutor Full 1M Checkpoint（40000 次模型更新）。原 Encoder/RSSM/Actor/Critic 不训练，保留原 C1 Reward；质量为 B(t,d)，MAE 独立。beta=0；辅助头梯度不回传 Backbone；新头使用来源 presets 和原优化器 warmup。所有预算按真实 Env 推进计量，4 次更新/100 Env 步，不把梯度、reset 或元数据算作 Env 步。

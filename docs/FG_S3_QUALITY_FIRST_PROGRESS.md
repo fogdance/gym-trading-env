@@ -2,6 +2,14 @@
 
 本页状态依据真实源码、测试 XML 和运行收据更新。完整实现与边界见 [实施记录](FG_S3_QUALITY_FIRST_IMPLEMENTATION.md)，预算及对照见 [启动方案](FG_S3_QUALITY_FIRST_RESEARCH_LAUNCH_PLAN.md)。GPU 未启动；预测准入保持 PENDING。
 
+## 2026-10-16 后续复审
+
+[三项修复与验收](FG_S3_QUALITY_FIRST_FOLLOWUP_FIXES.md)：Full 准备从已认证 Policy 读取 TRAIN 合约；全部 Touch／Adverse 窗口新增同状态 NLL／Brier 对照；SL／回撤统一为完整交易的入场 Fold 归属，区分跨 Fold 完整结果、右删失和未观察到的截止。
+
+- [x] 修复前六项真实目标失败；修复后 114 项回归与独立 CPU 生命周期 1 项通过（定向 18 项不重复计数）。
+- [x] 新 CPU Run 200 Env／4 次更新、四预测头实际梯度与参数变化、完整恢复一致性；旧账户按新口径仍不满足风险支持。
+- [ ] 真实预测／Q／决策准入和真实合格来源的 CONTROLLED_FULL 仍未通过，不能宣布全链路 GO。
+
 ## 2026-10-16 Review 修复
 
 逐项根因、源码修改、证据字段及当前收据见 [审查修复记录](FG_S3_QUALITY_FIRST_REVIEW_FIXES.md)。下文 150 项为 10 月 15 日历史基线。

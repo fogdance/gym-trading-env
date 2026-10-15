@@ -1,0 +1,6 @@
+intervals:
+- contract: CZCE.FG2701
+  direction: LONG
+  end: '2026-01-07'
+  start: '2026-01-05'
+timezone: Asia/Shanghai
