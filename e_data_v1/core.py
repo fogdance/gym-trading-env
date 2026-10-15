@@ -33,14 +33,15 @@ def _observation_provenance(value):
     return deepcopy(value)
 
 
-def _index(values, timezone):
+def _index(values, timezone, tz_normalizer=None):
     idx = pd.DatetimeIndex(pd.to_datetime(values, format="mixed"))
     if idx.hasnans:
         raise EDataError("Missing or invalid market timestamp")
-    return legacy_helper("time_contract").ensure_feature_tz_index(idx, assume_tz=timezone)
+    normalizer = tz_normalizer or legacy_helper("time_contract").ensure_feature_tz_index
+    return normalizer(idx, assume_tz=timezone)
 
 
-def normalize_bars(minute_bars, schedule):
+def normalize_bars(minute_bars, schedule, *, tz_normalizer=None, ohlc_normalizer=None):
     """Copy only market fields; never propagate teacher/account columns."""
     required = set(RAW_FIELDS) | {"symbol", "trading_date", "bob"}
     if required - set(minute_bars):
@@ -48,7 +49,7 @@ def normalize_bars(minute_bars, schedule):
     timezone = schedule["timezone"]
     if timezone != "Asia/Shanghai":
         raise EDataError("FG source timezone must be explicit Asia/Shanghai")
-    idx = _index(minute_bars["Date"] if "Date" in minute_bars else minute_bars.index, timezone)
+    idx = _index(minute_bars["Date"] if "Date" in minute_bars else minute_bars.index, timezone, tz_normalizer)
     if len(idx) == 0:
         raise EDataError("Empty minute source")
     f = minute_bars[list(RAW_FIELDS) + ["symbol", "trading_date", "bob"]].copy()
@@ -59,9 +60,9 @@ def normalize_bars(minute_bars, schedule):
     f["trading_date"] = pd.to_datetime(f.trading_date.astype(str), format="mixed").dt.strftime("%Y-%m-%d")
     if f.trading_date.isna().any():
         raise EDataError("Missing trading_date")
-    f["bob"] = _index(f.bob, timezone)
+    f["bob"] = _index(f.bob, timezone, tz_normalizer)
     arrivals = minute_bars["available_at"] if "available_at" in minute_bars else idx
-    f["available_at"] = _index(arrivals, timezone)
+    f["available_at"] = _index(arrivals, timezone, tz_normalizer)
     # A reported early arrival cannot make an unfinished candle available.
     f["available_at"] = pd.DatetimeIndex(np.maximum(f.index.asi8, pd.DatetimeIndex(f.available_at).asi8)).tz_localize("UTC").tz_convert(timezone)
     f["_duration"] = (f.index - pd.DatetimeIndex(f.bob)).total_seconds() / 60
@@ -69,7 +70,8 @@ def normalize_bars(minute_bars, schedule):
     # Attach all row metadata before the existing helper sorts the frame.
     # Invalid rows stay intact so duplicates/NaN VI are not silently repaired.
     if not f.index.has_duplicates and np.isfinite(f[list(RAW_FIELDS)].to_numpy()).all():
-        f = legacy_helper("ohlcvi_contract").normalize_ohlcvi(f)
+        normalizer = ohlc_normalizer or legacy_helper("ohlcvi_contract").normalize_ohlcvi
+        f = normalizer(f)
     return f.sort_index(kind="mergesort")
 
 
@@ -145,10 +147,20 @@ class MarketData:
     Standard CSV arrivals equal eob: the unchanged legacy calculator is reused
     once. Explicit delayed arrivals use a visible-prefix calculation per query.
     """
-    def __init__(self, minute_bars, schedule, config=None, *, compute_features=True):
+    def __init__(self, minute_bars, schedule, config=None, *, compute_features=True,
+                 feature_function=None, market_clock_class=None,
+                 tz_normalizer=None, ohlc_normalizer=None, _env_inputs=None):
         self.config = config or EDataConfig()
+        # Production Env may supply the exact existing feature/clock functions.
+        # The independent CPU research path retains its original defaults.
+        self._feature_function = feature_function
+        self._market_clock_class = market_clock_class
+        self._tz_normalizer = tz_normalizer
+        self._ohlc_normalizer = ohlc_normalizer
         self.schedule = deepcopy(schedule)
-        self.frame = normalize_bars(minute_bars, schedule)
+        self.frame = (_env_inputs['frame'] if _env_inputs is not None else
+            normalize_bars(minute_bars, schedule,
+                tz_normalizer=tz_normalizer, ohlc_normalizer=ohlc_normalizer))
         contracts = set(self.frame.symbol)
         if len(contracts) != 1:
             raise EDataError("MarketData requires one real contract; separate contracts before aggregation")
@@ -159,8 +171,15 @@ class MarketData:
         self.calendar = _calendar(schedule)
         self.good, self.events = _validate(self.frame, schedule, starts, self.calendar)
         self.frame["_good"] = self.good
-        self.market_clock_counter = legacy_helper("s3_market_clock", self.config.legacy_root).MarketClock(
-            np.asarray(self.good & self.frame._legal.to_numpy(), dtype=bool))
+        valid = np.asarray(self.good & self.frame._legal.to_numpy(), dtype=bool)
+        if _env_inputs is not None:
+            self.market_clock_counter = _env_inputs['clock']
+            if not np.array_equal(self.market_clock_counter.valid, valid):
+                raise EDataError('E and original Env disagree on valid 1m rows')
+        else:
+            clock = (self._market_clock_class or
+                     legacy_helper("s3_market_clock", self.config.legacy_root).MarketClock)
+            self.market_clock_counter = clock(valid)
         self.delayed = bool((pd.DatetimeIndex(self.frame.available_at).asi8 > self.frame.index.asi8).any())
         self.buckets = self._buckets(starts, ends)
         self.complete_buckets = [x for x in self.buckets if x["complete"]]
@@ -168,14 +187,40 @@ class MarketData:
         self.bucket_available_ns = np.array([local_timestamp(x["available_at"]).value for x in self.complete_buckets], dtype=np.int64)
         self.features = None
         if compute_features:
-            self._features()
+            self._features(_env_inputs['features'] if _env_inputs is not None else None)
 
-    def _features(self):
+    @classmethod
+    def from_env(cls, raw, schedule, features, market_clock, bobs, **helpers):
+        """Extend the Env's normalized market, original features and clock.
+
+        Only E visibility metadata is added to a shallow market view. The
+        original frame/account stay untouched; no CSV read, OHLC normalization,
+        feature rebuild or second valid-minute index occurs here.
+        """
+        frame = raw[list(RAW_FIELDS)+['symbol','trading_date','bob']].copy(deep=False)
+        frame['bob'] = bobs
+        frame['trading_date'] = pd.to_datetime(frame.trading_date.astype(str),
+            format='mixed').dt.strftime('%Y-%m-%d')
+        arrivals = raw['available_at'] if 'available_at' in raw else raw.index
+        arrivals = _index(arrivals,schedule['timezone'],helpers.get('tz_normalizer'))
+        frame['available_at'] = pd.DatetimeIndex(np.maximum(raw.index.asi8,arrivals.asi8)
+            ).tz_localize('UTC').tz_convert(schedule['timezone'])
+        frame['_duration'] = (raw.index-bobs).total_seconds()/60
+        frame['_legal'] = market_clock.valid
+        return cls(raw,schedule,_env_inputs=dict(frame=frame,features=features,clock=market_clock),
+                   **helpers)
+
+    def _features(self, prepared=None):
         if self.features is None:
             f = self.frame.loc[self.good & self.frame._legal.to_numpy()]
             cols = list(LEGACY_FIELDS) + ["ref_close_t", "cumVWAP_t", "session_high_t", "session_low_t", "dC_minus_cumVWAP_t"]
-            self.features = (legacy_features(f, self.clock, self.config.legacy_root)[cols].copy()
-                             if len(f) else pd.DataFrame(index=f.index, columns=cols))
+            calc = (prepared if prepared is not None else
+                    self._feature_function(f, self.clock) if self._feature_function
+                    else legacy_features(f, self.clock, self.config.legacy_root)) if len(f) else None
+            if calc is not None and not calc.index.equals(f.index):
+                raise EDataError('E and Env market feature positions differ')
+            self.features = (calc[cols].copy() if calc is not None
+                             else pd.DataFrame(index=f.index, columns=cols))
             self.obs_array = self.features[list(LEGACY_FIELDS)].to_numpy(dtype=np.float32)
             self.aux_array = self.features[["ref_close_t", "cumVWAP_t", "session_high_t", "session_low_t", "dC_minus_cumVWAP_t"]].to_numpy(dtype=np.float64)
             self.price_array = f[list(RAW_FIELDS[:4])].to_numpy(dtype=np.float64)
@@ -265,7 +310,11 @@ class MarketData:
             visible = self.frame.loc[(self.frame.index <= cutoff) & (self.frame.available_at <= cutoff)]
             if visible.empty:
                 raise EDataError("No visible market price at decision")
-            view = MarketData(visible, self.schedule, self.config)
+            view = MarketData(visible, self.schedule, self.config,
+                feature_function=self._feature_function,
+                market_clock_class=self._market_clock_class,
+                tz_normalizer=self._tz_normalizer,
+                ohlc_normalizer=self._ohlc_normalizer)
             return view._snapshot_at(decision, cutoff)
         return self._snapshot_at(decision, cutoff)
 

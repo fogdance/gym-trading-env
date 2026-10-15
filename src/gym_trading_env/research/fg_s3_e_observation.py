@@ -72,6 +72,26 @@ def e_array_hash(obs):
     return h.hexdigest()
 
 
+def validate_e_snapshot(value, decision_env, data_identity, arrays=None):
+    """Authenticate host provenance at the Env/Collector boundary."""
+    import pandas as pd
+    meta = context_provenance({k:v for k,v in value.items()
+                              if k not in ('snapshot_identity','arrays_hash')})
+    if meta['data_identity'] != data_identity:
+        raise ValueError('E provider data identity differs')
+    if value.get('snapshot_identity',meta['snapshot_identity']) != meta['snapshot_identity']:
+        raise ValueError('E snapshot provenance identity differs')
+    actual = pd.Timestamp(decision_env._raw.index[decision_env.current_step])
+    if meta['source_contract'] != decision_env.contract or pd.Timestamp(meta['decision_time']) != actual:
+        raise ValueError('E provider contract/decision time differs from actual Env')
+    cutoff = pd.Timestamp(meta['visible_cutoff'])
+    if cutoff > actual or any(pd.Timestamp(t)>cutoff for t in meta.get('context_available_at',[])):
+        raise ValueError('Future E context snapshot')
+    if arrays is not None and value.get('arrays_hash') != e_array_hash(arrays):
+        raise ValueError('E snapshot arrays differ from actual Env observation')
+    return meta
+
+
 def wrap_e_observation(observed, provider):
     """Adapt existing observed execution; provider owns all market formulas.
 
@@ -109,16 +129,7 @@ def wrap_e_observation(observed, provider):
                     raise ValueError('Invalid E provider array: '+k)
             if not np.isin(arrays['market_context_15m'][:, 6], (0., 1.)).all():
                 raise ValueError('E provider mask must be binary')
-            meta = context_provenance(meta)
-            if meta['data_identity'] != provider.identity:
-                raise ValueError('E provider data identity differs')
-            decision_time = pd.Timestamp(decision_env._raw.index[decision_env.current_step])
-            if meta['source_contract'] != decision_env.contract or pd.Timestamp(meta['decision_time']) != decision_time:
-                raise ValueError('E provider contract/decision time differs from actual Env')
-            cutoff = pd.Timestamp(meta['visible_cutoff'])
-            if pd.Timestamp(meta['decision_time']) < cutoff or any(
-                    pd.Timestamp(t) > cutoff for t in meta.get('context_available_at', [])):
-                raise ValueError('Future E context snapshot')
+            meta = validate_e_snapshot(meta,decision_env,provider.identity)
             self.e_snapshot = {**meta, 'arrays_hash': e_array_hash(arrays)}
             return {**obs, **{k: x.copy() for k, x in arrays.items()}}
 

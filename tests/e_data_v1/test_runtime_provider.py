@@ -72,3 +72,30 @@ def test_collection_process_cache_rejects_changed_payload(prepared,tmp_path):
     path=dest/'context_15m.npy';raw=path.read_bytes()
     path.write_bytes(raw[:-1]+bytes([raw[-1]^1]))
     with pytest.raises(ValueError,match='verification'):verified_collection(root)
+
+
+def test_native_admission_hashes_sources_without_parsing_train_csv(prepared,tmp_path,monkeypatch):
+    from e_data_v1.io import write_bundle,write_json,write_collection_index,sha256,stable_identity
+    from e_data_v1.provider import ETrainAdmission
+    from gym_trading_env.research.fg_replay import signed
+    market=tmp_path/'market.csv';market.write_text('opaque immutable TRAIN bytes\n')
+    env=tmp_path/'env.yaml';env.write_text('env: fixture\n')
+    terms=tmp_path/'terms.yaml';terms.write_text('contract: fixture\n')
+    row=dict(contract=prepared.contract,role='train',eligible_for_training=True,
+        path=str(market),sha256=sha256(market),env_config=str(env),env_sha256=sha256(env),
+        contract_config=str(terms),contract_sha256=sha256(terms))
+    pool=tmp_path/'pool.json';write_json(pool,signed(dict(product='FG',files=[row])))
+    bundle=prepared.build([Decision(prepared.contract,prepared.frame.index[374])])
+    bundle.provenance.update(market=stable_identity(market),env=stable_identity(env),
+                             contract=stable_identity(terms),master=None)
+    root=tmp_path/'collection';root.mkdir();dest=write_bundle(bundle,root/prepared.contract)
+    report=dict(schema_sha256=bundle.schema['schema_sha256'],source_pool=dict(sha256=sha256(pool)),
+                bundles=[dict(path=str(dest))])
+    write_json(root/'diagnostics.json',report);write_collection_index(root,report)
+    def forbidden(*args,**kwargs):raise AssertionError('Metadata admission must not parse TRAIN CSV')
+    monkeypatch.setattr(pd,'read_csv',forbidden)
+    profile=ETrainAdmission.from_train_pool(pool,root,pool,contracts=[prepared.contract])
+    assert profile.contracts=={prepared.contract} and not hasattr(profile,'snapshot')
+    market.write_text('changed TRAIN bytes\n')
+    with pytest.raises(ValueError,match='bytes changed'):
+        ETrainAdmission.from_train_pool(pool,root,pool,contracts=[prepared.contract])

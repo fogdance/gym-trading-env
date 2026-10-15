@@ -91,7 +91,11 @@ class D0Collector:
     def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
                  beta=.5, actor_probability=.5, actor=None, agent=None,
                  source_checkpoint_identity=None, existing=False,
-                 observation_schema=None, e_provider=None):
+                 observation_schema=None, e_provider=None, e_profile=None):
+        if e_profile is not None:
+            if e_provider is not None:
+                raise ValueError('Choose native E profile or synthetic research provider')
+            e_provider = e_profile
         embodied = self.runtime(dreamer_root)
         from embodied.envs.from_gymnasium import FromGymnasium
         from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
@@ -127,8 +131,22 @@ class D0Collector:
 
         self.observed = self.make_observed(env)
         if observation_schema is not None:
-            from .fg_s3_e_observation import wrap_e_observation
-            self.observed = wrap_e_observation(self.observed, e_provider)
+            native = all(k in self.observed.observation_space.spaces for k in
+                ('market_seq_e_shared', 'market_context_15m'))
+            if native:
+                if not hasattr(self.observed, 'e_snapshot'):
+                    raise ValueError('Native E Env lacks snapshot provenance')
+            else:
+                if e_profile is not None:
+                    raise ValueError('Native E profile requires native Env observations')
+                # Compatibility ONLY for the signed CPU SYNTHETIC E-model
+                # fixture. Real TRAIN never uses an external EObserved wrapper.
+                from .fg_replay import read_manifest
+                fixture = getattr(e_provider, 'manifest', None)
+                if fixture is None or read_manifest(fixture).get('schema') != 'FG_S3_E_MODEL_SYNTHETIC_V1':
+                    raise ValueError('Real E observation must originate inside the Env')
+                from .fg_s3_e_observation import wrap_e_observation
+                self.observed = wrap_e_observation(self.observed, e_provider)
         wrapped = embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(
             FromGymnasium(self.observed, reset_seed=seed)))
         self.driver = embodied.Driver([lambda: wrapped], parallel=False)
@@ -175,6 +193,10 @@ class D0Collector:
     def make_observed(self, env):
         import gymnasium as gym
         class Observed(gym.Wrapper):
+            @property
+            def e_snapshot(self):
+                return self.env.e_snapshot
+
             def reset(self, *, seed=None, options=None):
                 if options:
                     return self.env.reset(seed=seed, options=options)
@@ -252,7 +274,10 @@ class D0Collector:
             equity_before=str(self.decision_env._calculate_equity()),
             source_checkpoint_identity=self.source_checkpoint_identity)
         if self.observation_schema is not None:
-            self.pending['e_snapshot'] = copy.deepcopy(self.observed.e_snapshot)
+            from .fg_s3_e_observation import validate_e_snapshot
+            snapshot = copy.deepcopy(self.observed.e_snapshot)
+            validate_e_snapshot(snapshot,self.decision_env,self.identity['e_data_identity'],native)
+            self.pending['e_snapshot'] = snapshot
         self.counts['native_rows'] += 1
         self.counts['resets'] += int(ctx['is_first'])
 

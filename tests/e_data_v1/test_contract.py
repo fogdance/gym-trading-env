@@ -2,6 +2,7 @@ from copy import deepcopy
 import hashlib
 import json
 import os
+import pickle
 from pathlib import Path
 import subprocess
 import sys
@@ -276,14 +277,24 @@ def test_F09_opening_mark_has_no_future_first_close_anchor(market):
     assert bundle.decision_meta[0]['anchor_source']=='observed_close_fallback'
 
 
-def test_F10_only_known_market_inputs_and_no_GPU_imports(market):
+def test_F10_only_known_market_inputs_and_no_GPU_imports(market,tmp_path):
     f,schedule=market; f=f.copy()
     f['Oracle_future_target']=np.arange(len(f))*999
     f['Teacher_score']=100
     bundle=build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],schedule)
     serialized=json.dumps([bundle.schema,bundle.bucket_manifest,bundle.decision_meta,bundle.provenance,bundle.events])
     assert 'Oracle_future_target' not in serialized and 'Teacher_score' not in serialized
-    assert not {'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
+    # Native Env tests intentionally import Gym in this pytest process. Verify
+    # the standalone research dependency contract in a fresh Python process.
+    fixture=tmp_path/'market.pkl';fixture.write_bytes(pickle.dumps((f,schedule)))
+    script="""import pickle,sys
+from e_data_v1 import build_e_data_v1,Decision
+f,s=pickle.loads(open(sys.argv[1],'rb').read())
+build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],s)
+assert not {'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
+"""
+    result=subprocess.run([sys.executable,'-c',script,str(fixture)],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
 
 
 def test_F10_observation_provenance_rejects_teacher_payload(prepared):

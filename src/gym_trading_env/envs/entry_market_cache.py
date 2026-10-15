@@ -30,26 +30,38 @@ class _MarketSnapshot:
     features: object
     bobs: object
     valid: object
+    e_market: object = None
 
     @classmethod
     def capture(cls, env):
         # Never retain an Env/account or let an Env mutate the cache payload.
         return cls(env._raw.copy(deep=True), env._features.copy(),
-                   env.bobs.copy(deep=True), env.valid_fill_clock.copy())
+                   env.bobs.copy(deep=True), env.valid_fill_clock.copy(),
+                   getattr(env, '_e_market', None))
 
     def restore(self, env):
         env._raw = self.raw.copy(deep=True)
         env._features = self.features.copy()
         env.bobs = self.bobs.copy(deep=True)
         env.valid_fill_clock = self.valid.copy()
+        env._e_market = self.e_market
         env.bar_source = SimpleNamespace(store=SimpleNamespace(
             index=env._raw.index, n_rows=len(env._raw)))
-        env.market_clock_counter = MarketClock(env.valid_fill_clock)
+        env.market_clock_counter = (self.e_market.market_clock_counter if self.e_market is not None
+                                    else MarketClock(env.valid_fill_clock))
 
     @property
     def nbytes(self):
+        extra = 0
+        if self.e_market is not None:
+            # Account-free E data is part of the bounded market cache, not
+            # financial checkpoint state. Include its dominant allocations.
+            extra = (self.e_market.frame.memory_usage(deep=True).sum()
+                + self.e_market.features.memory_usage(deep=True).sum()
+                + self.e_market.obs_array.nbytes + self.e_market.aux_array.nbytes
+                + self.e_market.price_array.nbytes)
         return int(self.raw.memory_usage(deep=True).sum() + self.features.nbytes
-                   + self.bobs.nbytes + self.valid.nbytes)
+                   + self.bobs.nbytes + self.valid.nbytes + extra)
 
 
 class EntryMarketCache:
@@ -72,7 +84,7 @@ class EntryMarketCache:
         source = Path(env.config.trading.data_path).expanduser()
         path = source.resolve(strict=True)
         digest, stat = _file_identity(path)
-        key = (type(env), env.config_hash, str(path), digest)
+        key = (type(env), env.config_hash, getattr(env,'e_observation_identity',None), str(path), digest)
         snapshot = self._entries.get(key)
         if snapshot is None:
             env._load_market(None)
