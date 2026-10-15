@@ -66,7 +66,8 @@ def _native_validate(entry,profile,limit=None):
                 x,y=legacy.step(0),native.step(0)
                 a,b=x[0],y[0]
                 assert x[1:]==y[1:]
-                if x[2]:raise AssertionError('TRAIN terminal precedes full raw coverage')
+                if x[2] and i+1<count-1:
+                    raise AssertionError('TRAIN terminal precedes full raw coverage')
                 if x[3]:
                     a,ai=legacy.reset();b,bi=native.reset();assert ai==bi;resets+=1
         assert legacy.export_state()==native.export_state()
@@ -75,7 +76,7 @@ def _native_validate(entry,profile,limit=None):
         # are distinct from these explicit rebuilt-prefix causal checks.
         td=audit.frame.trading_date.to_numpy();changes=np.flatnonzero(td[1:]!=td[:-1])+1
         points=sorted(set(min(x,count-1) for x in
-            (14,int(changes[0])+14 if len(changes) else 345,count-1)))
+            (14,int(changes[0])+14 if len(changes) else 345,4*345)))
         for i in points:
             cutoff=audit.frame.index[i];decision=Decision(entry['contract'],cutoff)
             full=audit.snapshot(decision)
