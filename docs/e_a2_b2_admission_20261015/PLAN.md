@@ -11,3 +11,9 @@
 当前证据：旧 A2 / B2 CPU 收据均为 PASS_CPU_REAL_TRAIN、2200 分钟 / 6 更新 / cold_resume_exact=true，但旧代码与当前不同，不能充当当前 GPU 准入收据。原模型功能不重做、不扩展测试矩阵。
 
 资源只读观测：可用内存 12892389376 字节；项目 /dev/sdd2 可用 22206763008 字节；/data /dev/sda1 可用 104071180288 字节。既有完整 size50m Checkpoint 约 947772259 字节。CPU 两模式按可用资源并行，GPU 单卡串行，所有新增产物使用独立路径。
+
+## v1 准入实际失败与 v2 数据身份
+
+两模式 v1 prepare 均退出 1：`E real TRAIN collection mathematical code/schema changed; rebuild required`，尚未创建 prepared / Run。逐字段对照确认旧/新 schema 差异仅为 `legacy_sources_sha256` 中 `entry_market_cache.py` 指纹及派生 schema SHA；数学模块和七个其他 legacy 文件完全相同。新 schema 为 `a41c6d3621a56a739d18a296ecdda95d57efcdbb5254a0293a33963d4a39a874`。
+
+使用原 `python -m e_data_v1 build`、原完整 18 合约 TRAIN pool、stride15 创建 `fg-s3-e-ab-admission-20261015/e_data_current_v1`。运行时仍由 Env 每分钟计算，stride15 仅为已有研究 collection 的审计导出。保留旧 collection，四份 v1 配置和原失败日志；四份 v2 配置引用独立新 collection。构建后核对新旧数值文件并执行原 collection verify，不修改或绕过 schema。
