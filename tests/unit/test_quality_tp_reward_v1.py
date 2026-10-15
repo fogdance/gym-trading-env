@@ -5,6 +5,7 @@ import copy
 import importlib.util
 import sys
 import unittest
+import random
 
 SOURCE = Path(__file__).resolve().parents[2] / 'src/gym_trading_env/research/fg_reward_candidates.py'
 SPEC = importlib.util.spec_from_file_location('fg_quality_tp_test', SOURCE)
@@ -14,6 +15,15 @@ SPEC.loader.exec_module(m)
 
 
 class QualityTPRewardTests(unittest.TestCase):
+    def test_score_and_reward_share_the_frozen_curve(self):
+        from gym_trading_env.research.fg_s3_quality_score import tp_base_points
+        rng=random.Random(202)
+        values=[(t,d) for t in (1,10,11,74,75,120,121,240,241,10000) for d in (0,1,8)]
+        values.extend((rng.randint(1,10000),rng.randint(0,10)) for _ in range(64))
+        for minutes,days in values:
+            self.assertEqual(m.quality_tp_reward(minutes,days),tp_base_points(minutes,days)/100)
+        with self.assertRaises(m.RewardInputError):m.quality_tp_reward(1.5,0)
+
     def test_anchors_and_legacy_unchanged(self):
         for t, expected in ((4, 1), (10, 1), (30, .96875), (60, .921875),
                             (74, .9), (120, .85), (240, .75),

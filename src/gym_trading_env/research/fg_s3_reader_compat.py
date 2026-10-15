@@ -19,7 +19,7 @@ TARGETS = {
     'gym_trading_env/envs/entry_market_cache.py': '0a57a84a2e0df5dfdeae3c7308ced3cb9c9bee74c05cfc20963447d1a9daf0e5',
     'gym_trading_env/utils/bar_source.py': '8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667',
     'gym_trading_env/rewards/single3_reward.py':'60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8',
-    'gym_trading_env/research/fg_reward_candidates.py':'90df8ab4d6bad8ebef58a5e9caeb04499747887b5ef76d01dff9937ac034cb51',
+    'gym_trading_env/research/fg_reward_candidates.py':'cbcfb6d8f040c8db17fa8fb93200213769d19028d30218c61ef9b8bc6b1b8c8b',
 }
 
 

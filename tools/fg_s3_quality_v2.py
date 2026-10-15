@@ -16,14 +16,22 @@ os.environ.setdefault('MPLCONFIGDIR','/tmp/fg_s3_quality_mpl')
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('command',choices=['build-train','inspect','validate','summarize'])
+    p.add_argument('command',choices=['build-train','inspect','validate','summarize','validate-admission'])
     p.add_argument('--config');p.add_argument('--prepared');p.add_argument('--output-dir')
     p.add_argument('--journal');p.add_argument('--catalog');p.add_argument('--steps',type=int,default=100)
     p.add_argument('--beta',type=float,default=1.)
+    p.add_argument('--receipt');p.add_argument('--kind',choices=['prediction','decision','q'])
     a=p.parse_args()
     from gym_trading_env.research.fg_replay import read_manifest,write_json,signed,digest
     from gym_trading_env.research.fg_s3_quality_catalog_v2 import coverage,write_catalog_receipt
-    if a.command=='build-train':
+    if a.command=='validate-admission':
+        if not a.receipt or not a.kind:p.error('validate-admission requires --receipt and --kind')
+        from gym_trading_env.research.fg_s3_quality_admission import (
+            require_prediction_admission,require_decision_admission,require_q_admission)
+        checked={'prediction':require_prediction_admission,'decision':require_decision_admission,'q':require_q_admission}[a.kind](a.receipt)
+        result=dict(status='PASS_REVALIDATED_QUALITY_'+a.kind.upper(),receipt_sha256=digest(a.receipt),
+                    research_status=checked['status'],training='NOT_RUN')
+    elif a.command=='build-train':
         from gym_trading_env.research.fg_s3_v2_experiment import prepare,read_settings
         if not a.config or read_settings(a.config)['mode']!='quality_v2': p.error('build-train needs a quality config')
         result=prepare(a.config)
@@ -52,6 +60,8 @@ def main():
             actor_probability=1. if a.beta==0 else 0.,seed=settings['replay_seed'],
             max_env_steps=a.steps,quality_catalog=query)
         try:
+            import time,resource
+            began=time.perf_counter()
             collector.advance(a.steps)
             records=[json.loads(s) for s in collector.journal.read_text().splitlines()]
             write_catalog_receipt(output/'quality_catalog.json',dict(
@@ -72,6 +82,16 @@ def main():
                 catalog_sha256=digest(output/'quality_catalog.json'),
                 journal=str(collector.journal),journal_sha256=digest(collector.journal),
                 below_300000_rows=sum(float(r['equity_before'])<300000 for r in records),
+                performance=dict(elapsed_seconds=time.perf_counter()-began,
+                    peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+                    journal_bytes=collector.journal.stat().st_size,
+                    teacher_statistics={c:q.teacher.statistics for c,q in query.queries.items()},
+                    candidate_cost={c:q.suffix.candidate_cost for c,q in query.queries.items()},
+                    q_legal_flat_samples=sum(all(r['action_mask']) and r['execution_result']['advanced'] for r in records),
+                    q_potential_bounded_samples=sum(all(r['action_mask']) and r['execution_result']['advanced'] and
+                        len(query.queries[r['contract']].teacher.clone._raw)-1-r['cursor']<=settings['quality_q_max_suffix_bars']
+                        for r in records),
+                    domain='actual native rollout; not a full TRAIN or 1M throughput certificate'),
                 gpu='NOT_RUN',counterfactual_pnl='overlapping candidates; not an executable sum'))
             write_json(output/'receipt.json',result)
         finally: collector.close()

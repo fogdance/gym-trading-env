@@ -70,10 +70,50 @@ def _member(row,source,settings, *, build=False):
 
 
 def _build_member_job(args):
+    import resource,time
+    began=time.perf_counter()
     row,source,settings=args
     q=_member(row,source,settings,build=True)
-    try: return row['contract'],q.identity
+    try: return row['contract'],q.identity,dict(candidate_cost=q.suffix.candidate_cost,
+        elapsed_seconds=time.perf_counter()-began,
+        peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
     finally: q.close()
+
+
+def _build_members(jobs):
+    """Measure the largest member before allocating parallel native builders."""
+    import os,multiprocessing,psutil
+    from concurrent.futures import ProcessPoolExecutor
+    available=psutil.virtual_memory().available
+    workers=1
+    if len(jobs)==1:
+        results=[_build_member_job(jobs[0])]
+    else:
+        ordered=sorted(jobs,key=lambda job:job[0]['rows'],reverse=True)
+        thread_vars=('OPENBLAS_NUM_THREADS','OMP_NUM_THREADS','MKL_NUM_THREADS')
+        original={key:os.environ.get(key) for key in thread_vars}
+        try:
+            os.environ.update({key:'1' for key in thread_vars})
+            context=multiprocessing.get_context('spawn')
+            with ProcessPoolExecutor(1,mp_context=context) as executor:
+                pilot=executor.submit(_build_member_job,ordered[0]).result()
+            # A measured planning allowance, not a full-pool memory certificate.
+            # Leave 10% for the parent and normal system operation.
+            available=psutil.virtual_memory().available
+            per_worker=max(1,int(pilot[2]['peak_rss_bytes']*1.25))
+            workers=max(1,min(len(ordered)-1,os.cpu_count() or 1,int(available*.9)//per_worker))
+            with ProcessPoolExecutor(workers,mp_context=context) as executor:
+                results=[pilot,*executor.map(_build_member_job,ordered[1:])]
+        finally:
+            for key,value in original.items():
+                if value is None:os.environ.pop(key,None)
+                else:os.environ[key]=value
+    return ({c:identity for c,identity,_ in results},signed(dict(
+        protocol='FG_S3_QUALITY_NATIVE_BUILD_COST_V1',worker_count=workers,
+        available_memory_before_parallel_bytes=available,logical_cpus=os.cpu_count(),
+        allocation='largest-row-count pilot RSS * 1.25; 90% currently available memory',
+        contracts={c:stats for c,_,stats in results},
+        scope='measured members only; no full TRAIN/1M throughput certification')))
 
 
 def _derive_rows(settings,directory):
@@ -151,9 +191,18 @@ def prepare_quality(settings):
     if directory.exists(): raise FileExistsError('Quality preparation retained; choose a new experiment')
     directory.mkdir(parents=True)
     rows,frozen,training_hash,member_files=_derive_rows(settings,directory)
+    policy_hash=None
+    if settings.get('quality_admission_policy'):
+        from .fg_s3_quality_admission import validate_policy
+        policy=validate_policy(read_manifest(settings['quality_admission_policy']))
+        policy_hash=file_hash(settings['quality_admission_policy'])
+        if (policy_hash!=settings['quality_admission_policy_sha256'] or
+                set(policy['trained_contracts'])!={r['contract'] for r in rows}):
+            raise ValueError('Frozen admission policy changed its TRAIN plan')
+        (directory/'quality_admission_policy.json').write_bytes(Path(settings['quality_admission_policy']).read_bytes())
     prediction_source=None
     if settings['quality_stage']=='CONTROLLED_FULL':
-        from .fg_s3_quality_catalog_v2 import require_prediction_admission
+        from .fg_s3_quality_admission import require_prediction_admission
         admission_path=Path(settings['quality_prediction_admission_receipt'])
         admission=require_prediction_admission(admission_path)
         if (file_hash(admission_path)!=settings['quality_prediction_admission_sha256'] or
@@ -169,15 +218,11 @@ def prepare_quality(settings):
     (directory/'selector.yaml').write_text(yaml.safe_dump(selector,sort_keys=False))
     sources={r['contract']:dict(files=member_files[r['contract']],training_hash=training_hash,
         max_market_steps=settings['quality_max_market_steps'],
+        state_cache_entries=settings['quality_state_cache_entries'],
         calendar_complete=bool(r['calendar_complete']),row_hash=fingerprint(r),fold='TRAIN') for r in rows}
     jobs=[(row,sources[row['contract']],settings) for row in rows]
-    if len(jobs)>1:
-        import os,multiprocessing,psutil
-        from concurrent.futures import ProcessPoolExecutor
-        workers=max(1,min(len(jobs),os.cpu_count() or 1,psutil.virtual_memory().available//(512*2**20)))
-        with ProcessPoolExecutor(workers,mp_context=multiprocessing.get_context('spawn')) as executor:
-            identities=dict(executor.map(_build_member_job,jobs))
-    else: identities=dict(_build_member_job(job) for job in jobs)
+    identities,build_cost=_build_members(jobs)
+    write_json(directory/'quality_build_performance.json',build_cost)
     query_identity=dict(protocol='FG_S3_V2_ORACLE_POOL_V1',fold='TRAIN',manifest_hash=pool['content_hash'],
                         queries={c:fingerprint(identity) for c,identity in sorted(identities.items())})
     write_json(directory/'quality_pool.json',signed(dict(sources=sources,queries=identities,frozen=frozen)))
@@ -185,6 +230,7 @@ def prepare_quality(settings):
     try:
         binding=signed(dict(protocol='FG_S3_QUALITY_TRAIN_BINDING_V1',fold='TRAIN',
             reward_schema=first.reward_config.schema,quality_stage=settings['quality_stage'],
+            admission_policy_sha256=policy_hash,
             score_policy='FG_S3_QUALITY_TP_MARKET_DAY_V1',source=dict(training_hash=training_hash,
                 dataset_sha256=pool['content_hash'],reward_params_hash=first.reward_config.hash),
             observation_identity=first.observation_identity,diagnostic=settings['scope']=='diagnostic',
@@ -193,6 +239,19 @@ def prepare_quality(settings):
     if prediction_source is not None:
         binding=signed({**{k:v for k,v in binding.items() if k!='content_hash'},
                         'prediction_source':prediction_source})
+    if settings['quality_decision_admitted']:
+        from .fg_s3_quality_admission import require_decision_admission
+        decision=require_decision_admission(settings['quality_decision_admission_receipt'])
+        decision_source=dict(admission_receipt=settings['quality_decision_admission_receipt'],
+            admission_sha256=file_hash(settings['quality_decision_admission_receipt']),components=decision['components'])
+        binding=signed({**{k:v for k,v in binding.items() if k!='content_hash'},'decision_source':decision_source})
+    if settings['quality_q_admitted']:
+        from .fg_s3_quality_admission import require_q_admission
+        q_admission=require_q_admission(settings['quality_q_admission_receipt'])
+        q_source=dict(admission_receipt=settings['quality_q_admission_receipt'],
+            admission_sha256=file_hash(settings['quality_q_admission_receipt']),
+            checkpoint=q_admission['checkpoint'],checkpoint_manifest_sha256=q_admission['checkpoint_manifest_sha256'])
+        binding=signed({**{k:v for k,v in binding.items() if k!='content_hash'},'q_source':q_source})
     write_json(directory/'quality_binding.json',binding)
     catalog=SimpleNamespace(manifest=binding,manifest_sha256=file_hash(directory/'quality_binding.json'))
     model=None

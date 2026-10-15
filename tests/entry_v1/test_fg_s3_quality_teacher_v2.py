@@ -11,7 +11,7 @@ import yaml
 from test_fg_single3_env import single_env
 from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
 from gym_trading_env.rewards.single3_reward import Single3RewardConfig, QUALITY_TP_SCHEMA
-from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher, score_policy_v2_1, wait_reasons
+from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher, wait_reasons
 from gym_trading_env.research.fg_s3_quality_q_v2 import CertifiedQEngine, QualityOracle, build_quality_suffix
 from gym_trading_env.research.fg_s3_oracle_state_query import decision_state
 from gym_trading_env.research.fg_s3_quality_catalog_v2 import attach_quality,coverage,validate_label
@@ -28,15 +28,6 @@ def quality_env(tmp_path, prices=None, *, day=None, **kw):
     config_path.write_text(yaml.safe_dump(cfg))
     def factory(): return FixedDirectionEntryEnv(df=raw.copy(),config_path=str(config_path))
     return factory(), factory
-
-
-@pytest.mark.parametrize('t,d,maes,expected',[
-    (4,0,[0]*4,100),(10,0,[0]*4,100),(74,0,[0]*4,90),
-    (120,0,[0]*4,85),(240,0,[0]*4,75),(74,1,[0]*4,45),
-    (10,0,[10]*4,85),(120,0,[0,10,10,10],76),
-    (240,0,[0,0,10,10],70.5)])
-def test_score_anchors(t,d,maes,expected):
-    assert score_policy_v2_1('TP5',t,d,maes) == pytest.approx(expected)
 
 
 def test_censor_unknown_and_independent_horizons(tmp_path):
@@ -196,3 +187,33 @@ def test_bounded_native_exposure_is_censored_and_calendar_is_private(tmp_path):
     assert env.export_state()==before and teacher.calendar_index is calendar
     assert not hasattr(env,'calendar_index')
     teacher.close();env.close()
+
+
+def test_full_state_cache_is_private_and_never_aliases_returned_labels(tmp_path):
+    env,factory=quality_env(tmp_path,[(1000,1000,1000,1000),(1000,1007,1000,1007)])
+    teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source={'state_cache_entries':1})
+    state=copy.deepcopy(env.export_state())
+    first=teacher.query_state(env,env._published_mask)
+    expected=copy.deepcopy(first)
+    first['layers']['L2']['valid']=False
+    assert teacher.query_state(env,env._published_mask)==expected
+    assert teacher.statistics['native_traces']==teacher.statistics['cache_hits']==1
+    assert env.export_state()==state
+    assert not any('cache' in k for k in env._get_obs())
+    teacher.close();env.close()
+
+
+def test_strict_parity_rejects_a_candidate_outside_old_uniform_sample(tmp_path,monkeypatch):
+    from gym_trading_env.research.fg_single3_oracle import CandidateIndex
+    original=CandidateIndex.candidate
+    def corrupt(index,cursor):
+        row=original(index,cursor)
+        if cursor==1 and row.get('exit'):
+            from decimal import Decimal
+            row['exit']['net_trade_pnl']=str(Decimal(row['exit']['net_trade_pnl'])+1)
+        return row
+    env,_=quality_env(tmp_path,[(1000,1007,1000,1007)]*24)
+    monkeypatch.setattr(CandidateIndex,'candidate',corrupt)
+    with pytest.raises(RuntimeError,match='Indexed/reference exit mismatch'):
+        build_quality_suffix(env,source={})
+    env.close()

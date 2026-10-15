@@ -19,6 +19,63 @@ from gym_trading_env.envs.entry_contract import fingerprint
 ROLE='DEV_EVALUATION_ONLY'
 
 
+def diagnostic_action(prediction,mask,components,unimix):
+    """Read-only intervention using the SAME bounded deltas as the network.
+
+    It does not change the trained policy or admit that policy for training.
+    """
+    import math
+    names={'outcome':'O','score':'S','q':'Q'}
+    if not components or len(set(components))!=len(components) or set(components)-set(names):
+        raise ValueError('Explicit diagnostic outcome/score/q components required')
+    delta=[float(prediction['quality/diagnostic_delta_'+names[k]]) for k in components]
+    if any(not math.isfinite(d) or abs(d)>.50001 for d in delta):
+        raise ValueError('Diagnostic corrections exceed the frozen bounded formula')
+    z=float(prediction['quality/base_policy_logit'])+sum(delta)
+    if not math.isfinite(z):raise ValueError('Diagnostic logit is nonfinite')
+    probability=(1-unimix)*float(1/(1+np.exp(-np.clip(z,-700,700))))+unimix/2
+    return (int(z>0) if all(mask) else 0),z,(probability if all(mask) else 0.)
+
+
+def native_decision_audits(eval_dir):
+    """Independently replay a sealed tape and certify strict relative actions.
+
+    Future suffix data is opened only here, after inference has been sealed.
+    Results are evaluation-only and never become a TRAIN Catalog.
+    """
+    from .fg_s3_quality_q_v2 import build_quality_suffix
+    source=Path(eval_dir).resolve()
+    receipt,context,_,_=require_sealed_inference(source)
+    tape=[json.loads(s) for s in (source/'actions.jsonl').read_text().splitlines()]
+    factory=lambda:load_env(context['rows'][0],context['frozen_inputs'])
+    builder=factory()
+    suffix=build_quality_suffix(builder,source=dict(fold=receipt['fold']+'_EVALUATION_ONLY',
+        evaluation_only=True,sealed_inference_sha256=file_hash(source/'receipt.json')))
+    env=factory()
+    wrapped=embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(FromGymnasium(env,reset_seed=0)))
+    driver=embodied.Driver([lambda:wrapped],parallel=False);seen=[];audits={}
+    def policy(carry,obs):
+        return carry,dict(action=np.asarray([tape[len(seen)]['action']],np.int32)),{}
+    def capture(step,worker):
+        r=tape[len(seen)]
+        if (env.current_step!=r['cursor'] or fingerprint(decision_state(env))!=r['decision_state_id'] or
+                not np.array_equal(step['action_mask'],r['mask'])):
+            raise ValueError('Action-safety native account replay differs from sealed inference')
+        if float(env._calculate_equity())!=r['equity']:
+            raise ValueError('Sealed decision equity differs from native account')
+        seen.append(r)
+        if len(seen)<len(tape) and all(r['mask']) and not r['is_last']:
+            audits[r['decision_state_id']]=suffix.query(env,r['mask'],snapshot=decision_state(env))
+    driver.on_step(capture)
+    try:
+        driver(policy,steps=len(tape))
+        state=env.export_state()
+        if fingerprint(state)!=fingerprint(json.loads((source/'account_state.json').read_text())):
+            raise ValueError('Action-safety final native account differs')
+    finally:driver.close()
+    return audits,tape,state,context,suffix.identity
+
+
 def quality_scores(rows,prior=None, *,role=ROLE):
     from .fg_s3_prediction_evaluation import calibration
     from scipy.stats import spearmanr,kendalltau
@@ -148,16 +205,30 @@ def require_sealed_inference(eval_dir):
     reference=(fold in ('DEV','TRAIN_HOLDOUT') and
                receipt.get('status')=='SEALED_REFERENCE_PREDICTIONS_COMPLETE' and
                receipt.get('autonomous_actor_performance') is False)
+    diagnostic=actor and receipt.get('diagnostic_intervention_only') is True
+    mode='reference_on_sealed_history' if reference else 'eval_diagnostic_quality_argmax' if diagnostic else 'eval_argmax'
     if (not (actor or reference)
             or receipt['teacher_guidance'] or receipt['oracle_files_read'] or receipt['beta']!=0
-            or receipt['policy_mode']!=('reference_on_sealed_history' if reference else 'eval_argmax')):
+            or receipt['policy_mode']!=mode):
         raise ValueError('Quality scoring requires sealed evaluation-only inference')
     check_files({str(source/n):h for n,h in receipt['causal_prediction_files'].items()})
     node=Path(receipt['checkpoint'])
     identity=read_manifest(node.parent.parent/'run_identity.json')['identity']
     validate_bundle(node,identity)
+    if diagnostic and (identity['agent_extension']['quality_stage']!='HEADS_ONLY' or
+            receipt.get('actor_influence_admitted') is not False or receipt.get('policy_parameters_modified') is not False):
+        raise ValueError('Diagnostic actions must be a read-only fork of HEADS_ONLY')
     if file_hash(node/'manifest.json')!=receipt['checkpoint_manifest_sha256']:
         raise ValueError('Sealed quality Checkpoint changed')
+    overlay=receipt.get('q_parameter_overlay')
+    if overlay:
+        import pickle
+        from .fg_s3_quality_admission import admitted_q_overlay
+        if identity['agent_extension']['quality_stage']!='HEADS_ONLY' or reference:
+            raise ValueError('Q overlay escaped its private diagnostic model')
+        actual,_=admitted_q_overlay(overlay['admission_receipt'],node,
+                                   pickle.loads((node/'agent.pkl').read_bytes())['params'])
+        if actual!=overlay:raise ValueError('Sealed diagnostic Q weights or source changed')
     from .fg_s3_v2_evaluation import require_quality_evaluation_snapshot
     manifest_name=receipt.get('evaluation_manifest','dev_manifest.json')
     if Path(manifest_name).name!=manifest_name: raise ValueError('Evaluation manifest escaped output')
@@ -173,6 +244,21 @@ def require_sealed_inference(eval_dir):
     return receipt,dev,node,identity
 
 
+def frozen_q_budget(node,identity):
+    """Use the training Checkpoint's actual proof limits for posthoc Q too."""
+    from .fg_s3_quality_catalog_v2 import validate_catalog
+    node=Path(node)
+    catalog_path=node.parent.parent/('quality_catalog_'+node.name+'.json')
+    validate_catalog(catalog_path)
+    owner=read_manifest(catalog_path)['identity']
+    prepared=Path(owner['prepared_dir'])
+    if (owner['checkpoint_manifest_sha256']!=file_hash(node/'manifest.json') or
+            file_hash(prepared/'manifest.json')!=identity['preparation_sha256']):
+        raise ValueError('Q evaluation budget is not owned by the frozen Checkpoint')
+    settings=read_manifest(prepared/'settings.json')['settings']
+    return {name:settings['quality_q_'+name] for name in ('max_states','max_seconds','max_suffix_bars')}
+
+
 def score_quality_predictions(eval_dir,output_dir):
     source,output=Path(eval_dir).resolve(),Path(output_dir).resolve()
     receipt,dev,node,identity=require_sealed_inference(source)
@@ -180,6 +266,7 @@ def score_quality_predictions(eval_dir,output_dir):
     if output==source or output.is_relative_to(source): raise ValueError('Use a separate new posthoc output')
     records=[json.loads(s) for s in (source/'actions.jsonl').read_text().splitlines()]
     full_research=receipt['agent_extension']['quality_stage']=='CONTROLLED_FULL'
+    q_budget=frozen_q_budget(node,identity) if full_research else {}
     if not records or any('quality' not in r for r in records): raise ValueError('Missing sealed quality predictions')
     output.mkdir(parents=True,exist_ok=False)
     write_json(output/'prediction_seal.json',signed(dict(role=role,future_labels_generated=False,
@@ -190,7 +277,7 @@ def score_quality_predictions(eval_dir,output_dir):
         engine=None
         if generate and full_research:
             from .fg_s3_quality_q_v2 import CertifiedQEngine
-            engine=CertifiedQEngine(lambda:load_env(dev['rows'][0],dev['frozen_inputs']))
+            engine=CertifiedQEngine(lambda:load_env(dev['rows'][0],dev['frozen_inputs']),**q_budget)
         wrapped=embodied.wrappers.CheckSpaces(embodied.wrappers.UnifyDtypes(FromGymnasium(env,reset_seed=0)))
         driver=embodied.Driver([lambda:wrapped],parallel=False)
         seen=[];scored=[]
@@ -230,8 +317,10 @@ def score_quality_predictions(eval_dir,output_dir):
         fold=receipt['fold'],contract=receipt['contract'],training_labels_created=False,
         metrics=quality_scores(rows,prior,role=role),source_receipt_sha256=file_hash(source/'receipt.json'),
         inference_dir=str(source),checkpoint=str(node),
-        autonomous_actor_performance=receipt['status'].startswith('ACTOR_ONLY_'),
-        inference_kind='same_state_reference' if receipt['status'].startswith('SEALED_REFERENCE_') else 'actor_only',
+        autonomous_actor_performance=receipt['status'].startswith('ACTOR_ONLY_') and not receipt.get('diagnostic_intervention_only'),
+        diagnostic_intervention_only=bool(receipt.get('diagnostic_intervention_only')),
+        inference_kind='same_state_reference' if receipt['status'].startswith('SEALED_REFERENCE_') else
+                       'diagnostic_intervention' if receipt.get('diagnostic_intervention_only') else 'actor_only',
         checkpoint_manifest_sha256=receipt['checkpoint_manifest_sha256'],
         train_prior_sha256=file_hash(prior_path) if prior is not None else None,
         future_labels_generated_after_prediction_seal=True,rows=len(rows),
@@ -330,31 +419,18 @@ def reference_predictions(eval_dir,checkpoint,output_dir, *,device='cpu'):
     return result
 
 
-def compare_prediction_receipts(primary_dir,reference_dir,output_dir):
+def compare_prediction_receipts(primary_dir,reference_dir,output_dir, *,time_fold=None):
     """Compare predictions against exactly the same sealed labels/states."""
     paths=[Path(p).resolve() for p in (primary_dir,reference_dir)]
-    receipts=[];all_rows=[];priors=[];seals=[]
-    for root in paths:
-        receipt=read_manifest(root/'receipt.json')
-        if receipt.get('training_labels_created') is not False or not receipt.get('future_labels_generated_after_prediction_seal'):
-            raise ValueError('Comparison requires sealed posthoc evaluation-only labels')
-        check_files({str(root/p):h for p,h in receipt['files'].items()})
-        seal,_,_,_=require_sealed_inference(receipt['inference_dir'])
-        if file_hash(Path(receipt['inference_dir'])/'receipt.json')!=receipt['source_receipt_sha256']:
-            raise ValueError('Comparison inference binding changed')
-        receipts.append(receipt);seals.append(seal)
-        all_rows.append([json.loads(s) for s in (root/'labels_evaluation_only.jsonl').read_text().splitlines()])
-        priors.append(read_manifest(Path(receipt['inference_dir'])/'train_prediction_prior.json'))
-    primary,reference=receipts
-    if (primary['fold']!=reference['fold'] or primary['contract']!=reference['contract'] or
-            seals[1].get('same_state_source_receipt_sha256')!=primary['source_receipt_sha256'] or
-            priors[0]['source_records_hash']!=priors[1]['source_records_hash']):
-        raise ValueError('Reference is not matched to the same real tape and TRAIN prior')
-    left,right=all_rows
-    if len(left)!=len(right): raise ValueError('Matched prediction coverage differs')
-    for a,b in zip(left,right):
-        if a['state_id']!=b['state_id'] or a['action']!=b['action'] or fingerprint(a['label'])!=fingerprint(b['label']):
-            raise ValueError('Matched prediction account, action, or native label differs')
+    from .fg_s3_quality_admission import matched_prediction_rows,checkpoint_policy
+    policy_hash=None
+    left_bundle,right_bundle=matched_prediction_rows(*paths)
+    if time_fold is not None:
+        policy,policy_hash,_=checkpoint_policy(left_bundle[3])
+        left_bundle,right_bundle=matched_prediction_rows(*paths,policy=policy,time_fold=time_fold)
+    primary,reference=left_bundle[0],right_bundle[0]
+    left,right=left_bundle[5],right_bundle[5]
+    priors=[left_bundle[6],right_bundle[6]]
     lm=quality_scores(left,priors[0],role=primary['role'])
     rm=quality_scores(right,priors[1],role=primary['role'])
     for key,value in lm['horizons'].items():
@@ -375,6 +451,7 @@ def compare_prediction_receipts(primary_dir,reference_dir,output_dir):
             path=output/f'horizon_{horizon}.json'
             write_json(path,signed(dict(protocol='FG_S3_QUALITY_MATCHED_COMPARISON_V1',
                 fold=primary['fold'],contract=primary['contract'],samples=value['samples'],
+                time_fold=time_fold,policy_sha256=policy_hash,
                 checkpoint_manifest_sha256=primary['checkpoint_manifest_sha256'],metrics=metrics,
                 horizon=int(horizon),primary_scoring_dir=str(paths[0]),reference_scoring_dir=str(paths[1]),
                 comparison_code_sha256=file_hash(__file__),
@@ -383,6 +460,7 @@ def compare_prediction_receipts(primary_dir,reference_dir,output_dir):
             comparison_files.append(dict(evaluation_receipt=str(path),samples=value['samples'],metrics=metrics))
     result=signed(dict(status='QUALITY_MATCHED_PREDICTION_COMPARISON_COMPLETE',fold=primary['fold'],
         role=primary['role'],training_labels_created=False,matched_states=len(left),metrics=lm,
+        time_fold=time_fold,policy_sha256=policy_hash,
         checkpoint=primary['checkpoint'],checkpoint_manifest_sha256=primary['checkpoint_manifest_sha256'],
         reference_checkpoint_manifest_sha256=reference['checkpoint_manifest_sha256'],
         comparisons=comparison_files,prediction_admission='REVIEW_PENDING; no automatic Actor activation',

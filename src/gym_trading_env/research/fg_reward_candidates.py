@@ -12,7 +12,6 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
-from math import exp
 from hashlib import sha256
 from math import isfinite
 from typing import Any, Mapping
@@ -82,22 +81,10 @@ def quality_tp_reward(market_minutes: float, crossed_trading_days: int) -> float
     dates inferred from elapsed market minutes. Only valid for committed TP5.
     """
     t = _number(market_minutes, "TP held market minutes")
-    if t < 1 or isinstance(crossed_trading_days, bool) or not isinstance(crossed_trading_days, int) or crossed_trading_days < 0:
+    if t < 1 or not t.is_integer() or type(crossed_trading_days) is not int or crossed_trading_days < 0:
         raise RewardInputError("Invalid market minutes or official trading-day count")
-    d = crossed_trading_days
-    if d:
-        return max(20.0, 45.0 - 5.0 * (d - 1)) / 100.0
-    if t <= 10:
-        score = 100.0
-    elif t <= 74:
-        score = 100.0 - 10.0 * (t - 10.0) / 64.0
-    elif t <= 120:
-        score = 90.0 - 5.0 * (t - 74.0) / 46.0
-    elif t <= 240:
-        score = 85.0 - 10.0 * (t - 120.0) / 120.0
-    else:
-        score = 60.0 + 15.0 * exp(-(t - 240.0) / 120.0)
-    return score / 100.0
+    from gym_trading_env.research.fg_s3_quality_score import tp_event_reward
+    return tp_event_reward(int(t),crossed_trading_days)
 
 
 def _official_day_key(raw: Any) -> str:

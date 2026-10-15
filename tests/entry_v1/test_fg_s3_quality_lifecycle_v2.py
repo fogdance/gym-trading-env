@@ -36,7 +36,13 @@ def test_shared_cpu_prepare_start_resume_full_checkpoint():
     fixture_config['trading']['data_path']=str(market)
     (fixture/'env.yaml').write_text(yaml.safe_dump(fixture_config))
     cfg=yaml.safe_load((PROJECT/'configs/experiments/fg_s3_v2/QUALITY_V2_CPU_SMOKE.yaml').read_text())
+    from test_fg_s3_quality_admission_v2 import fixture_policy
+    policy=fixture_policy()
+    policy['trained_contracts']=[fixture_config['entry']['contract']]
+    policy_path=output/'synthetic_admission_policy.json'
+    write_json(policy_path,signed({k:v for k,v in policy.items() if k!='content_hash'}))
     cfg.update(experiment=tag,quality_fixture_env=str(fixture/'env.yaml'),env_steps=200,
+        quality_admission_policy=str(policy_path),
         prepared_dir='artifacts/fg_s3_v2/prepared/'+tag,
         run_dir='artifacts/fg_s3_v2/runs/'+tag,replay_capacity=256)
     path=output/'experiment.yaml';path.write_text(yaml.safe_dump(cfg))
@@ -71,6 +77,15 @@ def test_shared_cpu_prepare_start_resume_full_checkpoint():
     with pytest.raises(ValueError,match='journal bytes changed'):
         validate_catalog(tampered)
     node=Path(receipt['checkpoint'])
+    from gym_trading_env.research.fg_s3_quality_admission import checkpoint_policy,_head_updates
+    from embodied.run.fg_checkpoint import file_hash
+    frozen,policy_hash,meta=checkpoint_policy(node)
+    assert frozen==read_manifest(policy_path) and policy_hash==file_hash(policy_path)
+    assert meta['identity']['immutable_files'][str(root/'quality_admission_policy.json')]==policy_hash
+    _head_updates(node,meta['identity'])
+    from gym_trading_env.research.fg_s3_quality_prediction_evaluation import frozen_q_budget
+    assert frozen_q_budget(node,meta['identity'])=={
+        name:cfg['quality_q_'+name] for name in ('max_states','max_seconds','max_suffix_bars')}
     assert all((node/p).is_file() for p in ('agent.pkl','collector.pkl','driver.pkl','runtime.pkl','replay.pkl','done'))
     updates=[json.loads(line) for line in (root/'updates.jsonl').read_text().splitlines()]
     assert all(r['metrics']['opt/quality_actor_delta_norm']==0 and r['metrics']['opt/wm_delta_norm']==0 for r in updates)
@@ -88,6 +103,8 @@ def test_shared_cpu_prepare_start_resume_full_checkpoint():
     evidence=signed(dict(status='PASS_SHARED_CPU_PREPARE_START_RESUME',commands=commands,
         prepared=str(prepared),run_dir=str(root),checkpoint=str(node),env_steps=200,updates=4,
         coverage=receipt['quality']['coverage'],gpu='NOT_RUN',supervision='SYNTHETIC_NATIVE_ENV',
+        initial_checkpoint_owns_immutable_admission_policy=True,admission_policy_sha256=policy_hash,
+        posthoc_q_uses_frozen_training_proof_budget=True,
         unbroken_vs_resumed_gradient='PASS; all reported gradients/losses and final parameter digests equal'))
     write_json(output/'receipt.json',evidence)
     print('\nQUALITY_LIFECYCLE_RECEIPT='+str(output/'receipt.json'))

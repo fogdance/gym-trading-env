@@ -22,7 +22,7 @@ def controlled_extensions(settings):
     # Backend-only synthetic exercise of retained Full modules, not research
     # admission or an authorized production training configuration.
     return quality_extensions(dict(quality_stage='CONTROLLED_FULL',
-        quality_prediction_admitted=True,**settings))
+        quality_prediction_admitted=True,quality_decision_admitted=True,**settings))
 
 
 def labels(shape=(1,4)):
@@ -204,21 +204,27 @@ def test_quality_actor_parameter_warm_start_and_fresh_joint_optimizer(tmp_path):
 
 
 def test_controlled_prediction_transfer_requires_evaluated_weights():
-    from embodied.run.fg_s3_source_transfer import admitted_prediction_parameters
+    from embodied.run.fg_s3_source_transfer import admitted_auxiliary_parameters
     source={name+'/out/kernel':np.full((2,3),.25,np.float32) for name in
             ('quality_event','quality_touch','quality_adverse','quality_score')}
     source['quality_q_v2/out/kernel']=np.ones((2,2),np.float32)
     target={k:np.zeros_like(v) for k,v in source.items()}
     proof=parameter_digests({k:v for k,v in source.items() if not k.startswith('quality_q_')})
-    copied=admitted_prediction_parameters(target,source,proof)
+    copied=admitted_auxiliary_parameters(target,source,proof)
     assert parameter_digests(copied)==proof
     assert len(copied)==4 and not any(k.startswith('quality_q_') for k in copied)
     assert all(not v.any() for v in target.values())
     changed={**source,'quality_score/out/kernel':source['quality_score/out/kernel']+1}
     with pytest.raises(ValueError,match='evidence differs'):
-        admitted_prediction_parameters(target,changed,proof)
+        admitted_auxiliary_parameters(target,changed,proof)
     with pytest.raises(ValueError,match='schema/finite'):
-        admitted_prediction_parameters({**target,'quality_score/out/kernel':np.zeros((1,),np.float32)},source,proof)
+        admitted_auxiliary_parameters({**target,'quality_score/out/kernel':np.zeros((1,),np.float32)},source,proof)
+    source['quality_q_c1/out/kernel']=np.full((2,2),.5,np.float32)
+    target['quality_q_c1/out/kernel']=np.zeros((2,2),np.float32)
+    prefixes=('quality_q_c1/','quality_q_v2/')
+    qproof=parameter_digests({k:v for k,v in source.items() if k.startswith(prefixes)})
+    copied=admitted_auxiliary_parameters(target,source,qproof,prefixes=prefixes)
+    assert parameter_digests(copied)==qproof and all(k.startswith(prefixes) for k in copied)
 
 
 def test_quality_first_heads_only_updates_and_actor_isolation(tmp_path):

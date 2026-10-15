@@ -2,11 +2,12 @@
 from __future__ import annotations
 
 import copy
+from collections import OrderedDict
 from dataclasses import asdict,dataclass
 from decimal import Decimal
-import math
 
 import numpy as np
+import time
 
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import check_files, digest, signed
@@ -25,20 +26,6 @@ class StateProof:
     source_hash: str
     rules_hash: str
     funds_basis: str = 'actual_equity_and_native_ledger'
-
-
-def score_policy_v2_1(exit_type, minutes, crossed_days, maes, *, verified=True):
-    """Archived Reviewed V1 formula; not the Quality-first Catalog target."""
-    if not verified or exit_type not in ('TP5', 'SL30'):
-        return None
-    if exit_type == 'SL30':
-        return 0.
-    from .fg_reward_candidates import quality_tp_reward
-    if len(maes) != 4 or any(v is None or not math.isfinite(float(v)) or v < 0 for v in maes):
-        return None
-    base = 100 * quality_tp_reward(minutes, crossed_days)
-    risk = sum(w * min(30., float(a)) for w, a in zip((.4, .3, .2, .1), maes))
-    return float(np.clip(base - 1.5 * risk, 0., 100.))
 
 
 def official_days(env):
@@ -226,10 +213,18 @@ class NativeQualityTeacher:
         self.max_market_steps=source.get('max_market_steps')
         if self.max_market_steps is not None and (type(self.max_market_steps) is not int or self.max_market_steps<1):
             raise ValueError('Quality native exposure budget must be a positive market-minute integer')
+        self.cache_entries=source.get('state_cache_entries',128)
+        if type(self.cache_entries) is not int or not 0<=self.cache_entries<=4096:
+            raise ValueError('Quality exact-state cache must contain 0..4096 entries')
+        self._cache=OrderedDict()
+        self.statistics=dict(queries=0,native_traces=0,cache_hits=0,trace_seconds=0.,
+                             independently_observed_market_minutes=0,cache_peak_entries=0)
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
             market_hash=self.market_hash, code_sha256=digest(__file__),
             clock_protocol='S3_MARKET_MINUTE', score_policy=SCORE_POLICY,
             source_guard='SHA256_on_open_then_device_inode_size_mtime_ns_ctime_ns_each_query',
+            state_cache=dict(protocol='COMPLETE_NATIVE_STATE_LRU_V1',entries=self.cache_entries,
+                             key='teacher_identity + full export_state SHA256; source/mask checked before lookup'),
             max_market_steps=self.max_market_steps,calendar_metadata='immutable_teacher_private_index',
             horizons=list(HORIZONS), touch_horizons=list(TOUCH_HORIZONS), funds_proof='actual_snapshot_clone')
         import inspect
@@ -250,6 +245,13 @@ class NativeQualityTeacher:
             raise ValueError('Quality source/state identity mismatch')
         if not np.array_equal(mask, env._published_mask):
             raise ValueError('Quality requires the real published action mask')
+        self.statistics['queries']+=1
+        state=env.export_state()
+        snapshot_hash=fingerprint(state)
+        if snapshot_hash in self._cache:
+            self.statistics['cache_hits']+=1
+            self._cache.move_to_end(snapshot_hash)
+            return copy.deepcopy(self._cache[snapshot_hash])
         result = dict(protocol=PROTOCOL, state_id=state_id, teacher_identity=self.identity_hash,
             state_proof=asdict(StateProof(state_id,fingerprint(self.source),fingerprint(self.rules))),
             immediate_outcome_verified=False, score=None, score_valid=False,
@@ -259,8 +261,7 @@ class NativeQualityTeacher:
             invalid_reason=None, equity=str(env._calculate_equity()),
             event=[0]*7, event_valid=[False]*7, touch=[[0,0] for _ in range(4)],
             touch_valid=[[False,False] for _ in range(4)], adverse=[0]*4, adverse_valid=[False]*4)
-        state=env.export_state()
-        result['account_snapshot_hash']=fingerprint(state)
+        result['account_snapshot_hash']=snapshot_hash
         if env.net_lots or env.entries:
             result['invalid_reason'] = 'FORCED_WAIT_POSITION'
         elif not all(mask):
@@ -268,9 +269,13 @@ class NativeQualityTeacher:
         elif env.status != 'ACTIVE' or env.terminated or env.truncated:
             result['invalid_reason'] = 'INACTIVE_ACCOUNT'
         if not result['invalid_reason']:
+            started=time.perf_counter()
             result.update(trace_native_trade(env,self.clone,state=state,
                 calendar_index=self.calendar_index,max_market_steps=self.max_market_steps,
                 day_complete=bool(self.source.get('calendar_complete',False))))
+            self.statistics['native_traces']+=1
+            self.statistics['trace_seconds']+=time.perf_counter()-started
+            self.statistics['independently_observed_market_minutes']+=result.get('held_market_minutes',0)
         reason=result.get('invalid_reason') or result.get('exit_type','UNKNOWN')
         result['layers']={
             'L0':dict(valid=True,reason='NATIVE_CURRENT_MASK',protocol=env.protocol,source=self.rules),
@@ -279,12 +284,18 @@ class NativeQualityTeacher:
             'L2':dict(valid=bool(result['score_valid']),reason=result.get('score_reason',reason),
                       protocol=SCORE_POLICY,source=self.identity_hash),
         }
-        return signed(result)
+        result=signed(result)
+        if self.cache_entries and result['immediate_outcome_verified']:
+            self._cache[snapshot_hash]=copy.deepcopy(result)
+            while len(self._cache)>self.cache_entries:self._cache.popitem(last=False)
+            self.statistics['cache_peak_entries']=max(self.statistics['cache_peak_entries'],len(self._cache))
+        return result
 
     def close(self):
         # Native Env.close() may persist state_path. A research executor owns
         # no external resources requiring that side effect.
         self.clone=None
+        self._cache.clear()
 
 
 def trace_native_trade(env,clone, *, day_complete=False,state=None,calendar_index=None,max_market_steps=None):

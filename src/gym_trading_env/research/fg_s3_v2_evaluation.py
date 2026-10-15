@@ -118,7 +118,7 @@ def prepare_holdout(settings,directory,contract,identity):
     return require_quality_evaluation_snapshot(path,identity=identity)
 
 
-def evaluate(prepared, run_dir, steps=1000,output_dir=None,holdout_contract=None):
+def evaluate(prepared, run_dir, steps=1000,output_dir=None,holdout_contract=None,diagnostic_components=None,diagnostic_q_admission=None):
     if type(steps) is not int or not 1 <= steps <= 10000:
         raise ValueError('Actor-only diagnosis is bounded to 1..10000 actual advances')
     prepared, root = Path(prepared).resolve(), Path(run_dir).resolve()
@@ -146,7 +146,8 @@ def evaluate(prepared, run_dir, steps=1000,output_dir=None,holdout_contract=None
         raise ValueError('Frozen extended model configuration differs from settings')
     output = Path(output_dir).resolve() if output_dir else root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
     return _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps,
-                                 holdout_contract=holdout_contract)
+                                 holdout_contract=holdout_contract,diagnostic_components=diagnostic_components,
+                                 diagnostic_q_admission=diagnostic_q_admission)
 
 
 def evaluate_source(prepared,checkpoint,output_dir,steps=5000,device='cpu'):
@@ -188,7 +189,15 @@ def evaluate_source(prepared,checkpoint,output_dir,steps=5000,device='cpu'):
     return result
 
 
-def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,holdout_contract=None):
+def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,holdout_contract=None,diagnostic_components=None,diagnostic_q_admission=None):
+    if diagnostic_components is not None and (s['mode']!='quality_v2' or
+            extensions['quality_stage']!='HEADS_ONLY' or not diagnostic_components or
+            list(diagnostic_components)!=[x for x in ('outcome','score','q') if x in diagnostic_components]):
+        raise ValueError('Explicit diagnostic fusion is a read-only HEADS_ONLY evaluation recipe')
+    if diagnostic_q_admission and (s['mode']!='quality_v2' or extensions['quality_stage']!='HEADS_ONLY'):
+        raise ValueError('Diagnostic Q transfer requires a private HEADS_ONLY evaluation model')
+    if diagnostic_components and 'q' in diagnostic_components and not diagnostic_q_admission:
+        raise ValueError('Q diagnostics require the independently admitted trained Q weights')
     root=node.parent.parent
     output.mkdir(parents=True, exist_ok=False)
     if s['mode']=='quality_v2':
@@ -203,12 +212,30 @@ def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,hold
     manifest_name='holdout_manifest.json' if holdout_contract is not None else 'dev_manifest.json'
     model = make_agent(cfg, output/'model', agent_cls=S3V2Agent, device=s['device'],
         bc_lambda=s['bc_lambda'], extra_agent_config=extensions, composition=composition)
-    model.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
+    model_state=pickle.loads((node/'agent.pkl').read_bytes())
+    q_overlay=None
+    if diagnostic_q_admission:
+        from .fg_s3_quality_admission import admitted_q_overlay
+        q_overlay,copied=admitted_q_overlay(diagnostic_q_admission,node,model_state['params'])
+        model_state['params'].update(copied)
+    model.load_exact(model_state)
     # New evaluation episodes use the frozen config seed at counter zero.
     # Training/resume RNG remains untouched; this is a loaded read-only copy.
     model.sync_policy_from_train(reset_counter=True)
     model.evaluation_checkpoint_sha256 = file_hash(node/'manifest.json')
     policy = ActorPolicy(model)
+    def run_policy(carry,obs):
+        carry,actions,outs=policy(carry,obs)
+        if diagnostic_components is not None:
+            from .fg_s3_quality_prediction_evaluation import diagnostic_action
+            from embodied.run.fg_s3_dagger_policy import replace_prevact
+            action,z,padd=diagnostic_action(policy.last_diagnostics['quality'],
+                obs['action_mask'][0].tolist(),diagnostic_components,cfg['agent']['policy']['unimix'])
+            selected=np.asarray([action],np.int32)
+            carry=replace_prevact(carry,selected);actions=dict(action=selected)
+            policy.last_diagnostics['quality']['quality/diagnostic_z_final']=z
+            policy.last_diagnostics['p_add']=padd
+        return carry,actions,outs
     env = load_env(dev['rows'][0], dev['frozen_inputs'])
     shadow=None;shadow_counts=dict(fills=0,exits=0)
     if s['mode']=='quality_v2':
@@ -238,6 +265,8 @@ def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,hold
             mask=np.asarray(step['action_mask']).tolist(), is_first=bool(step['is_first']),
             is_last=bool(step['is_last']), reward_from_previous_action=float(step['reward']),
             p_add=policy.last_diagnostics['p_add'], advanced=bool(delta)))
+        rows[-1].update(equity=float(env._calculate_equity()),
+            official_trading_date=env._trading_day(env._raw.index[cursor]))
         rows[-1]['decision_state_id'] = fingerprint(decision_state(env))
         rows[-1]['prediction_phase'] = 'CAUSAL_ACTOR_ONLY'
         if s['mode'] == 'b2':
@@ -248,7 +277,7 @@ def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,hold
     driver.on_step(capture)
     try:
         while advanced < steps:
-            driver(policy, steps=1)
+            driver(run_policy, steps=1)
             if env.terminated or env.status in ('DATA_END', 'DATA_GAP'):
                 break
         exits = env.attributions
@@ -291,6 +320,12 @@ def _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps, *,hold
                 outcome_probabilities_source='causal RSSM predictions; no labels/Oracle queries')
             result = signed(result)
         result = {k:v for k,v in result.items() if k != 'content_hash'}
+        if q_overlay is not None:result['q_parameter_overlay']=q_overlay
+        if diagnostic_components is not None:
+            result.update(policy_mode='eval_diagnostic_quality_argmax',
+                diagnostic_intervention_only=True,actor_influence_admitted=False,
+                diagnostic_components=list(diagnostic_components),
+                policy_parameters_modified=False)
         result.update(evaluation_metrics(env.export_state(), result))
         if s['mode']=='quality_v2':
             from .fg_s3_quality_teacher_v2 import trade_facts

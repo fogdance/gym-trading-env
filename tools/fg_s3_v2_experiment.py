@@ -36,6 +36,9 @@ def main():
     p.add_argument('--stop-at', type=int)
     p.add_argument('--eval-steps', type=int, default=1000)
     p.add_argument('--holdout-contract',help='Whitelisted TRAIN contract excluded from quality-head training')
+    p.add_argument('--diagnostic-components',help='Read-only HEADS_ONLY evaluation fork: outcome,score,q in that order')
+    p.add_argument('--diagnostic-q-admission',help='Verified Q source copied into a private evaluation model; also use for its baseline')
+    p.add_argument('--time-fold',help='Pretraining-frozen official-day window for compare-predictions')
     p.add_argument('--eval-dir', help='Existing sealed Actor-only evaluation for CPU post-processing')
     p.add_argument('--reference-dir',help='Posthoc reference predictions on the same sealed causal tape')
     p.add_argument('--output-dir', help='New evaluation/scoring directory or online monitor observations')
@@ -49,6 +52,9 @@ def main():
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit authorization for formal 1M and any new Quality GPU start/resume')
     args = p.parse_args()
+    if args.diagnostic_components and args.command!='evaluate':p.error('--diagnostic-components requires evaluate')
+    if args.diagnostic_q_admission and args.command!='evaluate':p.error('--diagnostic-q-admission requires evaluate')
+    if args.time_fold and args.command!='compare-predictions':p.error('--time-fold requires compare-predictions')
     if (args.check_only or args.resume_online) and args.command != 'simulate-online':
         p.error('--check-only and --resume-online require simulate-online')
     if args.command == 'monitor-online':
@@ -100,7 +106,7 @@ def main():
         if not args.eval_dir or not args.reference_dir or not args.output_dir:
             p.error('compare-predictions requires posthoc --eval-dir, --reference-dir and new --output-dir')
         from gym_trading_env.research.fg_s3_quality_prediction_evaluation import compare_prediction_receipts
-        result=compare_prediction_receipts(args.eval_dir,args.reference_dir,args.output_dir)
+        result=compare_prediction_receipts(args.eval_dir,args.reference_dir,args.output_dir,time_fold=args.time_fold)
     elif args.command=='evaluate-source':
         if not args.prepared or not args.source_checkpoint or not args.output_dir:
             p.error('evaluate-source requires --prepared, --source-checkpoint and new --output-dir')
@@ -138,7 +144,8 @@ def main():
             result = read_manifest(Path(run_dir)/'training_receipt.json')
         elif args.command == 'evaluate':
             from gym_trading_env.research.fg_s3_v2_evaluation import evaluate
-            result = evaluate(prepared, run_dir, args.eval_steps,args.output_dir,args.holdout_contract)
+            components=args.diagnostic_components.split(',') if args.diagnostic_components else None
+            result = evaluate(prepared, run_dir, args.eval_steps,args.output_dir,args.holdout_contract,components,args.diagnostic_q_admission)
         else:
             from embodied.run.fg_s3_v2_train import LiveRun
             run = LiveRun(prepared, run_dir, resume=args.command == 'resume',

@@ -14,7 +14,7 @@ from .fg_replay import digest, signed
 from .fg_s3_oracle_state_query import decision_state, rules_identity
 from .fg_s3_quality_teacher_v2 import trade_facts
 
-PROTOCOL = 'FG_S3_QUALITY_FIRST_FINANCIAL_Q_V1'
+PROTOCOL = 'FG_S3_QUALITY_FIRST_FINANCIAL_Q_V2'
 PROOF_STATUSES=('Q_VALID','Q_INTERVAL','NO_PROOF','TIMEOUT','CENSORED')
 GAMMA = Fraction(332, 333)
 UTILITY = 'net_pnl/nominal_net_tp + .25*TP*(B_TP_MARKET_DAY_V1-60)/40'
@@ -72,6 +72,7 @@ class CertifiedQEngine:
         remaining = len(env._raw) - 1 - env.current_step
         if remaining > self.max_suffix_bars:
             return signed({**result, 'reason':'OUTSIDE_BOUNDED_PROOF_DOMAIN'})
+        result.update(root_snapshot=root,root_snapshot_hash=fingerprint(root),engine=self.identity)
         started = time.monotonic()
         memo = {}
         scratch = self.env
@@ -145,6 +146,67 @@ class CertifiedQEngine:
     def close(self): self.env=None
 
 
+def _quality_risk_cursors(rows,days):
+    """Deterministic representatives of the changed reward/clock boundaries."""
+    ordinal={d:i for i,d in enumerate(dict.fromkeys(days))}
+    groups={}
+    for row in rows:
+        if not row.get('eligible'): continue
+        event=row.get('exit') or {}
+        minutes=row.get('held_market_bars',0)
+        duration=next((i for i,b in enumerate((10,74,120,240)) if minutes<=b),4)
+        early=row.get('first_adverse_effective_bar')
+        early_band='NONE' if early is None else 'FIRST5' if early<=5 else '6_15' if early<=15 else 'LATE'
+        entry=row.get('entry_cursor');exit_=row.get('observed_until_cursor')
+        crossed=ordinal[days[exit_]]-ordinal[days[entry]] if entry is not None else None
+        key=(row.get('side'),event.get('reason','CENSORED' if row.get('filled') else 'REJECTED'),
+             crossed,duration,early_band,bool(event.get('same_entry_bar')),
+             bool(event.get('ambiguous_tp_sl')),bool(event.get('sl_pending_retry')),
+             row.get('reject_reason'))
+        groups.setdefault(key,row['cursor'])
+    return groups
+
+
+def _verify_selected_plan(env,initial,rows,query):
+    """Attain the selected relaxed optimum with a full native account replay."""
+    env.import_state(initial)
+    expected={r['cursor']:r for r in rows}
+    planned=query.plan['add_cursors'];schedule=set(planned)
+    feedback={s:v for t in planned for s,v in expected[t]['rewards']['C1']}
+    added=[];events=[];observed=[];cash=Decimal(0);advances=0
+    while env.current_step<query.end:
+        if env.truncated:
+            if env.status!='CHUNK_END': break
+            env.reset()
+        old=env.current_step;nf=len(env.fills);ne=len(env.attributions)
+        _,reward,*_=env.step(int(old in schedule))
+        if env.current_step==old:
+            raise ValueError('Selected strict plan stopped before its native boundary')
+        advances+=1
+        value=float(np.float32(reward))
+        if value!=feedback.get(env.current_step,0.):
+            raise ValueError('Selected strict plan/native reward feedback differs')
+        if value: observed.append([env.current_step,value])
+        for fill in env.fills[nf:]:
+            if fill['reason']=='ENTRY': added.append(old)
+        for event in env.attributions[ne:]:
+            if event['reason']!='TAKE_PROFIT' or not added:
+                raise ValueError('Selected strict plan retained a non-TP native trade')
+            candidate=expected[added[-1]]['exit']
+            if any(event.get(k)!=v for k,v in candidate.items() if k!='entry_id'):
+                raise ValueError('Selected strict plan/native settlement differs')
+            events.append(event);cash+=Decimal(event['net_trade_pnl'])
+        if env.terminated: break
+    expected_cash=sum((Decimal(expected[t]['exit']['net_trade_pnl']) for t in planned),Decimal(0))
+    displayed_cash=sum(float(e['net_trade_pnl']) for e in events)
+    if (added!=planned or cash!=expected_cash or displayed_cash!=query.plan['selected_cash_gain'] or env.entries):
+        raise ValueError('Selected strict optimum is not attained by the native account')
+    return dict(status='PASS_NATIVE_SELECTED_PLAN',native_advances=advances,
+        actual_add_cursors=added,actual_cash_gain=str(cash),every_feedback_matched=True,
+        every_retained_trade_matched=True,feedback_hash=fingerprint(observed),
+        native_events_hash=fingerprint(events),final_state_hash=fingerprint(env.export_state()))
+
+
 def build_quality_suffix(env, *, source):
     """Native parity and a separately bound strict auditor for this Reward.
 
@@ -153,12 +215,18 @@ def build_quality_suffix(env, *, source):
     original floor. The new TP profile preserves those premises; its labels
     are nevertheless rebuilt and bound to a new reward/source identity.
     """
-    from .fg_single3_oracle import CandidateIndex,reference_candidate
+    from .fg_single3_oracle import CandidateIndex,verify_candidates
     from .fg_s3_oracle_state_query import OracleStateQuery
     from .fg_reward_candidates import quality_tp_reward
     from .fg_s3_quality_teacher_v2 import official_days
     if env.reward_config.schema not in (LEGACY_REWARD_SCHEMA,QUALITY_TP_SCHEMA):
         raise ValueError('Quality suffix target mismatch')
+    fold=source.get('fold','TRAIN')
+    if fold!='TRAIN' and (fold not in ('TRAIN_HOLDOUT_EVALUATION_ONLY','DEV_EVALUATION_ONLY') or
+                          source.get('evaluation_only') is not True or not source.get('sealed_inference_sha256')):
+        raise ValueError('Strict evaluation audits require sealed evaluation-only source identity')
+    began=time.perf_counter()
+    initial=env.export_state()
     index = CandidateIndex(env)
     days = official_days(env)
     ordinal = {day:i for i,day in enumerate(dict.fromkeys(days))}
@@ -175,26 +243,39 @@ def build_quality_suffix(env, *, source):
             feedback[u] = feedback.get(u,0.) + quality_tp_reward(row['held_market_bars'], ordinal[days[u]]-ordinal[days[i]])
             row['rewards']['C1'] = [[s,float(np.float32(v))] for s,v in sorted(feedback.items()) if v]
         rows.append(row)
-    # Native execution/feedback parity is a gate for each rebuilt target, not
-    # an assumption inherited from the legacy scorer's acceptance.
-    chosen=set(np.linspace(0,max(0,len(rows)-1),min(8,len(rows)),dtype=int).tolist())
-    for reason in ('TAKE_PROFIT','STOP_LOSS'):
-        found=next((r['cursor'] for r in rows if (r.get('exit') or {}).get('reason')==reason),None)
-        if found is not None: chosen.add(found)
-    for t in sorted(chosen):
-        actual=reference_candidate(env,t)
-        if (actual['rewards']!=rows[t].get('rewards',{}).get('C1',[]) or actual['filled']!=rows[t].get('filled',False)
-                or actual.get('exit_cursor')!=rows[t].get('exit_cursor') and actual['filled']):
-            raise ValueError('New QualityReward candidate/native feedback parity failed at '+str(t))
+    # Reuse the existing full event/settlement comparison, randomized sample,
+    # long paths and chunk boundaries; add official-day/B/early-risk strata.
+    checked=verify_candidates(index,rows,seed=202,count=128)
+    groups=_quality_risk_cursors(rows,days)
+    chosen=set(checked['sampled_cursors'])
+    extra=set(groups.values())-chosen
+    if extra:
+        check_extra=verify_candidates(index,[r for r in rows if r['cursor'] in extra],seed=202,count=len(extra))
+        chosen.update(check_extra['sampled_cursors'])
     # CandidateIndex mutates its private builder Env; query identity excludes
     # its cursor/account but binds complete market and native rules.
     query = OracleStateQuery(env,rows,index.flat_end,fold='TRAIN',source_identity={
         **source, 'target_reward_schema':env.reward_config.schema,
         'candidate_hash':fingerprint(rows), 'builder_code_sha256':digest(__file__)})
-    query.identity.update(protocol='FG_S3_QUALITY_NATIVE_STRICT_AUDITOR_V1',
+    witness=_verify_selected_plan(env,initial,rows,query)
+    held=[r['held_market_bars'] for r in rows if r.get('filled')]
+    import resource
+    validation=dict(protocol='FG_S3_QUALITY_NATIVE_PARITY_V2',seed=202,random_sample_count=128,
+        checked_cursors=sorted(chosen),risk_strata=len(groups),
+        checked_risk_strata=[list(k) for k in groups],selected_plan=witness,
+        all_candidates_exhaustively_replayed=False,
+        proof_scope='indexed interval/dominance theorem plus native sampled strata and every retained plan trade')
+    stats=dict(candidates=len(rows),filled=len(held),
+        held_market_minutes_quantiles=np.quantile(held,[0,.5,.9,.99,1]).tolist() if held else [],
+        sum_independent_held_market_minutes=sum(held),
+        elapsed_seconds=time.perf_counter()-began,
+        peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
+    query.identity.update(protocol='FG_S3_QUALITY_NATIVE_STRICT_AUDITOR_V2',
+        fold=fold,
         target_reward_schema=env.reward_config.schema,
-        native_candidate_parity_cursors=sorted(chosen),
+        native_candidate_validation=validation,
         funding_proof_scope='new_target_proof_at_original_floor; no_legacy_label_reuse')
+    query.candidate_cost=stats  # Performance is evidence, not a semantic identity.
     query.identity_hash = fingerprint(query.identity)
     return query
 

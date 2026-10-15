@@ -50,8 +50,15 @@ def read_settings(path):
         s.update({k:v for k,v in quality_extensions(s).items() if k!='s3_v2_mode'})
         if s['quality_stage']=='HEADS_ONLY' and reward.schema!=LEGACY_REWARD_SCHEMA:
             raise ValueError('Quality-first HEADS_ONLY preserves original C1; new Reward is a later axis')
+        policy_path=s.get('quality_admission_policy')
+        if policy_path:
+            from .fg_s3_quality_admission import validate_policy
+            policy_path=(PROJECT/policy_path).resolve()
+            validate_policy(read_manifest(policy_path))
+            s.update(quality_admission_policy=str(policy_path),quality_admission_policy_sha256=file_hash(policy_path))
+        else:s['quality_admission_policy']=None
         if s['quality_stage']=='CONTROLLED_FULL':
-            from .fg_s3_quality_catalog_v2 import require_prediction_admission
+            from .fg_s3_quality_admission import require_prediction_admission
             if not s.get('quality_prediction_admission_receipt'):
                 raise ValueError('CONTROLLED_FULL is PREDICTION_GATE_PENDING')
             admission_path=Path(s['quality_prediction_admission_receipt']).resolve()
@@ -62,7 +69,9 @@ def read_settings(path):
         s.setdefault('source_checkpoint',None);s.setdefault('model_preset','source')
         s.setdefault('quality_q_max_states',4096);s.setdefault('quality_q_max_seconds',2.)
         s.setdefault('quality_q_max_suffix_bars',12)
-        s.setdefault('quality_max_market_steps',None)
+        s.setdefault('quality_max_market_steps',None);s.setdefault('quality_state_cache_entries',128)
+        if type(s['quality_state_cache_entries']) is not int or not 0<=s['quality_state_cache_entries']<=4096:
+            raise ValueError('Quality state cache requires 0..4096 entries')
         if s['quality_max_market_steps'] is not None and (type(s['quality_max_market_steps']) is not int or s['quality_max_market_steps']<1):
             raise ValueError('Quality exposure budget must be positive market minutes or null')
         if (s['device']=='cpu' and s['scope']!='diagnostic' or
@@ -73,12 +82,26 @@ def read_settings(path):
         if s.get('quality_fixture_env'):
             s['quality_fixture_env']=str((PROJECT/s['quality_fixture_env']).resolve())
         if s['quality_q_admitted']:
-            admission=read_manifest(Path(s['quality_q_admission_receipt']).resolve())
-            if (admission.get('status')!='PASS_TRAIN_Q_FUSION_ADMISSION' or admission.get('fold')!='TRAIN'
-                    or not admission.get('q_v2_pair_valid_count',0) or not admission.get('short_run_verified')):
-                raise ValueError('Quality Q fusion lacks TRAIN support and short-run admission')
+            from .fg_s3_quality_admission import require_q_admission
+            if not s.get('quality_q_admission_receipt'):
+                raise ValueError('FULL_Q_PENDING: independent native Q evidence required')
+            require_q_admission(s['quality_q_admission_receipt'])
             s['quality_q_admission_receipt']=str(Path(s['quality_q_admission_receipt']).resolve())
             s['quality_q_admission_sha256']=file_hash(s['quality_q_admission_receipt'])
+        if s['quality_decision_admitted']:
+            from .fg_s3_quality_admission import require_decision_admission
+            if not s.get('quality_decision_admission_receipt'):
+                raise ValueError('DECISION_GATE_PENDING: independent native action-safety evidence required')
+            decision=require_decision_admission(s['quality_decision_admission_receipt'])
+            expected=[k for k,flag in (('outcome','quality_fuse_outcome'),('score','quality_fuse_score'),('q','quality_q_admitted')) if s[flag]]
+            if decision['components']!=expected:
+                raise ValueError('Decision admission does not cover the selected fusion recipe')
+            if decision['prediction_admission_sha256']!=s['quality_prediction_admission_sha256']:
+                raise ValueError('Decision and prediction admissions selected different models')
+            if s['quality_q_admitted'] and decision.get('q_admission_sha256')!=s['quality_q_admission_sha256']:
+                raise ValueError('Decision and Q admissions selected different models')
+            s['quality_decision_admission_receipt']=str(Path(s['quality_decision_admission_receipt']).resolve())
+            s['quality_decision_admission_sha256']=file_hash(s['quality_decision_admission_receipt'])
     if s['mode'] == 'tutor':
         extension = agent_extensions(s)
         s.update({k: extension[k] for k in DEFAULTS})
