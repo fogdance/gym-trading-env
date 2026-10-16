@@ -1,0 +1,314 @@
+{
+  "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "e57189bad100465c9fee8d9bbb5601f3e5c376ad\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "e57189b WP02 E: certify bounded TRAIN corpus, native replay and audit receipts\n70a947d WP02 D: certify native Quality suffix values and generate full P4 accounts\n48a7eba WP02 C: generate native P0-P3 accounts and isolated Quality facts\n81c577d WP02 B: carry native E Quality V2 through Driver Replay and reconciliation\ne99bb03 WP02 A: publish native E V2 causal partial MACD snapshots\n2904f3e Add native read-only E Quality course preflight and fail-closed CLI\n6939de5 Prepare isolated E Tutor Full E2 formal 1M configuration\n5e71859 Document isolated 4K throughput comparison entrypoints\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/gym-trading-env\nHEAD d374e93e68c09d6bd8121177709960ef2ce497da\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-archive-dev/gym-trading-env\nHEAD b7d5edb30d1dcb2f2d845593a4cef498d923536d\nbranch refs/heads/feat/fg-s3-research-archive\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/gym-trading-env\nHEAD 61a3e88ac29f3445e7bacabd037d752db9431724\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-b2-adapter-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/gym-trading-env\nHEAD bf3c8b8d41ebcf320e77f624a0682ac0d59efc95\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/gym-trading-env\nHEAD c14fcdc257d84f2c9859030859898baff71b8bd0\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/gym-trading-env\nHEAD 9b23b72cb395002224bd3f87bdc808903b2d998e\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\nHEAD 9c7defbdec12f91c6ebadcbb6585ff55f7b18ade\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env\nHEAD a230fbe98e1c441bca4a9424bd3259ac078150f8\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/gym-trading-env\nHEAD 720a66ac3d74f2c8b94ba7f7fbc46a1daafeca15\nbranch refs/heads/feat/s3-e-data-v1\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/gym-trading-env\nHEAD 5e71859327a85c2a5f4923449e862902ae721e38\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env\nHEAD 1fa4cff970f700536b72041cad27972dacc76958\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/gym-trading-env\nHEAD 5ab3712a235d2dced57e049f447203903a9a3f4d\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env\nHEAD e7df18931bbb384282d602de8009208ca33d1de1\nbranch refs/heads/feat/s3-next-archive-integration\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/gym-trading-env\nHEAD 636d839efc45ff38cb914e9e77e99b75657fb32b\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env\nHEAD 9d2bf64f02db742d631a5556f5547c1378cec5cc\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env\nHEAD 9752438c3d9e23752778076e1883a44a507dc780\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/gym-trading-env\nHEAD 5293e978d3f234d5f7c3149f326f1da831012bad\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env\nHEAD 961957fbba8fa2b4ee963a860fcad5f1b95ad281\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-tutor-1m-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env\nHEAD 240d1b139d5afaf8a4c805b8430bac3be18a9f98\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/gym-trading-env\nHEAD cc6ba78f3a2016eb280135f7730d0a1f68d4512e\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/gym-trading-env\nHEAD 9eba965040b6660e6d4655712624353f90990999\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/gym-trading-env\nHEAD 57b0bc372b0813858dece93a25a328af75f6c9c9\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env\nHEAD 904bee6f851fd70d96dca48d06951bb466505561\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/gym-trading-env\nHEAD 267d0387eec26278f9b8b89a45f0646526d3d46f\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/gym-trading-env\nHEAD b71250c0708dd0f34aa61f80585f47f43ad94223\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/gym-trading-env\nHEAD ad6490675bf853a7793763f95aa7ba7f12fa379e\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/gym-trading-env\nHEAD 8a8f2514cb6b1065a665dcfa50a063be43bb8832\nbranch refs/heads/fix/s3-online-console\n\n",
+      "stderr": ""
+    }
+  ],
+  "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "e57189bad100465c9fee8d9bbb5601f3e5c376ad\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "?? src/gym_trading_env/research/fg_s3_e_quality_supervision.py\n?? tests/entry_v1/test_wp03_admission.py\n?? tests/entry_v1/wp03_fixture.py\n?? tools/wp03_verify.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "e57189b WP02 E: certify bounded TRAIN corpus, native replay and audit receipts\n70a947d WP02 D: certify native Quality suffix values and generate full P4 accounts\n48a7eba WP02 C: generate native P0-P3 accounts and isolated Quality facts\n81c577d WP02 B: carry native E Quality V2 through Driver Replay and reconciliation\ne99bb03 WP02 A: publish native E V2 causal partial MACD snapshots\n2904f3e Add native read-only E Quality course preflight and fail-closed CLI\n6939de5 Prepare isolated E Tutor Full E2 formal 1M configuration\n5e71859 Document isolated 4K throughput comparison entrypoints\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/gym-trading-env\nHEAD d374e93e68c09d6bd8121177709960ef2ce497da\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-archive-dev/gym-trading-env\nHEAD b7d5edb30d1dcb2f2d845593a4cef498d923536d\nbranch refs/heads/feat/fg-s3-research-archive\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/gym-trading-env\nHEAD 61a3e88ac29f3445e7bacabd037d752db9431724\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-b2-adapter-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/gym-trading-env\nHEAD bf3c8b8d41ebcf320e77f624a0682ac0d59efc95\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/gym-trading-env\nHEAD c14fcdc257d84f2c9859030859898baff71b8bd0\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/gym-trading-env\nHEAD 9b23b72cb395002224bd3f87bdc808903b2d998e\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\nHEAD 9c7defbdec12f91c6ebadcbb6585ff55f7b18ade\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env\nHEAD a230fbe98e1c441bca4a9424bd3259ac078150f8\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/gym-trading-env\nHEAD 720a66ac3d74f2c8b94ba7f7fbc46a1daafeca15\nbranch refs/heads/feat/s3-e-data-v1\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/gym-trading-env\nHEAD 5e71859327a85c2a5f4923449e862902ae721e38\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env\nHEAD 1fa4cff970f700536b72041cad27972dacc76958\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/gym-trading-env\nHEAD 5ab3712a235d2dced57e049f447203903a9a3f4d\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env\nHEAD e7df18931bbb384282d602de8009208ca33d1de1\nbranch refs/heads/feat/s3-next-archive-integration\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/gym-trading-env\nHEAD 636d839efc45ff38cb914e9e77e99b75657fb32b\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env\nHEAD 9d2bf64f02db742d631a5556f5547c1378cec5cc\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env\nHEAD 9752438c3d9e23752778076e1883a44a507dc780\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/gym-trading-env\nHEAD 5293e978d3f234d5f7c3149f326f1da831012bad\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env\nHEAD 961957fbba8fa2b4ee963a860fcad5f1b95ad281\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-tutor-1m-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env\nHEAD 240d1b139d5afaf8a4c805b8430bac3be18a9f98\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/gym-trading-env\nHEAD cc6ba78f3a2016eb280135f7730d0a1f68d4512e\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/gym-trading-env\nHEAD 9eba965040b6660e6d4655712624353f90990999\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/gym-trading-env\nHEAD 57b0bc372b0813858dece93a25a328af75f6c9c9\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env\nHEAD 904bee6f851fd70d96dca48d06951bb466505561\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/gym-trading-env\nHEAD 267d0387eec26278f9b8b89a45f0646526d3d46f\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/gym-trading-env\nHEAD b71250c0708dd0f34aa61f80585f47f43ad94223\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/gym-trading-env\nHEAD ad6490675bf853a7793763f95aa7ba7f12fa379e\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/gym-trading-env\nHEAD 8a8f2514cb6b1065a665dcfa50a063be43bb8832\nbranch refs/heads/fix/s3-online-console\n\n",
+      "stderr": ""
+    }
+  ],
+  "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "6939de5b43200e6f19311804ebf1739b01f12ba5\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "6939de5 Prepare isolated E Tutor Full E2 formal 1M configuration\n5e71859 Document isolated 4K throughput comparison entrypoints\n37b1f34 Avoid unchanged Replay owner rebuilds and verify native E throughput\n6c9b10a Optimize E snapshots with byte-equivalent array operations\nbed3a2c Prepare E-only original Dreamer RL without teacher queries or BC\n6c78d7c Merge versioned test and migration instructions into s3-next\ne532cde Record test and migration contracts in repository AGENTS instructions\n713a70f Record two-parent Quality merge review and real CPU acceptance evidence\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/gym-trading-env\nHEAD d374e93e68c09d6bd8121177709960ef2ce497da\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-archive-dev/gym-trading-env\nHEAD b7d5edb30d1dcb2f2d845593a4cef498d923536d\nbranch refs/heads/feat/fg-s3-research-archive\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/gym-trading-env\nHEAD 61a3e88ac29f3445e7bacabd037d752db9431724\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-b2-adapter-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/gym-trading-env\nHEAD bf3c8b8d41ebcf320e77f624a0682ac0d59efc95\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/gym-trading-env\nHEAD c14fcdc257d84f2c9859030859898baff71b8bd0\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/gym-trading-env\nHEAD 9b23b72cb395002224bd3f87bdc808903b2d998e\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/gym-trading-env\nHEAD 9c7defbdec12f91c6ebadcbb6585ff55f7b18ade\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/gym-trading-env\nHEAD a230fbe98e1c441bca4a9424bd3259ac078150f8\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/gym-trading-env\nHEAD 720a66ac3d74f2c8b94ba7f7fbc46a1daafeca15\nbranch refs/heads/feat/s3-e-data-v1\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/gym-trading-env\nHEAD bed3a2cefd3923f4a7d45709d979892264c6298d\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/gym-trading-env\nHEAD 5e71859327a85c2a5f4923449e862902ae721e38\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env\nHEAD e57189bad100465c9fee8d9bbb5601f3e5c376ad\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/gym-trading-env\nHEAD 1fa4cff970f700536b72041cad27972dacc76958\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/gym-trading-env\nHEAD 5ab3712a235d2dced57e049f447203903a9a3f4d\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/gym-trading-env\nHEAD e7df18931bbb384282d602de8009208ca33d1de1\nbranch refs/heads/feat/s3-next-archive-integration\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env\nHEAD 6939de5b43200e6f19311804ebf1739b01f12ba5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/gym-trading-env\nHEAD 636d839efc45ff38cb914e9e77e99b75657fb32b\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/gym-trading-env\nHEAD 871ca09000712d41408b8f72e0684624dce8659f\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/gym-trading-env\nHEAD 9d2bf64f02db742d631a5556f5547c1378cec5cc\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/gym-trading-env\nHEAD 9752438c3d9e23752778076e1883a44a507dc780\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/gym-trading-env\nHEAD 5293e978d3f234d5f7c3149f326f1da831012bad\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/gym-trading-env\nHEAD 961957fbba8fa2b4ee963a860fcad5f1b95ad281\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/gym-trading-env\nHEAD e0ad981e0309f4206fec0ee5403eff89ef9b0cb8\nbranch refs/heads/feat/s3-tutor-1m-diagnostics\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/gym-trading-env\nHEAD 240d1b139d5afaf8a4c805b8430bac3be18a9f98\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/gym-trading-env\nHEAD 3970e6ec69f67fb2d02f30456a077ea5a31fd05d\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/gym-trading-env\nHEAD cc6ba78f3a2016eb280135f7730d0a1f68d4512e\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/gym-trading-env\nHEAD 3a6f889adf65583a1ab636f244ca05218f19196f\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/gym-trading-env\nHEAD 9eba965040b6660e6d4655712624353f90990999\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/gym-trading-env\nHEAD 57b0bc372b0813858dece93a25a328af75f6c9c9\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/gym-trading-env\nHEAD 904bee6f851fd70d96dca48d06951bb466505561\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/gym-trading-env\nHEAD 267d0387eec26278f9b8b89a45f0646526d3d46f\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/gym-trading-env\nHEAD b71250c0708dd0f34aa61f80585f47f43ad94223\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/gym-trading-env\nHEAD ad6490675bf853a7793763f95aa7ba7f12fa379e\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/gym-trading-env\nHEAD 8a8f2514cb6b1065a665dcfa50a063be43bb8832\nbranch refs/heads/fix/s3-online-console\n\n",
+      "stderr": ""
+    }
+  ],
+  "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "44a6cc62032811501631e83be977f07137dc65b8\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "44a6cc6 WP02 D: bind Quality suffix objective without granting preflight admission\nc056184 WP02 B: fuse validity-gated MACD in the real E Encoder and exact resume\n1d59282 WP02 A: version the five-field E Quality course V2\n347724e Define versioned E Quality TP course contract without runtime admission\n51ed1d0 Route E-only composition through original gated Dreamer RL\n3264c7e Merge shared AGENTS requirements into s3-next\n1170ba6 Apply shared test and migration requirements in Dreamer AGENTS\n219d334 Merge verified Gate audit test contract fix into s3-next\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/dreamerv3\nHEAD bb1d123fbb12e9390cee0282490a604f66be10f8\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3\nHEAD 131e7ccd4ef0648c8230e088d95e2c6da991557c\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/dreamerv3\nHEAD 930d76446ac86fbb18b65a4f79eac263d89dafc4\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/dreamerv3\nHEAD 632a870d6c7de042f962c327cc984efb03aee2cf\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/dreamerv3\nHEAD d33985cb2989dcf2e3fe6dc06584ffb757011c3d\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/dreamerv3\nHEAD 00b82f850d44c268167578e07f77b0b613591f4a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/dreamerv3\nHEAD 93a6fb65b493b60f7c1205b8351d7024cbfc326a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/dreamerv3\nHEAD 33636c0593392b4f6ff203109ce41bfc831225a9\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/dreamerv3\nHEAD a561b09f1c10eaa73aa2834c46a2d94e6e354a36\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/dreamerv3\nHEAD 7ff697f70c92e0a9f764ef738437415470d0e59f\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/dreamerv3\nHEAD 8dad6dd036f46b95325b2348f0c871e5f722499d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/dreamerv3\nHEAD e64004e3da2cfe2848e6004234847c758ec41cc0\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\n",
+      "stderr": ""
+    }
+  ],
+  "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "44a6cc62032811501631e83be977f07137dc65b8\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "44a6cc6 WP02 D: bind Quality suffix objective without granting preflight admission\nc056184 WP02 B: fuse validity-gated MACD in the real E Encoder and exact resume\n1d59282 WP02 A: version the five-field E Quality course V2\n347724e Define versioned E Quality TP course contract without runtime admission\n51ed1d0 Route E-only composition through original gated Dreamer RL\n3264c7e Merge shared AGENTS requirements into s3-next\n1170ba6 Apply shared test and migration requirements in Dreamer AGENTS\n219d334 Merge verified Gate audit test contract fix into s3-next\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/dreamerv3\nHEAD bb1d123fbb12e9390cee0282490a604f66be10f8\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3\nHEAD 131e7ccd4ef0648c8230e088d95e2c6da991557c\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/dreamerv3\nHEAD 930d76446ac86fbb18b65a4f79eac263d89dafc4\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/dreamerv3\nHEAD 632a870d6c7de042f962c327cc984efb03aee2cf\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/dreamerv3\nHEAD d33985cb2989dcf2e3fe6dc06584ffb757011c3d\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/dreamerv3\nHEAD 00b82f850d44c268167578e07f77b0b613591f4a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/dreamerv3\nHEAD 93a6fb65b493b60f7c1205b8351d7024cbfc326a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/dreamerv3\nHEAD 33636c0593392b4f6ff203109ce41bfc831225a9\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/dreamerv3\nHEAD a561b09f1c10eaa73aa2834c46a2d94e6e354a36\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/dreamerv3\nHEAD 7ff697f70c92e0a9f764ef738437415470d0e59f\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/dreamerv3\nHEAD 8dad6dd036f46b95325b2348f0c871e5f722499d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/dreamerv3\nHEAD e64004e3da2cfe2848e6004234847c758ec41cc0\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\n",
+      "stderr": ""
+    }
+  ],
+  "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "51ed1d094c92fc52a910acda3e2a3421bc71c9e5\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "log",
+        "-8",
+        "--oneline"
+      ],
+      "exit_code": 0,
+      "stdout": "51ed1d0 Route E-only composition through original gated Dreamer RL\n3264c7e Merge shared AGENTS requirements into s3-next\n1170ba6 Apply shared test and migration requirements in Dreamer AGENTS\n219d334 Merge verified Gate audit test contract fix into s3-next\n60e1232 Preserve raw test receipts without rewriting captured whitespace\nab54b4e Fix stale Gate-only audit expectations and pin migration contracts\n6114b55 Document accepted Quality integration and remaining composition gates\n6403cd6 Merge reviewed Quality-first student into s3-next and retain E admission hooks\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "worktree /home/v/Documents/work/research/dreamerv3\nHEAD bb1d123fbb12e9390cee0282490a604f66be10f8\nbranch refs/heads/feat/fg-s3b-certified-bc\n\nworktree /home/v/Documents/work/research/fg-s3-b2-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-b2-outcome-aware\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-b2-full\n\nworktree /home/v/Documents/work/research/fg-s3-b2-full-train/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-clock-dev/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\nbranch refs/heads/feat/fg-s3-market-minute\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-collection-perf-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/perf/s3-env-rotation\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-dev/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\nbranch refs/heads/feat/fg-s3-v2-dagger\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/dreamerv3\nHEAD 131e7ccd4ef0648c8230e088d95e2c6da991557c\nbranch refs/heads/verify/s3-e-a2-b2-20261015\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-ab-release-20261016/dreamerv3\nHEAD 930d76446ac86fbb18b65a4f79eac263d89dafc4\nbranch refs/heads/feat/s3-e-a2-b2-release-20261016\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-data-dev/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-model-dev/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/feat/s3-e-model\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-dev-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/feat/s3-e-only-1m-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-only-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-e-perf-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/perf/s3-e-throughput-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp02-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp01-wp02-delivery-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/delivery/s3-e-quality-wp01-wp02-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3\nHEAD 44a6cc62032811501631e83be977f07137dc65b8\nbranch refs/heads/feat/s3-e-quality-wp03-v2-20261016\n\nworktree /home/v/Documents/work/research/fg-s3-e-review-fix-20261015/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/fix/s3-e-market-identity-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-e-tutor-train-20261016/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-f0-dev/dreamerv3\nHEAD 632a870d6c7de042f962c327cc984efb03aee2cf\nbranch refs/heads/feat/s3-f0-composition\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-full-integration-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-full-integration\n\nworktree /home/v/Documents/work/research/fg-s3-next-archive-integration/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-next-integration/dreamerv3\nHEAD 51ed1d094c92fc52a910acda3e2a3421bc71c9e5\nbranch refs/heads/integration/s3-next\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-integration-review/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\nbranch refs/heads/test/fg-s3-quality-first-integration-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-first-patch-review/dreamerv3\nHEAD 730939defb1bd77b2ceca04212105ec2727c95f9\nbranch refs/heads/test/fg-s3-quality-first-patch-20261015\n\nworktree /home/v/Documents/work/research/fg-s3-quality-v2-dev/dreamerv3\nHEAD d33985cb2989dcf2e3fe6dc06584ffb757011c3d\nbranch refs/heads/feat/fg-s3-quality-v2\n\nworktree /home/v/Documents/work/research/fg-s3-train-t030/dreamerv3\nHEAD 00b82f850d44c268167578e07f77b0b613591f4a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-train/dreamerv3\nHEAD 93a6fb65b493b60f7c1205b8351d7024cbfc326a\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-800k-freeze/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-dev/dreamerv3\nHEAD 33636c0593392b4f6ff203109ce41bfc831225a9\nbranch refs/heads/feat/fg-s3-tutor-cd-v0\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-diagnostics/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-e2-dev/dreamerv3\nHEAD a561b09f1c10eaa73aa2834c46a2d94e6e354a36\nbranch refs/heads/feat/fg-s3-tutor-cd-e2\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-dev/dreamerv3\nHEAD 5fd4ebdeb590fd8433338300bd82c7f2f520bf76\nbranch refs/heads/feat/fg-s3-tutor-cd-full\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-full-train/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-mm-train/dreamerv3\nHEAD c18a8b5917f73110f9b6ce840495f4da1d7ca1d4\ndetached\n\nworktree /home/v/Documents/work/research/fg-s3-tutor-online/dreamerv3\nHEAD d41bc80ba13b3dc3f5d2c32fcdc800613b2d0b4d\nbranch refs/heads/feat/tutor-cd-online-sim\n\nworktree /home/v/Documents/work/research/fg-s3-v2-c2-dev/dreamerv3\nHEAD 7ff697f70c92e0a9f764ef738437415470d0e59f\nbranch refs/heads/feat/fg-s3-v2-c2\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-beta/dreamerv3\nHEAD 6356747d64963fb5ef55a036d837591f778c9f0a\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train-p0/dreamerv3\nHEAD 8dad6dd036f46b95325b2348f0c871e5f722499d\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-v2-train/dreamerv3\nHEAD e64004e3da2cfe2848e6004234847c758ec41cc0\ndetached\nprunable gitdir file points to non-existent location\n\nworktree /home/v/Documents/work/research/fg-s3-wandb-dev/dreamerv3\nHEAD d76a423dd7930756c3609cc6f7197941f583c160\nbranch refs/heads/feat/fg-s3-wandb-tracking\n\nworktree /tmp/s3-online-console-integration/dreamerv3\nHEAD eb63de710fd693fad7ac76f797f3d9f39e331b98\ndetached\n\n",
+      "stderr": ""
+    }
+  ]
+}
