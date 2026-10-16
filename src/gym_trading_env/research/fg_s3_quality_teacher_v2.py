@@ -127,6 +127,13 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
                                    (first_f['1'], first_f['3'], first_a['10']))
         touch_y.append(y[:2]); touch_v.append(v[:2])
         adverse_y.append(y[2]); adverse_v.append(v[2])
+    close_quotes=np.asarray([float(env._price(row.Close,entry['side'],time)) for time,row in raw.iterrows()])
+    underwater=(sign*(close_quotes-price)<0)
+    if event is not None: underwater=underwater[:-1]  # no post-exit close
+    longest=run=0
+    for value in underwater:
+        run=run+1 if value else 0
+        longest=max(longest,run)
     score, score_reason = quality_for_exit(reason or 'RIGHT_CENSORED',observed,d)
     return dict(exit_type=kind, entry_cursor=i, observed_until_cursor=u,
         exit_cursor=u if event else None, held_market_minutes=observed,
@@ -139,6 +146,16 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
         first_adverse_valid={k:bool(event is not None or v is not None) for k,v in first_a.items()},
         favorable_event_not_reached={k:bool(event is not None and v is None) for k,v in first_f.items()},
         adverse_event_not_reached={k:bool(event is not None and v is None) for k,v in first_a.items()},
+        mae_15=float(adverse[:min(15,observed)].max()),
+        mae_15_complete=bool(event is not None or observed>=15),
+        underwater_minutes=int(underwater.sum()), underwater_longest_minutes=longest,
+        underwater_observed_minutes=len(underwater), underwater_observed_valid=True,
+        underwater_full_valid=event is not None,
+        underwater_definition='native_executable_close_while_held_at_eob; settled_exit_bar_excluded',
+        early10_5=first_a['10'] is not None and first_a['10']<=5,
+        early10_15=first_a['10'] is not None and first_a['10']<=15,
+        early10_5_valid=bool(event is not None or observed>=5 or first_a['10'] is not None),
+        early10_15_valid=bool(event is not None or observed>=15 or first_a['10'] is not None),
         mae_5=maes[0], mae_60=maes[1], mae_240=maes[2], mae_full=maes[3],
         mae_window_complete=[bool(event or observed >= h) for h in (5, 60, 240)],
         mfe_full=float(favorable.max()), path_complete=event is not None,
@@ -188,6 +205,38 @@ def wait_reasons(label, strict):
                 causal_explanation='UNKNOWN_REASON')
 
 
+def verify_native_e_fork(env, clone):
+    """Prove isolation with the actual native E executor, not a bypass flag."""
+    from .fg_s3_e_observation import OBS_SCHEMA, observation_contract
+    if (getattr(env, '_e_profile', None) is None or getattr(clone, '_e_profile', None) is None
+            or env.reward_config.schema != 'FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'
+            or env.e_observation_identity != clone.e_observation_identity
+            or not hasattr(env._e_profile, 'source_receipt')
+            or not hasattr(clone._e_profile, 'source_receipt')):
+        raise ValueError('E-profile native Quality fork identity is NOT_VERIFIED')
+    if (env._e_market is clone._e_market or
+            np.shares_memory(env._features, clone._features) or
+            np.shares_memory(env._e_market.obs_array, clone._e_market.obs_array)):
+        raise ValueError('E-profile native Quality fork aliases mutable market state')
+    state = env.export_state()
+    expected = env._get_obs()
+    clone.import_state(state)
+    for k,v in expected.items():
+        if not np.array_equal(v, clone._get_obs()[k]):
+            raise ValueError('E-profile native Quality fork observation differs')
+    if clone.status == 'ACTIVE' and not clone.terminated:
+        clone.step(0)
+    if env.export_state() != state:
+        raise ValueError('E-profile native Quality fork mutated the source account')
+    clone.import_state(state)
+    return dict(protocol='FG_S3_E_NATIVE_FORK_V2',observation_schema=OBS_SCHEMA,
+        observation_contract_hash=observation_contract()['contract_hash'],
+        source_identity=env._e_profile.identity,
+        profile_receipt_hash=fingerprint(env._e_profile.source_receipt),
+        independent_account_and_market=True, exact_restore=True,
+        snapshot_hash=fingerprint(state))
+
+
 class NativeQualityTeacher:
     """Restore a full financial snapshot into a private original Env executor."""
     def __init__(self, env, factory, *, fold, source):
@@ -205,8 +254,9 @@ class NativeQualityTeacher:
         self.rules = rules_identity(env)
         self.market_hash = fingerprint(env._raw.to_dict(orient='split'))
         self.clone = factory()
+        self.e_fork = None
         if getattr(env,'_e_profile',None) is not None or getattr(self.clone,'_e_profile',None) is not None:
-            raise ValueError('E-profile quality fork is NOT_VERIFIED')
+            self.e_fork = verify_native_e_fork(env,self.clone)
         if rules_identity(self.clone) != self.rules or not self.clone._raw.equals(env._raw):
             raise ValueError('Counterfactual clone differs from native rules or market')
         self.calendar_index=official_day_index(self.clone)
@@ -229,6 +279,8 @@ class NativeQualityTeacher:
             horizons=list(HORIZONS), touch_horizons=list(TOUCH_HORIZONS), funds_proof='actual_snapshot_clone')
         import inspect
         self.identity['native_env_code_sha256']=digest(inspect.getfile(type(env)))
+        if self.e_fork is not None:
+            self.identity['e_fork'] = self.e_fork
         self.identity_hash = fingerprint(self.identity)
 
     def query_state(self, env, mask, *, snapshot=None):
@@ -238,6 +290,11 @@ class NativeQualityTeacher:
             path=Path(name)
             if str(path.resolve(strict=True))!=resolved or _stat_identity(path)!=stat:
                 raise ValueError('Frozen quality source changed during collection: '+name)
+        if self.e_fork is not None and (
+                env.e_observation_identity != self.clone.e_observation_identity or
+                env._e_profile.identity != self.e_fork['source_identity'] or
+                fingerprint(env._e_profile.source_receipt) != self.e_fork['profile_receipt_hash']):
+            raise ValueError('E-profile source identity changed during Quality collection')
         actual = decision_state(env)
         state_id = fingerprint(actual)
         if (rules_identity(env) != self.rules or not env._raw.equals(self.clone._raw)
@@ -320,7 +377,8 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         from .fg_replay import execute_observed
         from gym_trading_env.rewards.single3_reward import Single3Reward,Single3RewardConfig
         clone.import_state(state)
-        shadow=Single3Reward(Single3RewardConfig.for_candidate('C1'))
+        shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'))
+                if getattr(env,'_e_profile',None) is None else None)
         before = clone._calculate_equity()
         fills, exits = len(clone.fills), len(clone.attributions)
         decision = clone.current_step
@@ -330,7 +388,7 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
             nonlocal original_reward
             _,row=execute_observed(clone,action)
             rewards.append([clone.current_step,float(np.float32(row['official_reward']))])
-            if row['advanced']:
+            if row['advanced'] and shadow is not None:
                 original_reward+=float(np.float32(shadow.step(row['bar'],clone.terms.multiplier)['total']))
         advance(1)
         opened = next((copy.deepcopy(f) for f in clone.fills[fills:] if f['reason'] == 'ENTRY'), None)
@@ -355,17 +413,18 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         result=dict(facts, immediate_outcome_verified=True, decision_cursor=decision,
             account_snapshot_hash=fingerprint(state),
             native_entry=copy.deepcopy(opened),
-            native_event=copy.deepcopy(event), original_c1_reward=original_reward,
+            native_event=copy.deepcopy(event), original_c1_reward=original_reward if shadow is not None else None,
             censor_reason=('EXPOSURE_BUDGET' if budget_censored else 'NATIVE_DATA_BOUNDARY') if event is None else None,
             configured_reward=sum(r[1] for r in rewards), reward_feedback=rewards,
             reward_schema=env.reward_config.schema, funds_after=str(clone._calculate_equity()),
             final_state_hash=fingerprint(clone.export_state()))
         is_tp=event is not None and event['reason']=='TAKE_PROFIT'
-        old_tp=float(shadow.scorer.closed[event['entry_id']].timeboxed_tp) if is_tp else None
+        old_tp=float(shadow.scorer.closed[event['entry_id']].timeboxed_tp) if is_tp and shadow is not None else None
         new_tp=facts['score']/100 if is_tp else None
         result.update(tp_event_reward_new=new_tp,old_tp_event_reward=old_tp,
-            old_reward_undiscounted=original_reward,
-            new_reward_undiscounted=(original_reward-old_tp+new_tp if is_tp else
+            old_reward_undiscounted=original_reward if shadow is not None else None,
+            new_reward_undiscounted=(sum(r[1] for r in rewards) if shadow is None and event is not None else
+                                    original_reward-old_tp+new_tp if is_tp else
                                     original_reward if event is not None else None),
             native_event_hash=fingerprint(event) if event is not None else None,
             risk=dict(mae_5=facts['mae_5'],mae_60=facts['mae_60'],mae_240=facts['mae_240'],
