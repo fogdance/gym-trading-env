@@ -1,0 +1,28 @@
+# S3 开发与集成要求
+
+工作区根目录的 AGENTS.md 继续适用。以下测试与迁移要求随仓库 Git 版本保留，适用于本仓及同工作区的兄弟 Dreamer 仓。
+
+## 测试合同与历史迁移（2026-10-16）
+
+代码语义变更时，同步更新测试合同和迁移规则。先从真实失败及源码确认根因，再决定修改生产代码还是测试预期；不能默认旧断言正确，也不能默认失败只因测试过时。
+
+1. **当前功能以行为验证为主。** 优先验证输入输出、数学结果、市场分钟、梯度边界、Replay 所属关系和完整恢复。AST／源码哈希比较用于有明确等价要求的来源审计；不得将整份实现结构相同当作一般功能正确的替代证明。
+2. **历史迁移测试固定两端版本。** 历史来源与历史目标均绑定完整 Git SHA 或已认证工件及哈希，不将固定旧源码与不断变化的 HEAD 默认视为等价。验证当前代码的变异负例必须从同一份当前源码构造，基准本身须先通过相应正例，避免因原有差异而产生无效的拒绝断言。
+3. **语义变更明确迁移边界。** 数学公式、Clock、Observation、Replay、优化器或恢复合同有意改变时，同步明确哪些迁移允许、哪些必须拒绝，并覆盖直接受影响的边界。新算法或合同使用新 Run；旧 Run 保留冻结源码和工件。参数继承只能走已明确允许且认证来源的 warm-start，不伪装为同 Run resume。
+4. **不为过时测试新增生产兼容。** 已有证据确认旧预期不再符合当前合同，就更新测试，保留仍有意义的历史迁移正例，并增加必要的拒绝回归。不得通过放宽审计、增加兼容别名或静默回退、跳过测试或无依据标记 xfail 来消除失败。
+5. **集成覆盖共享边界。** 涉及 Gate、SourceAdmission、Clock、Observation、Replay 或 FullCheckpoint 时，除本功能最小测试外，固定执行下述共享回归，并执行直接受影响的时钟、Replay／恢复测试。仅跑功能目录不足以证明共享调用链通过；无需穷举所有历史版本或无关组合。
+6. **验收范围可核对。** 记录真实两仓 SHA、dirty 状态、准确命令、实际收集的测试清单、通过／失败／跳过数量与未验证项，并保留原始收据。选定测试集合通过不能表述为全项目通过；未执行、跳过及旧版本 PASS 不自动成为新版本 PASS。对确认无运行源码变更的测试／文档修正，可明确记录源码哈希相同的继承证据。
+
+共享回归从同工作区的 Gym 仓库执行，使用现有 Dreamer Python 环境，保持 CPU 验证与 GPU／正式训练授权分离：
+
+```bash
+env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 \
+  JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 \
+  OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider \
+  ../dreamerv3/embodied/tests/test_fg_s3_gate.py \
+  ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py \
+  ../dreamerv3/embodied/tests/test_action_mask_formal_guards.py
+```
+
+遇到失败，先在未修改基线复现并定位首个相关变更；依据证据区分生产回归、测试合同过时、环境／数据问题或覆盖遗漏。报告根因、最小修复和实际验证，不能只用“兼容性问题”解释。
