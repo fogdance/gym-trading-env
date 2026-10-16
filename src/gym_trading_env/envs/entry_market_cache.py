@@ -1,5 +1,6 @@
 """Bounded process-local market reuse; accounts and checkpoints stay separate."""
 from collections import OrderedDict
+import copy
 from dataclasses import dataclass
 import hashlib
 from pathlib import Path
@@ -35,22 +36,21 @@ class _MarketSnapshot:
     @classmethod
     def capture(cls, env):
         # Never retain an Env/account or let an Env mutate the cache payload.
-        # E's fully prepared MarketData is deliberately shared. Treat its frames,
-        # arrays, buckets and clock as read-only after construction.
-        # Mutable account/query state must stay outside that shared object.
+        # E V2 owns a causal MACD prefix cache. Never share that mutable
+        # state between accounts, teacher forks or the pristine cache.
         return cls(env._raw.copy(deep=True), env._features.copy(),
                    env.bobs.copy(deep=True), env.valid_fill_clock.copy(),
-                   getattr(env, '_e_market', None))
+                   copy.deepcopy(getattr(env, '_e_market', None)))
 
     def restore(self, env):
         env._raw = self.raw.copy(deep=True)
         env._features = self.features.copy()
         env.bobs = self.bobs.copy(deep=True)
         env.valid_fill_clock = self.valid.copy()
-        env._e_market = self.e_market
+        env._e_market = copy.deepcopy(self.e_market)
         env.bar_source = SimpleNamespace(store=SimpleNamespace(
             index=env._raw.index, n_rows=len(env._raw)))
-        env.market_clock_counter = (self.e_market.market_clock_counter if self.e_market is not None
+        env.market_clock_counter = (env._e_market.market_clock_counter if env._e_market is not None
                                     else MarketClock(env.valid_fill_clock))
 
     @property

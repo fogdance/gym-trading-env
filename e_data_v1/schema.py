@@ -56,7 +56,10 @@ class EDataConfig:
 
     def schema(self, legacy_hashes):
         directory = Path(__file__).resolve().parent
+        from gym_trading_env.utils.macd_5m_causal import CONTRACT
+        indicator = directory.parent/'src/gym_trading_env/utils/macd_5m_causal.py'
         value = {
+            "macd_5m": CONTRACT, "macd_code_sha256": hashlib.sha256(indicator.read_bytes()).hexdigest(),
             "schema": SCHEMA, "context_shape": [24, 7], "minute_shape": [60, 18],
             "dtype": "float32", "context_fields": list(CONTEXT_FIELDS),
             "minute_fields": list(LEGACY_FIELDS), "shared_fields": list(SHARED_FIELDS),

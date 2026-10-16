@@ -23,7 +23,7 @@ from .fg_s3_quality_score import PROTOCOL as SCORE_POLICY
 
 
 PROJECT = Path(__file__).resolve().parents[3]
-REPORT_SCHEMA = 'FG_S3_E_QUALITY_COURSE_PREFLIGHT_V1'
+REPORT_SCHEMA = 'FG_S3_E_QUALITY_COURSE_PREFLIGHT_V2'
 RECEIPT_NAME = 'course_contract_receipt.json'
 RESERVED_OUTPUT_PARTS = {'prepared', 'runs', 'run', 'ckpt', 'checkpoint', 'checkpoints', 'corpus', 'corpora'}
 
@@ -98,6 +98,7 @@ def native_contracts(validated):
     if (obs['observation_schema'] != wanted['schema'] or
             obs['encoder_keys'] != wanted['policy_observation_fields'] or
             obs['context_fields'] != wanted['context_fields'] or
+            obs['macd_5m'] != wanted['macd_5m'] or
             any(obs['fields'].get(k) != v for k, v in wanted['fields'].items())):
         raise ValueError('COURSE_NATIVE_OBSERVATION_MISMATCH')
     e_schema = EDataConfig().schema(load_legacy()[1])
@@ -147,8 +148,8 @@ def _source_metadata(validated, base):
             for row in data['market_sources']:
                 native = index[row['contract']]
                 if any(row[key] != native.get(native_key) for key, native_key in (
-                        ('source_sha256', 'sha256'), ('env_config_sha256', 'env_config_sha256'),
-                        ('metadata_sha256', 'metadata_sha256'))):
+                        ('source_sha256', 'sha256'), ('env_config_sha256', 'env_sha256'),
+                        ('metadata_sha256', 'contract_sha256'))):
                     raise ValueError('COURSE_SOURCE_IDENTITY_MISMATCH: selected TRAIN member')
             checked['source_manifest'] = 'TRAIN_MEMBERS_AND_DECLARED_HASHES_MATCH_METADATA_ONLY'
         inputs.append(path)

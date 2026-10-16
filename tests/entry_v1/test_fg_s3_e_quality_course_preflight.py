@@ -17,7 +17,7 @@ from gym_trading_env.research.fg_replay import read_manifest, signed, write_json
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EXAMPLE = ROOT / 'docs/fixtures/fg_s3_e_quality_course_v1.example.json'
+EXAMPLE = ROOT / 'docs/fixtures/fg_s3_e_quality_course_v2.example.json'
 CLI = ROOT / 'tools/fg_s3_e_quality_course_preflight.py'
 
 
@@ -54,7 +54,7 @@ def complete_metadata(tmp_path, *, mode='formal'):
         env_config_sha256='b' * 64, metadata_sha256='c' * 64)]
     member = dict(contract='CZCE.FG201', role='train', eligible_for_training=True,
         path=str(metadata / 'NONEXISTENT_MARKET.csv'), sha256='a' * 64,
-        env_config_sha256='b' * 64, metadata_sha256='c' * 64)
+        env_sha256='b' * 64, contract_sha256='c' * 64)
     pool = metadata / 'pool.json'; pool.write_text(json.dumps(dict(product='FG', files=[member])))
     source['source_manifest'] = dict(path='metadata/pool.json', sha256=p.sha256(pool))
     source['e_profile_schema_sha256'] = p.native_contracts(validate_course_spec(draft()))['e_data_schema']['schema_sha256']

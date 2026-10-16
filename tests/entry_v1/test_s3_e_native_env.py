@@ -77,7 +77,7 @@ def test_native_profile_preserves_original_oracle_financial_rules(tmp_path):
         legacy.reset(seed=202);native.reset(seed=202)
         answer=query.query(native,native._published_mask)
         assert answer['certified'],answer['reason']
-        assert legacy.export_state()==native.export_state()
+        assert legacy.export_state()=={k:v for k,v in native.export_state().items() if k!='e_state'}
     finally:legacy.close();native.close()
 
 
@@ -123,7 +123,7 @@ def test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18(tmp_path):
         a, _ = legacy.reset()
         b, _ = extended.reset()
         assert set(a) == {'market_seq', 'position_state', 'action_mask'}
-        assert set(b) == set(a) | {'market_seq_e_shared', 'market_context_15m'}
+        assert set(b) == set(a) | {'market_seq_e_shared', 'market_context_15m', 'market_macd_5m'}
         for key in a:
             np.testing.assert_array_equal(a[key], b[key])
         np.testing.assert_array_equal(legacy._features, extended._features)
@@ -155,6 +155,7 @@ def test_market_cache_does_not_cross_legacy_and_e_profile(tmp_path):
                                    e_profile=profile)
     try:
         assert len(cache) == 2
+        assert new._e_market is not again._e_market
         assert new._e_market is not None and again._e_market is not None
         assert old._e_market is None
         assert old.config_hash==new.config_hash and old.observation_identity==new.observation_identity

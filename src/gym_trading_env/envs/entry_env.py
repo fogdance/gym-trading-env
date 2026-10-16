@@ -152,6 +152,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             obs_spaces.update({
                 'market_seq_e_shared': spaces.Box(-np.inf, np.inf, (60, 18), np.float32),
                 'market_context_15m': spaces.Box(-np.inf, np.inf, (24, 7), np.float32),
+                'market_macd_5m': spaces.Box(-np.inf, np.inf, (4,), np.float32),
             })
         self.observation_space = spaces.Dict(obs_spaces)
         self.completed_accounts = []
@@ -394,7 +395,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                          market_seq=obs['market_seq']))
             if not np.array_equal(old, obs['market_seq']):
                 raise ValueError('E observation changed the original 18 channels')
-            arrays = dict(market_seq_e_shared=shared.copy(), market_context_15m=context.copy())
+            macd, macd_meta = self._e_market.macd_snapshot(cutoff)
+            arrays = dict(market_seq_e_shared=shared.copy(), market_context_15m=context.copy(),
+                          market_macd_5m=macd)
             if (arrays['market_seq_e_shared'].shape != (60, 18)
                     or arrays['market_context_15m'].shape != (24, 7)
                     or any(x.dtype != np.float32 or not np.isfinite(x).all()
@@ -409,7 +412,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 visible_cutoff=meta['visible_cutoff'], decision_time=meta['decision_time'],
                 data_identity=self._e_profile.identity,
                 context_available_at=meta['context_available_at'],
-                anchor_source=meta['anchor_source']))
+                anchor_source=meta['anchor_source'], macd_5m=macd_meta))
             self.e_snapshot = {**host, 'arrays_hash': e_array_hash(arrays)}
             obs.update(arrays)
         return obs
@@ -751,10 +754,19 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             state[key] = getattr(self, key)
         if self.single3:
             state.update(reward_state=self.reward_function.snapshot(), last_reward_components=self.last_reward_components)
+        if self._e_profile is not None:
+            self._get_obs()
+            state['e_state'] = dict(observation_identity=self.e_observation_identity,
+                snapshot=copy.deepcopy(self.e_snapshot))
         return json.loads(json.dumps(state, default=str))
 
     def import_state(self, state):
         state = copy.deepcopy(state)
+        if self._e_profile is not None:
+            if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
+                raise ValueError('E V2 checkpoint observation/source identity differs')
+        elif 'e_state' in state:
+            raise ValueError('E V2 checkpoint requires its native E source')
         if state["schema"] != (3 if self.single3 else 1) or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
             raise ValueError("Incompatible Entry checkpoint")
         i = int(self._raw.index.get_indexer([timestamp(state["cursor_time"])])[0])
@@ -802,6 +814,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.single3:
             self._tp_info_cache=(0,0,0.)
         self._get_obs()
+        if self._e_profile is not None and self.e_snapshot != state['e_state']['snapshot']:
+            raise ValueError('E V2 checkpoint causal snapshot differs')
 
     def continue_data(self, df):
         """Append/backfill unprocessed data without changing already observed history."""

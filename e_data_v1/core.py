@@ -96,6 +96,12 @@ def _clock_slots(f, schedule):
         end_ns[hit] = (day[hit] + pd.Timedelta(minutes=end)).asi8
     if count != 345:
         raise EDataError("FG schedule does not contain exactly 345 minutes")
+    if 'dated_sessions' in schedule:
+        start_ns[:] = -1; end_ns[:] = -1
+        for session in schedule['dated_sessions']:
+            a, b = (local_timestamp(session[k], timezone=clock['timezone']) for k in ('start','end'))
+            hit = ((f.index > a) & (f.index <= b)) | ((f.index == a) & f._duration.eq(0).to_numpy())
+            start_ns[hit], end_ns[hit] = a.value, b.value
     return clock, start_ns, end_ns
 
 
@@ -299,6 +305,54 @@ class MarketData:
             arrival_ns = local_timestamp(item["available_at"]).value
             heappush(pending, (arrival_ns, end_ns, item))
         return result
+
+    def macd_snapshot(self, cutoff):
+        """One causal prefix, sharing this market's validated calendar and rows.
+
+        Cached per-cursor outputs make arbitrary queries and cold reconstruction
+        deterministic. The cache is private to each MarketData instance.
+        """
+        from gym_trading_env.utils.macd_5m_causal import CausalMACD5m, CONTRACT
+        cutoff = local_timestamp(cutoff)
+        through = int(self.frame.index.searchsorted(cutoff, side='right'))-1
+        if not hasattr(self, '_macd_cache'):
+            self._macd_cache = {}
+            self._macd_stream = CausalMACD5m()
+            self._macd_through = -1
+            self._macd_sessions = [(local_timestamp(s['start']), local_timestamp(s['end']))
+                                   for s in self.schedule['dated_sessions']]
+        for i in range(self._macd_through+1, through+1):
+            row = self.frame.iloc[i]; t = self.frame.index[i]
+            if row.available_at > cutoff:
+                raise EDataError('MACD unavailable prefix minute')
+            if not row._good:
+                raise EDataError('MACD invalid visible minute')
+            if row._legal:
+                sessions = [(a,b) for a,b in self._macd_sessions if a < t <= b]
+                if len(sessions) != 1:
+                    raise EDataError('MACD untrusted dated session')
+                a,b = sessions[0]
+                ordinal = int((t-a).total_seconds()/60)-1
+                bucket = self.contract+':'+a.isoformat()+':'+str(ordinal//5)
+                try:
+                    self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
+                        slot=ordinal%5+1, time_ns=t.value, available_ns=row.available_at.value)
+                except ValueError as exc:
+                    raise EDataError(str(exc)) from exc
+            state = self._macd_stream.snapshot()
+            value = np.asarray(self._macd_stream.output, np.float32)
+            if not np.isfinite(value).all():
+                raise EDataError('MACD scale overflow; no silent clipping')
+            self._macd_cache[i] = (value, dict(algorithm=CONTRACT,
+                raw=self._macd_stream.raw.copy(), anchor_close=float(row.Close),
+                bucket_id=self._macd_stream.bucket, last_committed_bucket=self._macd_stream.last_committed,
+                completed_buckets=self._macd_stream.completed, state=state,
+                visible_cutoff=t.isoformat(), available_at=row.available_at.isoformat()))
+            self._macd_through = i
+        if through < 0:
+            raise EDataError('MACD no visible source')
+        value, meta = self._macd_cache[through]
+        return value.copy(), deepcopy(meta)
 
     def snapshot(self, decision):
         if decision.source_contract != self.contract:

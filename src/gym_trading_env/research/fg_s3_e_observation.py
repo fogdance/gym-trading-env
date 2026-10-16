@@ -9,14 +9,15 @@ import numpy as np
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import FIELDS
 
-OBS_SCHEMA = 'FG_S3_E_OBSERVATION_V1'
-REPLAY_SCHEMA = 'FG_S3_E_REPLAY_MARKET_MINUTE_V1'
+OBS_SCHEMA = 'FG_S3_E_OBSERVATION_V2'
+REPLAY_SCHEMA = 'FG_S3_E_REPLAY_MARKET_MINUTE_V2'
 DECODER_SCHEMA = 'FG_S3_E_DECODER_V1'
-E_FIELDS_V1 = {**FIELDS,
+E_FIELDS_V2 = {**FIELDS,
     'market_seq_e_shared': ((60, 18), np.dtype('float32')),
-    'market_context_15m': ((24, 7), np.dtype('float32'))}
-E_S3_FIELDS_V1 = {**E_FIELDS_V1, 'market_advance': ((), np.dtype('int32'))}
-ENCODER_KEYS = ('market_seq_e_shared', 'position_state', 'action_mask', 'market_context_15m')
+    'market_context_15m': ((24, 7), np.dtype('float32')),
+    'market_macd_5m': ((4,), np.dtype('float32'))}
+E_S3_FIELDS_V2 = {**E_FIELDS_V2, 'market_advance': ((), np.dtype('int32'))}
+ENCODER_KEYS = ('market_seq_e_shared', 'position_state', 'action_mask', 'market_context_15m', 'market_macd_5m')
 DECODER_KEYS = ('market_seq_e_shared', 'position_state')
 
 
@@ -25,29 +26,34 @@ def fields_for(schema=None):
         return FIELDS
     if schema != OBS_SCHEMA:
         raise ValueError('Unknown E observation schema')
-    return E_FIELDS_V1
+    return E_FIELDS_V2
 
 
 def observation_contract():
     value = dict(observation_schema=OBS_SCHEMA, replay_schema=REPLAY_SCHEMA,
         decoder_schema=DECODER_SCHEMA,
         fields={k: dict(shape=list(shape), dtype=str(dtype))
-                for k, (shape, dtype) in E_FIELDS_V1.items()},
+                for k, (shape, dtype) in E_FIELDS_V2.items()},
         encoder_keys=list(ENCODER_KEYS), decoder_keys=list(DECODER_KEYS),
         audit_only=['market_seq'], context_fields=[
             'rel_open', 'rel_high', 'rel_low', 'rel_close', 'vol_relative', 'oi_change', 'valid'])
+    from gym_trading_env.utils.macd_5m_causal import CONTRACT
+    value['macd_5m'] = CONTRACT
     return {**value, 'contract_hash': fingerprint(value)}
 
 
 def validate_e_observation(obs, *, batched=False):
-    expected = set(E_FIELDS_V1) - {'action'}
+    expected = set(E_FIELDS_V2) - {'action'}
     if set(obs) != expected:
         raise ValueError('E observation field set differs; future/teacher fields forbidden')
     leading = np.asarray(obs['is_first']).shape if batched else ()
     for k in expected:
-        x = np.asarray(obs[k]); shape, dtype = E_FIELDS_V1[k]
+        x = np.asarray(obs[k]); shape, dtype = E_FIELDS_V2[k]
         if x.shape != (*leading, *shape) or x.dtype != dtype or not np.isfinite(x).all():
             raise ValueError('Invalid E observation shape/dtype/finite: '+k)
+    macd = np.asarray(obs['market_macd_5m'])
+    if not np.isin(macd[..., 3], (0., 1.)).all() or np.any((macd[..., 3:4] == 0) & (macd[..., :3] != 0)):
+        raise ValueError('E MACD invalid mask or nonzero invalid channels')
     context = np.asarray(obs['market_context_15m'])
     if not np.isin(context[..., 6], (0., 1.)).all():
         raise ValueError('E context valid mask must be binary')
@@ -66,7 +72,7 @@ def context_provenance(value):
 
 def e_array_hash(obs):
     h = hashlib.sha256()
-    for k in ('market_seq_e_shared', 'market_context_15m'):
+    for k in ('market_seq_e_shared', 'market_context_15m', 'market_macd_5m'):
         x = np.asarray(obs[k])
         h.update(k.encode()+str(x.dtype).encode()+str(x.shape).encode()+x.tobytes())
     return h.hexdigest()
@@ -108,8 +114,8 @@ def wrap_e_observation(observed, provider):
         def __init__(self):
             super().__init__(observed)
             space = dict(observed.observation_space.spaces)
-            for k in ('market_seq_e_shared', 'market_context_15m'):
-                shape, dtype = E_FIELDS_V1[k]
+            for k in ('market_seq_e_shared', 'market_context_15m', 'market_macd_5m'):
+                shape, dtype = E_FIELDS_V2[k]
                 space[k] = gym.spaces.Box(-np.inf, np.inf, shape, dtype)
             self.observation_space = gym.spaces.Dict(space)
             self.e_snapshot = None
@@ -121,10 +127,10 @@ def wrap_e_observation(observed, provider):
         def decorate(self, obs):
             decision_env = getattr(self.env, 'decision_env', self.env.unwrapped)
             arrays, meta = provider.snapshot(decision_env, copy.deepcopy(obs))
-            if set(arrays) != {'market_seq_e_shared', 'market_context_15m'}:
+            if set(arrays) != {'market_seq_e_shared', 'market_context_15m', 'market_macd_5m'}:
                 raise ValueError('E provider returned foreign or missing fields')
             for k, x in arrays.items():
-                shape, dtype = E_FIELDS_V1[k]
+                shape, dtype = E_FIELDS_V2[k]
                 if x.shape != shape or x.dtype != dtype or not np.isfinite(x).all():
                     raise ValueError('Invalid E provider array: '+k)
             if not np.isin(arrays['market_context_15m'][:, 6], (0., 1.)).all():

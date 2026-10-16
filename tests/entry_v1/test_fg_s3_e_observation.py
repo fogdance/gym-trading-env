@@ -6,7 +6,7 @@ import pytest
 from e_model_fixture import collector_fixture
 from gym_trading_env.research.fg_replay import FIELDS
 from gym_trading_env.research.fg_s3_e_observation import (
-    E_FIELDS_V1, OBS_SCHEMA, observation_contract, validate_e_observation)
+    E_FIELDS_V2, OBS_SCHEMA, observation_contract, validate_e_observation)
 
 
 def test_EM10_original_driver_dagger_native_replay_context_and_executed_action(tmp_path):
@@ -14,7 +14,7 @@ def test_EM10_original_driver_dagger_native_replay_context_and_executed_action(t
     try:
         collector.advance(75)
         raw=collector.replay.sample(1)
-        assert set(E_FIELDS_V1).issubset(raw)
+        assert set(E_FIELDS_V2).issubset(raw)
         assert 'market_context_15m' not in FIELDS and 'market_seq_e_shared' not in FIELDS
         joined=collector.join(raw)
         assert joined['teacher_valid'][:,1:].any()
@@ -38,7 +38,7 @@ def test_EM05_schema_and_future_outcome_actor_fields_rejected(tmp_path):
     try:
         collector.advance(65)
         sample=collector.replay.sample(1)
-        obs={k:v[:,0] for k,v in sample.items() if k in E_FIELDS_V1 and k!='action'}
+        obs={k:v[:,0] for k,v in sample.items() if k in E_FIELDS_V2 and k!='action'}
         validate_e_observation(obs,batched=True)
         for key in ('teacher_action','oracle_future_close','outcome_event','future_ohlc'):
             with pytest.raises(ValueError):collector.policy(None,{**obs,key:np.ones(1)})
