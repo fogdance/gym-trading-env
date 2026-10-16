@@ -22,6 +22,14 @@ Gym base `e57189bad100465c9fee8d9bbb5601f3e5c376ad`；Dreamer base
 post-step观测；decision_executed由下一回调补写；原pair_identity未排除全零owner；旧Q-C1排序项
 还会消费strict标签，不能仅关闭Q value valid。
 
+### 与任务书 action 描述的实测差异
+
+进一步读取原 `embodied/core/driver.py::_step` 并查看真实P1行，确认原Replay的`action`是当前观测下
+policy提议、将在下一次Env调用执行的动作；当前行的`incoming_action`、Reward与账户变化才是上次
+动作的反馈。真实P1第0行 action=1/incoming_action=null，第1行 action=0/incoming_action=1。
+因此不把teacher答案当行为action，也不整体平移标签；Join验证下一行incoming_action等于本行action，
+并以下一行advanced证明本行decision_executed。任务书/旧审计中“本行action是上一反馈”的描述据源码纠正。
+
 ## Changes made
 
 按用户确认，开发允许dirty/新增源码/换worktree。新监督记录以Corpus相对内容清单和合同建立身份，

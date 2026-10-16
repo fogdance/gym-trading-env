@@ -60,3 +60,67 @@ def metadata_corpus(root):
         course_identity_hash=fingerprint(course.course_identity_payload(normalized)))
     inventory(root,m)
     return root
+
+
+def native_corpus(root, *, minutes=30, chunk=9):
+    """Six original Env accounts and Replay on controlled, non-real prices."""
+    import shutil
+    import pandas as pd
+    from wp02_fixture import native_factory
+    from gym_trading_env.research.fg_s3_e_quality_strict import QualityStrictTeacher
+    from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior, behavior_specs
+    from gym_trading_env.research.fg_s3_e_quality_corpus_cli import _publish_streams
+    root.mkdir()
+    factory,_,profile=native_factory(root.parent/(root.name+'_market'),minutes=minutes,chunk=chunk)
+    env=factory();source=dict(fold='TRAIN',state_cache_entries=0,calendar_complete=True)
+    strict=QualityStrictTeacher(env,source=source)
+    specs=behavior_specs(202)+[dict(id='P4',kind='quality_oracle_schedule',seed_components=[202,0,5],
+                                  teacher_identity=strict.identity_hash)]
+    for spec in specs:
+        generate_behavior(factory,spec,root/'policies'/spec['id'],ROOT.parent/'dreamerv3',
+                          source=source,strict=strict)
+    _publish_streams(root,list(POLICIES))
+    metadata=metadata_corpus(root.parent/(root.name+'_metadata'))
+    for name in ('source_lock.json','teacher_manifest.json','course_v2.json','model_contract.json'):
+        shutil.copyfile(metadata/name,root/name)
+    lock=signed(dict(fold='TRAIN',contract=env.contract,row=dict(role='train',eligible_for_training=True)))
+    write_json(root/'source_lock.json',lock)
+    teacher=signed(dict(protocol='FG_S3_E_QUALITY_TEACHER_V2',fold='TRAIN',
+        strict_identity=strict.identity_hash,source_lock_hash=lock['content_hash'],
+        objective=strict.identity['objective'],gamma_rational=[332,333],reward_schema=env.reward_config.schema))
+    write_json(root/'teacher_manifest.json',teacher)
+    spec=json.loads((root/'course_v2.json').read_text());data=spec['data_identity']
+    bounds=dict(start=env._raw.index[0].isoformat(),end=(env._raw.index[-1]+pd.Timedelta(minutes=1)).isoformat())
+    data['contracts']=[env.contract];data['time_bounds']=bounds
+    data['market_sources']=[dict(contract=env.contract,source_sha256='c'*64,env_config_sha256='d'*64,metadata_sha256='e'*64)]
+    data['teacher_manifest']=dict(path='teacher_manifest.json',sha256=digest(root/'teacher_manifest.json'))
+    for behavior in spec['curriculum']['behaviors']:
+        behavior['boundary'].update(contracts=[env.contract],time_bounds=bounds)
+    write_json(root/'course_v2.json',spec)
+    model=json.loads((root/'model_contract.json').read_text())
+    m=dict(protocol='FG_S3_E_QUALITY_CORPUS_V2',fold='TRAIN',training_admitted=False,
+        behaviors=list(POLICIES),observation=observation_contract(),teacher_identity=strict.identity_hash,
+        source_lock_hash=lock['content_hash'],model_contract_hash=model['content_hash'],
+        e_profile_identity=profile.identity,source_binding=source,
+        course_identity_hash=fingerprint(course.course_identity_payload(course.validate_course_spec(spec))))
+    inventory(root,m)
+    env.close()
+    return root
+
+
+def rewrite_rows(root, policy, rows):
+    """Re-sign an attack fixture; behavioral mismatch must still be rejected."""
+    import hashlib,shutil
+    p=root/'policies'/policy
+    with gzip.open(p/'steps.jsonl.gz','wt') as f:
+        for row in rows:f.write(json.dumps(row,allow_nan=False)+'\n')
+    m=json.loads((p/'manifest.json').read_text());m.pop('content_hash')
+    m['files']['steps.jsonl.gz']=digest(p/'steps.jsonl.gz')
+    h=hashlib.sha256()
+    for row in rows:h.update(json.dumps({k:v for k,v in row.items() if k not in ('stepid','ordinal')},
+                                       sort_keys=True,separators=(',',':'),allow_nan=False).encode())
+    m['event_hash']=h.hexdigest()
+    m['replay_trace_hash']=fingerprint({k:m[k] for k in ('identity','policy','env_config_hash','reward_version','array_hash','event_hash')})
+    write_json(p/'manifest.json',signed(m))
+    shutil.copyfile(p/'steps.jsonl.gz',root/'teacher_sidecar'/policy/'steps.jsonl.gz')
+    inventory(root,json.loads((root/'corpus_manifest.json').read_text()))

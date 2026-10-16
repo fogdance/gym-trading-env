@@ -40,6 +40,8 @@ def labels(shape=(1,4)):
     d['quality_q_v2'][...]=[-.2,.8]
     d['quality_soft_valid'][...]=True;d['quality_soft_source'][...]=2
     d['quality_soft_target'][...]=1/(1+np.exp(-1))
+    # Legal shared synthetic lineage; the all-zero owner is invalid.
+    d['quality_owner'][...,0]=1
     return {k:jnp.asarray(v) for k,v in d.items()}
 
 

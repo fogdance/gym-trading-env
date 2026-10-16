@@ -191,3 +191,63 @@ class QualitySupervisionAdmission:
                 ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']),
             historical_producer=m.get('code', {}).get('repositories', {})))
         return Admission(source, receipt, native)
+
+
+def project_label(label, row, step, owner):
+    """Project certified facts independently; never teach from behavior action.
+
+    No Q/Soft target is authorized by this adapter. Invalid numeric targets
+    are zeroed *before* entering JAX, including independently invalid windows.
+    """
+    import numpy as np
+    from .fg_s3_quality_catalog_v2 import FIELDS, validate_corpus_label
+    validate_corpus_label(label)
+    facts, strict = label['L1'], label['L2']
+    out = {k:np.zeros(shape, dtype) for k,(dtype,shape) in FIELDS.items()}
+    out.update(teacher_action=np.array(0,np.int32), teacher_valid=np.array(False,bool))
+    completed = (row['decision_executed'] and row['decision_valid_minute']
+        and not any(row[k] for k in ('reset','is_first','is_last','is_terminal')))
+    dual = bool(np.array_equal(step['action_mask'], [1,1]))
+    eligible = bool(completed and dual and facts['actual_legal_wait'] and facts['actual_legal_add'])
+    if not eligible:
+        return out
+    if strict['teacher_valid']:
+        out['teacher_valid'][...] = True
+        out['teacher_action'][...] = int(strict['strict_action'])
+    out['quality_outcome_valid'][...] = bool(facts['immediate_outcome_verified'])
+    score_valid = bool(facts['immediate_outcome_verified'] and facts['score_valid'])
+    out['quality_score_valid'][...] = score_valid
+    if score_valid:
+        score = float(facts['score'])
+        if not np.isfinite(score) or not 0 <= score <= 100:
+            raise ValueError('SUPERVISION_SCORE_TARGET_INVALID')
+        out['quality_score'][...] = score
+    if facts['immediate_outcome_verified']:
+        out['quality_tp'][...] = facts.get('exit_type') == 'TP5'
+        out['quality_sl'][...] = facts.get('exit_type') == 'SL30'
+        early = facts.get('first_adverse',{}).get('10')
+        out['quality_early5'][...] = early is not None and early <= 5
+    for name, classes in [('event',4), ('touch',2), ('adverse',2)]:
+        valid = np.asarray(facts[name+'_valid'],bool)
+        value = np.asarray(facts[name])
+        safe = np.where(valid,value,0)
+        if (not np.isfinite(safe).all() or not np.isin(safe,np.arange(classes)).all()):
+            raise ValueError('SUPERVISION_WINDOW_TARGET_INVALID: ' + name)
+        out['quality_'+name][...] = safe
+        out['quality_'+name+'_valid'][...] = valid
+    supported = bool(out['teacher_valid'] or out['quality_outcome_valid'] or
+        any(np.any(out['quality_'+k+'_valid']) for k in ('event','touch','adverse')))
+    if supported:
+        owner_array = np.frombuffer(bytes.fromhex(owner), '>u4').astype(np.uint32)
+        if owner_array.shape != (8,) or not owner_array.any():
+            raise ValueError('SUPERVISION_NONZERO_OWNER_REQUIRED')
+        out['quality_owner'][...] = owner_array
+    return out
+
+
+def supervision_settings():
+    """Loss-only backend settings, with all prediction/Q/decision gates closed."""
+    return dict(quality_supervision_protocol=PROTOCOL,
+        quality_q_c1_lambda=0., quality_q_v2_lambda=0., quality_soft_lambda=0.,
+        quality_q_admitted=False, quality_prediction_admitted=False,
+        quality_decision_admitted=False, quality_fuse_outcome=False, quality_fuse_score=False)
