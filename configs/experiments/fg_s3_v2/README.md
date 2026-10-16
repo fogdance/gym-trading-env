@@ -672,3 +672,12 @@ and every trade of the selected path; it does not claim exhaustive native
 replay of all candidates. The default financial Q domain remains 12 bars.
 `quality_build_performance.json` records real member RSS/time/holding lengths;
 parallel builders use a measured largest-member pilot and single-thread BLAS.
+
+`E_ONLY_PERF_BASE_GPU_4K.yaml` and `E_ONLY_PERF_OPT_GPU_4K.yaml` are isolated
+4K speed comparisons with the same size50m recipe, batch1, 100:4 collection
+and update schedule, Gate and seed. BASE runs on Gym `bed3a2cefd3923f4a7d45709d979892264c6298d`
+with Dreamer `51ed1d094c92fc52a910acda3e2a3421bc71c9e5`; OPT runs on the performance
+worktree with its newly verified E collection. Use the shared `prepare --config
+<absolute YAML>` then `start --prepared <that snapshot>` commands. Both keep
+their own prepared and Run directories under their corresponding worktree's
+`artifacts/fg_s3_v2/`; compare warmed cycles after 2K environment advances.
