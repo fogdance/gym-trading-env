@@ -1,5 +1,17 @@
 # S3-V2 shared entry and experiment configurations
 
+## E + Tutor-CD Full formal 1M (2026-10-16)
+
+`E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_20261016` preserves the existing
+Full E2 recipe and uses the byte-equivalent E collection built for the throughput
+optimization. Fresh seed0 size50m, 18 TRAIN contracts, beta1, BC1, alpha.8,
+pair.1/tau1/kappa1/cap2, 1M Env advances, 40000 updates, Replay32768 and
+checkpoints every100K. Training uses the separate frozen sibling worktrees
+`research/fg-s3-e-tutor-train-20261016/`. Prepare with the shared entry and this
+config; start/resume from its immutable prepared snapshot with
+`--authorize-training`. The exact prepared path and W&B launch command are
+saved in that pair's `training-lock.json`. CPU preparation is not GPU acceptance.
+
 ## E-only formal 1M (2026-10-16)
 
 `E_ONLY_MARKET_MINUTE_FORMAL_1M` uses `e_multiscale_1m15m + teaching: none`,
