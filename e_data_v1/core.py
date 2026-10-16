@@ -339,10 +339,14 @@ class MarketData:
         raw_indices = self.market_clock_counter.window(through,60)
         feature_end = int(self.market_clock_counter.prefix[through+1])
         feature_start = max(0,feature_end-60)
-        window = f.iloc[raw_indices]
+        # Only the index/length are needed below. Avoid materializing a mixed
+        # dtype DataFrame for every decision; feature rows already live in the
+        # unchanged prepared arrays.
+        window_index = f.index.take(raw_indices)
+        window_size = len(raw_indices)
         old = np.zeros((60, 18), np.float32)
-        if len(window):
-            old[-len(window):] = self.obs_array[feature_start:feature_end]
+        if window_size:
+            old[-window_size:] = self.obs_array[feature_start:feature_end]
         if decision.market_seq is not None:
             supplied = np.asarray(decision.market_seq)
             if supplied.shape != (60, 18) or supplied.dtype != np.float32 or not np.array_equal(old, supplied):
@@ -350,7 +354,7 @@ class MarketData:
         anchor, anchor_source, anchor_time, anchor_arrival = self._anchor(through,feature_end,cutoff)
         shared = old.copy()
         audit = np.zeros((60, 4), np.float32) if self.config.audit_1m else None
-        if len(window):
+        if window_size:
             aux = self.aux_array[feature_start:feature_end]
             prices = self.price_array[feature_start:feature_end]
             values = {
@@ -362,25 +366,32 @@ class MarketData:
                 "obs_dC_minus_cumVWAP_t": np.clip(np.sign(aux[:,4]) * np.log1p(np.abs(aux[:,4]) / anchor), -1, 1),
             }
             for name in SHARED_FIELDS:
-                shared[-len(window):, LEGACY_FIELDS.index(name)] = values[name].astype(np.float32)
+                shared[-window_size:, LEGACY_FIELDS.index(name)] = values[name].astype(np.float32)
             if audit is not None:
-                audit[-len(window):] = np.log(prices / anchor).astype(np.float32)
+                audit[-window_size:] = np.log(prices / anchor).astype(np.float32)
         indices = np.flatnonzero((self.bucket_end_ns <= cutoff.value) & (self.bucket_available_ns <= cutoff.value))[-24:]
         buckets = [self.complete_buckets[i] for i in indices]
         context = np.zeros((24, 7), np.float32)
-        for i, item in enumerate(buckets, 24 - len(buckets)):
-            if item["feature_ready"]:
-                context[i, :4] = np.log(np.array([item[k] for k in RAW_FIELDS[:4]]) / anchor)
-                context[i, 4] = np.clip(item["vol_relative_raw"], *self.config.volume_clip)
-                context[i, 5] = np.clip(item["oi_change_raw"], *self.config.oi_clip)
-                context[i, 6] = 1
+        ready = [i for i, item in enumerate(buckets) if item["feature_ready"]]
+        if ready:
+            selected = [buckets[i] for i in ready]
+            rows = np.asarray(ready) + 24 - len(buckets)
+            # Keep float64 log/clip followed by the original float32 store;
+            # padding and unready buckets retain their exact all-zero rows.
+            context[rows, :4] = np.log(np.array([
+                [item[k] for k in RAW_FIELDS[:4]] for item in selected]) / anchor)
+            context[rows, 4] = np.clip(
+                [item["vol_relative_raw"] for item in selected], *self.config.volume_clip)
+            context[rows, 5] = np.clip(
+                [item["oi_change_raw"] for item in selected], *self.config.oi_clip)
+            context[rows, 6] = 1
         for array in (context, old, shared, audit):
             if array is not None and not np.isfinite(array).all():
                 raise EDataError("Nonfinite snapshot; no nan_to_num repair allowed")
         meta = dict(source_contract=self.contract, visible_cutoff=cutoff.isoformat(),
             decision_time=local_timestamp(decision.decision_time or cutoff).isoformat(),
             price_anchor=anchor, anchor_source=anchor_source, anchor_source_time=anchor_time,
-            anchor_available_at=anchor_arrival, minute_window_times=[t.isoformat() for t in window.index],
+            anchor_available_at=anchor_arrival, minute_window_times=[t.isoformat() for t in window_index],
             minute_window_sha256=hashlib.sha256(old.tobytes()).hexdigest(),
             context_bucket_ids=[x["bucket_id"] for x in buckets],
             context_bucket_ends=[x["bucket_end"] for x in buckets],
@@ -390,29 +401,28 @@ class MarketData:
                 vol_relative_raw=x["vol_relative_raw"], oi_change_raw=x["oi_change_raw"],
                 volume_baseline_bucket_ids=x["volume_baseline_bucket_ids"],
                 previous_OI_bucket_id=x["previous_OI_bucket_id"]) for x in buckets],
-            context_padding=24 - len(buckets), minute_padding=60 - len(window))
+            context_padding=24 - len(buckets), minute_padding=60 - window_size)
         return context, old, shared, anchor, audit, meta
 
     def _anchor(self, through, feature_end, cutoff):
         if feature_end:
             source_feature = int(self.ref_source[feature_end-1])
             source_raw = int(self.market_clock_counter.rows[source_feature])
-            source = self.frame.iloc[source_raw]
             source_time = self.frame.index[source_raw]
-            value = float(source.Close)
+            value = float(self.frame.Close.iat[source_raw])
+            arrival = self.frame.available_at.iat[source_raw]
             ref = float(self.aux_array[feature_end-1,0])
-            if value == ref and source_time <= cutoff and source.available_at <= cutoff:
+            if value == ref and source_time <= cutoff and arrival <= cutoff:
                 last_raw = int(self.market_clock_counter.rows[feature_end-1])
-                kind = ("legacy_first_observed_close" if source.trading_date == self.frame.trading_date.iloc[last_raw]
+                kind = ("legacy_first_observed_close" if self.frame.trading_date.iat[source_raw] == self.frame.trading_date.iat[last_raw]
                         else "legacy_previous_trading_day_close")
-                return value, kind, source_time.isoformat(), source.available_at.isoformat()
+                return value, kind, source_time.isoformat(), arrival.isoformat()
         # Zero-duration opening marks may expose a price, but never a future
         # first valid candle. An unknown positive price is not fabricated.
-        row = self.frame.iloc[through]
-        value = float(row.Close)
+        value = float(self.frame.Close.iat[through])
         if not np.isfinite(value) or value <= 0:
             raise EDataError("No legal observed price for anchor fallback")
-        return value, "observed_close_fallback", self.frame.index[through].isoformat(), row.available_at.isoformat()
+        return value, "observed_close_fallback", self.frame.index[through].isoformat(), self.frame.available_at.iat[through].isoformat()
 
 
 def build_e_data_v1(minute_bars, decisions, schedule, config=None):

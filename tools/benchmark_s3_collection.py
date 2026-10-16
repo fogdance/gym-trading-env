@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """CPU-only before/after account rotation benchmark; never starts a model."""
 import argparse
+import cProfile
+from contextlib import contextmanager
 import hashlib
 import json
 import os
@@ -39,6 +41,30 @@ def baseline_classes(ref):
         hashes[relative] = hashlib.sha256(source).hexdigest()
     modules['entry_dataset_env'].FixedDirectionEntryEnv = modules['entry_env'].FixedDirectionEntryEnv
     return commit, modules['entry_dataset_env'], hashes
+
+
+def baseline_e_market(commit):
+    relative = 'e_data_v1/core.py'
+    source = subprocess.check_output(['git', 'show', commit+':'+relative], cwd=PROJECT)
+    module = ModuleType('e_data_v1._benchmark_baseline_core')
+    module.__package__ = 'e_data_v1'
+    module.__file__ = 'git:'+commit+':'+relative
+    exec(compile(source, module.__file__, 'exec'), module.__dict__)
+    return module.MarketData, {relative: hashlib.sha256(source).hexdigest()}
+
+
+@contextmanager
+def e_market_class(market):
+    if market is None:
+        yield
+        return
+    from e_data_v1 import core
+    original = core.MarketData
+    core.MarketData = market
+    try:
+        yield
+    finally:
+        core.MarketData = original
 
 
 def trace_row(digest, contract, action, result):
@@ -80,7 +106,8 @@ def advance(env, obs, count, digest):
                     step_seconds=sum(elapsed), native_calls=len(elapsed))
 
 
-def benchmark(name, module, selector, count, seed, *, cache_market=None):
+def benchmark(name, module, selector, count, seed, *, cache_market=None,
+              e_profile=None, profile_path=None):
     import pandas as pd
     original = module.FixedDirectionEntryEnv
     constructors, signatures = [], {}
@@ -104,10 +131,20 @@ def benchmark(name, module, selector, count, seed, *, cache_market=None):
     try:
         started = time.perf_counter()
         kwargs = {} if cache_market is None else dict(cache_market=cache_market)
+        if e_profile is not None:
+            kwargs['e_profile'] = e_profile
         env = module.FGEntryDatasetEnv(selector, **kwargs)
         obs, info = env.reset(seed=seed)
         trace = hashlib.sha256(); trace_row(trace, env.env.contract, None, (obs, info))
-        obs, timing = advance(env, obs, count, trace)
+        profiler = cProfile.Profile() if profile_path else None
+        if profiler:
+            profiler.enable()
+        try:
+            obs, timing = advance(env, obs, count, trace)
+        finally:
+            if profiler:
+                profiler.disable()
+                profiler.dump_stats(profile_path)
         total = time.perf_counter()-started
         state = env.export_state()
         cache = getattr(env, '_market_cache', None)
@@ -127,11 +164,12 @@ def benchmark(name, module, selector, count, seed, *, cache_market=None):
         module.FixedDirectionEntryEnv = original
 
 
-def restore_check(env, obs, module, selector, continuation):
+def restore_check(env, obs, module, selector, continuation, *, e_profile=None):
     """Restore the original financial schema into a cold, independent cache."""
     from gym_trading_env.envs.entry_contract import fingerprint
     saved = json.loads(json.dumps(env.export_state(), default=str))
-    restored = module.FGEntryDatasetEnv(selector)
+    kwargs = {} if e_profile is None else dict(e_profile=e_profile)
+    restored = module.FGEntryDatasetEnv(selector, **kwargs)
     try:
         restored.reset(options={'resume': saved})
         if fingerprint(restored.export_state()) != fingerprint(env.export_state()):
@@ -167,7 +205,14 @@ def main():
     parser.add_argument('--seed', type=int, default=202)
     parser.add_argument('--restore-steps', type=int, default=64)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--e-data-collection', type=Path,
+                        help='Verified real E collection; enables native E before/after comparison')
+    parser.add_argument('--e-source-pool', type=Path,
+                        help='Original E TRAIN source pool, required with --e-data-collection')
+    parser.add_argument('--profile', action='store_true', help='Profile CPU Env steps separately for each variant')
     args = parser.parse_args()
+    if bool(args.e_data_collection) != bool(args.e_source_pool):
+        parser.error('E collection and original source pool must be supplied together')
     if (args.steps <= 0 or args.chunk_bars <= 0 or args.restore_steps <= 0
             or len(args.contracts) < 2 or len(set(args.contracts)) != len(args.contracts)):
         parser.error('Positive budgets and at least two unique contracts are required')
@@ -182,6 +227,7 @@ def main():
     os.environ.pop('DREAMER_RUN_DIR', None)
     os.environ.setdefault('MPLCONFIGDIR', '/tmp/s3-collection-benchmark-mpl')
     sys.path.insert(0, str(PROJECT/'src'))
+    sys.path.insert(0, str(PROJECT))
     from gym_trading_env.envs import entry_dataset_env as current
     from gym_trading_env.envs.entry_contract import read_yaml, fingerprint
     selector = read_yaml(args.selector)
@@ -213,14 +259,29 @@ def main():
                     scheduler=dict(mode='least_progress', chunk_bars=args.chunk_bars))
     local_selector = output/'selector.yaml'
     local_selector.write_text(yaml.safe_dump(settings))
+    e_profile, original_market = None, None
+    if args.e_data_collection:
+        from e_data_v1.provider import ETrainAdmission
+        from e_data_v1.core import MarketData
+        e_profile = ETrainAdmission.from_train_pool(args.e_source_pool,
+            args.e_data_collection, output/'pool.json', contracts=args.contracts)
+        original_market, e_hashes = baseline_e_market(commit)
+        code_hashes.update(e_hashes)
+        inputs[str(args.e_source_pool.resolve())] = sha256(args.e_source_pool)
+        inputs[str((args.e_data_collection/'index_manifest.json').resolve())] = sha256(
+            args.e_data_collection/'index_manifest.json')
     results, active, obs = [], None, None
     try:
-        for name, module, cache in [('original', baseline, None),
-                                    ('single_features', current, False),
-                                    ('cached', current, True)]:
+        variants = ([('original', baseline, True, original_market),
+                     ('cached', current, True, MarketData)] if e_profile is not None else
+                    [('original', baseline, None, None),
+                     ('single_features', current, False, None), ('cached', current, True, None)])
+        for name, module, cache, market in variants:
             print('CPU benchmark: '+name, flush=True)
-            result, env, current_obs = benchmark(name, module, local_selector,
-                args.steps, args.seed, cache_market=cache)
+            with e_market_class(market):
+                result, env, current_obs = benchmark(name, module, local_selector,
+                    args.steps, args.seed, cache_market=cache, e_profile=e_profile,
+                    profile_path=output/(name+'.prof') if args.profile else None)
             results.append(result)
             (output/(name+'.json')).write_text(json.dumps(result, indent=2)+'\n')
             print(json.dumps({'variant':name,'seconds':result['total_seconds'],
@@ -231,7 +292,8 @@ def main():
             for field in ('trace_sha256', 'state_sha256', 'market_signatures'):
                 if candidate[field] != results[0][field]:
                     raise ValueError(candidate['name']+' changed '+field)
-        restored = restore_check(active, obs, current, local_selector, args.restore_steps)
+        restored = restore_check(active, obs, current, local_selector, args.restore_steps,
+                                 e_profile=e_profile)
         if any(sha256(path) != digest for path,digest in inputs.items()):
             raise ValueError('Source inputs changed during benchmark')
         report = dict(schema='S3_COLLECTION_PERF_CPU_V1', status='PASS',
@@ -243,11 +305,16 @@ def main():
                  ('entry_env.py','entry_dataset_env.py','entry_market_cache.py')]
                 +[PROJECT/'src/gym_trading_env/utils/bar_source.py']},
             original_inputs_sha256=inputs, inputs_unchanged=True, model_initialized=False,
+            e_profile_identity=e_profile.identity if e_profile is not None else None,
+            profiled=args.profile,
             gpu_used=False, oracle_loaded=False, gradient_updates=0, original_run_modified=False,
             contracts=args.contracts, advances=args.steps, chunk_bars=args.chunk_bars,
             exact_observation_reward_info_trace=True, exact_account_state=True,
             exact_full_market_features=True, restore=restored, variants=results,
-            total_seconds_speedup=results[0]['total_seconds']/results[-1]['total_seconds'])
+            total_seconds_speedup=results[0]['total_seconds']/results[-1]['total_seconds'],
+            step_seconds_speedup=results[0]['timing']['step_seconds']/results[-1]['timing']['step_seconds'])
+        if e_profile is not None:
+            report['current_code_sha256']['e_data_v1/core.py'] = sha256(PROJECT/'e_data_v1/core.py')
         (output/'report.json').write_text(json.dumps(report, indent=2)+'\n')
         print(json.dumps({'status':'PASS','report':str(output/'report.json'),
                           'speedup':report['total_seconds_speedup'],'restore':restored}), flush=True)

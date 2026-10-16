@@ -22,6 +22,31 @@ def decision(data, i):
     return Decision(data.contract, data.frame.index[i])
 
 
+def test_snapshot_optimization_preserves_pinned_math_bytes_and_metadata(market):
+    from types import ModuleType
+    project = Path(__file__).resolve().parents[2]
+    commit = 'bed3a2cefd3923f4a7d45709d979892264c6298d'
+    source = subprocess.check_output(['git', 'show', commit+':e_data_v1/core.py'], cwd=project)
+    original = ModuleType('e_data_v1._pinned_snapshot_reference')
+    original.__package__ = 'e_data_v1'
+    exec(compile(source, 'git:'+commit+':e_data_v1/core.py', 'exec'), original.__dict__)
+    frame, schedule = market
+    config = EDataConfig(audit_1m=True, volume_clip=(-.02, .02), oi_clip=(-.0001, .0001))
+    before = original.MarketData(frame, schedule, config)
+    after = MarketData(frame, schedule, config)
+    # Empty/unready context, first bucket, clipping, and a new trading-day anchor.
+    for cursor in (0, 14, 314, 345, len(frame)-1):
+        d = decision(after, cursor)
+        expected, actual = before.snapshot(d), after.snapshot(d)
+        for left, right in zip(expected[:5], actual[:5]):
+            if isinstance(left, np.ndarray):
+                assert left.dtype == right.dtype and left.shape == right.shape
+                assert left.tobytes() == right.tobytes()
+            else:
+                assert left == right
+        assert expected[5] == actual[5]
+
+
 def test_F01_common_price_coordinate_and_near_high_relationship(prepared):
     bundle = prepared.build([decision(prepared, 374)])
     t, anchor = prepared.frame.index[374], bundle.price_anchor[0]
