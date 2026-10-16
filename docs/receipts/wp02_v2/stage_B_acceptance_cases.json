@@ -1,0 +1,74 @@
+[
+  {
+    "name": "test_B01_native_macd_replay_every_byte_cold_restore",
+    "class": "tests.entry_v1.test_wp02_replay",
+    "seconds": "16.218",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_single_delay_and_derived_reward_view",
+    "class": "tests.entry_v1.test_fg_single3_replay",
+    "seconds": "1.573",
+    "result": "PASS"
+  },
+  {
+    "name": "test_p4_refuses_unproven_schedule_before_execution",
+    "class": "tests.entry_v1.test_fg_single3_replay",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM10_original_driver_dagger_native_replay_context_and_executed_action",
+    "class": "tests.entry_v1.test_fg_s3_e_observation",
+    "seconds": "1.098",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM05_schema_and_future_outcome_actor_fields_rejected",
+    "class": "tests.entry_v1.test_fg_s3_e_observation",
+    "seconds": "1.016",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM03_EM04_shapes_registered_branches_and_context_effect[False]",
+    "class": "",
+    "seconds": "2.212",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM03_EM04_shapes_registered_branches_and_context_effect[True]",
+    "class": "",
+    "seconds": "1.620",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM05_invalid_rows_and_all_invalid_ignore_values_and_bias",
+    "class": "",
+    "seconds": "0.463",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM05_shape_dtype_future_keys_and_jit_nonfinite_rejected",
+    "class": "",
+    "seconds": "0.205",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM07_wm_style_gradient_reaches_all_three_branches",
+    "class": "",
+    "seconds": "1.126",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP02_B_macd_valid_gating_and_effect",
+    "class": "",
+    "seconds": "0.149",
+    "result": "PASS"
+  },
+  {
+    "name": "test_EM15_full_checkpoint_continuous_vs_interrupted_exact[a2]",
+    "class": "",
+    "seconds": "40.055",
+    "result": "PASS"
+  }
+]

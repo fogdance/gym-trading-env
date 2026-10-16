@@ -16,6 +16,8 @@ env = {**os.environ, 'PYTHONPATH':'.:src:../dreamerv3:tests/entry_v1',
        'OPENBLAS_NUM_THREADS':'1', 'OMP_NUM_THREADS':'1'}
 args = ['/home/v/miniconda3/envs/dreamerv3/bin/python','-B','-m','pytest',
         '-p','no:cacheprovider','-o','addopts=','-q', '--junitxml='+str(out/(name+'.xml')), *tests]
+if tests[0] == '--cmd':
+    args = ['/home/v/miniconda3/envs/dreamerv3/bin/python','-B',*tests[1:]]
 began = time.monotonic()
 with (out/(name+'.log')).open('w') as f:
     result = subprocess.run(args,cwd=root,env=env,stdout=f,stderr=subprocess.STDOUT)

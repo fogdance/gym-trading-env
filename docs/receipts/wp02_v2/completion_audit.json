@@ -1,0 +1,66 @@
+{
+  "requirements": {
+    "A_course_v2_native_partial_macd": {
+      "status": "PASS",
+      "evidence": "312 testcase list: A01-A09, course contract and native E tests"
+    },
+    "B_original_replay_real_encoder_and_same_version_resume": {
+      "status": "PASS",
+      "evidence": "B01, actual Agent/Encoder and EM15, driver/full checkpoint; Replay persisted in real_small_04"
+    },
+    "C_all_native_account_behaviors_and_L1": {
+      "status": "PASS",
+      "behaviors": [
+        "P0",
+        "P1",
+        "P2_low",
+        "P2_mid",
+        "P3",
+        "P4"
+      ],
+      "evidence": "6 x 691 independently replayed records and labels"
+    },
+    "D_quality_strict_suffix_L2_P4": {
+      "status": "PASS_IN_CERTIFIED_DOMAIN",
+      "evidence": "independent tiny native exhaustion + sampled native candidates + all retained real P4 trades/feedback + P4 full replay",
+      "unproven_other_account_roots": 93,
+      "unproven_action_admission": "NO_GO/null",
+      "arbitrary_funds_oracle_claimed": false
+    },
+    "E_cli_authenticated_limited_train_coverage_review": {
+      "status": "PASS",
+      "evidence": "actual validate/generate-small/verify/coverage exits, source/teacher/model/course/corpus hashes, review docs"
+    },
+    "draft_formal_source_guards": {
+      "status": "PASS",
+      "evidence": "E03, WP01 native preflight suite, four public commands exit1, independent source negative cases"
+    },
+    "financial_reward_clock_invariants": {
+      "status": "PASS",
+      "evidence": "13 byte-identical protected files; 25 AST-identical Env methods; financial/time/replay/shared regressions"
+    },
+    "no_test_gpu_formal_training_old_weights_full18": {
+      "status": "PRESERVED",
+      "prohibited_or_out_of_scope_actions": "NOT_RUN",
+      "training_admitted": false
+    },
+    "five_commits_docs_and_patches": {
+      "status": "PRE_COMMIT_SNAPSHOT; SEE_POST_COMMIT_RELEASE_LOCK",
+      "evidence": "A-D already committed; E staged; release_lock and /tmp patches follow commit"
+    }
+  },
+  "G1": "GO_WITH_EXPLICIT_VALIDITY_DOMAIN",
+  "G2": "GO",
+  "G3": "GO_FINITE_AUTHENTICATED_TRAIN_CORPUS",
+  "training": "NO_GO",
+  "runtime_files": 239,
+  "runtime_source_sha256": "fc44122394430de5e63aea9febace0654b19f32a94c7a19d835a6c55cfcee383",
+  "tests": {
+    "passed": 312,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "scope": "ONE_CONTRACT_LAST_TWO_MAIN_QUALIFICATION_OFFICIAL_DAYS",
+  "unknown_or_unproven_states_not_admitted": true
+}

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "test_E09_nested_replay_manifest_cannot_read_outside_market_files",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_B01_native_macd_replay_every_byte_cold_restore",
+    "class": "tests.entry_v1.test_wp02_replay",
+    "seconds": "17.995",
+    "result": "PASS"
+  }
+]

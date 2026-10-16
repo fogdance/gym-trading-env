@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/tools/fg_s3_v2_experiment.py", line 198, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/tools/fg_s3_v2_experiment.py", line 83, in main
+    normalize_config(raw, executable=args.command != 'describe-composition')
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/dreamerv3/fg_s3_composition.py", line 104, in normalize_config
+    require_ready(resolved)
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/dreamerv3/fg_s3_composition.py", line 69, in require_ready
+    raise ValueError('S3_QUALITY_E_NOT_IMPLEMENTED')
+ValueError: S3_QUALITY_E_NOT_IMPLEMENTED

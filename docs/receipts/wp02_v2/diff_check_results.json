@@ -1,0 +1,29 @@
+[
+  {
+    "name": "all",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "stdout_lines": 1309,
+    "reason": "Raw unmodified pytest logs/XML whitespace and canonical CSV CRLF retained"
+  },
+  {
+    "name": "editable_source_and_docs",
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      ".",
+      ":(exclude)docs/receipts/wp02_v2/**"
+    ],
+    "exit_code": 0,
+    "stdout_lines": 0,
+    "reason": "Editable source and review Markdown"
+  }
+]

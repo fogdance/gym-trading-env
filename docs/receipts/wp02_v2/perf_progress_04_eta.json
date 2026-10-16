@@ -1,0 +1,60 @@
+{
+  "time_utc": "2026-10-16T11:33:38.785421+00:00",
+  "behaviors": [
+    {
+      "name": "P0",
+      "visible_records": 191,
+      "expected_records": 691,
+      "last_cursor": 30759,
+      "elapsed_since_initial_snapshot_seconds": 233.5993676185608,
+      "manifest": false,
+      "reconciliation": false
+    },
+    {
+      "name": "P1",
+      "visible_records": 148,
+      "expected_records": 691,
+      "last_cursor": 30717,
+      "elapsed_since_initial_snapshot_seconds": 233.52136659622192,
+      "manifest": false,
+      "reconciliation": false
+    },
+    {
+      "name": "P2_low",
+      "visible_records": 124,
+      "expected_records": 691,
+      "last_cursor": 30693,
+      "elapsed_since_initial_snapshot_seconds": 233.9373722076416,
+      "manifest": false,
+      "reconciliation": false
+    },
+    {
+      "name": "P2_mid",
+      "visible_records": 127,
+      "expected_records": 691,
+      "last_cursor": 30696,
+      "elapsed_since_initial_snapshot_seconds": 234.00637316703796,
+      "manifest": false,
+      "reconciliation": false
+    },
+    {
+      "name": "P3",
+      "visible_records": 84,
+      "expected_records": 691,
+      "last_cursor": 30653,
+      "elapsed_since_initial_snapshot_seconds": 233.38136458396912,
+      "manifest": false,
+      "reconciliation": false
+    },
+    {
+      "name": "P4",
+      "visible_records": 106,
+      "expected_records": 691,
+      "last_cursor": 30675,
+      "elapsed_since_initial_snapshot_seconds": 234.09137415885925,
+      "manifest": false,
+      "reconciliation": false
+    }
+  ],
+  "elapsed_since_source_lock_seconds": 370.6702103614807
+}

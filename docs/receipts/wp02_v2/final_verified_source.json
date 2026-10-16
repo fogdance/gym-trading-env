@@ -1,0 +1,27 @@
+{
+  "runtime_files": 239,
+  "source_mismatches": 0,
+  "execution_source_hash": "fc44122394430de5e63aea9febace0654b19f32a94c7a19d835a6c55cfcee383",
+  "tests": 312,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "commands": {
+    "stage_E_release_perf_final": {
+      "exit_code": 0,
+      "seconds": 1007.5401766499272
+    },
+    "real_generate_small_04": {
+      "exit_code": 0,
+      "seconds": 2857.5624767639674
+    },
+    "real_verify_small_04": {
+      "exit_code": 0,
+      "seconds": 1674.0246402519988
+    },
+    "real_coverage_small_04": {
+      "exit_code": 0,
+      "seconds": 3.6585147640435025
+    }
+  }
+}

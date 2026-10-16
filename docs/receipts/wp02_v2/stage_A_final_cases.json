@@ -1,0 +1,764 @@
+[
+  {
+    "name": "test_A01_partial_from_committed_ema_and_hist_without_double",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.013",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A02_warmup_and_price_scale",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A03_stream_restore_and_prefix_invariance",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[duplicate]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[missing]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[order]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[late]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[nonfinite]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[negative]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.577",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.012",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_e_reuses_normalized_market_feature_build_and_clock",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.412",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_single_env_collector_uses_env_observation",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "1.084",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_profile_preserves_original_oracle_financial_rules",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.630",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_collector_rejects_foreign_profile_identity",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.530",
+    "result": "PASS"
+  },
+  {
+    "name": "test_native_env_rejects_unavailable_current_minute",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.680",
+    "result": "PASS"
+  },
+  {
+    "name": "test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.508",
+    "result": "PASS"
+  },
+  {
+    "name": "test_market_cache_does_not_cross_legacy_and_e_profile",
+    "class": "tests.entry_v1.test_s3_e_native_env",
+    "seconds": "0.521",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_clock_does_not_build_discarded_legacy_features",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "0.403",
+    "result": "PASS"
+  },
+  {
+    "name": "test_market_cache_reuses_only_market_and_owns_independent_copies",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "0.394",
+    "result": "PASS"
+  },
+  {
+    "name": "test_cache_rechecks_csv_bytes_and_config_identity",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "0.585",
+    "result": "PASS"
+  },
+  {
+    "name": "test_changed_file_during_cache_build_is_not_published",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "0.387",
+    "result": "PASS"
+  },
+  {
+    "name": "test_injected_frames_bypass_csv_cache_and_capacity_is_bounded",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "0.866",
+    "result": "PASS"
+  },
+  {
+    "name": "test_cached_pool_matches_uncached_tp_sl_and_cold_restore",
+    "class": "tests.entry_v1.test_entry_market_cache",
+    "seconds": "1.548",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_01_valid_design_has_all_stages_but_never_admits",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_no_other_student_or_old_parameter_source[path0-legacy_1m]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_no_other_student_or_old_parameter_source[path1-tutor_cd]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_no_other_student_or_old_parameter_source[path2-b2]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_no_other_student_or_old_parameter_source[path3-warm_start]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[schema-FG_SINGLE3_REWARD_MARKET_MINUTE_V2]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[candidate-C2]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[beta-0.6]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[rho-0.5]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[L-6]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[beta-True]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_03_reward_must_be_complete_quality_tp_c1[L-nan]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_04_native_e_shapes_valid_and_cutoff_are_required[minute]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_04_native_e_shapes_valid_and_cutoff_are_required[context]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_04_native_e_shapes_valid_and_cutoff_are_required[valid]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_04_native_e_shapes_valid_and_cutoff_are_required[cutoff]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path0-1]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path1-True]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path2-1]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path3-6]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path4-29]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_05_financial_and_clock_assertions_cannot_change[path5-WALL_CLOCK]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_teacher_and_sources_are_train_only[teacher-DEV]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_teacher_and_sources_are_train_only[teacher-TEST]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_teacher_and_sources_are_train_only[data_identity-DEV]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_teacher_and_sources_are_train_only[data_identity-TEST]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[teacher_valid]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[strict_suffix]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[quality_score]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[outcome_event]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[q_future]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_07_future_and_host_fields_cannot_be_policy_inputs[visible_cutoff]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_08_oracle_null_is_a_blocker_but_certified_boolean_is_rejected",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[ready]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[approved]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[admitted]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[support_state]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[resolved_composition]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[stage_contracts]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_09_derived_state_and_approvals_are_not_input[mode]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[duplicate]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[probability]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[seed]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[delay]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[unknown]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_10_behavior_parameters_and_identity_fail_closed[boundary]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_11_derived_stage_matrix_cannot_be_forged[FOUNDATION_WM-parameter_groups_trainable-value0]",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_11_derived_stage_matrix_cannot_be_forged[ACTOR_SUPERVISED-selected_policy_head-pol]",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_11_derived_stage_matrix_cannot_be_forged[QUALITY_HEADS-parameter_groups_trainable-value2]",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[missing_mode]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[blank_mode]",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[implicit]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[formal]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[blank_source]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_only_explicit_structurally_valid_draft_permits_null_identity[empty_sources]",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_13_identity_payload_preserves_order_source_and_configuration",
+    "class": "",
+    "seconds": "0.005",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_import_and_validation_without_site_packages_or_io",
+    "class": "",
+    "seconds": "0.025",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_01_12_native_draft_calls_reward_validator_and_never_loads_markets",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.059",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_13_cli_repeated_drafts_have_identical_non_authenticated_receipts",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "1.277",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_cli_disables_bytecode_without_external_python_flags",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.033",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_13_native_hash_changes_for_order_seed_or_source_hash",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.006",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_formal_complete_matching_metadata_still_fails_without_certification",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.659",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_08_declared_oracle_evidence_never_certifies_a_draft",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.648",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[composition]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.552",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[old_reward]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.546",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[candidate]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.536",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[minute_shape]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.546",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[context_shape]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.548",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[clock]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.549",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[lots]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.554",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[test_fold]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.563",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[leak]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.554",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[fake_oracle]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.550",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[unknown_behavior]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.558",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[blank_mode]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.586",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[blank_source]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.580",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[empty_sources]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.603",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[implicit_formal]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.575",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[forged_ready]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.575",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[forged_matrix]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.554",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[missing_mode]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.572",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[missing_source]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.538",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[duplicate_json]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.566",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[malformed_json]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.562",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[missing]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.650",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[hash]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.623",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[profile]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.614",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[test_source]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.602",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[teacher_reward]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.593",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[forged]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.610",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[malformed_pool]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.591",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[false_eligibility]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.585",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[existing]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.606",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[reserved]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.629",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[formal_root]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.599",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[symlink_parent]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.606",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[source_directory]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.627",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_native_validator_failures_are_not_suppressed[reward]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_native_validator_failures_are_not_suppressed[observation]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_native_validator_failures_are_not_suppressed[score]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_native_validator_failures_are_not_suppressed[public_guard]",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_WP01_14_real_legacy_quality_and_e_configurations_keep_their_contracts",
+    "class": "tests.entry_v1.test_fg_s3_e_quality_course_preflight",
+    "seconds": "0.063",
+    "result": "PASS"
+  }
+]

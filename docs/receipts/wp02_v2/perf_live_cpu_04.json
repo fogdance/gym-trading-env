@@ -1,0 +1,128 @@
+{
+  "parent": 2523502,
+  "seconds": 5.042072065989487,
+  "processes": {
+    "2523502": {
+      "ppid": 2523496,
+      "ticks": 11763,
+      "state": "S",
+      "rss": 623751168,
+      "cpu_percent": 0.0,
+      "pss_bytes": 534684672
+    },
+    "2525007": {
+      "ppid": 2523502,
+      "ticks": 1,
+      "state": "S",
+      "rss": 11993088,
+      "cpu_percent": 0.0,
+      "pss_bytes": 6045696
+    },
+    "2525008": {
+      "ppid": 2523502,
+      "ticks": 12899,
+      "state": "R",
+      "rss": 525479936,
+      "cpu_percent": 82.11,
+      "pss_bytes": 435143680
+    },
+    "2525011": {
+      "ppid": 2523502,
+      "ticks": 11948,
+      "state": "R",
+      "rss": 522915840,
+      "cpu_percent": 51.76,
+      "pss_bytes": 433559552
+    },
+    "2525012": {
+      "ppid": 2523502,
+      "ticks": 8967,
+      "state": "R",
+      "rss": 522170368,
+      "cpu_percent": 39.86,
+      "pss_bytes": 432159744
+    },
+    "2525013": {
+      "ppid": 2523502,
+      "ticks": 11660,
+      "state": "R",
+      "rss": 523497472,
+      "cpu_percent": 57.12,
+      "pss_bytes": 433467392
+    },
+    "2525014": {
+      "ppid": 2523502,
+      "ticks": 11053,
+      "state": "S",
+      "rss": 522321920,
+      "cpu_percent": 34.91,
+      "pss_bytes": 433033216
+    },
+    "2525015": {
+      "ppid": 2523502,
+      "ticks": 13577,
+      "state": "R",
+      "rss": 524238848,
+      "cpu_percent": 78.34,
+      "pss_bytes": 434392064
+    },
+    "2525551": {
+      "ppid": 2525013,
+      "ticks": 19009,
+      "state": "R",
+      "rss": 598790144,
+      "cpu_percent": 99.96,
+      "pss_bytes": 509247488
+    },
+    "2525552": {
+      "ppid": 2525014,
+      "ticks": 19024,
+      "state": "R",
+      "rss": 627650560,
+      "cpu_percent": 100.16,
+      "pss_bytes": 535149568
+    },
+    "2525553": {
+      "ppid": 2525008,
+      "ticks": 18966,
+      "state": "R",
+      "rss": 619364352,
+      "cpu_percent": 99.76,
+      "pss_bytes": 528462848
+    },
+    "2525554": {
+      "ppid": 2525015,
+      "ticks": 18951,
+      "state": "R",
+      "rss": 626688000,
+      "cpu_percent": 100.16,
+      "pss_bytes": 536596480
+    },
+    "2525555": {
+      "ppid": 2525011,
+      "ticks": 18957,
+      "state": "R",
+      "rss": 607092736,
+      "cpu_percent": 99.76,
+      "pss_bytes": 517218304
+    },
+    "2525557": {
+      "ppid": 2525012,
+      "ticks": 18935,
+      "state": "R",
+      "rss": 619810816,
+      "cpu_percent": 99.76,
+      "pss_bytes": 529382400
+    },
+    "2525660": {
+      "ppid": 2525008,
+      "ticks": 18766,
+      "state": "R",
+      "rss": 626081792,
+      "cpu_percent": 99.96,
+      "pss_bytes": 535375872
+    }
+  },
+  "total_cpu_percent": 1043.62,
+  "total_pss_bytes": 6833918976
+}

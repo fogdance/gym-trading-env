@@ -1,0 +1,8 @@
+{
+  "files": {
+    "src/gym_trading_env/envs/entry_env.py": "dd13dfc01d3cdf1462f2b6fab99419c5aad8544e5bbd4e4c2e84bc9a4728604c",
+    "src/gym_trading_env/research/fg_s3_quality_teacher_v2.py": "90ec481485e7916e9c606db20ab8954eb70a6eeceadce6511bd1b3489a8c830b",
+    "src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": "d4ecebf662c8019630cd7730c07c6aecc9dff532d0ce84994996d68d54be86d9"
+  },
+  "source": "WP02 D HEAD + pre-optimization dirty E bytes"
+}

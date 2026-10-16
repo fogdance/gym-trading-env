@@ -101,3 +101,9 @@ def test_C07_coverage_separates_market_accounts_and_counterfactuals(tmp_path):
     assert report['behaviors']['P0']['counts']['filled_add']==0
     assert report['behaviors']['P1']['counts']['filled_add']>0
     assert report==coverage(paths)
+    for behavior in report['behaviors'].values():
+        assert sum(s['replay_rows'] for s in behavior['by_official_day_session'].values())==behavior['counts']['replay_rows']
+    from gym_trading_env.research.fg_s3_e_quality_corpus import write_coverage_csv
+    a,b=tmp_path/'a.csv',tmp_path/'b.csv'
+    write_coverage_csv(a,report);write_coverage_csv(b,coverage(paths))
+    assert a.read_bytes()==b.read_bytes() and b'official_day_session' in a.read_bytes()

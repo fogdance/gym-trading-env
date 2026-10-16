@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/wp02_profile_snapshot.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+  "environment": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "exit_code": 0,
+  "seconds": 76.1717104249401
+}

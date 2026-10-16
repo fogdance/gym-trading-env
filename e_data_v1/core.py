@@ -319,6 +319,7 @@ class MarketData:
             self._macd_cache = {}
             self._macd_stream = CausalMACD5m()
             self._macd_through = -1
+            self._macd_anchor_close = None
             self._macd_sessions = [(local_timestamp(s['start']), local_timestamp(s['end']))
                                    for s in self.schedule['dated_sessions']]
         for i in range(self._macd_through+1, through+1):
@@ -337,6 +338,7 @@ class MarketData:
                 try:
                     self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
                         slot=ordinal%5+1, time_ns=t.value, available_ns=row.available_at.value)
+                    self._macd_anchor_close = float(row.Close)
                 except ValueError as exc:
                     raise EDataError(str(exc)) from exc
             state = self._macd_stream.snapshot()
@@ -344,7 +346,7 @@ class MarketData:
             if not np.isfinite(value).all():
                 raise EDataError('MACD scale overflow; no silent clipping')
             self._macd_cache[i] = (value, dict(algorithm=CONTRACT,
-                raw=self._macd_stream.raw.copy(), anchor_close=float(row.Close),
+                raw=self._macd_stream.raw.copy(), anchor_close=self._macd_anchor_close,
                 bucket_id=self._macd_stream.bucket, last_committed_bucket=self._macd_stream.last_committed,
                 completed_buckets=self._macd_stream.completed, state=state,
                 visible_cutoff=t.isoformat(), available_at=row.available_at.isoformat()))

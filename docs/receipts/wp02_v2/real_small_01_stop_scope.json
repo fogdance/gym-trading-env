@@ -1,0 +1,64 @@
+{
+  "authorization": "USER: \u5141\u8bb8\u505c\u6b62\u5e76\u4f18\u5316\u540e\u91cd\u8dd1",
+  "preserve": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_01",
+  "process_tree": [
+    {
+      "pid": 2433194,
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-c",
+        "from multiprocessing.resource_tracker import main;main(7)"
+      ],
+      "start": "52756772",
+      "uid": 1000,
+      "signal": "SIGTERM"
+    },
+    {
+      "pid": 2433195,
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-c",
+        "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=8, pipe_handle=12)",
+        "--multiprocessing-fork"
+      ],
+      "start": "52756772",
+      "uid": 1000,
+      "signal": "SIGTERM"
+    },
+    {
+      "pid": 2433198,
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-c",
+        "from multiprocessing.spawn import spawn_main; spawn_main(tracker_fd=8, pipe_handle=14)",
+        "--multiprocessing-fork"
+      ],
+      "start": "52756775",
+      "uid": 1000,
+      "signal": "SIGTERM"
+    },
+    {
+      "pid": 2431955,
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_e_quality_corpus.py",
+        "generate-small",
+        "--source-pool",
+        "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+        "--env-receipt",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+        "--contract",
+        "CZCE.FG201",
+        "--out",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_01"
+      ],
+      "start": "52745147",
+      "uid": 1000,
+      "signal": "SIGTERM"
+    }
+  ]
+}

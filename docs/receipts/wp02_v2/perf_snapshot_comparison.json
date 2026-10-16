@@ -1,0 +1,32 @@
+{
+  "scope": "ONE_CERTIFIED_TRAIN_CONTRACT_LAST_TWO_DAYS; THREE_READ_ONLY_STATES",
+  "status": "PASS",
+  "measurements": {
+    "baseline": {
+      "export_state_seconds": 0.45728066109586507,
+      "import_state_seconds": 0.3949295619968325,
+      "query_seconds": [
+        1.764003009069711,
+        1.8688517099944875,
+        1.9627536329207942
+      ],
+      "mean_query_seconds": 1.8652027839949976
+    },
+    "optimized": {
+      "export_state_seconds": 0.12450080795679241,
+      "import_state_seconds": 0.1171428250381723,
+      "query_seconds": [
+        0.8169304290786386,
+        0.8036615250166506,
+        0.9785579779418185
+      ],
+      "mean_query_seconds": 0.8663833106790358
+    }
+  },
+  "full_l1_labels_equal": true,
+  "complete_states_equal": true,
+  "baseline_source_sha256": "dd13dfc01d3cdf1462f2b6fab99419c5aad8544e5bbd4e4c2e84bc9a4728604c",
+  "optimized_source_sha256": "ae9580d4c9f53b91d9d19197ac9785fb92569c1c7f2c9155818fd87a7136a782",
+  "final_account_snapshot_hash": "894417a2956f40ab53d3e44f7f61f22a5041f078edf12f6303b125b3ee93d73b",
+  "query_speedup": 2.152860934651578
+}

@@ -1,0 +1,106 @@
+{
+  "gym_baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+  "dreamer_baseline": "347724e3207fca16907facab021302217f47cf6b",
+  "native_env_modified_methods": [
+    "__init__",
+    "_get_obs",
+    "_prefix_hash",
+    "export_state",
+    "import_state"
+  ],
+  "native_env_unchanged_methods": [
+    "_validate_e_market_source",
+    "_load_market",
+    "net_lots",
+    "_positions",
+    "_set_terms",
+    "_trading_day",
+    "_price",
+    "_mark",
+    "_compute_stop_loss_price",
+    "_compute_take_profit_price",
+    "_assert_ledger_conservation",
+    "_preflight_open",
+    "_required_margin",
+    "direction_at",
+    "_can_add",
+    "reset",
+    "_open_entry",
+    "settle_exit",
+    "_new_reward",
+    "_exit_request",
+    "step",
+    "_sample_equity",
+    "_get_info",
+    "continue_data",
+    "close"
+  ],
+  "protected_files": {
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py": {
+      "sha256": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_score.py": {
+      "sha256": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/utils/market_features.py": {
+      "sha256": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/research/fg_single3_oracle.py": {
+      "sha256": "914851a2cae766ece72ad824d65ee331919bbef96051a6287fea513a4c48e965",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/research/fg_single3_replay.py": {
+      "sha256": "a6742d439899adc127165e943a6076db51c25fdf4a84fc786a1ee44ae302780e",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/tools/fg_s3_v2_experiment.py": {
+      "sha256": "0370b818d6af94a31835183e995c008b35d71bfb49af8910f5b25ce7d4cf9fe0",
+      "baseline": "2904f3e58cd84fb383f9e5a0d2d2aa643fcb10d2",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/dreamerv3/fg_s3_composition.py": {
+      "sha256": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/run/fg_s3_source_admission.py": {
+      "sha256": "461c8bf2e1a407d1065e4c5a4a106f87a80b7ebf45a7ecba7d8053c28d5ebc92",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/run/fg_s3_gate.py": {
+      "sha256": "3c3c405111c18e210ac9810cd645e0cdc25dcedaad5897f6e21b038ae01a3beb",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/run/fg_checkpoint.py": {
+      "sha256": "c80bd662f63bd021b9c49af498cae05f1df618a7c46ddc57bcdbed09f4abedac",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/core/replay.py": {
+      "sha256": "ea70f6f0494c0520acd357190c5c78bee46b0365dd950231ca522ddb6dbdd027",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/core/driver.py": {
+      "sha256": "ebfd71d6adf205ada2720a357ac42e89f2891f9f496b5de28f79aabe4f67371b",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    },
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/dreamerv3/embodied/run/fg_s3_v2_train.py": {
+      "sha256": "2ada0c995bb0bdb5d484bf5be8c378de5d41f0d1efc3fdc01b9ce04c2f3f28da",
+      "baseline": "347724e3207fca16907facab021302217f47cf6b",
+      "byte_identical": true
+    }
+  },
+  "scope": "targeted source equivalence, not a substitute for native account replay"
+}

@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_migration_contract.xml",
+    "tests/entry_v1/test_s3_composition.py::test_reviewed_reader_warm_start_fixed_historical_endpoints",
+    "tests/entry_v1/test_s3_composition.py::test_current_v2_does_not_inherit_old_reader_migration_permission"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+  "environment": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "exit_code": 0,
+  "seconds": 2.6162062019575387
+}

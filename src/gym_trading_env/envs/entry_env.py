@@ -733,7 +733,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                        "log/env/speed_reward": self.total_reward})
 
     def _prefix_hash(self, through):
-        return fingerprint(self._raw.iloc[:through+1].to_dict(orient="split"))
+        from gym_trading_env.utils.market_prefix import MarketPrefix
+        cached = getattr(self, '_market_prefix_json', None)
+        if cached is None or not cached.matches(self._raw):
+            cached = self._market_prefix_json = MarketPrefix(self._raw)
+        return cached.digest(len(self._raw.iloc[:through+1]))
 
     def export_state(self):
         state = dict(schema=3 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
@@ -761,7 +765,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return json.loads(json.dumps(state, default=str))
 
     def import_state(self, state):
-        state = copy.deepcopy(state)
+        # export_state is a JSON snapshot. A JSON round trip preserves that
+        # public contract and independent ownership without Python deepcopy's
+        # per-object traversal of the full account history.
+        state = json.loads(json.dumps(state, default=str))
         if self._e_profile is not None:
             if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
                 raise ValueError('E V2 checkpoint observation/source identity differs')

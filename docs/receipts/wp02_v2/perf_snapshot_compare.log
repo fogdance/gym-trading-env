@@ -1,0 +1,61 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-obch73_p because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+baseline          5786850 function calls (5021569 primitive calls) in 3.332 seconds
+
+   Ordered by: cumulative time
+   List reduced from 729 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    3.332    3.332 fg_s3_quality_teacher_v2.py:286(query_state)
+        1    0.010    0.010    2.821    2.821 fg_s3_quality_teacher_v2.py:358(trace_native_trade)
+        1    0.004    0.004    2.409    2.409 fg_s3_quality_teacher_v2.py:371(_trace_native_trade)
+        3    0.000    0.000    1.360    0.453 entry_env.py:742(export_state)
+        4    0.011    0.003    1.349    0.337 entry_env.py:735(_prefix_hash)
+        1    0.001    0.001    1.318    1.318 entry_env.py:763(import_state)
+699185/795    0.567    0.000    1.038    0.001 copy.py:128(deepcopy)
+62421/371    0.176    0.000    1.035    0.003 copy.py:227(_deepcopy_dict)
+     1291    0.024    0.000    1.007    0.001 copy.py:201(_deepcopy_list)
+      113    0.000    0.000    0.926    0.008 __init__.py:183(dumps)
+      113    0.000    0.000    0.925    0.008 encoder.py:183(encode)
+      113    0.897    0.008    0.917    0.008 encoder.py:205(iterencode)
+        4    0.000    0.000    0.785    0.196 _decorators.py:325(wrapper)
+        4    0.000    0.000    0.785    0.196 frame.py:2063(to_dict)
+        4    0.000    0.000    0.785    0.196 to_dict.py:78(to_dict)
+      105    0.000    0.000    0.775    0.007 entry_contract.py:19(fingerprint)
+        4    0.124    0.031    0.678    0.169 frame.py:1999(_create_data_for_split_and_tight_to_dict)
+       87    0.000    0.000    0.363    0.004 fg_s3_quality_teacher_v2.py:387(advance)
+       87    0.006    0.000    0.362    0.004 fg_replay.py:225(execute_observed)
+   612455    0.262    0.000    0.317    0.000 cast.py:182(maybe_box_native)
+
+
+
+optimized          571953 function calls (541588 primitive calls) in 1.134 seconds
+
+   Ordered by: cumulative time
+   List reduced from 671 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    1.134    1.134 fg_s3_quality_teacher_v2.py:286(query_state)
+        1    0.011    0.011    0.914    0.914 fg_s3_quality_teacher_v2.py:358(trace_native_trade)
+        1    0.005    0.005    0.781    0.781 fg_s3_quality_teacher_v2.py:371(_trace_native_trade)
+      110    0.000    0.000    0.454    0.004 __init__.py:183(dumps)
+      110    0.000    0.000    0.454    0.004 encoder.py:183(encode)
+      110    0.447    0.004    0.447    0.004 encoder.py:205(iterencode)
+        3    0.000    0.000    0.358    0.119 entry_env.py:742(export_state)
+       87    0.000    0.000    0.349    0.004 fg_s3_quality_teacher_v2.py:387(advance)
+       87    0.006    0.000    0.349    0.004 fg_replay.py:225(execute_observed)
+       87    0.004    0.000    0.278    0.003 entry_env.py:580(step)
+      101    0.000    0.000    0.231    0.002 entry_contract.py:19(fingerprint)
+        5    0.000    0.000    0.209    0.042 __init__.py:299(loads)
+        5    0.000    0.000    0.209    0.042 decoder.py:332(decode)
+        5    0.209    0.042    0.209    0.042 decoder.py:343(raw_decode)
+       91    0.006    0.000    0.189    0.002 entry_env.py:349(_get_obs)
+        1    0.000    0.000    0.125    0.125 entry_env.py:767(import_state)
+      890    0.002    0.000    0.078    0.000 indexing.py:1176(__getitem__)
+      890    0.003    0.000    0.074    0.000 indexing.py:1719(_getitem_axis)
+       91    0.000    0.000    0.065    0.001 core.py:359(snapshot)
+       91    0.010    0.000    0.063    0.001 core.py:385(_snapshot_at)
+
+
+
+{"scope": "ONE_CERTIFIED_TRAIN_CONTRACT_LAST_TWO_DAYS; THREE_READ_ONLY_STATES", "status": "PASS", "measurements": {"baseline": {"export_state_seconds": 0.45728066109586507, "import_state_seconds": 0.3949295619968325, "query_seconds": [1.764003009069711, 1.8688517099944875, 1.9627536329207942], "mean_query_seconds": 1.8652027839949976}, "optimized": {"export_state_seconds": 0.12450080795679241, "import_state_seconds": 0.1171428250381723, "query_seconds": [0.8169304290786386, 0.8036615250166506, 0.9785579779418185], "mean_query_seconds": 0.8663833106790358}}, "full_l1_labels_equal": true, "complete_states_equal": true, "baseline_source_sha256": "dd13dfc01d3cdf1462f2b6fab99419c5aad8544e5bbd4e4c2e84bc9a4728604c", "optimized_source_sha256": "ae9580d4c9f53b91d9d19197ac9785fb92569c1c7f2c9155818fd87a7136a782", "final_account_snapshot_hash": "894417a2956f40ab53d3e44f7f61f22a5041f078edf12f6303b125b3ee93d73b", "query_speedup": 2.152860934651578}

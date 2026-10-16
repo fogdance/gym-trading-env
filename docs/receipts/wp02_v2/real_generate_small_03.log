@@ -1,0 +1,10 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-sl6xsptz because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Collect P0 CZCE.FG201: 31260 source rows, CPU Driver
+Collect P1 CZCE.FG201: 31260 source rows, CPU Driver
+{"behavior": "P1", "trace_hash": "506feb702e41292cc76ecf1410e757f46bcbbf9daf4da20f6aca65d9a2c527c3", "reconciliation": {"status": "PASS", "records": 691, "account_restores": 1, "replay_trace_hash": "506feb702e41292cc76ecf1410e757f46bcbbf9daf4da20f6aca65d9a2c527c3", "teacher_labels_verified": 691}, "seconds": 2825.5336272369605, "peak_rss_bytes": 780079104}
+Collect P2_low CZCE.FG201: 31260 source rows, CPU Driver
+{"behavior": "P0", "trace_hash": "bb46a2bc719be3544c6cfc0a8d1bcfcf9aa1e45eae36efd646c4366e4d70a3ed", "reconciliation": {"status": "PASS", "records": 691, "account_restores": 1, "replay_trace_hash": "bb46a2bc719be3544c6cfc0a8d1bcfcf9aa1e45eae36efd646c4366e4d70a3ed", "teacher_labels_verified": 691}, "seconds": 4962.456402465003, "peak_rss_bytes": 783122432}
+Collect P2_mid CZCE.FG201: 31260 source rows, CPU Driver
+{"behavior": "P2_low", "trace_hash": "fa71276070ea04ba0b2ed7ac062ee06bcc9de7268291af6b896106e293347468", "reconciliation": {"status": "PASS", "records": 691, "account_restores": 1, "replay_trace_hash": "fa71276070ea04ba0b2ed7ac062ee06bcc9de7268291af6b896106e293347468", "teacher_labels_verified": 691}, "seconds": 3031.098578777979, "peak_rss_bytes": 780079104}
+Collect P3 CZCE.FG201: 31260 source rows, CPU Driver

@@ -1,0 +1,124 @@
+{
+  "protocol": "FG_S3_E_MODEL_CONTRACT_V2",
+  "observation": {
+    "observation_schema": "FG_S3_E_OBSERVATION_V2",
+    "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+    "decoder_schema": "FG_S3_E_DECODER_V1",
+    "fields": {
+      "market_seq": {
+        "shape": [
+          60,
+          18
+        ],
+        "dtype": "float32"
+      },
+      "position_state": {
+        "shape": [
+          9
+        ],
+        "dtype": "float32"
+      },
+      "action_mask": {
+        "shape": [
+          2
+        ],
+        "dtype": "float32"
+      },
+      "action": {
+        "shape": [],
+        "dtype": "int32"
+      },
+      "reward": {
+        "shape": [],
+        "dtype": "float32"
+      },
+      "is_first": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "is_last": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "is_terminal": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "market_seq_e_shared": {
+        "shape": [
+          60,
+          18
+        ],
+        "dtype": "float32"
+      },
+      "market_context_15m": {
+        "shape": [
+          24,
+          7
+        ],
+        "dtype": "float32"
+      },
+      "market_macd_5m": {
+        "shape": [
+          4
+        ],
+        "dtype": "float32"
+      }
+    },
+    "encoder_keys": [
+      "market_seq_e_shared",
+      "position_state",
+      "action_mask",
+      "market_context_15m",
+      "market_macd_5m"
+    ],
+    "decoder_keys": [
+      "market_seq_e_shared",
+      "position_state"
+    ],
+    "audit_only": [
+      "market_seq"
+    ],
+    "context_fields": [
+      "rel_open",
+      "rel_high",
+      "rel_low",
+      "rel_close",
+      "vol_relative",
+      "oi_change",
+      "valid"
+    ],
+    "macd_5m": {
+      "schema": "FG_S3_E_MACD5M_CAUSAL_V2",
+      "periods": [
+        12,
+        26,
+        9
+      ],
+      "histogram": "DIF-Signal",
+      "initialization": "first_complete_close; first_DIF_and_signal_zero",
+      "warmup": "35_complete_buckets_strictly_before_current_bucket",
+      "scale": "1000*raw/current_visible_1m_Close",
+      "invalid": "all_zero",
+      "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+      "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+      "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+      "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+    },
+    "contract_hash": "5ca333e52049bf5bdfe0bf18f5519e65766363c946648bdd1f45b525558052b8"
+  },
+  "encoder_code_sha256": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22",
+  "minute_layers": 3,
+  "context_units": 128,
+  "macd_units": 16,
+  "fusion_units": "DREAMER_PRESET",
+  "decoder_keys": [
+    "market_seq_e_shared",
+    "position_state"
+  ],
+  "horizon": 333,
+  "clock": "S3_MARKET_MINUTE",
+  "initialization": "FRESH_PARAMETERS_ONLY",
+  "legacy_migration": false,
+  "content_hash": "7152f9de6de4885b0e64c77f003c7a646a9807364c4019034ff73aa2d76cad1b"
+}

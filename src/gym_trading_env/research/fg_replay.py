@@ -295,6 +295,22 @@ def iter_sidecar(directory):
             yield json.loads(line)
 
 
+def _validate_e_trace_paths(directory,data):
+    # Check every nested manifest path before any file hashing or np.load.
+    # A re-signed trace may never turn a reader into an outside price reader.
+    root=Path(directory).absolute()
+    names=[*data['files'],*(c['path'] for c in data['chunks'])]
+    for name in names:
+        path=Path(name);target=root/path
+        if (path.is_absolute() or '..' in path.parts or
+                not target.resolve().is_relative_to(root.resolve()) or
+                any(p.is_symlink() for p in (target,*target.parents))):
+            raise ValueError('Unsafe E Replay manifest path')
+    if any(c['path'] not in data['files'] or Path(c['path']).parts[0]!='replay'
+           or Path(c['path']).suffix!='.npz' for c in data['chunks']):
+        raise ValueError('Unsafe E Replay chunk inventory')
+
+
 def trace_manifest(directory, *, verify=True, schema=SCHEMA):
     directory = Path(directory)
     data = read_manifest(directory / "manifest.json")
@@ -302,6 +318,7 @@ def trace_manifest(directory, *, verify=True, schema=SCHEMA):
                        'FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if schema==SINGLE3_SCHEMA else 'V1')
     if schema not in (SCHEMA,SINGLE3_SCHEMA,E_QUALITY_SCHEMA) or data["schema"] != schema or data["reward_version"] != expected_reward:
         raise ValueError("Incompatible Replay/Reward identity")
+    if schema==E_QUALITY_SCHEMA:_validate_e_trace_paths(directory,data)
     if verify:
         check_files({str(directory / p): h for p, h in data["files"].items()})
     return data
@@ -313,6 +330,7 @@ def iter_replay_rows(directory, manifest=None):
     ordinal = 0
     seen = set()
     fields = replay_fields(manifest['schema'])
+    if manifest['schema']==E_QUALITY_SCHEMA:_validate_e_trace_paths(directory,manifest)
     for n, chunk in enumerate(manifest["chunks"]):
         if chunk["uuid"] in seen or (n and manifest["chunks"][n - 1]["succ"] != chunk["uuid"]):
             raise ValueError("Broken/repeated account chunk chain")
@@ -397,12 +415,20 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
     array_hash, event_hash = hashlib.sha256(), hashlib.sha256()
 
     def emit(row, stream):
+        if labeler is not None and getattr(labeler,'queue_depth',0):
+            row['teacher']=row['teacher'].result()
         canonical = {k: v for k, v in row.items() if k not in ("stepid", "ordinal")}
         event_hash.update(json.dumps(canonical, sort_keys=True, separators=(",", ":"), allow_nan=False).encode())
         stream.write(json.dumps(row, separators=(",", ":"), allow_nan=False) + "\n")
 
     try:
         with gzip.open(directory / "steps.jsonl.gz", "wt", encoding="utf-8") as stream:
+            from collections import deque
+            queued=deque()
+            def enqueue(row):
+                queued.append(row)
+                if len(queued)>=max(1,getattr(labeler,'queue_depth',1)):
+                    emit(queued.popleft(),stream)
             def capture(step, worker):
                 row = copy.deepcopy(observed.last)
                 if single3:
@@ -438,7 +464,7 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                 if state["pending"] is not None:
                     previous = state["pending"]
                     previous.update(decision_executed=row["advanced"], decision_valid_minute=row["valid_bar"])
-                    emit(previous, stream)
+                    enqueue(previous)
                 state["pending"] = row
                 state["records"] += 1
                 if state["records"] % 16384 == 0:
@@ -453,7 +479,8 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                 if raw.terminated or raw.status in ("DATA_END", "DATA_GAP") or (end_cursor is not None and raw.current_step >= end_cursor):
                     break
             state["pending"].update(decision_executed=False, decision_valid_minute=False)
-            emit(state["pending"], stream)
+            enqueue(state["pending"])
+            while queued:emit(queued.popleft(),stream)
         replay.save()
         replay.workers.shutdown(wait=True)
         chunks = [dict(path="replay/" + c.filename, uuid=str(c.uuid), succ=str(c.succ), length=c.length)
@@ -499,7 +526,7 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         driver.close()
 
 
-def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None):
+def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None, label_verifier=None):
     """Replay frozen actions through a second original Env, checking every row."""
     (runtime_factory or cpu_runtime)(dreamer_root)
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
@@ -519,6 +546,12 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
     pending = None
     sidecar = iter(iter_sidecar(directory))
     count, restores = 0, 0
+    from collections import deque
+    label_checks=deque()
+    def check_label():
+        saved,expected_label=label_checks.popleft()
+        if saved!=expected_label.result():
+            raise ValueError('Teacher posterior facts or strict action differ from native reconstruction')
     try:
         for ordinal, step in iter_replay_rows(directory, manifest):
             row = next(sidecar, None)
@@ -535,6 +568,13 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
             if schema == E_QUALITY_SCHEMA:
                 if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != fingerprint(raw.export_state()):
                     raise ValueError('Replay E snapshot or full account identity differs')
+            if label_verifier is not None:
+                expected_label=label_verifier(raw,step,row)
+                if getattr(label_verifier,'queue_depth',0):
+                    label_checks.append((row.get('teacher'),expected_label))
+                    if len(label_checks)>=label_verifier.queue_depth:check_label()
+                elif row.get('teacher')!=expected_label:
+                    raise ValueError('Teacher posterior facts or strict action differ from native reconstruction')
             for key, value in obs.items():
                 np.testing.assert_array_equal(step[key], value, err_msg=f"row {ordinal}: {key}")
             for key in ("is_first", "is_last", "is_terminal"):
@@ -564,6 +604,7 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
             count += 1
             if count % 16384 == 0:
                 print(f"Reconcile {manifest['policy']['id']} {raw.contract}: {count} records", flush=True)
+        while label_checks:check_label()
         if next(sidecar, None) is not None or pending["decision_executed"]:
             raise ValueError("Unmatched Sidecar tail")
         expected_final = json.loads((directory / "account_state.json").read_text())
@@ -572,7 +613,7 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
         if hasher.hexdigest() != manifest["array_hash"] or event_hash.hexdigest() != manifest["event_hash"]:
             raise ValueError("Canonical trace content hash mismatch")
         return dict(status="PASS", records=count, account_restores=restores,
-                    replay_trace_hash=manifest["replay_trace_hash"])
+                    replay_trace_hash=manifest["replay_trace_hash"], teacher_labels_verified=count if label_verifier is not None else 0)
     finally:
         raw.close()
 

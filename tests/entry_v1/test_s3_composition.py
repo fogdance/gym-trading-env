@@ -177,9 +177,24 @@ def test_source_and_model_factories_reject_waiting_before_any_data_or_model(tmp_
     assert not (tmp_path/'model').exists()
 
 
-def test_reviewed_reader_warm_start_still_rejects_unknown_changes(monkeypatch):
+def test_reviewed_reader_warm_start_fixed_historical_endpoints(tmp_path,monkeypatch):
     from embodied.run import fg_s3_source_admission as admission
-    from gym_trading_env.research.fg_s3_reader_compat import PRODUCERS
+    from gym_trading_env.research.fg_s3_reader_compat import PRODUCERS,NATIVE_E_IDENTITY_TARGETS
+    import hashlib
+    source_sha='e7df18931bbb384282d602de8009208ca33d1de1'
+    target_sha='6939de5b43200e6f19311804ebf1739b01f12ba5'
+    # Both historical ends are real immutable Git bytes. The temporary local
+    # clone shares objects read-only; it changes no original refs or index.
+    repo=tmp_path/'gym-trading-env'
+    subprocess.run(['git','clone','--shared','--no-checkout','--quiet',str(ROOT),str(repo)],check=True)
+    for name,expected in PRODUCERS.items():
+        raw=subprocess.check_output(['git','show',source_sha+':src/'+name],cwd=ROOT)
+        assert hashlib.sha256(raw).hexdigest()==expected
+    for name,expected in NATIVE_E_IDENTITY_TARGETS.items():
+        raw=subprocess.check_output(['git','show',target_sha+':src/'+name],cwd=ROOT)
+        assert hashlib.sha256(raw).hexdigest()==expected
+        path=repo/'src'/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(raw)
+    monkeypatch.setattr(admission,'__file__',str(tmp_path/'dreamerv3/embodied/run/fg_s3_source_admission.py'))
     mapping={n:h for n,h in PRODUCERS.items() if not n.endswith(('/entry_env.py','/single3_reward.py'))}
     result=admission.verify_producer_code(mapping,warm_start=True)
     assert all(r['disposition']=='AUTHENTICATED_REVIEWED_READER_PARAMETER_WARM_START' for r in result.values())
@@ -189,9 +204,18 @@ def test_reviewed_reader_warm_start_still_rejects_unknown_changes(monkeypatch):
     with pytest.raises(ValueError):admission.verify_producer_code(mapping,warm_start=False)
     name=next(iter(mapping))
     with pytest.raises(ValueError,match='Unreviewed'):admission.verify_producer_code({name:'0'*64},warm_start=True)
-    original=admission.file_hash
-    monkeypatch.setattr(admission,'file_hash',lambda p:'0'*64 if str(p).endswith('entry_market_cache.py') else original(p))
+    # Mutate the SAME passing historical target, not an already-different HEAD.
+    path=repo/'src/gym_trading_env/envs/entry_market_cache.py'
+    path.write_bytes(path.read_bytes()+b'\n# unreviewed mutation\n')
     with pytest.raises(ValueError,match='Unreviewed'):admission.verify_producer_code(mapping,warm_start=True)
+
+
+def test_current_v2_does_not_inherit_old_reader_migration_permission():
+    from embodied.run import fg_s3_source_admission as admission
+    from gym_trading_env.research.fg_s3_reader_compat import PRODUCERS
+    mapping={n:h for n,h in PRODUCERS.items() if not n.endswith(('/entry_env.py','/single3_reward.py'))}
+    with pytest.raises(ValueError,match='Unreviewed'):
+        admission.verify_producer_code(mapping,warm_start=True)
 
 
 def test_model_factory_rejects_encoder_identity_mismatch_before_building(tmp_path):

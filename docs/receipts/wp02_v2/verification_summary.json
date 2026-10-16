@@ -1,0 +1,554 @@
+[
+  {
+    "name": "stage_A_final",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 127,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_A_final.xml",
+      "tests/entry_v1/test_wp02_macd.py",
+      "tests/entry_v1/test_s3_e_native_env.py",
+      "tests/entry_v1/test_entry_market_cache.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_quality_course_contract.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_B_acceptance",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 12,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_B_acceptance.xml",
+      "tests/entry_v1/test_wp02_replay.py",
+      "tests/entry_v1/test_fg_single3_replay.py",
+      "tests/entry_v1/test_fg_s3_e_observation.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py",
+      "-k",
+      "not tutor and not b2"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_B_shared",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 20,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_B_shared.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_C_acceptance",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 33,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_C_acceptance.xml",
+      "tests/entry_v1/test_wp02_corpus_facts.py",
+      "tests/entry_v1/test_fg_s3_quality_teacher_v2.py",
+      "tests/unit/test_quality_tp_reward_v1.py",
+      "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_D_acceptance",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 124,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_D_acceptance.xml",
+      "tests/entry_v1/test_wp02_strict.py",
+      "tests/entry_v1/test_fg_single3_oracle.py",
+      "tests/entry_v1/test_fg_s3_quality_teacher_v2.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_quality_course_contract.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_full",
+    "actual_exit_code": 1,
+    "counts": {
+      "PASS": 255,
+      "FAIL": 1,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_full.xml",
+      "tests/entry_v1/test_wp02_macd.py",
+      "tests/entry_v1/test_wp02_replay.py",
+      "tests/entry_v1/test_wp02_corpus_facts.py",
+      "tests/entry_v1/test_wp02_strict.py",
+      "tests/entry_v1/test_wp02_cli.py",
+      "tests/entry_v1/test_s3_e_native_env.py",
+      "tests/entry_v1/test_entry_market_cache.py",
+      "tests/entry_v1/test_fg_s3_e_observation.py",
+      "tests/entry_v1/test_fg_single3_replay.py",
+      "tests/entry_v1/test_fg_single3_oracle.py",
+      "tests/entry_v1/test_fg_s3_quality_teacher_v2.py",
+      "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py",
+      "tests/unit/test_quality_tp_reward_v1.py",
+      "tests/entry_v1/test_s3_market_minute.py",
+      "tests/entry_v1/test_s3_composition.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_quality_course_contract.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_driver_account_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "-k",
+      "not tutor and not b2"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_migration_contract",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_migration_contract.xml",
+      "tests/entry_v1/test_s3_composition.py::test_reviewed_reader_warm_start_fixed_historical_endpoints",
+      "tests/entry_v1/test_s3_composition.py::test_current_v2_does_not_inherit_old_reader_migration_permission"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_all_new_final",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 45,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_all_new_final.xml",
+      "tests/entry_v1/test_wp02_macd.py",
+      "tests/entry_v1/test_wp02_replay.py",
+      "tests/entry_v1/test_wp02_corpus_facts.py",
+      "tests/entry_v1/test_wp02_strict.py",
+      "tests/entry_v1/test_wp02_cli.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_account_attacks",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 17,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_account_attacks.xml",
+      "tests/entry_v1/test_wp02_cli.py::test_E10_resigned_account_tampering_fails_native_replay",
+      "tests/entry_v1/test_fg_single3_env.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_shared_final_corrected",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 29,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_shared_final_corrected.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "tests/entry_v1/test_fg_s3_quality_lifecycle_v2.py",
+      "tests/entry_v1/test_fg_s3_quality_student_v2.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_full_final",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 279,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_full_final.xml",
+      "tests/entry_v1/test_wp02_macd.py",
+      "tests/entry_v1/test_wp02_replay.py",
+      "tests/entry_v1/test_wp02_corpus_facts.py",
+      "tests/entry_v1/test_wp02_strict.py",
+      "tests/entry_v1/test_wp02_cli.py",
+      "tests/entry_v1/test_s3_e_native_env.py",
+      "tests/entry_v1/test_entry_market_cache.py",
+      "tests/entry_v1/test_fg_s3_e_observation.py",
+      "tests/entry_v1/test_fg_single3_replay.py",
+      "tests/entry_v1/test_fg_single3_oracle.py",
+      "tests/entry_v1/test_fg_s3_quality_teacher_v2.py",
+      "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py",
+      "tests/unit/test_quality_tp_reward_v1.py",
+      "tests/entry_v1/test_s3_market_minute.py",
+      "tests/entry_v1/test_s3_composition.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_quality_course_contract.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_driver_account_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "--deselect=../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py::test_EM15_full_checkpoint_continuous_vs_interrupted_exact[tutor]",
+      "--deselect=../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py::test_EM15_full_checkpoint_continuous_vs_interrupted_exact[b2]"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_nested_paths",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_nested_paths.xml",
+      "tests/entry_v1/test_wp02_cli.py::test_E09_nested_replay_manifest_cannot_read_outside_market_files",
+      "tests/entry_v1/test_wp02_replay.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_calendar_final",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_calendar_final.xml",
+      "tests/entry_v1/test_wp02_macd.py::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+      "tests/entry_v1/test_wp02_corpus_facts.py::test_C07_coverage_separates_market_accounts_and_counterfactuals"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  },
+  {
+    "name": "stage_E_release_suite",
+    "actual_exit_code": 0,
+    "counts": {
+      "PASS": 306,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    },
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/evidence/stage_E_release_suite.xml",
+      "tests/entry_v1/test_wp02_macd.py",
+      "tests/entry_v1/test_wp02_replay.py",
+      "tests/entry_v1/test_wp02_corpus_facts.py",
+      "tests/entry_v1/test_wp02_strict.py",
+      "tests/entry_v1/test_wp02_cli.py",
+      "tests/entry_v1/test_s3_e_native_env.py",
+      "tests/entry_v1/test_entry_market_cache.py",
+      "tests/entry_v1/test_fg_s3_e_observation.py",
+      "tests/entry_v1/test_fg_single3_replay.py",
+      "tests/entry_v1/test_fg_single3_oracle.py",
+      "tests/entry_v1/test_fg_s3_quality_teacher_v2.py",
+      "tests/entry_v1/test_fg_s3_quality_patch_acceptance.py",
+      "tests/unit/test_quality_tp_reward_v1.py",
+      "tests/entry_v1/test_s3_market_minute.py",
+      "tests/entry_v1/test_s3_composition.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_quality_course_contract.py",
+      "../dreamerv3/dreamerv3/tests/test_fg_s3_e_encoder.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_driver_account_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "tests/entry_v1/test_fg_single3_env.py",
+      "tests/entry_v1/test_fg_s3_quality_lifecycle_v2.py",
+      "tests/entry_v1/test_fg_s3_quality_student_v2.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    }
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "0.435",
+    "result": "PASS"
+  },
+  {
+    "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "0.323",
+    "result": "PASS"
+  },
+  {
+    "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "0.047",
+    "result": "PASS"
+  },
+  {
+    "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "24.884",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "21.920",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "6.265",
+    "result": "PASS"
+  },
+  {
+    "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "21.193",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+    "class": "embodied.tests.test_fg_s3_gate",
+    "seconds": "8.410",
+    "result": "PASS"
+  },
+  {
+    "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+    "class": "embodied.tests.test_fg_s3_source_transfer",
+    "seconds": "0.019",
+    "result": "PASS"
+  },
+  {
+    "name": "test_online_model_and_environment_counters_have_separate_domains",
+    "class": "embodied.tests.test_fg_s3_source_transfer",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+    "class": "embodied.tests.test_fg_s3_source_transfer",
+    "seconds": "21.568",
+    "result": "PASS"
+  },
+  {
+    "name": "test_no_inference_source_and_frozen_snapshot",
+    "class": "embodied.tests.test_fg_s3_source_transfer",
+    "seconds": "6.723",
+    "result": "PASS"
+  },
+  {
+    "name": "test_missing_baseline_requires_authenticated_features",
+    "class": "embodied.tests.test_fg_s3_source_transfer",
+    "seconds": "7.821",
+    "result": "PASS"
+  },
+  {
+    "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_rejects_missing_gate_interface",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_accepts_formal_checkpoint",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_eval_only_rejects_warmup_checkpoint",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_live_trading_rejects_warmup_checkpoint",
+    "class": "embodied.tests.test_action_mask_formal_guards",
+    "seconds": "0.001",
+    "result": "PASS"
+  }
+]

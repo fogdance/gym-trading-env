@@ -49,6 +49,59 @@ class QualityCatalogIdentity:
     clock_protocol: str = 'S3_MARKET_MINUTE'
 
 
+def validate_corpus_label(label):
+    """Validate the new corpus envelope, without granting legacy TRAIN joins.
+
+    These hashes establish internal integrity. The corpus verifier separately
+    authenticates sources and re-executes every native L1/L2 query. Existing
+    validate_label/attach_quality still require their original admission.
+    """
+    from fractions import Fraction
+    from .fg_s3_quality_score import quality_for_exit
+    def intact(value):
+        return fingerprint({k:v for k,v in value.items() if k!='content_hash'})==value.get('content_hash')
+    if (not intact(label) or label.get('protocol')!='FG_S3_E_QUALITY_TEACHER_V2'
+            or label.get('fold')!='TRAIN' or any(label.get(k) is not False for k in
+            ('quality_q_v2_valid','prediction_admitted','decision_admitted'))):
+        raise ValueError('Corpus label identity or independent admission differs')
+    facts,strict=label['L1'],label['L2']
+    if (not intact(facts) or facts.get('protocol')!='FG_S3_QUALITY_TEACHER_V1'
+            or facts.get('score_policy')!='FG_S3_QUALITY_TP_MARKET_DAY_V1'
+            or facts.get('fold')!='TRAIN' or facts.get('training_action_label_allowed') is not False
+            or facts.get('state_id')!=label['state_id']
+            or facts.get('account_snapshot_hash')!=label['account_snapshot_hash']):
+        raise ValueError('Corpus L1 native owner/proof differs')
+    for key,shape in (('event',(7,)),('event_valid',(7,)),('touch',(4,2)),
+                      ('touch_valid',(4,2)),('adverse',(4,)),('adverse_valid',(4,))):
+        if np.asarray(facts[key]).shape!=shape:raise ValueError('Corpus L1 horizon shape differs')
+    if facts.get('score_valid'):
+        reason={'TP5':'TAKE_PROFIT','SL30':'STOP_LOSS'}.get(facts.get('exit_type'))
+        if not reason or not facts.get('immediate_outcome_verified'):
+            raise ValueError('Corpus L1 score has no completed native outcome')
+        expected,_=quality_for_exit(reason,facts['held_market_minutes'],facts['crossed_trading_days'])
+        event=facts.get('native_event')
+        if (facts['score']!=expected or not event or fingerprint(event)!=facts.get('native_event_hash')
+                or event['reason']!=reason or event['net_trade_pnl']!=facts['net_pnl']
+                or event['held_market_bars']!=facts['held_market_minutes']):
+            raise ValueError('Corpus L1 score differs from native Quality settlement')
+    if strict.get('teacher_valid'):
+        if (not intact(strict) or strict.get('protocol')!='FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
+                or strict.get('account_snapshot_hash')!=label['account_snapshot_hash']
+                or not facts['actual_legal_wait'] or not facts['actual_legal_add']
+                or facts.get('invalid_reason') or not strict.get('suffix_boundary_identity')):
+            raise ValueError('Corpus strict action is not an independently valid legal decision')
+        wait,add=map(Fraction,strict['value_rational_witness'])
+        if (strict['strict_action']!=int(add>wait) or strict['tie']!=(add==wait)
+                or strict['action_value_add']!=float(add) or strict['action_value_wait']!=float(wait)
+                or strict['margin']!=float(add-wait)
+                or not np.isfinite([float(wait),float(add),strict['margin']]).all()):
+            raise ValueError('Corpus strict values/action/witness differ')
+    elif any(strict.get(k) is not None for k in
+            ('strict_action','tie','action_value_add','action_value_wait','margin')):
+        raise ValueError('Invalid Corpus teacher cannot become an active WAIT label')
+    return label
+
+
 def validate_label(label):
     payload = {k:v for k,v in label.items() if k != 'content_hash'}
     if fingerprint(payload) != label.get('content_hash'):

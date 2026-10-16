@@ -1,0 +1,32 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-9al3uugq because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+{"export_state_seconds": 0.530664952006191, "query_seconds": 3.1975629129447043, "held_minutes": 12, "scope": "READ_ONLY_REAL_TRAIN_CPU_MEASUREMENT"}
+         5361992 function calls (4621821 primitive calls) in 3.194 seconds
+
+   Ordered by: cumulative time
+   List reduced from 897 to 20 due to restriction <20>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001    3.194    3.194 fg_s3_quality_teacher_v2.py:286(query_state)
+        1    0.011    0.011    2.638    2.638 fg_s3_quality_teacher_v2.py:358(trace_native_trade)
+        1    0.004    0.004    2.193    2.193 fg_s3_quality_teacher_v2.py:371(_trace_native_trade)
+        3    0.000    0.000    1.457    0.486 entry_env.py:738(export_state)
+        4    0.012    0.003    1.434    0.358 entry_env.py:735(_prefix_hash)
+        1    0.001    0.001    1.387    1.387 entry_env.py:763(import_state)
+678080/206    0.569    0.000    1.056    0.005 copy.py:128(deepcopy)
+ 61397/82    0.189    0.000    1.055    0.013 copy.py:227(_deepcopy_dict)
+      263    0.022    0.000    1.049    0.004 copy.py:201(_deepcopy_list)
+       38    0.000    0.000    0.981    0.026 __init__.py:183(dumps)
+       38    0.000    0.000    0.981    0.026 encoder.py:183(encode)
+       38    0.953    0.025    0.973    0.026 encoder.py:205(iterencode)
+        4    0.000    0.000    0.839    0.210 _decorators.py:325(wrapper)
+        4    0.000    0.000    0.839    0.210 frame.py:2063(to_dict)
+        4    0.000    0.000    0.839    0.210 to_dict.py:78(to_dict)
+       30    0.000    0.000    0.816    0.027 entry_contract.py:19(fingerprint)
+        4    0.137    0.034    0.573    0.143 frame.py:1999(_create_data_for_split_and_tight_to_dict)
+   611480    0.274    0.000    0.332    0.000 cast.py:182(maybe_box_native)
+        8    0.000    0.000    0.264    0.033 base.py:798(tolist)
+        4    0.010    0.002    0.264    0.066 base.py:2058(tolist)
+
+
+

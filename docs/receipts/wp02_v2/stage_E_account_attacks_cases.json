@@ -1,0 +1,104 @@
+[
+  {
+    "name": "test_E10_resigned_account_tampering_fails_native_replay[ledger_rewrite]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.144",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E10_resigned_account_tampering_fails_native_replay[different_account]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.625",
+    "result": "PASS"
+  },
+  {
+    "name": "test_single_capacity_sl_double_touch_and_release[LONG]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.336",
+    "result": "PASS"
+  },
+  {
+    "name": "test_single_capacity_sl_double_touch_and_release[SHORT]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.321",
+    "result": "PASS"
+  },
+  {
+    "name": "test_pending_no_liquidity_recovery_mask_and_resume",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.320",
+    "result": "PASS"
+  },
+  {
+    "name": "test_gap_uses_actual_quote_and_real_fees[LONG]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.340",
+    "result": "PASS"
+  },
+  {
+    "name": "test_gap_uses_actual_quote_and_real_fees[SHORT]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.340",
+    "result": "PASS"
+  },
+  {
+    "name": "test_tp_reward_and_other_exit_proportion",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.657",
+    "result": "PASS"
+  },
+  {
+    "name": "test_partial_exit_rejected_before_account_mutation",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.334",
+    "result": "PASS"
+  },
+  {
+    "name": "test_metadata_and_right_censor_do_not_invent_exit",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.489",
+    "result": "PASS"
+  },
+  {
+    "name": "test_single_checkpoint_cannot_resume_legacy_or_another_reward",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.829",
+    "result": "PASS"
+  },
+  {
+    "name": "test_margin_call_has_priority_over_sl_and_tp",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.321",
+    "result": "PASS"
+  },
+  {
+    "name": "test_atomic_sl_rejection_keeps_slot_and_retries_once",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.317",
+    "result": "PASS"
+  },
+  {
+    "name": "test_main_roll_overrides_pending_sl_without_stale_metadata",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.326",
+    "result": "PASS"
+  },
+  {
+    "name": "test_duplicate_fill_rejected_before_mutation",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.321",
+    "result": "PASS"
+  },
+  {
+    "name": "test_dataset_rejects_same_shape_different_semantics[legacy]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.643",
+    "result": "PASS"
+  },
+  {
+    "name": "test_dataset_rejects_same_shape_different_semantics[C3]",
+    "class": "tests.entry_v1.test_fg_single3_env",
+    "seconds": "0.791",
+    "result": "PASS"
+  }
+]

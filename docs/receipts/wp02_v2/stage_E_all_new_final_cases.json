@@ -1,0 +1,272 @@
+[
+  {
+    "name": "test_A01_partial_from_committed_ema_and_hist_without_double",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.014",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A02_warmup_and_price_scale",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A03_stream_restore_and_prefix_invariance",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[duplicate]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[missing]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[order]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[late]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[nonfinite]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A04_bad_minutes_fail_closed[negative]",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.643",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "0.013",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "1.070",
+    "result": "PASS"
+  },
+  {
+    "name": "test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "2.176",
+    "result": "PASS"
+  },
+  {
+    "name": "test_B01_native_macd_replay_every_byte_cold_restore",
+    "class": "tests.entry_v1.test_wp02_replay",
+    "seconds": "18.327",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C01_native_e_fork_isolated_complete_l1_and_underwater",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "0.664",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[0]",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "2.182",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[1]",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "1.550",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[2]",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "1.986",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[3]",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "1.605",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[4]",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "2.118",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C03_reject_nontrain_before_constructing_env",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C04_p2_seed_reproducibility_and_variation",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "4.124",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C05_aliasing_fork_never_admitted",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "0.518",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C06_persistent_old_state_path_is_never_written",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "0.502",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C07_coverage_separates_market_accounts_and_counterfactuals",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "2.015",
+    "result": "PASS"
+  },
+  {
+    "name": "test_D01_quality_paired_values_match_independent_native_exhaustion",
+    "class": "tests.entry_v1.test_wp02_strict",
+    "seconds": "1.719",
+    "result": "PASS"
+  },
+  {
+    "name": "test_D02_p4_complete_real_account_and_l2_own_validity",
+    "class": "tests.entry_v1.test_wp02_strict",
+    "seconds": "3.262",
+    "result": "PASS"
+  },
+  {
+    "name": "test_D03_forced_wait_and_unknown_boundary_never_action_labels",
+    "class": "tests.entry_v1.test_wp02_strict",
+    "seconds": "0.987",
+    "result": "PASS"
+  },
+  {
+    "name": "test_D04_multiple_good_entries_are_not_all_strict_adds",
+    "class": "tests.entry_v1.test_wp02_strict",
+    "seconds": "0.939",
+    "result": "PASS"
+  },
+  {
+    "name": "test_D05_low_funds_are_invalid_not_wait_and_old_reward_is_rejected",
+    "class": "tests.entry_v1.test_wp02_strict",
+    "seconds": "0.950",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[test-True]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[validation-True]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-true]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-False]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E02_fake_approval_and_invalid_output_write_nothing",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E03_draft_is_only_diagnostic_real_cli[draft-0]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.836",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E03_draft_is_only_diagnostic_real_cli[formal-2]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.725",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E03_draft_is_only_diagnostic_real_cli[-2]",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.716",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E04_resigned_teacher_forgery_is_rejected_by_native_facts",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "1.509",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E05_self_signed_env_receipt_does_not_create_a_train_authority",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E06_manifest_traversal_rejected_before_hashing_any_price",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E07_student_and_posterior_publications_are_separate",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.987",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E08_corpus_catalog_keeps_fact_action_and_permissions_separate",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.926",
+    "result": "PASS"
+  },
+  {
+    "name": "test_E09_nested_replay_manifest_cannot_read_outside_market_files",
+    "class": "tests.entry_v1.test_wp02_cli",
+    "seconds": "0.001",
+    "result": "PASS"
+  }
+]

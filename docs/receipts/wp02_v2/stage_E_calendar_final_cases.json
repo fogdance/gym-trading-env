@@ -1,0 +1,14 @@
+[
+  {
+    "name": "test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+    "class": "tests.entry_v1.test_wp02_macd",
+    "seconds": "1.976",
+    "result": "PASS"
+  },
+  {
+    "name": "test_C07_coverage_separates_market_accounts_and_counterfactuals",
+    "class": "tests.entry_v1.test_wp02_corpus_facts",
+    "seconds": "2.061",
+    "result": "PASS"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "scope": "real_small_03 CPU generation",
+  "pids": [
+    2455704,
+    2457869,
+    2457870,
+    2457875
+  ],
+  "signal": "SIGTERM",
+  "authorization": "那就停掉吧",
+  "exit_code": 0,
+  "artifacts_preserved": true,
+  "time_utc": "2026-10-16T11:14:58Z"
+}

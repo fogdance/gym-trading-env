@@ -1,0 +1,80 @@
+[
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_original_driver_cross_1024_restore_tp_save_load_and_stream_isolation",
+    "time": "8.536",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_shifted_feedback_is_rejected_even_with_updated_file_hash",
+    "time": "4.575",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_p3_waits_after_capacity_release_skips_resets_and_does_not_wait_after_first_fill",
+    "time": "0.001",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_p2_uses_only_legal_current_obs_and_preserves_rng_at_wrapper_boundaries",
+    "time": "0.001",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_train_hash_and_actual_days_checked_before_generation_without_reading_heldout",
+    "time": "0.016",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_naive_training_timestamps_use_the_frozen_environment_timezone",
+    "time": "0.008",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_native_sampling_counts_use_stepids_and_separate_context",
+    "time": "2.650",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_unfilled_main_roll_at_data_end_is_failure_not_a_free_reset_or_censor",
+    "time": "0.441",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_legal_add_rejection_is_counted_at_actual_feedback",
+    "time": "0.408",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_generation_publishes_only_after_final_validation[True]",
+    "time": "4.445",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_generation_publishes_only_after_final_validation[False]",
+    "time": "4.380",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_audit_publishes_pass_only_after_final_validation[True]",
+    "time": "4.848",
+    "status": "passed"
+  },
+  {
+    "classname": "tests.entry_v1.test_fg_replay",
+    "name": "test_audit_publishes_pass_only_after_final_validation[False]",
+    "time": "4.730",
+    "status": "passed"
+  }
+]

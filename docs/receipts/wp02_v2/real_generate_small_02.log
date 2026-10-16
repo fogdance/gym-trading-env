@@ -1,0 +1,5 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-nda70lxi because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Collect P0 CZCE.FG201: 31260 source rows, CPU Driver
+Collect P1 CZCE.FG201: 31260 source rows, CPU Driver
+{"status": "NO_GO", "error": "Frozen quality source changed during collection: /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/src/gym_trading_env/research/fg_replay.py", "training_admitted": false}

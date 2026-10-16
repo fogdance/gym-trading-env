@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="9" failures="0" skipped="0" tests="123" time="224.071" timestamp="2026-10-16T19:27:12.959285+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp02_snapshot_performance" name="test_worker_budget_uses_real_memory_cpu_and_independent_job_count" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_snapshot_performance" name="test_parallel_teacher_transport_matches_serial_native_accounts_and_labels" time="4.116" /><testcase classname="tests.entry_v1.test_wp02_snapshot_performance" name="test_prefix_json_matches_original_hash_and_does_not_include_suffix" time="0.458" /><testcase classname="tests.entry_v1.test_wp02_snapshot_performance" name="test_warm_prefix_cache_still_rejects_processed_history_tampering" time="0.462" /><testcase classname="tests.entry_v1.test_wp02_snapshot_performance" name="test_json_restore_keeps_full_history_and_independent_snapshot_ownership" time="0.585" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E01_nontrain_rejected_before_price_or_env_receipt_open[test-True]" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E01_nontrain_rejected_before_price_or_env_receipt_open[validation-True]" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-true]" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-False]" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E02_fake_approval_and_invalid_output_write_nothing" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E03_draft_is_only_diagnostic_real_cli[draft-0]" time="1.551" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E03_draft_is_only_diagnostic_real_cli[formal-2]" time="1.444" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E03_draft_is_only_diagnostic_real_cli[-2]" time="1.457" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E04_resigned_teacher_forgery_is_rejected_by_native_facts[False]" time="1.312" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E04_resigned_teacher_forgery_is_rejected_by_native_facts[True]" time="3.171" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E05_self_signed_env_receipt_does_not_create_a_train_authority" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E06_manifest_traversal_rejected_before_hashing_any_price" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E07_student_and_posterior_publications_are_separate" time="0.854" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E08_corpus_catalog_keeps_fact_action_and_permissions_separate" time="0.845" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E09_nested_replay_manifest_cannot_read_outside_market_files" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E10_resigned_account_tampering_fails_native_replay[ledger_rewrite]" time="0.976" /><testcase classname="tests.entry_v1.test_wp02_cli" name="test_E10_resigned_account_tampering_fails_native_replay[different_account]" time="1.436" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C01_native_e_fork_isolated_complete_l1_and_underwater" time="0.603" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C02_p0_p3_original_account_replay_and_separate_labels[0]" time="1.779" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C02_p0_p3_original_account_replay_and_separate_labels[1]" time="1.311" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C02_p0_p3_original_account_replay_and_separate_labels[2]" time="1.606" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C02_p0_p3_original_account_replay_and_separate_labels[3]" time="1.336" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C02_p0_p3_original_account_replay_and_separate_labels[4]" time="1.736" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C03_reject_nontrain_before_constructing_env" time="0.001" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C04_p2_seed_reproducibility_and_variation" time="3.391" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C05_aliasing_fork_never_admitted" time="0.463" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C06_persistent_old_state_path_is_never_written" time="0.450" /><testcase classname="tests.entry_v1.test_wp02_corpus_facts" name="test_C07_coverage_separates_market_accounts_and_counterfactuals" time="1.691" /><testcase classname="tests.entry_v1.test_wp02_strict" name="test_D01_quality_paired_values_match_independent_native_exhaustion" time="1.437" /><testcase classname="tests.entry_v1.test_wp02_strict" name="test_D02_p4_complete_real_account_and_l2_own_validity" time="2.547" /><testcase classname="tests.entry_v1.test_wp02_strict" name="test_D03_forced_wait_and_unknown_boundary_never_action_labels" time="0.825" /><testcase classname="tests.entry_v1.test_wp02_strict" name="test_D04_multiple_good_entries_are_not_all_strict_adds" time="0.786" /><testcase classname="tests.entry_v1.test_wp02_strict" name="test_D05_low_funds_are_invalid_not_wait_and_old_reward_is_rejected" time="0.824" /><testcase classname="tests.entry_v1.test_wp02_replay" name="test_B01_native_macd_replay_every_byte_cold_restore" time="15.482" /><testcase classname="tests.entry_v1.test_fg_replay" name="test_original_driver_cross_1024_restore_tp_save_load_and_stream_isolation" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_shifted_feedback_is_rejected_even_with_updated_file_hash" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_p3_waits_after_capacity_release_skips_resets_and_does_not_wait_after_first_fill" time="0.000" /><testcase classname="tests.entry_v1.test_fg_replay" name="test_p2_uses_only_legal_current_obs_and_preserves_rng_at_wrapper_boundaries" time="0.001" /><testcase classname="tests.entry_v1.test_fg_replay" name="test_train_hash_and_actual_days_checked_before_generation_without_reading_heldout" time="0.012" /><testcase classname="tests.entry_v1.test_fg_replay" name="test_naive_training_timestamps_use_the_frozen_environment_timezone" time="0.007" /><testcase classname="tests.entry_v1.test_fg_replay" name="test_native_sampling_counts_use_stepids_and_separate_context" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_unfilled_main_roll_at_data_end_is_failure_not_a_free_reset_or_censor" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_legal_add_rejection_is_counted_at_actual_feedback" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_generation_publishes_only_after_final_validation[True]" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_generation_publishes_only_after_final_validation[False]" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_audit_publishes_pass_only_after_final_validation[True]" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_replay" name="test_audit_publishes_pass_only_after_final_validation[False]" time="0.001"><error message="failed on setup with &quot;ValueError: Embodied was imported from a different Dreamer checkout&quot;">@pytest.fixture
+    def original_driver():
+        if not (DREAMER / "embodied/core/driver.py").is_file():
+            pytest.skip("Original Dreamer checkout is required for the Replay contract")
+&gt;       return cpu_runtime(DREAMER)
+               ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_replay.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+dreamer_root = PosixPath('/home/v/Documents/work/dreamerv3')
+
+    def cpu_runtime(dreamer_root):
+        """Set CPU constraints before importing Embodied (which imports JAX)."""
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""
+        os.environ["JAX_PLATFORMS"] = "cpu"
+        os.environ["JAX_PLATFORM_NAME"] = "cpu"
+        root = str(Path(dreamer_root).resolve())
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / "embodied":
+&gt;           raise ValueError("Embodied was imported from a different Dreamer checkout")
+E           ValueError: Embodied was imported from a different Dreamer checkout
+
+src/gym_trading_env/research/fg_replay.py:53: ValueError</error></testcase><testcase classname="tests.entry_v1.test_fg_single3_replay" name="test_native_single_delay_and_derived_reward_view" time="1.600" /><testcase classname="tests.entry_v1.test_fg_single3_replay" name="test_p4_refuses_unproven_schedule_before_execution" time="0.001" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_single_capacity_sl_double_touch_and_release[LONG]" time="0.315" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_single_capacity_sl_double_touch_and_release[SHORT]" time="0.317" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_pending_no_liquidity_recovery_mask_and_resume" time="0.319" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_gap_uses_actual_quote_and_real_fees[LONG]" time="0.311" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_gap_uses_actual_quote_and_real_fees[SHORT]" time="0.313" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_tp_reward_and_other_exit_proportion" time="0.629" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_partial_exit_rejected_before_account_mutation" time="0.328" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_metadata_and_right_censor_do_not_invent_exit" time="0.459" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_single_checkpoint_cannot_resume_legacy_or_another_reward" time="0.786" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_margin_call_has_priority_over_sl_and_tp" time="0.306" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_atomic_sl_rejection_keeps_slot_and_retries_once" time="0.309" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_main_roll_overrides_pending_sl_without_stale_metadata" time="0.310" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_duplicate_fill_rejected_before_mutation" time="0.313" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_dataset_rejects_same_shape_different_semantics[legacy]" time="0.621" /><testcase classname="tests.entry_v1.test_fg_single3_env" name="test_dataset_rejects_same_shape_different_semantics[C3]" time="0.785" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_real_clock_does_not_build_discarded_legacy_features" time="0.424" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_market_cache_reuses_only_market_and_owns_independent_copies" time="0.437" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_cache_rechecks_csv_bytes_and_config_identity" time="0.622" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_changed_file_during_cache_build_is_not_published" time="0.431" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_injected_frames_bypass_csv_cache_and_capacity_is_bounded" time="0.956" /><testcase classname="tests.entry_v1.test_entry_market_cache" name="test_cached_pool_matches_uncached_tp_sl_and_cold_restore" time="1.634" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_e_reuses_normalized_market_feature_build_and_clock" time="0.438" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_single_env_collector_uses_env_observation" time="0.657" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_profile_preserves_original_oracle_financial_rules" time="0.653" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_collector_rejects_foreign_profile_identity" time="0.565" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_native_env_rejects_unavailable_current_minute" time="0.742" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18" time="0.550" /><testcase classname="tests.entry_v1.test_s3_e_native_env" name="test_market_cache_does_not_cross_legacy_and_e_profile" time="0.561" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[1]" time="0.329" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[2]" time="0.331" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[5]" time="0.336" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[6]" time="0.333" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[15]" time="0.337" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[16]" time="0.348" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[60]" time="0.382" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_inclusive_fill_reward_age_and_sparse_oracle[61]" time="0.386" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_closed_hours_metadata_zero_volume_and_chunk_restore[lunch]" time="0.487" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_closed_hours_metadata_zero_volume_and_chunk_restore[overnight]" time="0.672" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_zero_volume_real_bar_counts_and_censored_or_rejected_is_not_tp" time="1.115" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[5--0.5]" time="0.328" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[6--0.2]" time="0.489" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[15--0.2]" time="0.333" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_first_adverse_market_bar_boundaries[16-0.0]" time="0.330" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_metadata_discount_matches_independent_env_enumeration_and_s3b" time="0.567" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_cross_semantic_snapshot_rejected_before_model_use" time="0.334" /><testcase classname="tests.entry_v1.test_s3_market_minute" name="test_model_return_uses_feedback_aligned_market_discounts" time="0.247" /><testcase classname="" name="test_driver_explicitly_fetches_jax_carry_under_transfer_guard" time="0.034" /><testcase classname="" name="test_driver_resumes_pending_actions_and_account[False]" time="0.003" /><testcase classname="" name="test_driver_resumes_pending_actions_and_account[True]" time="1.130" /><testcase classname="" name="test_threshold_boundaries_float32_bfloat16_and_safe_wait" time="0.343" /><testcase classname="" name="test_audited_ast_accepts_only_the_reviewed_transition" time="0.180" /><testcase classname="" name="test_gate_only_audit_rejects_market_minute_semantic_change" time="0.050" /><testcase classname="" name="test_direct_init_real_runner_uses_twenty_reports_and_regression_stop" time="22.204" /><testcase classname="" name="test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]" time="24.089" /><testcase classname="" name="test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]" time="8.765" /><testcase classname="" name="test_same_threshold_transfer_preserves_authenticated_window_and_streak" time="25.156" /><testcase classname="" name="test_real_availability_head_raw_mask_and_metrics_share_threshold" time="7.477" /><testcase classname="" name="test_full_source_dependency_inventory_includes_stream_and_serializer" time="0.026" /><testcase classname="" name="test_online_model_and_environment_counters_have_separate_domains" time="0.003" /><testcase classname="" name="test_actual_three_modes_inherit_complete_state_and_reject_foreign" time="28.798" /><testcase classname="" name="test_no_inference_source_and_frozen_snapshot" time="11.850" /><testcase classname="" name="test_missing_baseline_requires_authenticated_features" time="11.777" /><testcase classname="" name="test_train_warmup_preserves_loaded_formal_actor_gate" time="0.001" /><testcase classname="" name="test_train_warmup_keeps_warmup_checkpoint_disabled" time="0.000" /><testcase classname="" name="test_require_formal_actor_rejects_missing_gate_interface" time="0.001" /><testcase classname="" name="test_require_formal_actor_rejects_warmup_checkpoint" time="0.000" /><testcase classname="" name="test_require_formal_actor_accepts_formal_checkpoint" time="0.000" /><testcase classname="" name="test_eval_only_rejects_warmup_checkpoint" time="0.004" /><testcase classname="" name="test_live_trading_rejects_warmup_checkpoint" time="0.003" /></testsuite></testsuites>

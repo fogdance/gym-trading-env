@@ -1,0 +1,149 @@
+{
+  "P0": {
+    "extra_counts": {
+      "L1/TP5": 590,
+      "Quality/HIGH": 516,
+      "TP5_after_early10_15": 182,
+      "L1/SL30": 46,
+      "Quality/LOW": 120,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L1/OTHER_EXIT": 53
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 0,
+    "closed_exits": 0,
+    "final_balances": {
+      "user_cash": "300000",
+      "user_margin": "0.0",
+      "broker_fee_income": "0.0",
+      "broker_pnl": "0.0"
+    },
+    "final_account_state_sha256": "874c9d6b12fef107e0264c63394048016cbeb6f39766943f60cb260f91431f91"
+  },
+  "P1": {
+    "extra_counts": {
+      "L1/TP5": 16,
+      "Quality/HIGH": 15,
+      "TP5_after_early10_15": 5,
+      "L2_invalid/NO_LEARNABLE_DECISION": 668,
+      "L1/SL30": 4,
+      "Quality/LOW": 5,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L2_invalid/FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 13,
+      "L1/OTHER_EXIT": 1
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 42,
+    "closed_exits": 21,
+    "final_balances": {
+      "user_cash": "296862.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "378.0",
+      "broker_pnl": "2760.0"
+    },
+    "final_account_state_sha256": "da1dac4b3687727b0989c6767d72c177a8f8d11644ae5f09825ecd421d00ef8e"
+  },
+  "P2_low": {
+    "extra_counts": {
+      "L1/TP5": 74,
+      "Quality/HIGH": 51,
+      "TP5_after_early10_15": 30,
+      "L2_invalid/NO_LEARNABLE_DECISION": 600,
+      "L1/SL30": 12,
+      "Quality/LOW": 35,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L2_invalid/FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 17,
+      "L1/OTHER_EXIT": 3
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 24,
+    "closed_exits": 12,
+    "final_balances": {
+      "user_cash": "298224.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "216.0",
+      "broker_pnl": "1560.0"
+    },
+    "final_account_state_sha256": "80cd3c713c44ce147e0b0123dffa4237d1645561408c30b118c25d04779bd5ff"
+  },
+  "P2_mid": {
+    "extra_counts": {
+      "L1/TP5": 30,
+      "Quality/HIGH": 29,
+      "TP5_after_early10_15": 6,
+      "L2_invalid/NO_LEARNABLE_DECISION": 650,
+      "L1/SL30": 8,
+      "Quality/LOW": 9,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L2_invalid/FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 15,
+      "L1/OTHER_EXIT": 1
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 44,
+    "closed_exits": 22,
+    "final_balances": {
+      "user_cash": "297144.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "396.0",
+      "broker_pnl": "2460.0"
+    },
+    "final_account_state_sha256": "db98bc596457dd009d08a9097001433c47b7a5bc471f317eaf32bf9b561fc6b4"
+  },
+  "P3": {
+    "extra_counts": {
+      "L1/TP5": 135,
+      "Quality/HIGH": 135,
+      "TP5_after_early10_15": 42,
+      "L2_invalid/NO_LEARNABLE_DECISION": 529,
+      "L1/SL30": 21,
+      "Quality/LOW": 21,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L2_invalid/FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE": 48,
+      "L1/OTHER_EXIT": 4
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 20,
+    "closed_exits": 10,
+    "final_balances": {
+      "user_cash": "297600.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "180.0",
+      "broker_pnl": "2220.0"
+    },
+    "final_account_state_sha256": "a813b4d3136cb940e9fca192950ae5ffd8c9eeef062ef9e8a0e9aa1a3cbee652"
+  },
+  "P4": {
+    "extra_counts": {
+      "L1/TP5": 462,
+      "Quality/HIGH": 405,
+      "TP5_after_early10_15": 151,
+      "L2_invalid/NO_LEARNABLE_DECISION": 136,
+      "L1/SL30": 40,
+      "Quality/LOW": 97,
+      "L2_invalid/NO_ACTIVE_DECISION": 2,
+      "L1/OTHER_EXIT": 51
+    },
+    "final_status": "MAIN_ROLL",
+    "final_cursor": 31259,
+    "equity_history_rows": 62519,
+    "fills": 108,
+    "closed_exits": 54,
+    "final_balances": {
+      "user_cash": "315228.00",
+      "user_margin": "0.00",
+      "broker_fee_income": "972.0",
+      "broker_pnl": "-16200.0"
+    },
+    "final_account_state_sha256": "2d922b25914e5685e3e8459e21b43a52e1f086cf8d9bb2d45c033d47dca31155"
+  }
+}

@@ -1,0 +1,176 @@
+[
+  {
+    "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+    "class": "",
+    "seconds": "0.396",
+    "result": "PASS"
+  },
+  {
+    "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+    "class": "",
+    "seconds": "0.257",
+    "result": "PASS"
+  },
+  {
+    "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+    "class": "",
+    "seconds": "0.047",
+    "result": "PASS"
+  },
+  {
+    "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+    "class": "",
+    "seconds": "24.893",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+    "class": "",
+    "seconds": "24.211",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+    "class": "",
+    "seconds": "7.948",
+    "result": "PASS"
+  },
+  {
+    "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+    "class": "",
+    "seconds": "23.329",
+    "result": "PASS"
+  },
+  {
+    "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+    "class": "",
+    "seconds": "8.510",
+    "result": "PASS"
+  },
+  {
+    "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+    "class": "",
+    "seconds": "0.019",
+    "result": "PASS"
+  },
+  {
+    "name": "test_online_model_and_environment_counters_have_separate_domains",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+    "class": "",
+    "seconds": "23.950",
+    "result": "PASS"
+  },
+  {
+    "name": "test_no_inference_source_and_frozen_snapshot",
+    "class": "",
+    "seconds": "7.915",
+    "result": "PASS"
+  },
+  {
+    "name": "test_missing_baseline_requires_authenticated_features",
+    "class": "",
+    "seconds": "8.199",
+    "result": "PASS"
+  },
+  {
+    "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_rejects_missing_gate_interface",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_require_formal_actor_accepts_formal_checkpoint",
+    "class": "",
+    "seconds": "0.000",
+    "result": "PASS"
+  },
+  {
+    "name": "test_eval_only_rejects_warmup_checkpoint",
+    "class": "",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_live_trading_rejects_warmup_checkpoint",
+    "class": "",
+    "seconds": "0.001",
+    "result": "PASS"
+  },
+  {
+    "name": "test_shared_cpu_prepare_start_resume_full_checkpoint",
+    "class": "tests.entry_v1.test_fg_s3_quality_lifecycle_v2",
+    "seconds": "97.430",
+    "result": "PASS"
+  },
+  {
+    "name": "test_actor_same_forward_bounds_and_prediction_stop_gradient",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "0.578",
+    "result": "PASS"
+  },
+  {
+    "name": "test_pair_identity_soft_targets_and_empty_gradients",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "2.427",
+    "result": "PASS"
+  },
+  {
+    "name": "test_q_weak_wait_and_independent_prediction_masks",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "3.410",
+    "result": "PASS"
+  },
+  {
+    "name": "test_subunit_quality_weights_cancel_inside_single_member_class",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "1.130",
+    "result": "PASS"
+  },
+  {
+    "name": "test_all_heads_gradient_and_exact_model_restore_cpu",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "30.276",
+    "result": "PASS"
+  },
+  {
+    "name": "test_quality_actor_parameter_warm_start_and_fresh_joint_optimizer",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "27.171",
+    "result": "PASS"
+  },
+  {
+    "name": "test_controlled_prediction_transfer_requires_evaluated_weights",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "0.002",
+    "result": "PASS"
+  },
+  {
+    "name": "test_quality_first_heads_only_updates_and_actor_isolation",
+    "class": "tests.entry_v1.test_fg_s3_quality_student_v2",
+    "seconds": "22.803",
+    "result": "PASS"
+  }
+]
