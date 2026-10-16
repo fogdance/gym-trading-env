@@ -29,6 +29,7 @@ class V2Collector(D0Collector):
         self.commit_lock = threading.RLock()
         self.pending_native = None
         self.index = {}
+        self._pruned_chunks = None
         self.commit_seq = 0
         self.model_versions = set()
         self.outcome_catalog = outcome_catalog
@@ -159,8 +160,12 @@ class V2Collector(D0Collector):
         """
         with self.commit_lock:
             live = {bytes(k).hex() for k in self.replay.chunks}
-            self.records = [r for r in self.records if r['stepid'][:32] in live]
-            self.index = {r['stepid']: r for r in self.records}
+            # _complete publishes every new row to records and index together.
+            # Only a physical chunk change can retire one of those owners.
+            if live != self._pruned_chunks:
+                self.records = [r for r in self.records if r['stepid'][:32] in live]
+                self.index = {r['stepid']: r for r in self.records}
+                self._pruned_chunks = live
             self.query_seconds = self.query_seconds[-8192:]
 
     def sample(self, batch_size):
@@ -212,6 +217,7 @@ class V2Collector(D0Collector):
         if state['protocol'] != self.protocol or state['identity'] != self.identity:
             raise ValueError('Live collector checkpoint identity differs')
         with self.commit_lock:
+            self._pruned_chunks = None
             self.records, self.pending = state['records'], state['pending']
             self.pending_native, self.commit_seq = state['pending_native'], state['commit_seq']
             self.counts, self.query_seconds = state['counts'], state['query_seconds']

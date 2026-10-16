@@ -1,0 +1,39 @@
+# Isolated speed comparison; original size50m, update ratio, Gate and RNG.
+schema: FG_S3_V2_COMPOSITION_CONFIG_V1
+experiment: E_ONLY_PERF_BASE_GPU_4K_v1_20261016
+research_variant: e-only-throughput-base
+scope: diagnostic
+device: gpu
+contract: CZCE.FG201
+contracts:
+- CZCE.FG201
+- CZCE.FG301
+env_slice_bars: 1000
+dreamer_root: ../dreamerv3
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+oracle_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/oracle/v1
+catalog: /data/logdir/fg_s3_market_minute/20261013_v2/catalog/v1
+dev_source_manifest: ../../fg-data/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+prepared_dir: artifacts/fg_s3_v2/prepared/E_ONLY_PERF_BASE_GPU_4K_v1_20261016
+run_dir: artifacts/fg_s3_v2/runs/E_ONLY_PERF_BASE_GPU_4K_v1_20261016
+env_steps: 4000
+collect_every: 100
+updates_per_collect: 4
+save_every: 4000
+batch_size: 1
+replay_capacity: 32768
+replay_seed: 202
+beta: 0.0
+beta_schedule: null
+bc_lambda: 0.0
+clock_protocol: S3_MARKET_MINUTE
+source_kind: direct_init
+composition:
+  encoder: e_multiscale_1m15m
+  teaching: none
+model_init:
+  seed: 0
+  presets:
+  - size50m
+e_data_manifest: /home/v/Documents/work/research/fg-s3-e-ab-admission-20261015/e_data_current_v1/index_manifest.json
+e_data_source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json

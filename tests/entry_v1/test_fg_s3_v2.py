@@ -17,6 +17,36 @@ from gym_trading_env.research.fg_s3_v2_collector import V2Collector
 DREAMER = Path(__file__).resolve().parents[2].parent/'dreamerv3'
 
 
+def test_prune_keeps_committed_additions_and_retires_only_removed_chunk_owners():
+    from threading import RLock
+    from types import SimpleNamespace
+    first, second = bytes.fromhex('01'*16), bytes.fromhex('02'*16)
+    collector = V2Collector.__new__(V2Collector)
+    collector.commit_lock = RLock()
+    collector._pruned_chunks = None
+    collector.replay = SimpleNamespace(chunks={first: None})
+    initial = {'stepid': first.hex()+'00000000'}
+    collector.records = [initial]
+    collector.index = {initial['stepid']: initial}
+    collector.query_seconds = list(range(9000))
+    collector.prune()
+    # Normal publication adds to both collections between prune calls.
+    added = {'stepid': first.hex()+'01000000'}
+    collector.records.append(added)
+    collector.index[added['stepid']] = added
+    collector.prune()
+    assert collector.records == [initial, added]
+    assert collector.index == {r['stepid']: r for r in collector.records}
+    assert collector.query_seconds == list(range(808, 9000))
+    collector.replay.chunks = {second: None}
+    replacement = {'stepid': second.hex()+'00000000'}
+    collector.records.append(replacement)
+    collector.index[replacement['stepid']] = replacement
+    collector.prune()
+    assert collector.records == [replacement]
+    assert collector.index == {replacement['stepid']: replacement}
+
+
 def test_live_committed_rows_restore_preserves_native_ownership(tmp_path):
     from embodied.run.fg_checkpoint import save_replay, load_replay
     folder = tmp_path/'fixture'; folder.mkdir()
