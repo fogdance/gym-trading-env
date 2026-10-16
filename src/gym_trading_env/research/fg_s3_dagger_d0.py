@@ -146,7 +146,7 @@ class D0Collector:
                 # fixture. Real TRAIN never uses an external EObserved wrapper.
                 from .fg_replay import read_manifest
                 fixture = getattr(e_provider, 'manifest', None)
-                if fixture is None or read_manifest(fixture).get('schema') != 'FG_S3_E_MODEL_SYNTHETIC_V1':
+                if fixture is None or read_manifest(fixture).get('schema') != 'FG_S3_E_MODEL_SYNTHETIC_V2':
                     raise ValueError('Real E observation must originate inside the Env')
                 from .fg_s3_e_observation import wrap_e_observation
                 self.observed = wrap_e_observation(self.observed, e_provider)

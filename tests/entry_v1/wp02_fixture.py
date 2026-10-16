@@ -1,0 +1,40 @@
+"""Synthetic native CSV fixture: actual financial Env, never REAL_TRAIN."""
+from pathlib import Path
+import hashlib
+from types import SimpleNamespace
+import numpy as np
+import pandas as pd
+import yaml
+from test_fg_single3_env import single_env
+from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+
+
+def native_factory(folder, minutes=210, chunk=64):
+    folder=Path(folder);folder.mkdir(parents=True,exist_ok=True)
+    times=[];sessions=[];days=[]
+    segments=[['21:00','23:00'],['09:00','10:15'],['10:30','11:30'],['13:30','15:00']]
+    for day in ['2026-01-06','2026-01-07']:
+        td=pd.Timestamp(day)
+        for a,b in segments:
+            date=td-pd.Timedelta(days=1) if a=='21:00' else td
+            start=pd.Timestamp(str(date.date())+' '+a,tz='Asia/Shanghai')
+            end=pd.Timestamp(str(date.date())+' '+b,tz='Asia/Shanghai')
+            sessions.append(dict(start=str(start),end=str(end)))
+            new=list(pd.date_range(start+pd.Timedelta(minutes=1),end,freq='min'))
+            times+=new;days += [day]*len(new)
+    times=times[:minutes];days=days[:minutes]
+    prices=[(1000,1008 if i%11==1 else 1002,965 if i%17==3 else 985 if i%13==4 else 999,1000)
+            for i in range(minutes)]
+    old=single_env(folder,prices,candidate='C1',fees=3,chunk=chunk,times=pd.DatetimeIndex(times),
+        calendar=sessions,liquidation=str(times[-1]),main_exit=str(times[-1]))
+    frame=old._raw.copy();frame['trading_date']=days;frame['symbol']='CZCE.FG2701'
+    market=folder/'market.csv';frame.to_csv(market,index_label='Date')
+    path=folder/'env.yaml';config=yaml.safe_load(path.read_text())
+    config['entry'].update(market_clock=dict(timezone='Asia/Shanghai',minutes_per_day=345,segments=segments))
+    config['entry']['reward']['schema']='FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'
+    config['trading'].update(data_path=str(market),data_tz='Asia/Shanghai')
+    path.write_text(yaml.safe_dump(config));old.close()
+    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'},source_receipt={
+        'sources':{'CZCE.FG2701':{'market':{'path':str(market),'sha256':hashlib.sha256(market.read_bytes()).hexdigest()}}}})
+    def factory():return FixedDirectionEntryEnv(config_path=path,e_profile=profile)
+    return factory,path,profile

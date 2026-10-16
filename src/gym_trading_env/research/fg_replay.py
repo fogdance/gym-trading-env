@@ -25,6 +25,8 @@ from .fg_reward_candidates import CandidateConfig, FGRewardScorer
 
 SCHEMA = "FG_REPLAY_R0_R2_V1"
 SINGLE3_SCHEMA = "FG_SINGLE3_REPLAY_MARKET_MINUTE_V2"
+E_QUALITY_PROTOCOL = "fg_s3_e_quality_corpus_v2"
+E_QUALITY_SCHEMA = "FG_S3_E_REPLAY_MARKET_MINUTE_V2"
 FIELDS = {
     "market_seq": ((60, 18), np.dtype("float32")),
     "position_state": ((9,), np.dtype("float32")),
@@ -220,7 +222,7 @@ def account_core(env):
             env.total_reward, set(env.reward_function.rewarded))
 
 
-def execute_observed(env, action=None, *, seed=None):
+def execute_observed(env, action=None, *, seed=None, resume_state=None):
     """Collect evidence around one ORIGINAL Env reset/step; no execution logic."""
     before = env.current_step
     lots = float(env.net_lots)
@@ -230,7 +232,7 @@ def execute_observed(env, action=None, *, seed=None):
     if action is None:
         core = account_core(env)
         continuing = env.status == "CHUNK_END"
-        obs, info = env.reset(seed=seed)
+        obs, info = env.reset(seed=seed, options={'resume': resume_state} if resume_state is not None else None)
         if continuing and core != account_core(env):
             raise RuntimeError("Chunk resume changed the financial account")
         reward, terminal, truncated = 0., False, False
@@ -251,6 +253,8 @@ def execute_observed(env, action=None, *, seed=None):
                 valid_bar=valid, eligible_market_minute=bool(valid and direction != "NO_TRADE"),
                 entries=openings, exits=new_exits, chunk_end=bool(truncated and env.status == "CHUNK_END"),
                 true_terminal=bool(terminal))
+    if env.single3 and env.reward_config.schema == 'FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1':
+        unit['trading_day'] = env._trading_day(env._raw.index[current])
     row = dict(cursor=current, time=str(env._raw.index[current]),
                signal_time=signal if action is not None else None,
                trading_date=env._trading_day(env._raw.index[current]),
@@ -267,13 +271,22 @@ def execute_observed(env, action=None, *, seed=None):
 
 
 def update_array_hash(hasher, step):
-    fields = S3_FIELDS if 'market_advance' in step else FIELDS
+    fields = replay_fields(E_QUALITY_SCHEMA) if 'market_macd_5m' in step else (S3_FIELDS if 'market_advance' in step else FIELDS)
     for key in sorted(fields):
         value = np.asarray(step[key])
         shape, dtype = fields[key]
         if value.shape != shape or value.dtype != dtype or not np.isfinite(value).all():
             raise ValueError(f"Invalid Replay field {key}: {value.shape}/{value.dtype}")
         hasher.update(key.encode() + value.tobytes())
+
+
+def replay_fields(schema):
+    if schema == E_QUALITY_SCHEMA:
+        from .fg_s3_e_observation import E_S3_FIELDS_V2
+        return E_S3_FIELDS_V2
+    if schema == SINGLE3_SCHEMA: return S3_FIELDS
+    if schema == SCHEMA: return FIELDS
+    raise ValueError('Unknown Replay schema')
 
 
 def iter_sidecar(directory):
@@ -285,8 +298,9 @@ def iter_sidecar(directory):
 def trace_manifest(directory, *, verify=True, schema=SCHEMA):
     directory = Path(directory)
     data = read_manifest(directory / "manifest.json")
-    expected_reward = 'FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if schema==SINGLE3_SCHEMA else 'V1'
-    if schema not in (SCHEMA,SINGLE3_SCHEMA) or data["schema"] != schema or data["reward_version"] != expected_reward:
+    expected_reward = ('FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1' if schema == E_QUALITY_SCHEMA else
+                       'FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if schema==SINGLE3_SCHEMA else 'V1')
+    if schema not in (SCHEMA,SINGLE3_SCHEMA,E_QUALITY_SCHEMA) or data["schema"] != schema or data["reward_version"] != expected_reward:
         raise ValueError("Incompatible Replay/Reward identity")
     if verify:
         check_files({str(directory / p): h for p, h in data["files"].items()})
@@ -298,7 +312,7 @@ def iter_replay_rows(directory, manifest=None):
     manifest = manifest or trace_manifest(directory)
     ordinal = 0
     seen = set()
-    fields = S3_FIELDS if manifest['schema'] == SINGLE3_SCHEMA else FIELDS
+    fields = replay_fields(manifest['schema'])
     for n, chunk in enumerate(manifest["chunks"]):
         if chunk["uuid"] in seen or (n and manifest["chunks"][n - 1]["succ"] != chunk["uuid"]):
             raise ValueError("Broken/repeated account chunk chain")
@@ -324,7 +338,8 @@ def iter_replay_rows(directory, manifest=None):
 
 
 def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_factory=None,
-                  protocol='fg_entry_v1', policy_factory=None, runtime_factory=None):
+                  protocol='fg_entry_v1', policy_factory=None, runtime_factory=None,
+                  initial_state=None, end_cursor=None, labeler=None):
     """One complete independent Driver stream. Never reload an earlier account."""
     embodied = (runtime_factory or cpu_runtime)(dreamer_root)
     from embodied.envs.from_gymnasium import FromGymnasium
@@ -335,17 +350,30 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
     began = time.monotonic()
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=str(config_path))
     print(f"Collect {spec['id']} {raw.contract}: {len(raw._raw)} source rows, CPU Driver", flush=True)
-    single3 = protocol == 'fg_single3_v1'
-    if protocol not in ('fg_entry_v1','fg_single3_v1') or raw.single3 != single3:
+    e_quality = protocol == E_QUALITY_PROTOCOL
+    single3 = protocol in ('fg_single3_v1', E_QUALITY_PROTOCOL)
+    if e_quality and (getattr(raw, '_e_profile', None) is None or
+                      raw.reward_config.schema != 'FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'):
+        raise ValueError('E Quality Replay requires native E and Quality TP Reward')
+    if initial_state is not None:
+        raw.import_state(initial_state)
+        write_json(directory/'initial_state.json', initial_state)
+    if end_cursor is not None and not raw.current_step < end_cursor < len(raw._raw):
+        raise ValueError('Replay observation boundary outside native source')
+    if protocol not in ('fg_entry_v1','fg_single3_v1',E_QUALITY_PROTOCOL) or raw.single3 != single3:
         raise ValueError('Explicit Replay protocol must match the actual Env')
     policy = (policy_factory or BehaviorPolicy)(spec)
     scorer = raw._new_reward() if single3 else FGRewardScorer(CandidateConfig())
 
     class Observed(gym.Wrapper):
+        first_reset = True
+
         def reset(self, *, seed=None, options=None):
             if options is not None:
                 raise ValueError("Use a new trace for another account")
-            obs, self.last = execute_observed(self.env, seed=seed)
+            obs, self.last = execute_observed(self.env, seed=seed,
+                resume_state=initial_state if self.first_reset else None)
+            self.first_reset = False
             return obs, self.env._get_info()
 
         def step(self, action):
@@ -393,6 +421,16 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                            p3_waited=policy.waited, p3_waiting=policy.waiting)
                 if hasattr(policy, 'last_diagnostics'):
                     row['policy_diagnostics'] = copy.deepcopy(policy.last_diagnostics)
+                if e_quality:
+                    fields = replay_fields(E_QUALITY_SCHEMA)
+                    host_logs = {k for k in raw._get_info() if k.startswith('log/')}
+                    if set(step)-host_logs != set(fields):
+                        raise ValueError('E Quality Replay refuses teacher/foreign fields')
+                    step = {k:step[k] for k in fields}
+                    row['e_snapshot'] = copy.deepcopy(raw.e_snapshot)
+                    row['account_snapshot_hash'] = fingerprint(raw.export_state())
+                    if labeler is not None:
+                        row['teacher'] = labeler(raw, step, row)
                 replay.add(step, worker=worker)
                 chunkid, offset = replay.streams[worker][-1]
                 row["stepid"] = (bytes(chunkid) + offset.to_bytes(4, "big")).hex()
@@ -412,7 +450,7 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
             driver.on_step(capture)
             while True:
                 driver(policy, steps=1)
-                if raw.terminated or raw.status in ("DATA_END", "DATA_GAP"):
+                if raw.terminated or raw.status in ("DATA_END", "DATA_GAP") or (end_cursor is not None and raw.current_step >= end_cursor):
                     break
             state["pending"].update(decision_executed=False, decision_valid_minute=False)
             emit(state["pending"], stream)
@@ -423,14 +461,14 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         write_json(directory / "account_state.json", raw.export_state())
         trades = scorer.scorer.trade_rows() if single3 else scorer.trade_rows()
         for trade in trades:
-            if trade["status"] == "right_censored" and raw.pending_reason:
+            if not e_quality and trade["status"] == "right_censored" and raw.pending_reason:
                 trade["status"] = "terminal_failure_unfilled"
         write_json(directory / "trade_diagnostics.json", trades)
         source_rows = len(raw._raw)
-        payload = dict(schema=SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
-                       reward_version='FG_SINGLE3_REWARD_MARKET_MINUTE_V2' if single3 else "V1",
+        payload = dict(schema=E_QUALITY_SCHEMA if e_quality else SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
+                       reward_version=raw.reward_config.schema if single3 else "V1",
                        reward_params_hash=raw.reward_config.hash if single3 else fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
-                       obs_version='FG_SINGLE3_MARKET_MINUTE_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
+                       obs_version='FG_S3_E_OBSERVATION_V2' if e_quality else 'FG_SINGLE3_MARKET_MINUTE_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
                        contract=raw.contract, records=state["records"], advanced=state["advanced"],
                        valid_minutes=state["valid_minutes"], chunk_resets=state["chunk_resets"],
                        sequence_starts=max(0, state["records"] - 64), chunks=chunks,
@@ -443,6 +481,10 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                        array_hash=array_hash.hexdigest(), event_hash=event_hash.hexdigest(),
                        elapsed_seconds=time.monotonic() - began,
                        files={str(p.relative_to(directory)): digest(p) for p in directory.rglob("*") if p.is_file()})
+        if e_quality:
+            payload.update(e_observation_identity=raw.e_observation_identity,
+                data_identity=raw._e_profile.identity, initial_state=initial_state is not None,
+                bounded_observation_end=end_cursor, training_admitted=False)
         if single3:
             payload.update(protocol=protocol,reward_candidate=raw.reward_config.candidate,
                            fill_model=raw.fill_model, observation_identity=raw.observation_identity,
@@ -464,8 +506,15 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
     directory = Path(directory)
     manifest = trace_manifest(directory,schema=schema)
     raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=manifest["config_path"])
-    if raw.single3 != (schema==SINGLE3_SCHEMA):
+    if raw.single3 != (schema in (SINGLE3_SCHEMA,E_QUALITY_SCHEMA)):
         raise ValueError('Replay/Env protocol mismatch')
+    initial_state = None
+    if schema == E_QUALITY_SCHEMA:
+        if raw.e_observation_identity != manifest['e_observation_identity']:
+            raise ValueError('Replay E source/observation identity differs')
+        if manifest['initial_state']:
+            initial_state = json.loads((directory/'initial_state.json').read_text())
+            raw.import_state(initial_state)
     hasher, event_hash = hashlib.sha256(), hashlib.sha256()
     pending = None
     sidecar = iter(iter_sidecar(directory))
@@ -476,12 +525,16 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
             if row is None or row["ordinal"] != ordinal or row["stepid"] != step["stepid"].tobytes().hex():
                 raise ValueError("Sidecar row identity mismatch")
             incoming = None if pending is None or pending["is_last"] else pending["action"]
-            obs, expected = execute_observed(raw, incoming, seed=0 if ordinal == 0 else None)
+            obs, expected = execute_observed(raw, incoming, seed=0 if ordinal == 0 else None,
+                resume_state=initial_state if ordinal == 0 else None)
             if incoming != row["incoming_action"]:
                 raise ValueError("Driver action/feedback alignment mismatch")
             for key in expected:
                 if expected[key] != row[key]:
                     raise ValueError(f"Env/Sidecar row {ordinal} differs: {key}")
+            if schema == E_QUALITY_SCHEMA:
+                if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != fingerprint(raw.export_state()):
+                    raise ValueError('Replay E snapshot or full account identity differs')
             for key, value in obs.items():
                 np.testing.assert_array_equal(step[key], value, err_msg=f"row {ordinal}: {key}")
             for key in ("is_first", "is_last", "is_terminal"):
@@ -489,7 +542,7 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
                     raise ValueError(f"Driver boundary mismatch: {ordinal}/{key}")
             if step["reward"] != np.float32(expected["official_reward"]):
                 raise ValueError("Replay feedback reward shifted or changed")
-            if schema == SINGLE3_SCHEMA and step['market_advance'] != int(expected['valid_bar']):
+            if schema in (SINGLE3_SCHEMA,E_QUALITY_SCHEMA) and step['market_advance'] != int(expected['valid_bar']):
                 raise ValueError('Replay market clock is shifted from observed feedback')
             if int(step["action"]) != row["action"] or (row["action"] == 1 and not row["legal_add"]):
                 raise ValueError("Replay action changed or violates real Mask")

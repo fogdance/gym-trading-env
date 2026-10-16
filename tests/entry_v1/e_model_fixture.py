@@ -17,7 +17,7 @@ from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
 class SyntheticEProvider:
     def __init__(self, directory):
         self.manifest = Path(directory)/'synthetic_e_manifest.json'
-        value = signed(dict(schema='FG_S3_E_MODEL_SYNTHETIC_V1', seed=71,
+        value = signed(dict(schema='FG_S3_E_MODEL_SYNTHETIC_V2', seed=71,
             scope='CPU_MODEL_CONTRACT_ONLY', provider='deterministic_fixture_v1',
             real_aggregation=False, real_price_coordinate=False))
         write_json(self.manifest, value)
@@ -35,7 +35,8 @@ class SyntheticEProvider:
             context[-count:,:6]=rng.normal(size=(count,6)).astype(np.float32)*.1
             context[-count:,6]=1.
         time = state['cursor_time']
-        return dict(market_seq_e_shared=shared,market_context_15m=context), dict(
+        return dict(market_seq_e_shared=shared,market_context_15m=context,
+            market_macd_5m=np.array([np.sin(cursor*.1),.1,.2,1.],np.float32)), dict(
             source_contract=state['contract'],visible_cutoff=time,decision_time=time,
             data_identity=self.identity,context_available_at=[time]*count,
             fixture_cursor=cursor)
