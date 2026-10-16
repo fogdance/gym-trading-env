@@ -159,6 +159,15 @@
         ],
         "source": "native_certified_q"
       }
+    },
+    "strict_objective": {
+      "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+      "gamma_rational": [
+        332,
+        333
+      ],
+      "tie_break": "WAIT",
+      "scope": "TRAIN_NATIVE_COMPLETE_SUFFIX_ONLY"
     }
   },
   "authorization": {

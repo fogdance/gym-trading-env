@@ -207,7 +207,7 @@ def _verify_selected_plan(env,initial,rows,query):
         native_events_hash=fingerprint(events),final_state_hash=fingerprint(env.export_state()))
 
 
-def build_quality_suffix(env, *, source):
+def build_quality_suffix(env, *, source, start_cursor=0):
     """Native parity and a separately bound strict auditor for this Reward.
 
     The original dominance proof requires non-TP intervals to be nonpositive,
@@ -231,7 +231,11 @@ def build_quality_suffix(env, *, source):
     days = official_days(env)
     ordinal = {day:i for i,day in enumerate(dict.fromkeys(days))}
     rows = []
-    for t in range(index.flat_end):
+    if not 0 <= start_cursor < index.flat_end:
+        raise ValueError('Quality suffix start is outside the native boundary')
+    if start_cursor and initial['current_step'] != start_cursor:
+        raise ValueError('Quality suffix requires its actual initial account snapshot')
+    for t in range(start_cursor,index.flat_end):
         row = index.candidate(t)
         if (env.reward_config.schema==QUALITY_TP_SCHEMA and row.get('filled') and
                 row.get('exit') and row['exit']['reason'] == 'TAKE_PROFIT'):
@@ -257,6 +261,10 @@ def build_quality_suffix(env, *, source):
     query = OracleStateQuery(env,rows,index.flat_end,fold='TRAIN',source_identity={
         **source, 'target_reward_schema':env.reward_config.schema,
         'candidate_hash':fingerprint(rows), 'builder_code_sha256':digest(__file__)})
+    if start_cursor:
+        # No candidates precede the declared root; the full market remains
+        # available only as causal history, never as additional corpus rows.
+        query.start_cursor=start_cursor
     witness=_verify_selected_plan(env,initial,rows,query)
     held=[r['held_market_bars'] for r in rows if r.get('filled')]
     import resource

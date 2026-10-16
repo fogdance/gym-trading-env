@@ -49,6 +49,10 @@ def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_st
         if initial_state is not None:env.import_state(initial_state)
         else:env.reset(seed=0)
         teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source=source)
+        if spec['kind']=='quality_oracle_schedule':
+            from .fg_s3_e_quality_strict import QualityP4Policy
+            if strict is None:raise ValueError('P4 requires a complete Quality strict suffix')
+            policy_factory=lambda value:QualityP4Policy(value,env=env,teacher=strict)
         trace=collect_trace('',spec,output,dict(protocol=SCHEMA,source=source,
             teacher_identity=teacher.identity_hash,training_admitted=False),dreamer_root,
             env_factory=lambda:env,protocol=E_QUALITY_PROTOCOL,policy_factory=policy_factory,

@@ -84,7 +84,10 @@ class OracleStateQuery:
         plan = optimize(candidates, self.end, env.reward_config.candidate,
                         clock=env.market_clock_counter, return_suffix=True)
         self.dp_seconds = time.perf_counter() - started
-        self.first = tuple(plan.pop('suffix')['first'])
+        suffix = plan.pop('suffix')
+        self.first = tuple(suffix['first'])
+        self.value_intervals = tuple(suffix['value_intervals'])
+        self.candidates = {r['cursor']:r for r in candidates}
         self.plan = plan
         self.identity = dict(protocol=PROTOCOL, fold=fold, rules=self.rules,
             source=source_identity, funds_certificate=self.proof,

@@ -162,7 +162,7 @@ def test_WP01_08_declared_oracle_evidence_never_certifies_a_draft(tmp_path):
     result, report = cli(path, tmp_path / 'diagnostic')
     assert result.returncode == 0
     assert_not_admitted(report)
-    assert 'QUALITY_ORACLE_SCHEDULE_NOT_IMPLEMENTED:P4' in report['blocking_reasons']
+    assert 'QUALITY_ORACLE_SCHEDULE_NOT_AUTHENTICATED_BY_PREFLIGHT:P4' in report['blocking_reasons']
     assert report['source_readiness']['authenticated'] is False
     assert set((tmp_path / 'diagnostic').iterdir()) == {tmp_path / 'diagnostic' / p.RECEIPT_NAME}
 
