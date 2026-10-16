@@ -1,0 +1,37 @@
+{
+  "status": "PASS_CPU_CONTROLLED_MODEL",
+  "composition": {
+    "encoder": "e_multiscale_1m15m",
+    "teaching": "none",
+    "base_oracle_bc": false,
+    "use_e": true,
+    "use_tutor": false,
+    "use_b2": false,
+    "legacy_mode": "e",
+    "support_state": "ready",
+    "schema_version": 1
+  },
+  "closed_actor_critic_frozen": true,
+  "ready_rl_updates": true,
+  "bc_active": false,
+  "gradients": {
+    "actor": 0.00975743867456913,
+    "critic": 1.4586328268051147,
+    "e_minute": 321.7689514160156,
+    "e_context15": 48.05222702026367,
+    "e_fusion": 189.8900604248047
+  },
+  "changed_parameters": {
+    "enc/minute/": 9,
+    "enc/context15/": 2,
+    "enc/fusion/": 2,
+    "pol/": 5,
+    "val/": 2,
+    "slowval/": 3
+  },
+  "teacher_independence": true,
+  "exact_model_optimizer_rng_restore": true,
+  "production_gate": "NOT_ESTABLISHED",
+  "gpu": "NOT_RUN",
+  "content_hash": "1999b09785c81f69996c9bcb17b57822bb1534b607a57299313490934d18429d"
+}

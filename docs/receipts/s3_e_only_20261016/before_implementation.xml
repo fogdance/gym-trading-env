@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="2.737" timestamp="2026-10-16T08:07:47.084494+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_e_only" name="test_e_only_settings_disable_teaching_and_preserve_formal_authorization" time="0.003"><failure message="ValueError: Unknown teaching; select a2, tutor_cd, b2, tutor_cd_b2, quality_v2">tmp_path = PosixPath('/tmp/s3_e_only_before_20261016/test_e_only_settings_disable_t0')
+
+    def test_e_only_settings_disable_teaching_and_preserve_formal_authorization(tmp_path):
+        from gym_trading_env.research.fg_s3_v2_experiment import require_training_authorization
+        raw = read_config_yaml(ROOT/'configs/experiments/fg_s3_v2/E_A2_MARKET_MINUTE_FORMAL_1M.yaml')
+        raw.update(beta=0., bc_lambda=0.)
+        raw['composition']['teaching'] = 'none'
+        path = tmp_path/'e_only.yaml'; path.write_text('configuration contract fixture')
+&gt;       settings = _validate_settings(normalize_config(raw), path)
+                                      ^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_fg_s3_e_only.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/dreamerv3/fg_s3_composition.py:94: in normalize_config
+    resolved = resolve_composition(config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = {'schema': 'FG_S3_V2_COMPOSITION_CONFIG_V1', 'experiment': 'E_A2_MARKET_MINUTE_FORMAL_1M_v1_20261016', 'research_variant': 'e-a2', 'scope': 'formal', ...}
+
+    def resolve_composition(config):
+        """Parse a raw config/fragment; C2 deliberately stays outside composition."""
+        if not isinstance(config, Mapping):
+            raise ValueError('S3 composition configuration must be a mapping')
+        if KEY in config:
+            raise ValueError('resolved_composition is output metadata, not a YAML input')
+        if 'composition' in config:
+            if 'mode' in config:
+                raise ValueError('S3_MODE_COMPOSITION_CONFLICT: select exactly one syntax')
+            value = config['composition']
+            if not isinstance(value, Mapping) or set(value) != {'encoder', 'teaching'}:
+                raise ValueError('composition requires exactly encoder and teaching')
+            encoder, teaching = value['encoder'], value['teaching']
+        else:
+            mode = config.get('mode')
+            if mode == 'c2':
+                return None
+            if not isinstance(mode, str) or mode not in ('a2', 'tutor', 'b2', 'quality_v2'):
+                raise ValueError('Select composition or legacy mode: a2/tutor/b2/c2')
+            encoder, teaching = 'legacy_1m', {'a2': 'a2', 'tutor': 'tutor_cd', 'b2': 'b2', 'quality_v2':'quality_v2'}[mode]
+        if not isinstance(encoder, str) or encoder not in ENCODERS:
+            raise ValueError('Unknown encoder; select '+', '.join(ENCODERS))
+        if not isinstance(teaching, str) or teaching not in TEACHING:
+&gt;           raise ValueError('Unknown teaching; select '+', '.join(TEACHING))
+E           ValueError: Unknown teaching; select a2, tutor_cd, b2, tutor_cd_b2, quality_v2
+
+../dreamerv3/dreamerv3/fg_s3_composition.py:35: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_fg_s3_e_only" name="test_teacher_disabled_collector_has_no_queries_takeover_or_labels" time="0.935"><failure message="TypeError: D0Collector.__init__() got an unexpected keyword argument 'teacher_enabled'">tmp_path = PosixPath('/tmp/s3_e_only_before_20261016/test_teacher_disabled_collecto0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x701dd4cd3ad0&gt;
+
+    def test_teacher_disabled_collector_has_no_queries_takeover_or_labels(tmp_path, monkeypatch):
+        from e_model_fixture import controlled_env
+        from test_fg_s3_dagger_d0 import query_for
+        from gym_trading_env.research.fg_s3_v2_collector import V2Collector
+        env = controlled_env(tmp_path/'market')
+        query, _ = query_for(env, tmp_path/'market/env.yaml')
+        monkeypatch.setattr(query, 'query', lambda *a, **k: pytest.fail('Disabled teacher was queried'))
+&gt;       collector = V2Collector(env, query, tmp_path/'collector', DREAMER,
+                                beta=0., actor_probability=1., teacher_enabled=False)
+
+tests/entry_v1/test_fg_s3_e_only.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_v2_collector.V2Collector object at 0x701dbf8b5110&gt;
+replay_capacity = 2048, max_env_steps = 10000, beta_schedule = None
+outcome_catalog = None, quality_catalog = None
+args = (&lt;gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x701dbf056750&gt;, &lt;gym_trading_env.research.fg_s3_ora...acher_disabled_collecto0/collector'), PosixPath('/home/v/Documents/work/research/fg-s3-e-only-dev-20261016/dreamerv3'))
+kwargs = {'beta': 0.0, 'actor_probability': 1.0, 'teacher_enabled': False}
+
+    def __init__(self, *args, replay_capacity=2048, max_env_steps=10000, beta_schedule=None,
+                 outcome_catalog=None, quality_catalog=None, **kwargs):
+        if type(replay_capacity) is not int or replay_capacity &lt; 65:
+            raise ValueError('Live Replay capacity must retain a complete sequence')
+        if type(max_env_steps) is not int or not 65 &lt;= max_env_steps &lt;= 1000000:
+            raise ValueError('V2 requires an explicit diagnostic or 1M budget')
+        self.replay_capacity = replay_capacity
+        self.max_env_steps = max_env_steps
+        self.commit_lock = threading.RLock()
+        self.pending_native = None
+        self.index = {}
+        self.commit_seq = 0
+        self.model_versions = set()
+        self.outcome_catalog = outcome_catalog
+        self.quality_catalog = quality_catalog
+        if quality_catalog is not None:
+            self.protocol='FG_S3_QUALITY_LIVE_DAGGER_V2_1'
+        if outcome_catalog is not None:
+            self.protocol = 'FG_S3_B2_LIVE_DAGGER_MARKET_MINUTE_V1'
+        initial_beta = kwargs.get('beta', .5) if kwargs.get('mode', 'mixed') == 'mixed' else 0.
+        self.beta_schedule = BetaSchedule(initial_beta, beta_schedule)
+&gt;       super().__init__(*args, **kwargs)
+E       TypeError: D0Collector.__init__() got an unexpected keyword argument 'teacher_enabled'
+
+src/gym_trading_env/research/fg_s3_v2_collector.py:42: TypeError</failure></testcase></testsuite></testsuites>

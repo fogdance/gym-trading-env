@@ -91,7 +91,10 @@ class D0Collector:
     def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
                  beta=.5, actor_probability=.5, actor=None, agent=None,
                  source_checkpoint_identity=None, existing=False,
-                 observation_schema=None, e_provider=None, e_profile=None):
+                 observation_schema=None, e_provider=None, e_profile=None, teacher_enabled=True):
+        if type(teacher_enabled) is not bool or (not teacher_enabled and beta != 0):
+            raise ValueError('A disabled teacher requires beta=0')
+        self.teacher_enabled = teacher_enabled
         if e_profile is not None:
             if e_provider is not None:
                 raise ValueError('Choose native E profile or synthetic research provider')
@@ -161,6 +164,15 @@ class D0Collector:
                 observation_reward=float(one['reward']))
 
         def query(ctx, mask):
+            if not owner.teacher_enabled:
+                # Preserve the authenticated Replay owner/proof format without
+                # consulting any future path or issuing a certified label.
+                identity = oracle.identity.get('queries', {}).get(
+                    ctx['snapshot']['contract'], oracle.identity_hash)
+                answer = dict(action=0, valid=False, certified=False, reason='TEACHING_DISABLED',
+                    q_add=None, q_wait=None, q_margin=None, state_id=ctx['state_id'], oracle_identity=identity)
+                answer['proof_hash'] = fingerprint(answer)
+                return answer
             started = time.perf_counter()
             answer = oracle.query(owner.decision_env, mask, snapshot=ctx['snapshot'])
             owner.query_seconds.append(time.perf_counter() - started)
@@ -170,6 +182,9 @@ class D0Collector:
         self.policy = MixedExecutionPolicy(actor, query, context,
             beta=self.identity['beta'], seed=seed, dreamer_carry=agent is not None,
             observation_schema=observation_schema)
+        if not teacher_enabled:
+            self.identity['teacher_enabled'] = False
+            self.identity_hash = fingerprint(self.identity)
         self.agent = agent
         if agent is not None:
             self.driver.reset(agent.init_policy)

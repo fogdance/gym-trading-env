@@ -119,7 +119,7 @@ def test_formal_e_binding_still_refuses_synthetic_training_data(tmp_path):
 
 
 def test_EM16_original_teaching_method_bodies_unchanged():
-    original=ast.parse(subprocess.check_output(['git','show','eb63de7:dreamerv3/fg_s3_v2_agent.py'],cwd=DREAMER))
+    original=ast.parse(subprocess.check_output(['git','show','eb63de710fd693fad7ac76f797f3d9f39e331b98:dreamerv3/fg_s3_v2_agent.py'],cwd=DREAMER))
     current=ast.parse((DREAMER/'dreamerv3/fg_s3_v2_agent.py').read_text())
     old=next(n for n in original.body if isinstance(n,ast.ClassDef) and n.name=='S3V2Agent')
     new=next(n for n in current.body if isinstance(n,ast.ClassDef) and n.name=='_S3V2Model')
@@ -128,6 +128,22 @@ def test_EM16_original_teaching_method_bodies_unchanged():
     # actual per-mode gradient/checkpoint tests cover the dispatch extensions.
     names={'b2_predict','b2_init_loss','b2_bc_loss','wm_only','_components',
            'v2_loss','tutor_loss','tutor_term_gradient_diagnostics'}
+    # E-only joins the existing gated RL branch. Restore exactly those two
+    # dispatch comparisons before checking the otherwise unchanged loss AST.
+    class OriginalRLDispatch(ast.NodeTransformer):
+        count = 0
+        def visit_Compare(self, node):
+            expected = ast.parse('self.mode in RL_MODES', mode='eval').body
+            if ast.dump(node) == ast.dump(expected):
+                self.count += 1
+                return ast.parse("self.mode == 'c2'", mode='eval').body
+            return self.generic_visit(node)
+    dispatch = OriginalRLDispatch()
+    dispatch.visit(next(f for f in new.body if isinstance(f,ast.FunctionDef) and f.name=='v2_loss'))
+    assert dispatch.count == 2
+    assignment = next(n for n in current.body if isinstance(n,ast.Assign)
+                      and any(isinstance(t,ast.Name) and t.id=='RL_MODES' for t in n.targets))
+    assert ast.literal_eval(assignment.value) == ('c2','e')
     methods=lambda n:{f.name:ast.dump(f,include_attributes=False) for f in n.body
                      if isinstance(f,ast.FunctionDef) and f.name in names}
     assert len(methods(old))==len(names) and methods(old)==methods(new)

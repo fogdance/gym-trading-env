@@ -38,6 +38,10 @@ class V2Collector(D0Collector):
         if outcome_catalog is not None:
             self.protocol = 'FG_S3_B2_LIVE_DAGGER_MARKET_MINUTE_V1'
         initial_beta = kwargs.get('beta', .5) if kwargs.get('mode', 'mixed') == 'mixed' else 0.
+        if not kwargs.get('teacher_enabled', True) and (
+                initial_beta != 0 or beta_schedule is not None
+                or outcome_catalog is not None or quality_catalog is not None):
+            raise ValueError('A disabled teacher forbids mixing schedules and auxiliary catalogs')
         self.beta_schedule = BetaSchedule(initial_beta, beta_schedule)
         super().__init__(*args, **kwargs)
         self.identity['beta_schedule'] = self.beta_schedule.points

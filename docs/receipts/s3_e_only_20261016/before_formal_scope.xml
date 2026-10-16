@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.223" timestamp="2026-10-16T08:18:23.249219+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_fg_s3_e_only" name="test_e_only_formal_source_still_requires_authenticated_real_data" time="0.194"><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'authenticated real TRAIN data'&#10;  Actual message: 'Formal E entry requires a released individual teaching mode'">tmp_path = PosixPath('/tmp/s3_e_only_scope_before_20261016/test_e_only_formal_source_stil0')
+
+    def test_e_only_formal_source_still_requires_authenticated_real_data(tmp_path):
+        from e_model_fixture import SyntheticEProvider
+        from dreamerv3.fg_s3_e_config import e_target_config
+        from embodied.run.fg_s3_e_source import make_binding
+        from gym_trading_env.research.fg_s3_v2_gpu_check import small_config
+        composition = resolve_composition({'composition': dict(encoder='e_multiscale_1m15m', teaching='none')})
+        provider = SyntheticEProvider(tmp_path)
+&gt;       with pytest.raises(ValueError, match='authenticated real TRAIN data'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'authenticated real TRAIN data'
+E         Actual message: 'Formal E entry requires a released individual teaching mode'
+
+tests/entry_v1/test_fg_s3_e_only.py:70: AssertionError</failure></testcase></testsuite></testsuites>

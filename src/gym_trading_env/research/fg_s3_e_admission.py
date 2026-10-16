@@ -174,12 +174,22 @@ class _EAdmissionRun(LiveRun):
             raise ValueError('An E encoder branch had no finite nonzero gradient')
         transfer = read_manifest(self.root/'source_transfer.json')
         before, after = transfer['params_after'], parameter_digests(self.agent.params)
-        prefixes = ['enc/minute/', 'enc/context15/', 'enc/fusion/', 'pol/']
+        prefixes = ['enc/minute/', 'enc/context15/', 'enc/fusion/']
+        if self.settings['mode'] != 'e' or self.counters.state['rl_actor_updates']:
+            prefixes += ['pol/']
         if self.settings['mode'] == 'b2':
             prefixes += ['b2_event/', 'b2_early/', 'b2_adapter/']
         changed = {p: sum(before[k] != after[k] for k in before if k.startswith(p)) for p in prefixes}
         if not all(changed.values()):
             raise ValueError('An admitted Encoder/Actor/Outcome/Adapter branch did not update')
+        if self.settings['mode'] == 'e':
+            if (self.collector.counts['certified_labels'] or self.collector.query_seconds
+                    or self.counters.state['bc_valid_updates'] or self.counters.state['bc_add_updates']
+                    or any(r['oracle_selected'] or r['teacher_valid'] for r in rows)):
+                raise ValueError('E-only acceptance encountered teaching or an Oracle query')
+            if not self.counters.state['rl_actor_updates'] and any(
+                    before[k] != after[k] for k in before if k.startswith(('pol/','val/'))):
+                raise ValueError('E-only CLOSED Gate changed Actor or Critic')
         self.agent.sync_policy_from_train()
         policy = parameter_digests(self.agent.save_exact()['policy_params'])
         if any(v != after[k] for k, v in policy.items()):

@@ -1,0 +1,474 @@
+{
+  "status": "PASS_84_SELECTED_CASES_NOT_ENTIRE_REPOSITORY",
+  "passed": 84,
+  "failed": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_only",
+      "name": "test_e_only_settings_disable_teaching_and_preserve_formal_authorization",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_only",
+      "name": "test_teacher_disabled_collector_has_no_queries_takeover_or_labels",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_only",
+      "name": "test_e_only_formal_source_still_requires_authenticated_real_data",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_only",
+      "name": "test_e_only_closed_and_ready_updates_teacher_independence_and_exact_restore",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-a2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-tutor_cd]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-quality_v2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-a2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-tutor_cd]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-quality_v2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-none]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_pure_parser_runs_without_site_packages_or_jax",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_quality_e_requires_separate_admission_before_preparation",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw9]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_schema_and_legacy_mode_contracts",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_all_new_records_require_same_composition_and_legacy_records_stay_absent",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_source_and_model_factories_reject_waiting_before_any_data_or_model",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_reviewed_reader_warm_start_still_rejects_unknown_changes",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_composition",
+      "name": "test_model_factory_rejects_encoder_identity_mismatch_before_building",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM14_size50m_canonical_recipe_and_fresh_settings_without_checkpoint",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_formal_e_binding_still_refuses_synthetic_training_data",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_source",
+      "name": "test_EM16_original_teaching_method_bodies_unchanged",
+      "receipt": "final_e_contracts_and_model.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_suffix_query_all_cursors_matches_original_env_exhaustive_actions[LONG]",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_suffix_query_all_cursors_matches_original_env_exhaustive_actions[SHORT]",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_query_funding_forced_wait_tie_and_state_identity",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_driver_mixing_native_replay_restore_and_no_teacher_leak",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_original_env_rejections_forced_wait_and_gap",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_dagger_d0",
+      "name": "test_rejected_add_keeps_executed_prevact_and_independent_wait_label",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_live_committed_rows_restore_preserves_native_ownership",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_shared_extractions_reject_changed_math_and_cuda_flags",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_current_decision_descriptor_preserves_labels_and_rejects_stale_state",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2",
+      "name": "test_resume_archives_uncheckpointed_cycles",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_pool_rotation_keeps_raw_account_and_checkpoint_owner",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_formal_budget_needs_explicit_authorization_and_isolated_root",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_b2_formal_uses_shared_catalog_and_original_authorization",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_b2_pool_outcome_contract_dispatch_and_restore",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_v2_pool",
+      "name": "test_beta_schedule_uses_env_advances_and_validates_checkpoint_boundary",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_acceptance_bounds_cannot_enable_formal_or_combined_teaching",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_gpu_acceptance_requires_completed_cpu_full_checkpoint",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_real_cpu_small_network_keeps_canonical_single3_safety_gate",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "tests.entry_v1.test_fg_s3_e_admission",
+      "name": "test_next_update_probe_never_rewinds_a_started_prefetch",
+      "receipt": "final_native.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_online_model_and_environment_counters_have_separate_domains",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_no_inference_source_and_frozen_snapshot",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_missing_baseline_requires_authenticated_features",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_rejects_missing_gate_interface",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_accepts_formal_checkpoint",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_eval_only_rejects_warmup_checkpoint",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_live_trading_rejects_warmup_checkpoint",
+      "receipt": "final_shared.xml"
+    },
+    {
+      "classname": "embodied.tests.test_s3_composition",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[a2]",
+      "receipt": "legacy_model_regression.xml"
+    },
+    {
+      "classname": "embodied.tests.test_s3_composition",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[tutor]",
+      "receipt": "legacy_model_regression.xml"
+    },
+    {
+      "classname": "embodied.tests.test_s3_composition",
+      "name": "test_new_composition_and_legacy_have_identical_actual_updates_and_restore[b2]",
+      "receipt": "legacy_model_regression.xml"
+    }
+  ],
+  "primary_suites": [
+    "final_e_contracts_and_model.xml",
+    "final_native.xml",
+    "final_shared.xml",
+    "legacy_model_regression.xml"
+  ],
+  "targeted_retests_not_added": [
+    "actual_formal_template.xml",
+    "pinned_legacy_reference.xml"
+  ],
+  "native_development_receipt": {
+    "path": "/home/v/Documents/work/research/fg-s3-e-only-dev-20261016/gym-trading-env/artifacts/fg_s3_v2/runs/E_ONLY_NATIVE_CPU_v1_20261016/acceptance.json",
+    "sha256": "494ff520071942c8644e0bff583cc22c1caa4bd6eab04aaf28f4813bff2110a7",
+    "env_steps": 2200,
+    "updates": 6,
+    "cold_resume_exact": true,
+    "certified_labels": 0,
+    "source_stage": "intermediate development, followed by formal-scope registration and error wording; not final frozen GPU"
+  },
+  "neural_sources_unchanged_since_development_native": {
+    "dreamerv3/fg_s3_v2_agent.py": "bea67d758a3dc9074568130952378ac360d38c6e77b2d9d04fb5d05640a2d477",
+    "dreamerv3/fg_s3_composition.py": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5",
+    "dreamerv3/fg_s3_tutor_loss.py": "4ac7bcc73471a9318253f0cbd5b7e670aff1854e935fdbf0150c35b8287a77ab",
+    "dreamerv3/agent.py": "65fc310b7d48f9ee8a4f07828fc55d5102e22092300cab88931a7f0eeec9d114",
+    "dreamerv3/fg_s3c_agent.py": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e",
+    "embodied/run/fg_s3_source_transfer.py": "c9cfc7d1f7391b13ded58e991b9f394264c3fe6271252c1afb8c9f0d01b9dd5f",
+    "embodied/jax/opt.py": "b0a2f68fd142a6e206d72d10a9fbb96d1208de3e00112c953ddbffb4d4634a80"
+  },
+  "not_run": [
+    "GPU",
+    "formal_1M",
+    "real_gate_opening",
+    "actor_only_performance",
+    "WandB_cloud"
+  ],
+  "files": {
+    "before_implementation.xml": "3f79f374596a5acca4a056bdd3b4ef19c8b85f12180fae007f55e81decdf5ea4",
+    "before_formal_scope.xml": "9653c4d6d2b6141018b4752dc14214068deb3657555f970203eaad696fd9b482",
+    "final_e_contracts_and_model.xml": "492b22bc814e3356a01f740583faf5a0a7edd935116be2c710cd1754c44bac6e",
+    "final_native.xml": "6b77d9142cac068c8b13f69312952b55074caf8dabb2370a70b21a2de69013f5",
+    "final_shared.xml": "33190cb3633135325b5d6f805849bfd622576656597aa35b044765efd839798e",
+    "legacy_model_regression.xml": "8661d8d22ee6079bca9f566e8adaaf31a5e92cf9d5cbc07a9f14b00150c4a605",
+    "actual_formal_template.xml": "767953797e9fef4efed43a0a6080c0cd8353630b5ec3ad054a8769e74d6c66a5",
+    "pinned_legacy_reference.xml": "8b1070b634ef1ff1cdfd0067388bbf8c76b46a269f8ac6b29abd05204054af83",
+    "model_gradients_and_restore.json": "cf744ba685a2904f87dabaf5c4df250bf5a747f7cdb68e21d8ad5cc308b032e6"
+  }
+}

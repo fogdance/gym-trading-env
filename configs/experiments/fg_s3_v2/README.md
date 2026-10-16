@@ -1,5 +1,24 @@
 # S3-V2 shared entry and experiment configurations
 
+## E-only formal 1M (2026-10-16)
+
+`E_ONLY_MARKET_MINUTE_FORMAL_1M` uses `e_multiscale_1m15m + teaching: none`,
+fresh seed0 size50m initialization, 18 TRAIN contracts, 1M actual Env advances,
+40000 joint updates, Replay32768 and FullCheckpoint every100K. Beta and BC are
+zero; Oracle label queries, takeover, A2/Tutor/B2/Quality objectives and heads
+are disabled. Existing catalog/Oracle receipts authenticate the original data
+and reward; their labels are not queried or used for learning. The original
+Single3 availability Gate remains closed at initialization; WM learns first,
+then the original imagined Actor/Critic RL starts only after the Gate passes.
+The original C1 reward and market-minute clock remain in use.
+
+Use the independent frozen pair `fg-s3-e-only-train-20261016` and shared
+`prepare/start/resume/evaluate/report` commands. Exact configuration, evidence,
+preparation status and W&B launch/resume commands are recorded in
+`docs/S3_E_ONLY_FORMAL_1M_20261016.md`. No A2/Tutor/B2 experiment is launched by
+this configuration. CPU acceptance does not certify a production Gate opening,
+GPU arithmetic, or strategy performance.
+
 ## E + A2 / E + B2 Full formal entry (2026-10-16)
 
 `E_A2_MARKET_MINUTE_FORMAL_1M` and `E_B2_FULL_MARKET_MINUTE_FORMAL_1M` use

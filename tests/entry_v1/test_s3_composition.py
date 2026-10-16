@@ -18,18 +18,18 @@ from gym_trading_env.research import fg_s3_v2_experiment as experiment
 ROOT = Path(__file__).resolve().parents[2]
 
 
-@pytest.mark.parametrize('encoder', ENCODERS)
-@pytest.mark.parametrize('teaching', TEACHING)
-def test_all_declared_compositions_have_unique_state_and_one_base_bc(encoder, teaching):
+@pytest.mark.parametrize('encoder,teaching', [(e,t) for e in ENCODERS for t in TEACHING
+                                             if t != 'none' or e == 'e_multiscale_1m15m'])
+def test_all_declared_compositions_have_unique_state_and_explicit_bc(encoder, teaching):
     raw = dict(schema=CONFIG_SCHEMA, composition=dict(encoder=encoder, teaching=teaching))
     resolved = resolve_composition(raw)
     expected = ('waiting_tutor_b2' if teaching == 'tutor_cd_b2' else
                 'waiting_quality_e' if encoder == 'e_multiscale_1m15m' and teaching == 'quality_v2' else 'ready')
     assert resolved['support_state'] == expected
-    assert resolved['base_oracle_bc'] is True and resolved['schema_version'] == 1
+    assert resolved['base_oracle_bc'] is (teaching != 'none') and resolved['schema_version'] == 1
     assert resolved == normalize_config(raw, executable=False)[KEY]
     assert resolved['legacy_mode'] == {'a2':'a2','tutor_cd':'tutor','b2':'b2','tutor_cd_b2':None,
-                                       'quality_v2':'quality_v2'}[teaching]
+                                       'quality_v2':'quality_v2','none':'e'}[teaching]
 
 
 def test_pure_parser_runs_without_site_packages_or_jax():
@@ -56,6 +56,7 @@ def test_quality_e_requires_separate_admission_before_preparation(tmp_path):
     {'composition':{'encoder':'legacy_1m'}}, {'composition':{'teaching':'a2'}},
     {'composition':None}, {'composition':{'encoder':'unknown','teaching':'a2'}},
     {'composition':{'encoder':'legacy_1m','teaching':True}},
+    {'composition':{'encoder':'legacy_1m','teaching':'none'}},
     {'composition':{'encoder':'legacy_1m','teaching':'a2','ready':True}},
     {'resolved_composition':{}}, {'mode':'e'},
 ])

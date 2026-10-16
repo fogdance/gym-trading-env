@@ -145,7 +145,7 @@ def evaluate(prepared, run_dir, steps=1000,output_dir=None,holdout_contract=None
     validate_bundle(node, identity)
     cfg = frozen_model['config']
     extensions = agent_extensions(s)
-    if s['mode'] in ('tutor', 'b2','quality_v2') and frozen_model['agent_extension'] != extensions:
+    if s['mode'] in ('tutor', 'b2','quality_v2','e') and frozen_model['agent_extension'] != extensions:
         raise ValueError('Frozen extended model configuration differs from settings')
     output = Path(output_dir).resolve() if output_dir else root/'evaluations'/('actor_only_'+uuid.uuid4().hex[:10])
     return _run_actor_evaluation(s,node,cfg,extensions,composition,output,steps,

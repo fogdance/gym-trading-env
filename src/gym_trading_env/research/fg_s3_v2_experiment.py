@@ -44,9 +44,9 @@ def _validate_settings(s, path, *, admission=False):
     if s.get('clock_protocol') != 'S3_MARKET_MINUTE':
         raise ValueError('New S3 settings require S3_MARKET_MINUTE and rebuilt inputs')
     quality = s['mode'] == 'quality_v2'
-    if (s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2','quality_v2')
+    if (s['schema'] not in (SCHEMA, CONFIG_SCHEMA) or s['mode'] not in ('a2', 'c2', 'tutor', 'b2','quality_v2','e')
             or s['device'] not in (('cpu','gpu') if quality or admission else ('gpu',))):
-        raise ValueError('S3-V2 requires an explicit A2/C2/Tutor/B2 GPU config')
+        raise ValueError('S3-V2 mode/device configuration is invalid')
     s.setdefault('scope', 'diagnostic')
     if quality:
         from dreamerv3.fg_s3_quality_v2 import quality_extensions
@@ -149,6 +149,12 @@ def _validate_settings(s, path, *, admission=False):
     import math
     if not math.isfinite(s['beta']) or not 0 <= s['beta'] <= 1 or not math.isfinite(s['bc_lambda']) or s['bc_lambda'] < 0:
         raise ValueError('Invalid beta or BC lambda')
+    if s['mode'] == 'e':
+        comp = settings_composition(s)
+        if (comp is None or comp['teaching'] != 'none' or s['beta'] != 0 or s['bc_lambda'] != 0
+                or s['beta_schedule'] is not None
+                or any(k.startswith(('tutor_', 'b2_', 'quality_')) for k in s)):
+            raise ValueError('E-only requires teaching:none, beta=0, bc_lambda=0, no beta schedule or teaching settings')
     schedule = BetaSchedule(s['beta'], s['beta_schedule'])
     if schedule.points is not None and schedule.points[-1][0] > s['env_steps']:
         raise ValueError('Beta schedule exceeds the frozen Env budget')
@@ -263,7 +269,7 @@ def _prepare(s, *, admission=None, model_config=None):
         frozen_model = dict(config=plain(model), **identities)
         if 'e_binding' in spec:
             frozen_model['e_binding'] = spec['e_binding']
-        if s['mode'] in ('tutor', 'b2'):
+        if s['mode'] in ('tutor', 'b2', 'e'):
             frozen_model['agent_extension'] = agent_extensions(s)
         write_json(output/'model_config.json', signed(frozen_model))
         write_json(output/'source_admission.json', spec)
@@ -280,8 +286,9 @@ def _prepare(s, *, admission=None, model_config=None):
             files={p.name: file_hash(p) for p in output.iterdir() if p.is_file()},
             source_update_offset=spec['target_update_offset'], source_model_updates=spec['origin']['step'],
             clock_protocol='S3_MARKET_MINUTE', new_environment_steps=0,
-            training_identity=dict(candidate='C1', pool='C1_live_dagger' if catalog is None else 'C1_natural_oracle',
-                teacher_source_kind=spec.get('teacher_source_kind', 'catalog'),
+            training_identity=dict(candidate='C1', pool=('C1_actor_only' if s['mode']=='e' else
+                'C1_live_dagger' if catalog is None else 'C1_natural_oracle'),
+                teacher_source_kind='disabled' if s['mode']=='e' else spec.get('teacher_source_kind', 'catalog'),
                 dataset_sha256=spec['dataset_sha256'], reward_params_hash=spec['reward_params_hash'],
                 observation_identity=spec['observation_identity'],
                 training_hash=(binding if catalog is None else catalog).manifest['source']['training_hash']),
