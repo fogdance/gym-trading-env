@@ -1,0 +1,269 @@
+{
+  "schema": "FG_S3_E_QUALITY_COURSE_V1",
+  "spec_mode": "draft",
+  "composition": {
+    "encoder": "e_multiscale_1m15m",
+    "teaching": "quality_v2"
+  },
+  "initialization": {
+    "kind": "direct_init",
+    "seed": 17
+  },
+  "reward": {
+    "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+    "candidate": "C1",
+    "beta": 0.5,
+    "rho": 0.4,
+    "L": 3.0,
+    "clock_protocol": "S3_MARKET_MINUTE"
+  },
+  "observation": {
+    "schema": "FG_S3_E_OBSERVATION_V1",
+    "fields": {
+      "market_seq_e_shared": {
+        "shape": [
+          60,
+          18
+        ],
+        "dtype": "float32"
+      },
+      "position_state": {
+        "shape": [
+          9
+        ],
+        "dtype": "float32"
+      },
+      "action_mask": {
+        "shape": [
+          2
+        ],
+        "dtype": "float32"
+      },
+      "market_context_15m": {
+        "shape": [
+          24,
+          7
+        ],
+        "dtype": "float32"
+      }
+    },
+    "policy_observation_fields": [
+      "market_seq_e_shared",
+      "position_state",
+      "action_mask",
+      "market_context_15m"
+    ],
+    "context_fields": [
+      "rel_open",
+      "rel_high",
+      "rel_low",
+      "rel_close",
+      "vol_relative",
+      "oi_change",
+      "valid"
+    ],
+    "visibility": {
+      "data_schema": "S3_E_DATA_V1",
+      "availability": "max(bucket_end, all constituent arrival times) <= visible_cutoff",
+      "cutoff": "visible_cutoff <= decision_time",
+      "provenance_location": "HOST_ONLY",
+      "provenance_fields": [
+        "source_contract",
+        "visible_cutoff",
+        "decision_time",
+        "data_identity"
+      ],
+      "invalid_context": "zeros_with_valid_0"
+    }
+  },
+  "trading": {
+    "actions": {
+      "WAIT": 0,
+      "ADD": 1
+    },
+    "lots": 3,
+    "max_batches": 1,
+    "take_profit_points": 5,
+    "stop_loss_points": 30,
+    "action_mask_source": "NATIVE_ENV",
+    "account_state_source": "NATIVE_ENV"
+  },
+  "teacher": {
+    "kind": "quality_v2",
+    "fold": "TRAIN",
+    "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+    "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+    "label_schema": "FG_S3_QUALITY_TEACHER_V1",
+    "label_location": "SIDECAR",
+    "layers": {
+      "strict_action": {
+        "valid_fields": [
+          "teacher_valid"
+        ],
+        "source": "quality_tp_strict_suffix"
+      },
+      "score": {
+        "valid_fields": [
+          "quality_score_valid"
+        ],
+        "source": "native_trade_outcome"
+      },
+      "outcome": {
+        "valid_fields": [
+          "quality_outcome_valid",
+          "quality_event_valid",
+          "quality_touch_valid",
+          "quality_adverse_valid"
+        ],
+        "source": "native_trade_outcome"
+      },
+      "soft": {
+        "valid_fields": [
+          "quality_soft_valid"
+        ],
+        "source": "quality_soft_source",
+        "sources": [
+          "INVALID",
+          "HEURISTIC_V2",
+          "Q_V2_VERIFIED"
+        ]
+      },
+      "q": {
+        "valid_fields": [
+          "quality_q_c1_valid",
+          "quality_q_v2_valid"
+        ],
+        "source": "native_certified_q"
+      }
+    }
+  },
+  "authorization": {
+    "scope": "CONTRACT_ONLY",
+    "training_authorization": "EXTERNAL_REQUIRED"
+  },
+  "curriculum": {
+    "risk_selected": "sampling_label_from_real_trajectories_only",
+    "behaviors": [
+      {
+        "behavior_id": "P0",
+        "kind": "always_wait",
+        "seed": 0,
+        "parameters": {},
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      },
+      {
+        "behavior_id": "P1",
+        "kind": "always_add",
+        "seed": 1,
+        "parameters": {},
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      },
+      {
+        "behavior_id": "P2_low",
+        "kind": "probabilistic",
+        "seed": 2,
+        "parameters": {
+          "probability": 0.1
+        },
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      },
+      {
+        "behavior_id": "P2_mid",
+        "kind": "probabilistic",
+        "seed": 3,
+        "parameters": {
+          "probability": 0.5
+        },
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      },
+      {
+        "behavior_id": "P3",
+        "kind": "single_delay",
+        "seed": 4,
+        "parameters": {
+          "wait_market_minutes": 15
+        },
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      },
+      {
+        "behavior_id": "P4",
+        "kind": "quality_oracle_schedule",
+        "seed": 5,
+        "parameters": {
+          "source": null
+        },
+        "boundary": {
+          "contracts": [
+            "CZCE.FG201"
+          ],
+          "time_bounds": {
+            "start": "2020-01-02T09:00:00+08:00",
+            "end": "2020-01-03T15:00:00+08:00"
+          },
+          "initial_equity": "300000"
+        }
+      }
+    ]
+  },
+  "data_identity": {
+    "fold": "TRAIN",
+    "contracts": [
+      "CZCE.FG201"
+    ],
+    "time_bounds": {
+      "start": "2020-01-02T09:00:00+08:00",
+      "end": "2020-01-03T15:00:00+08:00"
+    },
+    "timezone": "Asia/Shanghai",
+    "official_day_source": "native_trading_date_or_trading_day",
+    "source_manifest": null,
+    "market_sources": null,
+    "e_profile_schema_sha256": null,
+    "teacher_manifest": null
+  }
+}

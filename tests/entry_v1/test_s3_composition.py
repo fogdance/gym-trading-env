@@ -98,14 +98,19 @@ def test_ready_settings_keep_all_legacy_hyperparameters(tmp_path, teaching, pres
     assert new == old
 
 
-WAITING = [(e, TEACHING[3]) for e in ENCODERS]
+WAITING = [(e, TEACHING[3]) for e in ENCODERS] + [(ENCODERS[1], 'quality_v2')]
+
+
+def waiting_error(teaching):
+    return {'tutor_cd_b2': 'S3_TUTOR_B2_NOT_IMPLEMENTED',
+            'quality_v2': 'S3_QUALITY_E_NOT_IMPLEMENTED'}[teaching]
 
 
 @pytest.mark.parametrize('encoder,teaching', WAITING)
 def test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts(tmp_path, encoder, teaching):
     path=tmp_path/'future.yaml'
     path.write_text(f'schema: {CONFIG_SCHEMA}\ncomposition:\n  encoder: {encoder}\n  teaching: {teaching}\n')
-    error='S3_TUTOR_B2_NOT_IMPLEMENTED' if teaching==TEACHING[3] else 'S3_E_ENCODER_NOT_IMPLEMENTED'
+    error=waiting_error(teaching)
     with pytest.raises(ValueError,match=error): experiment.prepare(path)
     for command in ('prepare','start','resume','evaluate'):
         result=subprocess.run([sys.executable,'-B',str(ROOT/'tools/fg_s3_v2_experiment.py'),
@@ -135,7 +140,7 @@ def test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output(tmp_
     from gym_trading_env.research import fg_s3_v2_evaluation as evaluation
     resolved=resolve_composition({'composition':dict(encoder=encoder,teaching=teaching)})
     prepared=tmp_path/'prepared';bundle(prepared,resolved)
-    error='S3_TUTOR_B2_NOT_IMPLEMENTED' if teaching==TEACHING[3] else 'S3_E_ENCODER_NOT_IMPLEMENTED'
+    error=waiting_error(teaching)
     with pytest.raises(ValueError,match=error): experiment.settings_from_prepared(prepared)
     monkeypatch.setattr(train,'execution_code',lambda:{})
     monkeypatch.setattr(train,'make_agent',lambda *a,**k:pytest.fail('Model factory must not execute'))
@@ -166,7 +171,7 @@ def test_source_and_model_factories_reject_waiting_before_any_data_or_model(tmp_
     from embodied.run.fg_s3_source_transfer import make_agent
     for encoder,teaching in WAITING:
         value=resolve_composition({'composition':dict(encoder=encoder,teaching=teaching)})
-        error='S3_TUTOR_B2_NOT_IMPLEMENTED' if teaching==TEACHING[3] else 'S3_E_ENCODER_NOT_IMPLEMENTED'
+        error=waiting_error(teaching)
         with pytest.raises(ValueError,match=error):inspect_source('direct_init',composition=value)
         with pytest.raises(ValueError,match=error):make_agent({},tmp_path/'model',composition=value)
     assert not (tmp_path/'model').exists()
