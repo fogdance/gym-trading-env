@@ -31,6 +31,7 @@ Quality-first 的最新合并复核与实际验收见 [集成 Review](S3_NEXT_QU
 - 代理默认 `http://127.0.0.1:10808`，仅作用于 Tracker。正式指标以已完成 Checkpoint 为边界，实时数据标记 provisional；断网后保留 offline 数据，使用现有 sync 恢复。
 - 功能验收优先最小 CPU 数值/模型、配置、原账户/Replay/恢复、W&B Mock/Offline 测试。GPU 或正式训练另行授权，不抢占正在运行的实验。
 - 回归失败必须记录并修复直接相关问题；依赖缺失、SKIP 和 NOT_RUN 不能算 PASS。受控 CPU 测试不代表生产行情或策略效果验收。
+- 测试与历史迁移要求随根目录 `AGENTS.md` 版本管理：历史测试固定两端完整 SHA，语义升级同步更新迁移边界；共享 Gate、SourceAdmission、正式 guard 及直接受影响的时钟／Replay／恢复检查必须纳入实际测试清单。旧 Gate 断言失效的根因与20项共享回归证据见兄弟 Dreamer 的 `docs/S3_NEXT_GATE_AUDIT_ROOT_CAUSE_20261016.md`。
 - integration 验收通过后才可考虑发布到 main，发布不是日常功能合并的一部分。
 
 ## 双仓版本 Manifest 与清理
