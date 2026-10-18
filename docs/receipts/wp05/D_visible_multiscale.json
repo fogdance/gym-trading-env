@@ -1,0 +1,41 @@
+{
+  "1m": {
+    "status": "SUPPORTED",
+    "valid_visible": true,
+    "max_abs_logit_delta": {
+      "adverse": 2.6172423362731934,
+      "event": 2.3332207202911377,
+      "score": 1.1530383825302124,
+      "touch": 1.4528188705444336
+    },
+    "encoder_max_abs_delta": 0.8738192319869995,
+    "posterior_logits_max_abs_delta": 1.8237696886062622,
+    "realized_features_max_abs_delta": 1.0
+  },
+  "15m": {
+    "status": "SUPPORTED",
+    "valid_visible": true,
+    "max_abs_logit_delta": {
+      "adverse": 2.6700596809387207,
+      "event": 1.202942132949829,
+      "score": 0.13744570314884186,
+      "touch": 1.339383840560913
+    },
+    "encoder_max_abs_delta": 0.008319377899169922,
+    "posterior_logits_max_abs_delta": 0.13208845257759094,
+    "realized_features_max_abs_delta": 1.0
+  },
+  "partial5m_macd": {
+    "status": "SUPPORTED",
+    "valid_visible": true,
+    "max_abs_logit_delta": {
+      "adverse": 0.9617401361465454,
+      "event": 1.7879531383514404,
+      "score": 0.42992082238197327,
+      "touch": 1.329317569732666
+    },
+    "encoder_max_abs_delta": 0.07322783768177032,
+    "posterior_logits_max_abs_delta": 0.2954045534133911,
+    "realized_features_max_abs_delta": 1.0
+  }
+}

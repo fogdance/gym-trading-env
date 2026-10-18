@@ -1,0 +1,55 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_D04_visible_native_macd_and_context_reach_F2 _______________
+
+indexed = (PosixPath('/tmp/pytest-of-v/pytest-506/wp05_diag0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...d806732bc5d961cc63f0ccdfb197e4f2a6b71a0156b577f45c'}), PosixPath('/tmp/pytest-of-v/pytest-506/wp05_diag0/join.sqlite'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-506/test_D04_visible_native_macd_a0')
+
+    def test_D04_visible_native_macd_and_context_reach_F2(indexed,tmp_path):
+     from wp05_fixture import BASE
+     source=BASE.parents[0]/'G0_cli_probe' if False else BASE.parent/'G0_cli_probe'
+     # Same preserved WP04 run; this source includes complete 320-minute prehistory.
+     source=BASE.parent/'G0_cli_probe'
+     s={**indexed[1],'corpus_root':str(source/'source/corpus'),'source_f1_run':str(source/'run'),
+        'source_f1_checkpoint':str(source/'run/ckpt/step_000000000004')}
+>    p=preflight(s);index=tmp_path/'join.sqlite';build_join_index(p.source,index)
+       ^^^^^^^^^^^^
+
+tests/entry_v1/test_wp05_diagnostics.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_heads.py:29: in preflight
+    admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(settings['corpus_root'],stage=STAGE),
+                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/research/fg_s3_e_quality_supervision.py:59: in from_corpus
+    m = read_manifest(root / 'corpus_manifest.json')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/research/fg_replay.py:67: in read_manifest
+    data = json.loads(Path(path).read_text())
+                      ^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_restore_review_final/G0_cli_probe/source/corpus/corpus_manifest.json')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_restore_review_final/G0_cli_probe/source/corpus/corpus_manifest.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-a1tl_681 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp05_diagnostics.py::test_D04_visible_native_macd_and_context_reach_F2
+1 failed in 6.12s
