@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_reader.py",
+    "read",
+    "--corpus",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04",
+    "--out",
+    "/home/v/Documents/work/research/fg-s3-e-train-corpus-plan-20261018/evidence/baseline_reader",
+    "--without-model"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-train-corpus-production-20261018/gym-trading-env",
+  "exit_code": 0,
+  "seconds": 14.267055212985724,
+  "native_g3": "NOT_RUN_THIS_SESSION",
+  "optimizer_updates": 0
+}

@@ -1,0 +1,103 @@
+{
+  "status": "OBSERVED_COVERAGE_ONLY",
+  "corpus_identity": "640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9",
+  "corpus_manifest_sha256": "e2c0fc4004eea2bd72a33cb734c3d3a4dcab0248accd8122b46d8add6a9f97f3",
+  "reader_report_sha256": "1424217c4418f5fbe004671ac7945919cca3463053c32be1a58a13912fef9b1a",
+  "source_lock": "ba359d42ace3439aab97c848dc7781cac635e2612b8aeb24525fce10099a017c",
+  "market_denominators": {
+    "unique_market_cursors": 690,
+    "unique_advanced_market_minutes": 689,
+    "unique_contract_official_days": 2,
+    "distinct_account_decision_states": 4134
+  },
+  "candidate_occurrences": {
+    "L1_candidates": 1551,
+    "outcome/TP5": 1307,
+    "TP_SLOW": 1019,
+    "TP_with_MAE15_at_least_10": 416,
+    "TP_FAST": 288,
+    "outcome/SL30": 131,
+    "early10_5_then_SL30": 84,
+    "early10_15_then_SL30": 129,
+    "outcome/OTHER_EXIT": 113
+  },
+  "unique_contract_cursor_support": {
+    "L1_candidates": 689,
+    "outcome/TP5": 590,
+    "TP_SLOW": 475,
+    "TP_with_MAE15_at_least_10": 182,
+    "TP_FAST": 115,
+    "outcome/SL30": 46,
+    "early10_5_then_SL30": 27,
+    "early10_15_then_SL30": 45,
+    "outcome/OTHER_EXIT": 53
+  },
+  "candidate_denominator": "account-state counterfactuals; overlapping metrics, not independent trades",
+  "projected_mask_denominator_physical_rows": 4146,
+  "projected_mask_valid_counts": {
+    "event": [
+      1543,
+      1543,
+      1543,
+      1543,
+      1543,
+      1543,
+      1543
+    ],
+    "touch": [
+      1543,
+      1543,
+      1543,
+      1543,
+      1543,
+      1543,
+      1543,
+      1543
+    ],
+    "adverse": [
+      1543,
+      1543,
+      1543,
+      1543
+    ]
+  },
+  "projected_mask_valid_rates": {
+    "event": [
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652
+    ],
+    "touch": [
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652
+    ],
+    "adverse": [
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652,
+      0.3721659430776652
+    ]
+  },
+  "event_window_order": [
+    5,
+    15,
+    60,
+    120,
+    240,
+    "entry_day_end",
+    "next_day_end"
+  ],
+  "actual_optimizer_exposures": 0,
+  "training_admitted": false,
+  "new_native_g3": "NOT_RUN_BY_THIS_REPORTER"
+}

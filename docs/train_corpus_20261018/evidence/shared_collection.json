@@ -1,0 +1,105 @@
+{
+  "status": "COLLECT_ONLY",
+  "tests": [
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_audited_ast_accepts_only_the_reviewed_transition",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_gate_only_audit_rejects_market_minute_semantic_change",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_online_model_and_environment_counters_have_separate_domains",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_no_inference_source_and_frozen_snapshot",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_missing_baseline_requires_authenticated_features",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_train_warmup_preserves_loaded_formal_actor_gate",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_train_warmup_keeps_warmup_checkpoint_disabled",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_require_formal_actor_rejects_missing_gate_interface",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_require_formal_actor_rejects_warmup_checkpoint",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_require_formal_actor_accepts_formal_checkpoint",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_eval_only_rejects_warmup_checkpoint",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    },
+    {
+      "nodeid": "embodied/tests/test_action_mask_formal_guards.py::test_live_trading_rejects_warmup_checkpoint",
+      "uses_optimizer_fixture": false,
+      "status": "SAFE_SUBSET_RUN_SEPARATELY"
+    }
+  ]
+}

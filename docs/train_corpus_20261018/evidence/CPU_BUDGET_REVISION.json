@@ -1,0 +1,11 @@
+{
+  "reason": "User changed requested occupancy from 24 to 20 logical CPUs and explicitly declined another 20-core validation.",
+  "old_worker_budget": 24,
+  "new_worker_budget": 20,
+  "cpu_affinity": "0-19",
+  "production_root": "/data/s3_corpus/early_train_20261018_cpu20_v1",
+  "unchanged_train_ranges": true,
+  "unchanged_runtime_code_commit": "63f2f8c35d4f84d9dfd11d2bab8e4b4d2c6d876c",
+  "cpu20_runtime_verification": "NOT_RUN_PER_USER_REQUEST",
+  "superseded_unexecuted_24_worker_drafts": "/home/v/Documents/work/research/fg-s3-e-train-corpus-plan-20261018/batches"
+}

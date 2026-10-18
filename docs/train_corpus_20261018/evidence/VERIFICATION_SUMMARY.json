@@ -1,0 +1,760 @@
+{
+  "status": "SELECTED_CPU_REGRESSION_PASS",
+  "counts": {
+    "PASS": 140,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "tests": [
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_explicit_range_can_select_earlier_days_without_changing_suffix",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_scope_never_silently_clips_or_substitutes_days[2024-04-01-None]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_scope_never_silently_clips_or_substitutes_days[2024-04-02-2024-04-01]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_scope_never_silently_clips_or_substitutes_days[2024-03-29-2024-04-02]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_scope_never_silently_clips_or_substitutes_days[2024-04-01-2024-04-04]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_explicit_24_workers_distribute_across_six_accounts_and_labels",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_cpu_budget_remains_memory_bounded",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_external_output_reaches_source_authentication_without_writing",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_cli_routes_dates_workers_and_external_output",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_bounded_native_replay_preserves_complete_train_suffix_and_account",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_production_controls",
+      "name": "test_explicit_producer_pin_requires_external_sha_and_clean_runtime",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[test-True]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[validation-True]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-true]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E01_nontrain_rejected_before_price_or_env_receipt_open[train-False]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E02_fake_approval_and_invalid_output_write_nothing",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E03_draft_is_only_diagnostic_real_cli[draft-0]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E03_draft_is_only_diagnostic_real_cli[formal-2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E03_draft_is_only_diagnostic_real_cli[-2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E04_resigned_teacher_forgery_is_rejected_by_native_facts[False]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E04_resigned_teacher_forgery_is_rejected_by_native_facts[True]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E05_self_signed_env_receipt_does_not_create_a_train_authority",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E06_manifest_traversal_rejected_before_hashing_any_price",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E07_student_and_posterior_publications_are_separate",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E08_corpus_catalog_keeps_fact_action_and_permissions_separate",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E09_nested_replay_manifest_cannot_read_outside_market_files",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E10_resigned_account_tampering_fails_native_replay[ledger_rewrite]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_cli",
+      "name": "test_E10_resigned_account_tampering_fails_native_replay[different_account]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_snapshot_performance",
+      "name": "test_worker_budget_uses_real_memory_cpu_and_independent_job_count",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_snapshot_performance",
+      "name": "test_parallel_teacher_transport_matches_serial_native_accounts_and_labels",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_snapshot_performance",
+      "name": "test_prefix_json_matches_original_hash_and_does_not_include_suffix",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_snapshot_performance",
+      "name": "test_warm_prefix_cache_still_rejects_processed_history_tampering",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_snapshot_performance",
+      "name": "test_json_restore_keeps_full_history_and_independent_snapshot_ownership",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C01_native_e_fork_isolated_complete_l1_and_underwater",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[0]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[1]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[3]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C02_p0_p3_original_account_replay_and_separate_labels[4]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C03_reject_nontrain_before_constructing_env",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C04_p2_seed_reproducibility_and_variation",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C05_aliasing_fork_never_admitted",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C06_persistent_old_state_path_is_never_written",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp02_corpus_facts",
+      "name": "test_C07_coverage_separates_market_accounts_and_counterfactuals",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A01_development_checks_content_without_claiming_native_or_training",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A02_relocated_corpus_and_unrelated_dirty_code_keep_content_identity",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A03_changed_source_or_course_bytes_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[../TEST/prices.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[/tmp/TEST/prices.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[TEST/prices.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[DEV/data.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/NEVER_OPEN_TEST.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/prices.csv]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A05_symlink_rejected_before_hashing",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A06_nontrain_and_forged_training_permission_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A07_self_signed_pass_cannot_replace_native_execution",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A08_missing_or_empty_purpose_never_means_draft",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A09_changed_declared_identity_and_old_teacher_objective_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A10_missing_published_owner_or_inventory_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_admission",
+      "name": "test_A11_draft_course_cannot_be_a_supervision_source",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D10_cli_negative_exit_and_no_output_side_effects[test]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D10_cli_negative_exit_and_no_output_side_effects[empty_purpose]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D10_cli_negative_exit_and_no_output_side_effects[bad_output]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D11_native_verification_rejects_wrong_producer_before_launch_or_write",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[prepare]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[start]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[resume]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[evaluate]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_cli",
+      "name": "test_D13_matching_head_but_modified_frozen_verifier_cannot_certify",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B01_six_native_accounts_stream_to_metadata_index",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[ordinal]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[stepid]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[missing]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[duplicate]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[shift]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[account]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[policy]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[executed]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[incoming_action]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B03_sidecar_or_student_chunk_exchange_is_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B04_l2_invalid_does_not_erase_l1_and_forced_wait_is_not_strict",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B05_current_observation_teacher_not_behavior_action",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B06_each_window_mask_is_independent_and_invalid_huge_target_zeroed",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B07_fake_strict_wait_and_rational_witness_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B08_pair_identity_requires_nonzero_same_owner_same_reset",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B09_new_protocol_rejects_old_q_soft_weights_and_preserves_legacy",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B10_json_claim_is_not_an_admission_object",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B11_resigned_student_chunk_exchange_or_macd_change_rejected",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B12_mae_does_not_change_score_and_nan_is_rejected_before_loss",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FORCED_WAIT_POSITION]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[ADD_RIGHT_CENSORED]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[NO_ACTIVE_DECISION]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_join",
+      "name": "test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C04_restore_rejects_source_index_stage_or_sampling_change",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C05_same_price_different_account_and_reset_never_form_pair",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C08_open_reader_detects_changed_sidecar_or_chunk",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[1]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[5]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[6]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[15]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[16]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[60]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_inclusive_fill_reward_age_and_sparse_oracle[61]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_closed_hours_metadata_zero_volume_and_chunk_restore[lunch]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_closed_hours_metadata_zero_volume_and_chunk_restore[overnight]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_zero_volume_real_bar_counts_and_censored_or_rejected_is_not_tp",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_first_adverse_market_bar_boundaries[5--0.5]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_first_adverse_market_bar_boundaries[6--0.2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_first_adverse_market_bar_boundaries[15--0.2]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_first_adverse_market_bar_boundaries[16-0.0]",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_metadata_discount_matches_independent_env_enumeration_and_s3b",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_cross_semantic_snapshot_rejected_before_model_use",
+      "status": "PASS"
+    },
+    {
+      "classname": "tests.entry_v1.test_s3_market_minute",
+      "name": "test_model_return_uses_feedback_aligned_market_discounts",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_online_model_and_environment_counters_have_separate_domains",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_rejects_missing_gate_interface",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_accepts_formal_checkpoint",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_eval_only_rejects_warmup_checkpoint",
+      "status": "PASS"
+    },
+    {
+      "classname": "",
+      "name": "test_live_trading_rejects_warmup_checkpoint",
+      "status": "PASS"
+    }
+  ],
+  "command_receipt": "release_code_63f2f8c.command.json",
+  "runtime_code_gym": "63f2f8c35d4f84d9dfd11d2bab8e4b4d2c6d876c",
+  "runtime_code_dreamer": "446d1bc99debd2d05c313eafd7d0c414ebd2815c",
+  "shared_not_run": [
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_gate.py::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_no_inference_source_and_frozen_snapshot",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    },
+    {
+      "nodeid": "embodied/tests/test_fg_s3_source_transfer.py::test_missing_baseline_requires_authenticated_features",
+      "uses_optimizer_fixture": true,
+      "status": "NOT_RUN_OPTIMIZER_BAN"
+    }
+  ],
+  "new_corpus_production": "NOT_RUN",
+  "cpu20_runtime_verification": "NOT_RUN_PER_USER_REQUEST",
+  "optimizer_updates": 0,
+  "gpu_used": false
+}

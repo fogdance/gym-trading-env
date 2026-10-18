@@ -1,0 +1,18 @@
+usage: fg_s3_e_quality_reader.py source [-h] --corpus CORPUS --out OUT
+                                        [--purpose {development,native-verification}]
+                                        [--producer-gym PRODUCER_GYM]
+                                        [--producer-lock PRODUCER_LOCK]
+                                        [--producer-lock-sha256 PRODUCER_LOCK_SHA256]
+                                        [--workers WORKERS]
+
+options:
+  -h, --help            show this help message and exit
+  --corpus CORPUS
+  --out OUT
+  --purpose {development,native-verification}
+  --producer-gym PRODUCER_GYM
+  --producer-lock PRODUCER_LOCK
+                        Operator-reviewed frozen producer pin; requires its
+                        separately supplied SHA256
+  --producer-lock-sha256 PRODUCER_LOCK_SHA256
+  --workers WORKERS     CPU process budget forwarded to native G3

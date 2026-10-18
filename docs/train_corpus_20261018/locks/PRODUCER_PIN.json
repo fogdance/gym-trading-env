@@ -1,0 +1,12 @@
+{
+  "protocol": "FG_S3_E_QUALITY_PRODUCER_PIN_V1",
+  "repositories": {
+    "gym": {
+      "sha": "63f2f8c35d4f84d9dfd11d2bab8e4b4d2c6d876c"
+    },
+    "dreamer": {
+      "sha": "446d1bc99debd2d05c313eafd7d0c414ebd2815c"
+    }
+  },
+  "content_hash": "40fbb32ed8fd5155960fbded534a8989aea3cf7f622f4aa772d4979f3ddf9247"
+}

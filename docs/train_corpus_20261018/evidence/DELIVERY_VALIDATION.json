@@ -1,0 +1,12 @@
+{
+  "status": "DOCUMENT_AND_COMMAND_VALIDATORS_PASS",
+  "checks": [
+    "audit_coverage.py: syntax parsed",
+    "RUN_TRAIN_CORPUS.sh: bash -n PASS (syntax only; no workers executed)",
+    "3 embedded Python blocks: syntax parsed",
+    "Four unexecuted batch plan JSON signatures and NOT_RUN fields checked",
+    "Report relative links resolve"
+  ],
+  "production": "NOT_RUN",
+  "cpu20_runtime_verification": "NOT_RUN_PER_USER_REQUEST"
+}

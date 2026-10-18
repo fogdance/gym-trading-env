@@ -1,0 +1,23 @@
+usage: fg_s3_e_quality_corpus.py generate [-h] [--source-pool SOURCE_POOL]
+                                          [--env-receipt ENV_RECEIPT]
+                                          [--contract CONTRACT]
+                                          [--start-day START_DAY]
+                                          [--end-day END_DAY] --out OUT
+                                          [--seed SEED] [--workers WORKERS]
+
+options:
+  -h, --help            show this help message and exit
+  --source-pool SOURCE_POOL
+  --env-receipt ENV_RECEIPT
+  --contract CONTRACT
+  --start-day START_DAY
+                        First official TRAIN trading day, inclusive (YYYY-MM-
+                        DD)
+  --end-day END_DAY     Last Replay trading day, inclusive; labels may use the
+                        locked complete TRAIN suffix
+  --out OUT
+  --seed SEED
+  --workers WORKERS     Total CPU worker budget across account and teacher
+                        processes; default: all affinity CPUs, memory bounded
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-gcsu5kwy because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.

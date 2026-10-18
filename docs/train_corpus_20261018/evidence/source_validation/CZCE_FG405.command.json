@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_corpus.py",
+    "validate",
+    "--source-pool",
+    "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+    "--env-receipt",
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+    "--contract",
+    "CZCE.FG405"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+  "exit_code": 0,
+  "seconds": 12.42185519693885
+}
