@@ -1,0 +1,3 @@
+['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '-m', 'pytest', '-p', 'no:cacheprovider', '-o', 'addopts=', '-q', '/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/embodied/tests/test_fg_s3_gate.py::test_audited_ast_accepts_only_the_reviewed_transition']
+.                                                                        [100%]
+1 passed in 2.00s

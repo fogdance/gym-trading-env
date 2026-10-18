@@ -305,7 +305,9 @@ class EQualityCourseReader:
                 or receipt['source_identity']!=admission.receipt['content_identity']):
             raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
         self.index_stat=_stat(self.index_path)
-        self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True)
+        # Prefetch owns sampling; checkpoint/diagnostics access it only while
+        # that worker is paused. SQLite remains read-only and query_only.
+        self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True,check_same_thread=False)
         self.db.execute('PRAGMA query_only=ON');self.db.execute('PRAGMA cache_size=-4096')
         self.report=json.loads(self.db.execute("SELECT value FROM meta WHERE key='report'").fetchone()[0])
         if any(self.report[k]!=receipt[k] for k in self.report):

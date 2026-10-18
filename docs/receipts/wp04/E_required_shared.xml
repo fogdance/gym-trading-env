@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="20" time="130.616" timestamp="2026-10-18T10:02:45.204687+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_s3_gate" name="test_threshold_boundaries_float32_bfloat16_and_safe_wait" time="0.442" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_audited_ast_accepts_only_the_reviewed_transition" time="0.125"><failure message="ValueError: Unreviewed World Model extraction contract">def test_audited_ast_accepts_only_the_reviewed_transition():
+        root=Path(__file__).resolve().parents[2]
+        old=subprocess.check_output(['git','show','09e2e5ce5b07433790e7f4c3e40be7ca4e084064:dreamerv3/agent.py'],cwd=root)
+        reviewed=subprocess.check_output(['git','show','00b82f850d44c268167578e07f77b0b613591f4a:dreamerv3/agent.py'],cwd=root)
+        current=(root/'dreamerv3/agent.py').read_bytes()
+        # Pin both ends of the actual Gate-only change. Current HEAD also includes
+        # market-minute discounts and E architecture changes; accepting those as a
+        # Gate-only full-state transfer would violate the production contract.
+        assert len(audit_code_transition(old,reviewed,'dreamerv3/agent.py'))==64
+&gt;       assert len(audit_code_transition(current,current,'dreamerv3/agent.py'))==64
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_gate.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:170: in audit_code_transition
+    normalized = _normalized_code(source, name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_source_admission.py:129: in _normalized_code
+    tree = _inline_world_model(tree)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = &lt;ast.Module object at 0x716ec9367f10&gt;
+
+    def _inline_world_model(tree):
+        """Accept only extraction whose expanded body is the original Agent loss.
+    
+        The helper body is not discarded or trusted by a placeholder hash: it is
+        put back into loss before the complete source/target AST comparison.
+        """
+        for cls in tree.body:
+            if not isinstance(cls, ast.ClassDef) or cls.name != 'Agent':
+                continue
+            helpers = [x for x in cls.body if isinstance(x, ast.FunctionDef) and x.name == 'world_model']
+            if not helpers:
+                continue
+            if len(helpers) != 1:
+                raise ValueError('Duplicate World Model extraction')
+            helper = helpers[0]
+            expected = ast.parse('''def world_model(self, carry, obs, prevact, training):
+        return (enc_carry, dyn_carry, dec_carry, enc_entries, dyn_entries,
+                dec_entries, tokens, repfeat, reset, B, T, losses, metrics)
+    ''').body[0]
+            call = ast.parse('''(enc_carry, dyn_carry, dec_carry, enc_entries, dyn_entries,
+    dec_entries, tokens, repfeat, reset, B, T, losses, metrics) = self.world_model(carry, obs, prevact, training)
+    ''').body[0]
+            loss = next(x for x in cls.body if isinstance(x, ast.FunctionDef) and x.name == 'loss')
+            dump = lambda x: ast.dump(x, include_attributes=False)
+            if (dump(helper.args) != dump(expected.args) or helper.decorator_list
+                    or dump(helper.body[-1]) != dump(expected.body[0])
+                    or dump(loss.body[0]) != dump(call)):
+&gt;               raise ValueError('Unreviewed World Model extraction contract')
+E               ValueError: Unreviewed World Model extraction contract
+
+../dreamerv3/embodied/run/fg_s3_source_admission.py:120: ValueError</failure></testcase><testcase classname="embodied.tests.test_fg_s3_gate" name="test_gate_only_audit_rejects_market_minute_semantic_change" time="0.057" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_direct_init_real_runner_uses_twenty_reports_and_regression_stop" time="27.407" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]" time="24.865" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]" time="8.559" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_same_threshold_transfer_preserves_authenticated_window_and_streak" time="21.809" /><testcase classname="embodied.tests.test_fg_s3_gate" name="test_real_availability_head_raw_mask_and_metrics_share_threshold" time="9.355" /><testcase classname="embodied.tests.test_fg_s3_source_transfer" name="test_full_source_dependency_inventory_includes_stream_and_serializer" time="0.018" /><testcase classname="embodied.tests.test_fg_s3_source_transfer" name="test_online_model_and_environment_counters_have_separate_domains" time="0.002" /><testcase classname="embodied.tests.test_fg_s3_source_transfer" name="test_actual_three_modes_inherit_complete_state_and_reject_foreign" time="22.749" /><testcase classname="embodied.tests.test_fg_s3_source_transfer" name="test_no_inference_source_and_frozen_snapshot" time="6.312" /><testcase classname="embodied.tests.test_fg_s3_source_transfer" name="test_missing_baseline_requires_authenticated_features" time="6.752" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_train_warmup_preserves_loaded_formal_actor_gate" time="0.000" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_train_warmup_keeps_warmup_checkpoint_disabled" time="0.000" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_require_formal_actor_rejects_missing_gate_interface" time="0.000" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_require_formal_actor_rejects_warmup_checkpoint" time="0.000" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_require_formal_actor_accepts_formal_checkpoint" time="0.000" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_eval_only_rejects_warmup_checkpoint" time="0.002" /><testcase classname="embodied.tests.test_action_mask_formal_guards" name="test_live_trading_rejects_warmup_checkpoint" time="0.002" /></testsuite></testsuites>

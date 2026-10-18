@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py", line 12, in <module>
+    run=FoundationRun(prep,index,root,resume=sys.argv[4]=='resume',_probe=synthetic_probe_permit(prep))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3/embodied/run/fg_s3_e_quality_foundation.py", line 97, in __init__
+    if saved!=self.identity:raise ValueError('F1_RESUME_IDENTITY_MISMATCH')
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: F1_RESUME_IDENTITY_MISMATCH

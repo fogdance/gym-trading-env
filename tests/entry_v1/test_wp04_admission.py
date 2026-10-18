@@ -85,10 +85,11 @@ def test_A06_F1_must_not_enable_teacher_or_decision_losses():
 
 def test_A07_prepare_only_writes_engineering_files_and_refuses_overwrite(tmp_path):
     import yaml
-    root=metadata_corpus(tmp_path/'corpus');config=tmp_path/'config.yaml'
+    from wp03_fixture import native_corpus
+    root=native_corpus(tmp_path/'corpus',minutes=16,chunk=20);config=tmp_path/'config.yaml'
     s=settings(root);config.write_text(yaml.safe_dump(s))
     receipt=prepare(config)
     assert receipt['status']=='F1_ENGINEERING_READY'
-    assert sorted(p.name for p in Path(s['prepared_dir']).iterdir())==['f1_preparation.json','settings.json']
+    assert sorted(p.name for p in Path(s['prepared_dir']).iterdir())==['f1_preparation.json','join.json','join.sqlite','reader_binding.json','settings.json']
     assert not Path(s['run_dir']).exists()
     with pytest.raises(ValueError,match='OUTPUT_MUST_BE_NEW'):prepare(config)

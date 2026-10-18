@@ -1,0 +1,62 @@
+.F..................                                                     [100%]
+=================================== FAILURES ===================================
+____________ test_audited_ast_accepts_only_the_reviewed_transition _____________
+
+    def test_audited_ast_accepts_only_the_reviewed_transition():
+        root=Path(__file__).resolve().parents[2]
+        old=subprocess.check_output(['git','show','09e2e5ce5b07433790e7f4c3e40be7ca4e084064:dreamerv3/agent.py'],cwd=root)
+        reviewed=subprocess.check_output(['git','show','00b82f850d44c268167578e07f77b0b613591f4a:dreamerv3/agent.py'],cwd=root)
+        current=(root/'dreamerv3/agent.py').read_bytes()
+        # Pin both ends of the actual Gate-only change. Current HEAD also includes
+        # market-minute discounts and E architecture changes; accepting those as a
+        # Gate-only full-state transfer would violate the production contract.
+        assert len(audit_code_transition(old,reviewed,'dreamerv3/agent.py'))==64
+>       assert len(audit_code_transition(current,current,'dreamerv3/agent.py'))==64
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_s3_gate.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_source_admission.py:170: in audit_code_transition
+    normalized = _normalized_code(source, name)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_source_admission.py:129: in _normalized_code
+    tree = _inline_world_model(tree)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+tree = <ast.Module object at 0x716ec9367f10>
+
+    def _inline_world_model(tree):
+        """Accept only extraction whose expanded body is the original Agent loss.
+    
+        The helper body is not discarded or trusted by a placeholder hash: it is
+        put back into loss before the complete source/target AST comparison.
+        """
+        for cls in tree.body:
+            if not isinstance(cls, ast.ClassDef) or cls.name != 'Agent':
+                continue
+            helpers = [x for x in cls.body if isinstance(x, ast.FunctionDef) and x.name == 'world_model']
+            if not helpers:
+                continue
+            if len(helpers) != 1:
+                raise ValueError('Duplicate World Model extraction')
+            helper = helpers[0]
+            expected = ast.parse('''def world_model(self, carry, obs, prevact, training):
+        return (enc_carry, dyn_carry, dec_carry, enc_entries, dyn_entries,
+                dec_entries, tokens, repfeat, reset, B, T, losses, metrics)
+    ''').body[0]
+            call = ast.parse('''(enc_carry, dyn_carry, dec_carry, enc_entries, dyn_entries,
+    dec_entries, tokens, repfeat, reset, B, T, losses, metrics) = self.world_model(carry, obs, prevact, training)
+    ''').body[0]
+            loss = next(x for x in cls.body if isinstance(x, ast.FunctionDef) and x.name == 'loss')
+            dump = lambda x: ast.dump(x, include_attributes=False)
+            if (dump(helper.args) != dump(expected.args) or helper.decorator_list
+                    or dump(helper.body[-1]) != dump(expected.body[0])
+                    or dump(loss.body[0]) != dump(call)):
+>               raise ValueError('Unreviewed World Model extraction contract')
+E               ValueError: Unreviewed World Model extraction contract
+
+../dreamerv3/embodied/run/fg_s3_source_admission.py:120: ValueError
+=========================== short test summary info ============================
+FAILED ../dreamerv3/embodied/tests/test_fg_s3_gate.py::test_audited_ast_accepts_only_the_reviewed_transition
+1 failed, 19 passed in 130.63s (0:02:10)

@@ -34,7 +34,9 @@ for role, repo in [('gym', root), ('dreamer', root.parent / 'dreamerv3')]:
     versions[role] = dict(head=git('rev-parse', 'HEAD'), dirty=git('status', '--porcelain'),
                           branch=git('branch', '--show-current'))
     # Audit only, never a reader/G3 gate. Includes uncommitted new modules.
-    for folder in ([repo/'src', repo/'tools'] if role == 'gym' else [repo/'dreamerv3']):
+    folders=([repo/'src', repo/'tools'] if role == 'gym' else [repo/'dreamerv3'])
+    if package=='wp04':folders += [repo/'e_data_v1'] if role=='gym' else [repo/'embodied']
+    for folder in folders:
         for p in folder.rglob('*.py'):
             sources[role + '/' + str(p.relative_to(repo))] = hashlib.sha256(p.read_bytes()).hexdigest()
 began = time.monotonic()

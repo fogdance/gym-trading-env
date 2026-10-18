@@ -1,0 +1,98 @@
+F...........F.                                                           [100%]
+=================================== FAILURES ===================================
+____________ test_D01_actual_cold_process_full_state_and_next_batch ____________
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0'), PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json'...TY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+
+    def test_D01_actual_cold_process_full_state_and_next_batch(case):
+     continuous=run_worker(case,'continuous','start',4)
+     run_worker(case,'split','start',2)
+>    restored=run_worker(case,'split','resume',4)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp04_checkpoint.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0'), PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json'...TY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+name = 'split', mode = 'resume', stop = 4
+
+    def run_worker(case,name,mode,stop):
+     root,path,_=case
+     result=subprocess.run([sys.executable,'-B',str(Path(__file__).with_name('wp04_cold_worker.py')),
+       str(path),str(root/name),str(root/'join.sqlite'),mode,str(stop)],capture_output=True,text=True)
+     out=Path('docs/receipts/wp04')/('D_worker_'+name+'_'+mode+'_'+str(stop))
+     out.with_suffix('.log').write_text(result.stdout+result.stderr)
+     out.with_suffix('.json').write_text(json.dumps(dict(argv=result.args,exit_code=result.returncode),indent=2))
+>    assert result.returncode==0,result.stdout[-2000:]+result.stderr[-3000:]
+E    AssertionError: Traceback (most recent call last):
+E        File "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py", line 12, in <module>
+E          run=FoundationRun(prep,index,root,resume=sys.argv[4]=='resume',_probe=synthetic_probe_permit(prep))
+E              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E        File "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3/embodied/run/fg_s3_e_quality_foundation.py", line 97, in __init__
+E          if saved!=self.identity:raise ValueError('F1_RESUME_IDENTITY_MISMATCH')
+E                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E      ValueError: F1_RESUME_IDENTITY_MISMATCH
+E      
+E    assert 1 == 0
+E     +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nValueError: F1_RESUME_IDENTITY_MISMATCH\n').returncode
+
+tests/entry_v1/test_wp04_checkpoint.py:25: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 100 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 100 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-m1q9etwz because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+________ test_D04_external_source_index_and_corrupt_bundle_fail_closed _________
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0'), PosixPath('/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json'...TY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-478/test_D04_external_source_index0')
+
+    def test_D04_external_source_index_and_corrupt_bundle_fail_closed(case,tmp_path):
+     import shutil
+     from embodied.run.fg_s3_e_quality_foundation import CourseStream,FoundationRun,synthetic_probe_permit
+     from gym_trading_env.research.fg_s3_e_quality_reader import EQualityCourseReader
+     from embodied.run.fg_checkpoint import FullCheckpoint
+     import elements
+     root,_,s=case
+     p=preflight(s);r=EQualityCourseReader.open(p.source,stage='WM_NATURAL',sampling_spec=s['sampling_spec'],seed=202,index_path=root/'join.sqlite')
+     stream=CourseStream(r,s);saved=stream.save();stream.validate_snapshot(saved)
+     wrong=copy.deepcopy(saved);wrong['stage']='ACTOR_STRICT'
+     with pytest.raises(ValueError,match='EXTERNAL_READER_IDENTITY'):stream.validate_snapshot(wrong)
+     r.close()
+     # Preserve original evidence; attacks operate only on isolated copies.
+     clone=tmp_path/'clone';shutil.copytree(root/'split',clone)
+>    latest=clone/'ckpt/step_000000000004';(latest/'agent.pkl').write_bytes(b'corrupt')
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp04_checkpoint.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1067: in write_bytes
+    with self.open(mode='wb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-v/pytest-478/test_D04_external_source_index0/clone/ckpt/step_000000000004/agent.pkl')
+mode = 'wb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-v/pytest-478/test_D04_external_source_index0/clone/ckpt/step_000000000004/agent.pkl'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp04_checkpoint.py::test_D01_actual_cold_process_full_state_and_next_batch
+FAILED tests/entry_v1/test_wp04_checkpoint.py::test_D04_external_source_index_and_corrupt_bundle_fail_closed
+2 failed, 12 passed in 146.37s (0:02:26)

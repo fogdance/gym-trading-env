@@ -20,6 +20,7 @@ from .fg_s3_e_observation import observation_contract
 
 PROJECT = Path(__file__).resolve().parents[3]
 CONFIG_SCHEMA = 'FG_S3_E_QUALITY_F1_CONFIG_V1'
+_NATIVE_PROOFS = {}
 
 
 def validate_settings(raw):
@@ -96,9 +97,10 @@ def execution_identity():
         git = lambda *a: subprocess.check_output(['git','-C',str(root),*a],text=True).strip()
         # Bound to run/resume, not to ordinary Reader development. Relative
         # module names make moving an otherwise identical checkout harmless.
-        folders = ('src/gym_trading_env/research',) if role == 'gym' else ('dreamerv3','embodied')
+        folders = ('src/gym_trading_env','e_data_v1') if role == 'gym' else ('dreamerv3','embodied')
         files = {str(p.relative_to(root)):digest(p) for folder in folders
             for p in sorted((root/folder).rglob('*.py')) if 'tests' not in p.parts}
+        if role == 'gym':files['tools/fg_s3_v2_experiment.py']=digest(root/'tools/fg_s3_v2_experiment.py')
         result[role] = dict(head=git('rev-parse','HEAD'),runtime_hash=fingerprint(files))
     return result
 
@@ -126,6 +128,8 @@ def preflight(settings, *, purpose='development', producer_gym=None, log_path=No
         device=settings['device'],code=execution_identity(),
         checkpoint_backend='external_immutable_course_reader',
         parameter_policy=expected_stage_contract(STAGE)['parameter_group_policy'])
+    from embodied.run.fg_checkpoint import plain
+    identity=plain(identity)  # Same canonical representation before/after JSON.
     native = admission.native_result is not None
     receipt = signed(dict(protocol=PROTOCOL,status='F1_DATA_READY' if native else 'F1_ENGINEERING_READY',
         stage=STAGE,training_admitted=False,research_admitted=False,
@@ -133,7 +137,12 @@ def preflight(settings, *, purpose='development', producer_gym=None, log_path=No
         native_receipt_hash=admission.receipt['native_receipt_hash'],
         blockers=['F1_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED']+
             ([] if native else ['F1_NATIVE_G3_NOT_RUN']),source_receipt=admission.receipt))
-    return F1Preparation(settings,admission,receipt)
+    result=F1Preparation(settings,admission,receipt)
+    if native:
+        # In-process evidence of the actual verifier invocation. Reconstructing
+        # a dataclass from an editable JSON receipt cannot mint this authority.
+        _NATIVE_PROOFS[id(result)]=(result,fingerprint(admission.native_result),fingerprint(receipt))
+    return result
 
 
 def prepare(config, *, purpose='development', producer_gym=None):
@@ -143,8 +152,12 @@ def prepare(config, *, purpose='development', producer_gym=None):
         raise ValueError('F1_PREPARATION_OUTPUT_MUST_BE_NEW')
     result = preflight(settings,purpose=purpose,producer_gym=producer_gym,
         log_path=out/'native_verify.log' if purpose == 'native-verification' else None)
+    from .fg_s3_e_quality_reader import build_join_index
+    joined=build_join_index(result.source,out/'join.sqlite')
     write_json(out/'settings.json',signed(dict(protocol=PROTOCOL,settings=settings)))
     write_json(out/'f1_preparation.json',result.receipt)
+    write_json(out/'reader_binding.json',signed(dict(index_sha256=digest(out/'join.sqlite'),
+        source_identity=result.source.receipt['content_identity'],join_report=joined)))
     if result.source.native_result is not None:
         write_json(out/'native_verification.json',result.source.native_result)
     return result.receipt
@@ -157,6 +170,10 @@ def require_training_authority(preparation, *, authorized=False):
             or preparation.source.native_result['result'].get('G3') != 'GO'
             or preparation.receipt.get('status') != 'F1_DATA_READY'):
         raise ValueError('F1_ACTUAL_NATIVE_G3_REQUIRED; loaded JSON is not authority')
+    proof=_NATIVE_PROOFS.get(id(preparation))
+    if (proof is None or proof[0] is not preparation or
+            proof[1:]!=(fingerprint(preparation.source.native_result),fingerprint(preparation.receipt))):
+        raise ValueError('F1_ACTUAL_NATIVE_G3_EXECUTION_PROOF_REQUIRED')
     return preparation
 
 
@@ -191,3 +208,29 @@ class F1WindowAdapter:
         except BaseException:
             self.reader.load_state_dict(state)
             raise
+
+
+def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, stop_at=None):
+    """Formal route: actual native proof and explicit external permission."""
+    if authorized is not True:raise ValueError('F1_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    import uuid
+    path=_local_path(path)
+    settings=validate_settings(read_manifest(path/'settings.json')['settings'])
+    saved=read_manifest(path/'f1_preparation.json')
+    binding=read_manifest(path/'reader_binding.json')
+    if saved['status']!='F1_DATA_READY':raise ValueError('F1_NATIVE_PREPARATION_REQUIRED')
+    if saved['identity']['code']!=execution_identity():raise ValueError('F1_PREPARED_CODE_CHANGED')
+    index=path/'join.sqlite'
+    if digest(index)!=binding['index_sha256']:raise ValueError('F1_PREPARED_INDEX_CHANGED')
+    root=Path(settings['run_dir'])
+    allowed=(PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))
+    if not any(root.is_relative_to(p) for p in allowed):raise ValueError('F1_RUN_DIRECTORY_INVALID')
+    # G3 log is outside immutable preparation and outside the run being resumed.
+    audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp04/preflights'/uuid.uuid4().hex
+    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,log_path=audit/'native.log')
+    if (current.receipt['identity']!=saved['identity'] or
+            binding['source_identity']!=current.source.receipt['content_identity']):
+        raise ValueError('F1_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
+    from embodied.run.fg_s3_e_quality_foundation import FoundationRun
+    run=FoundationRun(current,index,root,resume=resume,authorize_training=authorized)
+    return run.run(stop_at)

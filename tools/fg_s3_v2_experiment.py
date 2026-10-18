@@ -28,7 +28,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
                                      'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
-                                     'f1-prepare', 'f1-start', 'f1-resume',
+                                     'f1-prepare', 'f1-start', 'f1-resume', 'f1-probe', 'f1-read-check',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
     p.add_argument('--config')
@@ -68,7 +68,27 @@ def main():
         if args.command in ('f1-start','f1-resume'):
             if not args.authorize_training:
                 raise ValueError('F1_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
-            raise ValueError('F1_RUN_COORDINATOR_NOT_IMPLEMENTED')
+            if not args.prepared or args.config or args.run_dir:
+                p.error('f1-start/resume requires --prepared; run path is frozen in its settings')
+            from gym_trading_env.research.fg_s3_e_quality_foundation import read_settings,start_prepared
+            from gym_trading_env.research.fg_replay import read_manifest
+            device=read_manifest(Path(args.prepared)/'settings.json')['settings']['device']
+            if device=='gpu':
+                os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
+            result=start_prepared(args.prepared,resume=args.command=='f1-resume',authorized=True,
+                producer_gym=args.producer_gym,stop_at=args.stop_at)
+            print(json.dumps(result,indent=2,ensure_ascii=False));return
+        if args.command=='f1-probe':
+            if not args.output_dir or args.config or args.prepared or args.authorize_training:
+                p.error('f1-probe only accepts --output-dir for the built-in CPU synthetic source')
+            from gym_trading_env.research.fg_s3_e_quality_foundation_checks import cpu_probe
+            print(json.dumps(cpu_probe(args.output_dir),indent=2));return
+        if args.command=='f1-read-check':
+            if not args.config or not args.output_dir or args.prepared or args.authorize_training:
+                p.error('f1-read-check requires --config --output-dir and cannot authorize training')
+            from gym_trading_env.research.fg_s3_e_quality_foundation_checks import read_check
+            result=read_check(args.config,args.output_dir,purpose=args.source_purpose,producer_gym=args.producer_gym)
+            print(json.dumps(dict(status=result['status'],actual_optimizer_updates=0)));return
         if not args.config or args.prepared or args.authorize_training:
             p.error('f1-prepare requires --config and cannot authorize training')
         from gym_trading_env.research.fg_s3_e_quality_foundation import prepare as prepare_f1

@@ -1,0 +1,61 @@
+............F.                                                           [100%]
+=================================== FAILURES ===================================
+________ test_D04_external_source_index_and_corrupt_bundle_fail_closed _________
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-481/wp04_cold0'), PosixPath('/tmp/pytest-of-v/pytest-481/wp04_cold0/settings.json'...TY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-481/test_D04_external_source_index0')
+
+    def test_D04_external_source_index_and_corrupt_bundle_fail_closed(case,tmp_path):
+     import shutil
+     from embodied.run.fg_s3_e_quality_foundation import CourseStream,FoundationRun,synthetic_probe_permit
+     from gym_trading_env.research.fg_s3_e_quality_reader import EQualityCourseReader
+     from embodied.run.fg_checkpoint import FullCheckpoint
+     import elements
+     root,_,s=case
+     p=preflight(s);r=EQualityCourseReader.open(p.source,stage='WM_NATURAL',sampling_spec=s['sampling_spec'],seed=202,index_path=root/'join.sqlite')
+     stream=CourseStream(r,s);saved=stream.save();stream.validate_snapshot(saved)
+     wrong=copy.deepcopy(saved);wrong['stage']='ACTOR_STRICT'
+     with pytest.raises(ValueError,match='EXTERNAL_READER_IDENTITY'):stream.validate_snapshot(wrong)
+     r.close()
+     # Preserve original evidence; attacks operate only on isolated copies.
+     clone=tmp_path/'clone';shutil.copytree(root/'split',clone)
+     latest=sorted((clone/'ckpt').glob('step_*'))[-1];(latest/'agent.pkl').write_bytes(b'corrupt')
+     cp=FullCheckpoint(clone/'ckpt',elements.Counter(),json.loads((clone/'run_identity.json').read_text())['identity'],(),backend='external_immutable_course_reader')
+     with pytest.raises(ValueError,match='corrupt file'):cp.latest()
+     index=tmp_path/'changed.sqlite';shutil.copyfile(root/'join.sqlite',index)
+     with index.open('ab') as f:f.write(b'changed')
+     with pytest.raises(ValueError,match='RESUME_IDENTITY_MISMATCH'):
+>     FoundationRun(p,index,root/'split',resume=True,_probe=synthetic_probe_permit(p))
+
+tests/entry_v1/test_wp04_checkpoint.py:101: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_e_quality_foundation.py:87: in __init__
+    index_receipt_sha256=digest(self.index.with_suffix('.json')),
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/research/fg_history_study.py:14: in digest
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                          ^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1050: in read_bytes
+    with self.open(mode='rb') as f:
+         ^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-v/pytest-481/test_D04_external_source_index0/changed.json')
+mode = 'rb', buffering = -1, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-v/pytest-481/test_D04_external_source_index0/changed.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp04_checkpoint.py::test_D04_external_source_index_and_corrupt_bundle_fail_closed
+1 failed, 13 passed in 136.34s (0:02:16)

@@ -1,0 +1,21 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-ejir_c54 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+ValueError F1_RESUME_IDENTITY_MISMATCH
+/preparation/model/jax/train_devices types list tuple [0] (0,)
+/preparation/model/jax/policy_devices types list tuple [0] (0,)
+/preparation/model/agent/dec/simple/mults types list tuple [2, 3, 4, 4] (2, 3, 4, 4)
+/preparation/model/agent/enc/simple/mults types list tuple [2, 3, 4, 4] (2, 3, 4, 4)
+/preparation/model/logger/outputs types list tuple ['tensorboard', 'jsonl', 'scope'] ('tensorboard', 'jsonl', 'scope')
+/preparation/model/walk_forward_guard_result/problems types list tuple [''] ('',)
+/preparation/model/walk_forward_guard_result/test_overlap_days types list tuple [0] (0,)
+/preparation/model/walk_forward_guard_result/validation_overlap_days types list tuple [0] (0,)
+/preparation/model/env/loconav/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/procgen/size types list tuple [96, 96] (96, 96)
+/preparation/model/env/dmc/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/minecraft/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/crafter/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/dmlab/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/atari100k/size types list tuple [64, 64] (64, 64)
+/preparation/model/env/atari/size types list tuple [96, 96] (96, 96)
+/preparation/model/run/checkpoint_retention/steps types list tuple [0] (0,)
+/preparation/model/run/fg_key_steps types list tuple [70000, 100000, 700000, 1000000] (70000, 100000, 700000, 1000000)
