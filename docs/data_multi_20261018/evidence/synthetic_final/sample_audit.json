@@ -1,0 +1,794 @@
+{
+  "batch_digest": "af2672442d9327c8199f662853383d3194ea6d78bedf6bfff86e8be85495fc9a",
+  "rows": [
+    {
+      "corpus_id": "alpha",
+      "source_identity": "3482c56256eabef063ff5649a0d44cff7fcc2892e007dda54245f626d16da430",
+      "index_sha256": "c57f93af85a51f26b1ab9e995f4a78bf86b1047fbfaa753354f26209c0b291ef",
+      "contract": "CZCE.FG2701",
+      "policy": "P1",
+      "segment": 0,
+      "reset_ordinal": 0,
+      "distance_from_reset_market_minutes": 10,
+      "rows": [
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 10,
+          "cursor": 10,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000a",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 11,
+          "cursor": 11,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000b",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 12,
+          "cursor": 12,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000c",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "ambiguous_tp_sl": false,
+              "clock_protocol": "S3_MARKET_MINUTE",
+              "close_fee": "9",
+              "closed_quantity": 3,
+              "committed": true,
+              "entry_cursor": 4,
+              "entry_id": "CZCE.FG2701:1:2",
+              "entry_price": "1000",
+              "entry_time": "2026-01-05 21:04:00+08:00",
+              "exit_cursor": 12,
+              "exit_price": "1005",
+              "exit_time": "2026-01-05 21:13:00+08:00",
+              "gross_trade_pnl": "300",
+              "held_market_bars": 9,
+              "net_trade_pnl": "282",
+              "open_fee": "9",
+              "price_reference_time": "2026-01-05 21:13:00+08:00",
+              "reason": "TAKE_PROFIT",
+              "reward": 1.0,
+              "same_entry_bar": false,
+              "side": "LONG",
+              "tp_market_minutes": 9
+            }
+          ],
+          "native_exit_reasons": [
+            "TAKE_PROFIT"
+          ]
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 13,
+          "cursor": 13,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000d",
+          "incoming_action": 1,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 14,
+          "cursor": 14,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000e",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 15,
+          "cursor": 15,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba40000000f",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 16,
+          "cursor": 16,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000010",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 17,
+          "cursor": 17,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000011",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "effective_bar": 5,
+              "entry_id": "CZCE.FG2701:1:3",
+              "observed": true,
+              "reason": "FIRST_ADVERSE10",
+              "reward": -0.5,
+              "time": "2026-01-05 21:18:00+08:00"
+            }
+          ],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 18,
+          "cursor": 18,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000012",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 19,
+          "cursor": 19,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000013",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 20,
+          "cursor": 20,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000014",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "ambiguous_tp_sl": false,
+              "clock_protocol": "S3_MARKET_MINUTE",
+              "close_fee": "9",
+              "closed_quantity": 3,
+              "committed": true,
+              "entry_cursor": 13,
+              "entry_id": "CZCE.FG2701:1:3",
+              "entry_price": "1000",
+              "entry_time": "2026-01-05 21:13:00+08:00",
+              "exit_cursor": 20,
+              "exit_price": "970",
+              "exit_time": "2026-01-05 21:21:00+08:00",
+              "gap_slippage_points": 0.0,
+              "gross_trade_pnl": "-1800",
+              "held_market_bars": 8,
+              "net_trade_pnl": "-1818",
+              "open_fee": "9",
+              "price_reference_time": "2026-01-05 21:21:00+08:00",
+              "reason": "STOP_LOSS",
+              "reward": -3.0,
+              "same_entry_bar": false,
+              "side": "LONG",
+              "sl_pending_retry": false,
+              "sl_trigger_time": "2026-01-05 21:21:00+08:00"
+            }
+          ],
+          "native_exit_reasons": [
+            "STOP_LOSS"
+          ]
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 21,
+          "cursor": 21,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000015",
+          "incoming_action": 1,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P1",
+          "segment": 0,
+          "ordinal": 22,
+          "cursor": 22,
+          "stepid": "08e206cab7cb4e05a32c29c1f95bbba400000016",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        }
+      ]
+    },
+    {
+      "corpus_id": "alpha",
+      "source_identity": "3482c56256eabef063ff5649a0d44cff7fcc2892e007dda54245f626d16da430",
+      "index_sha256": "c57f93af85a51f26b1ab9e995f4a78bf86b1047fbfaa753354f26209c0b291ef",
+      "contract": "CZCE.FG2701",
+      "policy": "P3",
+      "segment": 0,
+      "reset_ordinal": 0,
+      "distance_from_reset_market_minutes": 16,
+      "rows": [
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 16,
+          "cursor": 16,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000010",
+          "incoming_action": 1,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 17,
+          "cursor": 17,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000011",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "effective_bar": 2,
+              "entry_id": "CZCE.FG2701:1:1",
+              "observed": true,
+              "reason": "FIRST_ADVERSE10",
+              "reward": -0.5,
+              "time": "2026-01-05 21:18:00+08:00"
+            }
+          ],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 18,
+          "cursor": 18,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000012",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 19,
+          "cursor": 19,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000013",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 20,
+          "cursor": 20,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000014",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "ambiguous_tp_sl": false,
+              "clock_protocol": "S3_MARKET_MINUTE",
+              "close_fee": "9",
+              "closed_quantity": 3,
+              "committed": true,
+              "entry_cursor": 16,
+              "entry_id": "CZCE.FG2701:1:1",
+              "entry_price": "1000",
+              "entry_time": "2026-01-05 21:16:00+08:00",
+              "exit_cursor": 20,
+              "exit_price": "970",
+              "exit_time": "2026-01-05 21:21:00+08:00",
+              "gap_slippage_points": 0.0,
+              "gross_trade_pnl": "-1800",
+              "held_market_bars": 5,
+              "net_trade_pnl": "-1818",
+              "open_fee": "9",
+              "price_reference_time": "2026-01-05 21:21:00+08:00",
+              "reason": "STOP_LOSS",
+              "reward": -3.0,
+              "same_entry_bar": false,
+              "side": "LONG",
+              "sl_pending_retry": false,
+              "sl_trigger_time": "2026-01-05 21:21:00+08:00"
+            }
+          ],
+          "native_exit_reasons": [
+            "STOP_LOSS"
+          ]
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 21,
+          "cursor": 21,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000015",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 22,
+          "cursor": 22,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000016",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 23,
+          "cursor": 23,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000017",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 24,
+          "cursor": 24,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000018",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 25,
+          "cursor": 25,
+          "stepid": "e49554671ace48f0b63c752f6b64372c00000019",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 26,
+          "cursor": 26,
+          "stepid": "e49554671ace48f0b63c752f6b64372c0000001a",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 27,
+          "cursor": 27,
+          "stepid": "e49554671ace48f0b63c752f6b64372c0000001b",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P3",
+          "segment": 0,
+          "ordinal": 28,
+          "cursor": 28,
+          "stepid": "e49554671ace48f0b63c752f6b64372c0000001c",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        }
+      ]
+    },
+    {
+      "corpus_id": "beta",
+      "source_identity": "c5c91d8f05c670b8ab4f5d1bfda49db2d48d16511813069313569a0e66219e5e",
+      "index_sha256": "a1602baac7b9eb5afe01188610dc04850dd62d7e70c2eb0197f7e6eaae994e00",
+      "contract": "CZCE.FG2701",
+      "policy": "P0",
+      "segment": 0,
+      "reset_ordinal": 0,
+      "distance_from_reset_market_minutes": 16,
+      "rows": [
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 16,
+          "cursor": 16,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000010",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 17,
+          "cursor": 17,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000011",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 18,
+          "cursor": 18,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000012",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 19,
+          "cursor": 19,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000013",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 20,
+          "cursor": 20,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000014",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 21,
+          "cursor": 21,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000015",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 22,
+          "cursor": 22,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000016",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 23,
+          "cursor": 23,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000017",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 24,
+          "cursor": 24,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000018",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 25,
+          "cursor": 25,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b00000019",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 26,
+          "cursor": 26,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b0000001a",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 27,
+          "cursor": 27,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b0000001b",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P0",
+          "segment": 0,
+          "ordinal": 28,
+          "cursor": 28,
+          "stepid": "1e250d48926b4d6d855e2af3055fb62b0000001c",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        }
+      ]
+    },
+    {
+      "corpus_id": "beta",
+      "source_identity": "c5c91d8f05c670b8ab4f5d1bfda49db2d48d16511813069313569a0e66219e5e",
+      "index_sha256": "a1602baac7b9eb5afe01188610dc04850dd62d7e70c2eb0197f7e6eaae994e00",
+      "contract": "CZCE.FG2701",
+      "policy": "P2_mid",
+      "segment": 0,
+      "reset_ordinal": 0,
+      "distance_from_reset_market_minutes": 18,
+      "rows": [
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 18,
+          "cursor": 18,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000012",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 19,
+          "cursor": 19,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000013",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 20,
+          "cursor": 20,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000014",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "ambiguous_tp_sl": false,
+              "clock_protocol": "S3_MARKET_MINUTE",
+              "close_fee": "9",
+              "closed_quantity": 3,
+              "committed": true,
+              "entry_cursor": 13,
+              "entry_id": "CZCE.FG2701:1:3",
+              "entry_price": "1017",
+              "entry_time": "2026-01-05 21:13:00+08:00",
+              "exit_cursor": 20,
+              "exit_price": "987",
+              "exit_time": "2026-01-05 21:21:00+08:00",
+              "gap_slippage_points": 0.0,
+              "gross_trade_pnl": "-1800",
+              "held_market_bars": 8,
+              "net_trade_pnl": "-1818",
+              "open_fee": "9",
+              "price_reference_time": "2026-01-05 21:21:00+08:00",
+              "reason": "STOP_LOSS",
+              "reward": -3.0,
+              "same_entry_bar": false,
+              "side": "LONG",
+              "sl_pending_retry": false,
+              "sl_trigger_time": "2026-01-05 21:21:00+08:00"
+            }
+          ],
+          "native_exit_reasons": [
+            "STOP_LOSS"
+          ]
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 21,
+          "cursor": 21,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000015",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 22,
+          "cursor": 22,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000016",
+          "incoming_action": 1,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 23,
+          "cursor": 23,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000017",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "ambiguous_tp_sl": false,
+              "clock_protocol": "S3_MARKET_MINUTE",
+              "close_fee": "9",
+              "closed_quantity": 3,
+              "committed": true,
+              "entry_cursor": 22,
+              "entry_id": "CZCE.FG2701:1:4",
+              "entry_price": "1017",
+              "entry_time": "2026-01-05 21:22:00+08:00",
+              "exit_cursor": 23,
+              "exit_price": "1022",
+              "exit_time": "2026-01-05 21:24:00+08:00",
+              "gross_trade_pnl": "300",
+              "held_market_bars": 2,
+              "net_trade_pnl": "282",
+              "open_fee": "9",
+              "price_reference_time": "2026-01-05 21:24:00+08:00",
+              "reason": "TAKE_PROFIT",
+              "reward": 1.0,
+              "same_entry_bar": false,
+              "side": "LONG",
+              "tp_market_minutes": 2
+            }
+          ],
+          "native_exit_reasons": [
+            "TAKE_PROFIT"
+          ]
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 24,
+          "cursor": 24,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000018",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 25,
+          "cursor": 25,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e00000019",
+          "incoming_action": 1,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 26,
+          "cursor": 26,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e0000001a",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 27,
+          "cursor": 27,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e0000001b",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 28,
+          "cursor": 28,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e0000001c",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 29,
+          "cursor": 29,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e0000001d",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [],
+          "native_exit_reasons": []
+        },
+        {
+          "policy": "P2_mid",
+          "segment": 0,
+          "ordinal": 30,
+          "cursor": 30,
+          "stepid": "0461b2c76f004b18844f144d8eeb3f8e0000001e",
+          "incoming_action": 0,
+          "status": "ACTIVE",
+          "reward_events": [
+            {
+              "effective_bar": 6,
+              "entry_id": "CZCE.FG2701:1:5",
+              "observed": true,
+              "reason": "FIRST_ADVERSE10",
+              "reward": -0.2,
+              "time": "2026-01-05 21:31:00+08:00"
+            }
+          ],
+          "native_exit_reasons": []
+        }
+      ]
+    }
+  ],
+  "content_hash": "d456a8127f9da3b1925e5107073b0169fc4952faffc57d94ed9ca8445475b4d7"
+}

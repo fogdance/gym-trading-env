@@ -1,0 +1,21 @@
+{
+  "observed_utc": "2026-10-18T23:44:03.790316+00:00",
+  "roots": [
+    {
+      "root": "/data/s3_corpus/train_full_main_20261018_cpu20_v1",
+      "exists": true,
+      "published_batch_manifests": []
+    },
+    {
+      "root": "/data/s3_corpus/train_full_main_20261018_cpu20_v2",
+      "exists": true,
+      "published_batch_manifests": []
+    }
+  ],
+  "published_manifest_count": 0,
+  "real_acceptance": "NOT_RUN",
+  "reason": "Fewer than two actual published certified Corpus manifests; DEV completion does not require them.",
+  "prices_opened": 0,
+  "native_g3_executions": 0,
+  "optimizer_updates": 0
+}

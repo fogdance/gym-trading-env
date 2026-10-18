@@ -1,0 +1,15 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-dqui9rz1 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+{"status": "SYNTHETIC_NATIVE_FIXTURES_BUILT", "config": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json", "real_TRAIN_prices_opened": 0, "optimizer_updates": 0}

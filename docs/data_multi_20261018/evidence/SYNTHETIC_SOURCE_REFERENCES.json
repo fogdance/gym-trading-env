@@ -1,0 +1,573 @@
+{
+  "config_path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json",
+  "config_sha256": "3e015e21ad3bb5dd3a6ea628e4fe5ae10be99058bdddbd7014c85f606f2401bf",
+  "config": {
+    "schema": "FG_S3_E_MULTICORPUS_CONFIG_V1",
+    "sources": [
+      {
+        "corpus_id": "alpha",
+        "corpus_root": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/alpha",
+        "index_path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/alpha.sqlite"
+      },
+      {
+        "corpus_id": "beta",
+        "corpus_root": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/beta",
+        "index_path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/beta.sqlite"
+      }
+    ],
+    "stage": "WM_NATURAL",
+    "per_source_sampling_spec": {
+      "alpha": {
+        "mode": "NATURAL"
+      },
+      "beta": {
+        "mode": "NATURAL"
+      }
+    },
+    "source_mix_weights": {
+      "alpha": 1.0,
+      "beta": 1.0
+    },
+    "seed": 202,
+    "cache_bytes": 1048576
+  },
+  "scope": "RETAINED_NATIVE_SYNTHETIC_ONLY_DEV_NOT_CERTIFIED",
+  "sources": [
+    {
+      "corpus_id": "alpha",
+      "corpus_manifest": {
+        "protocol": "FG_S3_E_QUALITY_CORPUS_V2",
+        "fold": "TRAIN",
+        "training_admitted": false,
+        "behaviors": [
+          "P0",
+          "P1",
+          "P2_low",
+          "P2_mid",
+          "P3",
+          "P4"
+        ],
+        "observation": {
+          "observation_schema": "FG_S3_E_OBSERVATION_V2",
+          "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+          "decoder_schema": "FG_S3_E_DECODER_V1",
+          "fields": {
+            "market_seq": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "position_state": {
+              "shape": [
+                9
+              ],
+              "dtype": "float32"
+            },
+            "action_mask": {
+              "shape": [
+                2
+              ],
+              "dtype": "float32"
+            },
+            "action": {
+              "shape": [],
+              "dtype": "int32"
+            },
+            "reward": {
+              "shape": [],
+              "dtype": "float32"
+            },
+            "is_first": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_last": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_terminal": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "market_seq_e_shared": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "market_context_15m": {
+              "shape": [
+                24,
+                7
+              ],
+              "dtype": "float32"
+            },
+            "market_macd_5m": {
+              "shape": [
+                4
+              ],
+              "dtype": "float32"
+            }
+          },
+          "encoder_keys": [
+            "market_seq_e_shared",
+            "position_state",
+            "action_mask",
+            "market_context_15m",
+            "market_macd_5m"
+          ],
+          "decoder_keys": [
+            "market_seq_e_shared",
+            "position_state"
+          ],
+          "audit_only": [
+            "market_seq"
+          ],
+          "context_fields": [
+            "rel_open",
+            "rel_high",
+            "rel_low",
+            "rel_close",
+            "vol_relative",
+            "oi_change",
+            "valid"
+          ],
+          "macd_5m": {
+            "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+            "periods": [
+              12,
+              26,
+              9
+            ],
+            "histogram": "DIF-Signal",
+            "initialization": "first_complete_close; first_DIF_and_signal_zero",
+            "warmup": "35_complete_buckets_strictly_before_current_bucket",
+            "scale": "1000*raw/current_visible_1m_Close",
+            "invalid": "all_zero",
+            "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+            "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+            "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+            "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+            "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+            "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+          },
+          "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+        },
+        "teacher_identity": "d8b6c4d0d4b8d6839a3d4fdc7814fd8711ae0ebdbe8ca475f34bdbce1b7f3324",
+        "source_lock_hash": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+        "model_contract_hash": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+        "e_profile_identity": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "source_binding": {
+          "fold": "TRAIN",
+          "state_cache_entries": 0,
+          "calendar_complete": true
+        },
+        "course_identity_hash": "c47570ee438bcb59bd11c72fabbc7e2742e79ff265ce596d54449fe8921194c5",
+        "files": {
+          "teacher_manifest.json": "bc2b9851355abaa458f4cfb0f54d80370dcbb6fd359df3b33a3a3907f3911550",
+          "model_contract.json": "5b2dd185c68a585058008952a924156a8c178ea9b587d63881d6982cfd41450f",
+          "course_v2.json": "3aa2d546253bd2b4c09495227b691ddabc42f3c40102eefb5120498d26a48c52",
+          "source_lock.json": "d7be9bcd549cb4367b1985328e2279b08c000e7202b2df13ceded8888c2b97db",
+          "teacher_sidecar/P3/steps.jsonl.gz": "d2d3b5d543ae5581082f85e7ceaa1696368978e687e17e7d6ad5726e29e65c84",
+          "teacher_sidecar/P2_mid/steps.jsonl.gz": "098b276dbb5dcabb3f9f15cbb7365759831e92ab3d72839a003caeb5d55defa1",
+          "teacher_sidecar/P4/steps.jsonl.gz": "9274fc6e39d6a22841ab077b8dcd83a1e3263aaa5225742831aa3c85a03ae263",
+          "teacher_sidecar/P2_low/steps.jsonl.gz": "b3d934f333fa9002851f1635b5708a53b79fb1f706d3bcfaf63fa6c62ff98a28",
+          "teacher_sidecar/P1/steps.jsonl.gz": "2ec904863bf3a37b472dcbebadc8d9458a3e4fa1e342bb5ec8e150bfbf85f9cf",
+          "teacher_sidecar/P0/steps.jsonl.gz": "4689d1f8d483cd9a5291686939eee8d2ee0aa315a231cbb5deba41b03dc6b301",
+          "student_replay/P3/manifest.json": "a31f712db396a10ed2fc46e9408039faaca9658abff2ccb4bbbab9abd8695782",
+          "student_replay/P3/replay/20261019T073607F711154-6XkuEx7Z4Dgg6Vm4wxeENe-1vJ4dm2MblwDJGTHgqjmSj-40.npz": "d580dd08b6f5fb343af38161d6fadc6cb30d4c2b0f3733a4c4382820a28b9a95",
+          "student_replay/P2_mid/manifest.json": "3d29c186eab442d9ee94aea36e153113d13ef4dc0b31ae10e9aeefb67a5f2fc7",
+          "student_replay/P2_mid/replay/20261019T073606F085700-1ORxTcZRfl9sU0TqfMdnx0-6ngDQRyCptQ2j4CAi0A5T8-40.npz": "a21a6a28967e8d9a9d9dbdb264da21f426cbd9e19570a4a03ca99851e982017c",
+          "student_replay/P4/manifest.json": "9c3d0ab969407c14215684db65edcda993a55e52289b32f48f8e1f8d61b7fcce",
+          "student_replay/P4/replay/20261019T073609F895228-4KMRDCt0zHYFAAmBjXLMEi-0dTxau42sPUUPqLzdVkJdV-40.npz": "d4eadb7e3e41f9de2ee6f6addfc42689ed003126d8d928501d86766f68b3a880",
+          "student_replay/P2_low/manifest.json": "0d440dfb7bfabac820ac769aed37edb0e46b56a1107d33cbbcaa7f7f868de7d4",
+          "student_replay/P2_low/replay/20261019T073604F296236-1pcpzEfesZPj7j6m4xyKEG-0U9c2W4DHPKJqTLRSyRhlj-40.npz": "88e03ce669d389ddf9f77e5e13776e4ea635507186e739953cd785980e0d58c6",
+          "student_replay/P1/manifest.json": "ba63cda375cb68999174a189f729c98c1d3da27958fbce5088aad0a059208b01",
+          "student_replay/P1/replay/20261019T073602F751203-0gLerLmR0nSLMFebTeCjs0-2Pbp4y2U1DTFL3cSxxMixD-40.npz": "9a96bf9bb2940c70b05feb629f627e66989e0a360d2e66b6fd09307a7828547e",
+          "student_replay/P0/manifest.json": "b19673cba7de1deea2091cbd6fccc0d1160d693d6149a016ebe1bbe3a138870e",
+          "student_replay/P0/replay/20261019T073600F416227-3r8SfKLVJiS9qnv6n59vvl-2Fhi3szZtBG2bgFqoaON3g-40.npz": "f26689639c92d212ad0b9715f374670f2f53d1825225cccb20d52c9dc1898738",
+          "policies/P3/account_state.json": "b5c7ed5437775edcaf3ad5b1d396445f68ba4505dcf2a868a851a82d23de7480",
+          "policies/P3/reconciliation.json": "a9bc6b10bf25c37c28db563d6bef5962844224061fe0ce907b5e29609f7452fd",
+          "policies/P3/trade_diagnostics.json": "83922c7e829c1b96d71cad85cf901381c1b66974866ca423e8796aa62069fe54",
+          "policies/P3/steps.jsonl.gz": "d2d3b5d543ae5581082f85e7ceaa1696368978e687e17e7d6ad5726e29e65c84",
+          "policies/P3/manifest.json": "5863abe53c048e74c2b3b2f39001c3d94f86e268bbb841e5e11eb4166f709ebb",
+          "policies/P3/replay/20261019T073607F711154-6XkuEx7Z4Dgg6Vm4wxeENe-1vJ4dm2MblwDJGTHgqjmSj-40.npz": "d580dd08b6f5fb343af38161d6fadc6cb30d4c2b0f3733a4c4382820a28b9a95",
+          "policies/P2_mid/account_state.json": "4865c888a5d073dbe4a0f714f845ec5aa5e7c29f37454c2c0957dd94a8124e59",
+          "policies/P2_mid/reconciliation.json": "40814873437400983c9e66446d11e30639542b1e0cb94193d6d05686934b77b8",
+          "policies/P2_mid/trade_diagnostics.json": "39e8bbe8568866a20bf40b77d19881155a9444e01bf8684a28da89fe2eb8ff77",
+          "policies/P2_mid/steps.jsonl.gz": "098b276dbb5dcabb3f9f15cbb7365759831e92ab3d72839a003caeb5d55defa1",
+          "policies/P2_mid/manifest.json": "0fd9b08a6ce702b3cb686e1c4586b9a15196bee544ac869bdb85e5def56620fb",
+          "policies/P2_mid/replay/20261019T073606F085700-1ORxTcZRfl9sU0TqfMdnx0-6ngDQRyCptQ2j4CAi0A5T8-40.npz": "a21a6a28967e8d9a9d9dbdb264da21f426cbd9e19570a4a03ca99851e982017c",
+          "policies/P4/account_state.json": "14afe7d1401ff927ecfcabcbc1cfb251567286bb981abf7ed114e819e7da35e8",
+          "policies/P4/reconciliation.json": "683c3ff26eaf92b7409415d5d5b71927a086514f7b7f9fd243daa69e41290506",
+          "policies/P4/trade_diagnostics.json": "0264439bf8754314b93c1cecd7592e9aeebb1db34bac45ee4f06c1711077f65b",
+          "policies/P4/steps.jsonl.gz": "9274fc6e39d6a22841ab077b8dcd83a1e3263aaa5225742831aa3c85a03ae263",
+          "policies/P4/manifest.json": "8bd1c2a47ead39ba84b3664e59edb16518349ff2536197de207bb782f0eb5121",
+          "policies/P4/replay/20261019T073609F895228-4KMRDCt0zHYFAAmBjXLMEi-0dTxau42sPUUPqLzdVkJdV-40.npz": "d4eadb7e3e41f9de2ee6f6addfc42689ed003126d8d928501d86766f68b3a880",
+          "policies/P2_low/account_state.json": "b9d66794828b74aa2f9aff809f1275dd9f1be01ed0b1775b3cd26d1c542cb208",
+          "policies/P2_low/reconciliation.json": "decf820972d5da49da221beb766ce3f73d53023e4a1f43309b589c5afc0b554c",
+          "policies/P2_low/trade_diagnostics.json": "6c99a35b6eed5685483db2a2ce01ed780d5baa62f9912ac83fc1eae975b2f16d",
+          "policies/P2_low/steps.jsonl.gz": "b3d934f333fa9002851f1635b5708a53b79fb1f706d3bcfaf63fa6c62ff98a28",
+          "policies/P2_low/manifest.json": "cd72bffe9bcced4905186b2e1c5d50e06a6000cfd56f26f6a8dbb74df7cab968",
+          "policies/P2_low/replay/20261019T073604F296236-1pcpzEfesZPj7j6m4xyKEG-0U9c2W4DHPKJqTLRSyRhlj-40.npz": "88e03ce669d389ddf9f77e5e13776e4ea635507186e739953cd785980e0d58c6",
+          "policies/P1/account_state.json": "4ef70ecee0bf730162152cbaf7a6d9e4cf58eba666948c7d3741c5728941d051",
+          "policies/P1/reconciliation.json": "8114d31c2b500f330962f320ab7c8e1eff5df494fc3d81e8f8fc8be41e42a2a4",
+          "policies/P1/trade_diagnostics.json": "8930ab8c18d42e0ac535e1eb2251fceb12aef3b2d4c089f0f67f0d77035e745a",
+          "policies/P1/steps.jsonl.gz": "2ec904863bf3a37b472dcbebadc8d9458a3e4fa1e342bb5ec8e150bfbf85f9cf",
+          "policies/P1/manifest.json": "9d3e40622c4c38a10f958f463f2adf5d0fe401c9f8a7c054c48f139eb4caa1fd",
+          "policies/P1/replay/20261019T073602F751203-0gLerLmR0nSLMFebTeCjs0-2Pbp4y2U1DTFL3cSxxMixD-40.npz": "9a96bf9bb2940c70b05feb629f627e66989e0a360d2e66b6fd09307a7828547e",
+          "policies/P0/account_state.json": "3b19b8e1c5d8bcdbd1372f75eddf3b61ff126b077d86bdf916227bcf0afee16b",
+          "policies/P0/reconciliation.json": "e753a6c3b21001c39bdde4c21e9e8b56b38880f34388010719a144d674fedea3",
+          "policies/P0/trade_diagnostics.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "policies/P0/steps.jsonl.gz": "4689d1f8d483cd9a5291686939eee8d2ee0aa315a231cbb5deba41b03dc6b301",
+          "policies/P0/manifest.json": "d39f2e12d3cdba3fc470da30d6dffbc75fe590654628a9765d047e7f0bfb0cb8",
+          "policies/P0/replay/20261019T073600F416227-3r8SfKLVJiS9qnv6n59vvl-2Fhi3szZtBG2bgFqoaON3g-40.npz": "f26689639c92d212ad0b9715f374670f2f53d1825225cccb20d52c9dc1898738"
+        },
+        "content_hash": "697fd62809a56a7d0c6d817b06c41d6768d688ca29d5620aea5ce9f813460413"
+      },
+      "source_lock": {
+        "fold": "TRAIN",
+        "contract": "CZCE.FG2701",
+        "row": {
+          "role": "train",
+          "eligible_for_training": true
+        },
+        "content_hash": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e"
+      },
+      "index_sha256": "c57f93af85a51f26b1ab9e995f4a78bf86b1047fbfaa753354f26209c0b291ef",
+      "index_receipt_sha256": "db022b71e5f51a2d68ecb2b95f724fc3574c818fc3e6e6a64152a0d1d18aaaab",
+      "files": {
+        "corpus_manifest.json": "ae15fe45199aadc7f2e10e63c4bca67755fc28eb37d6472bf8602821a422293e",
+        "course_v2.json": "3aa2d546253bd2b4c09495227b691ddabc42f3c40102eefb5120498d26a48c52",
+        "model_contract.json": "5b2dd185c68a585058008952a924156a8c178ea9b587d63881d6982cfd41450f",
+        "policies/P0/account_state.json": "3b19b8e1c5d8bcdbd1372f75eddf3b61ff126b077d86bdf916227bcf0afee16b",
+        "policies/P0/manifest.json": "d39f2e12d3cdba3fc470da30d6dffbc75fe590654628a9765d047e7f0bfb0cb8",
+        "policies/P0/reconciliation.json": "e753a6c3b21001c39bdde4c21e9e8b56b38880f34388010719a144d674fedea3",
+        "policies/P0/replay/20261019T073600F416227-3r8SfKLVJiS9qnv6n59vvl-2Fhi3szZtBG2bgFqoaON3g-40.npz": "f26689639c92d212ad0b9715f374670f2f53d1825225cccb20d52c9dc1898738",
+        "policies/P0/steps.jsonl.gz": "4689d1f8d483cd9a5291686939eee8d2ee0aa315a231cbb5deba41b03dc6b301",
+        "policies/P0/trade_diagnostics.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "policies/P1/account_state.json": "4ef70ecee0bf730162152cbaf7a6d9e4cf58eba666948c7d3741c5728941d051",
+        "policies/P1/manifest.json": "9d3e40622c4c38a10f958f463f2adf5d0fe401c9f8a7c054c48f139eb4caa1fd",
+        "policies/P1/reconciliation.json": "8114d31c2b500f330962f320ab7c8e1eff5df494fc3d81e8f8fc8be41e42a2a4",
+        "policies/P1/replay/20261019T073602F751203-0gLerLmR0nSLMFebTeCjs0-2Pbp4y2U1DTFL3cSxxMixD-40.npz": "9a96bf9bb2940c70b05feb629f627e66989e0a360d2e66b6fd09307a7828547e",
+        "policies/P1/steps.jsonl.gz": "2ec904863bf3a37b472dcbebadc8d9458a3e4fa1e342bb5ec8e150bfbf85f9cf",
+        "policies/P1/trade_diagnostics.json": "8930ab8c18d42e0ac535e1eb2251fceb12aef3b2d4c089f0f67f0d77035e745a",
+        "policies/P2_low/account_state.json": "b9d66794828b74aa2f9aff809f1275dd9f1be01ed0b1775b3cd26d1c542cb208",
+        "policies/P2_low/manifest.json": "cd72bffe9bcced4905186b2e1c5d50e06a6000cfd56f26f6a8dbb74df7cab968",
+        "policies/P2_low/reconciliation.json": "decf820972d5da49da221beb766ce3f73d53023e4a1f43309b589c5afc0b554c",
+        "policies/P2_low/replay/20261019T073604F296236-1pcpzEfesZPj7j6m4xyKEG-0U9c2W4DHPKJqTLRSyRhlj-40.npz": "88e03ce669d389ddf9f77e5e13776e4ea635507186e739953cd785980e0d58c6",
+        "policies/P2_low/steps.jsonl.gz": "b3d934f333fa9002851f1635b5708a53b79fb1f706d3bcfaf63fa6c62ff98a28",
+        "policies/P2_low/trade_diagnostics.json": "6c99a35b6eed5685483db2a2ce01ed780d5baa62f9912ac83fc1eae975b2f16d",
+        "policies/P2_mid/account_state.json": "4865c888a5d073dbe4a0f714f845ec5aa5e7c29f37454c2c0957dd94a8124e59",
+        "policies/P2_mid/manifest.json": "0fd9b08a6ce702b3cb686e1c4586b9a15196bee544ac869bdb85e5def56620fb",
+        "policies/P2_mid/reconciliation.json": "40814873437400983c9e66446d11e30639542b1e0cb94193d6d05686934b77b8",
+        "policies/P2_mid/replay/20261019T073606F085700-1ORxTcZRfl9sU0TqfMdnx0-6ngDQRyCptQ2j4CAi0A5T8-40.npz": "a21a6a28967e8d9a9d9dbdb264da21f426cbd9e19570a4a03ca99851e982017c",
+        "policies/P2_mid/steps.jsonl.gz": "098b276dbb5dcabb3f9f15cbb7365759831e92ab3d72839a003caeb5d55defa1",
+        "policies/P2_mid/trade_diagnostics.json": "39e8bbe8568866a20bf40b77d19881155a9444e01bf8684a28da89fe2eb8ff77",
+        "policies/P3/account_state.json": "b5c7ed5437775edcaf3ad5b1d396445f68ba4505dcf2a868a851a82d23de7480",
+        "policies/P3/manifest.json": "5863abe53c048e74c2b3b2f39001c3d94f86e268bbb841e5e11eb4166f709ebb",
+        "policies/P3/reconciliation.json": "a9bc6b10bf25c37c28db563d6bef5962844224061fe0ce907b5e29609f7452fd",
+        "policies/P3/replay/20261019T073607F711154-6XkuEx7Z4Dgg6Vm4wxeENe-1vJ4dm2MblwDJGTHgqjmSj-40.npz": "d580dd08b6f5fb343af38161d6fadc6cb30d4c2b0f3733a4c4382820a28b9a95",
+        "policies/P3/steps.jsonl.gz": "d2d3b5d543ae5581082f85e7ceaa1696368978e687e17e7d6ad5726e29e65c84",
+        "policies/P3/trade_diagnostics.json": "83922c7e829c1b96d71cad85cf901381c1b66974866ca423e8796aa62069fe54",
+        "policies/P4/account_state.json": "14afe7d1401ff927ecfcabcbc1cfb251567286bb981abf7ed114e819e7da35e8",
+        "policies/P4/manifest.json": "8bd1c2a47ead39ba84b3664e59edb16518349ff2536197de207bb782f0eb5121",
+        "policies/P4/reconciliation.json": "683c3ff26eaf92b7409415d5d5b71927a086514f7b7f9fd243daa69e41290506",
+        "policies/P4/replay/20261019T073609F895228-4KMRDCt0zHYFAAmBjXLMEi-0dTxau42sPUUPqLzdVkJdV-40.npz": "d4eadb7e3e41f9de2ee6f6addfc42689ed003126d8d928501d86766f68b3a880",
+        "policies/P4/steps.jsonl.gz": "9274fc6e39d6a22841ab077b8dcd83a1e3263aaa5225742831aa3c85a03ae263",
+        "policies/P4/trade_diagnostics.json": "0264439bf8754314b93c1cecd7592e9aeebb1db34bac45ee4f06c1711077f65b",
+        "source_lock.json": "d7be9bcd549cb4367b1985328e2279b08c000e7202b2df13ceded8888c2b97db",
+        "student_replay/P0/manifest.json": "b19673cba7de1deea2091cbd6fccc0d1160d693d6149a016ebe1bbe3a138870e",
+        "student_replay/P0/replay/20261019T073600F416227-3r8SfKLVJiS9qnv6n59vvl-2Fhi3szZtBG2bgFqoaON3g-40.npz": "f26689639c92d212ad0b9715f374670f2f53d1825225cccb20d52c9dc1898738",
+        "student_replay/P1/manifest.json": "ba63cda375cb68999174a189f729c98c1d3da27958fbce5088aad0a059208b01",
+        "student_replay/P1/replay/20261019T073602F751203-0gLerLmR0nSLMFebTeCjs0-2Pbp4y2U1DTFL3cSxxMixD-40.npz": "9a96bf9bb2940c70b05feb629f627e66989e0a360d2e66b6fd09307a7828547e",
+        "student_replay/P2_low/manifest.json": "0d440dfb7bfabac820ac769aed37edb0e46b56a1107d33cbbcaa7f7f868de7d4",
+        "student_replay/P2_low/replay/20261019T073604F296236-1pcpzEfesZPj7j6m4xyKEG-0U9c2W4DHPKJqTLRSyRhlj-40.npz": "88e03ce669d389ddf9f77e5e13776e4ea635507186e739953cd785980e0d58c6",
+        "student_replay/P2_mid/manifest.json": "3d29c186eab442d9ee94aea36e153113d13ef4dc0b31ae10e9aeefb67a5f2fc7",
+        "student_replay/P2_mid/replay/20261019T073606F085700-1ORxTcZRfl9sU0TqfMdnx0-6ngDQRyCptQ2j4CAi0A5T8-40.npz": "a21a6a28967e8d9a9d9dbdb264da21f426cbd9e19570a4a03ca99851e982017c",
+        "student_replay/P3/manifest.json": "a31f712db396a10ed2fc46e9408039faaca9658abff2ccb4bbbab9abd8695782",
+        "student_replay/P3/replay/20261019T073607F711154-6XkuEx7Z4Dgg6Vm4wxeENe-1vJ4dm2MblwDJGTHgqjmSj-40.npz": "d580dd08b6f5fb343af38161d6fadc6cb30d4c2b0f3733a4c4382820a28b9a95",
+        "student_replay/P4/manifest.json": "9c3d0ab969407c14215684db65edcda993a55e52289b32f48f8e1f8d61b7fcce",
+        "student_replay/P4/replay/20261019T073609F895228-4KMRDCt0zHYFAAmBjXLMEi-0dTxau42sPUUPqLzdVkJdV-40.npz": "d4eadb7e3e41f9de2ee6f6addfc42689ed003126d8d928501d86766f68b3a880",
+        "teacher_manifest.json": "bc2b9851355abaa458f4cfb0f54d80370dcbb6fd359df3b33a3a3907f3911550",
+        "teacher_sidecar/P0/steps.jsonl.gz": "4689d1f8d483cd9a5291686939eee8d2ee0aa315a231cbb5deba41b03dc6b301",
+        "teacher_sidecar/P1/steps.jsonl.gz": "2ec904863bf3a37b472dcbebadc8d9458a3e4fa1e342bb5ec8e150bfbf85f9cf",
+        "teacher_sidecar/P2_low/steps.jsonl.gz": "b3d934f333fa9002851f1635b5708a53b79fb1f706d3bcfaf63fa6c62ff98a28",
+        "teacher_sidecar/P2_mid/steps.jsonl.gz": "098b276dbb5dcabb3f9f15cbb7365759831e92ab3d72839a003caeb5d55defa1",
+        "teacher_sidecar/P3/steps.jsonl.gz": "d2d3b5d543ae5581082f85e7ceaa1696368978e687e17e7d6ad5726e29e65c84",
+        "teacher_sidecar/P4/steps.jsonl.gz": "9274fc6e39d6a22841ab077b8dcd83a1e3263aaa5225742831aa3c85a03ae263"
+      }
+    },
+    {
+      "corpus_id": "beta",
+      "corpus_manifest": {
+        "protocol": "FG_S3_E_QUALITY_CORPUS_V2",
+        "fold": "TRAIN",
+        "training_admitted": false,
+        "behaviors": [
+          "P0",
+          "P1",
+          "P2_low",
+          "P2_mid",
+          "P3",
+          "P4"
+        ],
+        "observation": {
+          "observation_schema": "FG_S3_E_OBSERVATION_V2",
+          "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+          "decoder_schema": "FG_S3_E_DECODER_V1",
+          "fields": {
+            "market_seq": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "position_state": {
+              "shape": [
+                9
+              ],
+              "dtype": "float32"
+            },
+            "action_mask": {
+              "shape": [
+                2
+              ],
+              "dtype": "float32"
+            },
+            "action": {
+              "shape": [],
+              "dtype": "int32"
+            },
+            "reward": {
+              "shape": [],
+              "dtype": "float32"
+            },
+            "is_first": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_last": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "is_terminal": {
+              "shape": [],
+              "dtype": "bool"
+            },
+            "market_seq_e_shared": {
+              "shape": [
+                60,
+                18
+              ],
+              "dtype": "float32"
+            },
+            "market_context_15m": {
+              "shape": [
+                24,
+                7
+              ],
+              "dtype": "float32"
+            },
+            "market_macd_5m": {
+              "shape": [
+                4
+              ],
+              "dtype": "float32"
+            }
+          },
+          "encoder_keys": [
+            "market_seq_e_shared",
+            "position_state",
+            "action_mask",
+            "market_context_15m",
+            "market_macd_5m"
+          ],
+          "decoder_keys": [
+            "market_seq_e_shared",
+            "position_state"
+          ],
+          "audit_only": [
+            "market_seq"
+          ],
+          "context_fields": [
+            "rel_open",
+            "rel_high",
+            "rel_low",
+            "rel_close",
+            "vol_relative",
+            "oi_change",
+            "valid"
+          ],
+          "macd_5m": {
+            "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+            "periods": [
+              12,
+              26,
+              9
+            ],
+            "histogram": "DIF-Signal",
+            "initialization": "first_complete_close; first_DIF_and_signal_zero",
+            "warmup": "35_complete_buckets_strictly_before_current_bucket",
+            "scale": "1000*raw/current_visible_1m_Close",
+            "invalid": "all_zero",
+            "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+            "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+            "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+            "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+            "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+            "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+          },
+          "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+        },
+        "teacher_identity": "b898e0c798d627320681fb762685da4dfe2277ea88166ac9c7d773734dffccc5",
+        "source_lock_hash": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+        "model_contract_hash": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+        "e_profile_identity": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "source_binding": {
+          "fold": "TRAIN",
+          "state_cache_entries": 0,
+          "calendar_complete": true
+        },
+        "course_identity_hash": "0b6b23dcf9f1bb7cdcbfeba33cc14f6e41d38309aa3e7552ae2a3a5ee7f30784",
+        "files": {
+          "teacher_manifest.json": "426e732e033671eb060afe6262028925cb7721607607243894d14c45801fe182",
+          "model_contract.json": "5b2dd185c68a585058008952a924156a8c178ea9b587d63881d6982cfd41450f",
+          "course_v2.json": "f61bfebe44235c3fc9ca913ff5d3e7d8fc750ab8cd54a6ce4c1ae82d1eb130ca",
+          "source_lock.json": "d7be9bcd549cb4367b1985328e2279b08c000e7202b2df13ceded8888c2b97db",
+          "teacher_sidecar/P3/steps.jsonl.gz": "9f32f84b71c5c548fcc90a18a8fd98d5ee19a4810ecd3d79eb33e9bc48c5c639",
+          "teacher_sidecar/P2_mid/steps.jsonl.gz": "46580d626eb1a3d921c36e5ddbd5ae8e3db07042de5ce818f1593cb65d52cc7c",
+          "teacher_sidecar/P4/steps.jsonl.gz": "040ae1572ff0a8cdaceef02170045db57fdf61eecc8cac9dd6f67d7d7dd3de7c",
+          "teacher_sidecar/P2_low/steps.jsonl.gz": "f091de22d9b21a63642798e4d2f0de9a97fe0ae9d963a6b147634b49a95b7c8b",
+          "teacher_sidecar/P1/steps.jsonl.gz": "0fc23b421e3a7a112e60e8b10ba9f38463c058a2acfb5a86b9c488f10de9e04b",
+          "teacher_sidecar/P0/steps.jsonl.gz": "372976cd9c7193061ca9bc2b60201b7f9604d62b7755e347a6753dcce52975cd",
+          "student_replay/P3/manifest.json": "d0c7a5397eeb7bf213548ae1d99be06be71f84bae4767476edd508a60cfe134b",
+          "student_replay/P3/replay/20261019T073621F231730-45ED0Gmvjo15VkgMU9HvKT-7IiR1bLkHQzGwbO8XlUiIt-40.npz": "47da47da6a955afdaa6a115169e9f11734c73323d02228c387f936b03904ff88",
+          "student_replay/P2_mid/manifest.json": "b07f7552dae610ca0eb532b1a7b62f746935f16d6eca4172d0afa6dba42e49ac",
+          "student_replay/P2_mid/replay/20261019T073619F591618-08gChYU5v7heExiUNrQguq-0KtTKnHRYfmNWU7CytBiz0-40.npz": "604e82a725e9f0abe3f25f30c93eef7d2dcd977337f0912373cff935eca12209",
+          "student_replay/P4/manifest.json": "3deadcf3892d10bf1f9c10e3c6d1f5849de33a4382c145f25c567c4027e3be2d",
+          "student_replay/P4/replay/20261019T073623F448889-5jbeBajTnxlAVjqgBiZSci-70SJknuCEgKogLqilmZvoX-40.npz": "3e65a676d579f68862a5e3d21f7e84241bdc0c6bb921700d3c29be657bc56383",
+          "student_replay/P2_low/manifest.json": "5337035b18c1fdcc5f337778ccdec5339976b794e196c238652cf35b5715c802",
+          "student_replay/P2_low/replay/20261019T073617F777618-1rYeyGInzlQELoYU0XRnI3-3r8B8x3Ze6DiJF01vuPPL4-40.npz": "ce2833cc82d0335025b3e23e0b307d033841bf0df812197fe6cffb6085e89ce3",
+          "student_replay/P1/manifest.json": "b39d29107bb41ec83224bd6ea6f9a25eeb44622f57d4d9998da7397c61a54a10",
+          "student_replay/P1/replay/20261019T073616F218123-6nCwLP4qojJcWyi4GELKyH-69Za19LTd9kGUES0ilWVXd-40.npz": "473bfdc3d66f2e538fe7ac11fc90da78350f05e32fe236e309d188a1599f4d0b",
+          "student_replay/P0/manifest.json": "c20be2e43656a6a0e5d4f45bc2fc715b6866e67493979f0426876d6f7f3b13df",
+          "student_replay/P0/replay/20261019T073613F917481-0USHyG6H00bk3hNk5xZwf1-43Z55jufdde4rzGEnH9bGp-40.npz": "06f1e3d13e0bccaeff4aa4b0af907b0ad201bcd328b6e69bfd420b1629afef0a",
+          "policies/P3/account_state.json": "1a03013d2fa1faaf8dca1672c19156cde2f20d50ccf6a743e22db352ddeff6c2",
+          "policies/P3/reconciliation.json": "a28b51cbffd7c472fbd0aada22ec38dbf77728884c20548e62a321d4d250ec4f",
+          "policies/P3/trade_diagnostics.json": "7f974cf14f98793305a417d9d5ec5554b7e0b3896b3b67971262624d4ea1a42d",
+          "policies/P3/steps.jsonl.gz": "9f32f84b71c5c548fcc90a18a8fd98d5ee19a4810ecd3d79eb33e9bc48c5c639",
+          "policies/P3/manifest.json": "00ac0ace6ceec151604a38e87b0c77dc1f65191aeae219f353a23f86fe5b6359",
+          "policies/P3/replay/20261019T073621F231730-45ED0Gmvjo15VkgMU9HvKT-7IiR1bLkHQzGwbO8XlUiIt-40.npz": "47da47da6a955afdaa6a115169e9f11734c73323d02228c387f936b03904ff88",
+          "policies/P2_mid/account_state.json": "5444dfa3665c626cb58b5c2f244755fbbe402658c3d8e8f9e0b8776b2f63935a",
+          "policies/P2_mid/reconciliation.json": "64e9186332e61ae51beadd4112f173a39fce01b228441d47121292456f8f0065",
+          "policies/P2_mid/trade_diagnostics.json": "d3fa18548331f1927531b9d192d8ef555126b9508c3c1b8b63c3015c2b039ae0",
+          "policies/P2_mid/steps.jsonl.gz": "46580d626eb1a3d921c36e5ddbd5ae8e3db07042de5ce818f1593cb65d52cc7c",
+          "policies/P2_mid/manifest.json": "9bd38ef434b71746b0addba65f710aa01b4ffcfb88ec36d7702de3eedfe936d1",
+          "policies/P2_mid/replay/20261019T073619F591618-08gChYU5v7heExiUNrQguq-0KtTKnHRYfmNWU7CytBiz0-40.npz": "604e82a725e9f0abe3f25f30c93eef7d2dcd977337f0912373cff935eca12209",
+          "policies/P4/account_state.json": "abd4bd884b1b6c81f9ebf24ce2fdb9fdb4efef8c7afde79c6fa0a9f1fe968980",
+          "policies/P4/reconciliation.json": "48d5375a4b8299bcc121a1ffbe1a9f58597145b5b4ca5c8daa26f3c13e3dfde4",
+          "policies/P4/trade_diagnostics.json": "e73a24177e8f61d9368a341b1be951f79e5aa8afb8d4025c38d5d38a3e49caac",
+          "policies/P4/steps.jsonl.gz": "040ae1572ff0a8cdaceef02170045db57fdf61eecc8cac9dd6f67d7d7dd3de7c",
+          "policies/P4/manifest.json": "cdf2869ffe7d02f4a31bb9de2dfb09b63264d10e7c2dd1820d69fd00fd634888",
+          "policies/P4/replay/20261019T073623F448889-5jbeBajTnxlAVjqgBiZSci-70SJknuCEgKogLqilmZvoX-40.npz": "3e65a676d579f68862a5e3d21f7e84241bdc0c6bb921700d3c29be657bc56383",
+          "policies/P2_low/account_state.json": "6c42e57c32f96353101d4943e145f096331f4b70374337b3b5fc2551d3af746e",
+          "policies/P2_low/reconciliation.json": "2dc99a8be841a9ec4e8342f64ce07d7d4a6c094137f700200be1974b2109fe27",
+          "policies/P2_low/trade_diagnostics.json": "64626cd9c91591d7e7b549aa32ab80103ddcd0de58803e4aec2b4a4e7cf953d2",
+          "policies/P2_low/steps.jsonl.gz": "f091de22d9b21a63642798e4d2f0de9a97fe0ae9d963a6b147634b49a95b7c8b",
+          "policies/P2_low/manifest.json": "7bc1358f86651d2984fa168752b0daf3c3809a167830a74d36a2cb05cc1b4a3e",
+          "policies/P2_low/replay/20261019T073617F777618-1rYeyGInzlQELoYU0XRnI3-3r8B8x3Ze6DiJF01vuPPL4-40.npz": "ce2833cc82d0335025b3e23e0b307d033841bf0df812197fe6cffb6085e89ce3",
+          "policies/P1/account_state.json": "7dbd4d438b5c028ac5907d70b4cc05e705fe0cc1a53932f7e8973899a971e7bf",
+          "policies/P1/reconciliation.json": "5d1ebb2b9d7542f8a355b3a3f2df8a33fc667b51688e1da9ded5596c9586e3fc",
+          "policies/P1/trade_diagnostics.json": "b3af0918929aae1551fe77a23e932b30499621c866eed4bb163901004098ac3e",
+          "policies/P1/steps.jsonl.gz": "0fc23b421e3a7a112e60e8b10ba9f38463c058a2acfb5a86b9c488f10de9e04b",
+          "policies/P1/manifest.json": "0996a3f267c3b7a8e53312726f39f9250644331d13dd2ff104a78b95d600a4df",
+          "policies/P1/replay/20261019T073616F218123-6nCwLP4qojJcWyi4GELKyH-69Za19LTd9kGUES0ilWVXd-40.npz": "473bfdc3d66f2e538fe7ac11fc90da78350f05e32fe236e309d188a1599f4d0b",
+          "policies/P0/account_state.json": "db02bd45655b0bbc2d25d15678442161bedf0cf675496d90a1f60c044b8ed173",
+          "policies/P0/reconciliation.json": "ba98244c6b1039fa4a602ca4f8d6bb894b6e800d8cec49a1d41498b073898025",
+          "policies/P0/trade_diagnostics.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "policies/P0/steps.jsonl.gz": "372976cd9c7193061ca9bc2b60201b7f9604d62b7755e347a6753dcce52975cd",
+          "policies/P0/manifest.json": "6a3cf8295fb50f8ec29493796a182e4b716397733db9da262dcf0624f42ce7e3",
+          "policies/P0/replay/20261019T073613F917481-0USHyG6H00bk3hNk5xZwf1-43Z55jufdde4rzGEnH9bGp-40.npz": "06f1e3d13e0bccaeff4aa4b0af907b0ad201bcd328b6e69bfd420b1629afef0a"
+        },
+        "content_hash": "bc8a2f4c69fddcb4671a96550cf3758e5c3d88d6ddecbefbb7ea2d0781fd0917"
+      },
+      "source_lock": {
+        "fold": "TRAIN",
+        "contract": "CZCE.FG2701",
+        "row": {
+          "role": "train",
+          "eligible_for_training": true
+        },
+        "content_hash": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e"
+      },
+      "index_sha256": "a1602baac7b9eb5afe01188610dc04850dd62d7e70c2eb0197f7e6eaae994e00",
+      "index_receipt_sha256": "11ad51090e7c20732eda6d453f32f3dc9ec3834e2c959b6dcbf42b242ec3086e",
+      "files": {
+        "corpus_manifest.json": "37980989bbd066976eed8eec13b3234802e6afdd0d0879de089efca23b379015",
+        "course_v2.json": "f61bfebe44235c3fc9ca913ff5d3e7d8fc750ab8cd54a6ce4c1ae82d1eb130ca",
+        "model_contract.json": "5b2dd185c68a585058008952a924156a8c178ea9b587d63881d6982cfd41450f",
+        "policies/P0/account_state.json": "db02bd45655b0bbc2d25d15678442161bedf0cf675496d90a1f60c044b8ed173",
+        "policies/P0/manifest.json": "6a3cf8295fb50f8ec29493796a182e4b716397733db9da262dcf0624f42ce7e3",
+        "policies/P0/reconciliation.json": "ba98244c6b1039fa4a602ca4f8d6bb894b6e800d8cec49a1d41498b073898025",
+        "policies/P0/replay/20261019T073613F917481-0USHyG6H00bk3hNk5xZwf1-43Z55jufdde4rzGEnH9bGp-40.npz": "06f1e3d13e0bccaeff4aa4b0af907b0ad201bcd328b6e69bfd420b1629afef0a",
+        "policies/P0/steps.jsonl.gz": "372976cd9c7193061ca9bc2b60201b7f9604d62b7755e347a6753dcce52975cd",
+        "policies/P0/trade_diagnostics.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "policies/P1/account_state.json": "7dbd4d438b5c028ac5907d70b4cc05e705fe0cc1a53932f7e8973899a971e7bf",
+        "policies/P1/manifest.json": "0996a3f267c3b7a8e53312726f39f9250644331d13dd2ff104a78b95d600a4df",
+        "policies/P1/reconciliation.json": "5d1ebb2b9d7542f8a355b3a3f2df8a33fc667b51688e1da9ded5596c9586e3fc",
+        "policies/P1/replay/20261019T073616F218123-6nCwLP4qojJcWyi4GELKyH-69Za19LTd9kGUES0ilWVXd-40.npz": "473bfdc3d66f2e538fe7ac11fc90da78350f05e32fe236e309d188a1599f4d0b",
+        "policies/P1/steps.jsonl.gz": "0fc23b421e3a7a112e60e8b10ba9f38463c058a2acfb5a86b9c488f10de9e04b",
+        "policies/P1/trade_diagnostics.json": "b3af0918929aae1551fe77a23e932b30499621c866eed4bb163901004098ac3e",
+        "policies/P2_low/account_state.json": "6c42e57c32f96353101d4943e145f096331f4b70374337b3b5fc2551d3af746e",
+        "policies/P2_low/manifest.json": "7bc1358f86651d2984fa168752b0daf3c3809a167830a74d36a2cb05cc1b4a3e",
+        "policies/P2_low/reconciliation.json": "2dc99a8be841a9ec4e8342f64ce07d7d4a6c094137f700200be1974b2109fe27",
+        "policies/P2_low/replay/20261019T073617F777618-1rYeyGInzlQELoYU0XRnI3-3r8B8x3Ze6DiJF01vuPPL4-40.npz": "ce2833cc82d0335025b3e23e0b307d033841bf0df812197fe6cffb6085e89ce3",
+        "policies/P2_low/steps.jsonl.gz": "f091de22d9b21a63642798e4d2f0de9a97fe0ae9d963a6b147634b49a95b7c8b",
+        "policies/P2_low/trade_diagnostics.json": "64626cd9c91591d7e7b549aa32ab80103ddcd0de58803e4aec2b4a4e7cf953d2",
+        "policies/P2_mid/account_state.json": "5444dfa3665c626cb58b5c2f244755fbbe402658c3d8e8f9e0b8776b2f63935a",
+        "policies/P2_mid/manifest.json": "9bd38ef434b71746b0addba65f710aa01b4ffcfb88ec36d7702de3eedfe936d1",
+        "policies/P2_mid/reconciliation.json": "64e9186332e61ae51beadd4112f173a39fce01b228441d47121292456f8f0065",
+        "policies/P2_mid/replay/20261019T073619F591618-08gChYU5v7heExiUNrQguq-0KtTKnHRYfmNWU7CytBiz0-40.npz": "604e82a725e9f0abe3f25f30c93eef7d2dcd977337f0912373cff935eca12209",
+        "policies/P2_mid/steps.jsonl.gz": "46580d626eb1a3d921c36e5ddbd5ae8e3db07042de5ce818f1593cb65d52cc7c",
+        "policies/P2_mid/trade_diagnostics.json": "d3fa18548331f1927531b9d192d8ef555126b9508c3c1b8b63c3015c2b039ae0",
+        "policies/P3/account_state.json": "1a03013d2fa1faaf8dca1672c19156cde2f20d50ccf6a743e22db352ddeff6c2",
+        "policies/P3/manifest.json": "00ac0ace6ceec151604a38e87b0c77dc1f65191aeae219f353a23f86fe5b6359",
+        "policies/P3/reconciliation.json": "a28b51cbffd7c472fbd0aada22ec38dbf77728884c20548e62a321d4d250ec4f",
+        "policies/P3/replay/20261019T073621F231730-45ED0Gmvjo15VkgMU9HvKT-7IiR1bLkHQzGwbO8XlUiIt-40.npz": "47da47da6a955afdaa6a115169e9f11734c73323d02228c387f936b03904ff88",
+        "policies/P3/steps.jsonl.gz": "9f32f84b71c5c548fcc90a18a8fd98d5ee19a4810ecd3d79eb33e9bc48c5c639",
+        "policies/P3/trade_diagnostics.json": "7f974cf14f98793305a417d9d5ec5554b7e0b3896b3b67971262624d4ea1a42d",
+        "policies/P4/account_state.json": "abd4bd884b1b6c81f9ebf24ce2fdb9fdb4efef8c7afde79c6fa0a9f1fe968980",
+        "policies/P4/manifest.json": "cdf2869ffe7d02f4a31bb9de2dfb09b63264d10e7c2dd1820d69fd00fd634888",
+        "policies/P4/reconciliation.json": "48d5375a4b8299bcc121a1ffbe1a9f58597145b5b4ca5c8daa26f3c13e3dfde4",
+        "policies/P4/replay/20261019T073623F448889-5jbeBajTnxlAVjqgBiZSci-70SJknuCEgKogLqilmZvoX-40.npz": "3e65a676d579f68862a5e3d21f7e84241bdc0c6bb921700d3c29be657bc56383",
+        "policies/P4/steps.jsonl.gz": "040ae1572ff0a8cdaceef02170045db57fdf61eecc8cac9dd6f67d7d7dd3de7c",
+        "policies/P4/trade_diagnostics.json": "e73a24177e8f61d9368a341b1be951f79e5aa8afb8d4025c38d5d38a3e49caac",
+        "source_lock.json": "d7be9bcd549cb4367b1985328e2279b08c000e7202b2df13ceded8888c2b97db",
+        "student_replay/P0/manifest.json": "c20be2e43656a6a0e5d4f45bc2fc715b6866e67493979f0426876d6f7f3b13df",
+        "student_replay/P0/replay/20261019T073613F917481-0USHyG6H00bk3hNk5xZwf1-43Z55jufdde4rzGEnH9bGp-40.npz": "06f1e3d13e0bccaeff4aa4b0af907b0ad201bcd328b6e69bfd420b1629afef0a",
+        "student_replay/P1/manifest.json": "b39d29107bb41ec83224bd6ea6f9a25eeb44622f57d4d9998da7397c61a54a10",
+        "student_replay/P1/replay/20261019T073616F218123-6nCwLP4qojJcWyi4GELKyH-69Za19LTd9kGUES0ilWVXd-40.npz": "473bfdc3d66f2e538fe7ac11fc90da78350f05e32fe236e309d188a1599f4d0b",
+        "student_replay/P2_low/manifest.json": "5337035b18c1fdcc5f337778ccdec5339976b794e196c238652cf35b5715c802",
+        "student_replay/P2_low/replay/20261019T073617F777618-1rYeyGInzlQELoYU0XRnI3-3r8B8x3Ze6DiJF01vuPPL4-40.npz": "ce2833cc82d0335025b3e23e0b307d033841bf0df812197fe6cffb6085e89ce3",
+        "student_replay/P2_mid/manifest.json": "b07f7552dae610ca0eb532b1a7b62f746935f16d6eca4172d0afa6dba42e49ac",
+        "student_replay/P2_mid/replay/20261019T073619F591618-08gChYU5v7heExiUNrQguq-0KtTKnHRYfmNWU7CytBiz0-40.npz": "604e82a725e9f0abe3f25f30c93eef7d2dcd977337f0912373cff935eca12209",
+        "student_replay/P3/manifest.json": "d0c7a5397eeb7bf213548ae1d99be06be71f84bae4767476edd508a60cfe134b",
+        "student_replay/P3/replay/20261019T073621F231730-45ED0Gmvjo15VkgMU9HvKT-7IiR1bLkHQzGwbO8XlUiIt-40.npz": "47da47da6a955afdaa6a115169e9f11734c73323d02228c387f936b03904ff88",
+        "student_replay/P4/manifest.json": "3deadcf3892d10bf1f9c10e3c6d1f5849de33a4382c145f25c567c4027e3be2d",
+        "student_replay/P4/replay/20261019T073623F448889-5jbeBajTnxlAVjqgBiZSci-70SJknuCEgKogLqilmZvoX-40.npz": "3e65a676d579f68862a5e3d21f7e84241bdc0c6bb921700d3c29be657bc56383",
+        "teacher_manifest.json": "426e732e033671eb060afe6262028925cb7721607607243894d14c45801fe182",
+        "teacher_sidecar/P0/steps.jsonl.gz": "372976cd9c7193061ca9bc2b60201b7f9604d62b7755e347a6753dcce52975cd",
+        "teacher_sidecar/P1/steps.jsonl.gz": "0fc23b421e3a7a112e60e8b10ba9f38463c058a2acfb5a86b9c488f10de9e04b",
+        "teacher_sidecar/P2_low/steps.jsonl.gz": "f091de22d9b21a63642798e4d2f0de9a97fe0ae9d963a6b147634b49a95b7c8b",
+        "teacher_sidecar/P2_mid/steps.jsonl.gz": "46580d626eb1a3d921c36e5ddbd5ae8e3db07042de5ce818f1593cb65d52cc7c",
+        "teacher_sidecar/P3/steps.jsonl.gz": "9f32f84b71c5c548fcc90a18a8fd98d5ee19a4810ecd3d79eb33e9bc48c5c639",
+        "teacher_sidecar/P4/steps.jsonl.gz": "040ae1572ff0a8cdaceef02170045db57fdf61eecc8cac9dd6f67d7d7dd3de7c"
+      }
+    }
+  ]
+}

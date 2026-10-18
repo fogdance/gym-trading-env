@@ -1,0 +1,120 @@
+{
+  "status": "PASS_EXACT_COLD_DATA_STATE",
+  "calls": [
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/evidence/synthetic_final/continuous",
+        "--stop",
+        "6"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7853e93bec9379b5fd80cd5f74360498680b25b0cbd4377e6aba2cbcfccd767b"
+    },
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/evidence/synthetic_final/split",
+        "--stop",
+        "3"
+      ],
+      "exit_code": 0,
+      "log_sha256": "505881c0ab8baf930d10b7a557310a1c9b0d5bf40d6367cb494d131a4d75f54e"
+    },
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/evidence/synthetic_final/split",
+        "--stop",
+        "6",
+        "--resume"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7853e93bec9379b5fd80cd5f74360498680b25b0cbd4377e6aba2cbcfccd767b"
+    }
+  ],
+  "batches": 6,
+  "split_at": 3,
+  "prefetched_batches": 2,
+  "scheduler_and_all_reader_states_equal": true,
+  "all_native_array_bytes_and_provenance_equal": true,
+  "runtime_and_pending_queue_equal": true,
+  "batch_history": [
+    "af2672442d9327c8199f662853383d3194ea6d78bedf6bfff86e8be85495fc9a",
+    "0b8d317922894c6f66075c0e538211c7203ad4972455c5aa3269e12fd18d731f",
+    "3608eda4ec6a2dc0815d7e01bf22878a723923459a35b946ebd6827751ccb6ad",
+    "3aacd3be5719a6de24924718e59f36c921680ae0b544dcba04f0d8eccf95ffea",
+    "e649e611a2d8d06f3fb25c54a0863d038111b6fe0058a0d39f9ab11fc9d4b9b1",
+    "4f1273213898036b3775f2cc43c923dc0de17e637c555b62308acf0be15bc945"
+  ],
+  "checkpoint_manifest": {
+    "backend": "external_immutable_course_reader",
+    "files": {
+      "agent.pkl": "c0b22bb60958c885d80b89f4379a741dae64ef5a7f3f755bdf0d1445521db461",
+      "course_reader.pkl": "b164384e98d1d83bbd229c4ce766560ec2df7611dc0b084a5cd66eef9a0f0fb6",
+      "runtime.pkl": "afec724233b851c3e5eb702b11ecb91d46126740c19a6694cb08af2e1e87dad0",
+      "step.pkl": "31068125b3d6543518fbb7ce7878b1db2ebfb1268f2af67483779f91f5c99530"
+    },
+    "identity": {
+      "adapter": "0a2f881c2f3394e6e5cffe68a11d7ce5278cfe9425fa1b6c2be570368b2d5e7c",
+      "batch_size": 4,
+      "code_sha256": "5994e7ac36c460dbd1d9fe011621b8020a5c531dfe049f669b7cf7c0e5689291",
+      "data_only": true,
+      "length": 12,
+      "packages": {
+        "cloudpickle": "3.1.0",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "numpy": "1.26.4",
+        "optax": "0.2.4",
+        "pandas": "2.2.3",
+        "portal": "3.5.1"
+      },
+      "prefetch": 2,
+      "probe_code_sha256": "be13ca4a6ef18de3c3a45ac0b31d1265677c817ac225ac8237291da455318326",
+      "protocol": "FG_S3_DATA_MULTI_COLD_PROBE_V1",
+      "source": "782febb12c655405dc69169300211a84366d9dc42618a796e369075fddf7308e"
+    },
+    "protected": true,
+    "protocol": "FG_FULL_V1",
+    "schema": 1,
+    "step": 6
+  },
+  "optimizer_updates": 0,
+  "neural_training_checkpoint": "NOT_RUN",
+  "copied_corpus_chunks": 0,
+  "content_hash": "537f576f72afb2016bcdbfc8591d3382cc6a315b1a5db9c1bf77f8cb5a91016c"
+}

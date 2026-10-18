@@ -1,0 +1,23 @@
+{
+  "reason": "These fixture paths call ActorBC.update twice; actual optimizer updates are forbidden in this task.",
+  "evidence": "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py:87",
+  "required_shared_collected": 20,
+  "required_shared_executed": 12,
+  "required_shared_not_run": [
+    "embodied/tests/test_fg_s3_gate.py::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+    "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+    "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+    "embodied/tests/test_fg_s3_gate.py::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+    "embodied/tests/test_fg_s3_gate.py::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+    "embodied/tests/test_fg_s3_source_transfer.py::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+    "embodied/tests/test_fg_s3_source_transfer.py::test_no_inference_source_and_frozen_snapshot",
+    "embodied/tests/test_fg_s3_source_transfer.py::test_missing_baseline_requires_authenticated_features"
+  ],
+  "additional_not_run": [
+    "REAL_PUBLISHED_MULTI_CORPUS_ACCEPTANCE",
+    "F1_F2_F3_PREPARE_START_RESUME_WIRING",
+    "NEURAL_AGENT_OPTIMIZER_COLD_RESTORE",
+    "GPU_TRAINING",
+    "FORMAL_TRAINING_ADMISSION"
+  ]
+}

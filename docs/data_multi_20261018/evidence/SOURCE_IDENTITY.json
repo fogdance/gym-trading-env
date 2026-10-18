@@ -1,0 +1,28 @@
+{
+  "observed_utc": "2026-10-18T23:45:19.228892+00:00",
+  "gym": {
+    "path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+    "branch": "feat/data-multi-20261018",
+    "source_commit": "3abf8aaeee5e5db0060439bb18188562c958fbdd",
+    "parent": "8f471cbb94e0ac31f86dfca96c8b717528562e6a",
+    "tracked_dirty": false,
+    "committed_tested_bytes_equal": true
+  },
+  "dreamer": {
+    "path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/dreamerv3",
+    "sha": "0e39dfd498f9146e10f966cfe118a24b20e5143e",
+    "tracked_dirty": false,
+    "modified_by_this_task": false
+  },
+  "source_sha256": {
+    "src/gym_trading_env/research/fg_s3_e_quality_checks.py": "cf56a2d9adc2cbc8978b3a920ae260c5696a732f15f28e2d34576b180e6475ea",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi.py": "5994e7ac36c460dbd1d9fe011621b8020a5c531dfe049f669b7cf7c0e5689291",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py": "be13ca4a6ef18de3c3a45ac0b31d1265677c817ac225ac8237291da455318326",
+    "tests/entry_v1/data_multi_fixture.py": "4f84637c37083b51f2e912225b37b93387931e032d5ab1ef8f5a10dbfd3a771f",
+    "tests/entry_v1/test_data_multi.py": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  "test_timing": "Tests ran before the source commit. Exact file hashes match the committed blobs; later evidence/docs commits do not change these files.",
+  "integration_merge": "NOT_REQUESTED_NOT_PERFORMED",
+  "WP04_modified": false,
+  "WP06_modified": false
+}

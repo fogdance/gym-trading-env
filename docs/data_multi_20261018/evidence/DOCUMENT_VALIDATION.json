@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "checkpoint_bundles_checked": 5,
+  "core_and_probe_hashes_bound": true,
+  "python_ast_files": 5,
+  "all_json_parsed": true,
+  "scope": "Documentation, syntax and retained evidence integrity only; not additional business tests",
+  "markdown_local_links_checked": 36
+}

@@ -1,0 +1,46 @@
+{
+  "cwd": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "junit_family=xunit1",
+    "tests/entry_v1/test_wp03_reader.py",
+    "tests/entry_v1/test_wp03_join.py",
+    "tests/entry_v1/test_wp03_admission.py",
+    "tests/entry_v1/test_wp03_cli.py",
+    "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+    "../dreamerv3/embodied/tests/test_fg_s3_gate.py::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+    "../dreamerv3/embodied/tests/test_fg_s3_gate.py::test_audited_ast_accepts_only_the_reviewed_transition",
+    "../dreamerv3/embodied/tests/test_fg_s3_gate.py::test_gate_only_audit_rejects_market_minute_semantic_change",
+    "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py::test_full_source_dependency_inventory_includes_stream_and_serializer",
+    "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py::test_online_model_and_environment_counters_have_separate_domains",
+    "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "-q",
+    "-x",
+    "--junitxml=docs/data_multi_20261018/evidence/SHARED_FINAL.xml"
+  ],
+  "env_overrides": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "MPLCONFIGDIR": "/tmp/data_multi_mpl",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "start_utc": "2026-10-18T23:43:35.441768+00:00",
+  "source_sha256": {
+    "src/gym_trading_env/research/fg_s3_e_quality_checks.py": "cf56a2d9adc2cbc8978b3a920ae260c5696a732f15f28e2d34576b180e6475ea",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi.py": "5994e7ac36c460dbd1d9fe011621b8020a5c531dfe049f669b7cf7c0e5689291",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py": "be13ca4a6ef18de3c3a45ac0b31d1265677c817ac225ac8237291da455318326",
+    "tests/entry_v1/data_multi_fixture.py": "4f84637c37083b51f2e912225b37b93387931e032d5ab1ef8f5a10dbfd3a771f",
+    "tests/entry_v1/test_data_multi.py": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  "exit_code": 0,
+  "end_utc": "2026-10-18T23:44:15.333815+00:00"
+}
