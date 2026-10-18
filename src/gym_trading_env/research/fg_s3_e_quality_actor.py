@@ -109,3 +109,62 @@ def create_agent(settings,output,*,controlled_small=False):
         composition=resolve_composition(dict(composition=dict(encoder='e_multiscale_1m15m',teaching='quality_v2'))))
     register_state_schema(agent.model,agent.params)
     return agent
+
+
+class F3WindowAdapter:
+    """Loss-only labels from the existing V3 Join, with no second projection."""
+    def __init__(self,reader,settings):
+        from dreamerv3.fg_s3_e_quality_actor import dimensions
+        if reader.stage!=SAMPLING_STAGE or reader.admission.source.stage!=STAGE:raise ValueError('F3_READER_STAGE_MISMATCH')
+        self.reader,self.settings=reader,settings
+        self.length=dimensions(settings['target_steps'],settings['burnin_steps'])
+        self.target_support=None
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+            if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+            support[str(tag or 'NATURAL')]=True
+        self.target_support=dict(burnin_steps=self.settings['burnin_steps'],target_steps=self.settings['target_steps'],components=support)
+        return self.target_support
+
+    def adapt(self,raw):
+        import numpy as np
+        from dreamerv3.fg_s3_e_quality_actor import LABELS
+        from .fg_replay import replay_fields,E_QUALITY_SCHEMA
+        from .fg_s3_quality_catalog_v2 import FIELDS
+        shape=(self.settings['batch_size'],self.length+1)
+        if any(raw[k].any() for k in ('quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source')):
+            raise ValueError('F3_Q_SOFT_TARGETS_FORBIDDEN')
+        if raw['stepid'].shape!=(*shape,20) or raw['consec'].dtype!=np.int32 or raw['consec'].shape!=shape or raw['consec'].any():raise ValueError('F3_NATIVE_WINDOW_GEOMETRY')
+        labels=tuple(k for k in LABELS if k!='f3_natural')
+        for key in labels:
+            dtype,dims=FIELDS[key] if key in FIELDS else (np.dtype('int32') if key=='teacher_action' else np.dtype('bool'),())
+            if raw[key].shape!=(*shape,*dims) or raw[key].dtype!=dtype:raise ValueError('F3_LABEL_SCHEMA: '+key)
+        metadata=self.reader.audit_windows(raw,supervision_fields=labels)
+        data={k:raw[k].copy() for k in (*replay_fields(E_QUALITY_SCHEMA),'stepid','consec',*labels)}
+        valid=data['teacher_valid'];score_valid=data['quality_score_valid']
+        if not np.isin(data['teacher_action'][valid],[0,1]).all():raise ValueError('F3_VALID_L2_ACTION_INVALID')
+        score=data['quality_score'];known=score[score_valid]
+        if not (np.isfinite(known)&(known>=0)&(known<=100)).all():raise ValueError('F3_VALID_SCORE_INVALID')
+        data['teacher_action']=np.where(valid,data['teacher_action'],0).astype(np.int32)
+        data['quality_score']=np.where(score_valid,score,0).astype(np.float32)
+        data['f3_natural']=np.ones(shape,bool)
+        for k,v in data.items():
+            if np.issubdtype(v.dtype,np.floating) and not np.isfinite(v).all():raise ValueError('F3_NONFINITE_INPUT: '+k)
+        return data,metadata
+
+    def sample(self):
+        self.validate_support();state=self.reader.state_dict()
+        try:return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))
+        except BaseException:
+            self.reader.load_state_dict(state);raise

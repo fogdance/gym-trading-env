@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="13" time="183.881" timestamp="2026-10-19T00:25:42.656908+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C01_actual_actor_update_complete_parameter_and_slot_freeze" time="175.721" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C02_no_valid_labels_freezes_all_state_including_inherited_slots" time="0.135" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C03_teacher_never_changes_features_and_burnin_never_supervised" time="3.872"><failure message="KeyError: 'e_market_1m'">case = (&lt;embodied.jax.agent.Agent object at 0x72ddf6ab8ed0&gt;, {'params': {'avail/head/logit/bias': array([0., 0.], dtype=float...        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...}, ...)
+
+    def test_C03_teacher_never_changes_features_and_burnin_never_supervised(case):
+        a,initial,data,*_=case;a.load_exact(initial);d=supervised(data,1);one=read_only_forward(a,d)
+        changed=supervised(d,0);changed['quality_score'][...]=99;two=read_only_forward(a,changed)
+        assert one['features'].tobytes()==two['features'].tobytes() and one['logits'].tobytes()==two['logits'].tobytes()
+        assert one['loss']!=two['loss']
+        changed=copy.deepcopy(d)
+        for k in LABELS:
+            if k!='f3_natural':changed[k][:,:5]=0
+        assert read_only_forward(a,changed)['loss'].tobytes()==one['loss'].tobytes()
+&gt;       history=copy.deepcopy(d);history['e_market_1m'][:,1:5]*=-1
+                                 ^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'e_market_1m'
+
+tests/entry_v1/test_wp06_updates.py:63: KeyError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C04_nonzero_frozen_momentum_and_negative_zero_survive" time="0.820" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C05_nonfinite_candidate_entire_state_rollback" time="0.085" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C06_unknown_slots_or_dynamic_wm_rule_rejected" time="0.019" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[teacher_action]" time="0.009" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[teacher_valid]" time="0.009" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[quality_owner]" time="0.008" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[quality_score]" time="0.009" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C08_q_soft_and_bad_native_window_reject_before_model" time="0.008" /><testcase classname="tests.entry_v1.test_wp06_updates" name="test_C09_reset_terminal_single_action_masks_never_become_wait_truth" time="0.111" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C09_positive_allowlist_rejects_injected_wm_rule" time="0.086" /></testsuite></testsuites>
