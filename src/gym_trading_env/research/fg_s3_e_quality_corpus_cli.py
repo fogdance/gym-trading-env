@@ -12,7 +12,9 @@ from pathlib import Path
 import resource
 import shutil
 import subprocess
+import sys
 import time
+import traceback
 
 import numpy as np
 import pandas as pd
@@ -327,13 +329,36 @@ def _verification_job(job):
     return result
 
 
-def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_day=None,workers=None):
+def _execution_scope(lock, market, mode, max_market_steps):
+    if mode not in ('dev','data'):
+        raise ValueError('Corpus mode must be dev or data')
+    if mode=='data':
+        if max_market_steps is not None:
+            raise ValueError('A step-limited diagnostic requires --mode dev; DATA uses explicit official days')
+        return lock
+    if type(max_market_steps) is not int or max_market_steps<1:
+        raise ValueError('DEV requires an explicit positive --max-market-steps')
+    value={k:v for k,v in lock.items() if k!='content_hash'}
+    advances=np.flatnonzero(market.market_clock_counter.valid)
+    advances=advances[(advances>lock['start_cursor']) & (advances<=lock['end_cursor'])]
+    end=int(advances[max_market_steps-1]) if len(advances)>=max_market_steps else lock['end_cursor']
+    value.update(execution_mode='dev',requested_max_market_steps=max_market_steps,
+        source_window_end_cursor=lock['end_cursor'],end_cursor=end,
+        last_time=str(market.frame.index[end]),sample_scope='bounded_dev_observations_with_full_train_suffix')
+    value['official_days']=list(market.frame.iloc[lock['start_cursor']:end+1].trading_date.unique())
+    return signed(value)
+
+
+def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_day=None,workers=None,
+                   mode='data',max_market_steps=None):
     began=time.monotonic()
     out=_local_path(out)
     independent_output(out,inputs=[pool])
     if workers is not None and (type(workers) is not int or not 1<=workers<=len(os.sched_getaffinity(0))):
         raise ValueError('Requested workers must be positive and fit the available CPU affinity')
     lock,source,market=source_inputs(pool,env_receipt,contract,start_day=start_day,end_day=end_day)
+    lock=_execution_scope(lock,market,mode,max_market_steps)
+    if mode=='dev' and workers is None:workers=1
     independent_output(out,inputs=[pool,env_receipt,lock['row']['path'],lock['row']['env_config'],
         lock['row']['contract_config'],lock['partition_manifest']['path'],PROJECT,PROJECT.parent/'dreamerv3'])
     out.mkdir(parents=True,exist_ok=False)
@@ -389,7 +414,9 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         decoder_keys=['market_seq_e_shared','position_state'],horizon=333,clock='S3_MARKET_MINUTE',
         initialization='FRESH_PARAMETERS_ONLY',legacy_migration=False)
     write_json(out/'model_contract.json',signed(model_contract))
-    manifest=signed(dict(protocol=SCHEMA,fold='TRAIN',status='CORPUS_VERIFIED_FOR_TRAIN_PREPARATION',
+    manifest=signed(dict(protocol=SCHEMA,fold='TRAIN',execution_mode=mode,
+        status='DEV_ONLY_NOT_CERTIFIED' if mode=='dev' else 'CORPUS_PRODUCED',
+        certification='NOT_CERTIFIED' if mode=='dev' else 'INDEPENDENT_NATIVE_G3_REQUIRED',
         training_admitted=False,source_lock_hash=lock['content_hash'],course_identity_hash=course_hash,
         observation=observation_contract(),model_contract_hash=fingerprint(model_contract),
         teacher_identity=strict.identity_hash,e_profile_identity=profile.identity,code=code,
@@ -436,6 +463,8 @@ def verify_corpus(path,*,workers=None):
     path=_local_path(path);m=read_manifest(path/'corpus_manifest.json')
     if m.get('protocol')!=SCHEMA or m.get('training_admitted') is not False or m.get('fold')!='TRAIN':
         raise ValueError('Unknown Corpus or forged training admission')
+    if m.get('execution_mode','data')!='data':
+        raise ValueError('DEV_CORPUS_NOT_CERTIFIED: generate a new DATA version for native admission')
     _inventory(path,m)
     if _code_lock()['files']!=m['code']['files']:
         raise ValueError('Corpus runtime code inventory differs')
@@ -488,12 +517,16 @@ def main(argv=None):
         p=sub.add_parser(name);p.add_argument('--source-pool');p.add_argument('--env-receipt');p.add_argument('--contract',default='CZCE.FG201')
         p.add_argument('--start-day',help='First official TRAIN trading day, inclusive (YYYY-MM-DD)')
         p.add_argument('--end-day',help='Last Replay trading day, inclusive; labels may use the locked complete TRAIN suffix')
+        p.add_argument('--debug',action='store_true',help='Preserve the full diagnostic traceback on stderr')
         if name=='validate':p.add_argument('--course')
         else:
             p.add_argument('--out',required=True);p.add_argument('--seed',type=int,default=202)
             p.add_argument('--workers',type=int,help='Total CPU worker budget across account and teacher processes; default: all affinity CPUs, memory bounded')
+            p.add_argument('--mode',choices=['dev','data'],default='data')
+            p.add_argument('--max-market-steps',type=int,help='Required only for DEV; cap actual market advances, not teacher suffix or account history')
     for name in ['verify','coverage']:
         p=sub.add_parser(name);p.add_argument('--corpus',required=True)
+        p.add_argument('--debug',action='store_true')
         if name=='verify':p.add_argument('--workers',type=int)
     args=parser.parse_args(argv)
     try:
@@ -507,7 +540,8 @@ def main(argv=None):
                 lock,_,_=source_inputs(args.source_pool,args.env_receipt,args.contract,start_day=args.start_day,end_day=args.end_day)
                 result=dict(status='SOURCE_VALIDATED_ONLY',source=lock,training_admitted=False)
             else:result=generate_small(args.source_pool,args.env_receipt,args.contract,args.out,seed=args.seed,
-                start_day=args.start_day,end_day=args.end_day,workers=args.workers)
+                start_day=args.start_day,end_day=args.end_day,workers=args.workers,
+                mode=args.mode,max_market_steps=args.max_market_steps)
         elif args.command=='verify':result=verify_corpus(args.corpus,workers=args.workers)
         else:
             path=_local_path(args.corpus);m=read_manifest(path/'corpus_manifest.json')
@@ -515,4 +549,5 @@ def main(argv=None):
             result=coverage([path/'policies'/name for name in m['behaviors']])
         print(json.dumps(result,ensure_ascii=False));return 0
     except (ValueError,OSError,KeyError,TypeError,RuntimeError) as exc:
-        print(json.dumps(dict(status='NO_GO',error=str(exc),training_admitted=False)),flush=True);return 2
+        if args.debug:traceback.print_exc(file=sys.stderr)
+        print(json.dumps(dict(status='NO_GO',error=str(exc),diagnostics=getattr(exc,'events',[]),training_admitted=False)),flush=True);return 2

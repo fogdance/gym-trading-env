@@ -64,7 +64,8 @@ def test_cli_routes_dates_workers_and_external_output(monkeypatch, tmp_path):
     assert cli.main(['generate', '--source-pool', 'pool.json', '--env-receipt', 'receipt',
         '--contract', 'CZCE.FG809', '--out', str(tmp_path/'batch'),
         '--start-day', '2018-08-06', '--end-day', '2018-08-08', '--workers', '24']) == 0
-    assert captured == dict(seed=202, start_day='2018-08-06', end_day='2018-08-08', workers=24)
+    assert captured == dict(seed=202, start_day='2018-08-06', end_day='2018-08-08', workers=24,
+        mode='data',max_market_steps=None)
 
 
 def test_bounded_native_replay_preserves_complete_train_suffix_and_account(tmp_path):

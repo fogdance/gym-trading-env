@@ -106,6 +106,9 @@ def inspect_source(source):
         if not path.is_file() or digest(path) != m['files'][name]:
             raise ValueError('SUPERVISION_CONTENT_CHANGED: ' + name)
     lock = read_manifest(root / 'source_lock.json')
+    mode=m.get('execution_mode','data')
+    if mode not in ('dev','data') or mode!=lock.get('execution_mode','data'):
+        raise ValueError('SUPERVISION_EXECUTION_MODE_MISMATCH')
     teacher = read_manifest(root / 'teacher_manifest.json')
     model = read_manifest(root / 'model_contract.json')
     spec = course.validate_course_spec(json.loads((root / 'course_v2.json').read_text()))
@@ -221,6 +224,8 @@ class QualitySupervisionAdmission:
         m = inspect_source(source)
         native = None
         if purpose == 'native-verification':
+            if m.get('execution_mode','data')=='dev':
+                raise ValueError('DEV_CORPUS_NOT_CERTIFIED: native admission requires a new DATA version')
             if producer_gym is None or log_path is None:
                 raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
             native = native_verification(source, producer_gym=producer_gym, log_path=log_path,
@@ -240,7 +245,8 @@ class QualitySupervisionAdmission:
             corpus_root=str(source.corpus_root), content_identity=fingerprint(identity),
             identity=identity, native_receipt_hash=fingerprint(native) if native else None,
             blockers=['E_QUALITY_FORMAL_TRAIN_GUARD_CLOSED'] +
-                ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']),
+                ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']) +
+                (['DEV_CORPUS_NOT_CERTIFIED'] if m.get('execution_mode')=='dev' else []),
             historical_producer=m.get('code', {}).get('repositories', {})))
         return Admission(source, receipt, native)
 

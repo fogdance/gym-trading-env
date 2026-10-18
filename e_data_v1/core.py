@@ -5,6 +5,7 @@ from bisect import insort
 from heapq import heappop, heappush
 from copy import deepcopy
 import hashlib
+import json
 import re
 
 import numpy as np
@@ -328,19 +329,36 @@ class MarketData:
                 raise EDataError('MACD unavailable prefix minute')
             if not row._good:
                 raise EDataError('MACD invalid visible minute')
-            if row._legal:
-                sessions = [(a,b) for a,b in self._macd_sessions if a < t <= b]
+            sessions = [(a,b) for a,b in self._macd_sessions if a < t <= b]
+            closing_mark = (not row._legal and row._duration == 0 and
+                            len(sessions) == 1 and t == sessions[0][1])
+            if row._legal or closing_mark:
                 if len(sessions) != 1:
                     raise EDataError('MACD untrusted dated session')
                 a,b = sessions[0]
                 ordinal = int((t-a).total_seconds()/60)-1
                 bucket = self.contract+':'+a.isoformat()+':'+str(ordinal//5)
                 try:
-                    self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
-                        slot=ordinal%5+1, time_ns=t.value, available_ns=row.available_at.value)
-                    self._macd_anchor_close = float(row.Close)
+                    if row._legal:
+                        self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
+                            slot=ordinal%5+1, time_ns=t.value, available_ns=row.available_at.value,
+                            session_end_ns=b.value)
+                        self._macd_anchor_close = float(row.Close)
+                    else:
+                        self._macd_stream.observe_interval_end(session=a.isoformat(),time_ns=t.value,
+                            available_ns=row.available_at.value,session_end_ns=b.value)
                 except ValueError as exc:
-                    raise EDataError(str(exc)) from exc
+                    prior=self._macd_stream
+                    context=dict(type='MACD_REJECTED',contract=self.contract,cursor=i,
+                        trading_date=str(row.trading_date),time=t.isoformat(),
+                        previous_time_ns=prior.last_time,previous_session=prior.session,
+                        previous_interval_end_ns=prior.session_end_ns,
+                        previous_bucket=prior.bucket,previous_slot=prior.slot,
+                        session_start=a.isoformat(),session_end=b.isoformat(),bucket=bucket,
+                        slot=ordinal%5+1,expected_slot=prior.slot+1 if bucket==prior.bucket else 1,
+                        source_valid=bool(row._good),valid_minute=bool(row._legal),
+                        available_at=row.available_at.isoformat())
+                    raise EDataError(str(exc)+'; context='+json.dumps(context,sort_keys=True),[context]) from exc
             state = self._macd_stream.snapshot()
             value = np.asarray(self._macd_stream.output, np.float32)
             if not np.isfinite(value).all():

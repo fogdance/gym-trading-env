@@ -19,7 +19,7 @@
   },
   "observation": {
     "macd_5m": {
-      "schema": "FG_S3_E_MACD5M_CAUSAL_V2",
+      "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
       "periods": [
         12,
         26,
@@ -33,7 +33,9 @@
       "bucket": "five_exact_calendar_minutes_in_one_dated_session",
       "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
       "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
-      "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+      "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill",
+      "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+      "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update"
     },
     "schema": "FG_S3_E_OBSERVATION_V2",
     "fields": {
