@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="14" time="1.951" timestamp="2026-10-18T15:03:41.336287+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A01_subset_preserves_original_course" time="0.001" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_stage-HEADS_ONLY]" time="0.323" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_f2_protocol-FAKE]" time="0.001" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_q_c1_lambda-0.1]" time="0.000" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_soft_lambda-0.1]" time="0.000" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_decision_admitted-True]" time="0.000" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A02_protocol_and_guard_negative[quality_f1_protocol-FAKE]" time="0.000" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[source_f1_run-]" time="0.028" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[stage-FOUNDATION_WM]" time="0.001" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[sampling_stage-WM_NATURAL]" time="0.001" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[burnin_steps-0]" time="0.001" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[sampling_spec-value4]" time="0.017" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A03_settings_negatives[prediction_weights-value5]" time="0.017" /><testcase classname="tests.entry_v1.test_wp05_contract" name="test_A04_complete_native_model" time="1.012"><failure message="ValueError: F2_UNKNOWN_CONFIGURATION">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-496/test_A04_complete_native_model0')
+
+    def test_A04_complete_native_model(tmp_path):
+&gt;    a=create_agent(validate_settings(settings(tmp_path/'corpus')),tmp_path/'model',controlled_small=True)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp05_contract.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_heads.py:55: in create_agent
+    agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:46: in __new__
+    model.__init__(obs_space, act_space, config)
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:101: in __init__
+    self.quality = quality_extensions({'mode':self.mode,**{k:v for k,v in dict(config).items() if k.startswith('quality_')}})
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_quality_v2.py:34: in quality_extensions
+    return quality_configuration(settings, DEFAULTS)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+settings = {'mode': 'quality_v2', 'quality_alpha': 0.8, 'quality_kappa': 1.0, 'quality_wmax': 2.0, ...}
+defaults = {'quality_alpha': 0.8, 'quality_kappa': 1.0, 'quality_wmax': 2.0, 'quality_strict_pair_lambda': 0.1, ...}
+
+    def quality_configuration(settings,defaults):
+        from gym_trading_env.research.fg_s3_e_quality_supervision import PROTOCOL as SUPERVISION
+        if (settings.get('quality_f2_protocol')!=PROTOCOL or settings.get('quality_stage')!=STAGE
+                or settings.get('quality_supervision_protocol')!=SUPERVISION):
+            raise ValueError('F2_EXECUTION_PROTOCOL_REQUIRED')
+        dimensions(settings.get('quality_f2_target_steps'),settings.get('quality_f2_burnin_steps'))
+        allowed=('quality_outcome_lambda','quality_score_lambda','quality_mono_lambda')
+        off=('quality_prediction_admitted','quality_decision_admitted','quality_q_admitted',
+             'quality_fuse_outcome','quality_fuse_score','quality_weighting')
+        forbidden=tuple(k for k in defaults if k.endswith('_lambda') and k not in allowed)+('quality_repr_grad_scale',)
+        if any(settings.get(k,False) is not False for k in off):raise ValueError('F2_DECISION_FORBIDDEN')
+        if any(type(settings.get(k,0.)) not in (int,float) or settings.get(k,0.)!=0. for k in forbidden):
+            raise ValueError('F2_Q_SOFT_ACTOR_FORBIDDEN')
+        known=set(defaults)|set(off)|{'s3_v2_mode','quality_variant','quality_stage','quality_f2_protocol',
+            'quality_f2_target_steps','quality_f2_burnin_steps','quality_supervision_protocol',
+            'quality_gradient_every_updates'}
+        if set(settings)-known or settings.get('quality_variant','FULL')!='FULL' or settings.get('quality_gradient_every_updates',0)!=0:
+&gt;           raise ValueError('F2_UNKNOWN_CONFIGURATION')
+E           ValueError: F2_UNKNOWN_CONFIGURATION
+
+../dreamerv3/dreamerv3/fg_s3_e_quality_heads.py:48: ValueError</failure></testcase></testsuite></testsuites>

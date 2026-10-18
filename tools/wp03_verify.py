@@ -9,7 +9,7 @@ import time
 
 root = Path(__file__).resolve().parents[1]
 package = os.environ.get('FG_WP_RECEIPTS','wp03')
-if package not in ('wp03','wp04'):
+if package not in ('wp03','wp04','wp05'):
     raise SystemExit('Unknown WP receipt package')
 out = root / 'docs/receipts' / package
 out.mkdir(parents=True, exist_ok=True)
@@ -35,7 +35,7 @@ for role, repo in [('gym', root), ('dreamer', root.parent / 'dreamerv3')]:
                           branch=git('branch', '--show-current'))
     # Audit only, never a reader/G3 gate. Includes uncommitted new modules.
     folders=([repo/'src', repo/'tools'] if role == 'gym' else [repo/'dreamerv3'])
-    if package=='wp04':folders += [repo/'e_data_v1'] if role=='gym' else [repo/'embodied']
+    if package in ('wp04','wp05'):folders += [repo/'e_data_v1'] if role=='gym' else [repo/'embodied']
     for folder in folders:
         for p in folder.rglob('*.py'):
             sources[role + '/' + str(p.relative_to(repo))] = hashlib.sha256(p.read_bytes()).hexdigest()
