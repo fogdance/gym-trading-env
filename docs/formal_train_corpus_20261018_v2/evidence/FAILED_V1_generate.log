@@ -1,0 +1,55 @@
+{"phase": "generate", "resource_budget": {"workers": 6, "label_workers": [3, 2, 2, 2, 2, 2], "total_worker_processes": 19, "available_memory_bytes": 17399181312, "observed_parent_peak_rss_bytes": 4539047936, "worker_budget_bytes": 877018880, "observed_process_pss_bytes": 701615104, "coordinator_reserve_bytes": 536870912, "available_logical_cpus": 20, "native_threads_per_worker": 1, "requested_worker_processes": 20, "worker_limit_reason": "memory"}}
+Collect P0 CZCE.FG809: 28264 source rows, CPU Driver
+Collect P1 CZCE.FG809: 28264 source rows, CPU Driver
+Collect P2_low CZCE.FG809: 28264 source rows, CPU Driver
+Collect P2_mid CZCE.FG809: 28264 source rows, CPU Driver
+Collect P3 CZCE.FG809: 28264 source rows, CPU Driver
+Collect P4 CZCE.FG809: 28264 source rows, CPU Driver
+concurrent.futures.process._RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/process.py", line 261, in _process_worker
+    r = call_item.fn(*call_item.args, **call_item.kwargs)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py", line 267, in _behavior_job
+    trace,receipt=generate_behavior(factory,spec,job['out'],PROJECT.parent/'dreamerv3',
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus.py", line 63, in generate_behavior
+    trace=collect_trace('',spec,output,dict(protocol=SCHEMA,source=source,
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_replay.py", line 478, in collect_trace
+    driver(policy, steps=1)
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/dreamerv3/embodied/core/driver.py", line 82, in __call__
+    step, episode = self._step(policy, step, episode)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/dreamerv3/embodied/core/driver.py", line 98, in _step
+    self.carry, acts, outs = policy(self.carry, obs, **self.kwargs)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_strict.py", line 123, in __call__
+    value=self.teacher.query_values(self.env,self.env._published_mask)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_strict.py", line 100, in query_values
+    'value_rational_witness':[str(wait),str(add)],'forced_add_funding_proof':funding,
+                              ^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/fractions.py", line 275, in __str__
+    return '%s/%s' % (self._numerator, self._denominator)
+                      ^^^^^^^^^^^^^^^
+ValueError: Exceeds the limit (4300 digits) for integer string conversion; use sys.set_int_max_str_digits() to increase the limit
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py", line 542, in main
+    else:result=generate_small(args.source_pool,args.env_receipt,args.contract,args.out,seed=args.seed,
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py", line 396, in generate_small
+    result=future.result();jobs.append(result);print(json.dumps(result),flush=True)
+           ^^^^^^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+ValueError: Exceeds the limit (4300 digits) for integer string conversion; use sys.set_int_max_str_digits() to increase the limit
+{"status": "NO_GO", "error": "Exceeds the limit (4300 digits) for integer string conversion; use sys.set_int_max_str_digits() to increase the limit", "diagnostics": [], "training_admitted": false}
