@@ -300,8 +300,10 @@ class EQualityCourseReader:
         from .fg_s3_e_quality_course_preflight import _local_path
         self.index_path=_local_path(index_path)
         receipt=read_manifest(self.index_path.with_suffix('.json'))
+        if receipt.get('protocol')!=INDEX_SCHEMA:
+            raise ValueError('SUPERVISION_INDEX_SCHEMA_MISMATCH: V3 receipt required; rebuild with current build_join_index')
         self.index_hash=digest(self.index_path)
-        if (receipt['protocol']!=INDEX_SCHEMA or self.index_hash!=receipt['index_sha256']
+        if (self.index_hash!=receipt['index_sha256']
                 or receipt['source_identity']!=admission.receipt['content_identity']):
             raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
         self.index_stat=_stat(self.index_path)
@@ -310,6 +312,9 @@ class EQualityCourseReader:
         self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True,check_same_thread=False)
         self.db.execute('PRAGMA query_only=ON');self.db.execute('PRAGMA cache_size=-4096')
         self.report=json.loads(self.db.execute("SELECT value FROM meta WHERE key='report'").fetchone()[0])
+        if self.report.get('protocol')!=INDEX_SCHEMA:
+            self.db.close()
+            raise ValueError('SUPERVISION_INDEX_SCHEMA_MISMATCH: V3 database required; rebuild with current build_join_index')
         if any(self.report[k]!=receipt[k] for k in self.report):
             self.db.close();raise ValueError('SUPERVISION_INDEX_REPORT_MISMATCH')
         self.files={rel:(sha,_stat(member(self.root,rel))) for rel,sha in self.corpus['files'].items()}

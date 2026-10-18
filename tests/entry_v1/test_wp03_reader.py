@@ -31,6 +31,36 @@ def same(a,b):
     for k in a:np.testing.assert_array_equal(a[k],b[k],err_msg=k)
 
 
+def test_C11_writer_and_reader_use_only_V3(indexed):
+    from gym_trading_env.research.fg_replay import read_manifest
+    r=reader(indexed)
+    try:
+        assert read_manifest(indexed[1].with_suffix('.json'))['protocol']==r.report['protocol']=='FG_S3_E_QUALITY_JOIN_INDEX_V3'
+        assert r.sample(1,4)['stepid'].shape==(1,5,20)
+    finally:r.close()
+
+
+@pytest.mark.parametrize('attack',['receipt_v2','missing','database_v2'])
+def test_C12_old_or_forged_index_versions_refused_without_writes(indexed,tmp_path,attack):
+    import sqlite3
+    from gym_trading_env.research.fg_replay import read_manifest,write_json,signed,digest
+    a,old=indexed;index=tmp_path/'index.sqlite';shutil.copyfile(old,index)
+    receipt=read_manifest(old.with_suffix('.json'));receipt.pop('content_hash')
+    if attack=='receipt_v2':receipt['protocol']='FG_S3_E_QUALITY_JOIN_INDEX_V2'
+    elif attack=='missing':receipt.pop('protocol')
+    else:
+        with sqlite3.connect(index) as db:
+            report=json.loads(db.execute("SELECT value FROM meta WHERE key='report'").fetchone()[0])
+            report['protocol']='FG_S3_E_QUALITY_JOIN_INDEX_V2'
+            db.execute("UPDATE meta SET value=? WHERE key='report'",(json.dumps(report),))
+        receipt['index_sha256']=digest(index)
+    write_json(index.with_suffix('.json'),signed(receipt))
+    before={p.name:p.read_bytes() for p in tmp_path.iterdir()}
+    with pytest.raises(ValueError,match='INDEX_SCHEMA_MISMATCH'):
+        reader((a,index))
+    assert before=={p.name:p.read_bytes() for p in tmp_path.iterdir()}
+
+
 @pytest.mark.parametrize('stage',['WM_NATURAL','HEADS_VALID','ACTOR_STRICT','ACTOR_QUALITY_PAIR'])
 def test_C01_native_contiguous_episode_safe_windows_all_stages(indexed,stage):
     r=reader(indexed,stage)
