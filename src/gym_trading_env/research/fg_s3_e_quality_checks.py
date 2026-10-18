@@ -204,7 +204,7 @@ def reader_evidence(admission,out,*,length=64,seed=202,with_model=True):
     joined=build_join_index(admission,index)
     write_json(out/'WP03_TEACHER_JOIN_AUDIT.json',joined)
     index_seconds=time.monotonic()-began
-    views={};support={};model_batch=None
+    views={};support={};model_batch=None;scope=None
     all_tags=('TP_FAST','TP_SLOW','SL30','EARLY10_5','EARLY10_15','SAME_DAY','CROSS_DAY','STRICT_ADD','STRICT_WAIT')
     start=time.monotonic();delivered=0
     for stage in ('WM_NATURAL','HEADS_VALID','ACTOR_STRICT','ACTOR_QUALITY_PAIR'):
@@ -216,10 +216,11 @@ def reader_evidence(admission,out,*,length=64,seed=202,with_model=True):
             if mode=='MIXED':spec['natural_weight']=.5
             reader=EQualityCourseReader.open(admission,stage=stage,sampling_spec=spec,seed=seed,index_path=index)
             try:
+                if scope is None:scope=reader.coverage()
                 # Query support separately; never silently replace a missing class.
                 available={tag:sum(g[-1] for g in reader._groups(length,tag)) for tag in all_tags}
                 support[stage+':'+mode]=available
-                if any(available[tag]==0 for tag in spec.get('strata_weights',{})):
+                if not reader._groups(length) or any(available[tag]==0 for tag in spec.get('strata_weights',{})):
                     views[stage+':'+mode]=dict(status='INSUFFICIENT_CURRICULUM_SUPPORT',support=available)
                     continue
                 for _ in range(4):
@@ -234,13 +235,16 @@ def reader_evidence(admission,out,*,length=64,seed=202,with_model=True):
                 coverage['effective_stepid_hash']=fingerprint(raw['stepid'][:,1:].tolist())
                 views[stage+':'+mode]=coverage
             finally:reader.close()
-    policy_batches={}
+    policy_batches={};policy_support={}
     for policy in joined['policies']:
         reader=EQualityCourseReader.open(admission,stage='HEADS_VALID',
             sampling_spec=dict(mode='NATURAL',policies=[policy]),seed=seed,index_path=index)
-        try:policy_batches[policy]=reader.sample(1,length)
+        try:
+            windows=sum(g[-1] for g in reader._groups(length))
+            policy_support[policy]=dict(available_windows=windows,
+                status='SUPPORTED' if windows else 'INSUFFICIENT_CURRICULUM_SUPPORT')
+            if windows:policy_batches[policy]=reader.sample(1,length)
         finally:reader.close()
-    scope=next(v for v in views.values() if 'unique_market_cursors' in v)
     reference=read_manifest(Path(admission.source.corpus_root)/'coverage.json')
     if (scope['unique_market_cursors']!=reference['unique_market_cursors'] or
             scope['distinct_account_decisions']!=reference['distinct_account_decision_states']):
@@ -253,8 +257,9 @@ def reader_evidence(admission,out,*,length=64,seed=202,with_model=True):
         write_json(out/'WP03_CPU_FORWARD_LOSS_EVIDENCE.json',loss)
     report=signed(dict(status='PASS_READER_CPU' if with_model else 'PASS_READER_ONLY',
         corpus_identity=admission.source.corpus_content_hash,source_identity=joined['source_identity'],
-        index_sha256=joined['index_sha256'],stage_views=views,course_support=support,
-        curriculum_support='LIMITED' if any('status' in v for v in views.values()) else 'SUPPORTED_FOR_REQUESTED_WINDOWS',
+        index_sha256=joined['index_sha256'],stage_views=views,course_support=support,policy_support=policy_support,
+        curriculum_support='LIMITED' if (any('status' in v for v in views.values()) or
+            any(v['available_windows']==0 for v in policy_support.values())) else 'SUPPORTED_FOR_REQUESTED_WINDOWS',
         actual_optimizer_exposures=0,training_admitted=False,
         independent_wp02_count_comparison='PASS',index_seconds=index_seconds,
         reader_sampling_seconds=sampling_seconds,measured_sample_rows=delivered,

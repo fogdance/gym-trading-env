@@ -71,3 +71,24 @@ def test_D13_matching_head_but_modified_frozen_verifier_cannot_certify(tmp_path,
     with pytest.raises(ValueError,match='FROZEN_PRODUCER_CODE_CHANGED'):
         module.native_verification(SupervisionSource.from_corpus(root),producer_gym=ROOT,log_path=log)
     assert not log.exists()
+
+
+def test_D14_reader_diagnostic_reports_missing_pair_support_without_inventing_samples(tmp_path):
+    from gym_trading_env.research.fg_s3_e_quality_checks import reader_evidence
+    from gym_trading_env.research.fg_s3_e_quality_corpus import coverage
+    from gym_trading_env.research.fg_replay import write_json
+    from wp03_fixture import native_corpus,inventory
+    root=native_corpus(tmp_path/'corpus',minutes=5)
+    m=json.loads((root/'corpus_manifest.json').read_text())
+    write_json(root/'coverage.json',coverage([root/'policies'/p for p in m['behaviors']]))
+    inventory(root,m)
+    admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(root))
+    out=tmp_path/'reader';out.mkdir()
+    report=reader_evidence(admission,out,length=4,with_model=False)
+    assert report['status']=='PASS_READER_ONLY' and report['curriculum_support']=='LIMITED'
+    assert report['stage_views']['ACTOR_QUALITY_PAIR:NATURAL']['status']=='INSUFFICIENT_CURRICULUM_SUPPORT'
+    assert report['stage_views']['WM_NATURAL:NATURAL']['exact_next_batch_restore'] is True
+    assert report['actual_optimizer_exposures']==0 and report['training_admitted'] is False
+    required=tmp_path/'reader_with_model';required.mkdir()
+    with pytest.raises(ValueError,match='INSUFFICIENT_CURRICULUM_SUPPORT'):
+        reader_evidence(admission,required,length=4,with_model=True)
