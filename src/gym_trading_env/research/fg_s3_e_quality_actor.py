@@ -7,6 +7,54 @@ from .fg_s3_e_quality_foundation import execution_identity
 from .fg_s3_e_quality_course_preflight import _local_path
 
 CONFIG_SCHEMA='FG_S3_E_QUALITY_F3_CONFIG_V1'
+_NATIVE_PROOFS={}
+
+
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class F3Preparation:
+    settings: dict
+    source: object
+    receipt: dict
+
+
+def preflight(settings,*,purpose='development',producer_gym=None,log_path=None):
+    from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
+    from .fg_s3_e_observation import observation_contract
+    from .fg_replay import signed
+    from embodied.run.fg_s3_e_quality_transfer import inspect_stage
+    from embodied.run.fg_checkpoint import plain
+    from gym_trading_env.envs.entry_contract import fingerprint
+    from dreamerv3.fg_s3_e_quality_actor import execution_contract
+    s=validate_settings(settings)
+    admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(s['corpus_root'],stage=STAGE),
+        purpose=purpose,producer_gym=producer_gym,log_path=log_path)
+    proof,_=inspect_stage(s,allow_engineering=True);p=proof['identity']['preparation']
+    if p['course']!=admission.source.course_identity_hash or p['source']!=admission.receipt['content_identity']:
+        raise ValueError('F3_SOURCE_CORPUS_COURSE_MISMATCH')
+    identity=plain(dict(protocol=PROTOCOL,settings=s,source=admission.receipt['content_identity'],
+        course=admission.source.course_identity_hash,observation=observation_contract(),source_model=proof,
+        effective_model=model_config(s,controlled_small=proof['engineering_only']),
+        execution_contract=execution_contract(),execution_contract_hash=fingerprint(execution_contract()),
+        code=execution_identity(),backend='external_immutable_course_reader'))
+    blockers=['F3_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED']
+    if proof['engineering_only']:blockers.append('FOUNDATION_NOT_TRAINED')
+    if admission.native_result is None:blockers.append('F3_NATIVE_G3_NOT_RUN')
+    receipt=signed(dict(protocol=PROTOCOL,status='F3_ENGINEERING_READY' if proof['engineering_only'] or admission.native_result is None else 'F3_DATA_READY',
+        identity=identity,identity_hash=fingerprint(identity),blockers=blockers,training_admitted=False,research_admitted=False,source_receipt=admission.receipt))
+    result=F3Preparation(s,admission,receipt)
+    if admission.native_result is not None:_NATIVE_PROOFS[id(result)]=(result,fingerprint(admission.native_result),fingerprint(receipt))
+    return result
+
+
+def require_training_authority(preparation,*,authorized=False):
+    from gym_trading_env.envs.entry_contract import fingerprint
+    if authorized is not True:raise ValueError('F3_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    if preparation.receipt['identity']['source_model']['engineering_only']:raise ValueError('F3_FOUNDATION_NOT_TRAINED')
+    proof=_NATIVE_PROOFS.get(id(preparation))
+    if (not proof or proof[0] is not preparation or proof[1]!=fingerprint(preparation.source.native_result)
+            or proof[2]!=fingerprint(preparation.receipt) or preparation.receipt['status']!='F3_DATA_READY'):
+        raise ValueError('F3_ACTUAL_NATIVE_EXECUTION_PROOF_REQUIRED')
 
 
 def validate_settings(raw):
