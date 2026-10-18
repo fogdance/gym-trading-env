@@ -1,0 +1,30 @@
+{
+  "cwd": "/data/s3_corpus/early_train_20261018_cpu20_v2/code/gym-trading-env",
+  "argv": [
+    "env",
+    "PYTHONDONTWRITEBYTECODE=1",
+    "OPENBLAS_NUM_THREADS=1",
+    "OMP_NUM_THREADS=1",
+    "MPLCONFIGDIR=/tmp/fg-s3-formal-plan-mpl",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_corpus.py",
+    "validate",
+    "--source-pool",
+    "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+    "--env-receipt",
+    "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+    "--contract",
+    "CZCE.FG205",
+    "--start-day",
+    "2021-12-10",
+    "--end-day",
+    "2022-03-23",
+    "--debug"
+  ],
+  "stdout_redirect": "/tmp/TRAIN12_FG205_FULL_MAIN.validate.json",
+  "stdout_artifact": "evidence/source_validation/TRAIN12_FG205_FULL_MAIN.stdout.json",
+  "exit_code": 0,
+  "source_validation_only": true,
+  "corpus_generation": "NOT_RUN"
+}

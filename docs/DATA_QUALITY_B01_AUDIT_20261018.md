@@ -1,5 +1,7 @@
 # P0 DATA-QUALITY：B01 现场成果与覆盖审计
 
+> 历史报告：用户随后要求忽略并删除旧教材；cpu20_v1/v2 的 B01 产物及收据已删除，本文数字不计入当前教材，原路径已不存在。当前正式教材范围及状态以 [18合约完整主力期计划](../TRAIN_CORPUS_PRODUCTION_PLAN.md) 为准；下文仅保留删除前的历史审计证据，不再运行其重演命令。
+
 本轮只处理 [并行工作流任务书](</home/v/Downloads/FG_S3_E_Quality_Parallel_Workstreams_20261018_V1.md>) 的第一个P0。**首批 B01 的生产→G3→Reader→质量/成本报告闭环已完成；扩大跨合约教材仍待后续批次。** 本轮没有启动任何新生产或训练，没有推进DATA-MULTI/EVAL-BASE/TRAIN-PLAN。
 
 ## 成果清单

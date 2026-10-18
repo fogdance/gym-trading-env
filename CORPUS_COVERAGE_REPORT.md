@@ -1,81 +1,45 @@
-# Corpus 覆盖报告：2026-10-18，MACD V3
+# CORPUS_COVERAGE_REPORT
 
-**正式V3 B01已由用户生成，Native G3=GO、独立Reader=PASS_READER_ONLY，覆盖LIMITED；B02–B04为NOT_RUN。** 现场收据和逐项审计见 [第一个P0 DATA-QUALITY成果](docs/DATA_QUALITY_B01_AUDIT_20261018.md)。旧cpu20_v1失败尝试、下述DEV小样、旧FG201 V2均不计入B01的正式规模。
+**当前正式教材已完成0/18批。** 用户要求覆盖原TRAIN池全部18合约的完整主力资格期。来源只读校验已完成18/18，来源合计1455个合约官方日、488160行；这些数字不是已生产Replay、已验收课程或有效市场分钟数。
 
-## 正式B01：已核验的现场结果
+旧教材按用户要求忽略并删除：cpu20_v1失败尝试及cpu20_v2旧B01的教材和对应收据四目录均已删除、核对不存在。无完整备份，冻结Producer源码/pin及原始TRAIN行情保留。[删除记录](docs/formal_train_corpus_20261018/evidence/OLD_CORPUS_DELETION.json)。历史B01审计不再计入当前教材覆盖。
 
-6210物理行、1034独立cursor、1033推进分钟、3官方日、6198账户决策；125个最终清单文件SHA全部匹配。六账户各1035行Native G3逐行重放PASS。
+## 当前18批状态
 
-| 本批候选题型 | 账户状态候选次数 | 独立cursor支持 |
-| --- | ---: | ---: |
-| TP5候选 | 973 | 490 |
-| SL30候选 | 11 | 5 |
-| 其他退出候选 | 984 | 538 |
-| 快速TP（≤5市场分钟） | 8 | 5 |
-| 较慢TP（>5市场分钟） | 965 | 485 |
-| 5分钟内逆势≥10 | 31 | 11 |
-| 15分钟内逆势≥10 | 92 | 36 |
-| 5分钟内逆势10后SL30 | 6 | 2 |
-| 15分钟内逆势10后SL30 | 9 | 3 |
-| TP且完整MAE15≥10 | 38 | 14 |
-| 同官方日TP | 394 | 206 |
-| 跨官方日TP | 579 | 284 |
+| 批次 | 计划官方日 / 来源行 | 真实来源校验 | 原生生成 | 独立Native G3 | 独立Reader | 质量分布/成本 |
+| --- | ---: | --- | --- | --- | --- | --- |
+| TRAIN01_FG809_FULL_MAIN | 83 / 28264 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN02_FG901_FULL_MAIN | 86 / 29416 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN03_FG905_FULL_MAIN | 79 / 26762 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN04_FG909_FULL_MAIN | 78 / 26546 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN05_FG001_FULL_MAIN | 81 / 27464 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN06_FG005_FULL_MAIN | 75 / 20505 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN07_FG009_FULL_MAIN | 88 / 27600 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN08_FG101_FULL_MAIN | 82 / 28050 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN09_FG105_FULL_MAIN | 76 / 25620 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN10_FG109_FULL_MAIN | 73 / 24945 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN11_FG201_FULL_MAIN | 92 / 31260 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN12_FG205_FULL_MAIN | 68 / 23220 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN13_FG209_FULL_MAIN | 94 / 31950 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN14_FG301_FULL_MAIN | 81 / 27703 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN15_FG305_FULL_MAIN | 79 / 26895 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN16_FG309_FULL_MAIN | 84 / 28740 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN17_FG401_FULL_MAIN | 78 / 26790 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
+| TRAIN18_FG405_FULL_MAIN | 78 / 26430 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
 
-上述候选总分母1968次/1033有候选cursor，指标可重叠；实际退出14 TP、0 SL、4 MAIN_ROLL。Reader投影strict ADD/WAIT=23/1938，有效1961/6210，其余无效不补WAIT；score有效983/6210。P1无HEADS_VALID 64步窗口，总体LIMITED；其他10个阶段/抽样视图均SUPPORTED。
+精确日期、官方日列表、源文件SHA与每批身份锁见 [生产计划](TRAIN_CORPUS_PRODUCTION_PLAN.md) 和 [完整锁](docs/formal_train_corpus_20261018/locks/IDENTITY_LOCK.json)。18份实际validate输出只证明TRAIN范围/来源/日历与主力边界，不代替生成、G3或Reader。
 
-缺口：真实SL退出和右删失为0，快速TP及SL候选独立位置各仅5个，单合约3日仍不足以证明跨合约覆盖。下一批选择已锁定B02 FG009的2020-08-07/10/11，状态SELECTED_NOT_RUN。
+## 每批生成后填写的质量分母与缺口
 
-现场成本：生成3373.27秒、G3 1607.82秒、Reader 18.70秒；五阶段合计5013.33秒。报告含完整分布、无效原因、缺题型表及分母；产物和收据保持原位且未重签。
+所有以下项目当前均NOT_RUN，不预填0或沿用旧PASS：
 
-## 历史DEV小样（不计入正式B01）
+- 市场：去重contract×cursor、有效推进分钟、合约官方日；六账户物理Replay行及账户决策数单列。
+- 原始L1候选：TP5、SL30、OTHER_EXIT、快速TP≤5市场分钟、较慢TP、5/15分钟内逆势≥10及随后SL、TP且高MAE、同日/跨日、右删失；同时报告账户状态次数与去重cursor支持，重叠题型不相加为独立样本。
+- 实际交易：各行为真实ADD、TP、SL、主力退出、跨日持仓和未完成交易；候选结果不冒充已执行交易。
+- Reader投影：outcome/score/event/touch/adverse valid分母、严格ADD/WAIT、Quality Pair、无效原因；无效标签不补WAIT。
+- 课程支持：自然/分层/混合采样、各行为及各阶段真实窗口数、缺题型表；不足保持LIMITED/UNSUPPORTED。
+- 成本：各阶段GNU time和实际产物字节、Reader索引/抽样成本；全进程树PSS峰值无测量时保持NOT_RUN。全周期耗时不能由旧三日样本推定已完成预算。
 
-### 开发小样记录
+发布成功以新目录对应的BATCH_MANIFEST与逐批G3/Reader原始收据为准。教材范围由完整TRAIN池确定，不按未来质量标签选日；生成后的题型缺口用于评估课程支持，不能据此改写历史身份。当前没有可据以报告的正式18批质量结果。
 
-合约 CZCE.FG809，官方日2018-08-08；来源只含主力资格期间行情。观察窗口为5个cursor、4次有效市场推进，教师保留到真实主力退出点的完整TRAIN后缀。精确范围及身份见 [原生source lock](docs/data_macd_fix_20261018/evidence/DEV_source_lock.json)。
-
-| 观察量 | 实测 |
-| --- | ---: |
-| 原生账户 P0/P1/P2_low/P2_mid/P3/P4 | 6 |
-| StudentReplay物理行 | 30（每账户5） |
-| 去重市场cursor / 推进分钟 / 官方日 | 5 / 4 / 1 |
-| 已执行账户决策 | 24 |
-| 六账户原生复核 | 每账户5行及5行Teacher标签，全部PASS |
-| MACD数组 | 30/30有限float32，末维4；valid=1，来自完整因果预热 |
-| 实际ADD成交 | 3，诊断停止时持仓未完成退出 |
-| 实际TP / SL / 其他退出 | 0 / 0 / 0 |
-| 原始L1反事实候选 | 21次账户状态，去重5个市场cursor |
-| L1后验TP5 / SL30 / OTHER_EXIT | 0 / 0 / 21 |
-| 投影strict有效 / ADD / WAIT | 12 / 0 / 12；其余18行不补标签 |
-| 七事件窗口有效数 | 每个12/30=40% |
-| 优化器更新 / 新独立Native G3 | 0 / NOT_RUN |
-
-OTHER_EXIT是完整教师后缀上的候选结果，不是小样窗口内实际退出。诊断停止处3笔持仓的删失也不等于教师后缀缺失。候选次数、物理行和去重市场位置不能相加为独立金融样本。
-
-Corpus内容身份 `636ceada845a4cf5c73be364584147acf99dff951ca52d40b3bd3191aafc7304`；原生manifest文件SHA256 `5d253bc87e269026965434bb281203f5f5a3a1840797f3dedf9c4274f19544a5`。真实产物目录及完整复核见 [DEV结果](docs/data_macd_fix_20261018/evidence/DEV_SMOKE_RESULT.json)、[不可变原生manifest副本](docs/data_macd_fix_20261018/evidence/DEV_corpus_manifest.json)。原始Replay/Sidecar保留在结果中的开发artifacts目录。
-
-### DEV Reader和题型支持（历史）
-
-Reader独立建立三方Replay/Trace/Sidecar Join，30行身份核对通过，`PASS_READER_ONLY / LIMITED`，优化器曝光0。索引SHA256 `9cbcd6a92608dac8e09b9273c9deb7ddd2a3047b4a9f3ae852580332959ab52e`。
-
-WM_NATURAL、HEADS_VALID:NATURAL、ACTOR_STRICT:NATURAL的4步窗口可读取并精确恢复下一批。Quality Pair、缺少类别的分层/混合窗口，以及P1单账户的4步HEADS_VALID窗口标为 `INSUFFICIENT_CURRICULUM_SUPPORT`，未采样替代类别。
-
-当前小样对快速TP、SL30、快速逆势后SL、TP后高MAE、strict ADD、Quality Pair均无支持；不能作为这些题型验收。Reader最初因无Quality Pair中断的日志保留，修复诊断报告后才返回明确LIMITED；没有放宽实际Reader.sample或模型检查。
-
-原始 [Reader覆盖](docs/data_macd_fix_20261018/evidence/WP03_COURSE_READER_COVERAGE.json)、[Join](docs/data_macd_fix_20261018/evidence/WP03_TEACHER_JOIN_AUDIT.json)、[逐行质量统计](docs/data_macd_fix_20261018/evidence/dev_quality_coverage.json) 均可核对。StudentReplay中无Teacher/Quality/Oracle/Outcome字段，Teacher仍在独立Sidecar。
-
-## 正式计划覆盖
-
-| 批次 | 计划合约/官方日数/市场位置 | 正式生成 | 新Native G3 | 整批Reader及质量覆盖 |
-| --- | --- | --- | --- | --- |
-| B01_FG809 | FG809 / 3 / 1034 | COMPLETED | GO | PASS_READER_ONLY / LIMITED；已审计 |
-| B02_FG009 | FG009 / 3 / 1035 | NOT_RUN | NOT_RUN | NOT_RUN |
-| B03_FG209 | FG209 / 3 / 1035 | NOT_RUN | NOT_RUN | NOT_RUN |
-| B04_FG405 | FG405 / 3 / 915 | NOT_RUN | NOT_RUN | NOT_RUN |
-
-已完成1合约/3官方日/1034位置；4合约、12合约官方日、4019位置仍是总计划，其他三批NOT_RUN。详见 [生产计划](TRAIN_CORPUS_PRODUCTION_PLAN.md)。各批按实际TP/SL、MAE、L2 valid/invalid、strict ADD/WAIT/Pair、自然/分层采样支持填写结果，不能预填0或继承旧PASS。
-
-## 保留的历史证据
-
-旧 `/data/s3_corpus/early_train_20261018_cpu20_v1` B01：generate exit2、`MACD incomplete previous bucket`，42.50s，失败于预热，没有完整Corpus；本轮未改写。旧FG201 V2：690个cursor、4146物理行及历史G3/Reader收据保留在 [旧计划证据](docs/train_corpus_20261018/evidence)，本轮不重签、不迁移，也不将其旧数学合同当作V3认证。
-
-现有18个TRAIN来源清点及SHA见 [历史来源清单](docs/train_corpus_20261018/evidence/SOURCE_INVENTORY.json)。四批来源在计划发布时已validate；本轮仅审计B01现场收据和标签，未启动新生产、未读取TEST、未使用GPU或真实优化器。
+本轮无真实生成、无新G3/Reader、无模型/优化器更新、无GPU、无DEV/TEST价格访问。逐批命令已提供给用户，入口不自动启动后续批次，不合并到integration/s3-next。

@@ -1,0 +1,98 @@
+{
+  "status": "PLAN_VALIDATION_PASS",
+  "source_validation_receipts": 18,
+  "source_contract_official_days": 1455,
+  "source_rows": 488160,
+  "batch_plan_and_source_locks_checked": 18,
+  "runtime_source_files_verified": 242,
+  "script_bash_syntax": "PASS",
+  "embedded_python_blocks_parsed": 3,
+  "five_phase_workflow": "BYTE_IDENTICAL_TO_EXISTING_DATA_RELEASE",
+  "negative_argument_cases": [
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh"
+      ],
+      "exit_code": 0,
+      "production_started": false
+    },
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh",
+        "--help"
+      ],
+      "exit_code": 0,
+      "production_started": false
+    },
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh",
+        "all"
+      ],
+      "exit_code": 2,
+      "production_started": false
+    },
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh",
+        "produce"
+      ],
+      "exit_code": 2,
+      "production_started": false
+    },
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh",
+        "produce",
+        "all"
+      ],
+      "exit_code": 2,
+      "production_started": false
+    },
+    {
+      "argv": [
+        "bash",
+        "/home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env/docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh",
+        "produce",
+        "TRAIN01_FG809_FULL_MAIN",
+        "TRAIN02_FG901_FULL_MAIN"
+      ],
+      "exit_code": 2,
+      "production_started": false
+    }
+  ],
+  "doc_links_checked": 13,
+  "archived_release_checksums_unchanged": [
+    "train_corpus_20261018",
+    "data_macd_fix_20261018"
+  ],
+  "old_corpus_directories_deleted_and_absence_verified": 4,
+  "new_production_root_exists": false,
+  "formal_production": "NOT_RUN",
+  "native_g3": "NOT_RUN",
+  "reader": "NOT_RUN",
+  "cpu20_occupancy": "NOT_RUN_PER_USER_REQUEST",
+  "gpu": "NOT_RUN",
+  "optimizer_updates": 0,
+  "source_code_changes": false,
+  "setup_corrections": [
+    {
+      "initial_frozen_audit_exit_code": 1,
+      "error": "ModuleNotFoundError: No module named 'gym_trading_env.research.fg_s3_e_quality_supervision'",
+      "cause": "PYTHONPATH omitted in inspection command",
+      "retry": "PYTHONPATH=.:src:../dreamerv3, matching production script",
+      "retry_exit_code": 0
+    },
+    {
+      "initial_plan_verifier_exit_code": 1,
+      "error": "AssertionError comparing compact JSON encoding to source lock fingerprint",
+      "resolution": "New plans use existing fg_replay.signed and read_manifest; validator uses the actual entry_contract.fingerprint encoding; original source locks unchanged",
+      "retry": "PASS"
+    }
+  ]
+}

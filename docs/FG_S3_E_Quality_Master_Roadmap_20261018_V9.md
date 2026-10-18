@@ -1,5 +1,7 @@
 # E+Quality Master Roadmap V9：第一个P0 DATA-QUALITY现场审计
 
+> 后续状态更正：用户已要求删除旧教材，旧 B01 产物及收据已删除；本线当前可用正式 Corpus 为0份。原B02–B04三日窗口不再是现行生产安排。新的正式教材覆盖全部18个TRAIN合约的完整主力期，18份来源校验已通过，实际生成/G3/Reader均NOT_RUN。见 [现行生产计划](../TRAIN_CORPUS_PRODUCTION_PLAN.md)；下文保留V9发布时的历史快照。
+
 2026-10-18。继承 [V8](FG_S3_E_Quality_Master_Roadmap_20261018_V8.md) 的WP01–WP10及WP04/WP05集成状态，不变更模型、课程数学或训练授权。本轮仅处理并行工作流任务书的第一个P0。
 
 | 工作流 | 本轮实际状态 | 下一条件 |

@@ -1,64 +1,49 @@
-# TRAIN Corpus 生产计划：MACD V3 修复版，2026-10-18
+# TRAIN_CORPUS_PRODUCTION_PLAN
 
-当前代码修复已完成；**B01已由用户正式生成，Native G3=GO、Reader=PASS_READER_ONLY，质量覆盖LIMITED；B02–B04仍NOT_RUN，由用户逐批执行**。现场成果见 [P0 DATA-QUALITY审计](docs/DATA_QUALITY_B01_AUDIT_20261018.md)。旧 `/data/s3_corpus/early_train_20261018_cpu20_v1` 的 B01 是失败尝试，保留原目录与 pin，禁止覆盖重试。
+**正式教材范围：原合法TRAIN池全部18合约、每个合约完整主力资格期间；不是此前四个三日窗口。** 每合约一批，六种原生行为连续生成。全部18份来源锁已只读校验成功，共1455个合约官方日、488160行原始行情；实际正式生成0/18，生成/G3/Reader/质量分布均NOT_RUN。
 
-## 最终运行版本
+旧教材按用户要求删除并排除，当前正式教材从零统计。旧B01成功结果不再作为当前教材；旧B02–B04三日计划封存，不是当前正式生产命令。现行范围、18批定义和所有逐批命令见 [正式生产包](docs/formal_train_corpus_20261018/README.md)。
 
-| 仓库 | 运行源码提交 | 冻结检查 |
-| --- | --- | --- |
-| Gym | `b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46` | clean，已快进共用 integration/s3-next |
-| Dreamer | `fd144113ce706e2d8f1ce8e7828ece0799c8bf7a` | clean，已快进共用 integration/s3-next |
-
-开发位置：`/home/v/Documents/work/research/fg-s3-data-integration-20261018/`，两仓分支 `integration/s3-data`。WP04 worktree 未修改。最终文档提交可在运行提交之后；生产脚本始终冻结上表精确运行提交。
-
-最终 [Producer pin](docs/data_macd_fix_20261018/locks/PRODUCER_PIN.json) 文件 SHA256：`7310b2a2cdcfba7fdc8697bc46fff0d6ca39e4f7932b90710eff7de1a7179515`。242 份运行源码的相对路径/哈希、Observation 合同与模板哈希见 [完整身份锁](docs/data_macd_fix_20261018/locks/IDENTITY_LOCK.json)。[冻结源码检查](docs/data_macd_fix_20261018/evidence/FROZEN_PRODUCER_AUDIT.json) 只证明代码身份，不是 G3。
-
-## 用户执行命令
+## 用户执行首批
 
 ```bash
-cd /home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env
-bash docs/data_macd_fix_20261018/RUN_TRAIN_CORPUS.sh produce B02_FG009
+cd /home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env
+bash docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh produce TRAIN01_FG809_FULL_MAIN
 ```
 
-B01及冻结代码已存在，不再执行prepare或重跑B01。上面给出选定下一批B02的命令，本轮未执行。生产根目录固定 `/data/s3_corpus/early_train_20261018_cpu20_v2`。`prepare` 创建冻结兄弟 worktree；`produce` 只执行所选单批：来源校验 → 六行为原生生成及随附复核 → 独立 Native G3 → 独立 Reader → 质量统计 → 不可变 `BATCH_MANIFEST.json`。失败立即停止并保留日志、退出码及已有工件；重试必须使用另一个新版本目录。
+首批范围为CZCE.FG809，2018-04-11至2018-08-08全部83个官方交易日，cursor 0..28263；用户运行上面命令才开始真实生成。每次只能指定一个批次，固定20逻辑CPU预算；不自动运行全部18合约。完成后逐批检查质量覆盖，由用户选择下一批。
 
-阅读 B01 覆盖后再手动选择 `produce B02_FG009`、`produce B03_FG209` 或 `produce B04_FG405`。脚本没有全合约模式，也不会自动启动下一批。B01现场已执行完成；本轮代理只读审计，没有启动任何新批次。
+## 18批完整范围
 
-## 已锁定范围
+| 批次 | 合约 | 官方日范围（含首尾） | 官方日数 | 来源行数 | 生成/G3/Reader/覆盖 |
+| --- | --- | --- | ---: | ---: | --- |
+| TRAIN01_FG809_FULL_MAIN | CZCE.FG809 | 2018-04-11—2018-08-08 | 83 | 28264 | NOT_RUN |
+| TRAIN02_FG901_FULL_MAIN | CZCE.FG901 | 2018-08-09—2018-12-14 | 86 | 29416 | NOT_RUN |
+| TRAIN03_FG905_FULL_MAIN | CZCE.FG905 | 2018-12-17—2019-04-16 | 79 | 26762 | NOT_RUN |
+| TRAIN04_FG909_FULL_MAIN | CZCE.FG909 | 2019-04-17—2019-08-08 | 78 | 26546 | NOT_RUN |
+| TRAIN05_FG001_FULL_MAIN | CZCE.FG001 | 2019-08-09—2019-12-09 | 81 | 27464 | NOT_RUN |
+| TRAIN06_FG005_FULL_MAIN | CZCE.FG005 | 2019-12-10—2020-04-01 | 75 | 20505 | NOT_RUN |
+| TRAIN07_FG009_FULL_MAIN | CZCE.FG009 | 2020-04-02—2020-08-11 | 88 | 27600 | NOT_RUN |
+| TRAIN08_FG101_FULL_MAIN | CZCE.FG101 | 2020-08-12—2020-12-11 | 82 | 28050 | NOT_RUN |
+| TRAIN09_FG105_FULL_MAIN | CZCE.FG105 | 2020-12-14—2021-04-07 | 76 | 25620 | NOT_RUN |
+| TRAIN10_FG109_FULL_MAIN | CZCE.FG109 | 2021-04-08—2021-07-23 | 73 | 24945 | NOT_RUN |
+| TRAIN11_FG201_FULL_MAIN | CZCE.FG201 | 2021-07-26—2021-12-09 | 92 | 31260 | NOT_RUN |
+| TRAIN12_FG205_FULL_MAIN | CZCE.FG205 | 2021-12-10—2022-03-23 | 68 | 23220 | NOT_RUN |
+| TRAIN13_FG209_FULL_MAIN | CZCE.FG209 | 2022-03-24—2022-08-10 | 94 | 31950 | NOT_RUN |
+| TRAIN14_FG301_FULL_MAIN | CZCE.FG301 | 2022-08-11—2022-12-09 | 81 | 27703 | NOT_RUN |
+| TRAIN15_FG305_FULL_MAIN | CZCE.FG305 | 2022-12-12—2023-04-10 | 79 | 26895 | NOT_RUN |
+| TRAIN16_FG309_FULL_MAIN | CZCE.FG309 | 2023-04-11—2023-08-11 | 84 | 28740 | NOT_RUN |
+| TRAIN17_FG401_FULL_MAIN | CZCE.FG401 | 2023-08-14—2023-12-07 | 78 | 26790 | NOT_RUN |
+| TRAIN18_FG405_FULL_MAIN | CZCE.FG405 | 2023-12-08—2024-04-08 | 78 | 26430 | NOT_RUN |
 
-| 批次 | TRAIN 合约 | 官方日 | cursor | 计划市场位置 | 正式生成/G3/Reader |
-| --- | --- | --- | --- | ---: | --- |
-| B01_FG809 | CZCE.FG809 | 2018-08-06、07、08 | 27230..28263 | 1034 | COMPLETED / GO / PASS_READER_ONLY-LIMITED |
-| B02_FG009 | CZCE.FG009 | 2020-08-07、10、11 | 26565..27599 | 1035 | NOT_RUN |
-| B03_FG209 | CZCE.FG209 | 2022-08-08、09、10 | 30915..31949 | 1035 | NOT_RUN |
-| B04_FG405 | CZCE.FG405 | 2024-04-02、03、08 | 25515..26429 | 915 | NOT_RUN |
+[逐批不可变计划manifest](docs/formal_train_corpus_20261018/batches)、[逐批来源锁及完整身份锁](docs/formal_train_corpus_20261018/locks) 含全部官方日、TRAIN信任根、来源文件哈希与真实主力末端。所有Corpus/Teacher/index新结果身份仍为null；不能继承旧教材的认证身份。
 
-总计划为4合约、12合约官方日、4019市场位置；目前实际完成B01的1合约、3官方日、1034市场位置，不能把其他三批计入已生产覆盖。每批固定 P0/P1/P2_low/P2_mid/P3/P4 六个账户和 seed=202。不可变 [计划 manifest](docs/data_macd_fix_20261018/batches) 与 [source lock](docs/data_macd_fix_20261018/locks) 已更新到 V3；不可变计划文件保留当时的null/NOT_RUN；B01真实身份由生产现场BATCH_MANIFEST给出，不能回填或重签旧计划。其他三批身份仍未知。
+## 生产和验收
 
-计划发布时四批 `validate` 均 `SOURCE_VALIDATED_ONLY`；精确命令和 stdout 见 [来源收据](docs/data_macd_fix_20261018/evidence/source_validation)。TRAIN 信任根、白名单和主力资格边界未改。原18来源的历史清点为488160行/1455合约官方日，见保留的 [来源清单](docs/train_corpus_20261018/evidence/SOURCE_INVENTORY.json)，本轮仅审计已发布B01，没有启动新生产。
+复用原WP02 Producer及WP03 Admission/Reader：validate → 六行为原生generate及复核 → 独立Native G3 → 独立Reader → 覆盖报告 → 不可变BATCH_MANIFEST。每批必须有自己的G3和Reader，缺题型或采样不支持必须如实报告。P0 DATA-QUALITY仍在推进，不能用18份来源校验声称18批教材生产完成。
 
-显式日期限制 StudentReplay 观察窗口；计算读取该合约主力资格内的因果预热和完整 TRAIN 教师后缀，不以观察窗口末端伪造金融平仓。全部实际价格行仍须属于原始 TRAIN。原日历依据为 `user_confirmed_complete_market`，本轮没有增加交易所独立日历认证。
+生产输出 `/data/s3_corpus/train_full_main_20261018_cpu20_v1`。复用保留的冻结源码 `/data/s3_corpus/early_train_20261018_cpu20_v2/code/`，Gym=`b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46`，Dreamer=`fd144113ce706e2d8f1ce8e7828ece0799c8bf7a`；[Producer pin](docs/formal_train_corpus_20261018/locks/PRODUCER_PIN.json) 文件SHA256=`7310b2a2cdcfba7fdc8697bc46fff0d6ca39e4f7932b90710eff7de1a7179515`。不需要prepare，不重新冻结到当前集成HEAD。
 
-## 算力与开发层级
+资源为taskset 0–19、workers=20、每worker原生线程1、按可用物理内存约束并行；一次一批。不再做20核占用验证。全主力期真实生成耗时、磁盘增长、G3成本和全进程树内存峰值均NOT_RUN。运行时由脚本记录实际内存/磁盘；仅使用工作盘及/data指定存储。
 
-正式命令使用 `taskset -c 0-19`、`--workers 20`，账户及标签 worker 合计最多20；原生库每进程1线程，GPU 不可见。内存充足时为6个账户+14个标签进程；按实际 MemAvailable/PSS 缩减并发，Swap 不算物理内存。预热与部分建表仍是串行阶段，不承诺全程2000% CPU。B01现场日志已记录生成/G3平均CPU=1270%/1163%，墙钟3373.27/1607.82秒；没有额外占核测试，全进程树PSS峰值仍NOT_RUN。
-
-产物位于 `/data`（历史设备核查 `/dev/sda1`），开发位于工作盘 `/dev/sdd2`；不使用其他存储。用户生产脚本在开始前记录实际内存与磁盘余量，并拒绝 `/data` 设备变化。CPU和数据范围由本次明确批次命令选择，不构成代理自动生产授权。
-
-| 层级 | 使用方式 |
-| --- | --- |
-| DEV | 临时目录、合成数据、有限真实 TRAIN、定向测试；失败可改后重试；不要求每次冻结SHA或完整G3；产物 DEV_ONLY/NOT_CERTIFIED |
-| DATA | 最终发布版本才冻结代码与来源；每批发布前独立G3和Reader；保留失败结果身份 |
-| FORMAL | 独立训练授权、阶段冻结/优化器/Checkpoint/研究验收；DATA成功不解除训练Guard |
-
-上述规则已写入 [AGENTS.md](AGENTS.md)，兄弟 Dreamer 遵循同一规则。金融正确、MACD因果性、Teacher/Observation隔离在三个层级都必须满足。
-
-## 当前实际验证
-
-正式B01已完成生成、逐行独立G3、Reader和质量审计：6210物理行/1034独立cursor，质量LIMITED，五阶段墙钟5013.33秒。原件 [BATCH_MANIFEST](</data/s3_corpus/early_train_20261018_cpu20_v2/receipts/B01_FG809/BATCH_MANIFEST.json>) 及 [逐项报告](docs/DATA_QUALITY_B01_AUDIT_20261018.md)。下面的DEV与CPU测试记录保留原开发验收语境，不代替B01现场收据。
-
-MACD第1～4根有效分钟持续输出 partial，完整第5根才提交一次EMA；认证区间尾部和零时长结束标记不供新EMA价格。数学子合同为 `FG_S3_E_MACD5M_CAUSAL_V3`；Observation四维形状保持，合同及Course/Corpus内容身份重新锁定，旧V2产物不能冒名准入。
-
-实际单worker DEV：FG809 2018-08-08，4个市场推进/账户，六行为30行Replay，5个独立cursor，24个账户决策，逐行账户/Teacher复核PASS；Reader `PASS_READER_ONLY / LIMITED`。缺少题型明确UNSUPPORTED。详见 [修复报告](DATA_PRODUCER_FIX_REPORT.md) 和 [覆盖报告](CORPUS_COVERAGE_REPORT.md)。
-
-265个不同的选定CPU用例通过（264项基础回归、Reader定向回归及共用基线19项，重复用例不累计）；非全项目通过。8项调用真实优化器fixture的共享用例、GPU、TEST价格和正式训练均NOT_RUN。原始清单及继承范围见 [验证摘要](docs/data_macd_fix_20261018/evidence/VERIFICATION_SUMMARY.json)。
+本轮只改独立worktree的生产文档和发布脚本，不改Producer/Reader金融语义、不改WP04、不合并到s3-next。无GPU、无DEV/TEST价格、无真实优化器更新；DATA教材验收与FORMAL训练准入仍分开。旧产物删除及未运行项见 [覆盖报告](CORPUS_COVERAGE_REPORT.md)。
