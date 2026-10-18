@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="13" time="30.039" timestamp="2026-10-19T00:28:10.487524+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D01_natural_balanced_denominators_and_single_class_fallback" time="2.176" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D02_l1_conflicts_never_reverse_l2_and_default_off" time="0.117" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D03_no_pairs_across_owner_segment_batch_or_zero_owner" time="3.556" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D04_l2_flip_changes_gradient_and_invalid_placeholders_are_zero" time="1.978" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D05_actual_dual_mask_and_reset_terminal_define_valid_l2" time="0.155" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D06_auxiliary_never_changes_natural_prior_or_pairs_across_streams" time="2.115" /><testcase classname="tests.entry_v1.test_wp06_losses" name="test_D07_pair_temperature_and_explicit_weight_ablation" time="0.035" /><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D08_original_readers_roles_rng_restore_and_bounded_cache[None]" time="17.641"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">indexed = (Admission(source=SupervisionSource(corpus_root=PosixPath('/tmp/pytest-of-v/pytest-548/wp06_sampling0/corpus'), corpus..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+mode = None
+
+    @pytest.mark.parametrize('mode',[None,'NATURAL','STRATIFIED','MIXED'])
+    def test_D08_original_readers_roles_rng_restore_and_bounded_cache(indexed,mode):
+&gt;       a=stream(indexed,mode);b=stream(indexed,mode)
+          ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp06_sampling.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_sampling.py:28: in stream
+    return ActorStreams(SimpleNamespace(settings=validate_settings(s),source=admission),index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:24: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x755b684a7b10&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:135: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D08_original_readers_roles_rng_restore_and_bounded_cache[NATURAL]" time="0.109"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">indexed = (Admission(source=SupervisionSource(corpus_root=PosixPath('/tmp/pytest-of-v/pytest-548/wp06_sampling0/corpus'), corpus..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+mode = 'NATURAL'
+
+    @pytest.mark.parametrize('mode',[None,'NATURAL','STRATIFIED','MIXED'])
+    def test_D08_original_readers_roles_rng_restore_and_bounded_cache(indexed,mode):
+&gt;       a=stream(indexed,mode);b=stream(indexed,mode)
+          ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp06_sampling.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_sampling.py:28: in stream
+    return ActorStreams(SimpleNamespace(settings=validate_settings(s),source=admission),index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:24: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x755b28423250&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:135: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D08_original_readers_roles_rng_restore_and_bounded_cache[STRATIFIED]" time="0.104"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">indexed = (Admission(source=SupervisionSource(corpus_root=PosixPath('/tmp/pytest-of-v/pytest-548/wp06_sampling0/corpus'), corpus..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+mode = 'STRATIFIED'
+
+    @pytest.mark.parametrize('mode',[None,'NATURAL','STRATIFIED','MIXED'])
+    def test_D08_original_readers_roles_rng_restore_and_bounded_cache(indexed,mode):
+&gt;       a=stream(indexed,mode);b=stream(indexed,mode)
+          ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp06_sampling.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_sampling.py:28: in stream
+    return ActorStreams(SimpleNamespace(settings=validate_settings(s),source=admission),index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:24: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x755b284bc350&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:135: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D08_original_readers_roles_rng_restore_and_bounded_cache[MIXED]" time="0.102"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">indexed = (Admission(source=SupervisionSource(corpus_root=PosixPath('/tmp/pytest-of-v/pytest-548/wp06_sampling0/corpus'), corpus..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+mode = 'MIXED'
+
+    @pytest.mark.parametrize('mode',[None,'NATURAL','STRATIFIED','MIXED'])
+    def test_D08_original_readers_roles_rng_restore_and_bounded_cache(indexed,mode):
+&gt;       a=stream(indexed,mode);b=stream(indexed,mode)
+          ^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp06_sampling.py:32: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_sampling.py:28: in stream
+    return ActorStreams(SimpleNamespace(settings=validate_settings(s),source=admission),index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:24: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x755b681451d0&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:135: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D09_auxiliary_failure_restores_both_consumption_states" time="0.105"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">indexed = (Admission(source=SupervisionSource(corpus_root=PosixPath('/tmp/pytest-of-v/pytest-548/wp06_sampling0/corpus'), corpus..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x755b2853fa90&gt;
+
+    def test_D09_auxiliary_failure_restores_both_consumption_states(indexed,monkeypatch):
+&gt;       a=stream(indexed,'MIXED')
+          ^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp06_sampling.py:48: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_sampling.py:28: in stream
+    return ActorStreams(SimpleNamespace(settings=validate_settings(s),source=admission),index)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:24: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x755b28420e10&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:135: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_sampling" name="test_D10_missing_auxiliary_support_is_no_go_not_resampled" time="0.384" /></testsuite></testsuites>

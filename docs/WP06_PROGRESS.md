@@ -24,3 +24,11 @@ G0 complete: 126 distinct CPU cases PASS, exit 0; real TRAIN DEV 4-minute read P
 - 验证非有限候选完整回滚、已有动量的全无效 batch 不推进 optimizer、冻结非零动量/负零、错误 Owner/标签/原生 stepid、Q/Soft、单动作 mask/reset/terminal 拒绝或屏蔽。
 - 当前仅 CPU 合成工程验收，真实 TRAIN 更新数为 0。D 的双 Reader 协调仍为独立待提交工作。
 
+# 06.D Teacher、采样与同一原循环
+
+- `D_run`：16 passed / exit 0 / 220.47 秒。包含两条原 WP03 Reader（NATURAL anchor + MIXED auxiliary）、原 Agent.stream/prefetch 和同一 HeadsRun.update/run；两次实际 Actor 更新，以及全无效批次消费 4 次后明确拒绝继续、optimizer 保持 0。
+- `D_boundary`：14 passed / exit 0 / 32.66 秒。包括 NATURAL/STRATIFIED/MIXED RNG 精确恢复、辅助失败双流回滚、仅 burn-in 有标签时拒绝 target support、独立自然/辅助/平衡分母、标签翻转梯度、L1 冲突过滤、跨 Owner/reset/batch 零 Pair。
+- 原始失败保留：`D_losses` 1 failed（测试把 10 分差计入 >=15），`D_loss_sampling` 5 failed（测试账户每 9 步 reset 不支持 12 步窗口）；修正 fixture 后 `D_loss_sampling_retry` 13 passed。生产准入与数学阈值未放宽。
+- `D_actor_run.json` 从 D11 实际 FullCheckpoint 读取 counters/双 Reader 状态和参数 SHA；单元测试结果文件名曾与 harness 同名，已改名避免覆盖。原始 Checkpoint 未改写。
+- 自审修正统计含义：无辅助流时 balanced loss 可复用主流，但 `auxiliary_*` 暴露计数为 0；新增 `balanced_count` 单独记录实际 loss 分母。
+
