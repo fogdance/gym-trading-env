@@ -287,8 +287,18 @@ def main(argv=None):
     reader.add_argument('--corpus',required=True);reader.add_argument('--out',required=True)
     reader.add_argument('--length',type=int,default=64);reader.add_argument('--seed',type=int,default=202)
     reader.add_argument('--without-model',action='store_true')
+    multi=sub.add_parser('multi-read',help='Read-only multi-Corpus scheduling and cold Checkpoint probe')
+    multi.add_argument('--config',required=True);multi.add_argument('--out',required=True)
+    multi.add_argument('--batch-size',type=int,default=4);multi.add_argument('--length',type=int,default=8)
+    multi.add_argument('--require-published',action='store_true',help='Require 2+ actual published TRAIN batch receipts')
     args=parser.parse_args(argv)
     try:
+        if args.command=='multi-read':
+            from .fg_s3_e_quality_multi_checks import multi_evidence
+            result=multi_evidence(args.config,args.out,batch_size=args.batch_size,
+                length=args.length,require_published=args.require_published)
+            print(json.dumps(result,ensure_ascii=False),flush=True)
+            return 0
         out=_output(args.out,args.corpus)
         source=SupervisionSource.from_corpus(args.corpus)
         admission=QualitySupervisionAdmission.preflight(source,purpose=getattr(args,'purpose','development'),
