@@ -1,0 +1,56 @@
+.......F.                                                                [100%]
+=================================== FAILURES ===================================
+_________ test_C06_reset_episode_full_forward_and_finite_K_comparison __________
+
+case = ({'schema': 'FG_S3_E_QUALITY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec':... 'SL': {'status': 'SUPPORTED', 'count': 4, 'loss': 5.541263580322266, 'bias': 3.174999952316284, ...}, ...}, ...}, ...)
+
+        assert result['status']=='NO_SUPPORT' and not result['model_research_go'] and not result['training_admitted']
+    
+    def test_C06_reset_episode_full_forward_and_finite_K_comparison(case):
+        _,_,a,data,_,_,_=case
+        # Controlled short episode reference: same visible sequence and actions,
+        # explicit reset at start; never submitted as authenticated Reader data.
+        raw={k:jnp.asarray(v) for k,v in data.items()};raw['is_first']=raw['is_first'].at[:,0].set(True)
+        def reference(d):
+            initial=a.model.init_train(1);carry=initial[:3]
+            obs={k:d[k] for k in a.model.obs_space};obs['market_advance']=d['market_advance']
+            act={k:jnp.concatenate([initial[3][k][:,None],d[k][:,:-1]],1) for k in a.model.act_space}
+            full,(_,_,out,mets)=a.model.wm_only(carry,obs,act,False,diagnostics=True)
+            prefix,tail,prev,_=__import__('dreamerv3.fg_s3_e_quality_foundation',fromlist=['context']).context(a.model,d)
+            finite,(_,_,short,sm)=a.model.wm_only(prefix,tail,prev,False,diagnostics=True)
+            _,nobs,nact,_=a.model._apply_replay_context(initial,d)
+            _,(_,_,none,nm)=a.model.wm_only(carry,nobs,nact,False,diagnostics=True)
+            return full,finite,out['repfeat'],short['repfeat'],none['repfeat'],mets['f1_raw/encoder_tokens'],sm['f1_raw/encoder_tokens']
+>       _,result=nj.pure(reference)(a.params,raw,seed=202,create=False,modify=True)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp04_diagnostics.py:103: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (<built-in function eq>, array([[[ 0.03782615,  0.02194634,  0.03578627, ..., -0.17321406,
+         -0.05195735, -0.06...        [ 0.09519626,  0.01520706, -0.01095162, ..., -0.1917636 ,
+         -0.05402359,  0.15565977]]], dtype=float32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+>           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 15 / 1024 (1.46%)
+E           Max absolute difference: 8.940697e-08
+E           Max relative difference: 0.00061109
+E            x: array([[[ 0.037826,  0.021946,  0.035786, ..., -0.173214, -0.051957,
+E                    -0.06712 ],
+E                   [-0.002308,  0.015005,  0.068188, ..., -0.232956, -0.021748,...
+E            y: array([[[ 0.037826,  0.021946,  0.035786, ..., -0.173214, -0.051957,
+E                    -0.06712 ],
+E                   [-0.002308,  0.015005,  0.068188, ..., -0.232956, -0.021748,...
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp04_diagnostics.py::test_C06_reset_episode_full_forward_and_finite_K_comparison
+1 failed, 8 passed in 404.95s (0:06:44)

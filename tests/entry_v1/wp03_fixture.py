@@ -62,7 +62,7 @@ def metadata_corpus(root):
     return root
 
 
-def native_corpus(root, *, minutes=30, chunk=9):
+def native_corpus(root, *, minutes=30, chunk=9, factory_bundle=None, initial_state=None):
     """Six original Env accounts and Replay on controlled, non-real prices."""
     import shutil
     import pandas as pd
@@ -71,14 +71,16 @@ def native_corpus(root, *, minutes=30, chunk=9):
     from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior, behavior_specs
     from gym_trading_env.research.fg_s3_e_quality_corpus_cli import _publish_streams
     root.mkdir()
-    factory,_,profile=native_factory(root.parent/(root.name+'_market'),minutes=minutes,chunk=chunk)
+    factory,_,profile=(factory_bundle if factory_bundle is not None else
+        native_factory(root.parent/(root.name+'_market'),minutes=minutes,chunk=chunk))
     env=factory();source=dict(fold='TRAIN',state_cache_entries=0,calendar_complete=True)
-    strict=QualityStrictTeacher(env,source=source)
+    if initial_state is not None:env.import_state(initial_state)
+    strict=QualityStrictTeacher(env,source=source,start_cursor=env.current_step)
     specs=behavior_specs(202)+[dict(id='P4',kind='quality_oracle_schedule',seed_components=[202,0,5],
                                   teacher_identity=strict.identity_hash)]
     for spec in specs:
         generate_behavior(factory,spec,root/'policies'/spec['id'],ROOT.parent/'dreamerv3',
-                          source=source,strict=strict)
+                          source=source,strict=strict,initial_state=initial_state)
     _publish_streams(root,list(POLICIES))
     metadata=metadata_corpus(root.parent/(root.name+'_metadata'))
     for name in ('source_lock.json','teacher_manifest.json','course_v2.json','model_contract.json'):
