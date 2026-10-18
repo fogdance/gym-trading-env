@@ -1,0 +1,297 @@
+{
+  "A_contract": {
+    "exit_code": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A01_engineering_receipt_is_not_native_or_training_authority",
+        "time": "0.105"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[stage-QUALITY_HEADS]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[sampling_stage-FOUNDATION_WM]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[sampling_spec-value2]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[burnin_steps-0]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[target_steps-True]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A02_stage_shape_or_old_initialization_never_falls_back[model_init-value5]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A03_wrong_reward_observation_or_nontrain_rejected_without_prepare",
+        "time": "0.115"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A04_unauthorized_cli_fails_before_reading_or_creating_run[f1-start]",
+        "time": "0.051"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A04_unauthorized_cli_fails_before_reading_or_creating_run[f1-resume]",
+        "time": "0.054"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A06_F1_must_not_enable_teacher_or_decision_losses",
+        "time": "0.344"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A07_prepare_only_writes_engineering_files_and_refuses_overwrite",
+        "time": "0.102"
+      }
+    ]
+  },
+  "A_model": {
+    "exit_code": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_admission",
+        "name": "test_A05_fresh_complete_E_quality_model_and_no_teacher_training_inputs",
+        "time": "22.679"
+      }
+    ]
+  },
+  "A_guards": {
+    "exit_code": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-a2]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-tutor_cd]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-b2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-tutor_cd_b2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[legacy_1m-quality_v2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-a2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-tutor_cd]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-b2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-tutor_cd_b2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-quality_v2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_declared_compositions_have_unique_state_and_explicit_bc[e_multiscale_1m15m-none]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_pure_parser_runs_without_site_packages_or_jax",
+        "time": "0.013"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_quality_e_requires_separate_admission_before_preparation",
+        "time": "0.002"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw0]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw1]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw2]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw3]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw4]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw5]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw6]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw7]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw8]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_invalid_or_duplicate_raw_configuration_fails_closed[raw9]",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_schema_and_legacy_mode_contracts",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_ready_settings_keep_all_legacy_hyperparameters[a2-A2_MARKET_MINUTE_GPU_1K-a2]",
+        "time": "0.006"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_ready_settings_keep_all_legacy_hyperparameters[tutor_cd-TUTOR_CD_FULL_E2_MM_10K-tutor]",
+        "time": "0.007"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_ready_settings_keep_all_legacy_hyperparameters[b2-B2_FULL_MARKET_MINUTE_FORMAL_1M-b2]",
+        "time": "0.008"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[legacy_1m-tutor_cd_b2]",
+        "time": "0.333"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-tutor_cd_b2]",
+        "time": "0.338"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_unimplemented_config_cli_and_direct_prepare_create_no_artifacts[e_multiscale_1m15m-quality_v2]",
+        "time": "0.332"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[legacy_1m-tutor_cd_b2]",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-tutor_cd_b2]",
+        "time": "0.002"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_waiting_prepared_live_and_eval_are_rejected_before_model_or_output[e_multiscale_1m15m-quality_v2]",
+        "time": "0.002"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_all_new_records_require_same_composition_and_legacy_records_stay_absent",
+        "time": "0.002"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_source_and_model_factories_reject_waiting_before_any_data_or_model",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_reviewed_reader_warm_start_fixed_historical_endpoints",
+        "time": "0.107"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_current_v2_does_not_inherit_old_reader_migration_permission",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_s3_composition",
+        "name": "test_model_factory_rejects_encoder_identity_mismatch_before_building",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_cli",
+        "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[prepare]",
+        "time": "0.067"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_cli",
+        "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[start]",
+        "time": "0.070"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_cli",
+        "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[resume]",
+        "time": "0.066"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_cli",
+        "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[evaluate]",
+        "time": "0.066"
+      },
+      {
+        "classname": "tests.entry_v1.test_fg_s3_quality_student_v2",
+        "name": "test_pair_identity_soft_targets_and_empty_gradients",
+        "time": "2.534"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+schema: FG_S3_E_QUALITY_F1_CONFIG_V1
+stage: FOUNDATION_WM
+sampling_stage: WM_NATURAL
+sampling_spec:
+  mode: NATURAL
+model_init:
+  seed: 202
+  presets: [size1m]
+batch_size: 1
+target_steps: 64
+burnin_steps: 32
+optimizer_updates: 4
+report_every_updates: 1
+save_every_updates: 2
+device: cpu
+corpus_root: /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04
+prepared_dir: artifacts/fg_s3_v2/e_quality_wp04/f1_cpu_engineering_prepared
+run_dir: artifacts/fg_s3_v2/e_quality_wp04/f1_cpu_not_authorized_run

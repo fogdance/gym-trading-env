@@ -28,6 +28,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
                                      'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
+                                     'f1-prepare', 'f1-start', 'f1-resume',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
     p.add_argument('--config')
@@ -55,7 +56,25 @@ def main():
     p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit authorization for formal 1M and any new Quality GPU start/resume')
+    p.add_argument('--source-purpose', choices=['development','native-verification'],default='development',
+                   help='F1 preparation: engineering integrity or an actual native G3 invocation')
+    p.add_argument('--producer-gym',help='Frozen WP02 producer for explicit F1 native source verification')
     args = p.parse_args()
+    if args.command.startswith('f1-'):
+        # F1 has a separate stage admission, never a global Composition READY.
+        # All preparation is CPU; authorization is checked before any run I/O.
+        os.environ['JAX_PLATFORMS']='cpu'
+        os.environ['CUDA_VISIBLE_DEVICES']=''
+        if args.command in ('f1-start','f1-resume'):
+            if not args.authorize_training:
+                raise ValueError('F1_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+            raise ValueError('F1_RUN_COORDINATOR_NOT_IMPLEMENTED')
+        if not args.config or args.prepared or args.authorize_training:
+            p.error('f1-prepare requires --config and cannot authorize training')
+        from gym_trading_env.research.fg_s3_e_quality_foundation import prepare as prepare_f1
+        result=prepare_f1(args.config,purpose=args.source_purpose,producer_gym=args.producer_gym)
+        print(json.dumps(result,indent=2,ensure_ascii=False))
+        return
     if args.verify_resume_only and (args.command != 'admit-e-resume' or args.stop_at is not None):
         p.error('--verify-resume-only requires admit-e-resume without --stop-at')
     if args.diagnostic_components and args.command!='evaluate':p.error('--diagnostic-components requires evaluate')

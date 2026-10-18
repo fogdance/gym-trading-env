@@ -693,3 +693,20 @@ worktree with its newly verified E collection. Use the shared `prepare --config
 <absolute YAML>` then `start --prepared <that snapshot>` commands. Both keep
 their own prepared and Run directories under their corresponding worktree's
 `artifacts/fg_s3_v2/`; compare warmed cycles after 2K environment advances.
+
+
+### E+Quality F1 foundation (WP04)
+
+The F1 contract uses `FOUNDATION_WM` execution and `WM_NATURAL` sampling.
+The example `e_quality_f1_cpu.example.yaml` creates an engineering preparation
+only; it does not authorize real TRAIN parameter updates or GPU training.
+All relative example paths are used from the Gym worktree directory.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f1-prepare --config configs/experiments/fg_s3_v2/e_quality_f1_cpu.example.yaml
+```
+
+`--source-purpose native-verification --producer-gym <frozen-WP02-Gym>`
+explicitly replays the native G3 before an F1_DATA_READY data receipt.
+F1_ENGINEERING_READY and F1_DATA_READY never authorize training. Ordinary
+E+Quality prepare/start/resume/evaluate keep their existing public Guard.

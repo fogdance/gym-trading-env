@@ -8,7 +8,10 @@ import sys
 import time
 
 root = Path(__file__).resolve().parents[1]
-out = root / 'docs/receipts/wp03'
+package = os.environ.get('FG_WP_RECEIPTS','wp03')
+if package not in ('wp03','wp04'):
+    raise SystemExit('Unknown WP receipt package')
+out = root / 'docs/receipts' / package
 out.mkdir(parents=True, exist_ok=True)
 name, *tests = sys.argv[1:]
 if not tests or not name.replace('_', '').isalnum():
