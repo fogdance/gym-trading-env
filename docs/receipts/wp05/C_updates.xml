@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="10" time="90.814" timestamp="2026-10-18T15:09:43.652449+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C01_each_head_updates_only_its_params_and_slots[event]" time="48.832" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C01_each_head_updates_only_its_params_and_slots[touch]" time="0.219" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C01_each_head_updates_only_its_params_and_slots[adverse]" time="0.179" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C01_each_head_updates_only_its_params_and_slots[score]" time="0.232" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C02_all_invalid_skips_with_fresh_or_inherited_momentum" time="0.227" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C03_teacher_changes_loss_only_and_burnin_is_not_supervised" time="35.882" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C04_frozen_nonzero_momentum_negative_zero" time="0.913" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C05_nonfinite_rejected_and_all_state_rolled_back" time="0.152" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C06_unknown_leaf_or_slot_rejected" time="0.006" /><testcase classname="tests.entry_v1.test_wp05_updates" name="test_C07_invalid_placeholders_safe_no_q_computation" time="0.865"><failure message="AssertionError: [Chex] Assertion assert_type failed: Error in type compatibility check: input 0 has type float32 but expected &lt;class 'int'&gt;.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.">def test_C07_invalid_placeholders_safe_no_q_computation():
+     from dreamerv3.fg_s3_quality_v2 import prediction_terms
+     from dreamerv3.fg_s3_e_quality_heads import model_extensions
+     shapes={'event':(1,2,7,4),'touch':(1,2,4,2),'adverse':(1,2,4),'score':(1,2)}
+     pred={k:jnp.zeros(s) for k,s in shapes.items()};labels={}
+     for n in TARGETS:
+      shape=shapes[n][:-1] if n=='event' else shapes[n]
+      labels['quality_'+n]=jnp.full(shape,jnp.nan);labels['quality_'+n+'_valid']=jnp.zeros(shape,bool)
+&gt;    value,grad=jax.value_and_grad(lambda p:prediction_terms(p,labels,model_extensions(8,4))[0])(pred)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp05_updates.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp05_updates.py:98: in &lt;lambda&gt;
+    value,grad=jax.value_and_grad(lambda p:prediction_terms(p,labels,model_extensions(8,4))[0])(pred)
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_quality_v2.py:274: in prediction_terms
+    ce = optax.softmax_cross_entropy_with_integer_labels(pred['event'],event_y)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/optax/losses/_classification.py:331: in softmax_cross_entropy_with_integer_labels
+    chex.assert_type([labels], int)
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/chex/_src/asserts_internal.py:278: in _chex_assert_fn
+    host_assertion_fn(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+custom_message = None, custom_message_format_vars = ()
+include_default_message = True, exception_type = &lt;class 'AssertionError'&gt;
+args = ([Array([[[0., 0., 0., 0., 0., 0., 0.],
+        [0., 0., 0., 0., 0., 0., 0.]]], dtype=float32, weak_type=True)], &lt;class 'int'&gt;)
+kwargs = {}
+
+    def _assert_on_host(*args,
+                        custom_message: Optional[str] = None,
+                        custom_message_format_vars: Sequence[Any] = (),
+                        include_default_message: bool = True,
+                        exception_type: Type[Exception] = AssertionError,
+                        **kwargs) -&gt; None:
+      # Format error's stack trace to remove Chex' internal frames.
+      assertion_exc = None
+      value_exc = None
+      try:
+        assert_fn(*args, **kwargs)
+      except AssertionError as e:
+        assertion_exc = e
+      except ValueError as e:
+        value_exc = e
+      finally:
+        if value_exc is not None:
+          raise ValueError(str(value_exc))
+    
+        if assertion_exc is not None:
+          # Format the exception message.
+          error_msg = str(assertion_exc)
+    
+          # Include only the name of the outermost chex assertion.
+          if error_msg.startswith(ERR_PREFIX):
+            error_msg = error_msg[error_msg.find("failed:") + len("failed:"):]
+    
+          # Whether to include the default error message.
+          default_msg = (f"Assertion {name} failed: "
+                         if include_default_message else "")
+          error_msg = f"{ERR_PREFIX}{default_msg}{error_msg}"
+    
+          # Whether to include a custom error message.
+          if custom_message:
+            if custom_message_format_vars:
+              custom_message = custom_message.format(*custom_message_format_vars)
+            error_msg = f"{error_msg} [{custom_message}]"
+    
+&gt;         raise exception_type(error_msg)
+E         AssertionError: [Chex] Assertion assert_type failed: Error in type compatibility check: input 0 has type float32 but expected &lt;class 'int'&gt;.
+E         --------------------
+E         For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/chex/_src/asserts_internal.py:196: AssertionError</failure></testcase></testsuite></testsuites>

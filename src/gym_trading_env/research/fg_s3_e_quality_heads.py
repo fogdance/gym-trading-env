@@ -104,6 +104,8 @@ def create_agent(settings,output,*,controlled_small=False):
         device=settings['device'],bc_lambda=0.,extra_agent_config=model_extensions(settings['target_steps'],settings['burnin_steps'],settings.get('prediction_weights')),
         composition=resolve_composition(dict(composition=dict(encoder='e_multiscale_1m15m',teaching='quality_v2'))))
     parameter_layout(agent.params)
+    from dreamerv3.fg_s3_e_quality_heads import register_state_schema
+    register_state_schema(agent.model,agent.params)
     return agent
 
 class F2WindowAdapter:
@@ -117,6 +119,8 @@ class F2WindowAdapter:
         from .fg_replay import replay_fields,E_QUALITY_SCHEMA
         from .fg_s3_quality_catalog_v2 import FIELDS
         shape=(self.settings['batch_size'],self.length+1)
+        if any(raw[k].any() for k in ('quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source')):
+            raise ValueError('F2_Q_SOFT_TARGETS_FORBIDDEN')
         if raw['stepid'].shape!=(*shape,20) or raw['consec'].dtype!=np.int32 or raw['consec'].shape!=shape or raw['consec'].any():raise ValueError('F2_NATIVE_WINDOW_GEOMETRY')
         metadata=self.reader.audit_windows(raw)
         data={k:raw[k].copy() for k in (*replay_fields(E_QUALITY_SCHEMA),'stepid','consec')}
