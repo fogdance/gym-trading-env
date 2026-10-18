@@ -1,0 +1,41 @@
+{
+  "status": "PASS_EXACT_COLD_CPU",
+  "root": "/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/release_cold_01",
+  "scenario": "ordinary",
+  "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/release_cold_01/ordinary_split/ckpt/step_000000000004",
+  "counters": {
+    "optimizer_updates": 4,
+    "consumed_batches": 4,
+    "skip_no_valid": 0,
+    "skip_disabled_loss": 0,
+    "numerical_rejections": 0,
+    "target_positions": 512,
+    "target_market_minutes": 512,
+    "burnin_positions": 256,
+    "burnin_market_minutes": 256,
+    "exposures": {
+      "natural_count": 64,
+      "natural_add": 5,
+      "natural_wait": 59,
+      "auxiliary_count": 245,
+      "auxiliary_add": 20,
+      "auxiliary_wait": 225,
+      "balanced_count": 245,
+      "strict_pair_count": 1125,
+      "quality_pair_count": 550,
+      "quality_pair_candidates": 2921,
+      "quality_pair_conflicts": 2371,
+      "quality_pair_same_action_filtered": 2371,
+      "quality_pair_reversed_filtered": 0
+    }
+  },
+  "checkpoint_files": {
+    "agent.pkl": "6234ec1fe5cd31d86d6f156a9fcce42ab9f482bafe9ff1c4869a93cbbf00682f",
+    "counters.pkl": "88535543073b73a0354944cfbb4f3981004fb28ec76fbf1bccae648a439e94aa",
+    "course_reader.pkl": "1cba352138296912792c84d148b7f89298d4471eea125744efd00c335040b5ee",
+    "runtime.pkl": "f170078950b7ae9d2edcad5cbd3c903b98fd6d079b4e453a39ffb7d6aaaccedc",
+    "step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22"
+  },
+  "all_state_and_next_batch_byte_equal": true,
+  "real_TRAIN_updates": 0
+}

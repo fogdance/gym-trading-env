@@ -300,8 +300,10 @@ class EQualityCourseReader:
         from .fg_s3_e_quality_course_preflight import _local_path
         self.index_path=_local_path(index_path)
         receipt=read_manifest(self.index_path.with_suffix('.json'))
+        if receipt.get('protocol')!=INDEX_SCHEMA:
+            raise ValueError('SUPERVISION_INDEX_SCHEMA_MISMATCH: V3 receipt required; rebuild with current build_join_index')
         self.index_hash=digest(self.index_path)
-        if (receipt['protocol']!=INDEX_SCHEMA or self.index_hash!=receipt['index_sha256']
+        if (self.index_hash!=receipt['index_sha256']
                 or receipt['source_identity']!=admission.receipt['content_identity']):
             raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
         self.index_stat=_stat(self.index_path)
@@ -310,6 +312,9 @@ class EQualityCourseReader:
         self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True,check_same_thread=False)
         self.db.execute('PRAGMA query_only=ON');self.db.execute('PRAGMA cache_size=-4096')
         self.report=json.loads(self.db.execute("SELECT value FROM meta WHERE key='report'").fetchone()[0])
+        if self.report.get('protocol')!=INDEX_SCHEMA:
+            self.db.close()
+            raise ValueError('SUPERVISION_INDEX_SCHEMA_MISMATCH: V3 database required; rebuild with current build_join_index')
         if any(self.report[k]!=receipt[k] for k in self.report):
             self.db.close();raise ValueError('SUPERVISION_INDEX_REPORT_MISMATCH')
         self.files={rel:(sha,_stat(member(self.root,rel))) for rel,sha in self.corpus['files'].items()}
@@ -449,13 +454,17 @@ class EQualityCourseReader:
                      for (length,tag),groups in self._choices.items()},
             peak_cached_bytes=self.peak_cached_bytes,cache_budget_bytes=self.cache_bytes)
 
-    def audit_windows(self, batch):
-        """Bind a model window to native rows, without consulting teacher values.
+    def audit_windows(self, batch, *, supervision_fields=()):
+        """Bind native rows and, when requested, canonical post-step labels.
 
         Only metadata is returned. This does not construct or sample a Replay.
         It also supplies past native reward events for F1 diagnostics.
         """
         self._guard()
+        if supervision_fields:
+            from .fg_s3_quality_catalog_v2 import FIELDS
+            if not set(supervision_fields)<=set(FIELDS)|{'teacher_action','teacher_valid'}:
+                raise ValueError('SUPERVISION_AUDIT_UNKNOWN_FIELD')
         ids=batch['stepid']
         if ids.dtype!=np.uint8 or ids.ndim!=3 or ids.shape[-1]!=20:
             raise ValueError('F1_PHYSICAL_STEPID_SHAPE')
@@ -467,10 +476,10 @@ class EQualityCourseReader:
         for b,window in enumerate(ids):
             rows=[];previous=None;episode=None
             for t,stepid in enumerate(window):
-                item=self.db.execute('SELECT policy,ordinal,segment,cursor,chunk,offset,audit FROM rows WHERE stepid=?',
+                item=self.db.execute('SELECT policy,ordinal,segment,cursor,chunk,offset,audit,labels FROM rows WHERE stepid=?',
                                      (stepid.tobytes(),)).fetchone()
                 if item is None:raise ValueError('F1_UNKNOWN_STEPID')
-                policy,ordinal,segment,cursor,chunk,offset,audit=item
+                policy,ordinal,segment,cursor,chunk,offset,audit,labels=item
                 if episode is None:episode=(policy,segment)
                 if (policy,segment)!=episode or previous is not None and ordinal!=previous+1:
                     raise ValueError('F1_OWNER_EPISODE_OR_ORDINAL_MISMATCH')
@@ -478,6 +487,13 @@ class EQualityCourseReader:
                 for key in fields:
                     if batch[key][b,t].tobytes()!=arrays[key][offset].tobytes():
                         raise ValueError('F1_NATIVE_WINDOW_BYTES_MISMATCH: '+key)
+                if supervision_fields:
+                    canonical=json.loads(labels)
+                    for key in supervision_fields:
+                        value=batch[key][b,t]
+                        expected=np.asarray(canonical[key],dtype=value.dtype) if t else np.zeros_like(value)
+                        if value.tobytes()!=expected.tobytes():
+                            raise ValueError('SUPERVISION_POST_STEP_LABEL_MISMATCH: '+key)
                 past=json.loads(audit)
                 rows.append(dict(policy=policy,segment=segment,ordinal=ordinal,cursor=cursor,
                     stepid=stepid.tobytes().hex(),incoming_action=past['incoming_action'],

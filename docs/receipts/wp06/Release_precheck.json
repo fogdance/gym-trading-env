@@ -1,0 +1,26 @@
+{
+  "status": "CLEAN_PAIRED_RELEASE_WORKTREES",
+  "source": {
+    "gym": {
+      "head": "53ffea2353618be99f35673ab8f4c6c544b7273d",
+      "runtime_hash": "1689b70d2f197558c750bc287691e0ed3156cafb3c5aaeee71e30f75dfe3257e"
+    },
+    "dreamer": {
+      "head": "ffe6a831877ee91769f611dd16c374fb96941ebd",
+      "runtime_hash": "380a6dce0bc9fb7c805f6dc175dbbc82751f7e2598cec6d28fd82eaec9eaf057"
+    }
+  },
+  "git_status": {
+    "gym": "",
+    "dreamer": ""
+  },
+  "public_heads": {
+    "gym": "7ea95563166bf7fa03c6ce836e7484053cac0b96",
+    "dreamer": "0e39dfd498f9146e10f966cfe118a24b20e5143e"
+  },
+  "persistent_cold": "/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/release_cold_01",
+  "persistent_eval": "/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/release_eval_01",
+  "formal_training_admitted": false,
+  "real_TRAIN_updates": 0,
+  "content_hash": "6082101757dfaebb1bca6fae5b3cdbbd88b6d39e91a012b7bf9a92141b4004f4"
+}

@@ -738,3 +738,15 @@ python tools/fg_s3_v2_experiment.py f2-read-check --config configs/experiments/f
 The read smoke explicitly uses fresh small diagnostic weights, performs zero updates, consumes no F1 weights and emits no training admission. Its synthetic F1 path is unrelated to real FG201; f2-prepare/start must reject that pairing. Missing trained F1 does not block read-only diagnostics.
 
 Future FORMAL preparation additionally uses `--source-purpose native-verification --producer-gym <frozen-producer>`. Only separately authorized `f2-start --prepared <prepared> --authorize-training` and `f2-resume --prepared <same-prepared> --authorize-training` can enter training, after current native proof and completed F1 checks. No such real training is authorized or launched by this WP. Same-Run resume restores F2 FullCheckpoint and never repeats F1 handoff.
+# WP06 F3：Actor 监督与只读诊断
+
+沿用统一入口 `tools/fg_s3_v2_experiment.py`，新增 `f3-prepare / f3-probe / f3-read-check / f3-start / f3-resume / f3-evaluate`。完整 F3 模型只更新 `quality_actor/`；Natural anchor 固定，可选同一 Corpus 的辅助 Reader。F1/F2 参数接续是新 Run，F3 resume 是原 FullCheckpoint 的完整同版本恢复。
+
+`e_quality_f3_read_smoke.yaml` 仅绑定现存有限 TRAIN DEV 小样，K=1/T=1，不代表 K32/T64 或正式教材认证。它明确没有真实已训练 F1/F2，source 路径为 NOT_RUN 占位；`f3-read-check` 使用 fresh CPU 诊断模型、不消费该来源、不更新参数，也不创建 Run/Checkpoint。不能用它启动训练。
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f3-read-check --config configs/experiments/fg_s3_v2/e_quality_f3_read_smoke.yaml --output-dir docs/receipts/wp06/NEW_READ_ONLY_DIRECTORY
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f3-probe --output-dir artifacts/fg_s3_v2/e_quality_wp06/NEW_SYNTHETIC_PROBE
+```
+
+正式 `f3-prepare --config ... --source-purpose native-verification --producer-gym ...` 需要真实完整 TRAIN Corpus、完整受训 F1/F2 和实际 native 证明；prepare 不授予训练权。`f3-start/f3-resume --prepared ... --authorize-training` 仍需用户授权并重新校验原生来源，工程 fixture 不可升级为正式训练。`f3-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受完整 F3 Checkpoint，在原 Env 做有限 TRAIN 只读参数诊断，不允许 Teacher/预测替换动作。真实研究考试仍属 WP08。

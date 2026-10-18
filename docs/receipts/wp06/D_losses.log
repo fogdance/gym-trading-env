@@ -1,0 +1,14 @@
+.F.....                                                                  [100%]
+=================================== FAILURES ===================================
+____________ test_D02_l1_conflicts_never_reverse_l2_and_default_off ____________
+
+    def test_D02_l1_conflicts_never_reverse_l2_and_default_off():
+        labels,mask,first=example((0,1,0,1),(90,80,10,0));logits=jnp.array([[[0.,1.],[0.,2.],[0.,-1.],[0.,0.]]])
+        base,m=objective(logits,labels,mask,first)
+>       assert m['f3/quality_pair_count']==1 and m['f3/quality_pair_candidates']==5
+E       assert (Array(1, dtype=int32) == 1 and Array(4, dtype=int32) == 5)
+
+tests/entry_v1/test_wp06_losses.py:32: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp06_losses.py::test_D02_l1_conflicts_never_reverse_l2_and_default_off
+1 failed, 6 passed in 11.90s

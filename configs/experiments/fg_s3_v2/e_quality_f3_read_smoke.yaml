@@ -1,0 +1,23 @@
+# DEV read-only input diagnostic. No trained F1/F2 is supplied or consumed.
+# prepare/start intentionally fail until an actual eligible source is supplied.
+schema: FG_S3_E_QUALITY_F3_CONFIG_V1
+stage: ACTOR_SUPERVISED
+sampling_stage: ACTOR_STRICT
+sampling_spec: {mode: NATURAL}
+aux_sampling_spec: null
+model_init: {seed: 202, presets: [size1m]}
+batch_size: 1
+target_steps: 1
+burnin_steps: 1
+optimizer_updates: 4
+max_consumed_batches: 40
+report_every_updates: 1
+save_every_updates: 2
+device: cpu
+corpus_root: /home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/fg809_dev_smoke_v3_final
+prepared_dir: /home/v/Documents/work/research/fg-s3-e-quality-wp06-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/read_smoke_unused_prepared
+run_dir: /home/v/Documents/work/research/fg-s3-e-quality-wp06-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/read_smoke_unused_run
+source_stage: F1
+source_run: /home/v/Documents/work/research/fg-s3-e-quality-wp06-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/NOT_RUN_REAL_TRAINED_F1
+source_checkpoint: /home/v/Documents/work/research/fg-s3-e-quality-wp06-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/NOT_RUN_REAL_TRAINED_F1/ckpt/step_000000000004
+actor_loss: {natural: 1.0, balanced: 0.0, strict_pair: 0.0, quality_pair: 0.0, pair_tau: 1.0}

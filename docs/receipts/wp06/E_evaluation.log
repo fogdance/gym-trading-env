@@ -1,0 +1,26 @@
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+_____ test_E02_original_model_learns_both_synthetic_classes_with_frozen_wm _____
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-552/wp06_eval0'), <embodied.jax.agent.Agent object at 0x7a850a0ac510>, {'market_se..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+
+    def test_E02_original_model_learns_both_synthetic_classes_with_frozen_wm(case):
+        root,a,data,s=case;d=copy.deepcopy(data);start=33
+        before=parameter_digests(a.params);features=read_only_forward(a,d)['features']
+        legal=((d['action_mask'][:,start:]==1).all(-1) & ~d['is_first'][:,start:] & ~d['is_last'][:,start:] & ~d['is_terminal'][:,start:])
+        # A declared synthetic, linearly learnable task on native frozen features.
+        # These are NOT certified L2 labels and are never published to the Corpus.
+        coordinate=int(np.argmax(features[...,:32][legal].var(0)));x=features[...,coordinate]
+        y=(x>np.median(x[legal])).astype(np.int32)
+        d['teacher_action'][:,start:]=y;d['teacher_valid'][:,start:]=legal
+        fresh=score_batch(d,read_only_forward(a,d),start)
+        assert fresh['valid_add'] and fresh['valid_wait']
+        for _ in range(512):train(a,d,202)
+        out=read_only_forward(a,d);trained=score_batch(d,out,start);after=parameter_digests(a.params)
+>       assert trained['loss']<fresh['loss']
+E       assert 0.6966443061828613 < 0.6942111849784851
+
+tests/entry_v1/test_wp06_evaluation.py:52: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp06_evaluation.py::test_E02_original_model_learns_both_synthetic_classes_with_frozen_wm
+1 failed, 3 passed in 193.45s (0:03:13)

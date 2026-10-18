@@ -1,0 +1,42 @@
+{
+  "status": "PASS_STATIC_SOURCE_REVIEW",
+  "ast_files": [
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_actor.py",
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_actor_checks.py",
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_reader.py",
+    "gym/tests/entry_v1/test_wp06_checkpoint.py",
+    "gym/tests/entry_v1/test_wp06_cli.py",
+    "gym/tests/entry_v1/test_wp06_contract.py",
+    "gym/tests/entry_v1/test_wp06_evaluation.py",
+    "gym/tests/entry_v1/test_wp06_losses.py",
+    "gym/tests/entry_v1/test_wp06_run.py",
+    "gym/tests/entry_v1/test_wp06_sampling.py",
+    "gym/tests/entry_v1/test_wp06_transfer.py",
+    "gym/tests/entry_v1/test_wp06_updates.py",
+    "gym/tests/entry_v1/wp06_cold_worker.py",
+    "gym/tests/entry_v1/wp06_fixture.py",
+    "gym/tools/fg_s3_v2_experiment.py",
+    "gym/tools/wp03_verify.py",
+    "dreamer/dreamerv3/fg_s3_e_quality_actor.py",
+    "dreamer/dreamerv3/fg_s3_e_quality_foundation.py",
+    "dreamer/dreamerv3/fg_s3_e_quality_heads.py",
+    "dreamer/dreamerv3/fg_s3_quality_v2.py",
+    "dreamer/dreamerv3/fg_s3_v2_agent.py",
+    "dreamer/embodied/jax/agent.py",
+    "dreamer/embodied/run/fg_s3_e_quality_actor.py",
+    "dreamer/embodied/run/fg_s3_e_quality_heads.py",
+    "dreamer/embodied/run/fg_s3_e_quality_transfer.py"
+  ],
+  "protected_source_diffs": {
+    "gym": [],
+    "dreamer": []
+  },
+  "read_config_geometry": [
+    1,
+    1,
+    1
+  ],
+  "parallel_trainer_added": false,
+  "reviewer": "same_agent_self_review_not_second_reviewer",
+  "content_hash": "3288dcda68b5c8b7fbe473b4b538a40eb360c6520da0318fa53c0159eef07736"
+}

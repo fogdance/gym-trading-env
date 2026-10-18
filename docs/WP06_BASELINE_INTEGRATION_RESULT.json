@@ -1,0 +1,62 @@
+{
+  "status": "CODE_INTEGRATION_GO",
+  "gym": "7ea95563166bf7fa03c6ce836e7484053cac0b96",
+  "dreamer": "0e39dfd498f9146e10f966cfe118a24b20e5143e",
+  "tests": [
+    {
+      "label": "G0_WP06_contract_reader",
+      "exit_code": 0,
+      "seconds": 64.95996508398093,
+      "tests": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "69",
+        "time": "61.800",
+        "timestamp": "2026-10-18T23:56:50.971720+08:00",
+        "hostname": "v-X570-AORUS-PRO-WIFI"
+      }
+    },
+    {
+      "label": "G0_WP06_f1_f2",
+      "exit_code": 0,
+      "seconds": 528.7688084740657,
+      "tests": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "37",
+        "time": "523.387",
+        "timestamp": "2026-10-18T23:56:51.026208+08:00",
+        "hostname": "v-X570-AORUS-PRO-WIFI"
+      }
+    },
+    {
+      "label": "G0_WP06_shared",
+      "exit_code": 0,
+      "seconds": 194.13522648904473,
+      "tests": {
+        "name": "pytest",
+        "errors": "0",
+        "failures": "0",
+        "skipped": "0",
+        "tests": "20",
+        "time": "188.180",
+        "timestamp": "2026-10-18T23:56:50.936778+08:00",
+        "hostname": "v-X570-AORUS-PRO-WIFI"
+      }
+    },
+    {
+      "label": "G0_WP06_dev_train",
+      "exit_code": 0,
+      "seconds": 5.9475439849775285,
+      "tests": null
+    }
+  ],
+  "real_source_scope": "4-minute real TRAIN DEV corpus only; LIMITED / NOT_ADMITTED; zero updates",
+  "full_B01_read": "NOT_RUN_MISSING_CORPUS; G0_WP06_real exit 2 retained",
+  "formal_training": "NO_GO",
+  "source_relocation_requested": true
+}

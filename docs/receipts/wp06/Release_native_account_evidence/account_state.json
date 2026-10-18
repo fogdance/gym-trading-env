@@ -1,0 +1,1536 @@
+{
+  "schema": 3,
+  "contract": "CZCE.FG2701",
+  "config_hash": "40ae8c8272c0ab1c2c44d08734b31a7b1caf3a039b71450b460ac6488cc304ec",
+  "cursor_time": "2026-01-05 21:33:00+08:00",
+  "prefix_hash": "b7d4b5b577328af3d1a8c7c96ebe6d73454ab37b769e516804d96d978fe829b2",
+  "balances": {
+    "user_cash": "290919.0",
+    "user_margin": "6000.0",
+    "broker_fee_income": "81.0",
+    "broker_pnl": "3000.0"
+  },
+  "ledger_entries": [
+    {
+      "timestamp": "2026-01-05 21:03:00+08:00",
+      "memo": "LONG_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-6009.0"
+        },
+        {
+          "account": "user_margin",
+          "amount": "6000.0"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "price": "1000"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:04:00+08:00",
+      "memo": "LONG_CLOSE",
+      "postings": [
+        {
+          "account": "user_margin",
+          "amount": "-6000.0"
+        },
+        {
+          "account": "broker_pnl",
+          "amount": "1800"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        },
+        {
+          "account": "user_cash",
+          "amount": "4191.0"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "close_price": "970",
+        "pnl": "-1800"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:05:00+08:00",
+      "memo": "LONG_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-6009.0"
+        },
+        {
+          "account": "user_margin",
+          "amount": "6000.0"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "price": "1000"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:13:00+08:00",
+      "memo": "LONG_CLOSE",
+      "postings": [
+        {
+          "account": "user_margin",
+          "amount": "-6000.0"
+        },
+        {
+          "account": "broker_pnl",
+          "amount": "-300"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        },
+        {
+          "account": "user_cash",
+          "amount": "6291.0"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "close_price": "1005",
+        "pnl": "300"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:14:00+08:00",
+      "memo": "LONG_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-6009.0"
+        },
+        {
+          "account": "user_margin",
+          "amount": "6000.0"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "price": "1000"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:21:00+08:00",
+      "memo": "LONG_CLOSE",
+      "postings": [
+        {
+          "account": "user_margin",
+          "amount": "-6000.0"
+        },
+        {
+          "account": "broker_pnl",
+          "amount": "1800"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        },
+        {
+          "account": "user_cash",
+          "amount": "4191.0"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "close_price": "970",
+        "pnl": "-1800"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:21:00+08:00",
+      "memo": "LONG_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-6009.0"
+        },
+        {
+          "account": "user_margin",
+          "amount": "6000.0"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "price": "1000"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:24:00+08:00",
+      "memo": "LONG_CLOSE",
+      "postings": [
+        {
+          "account": "user_margin",
+          "amount": "-6000.0"
+        },
+        {
+          "account": "broker_pnl",
+          "amount": "-300"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        },
+        {
+          "account": "user_cash",
+          "amount": "6291.0"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "close_price": "1005",
+        "pnl": "300"
+      }
+    },
+    {
+      "timestamp": "2026-01-05 21:24:00+08:00",
+      "memo": "LONG_OPEN",
+      "postings": [
+        {
+          "account": "user_cash",
+          "amount": "-6009.0"
+        },
+        {
+          "account": "user_margin",
+          "amount": "6000.0"
+        },
+        {
+          "account": "broker_fee_income",
+          "amount": "9"
+        }
+      ],
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "price": "1000"
+      }
+    }
+  ],
+  "long_positions": [
+    {
+      "size": "3",
+      "entry_price": "1000",
+      "initial_margin": "6000.0",
+      "open_step": 24,
+      "stop_loss_price": "970",
+      "take_profit_price": "1005"
+    },
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "short_positions": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+  ],
+  "closed_trade_profits": [
+    "-1800",
+    "300",
+    "-1800",
+    "300"
+  ],
+  "realized_pnl": "-3000.0",
+  "unrealized_pnl": "0",
+  "trade_history": [
+    {
+      "timestamp": "2026-01-05T21:03:00+08:00",
+      "operation_type": "LONG_OPEN",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "0",
+      "required_margin": "6000.0",
+      "fee": "9",
+      "balance": "293991.0",
+      "leverage": "1E+1",
+      "free_margin": "293991.0",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG2701:1:1",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:04:00+08:00",
+      "operation_type": "LONG_CLOSE",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "970",
+      "required_margin": "0",
+      "fee": "9",
+      "balance": "298182.0",
+      "leverage": "1E+1",
+      "free_margin": "296082.0",
+      "pnl": "-1800",
+      "closed_size": "3",
+      "released_margin": "6000.0",
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "reason": "STOP_LOSS",
+        "entry_id": "CZCE.FG2701:1:1",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:05:00+08:00",
+      "operation_type": "LONG_OPEN",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "0",
+      "required_margin": "6000.0",
+      "fee": "9",
+      "balance": "292173.0",
+      "leverage": "1E+1",
+      "free_margin": "292173.0",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG2701:1:2",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:13:00+08:00",
+      "operation_type": "LONG_CLOSE",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "1005",
+      "required_margin": "0",
+      "fee": "9",
+      "balance": "298464.0",
+      "leverage": "1E+1",
+      "free_margin": "298404.0",
+      "pnl": "300",
+      "closed_size": "3",
+      "released_margin": "6000.0",
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "reason": "TAKE_PROFIT",
+        "entry_id": "CZCE.FG2701:1:2",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:14:00+08:00",
+      "operation_type": "LONG_OPEN",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "0",
+      "required_margin": "6000.0",
+      "fee": "9",
+      "balance": "292455.0",
+      "leverage": "1E+1",
+      "free_margin": "292455.0",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG2701:1:3",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:21:00+08:00",
+      "operation_type": "LONG_CLOSE",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "970",
+      "required_margin": "0",
+      "fee": "9",
+      "balance": "296646.0",
+      "leverage": "1E+1",
+      "free_margin": "294546.0",
+      "pnl": "-1800",
+      "closed_size": "3",
+      "released_margin": "6000.0",
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "reason": "STOP_LOSS",
+        "entry_id": "CZCE.FG2701:1:3",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:21:00+08:00",
+      "operation_type": "LONG_OPEN",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "0",
+      "required_margin": "6000.0",
+      "fee": "9",
+      "balance": "290637.0",
+      "leverage": "1E+1",
+      "free_margin": "290637.0",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG2701:1:4",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:24:00+08:00",
+      "operation_type": "LONG_CLOSE",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "1005",
+      "required_margin": "0",
+      "fee": "9",
+      "balance": "296928.0",
+      "leverage": "1E+1",
+      "free_margin": "296868.0",
+      "pnl": "300",
+      "closed_size": "3",
+      "released_margin": "6000.0",
+      "meta": {
+        "side": "long",
+        "slot": 0,
+        "reason": "TAKE_PROFIT",
+        "entry_id": "CZCE.FG2701:1:4",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    },
+    {
+      "timestamp": "2026-01-05T21:24:00+08:00",
+      "operation_type": "LONG_OPEN",
+      "position_size": "3",
+      "open_price": "1000",
+      "close_price": "0",
+      "required_margin": "6000.0",
+      "fee": "9",
+      "balance": "290919.0",
+      "leverage": "1E+1",
+      "free_margin": "290919.0",
+      "pnl": "0.0",
+      "closed_size": "0.0",
+      "released_margin": "0.0",
+      "meta": {
+        "entry_id": "CZCE.FG2701:1:5",
+        "fill_model": "minute_tp5_sl30_risk_first_v1"
+      }
+    }
+  ],
+  "rng": {
+    "bit_generator": "PCG64",
+    "state": {
+      "state": 35399562948360463058890781895381311971,
+      "inc": 87136372517582989555478159403783844777
+    },
+    "has_uint32": 0,
+    "uinteger": 0
+  },
+  "rewarded": [
+    "CZCE.FG2701:1:1",
+    "CZCE.FG2701:1:2",
+    "CZCE.FG2701:1:3",
+    "CZCE.FG2701:1:4"
+  ],
+  "processed_fills": [
+    "CZCE.FG2701:1:1|2026-01-05 21:04:00+08:00|STOP_LOSS|3",
+    "CZCE.FG2701:1:2|2026-01-05 21:13:00+08:00|TAKE_PROFIT|3",
+    "CZCE.FG2701:1:3|2026-01-05 21:21:00+08:00|STOP_LOSS|3",
+    "CZCE.FG2701:1:4|2026-01-05 21:24:00+08:00|TAKE_PROFIT|3"
+  ],
+  "current_step": 32,
+  "episode_step_count": 32,
+  "chunk_count": 5,
+  "entry_sequence": 5,
+  "account_sequence": 1,
+  "current_price": "1000",
+  "entries": {
+    "CZCE.FG2701:1:5": {
+      "entry_id": "CZCE.FG2701:1:5",
+      "side": "LONG",
+      "slot": 0,
+      "entry_time": "2026-01-05 21:24:00+08:00",
+      "obs_slot": 0,
+      "entry_price": "1000",
+      "closed_quantity": "0",
+      "exit_notional": "0",
+      "exit_pending": false,
+      "trading_day": "2026-01-06",
+      "all_tp": true,
+      "sl_pending": false,
+      "entry_cursor": 24,
+      "open_fee": "9",
+      "exit_metadata": {
+        "ambiguous_tp_sl": false,
+        "same_entry_bar": false,
+        "price_reference_time": "2026-01-05 21:33:00+08:00"
+      }
+    }
+  },
+  "fills": [
+    {
+      "entry_id": "CZCE.FG2701:1:1",
+      "time": "2026-01-05 21:03:00+08:00",
+      "side": "LONG",
+      "quantity": 3,
+      "price": "1000",
+      "reason": "ENTRY",
+      "committed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:1",
+      "time": "2026-01-05 21:04:00+08:00",
+      "side": "LONG",
+      "quantity": "3",
+      "price": "970",
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "fill_id": "CZCE.FG2701:1:1|2026-01-05 21:04:00+08:00|STOP_LOSS|3"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:2",
+      "time": "2026-01-05 21:05:00+08:00",
+      "side": "LONG",
+      "quantity": 3,
+      "price": "1000",
+      "reason": "ENTRY",
+      "committed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:2",
+      "time": "2026-01-05 21:13:00+08:00",
+      "side": "LONG",
+      "quantity": "3",
+      "price": "1005",
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "fill_id": "CZCE.FG2701:1:2|2026-01-05 21:13:00+08:00|TAKE_PROFIT|3"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:3",
+      "time": "2026-01-05 21:14:00+08:00",
+      "side": "LONG",
+      "quantity": 3,
+      "price": "1000",
+      "reason": "ENTRY",
+      "committed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:3",
+      "time": "2026-01-05 21:21:00+08:00",
+      "side": "LONG",
+      "quantity": "3",
+      "price": "970",
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "fill_id": "CZCE.FG2701:1:3|2026-01-05 21:21:00+08:00|STOP_LOSS|3"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:4",
+      "time": "2026-01-05 21:21:00+08:00",
+      "side": "LONG",
+      "quantity": 3,
+      "price": "1000",
+      "reason": "ENTRY",
+      "committed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:4",
+      "time": "2026-01-05 21:24:00+08:00",
+      "side": "LONG",
+      "quantity": "3",
+      "price": "1005",
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "fill_id": "CZCE.FG2701:1:4|2026-01-05 21:24:00+08:00|TAKE_PROFIT|3"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:5",
+      "time": "2026-01-05 21:24:00+08:00",
+      "side": "LONG",
+      "quantity": 3,
+      "price": "1000",
+      "reason": "ENTRY",
+      "committed": true
+    }
+  ],
+  "attributions": [
+    {
+      "entry_id": "CZCE.FG2701:1:1",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:03:00+08:00",
+      "exit_time": "2026-01-05 21:04:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "970",
+      "closed_quantity": 3,
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "gross_trade_pnl": "-1800",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "-1818",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": true,
+      "price_reference_time": "2026-01-05 21:04:00+08:00",
+      "sl_trigger_time": "2026-01-05 21:04:00+08:00",
+      "sl_pending_retry": false,
+      "gap_slippage_points": 0.0,
+      "entry_cursor": 3,
+      "exit_cursor": 3,
+      "held_market_bars": 1,
+      "clock_protocol": "S3_MARKET_MINUTE"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:2",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:05:00+08:00",
+      "exit_time": "2026-01-05 21:13:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "1005",
+      "closed_quantity": 3,
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "gross_trade_pnl": "300",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "282",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:13:00+08:00",
+      "entry_cursor": 5,
+      "exit_cursor": 12,
+      "held_market_bars": 8,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "tp_market_minutes": 8
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:3",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:14:00+08:00",
+      "exit_time": "2026-01-05 21:21:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "970",
+      "closed_quantity": 3,
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "gross_trade_pnl": "-1800",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "-1818",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:21:00+08:00",
+      "sl_trigger_time": "2026-01-05 21:21:00+08:00",
+      "sl_pending_retry": false,
+      "gap_slippage_points": 0.0,
+      "entry_cursor": 14,
+      "exit_cursor": 20,
+      "held_market_bars": 7,
+      "clock_protocol": "S3_MARKET_MINUTE"
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:4",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:21:00+08:00",
+      "exit_time": "2026-01-05 21:24:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "1005",
+      "closed_quantity": 3,
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "gross_trade_pnl": "300",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "282",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:24:00+08:00",
+      "entry_cursor": 21,
+      "exit_cursor": 23,
+      "held_market_bars": 3,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "tp_market_minutes": 3
+    }
+  ],
+  "reward_events": [
+    {
+      "entry_id": "CZCE.FG2701:1:1",
+      "reason": "FIRST_ADVERSE10",
+      "time": "2026-01-05 21:04:00+08:00",
+      "effective_bar": 1,
+      "reward": -0.5,
+      "observed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:1",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:03:00+08:00",
+      "exit_time": "2026-01-05 21:04:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "970",
+      "closed_quantity": 3,
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "gross_trade_pnl": "-1800",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "-1818",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": true,
+      "price_reference_time": "2026-01-05 21:04:00+08:00",
+      "sl_trigger_time": "2026-01-05 21:04:00+08:00",
+      "sl_pending_retry": false,
+      "gap_slippage_points": 0.0,
+      "entry_cursor": 3,
+      "exit_cursor": 3,
+      "held_market_bars": 1,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "reward": -3.0
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:2",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:05:00+08:00",
+      "exit_time": "2026-01-05 21:13:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "1005",
+      "closed_quantity": 3,
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "gross_trade_pnl": "300",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "282",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:13:00+08:00",
+      "entry_cursor": 5,
+      "exit_cursor": 12,
+      "held_market_bars": 8,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "tp_market_minutes": 8,
+      "reward": 1.0
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:3",
+      "reason": "FIRST_ADVERSE10",
+      "time": "2026-01-05 21:18:00+08:00",
+      "effective_bar": 4,
+      "reward": -0.5,
+      "observed": true
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:3",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:14:00+08:00",
+      "exit_time": "2026-01-05 21:21:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "970",
+      "closed_quantity": 3,
+      "reason": "STOP_LOSS",
+      "committed": true,
+      "gross_trade_pnl": "-1800",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "-1818",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:21:00+08:00",
+      "sl_trigger_time": "2026-01-05 21:21:00+08:00",
+      "sl_pending_retry": false,
+      "gap_slippage_points": 0.0,
+      "entry_cursor": 14,
+      "exit_cursor": 20,
+      "held_market_bars": 7,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "reward": -3.0
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:4",
+      "side": "LONG",
+      "entry_time": "2026-01-05 21:21:00+08:00",
+      "exit_time": "2026-01-05 21:24:00+08:00",
+      "entry_price": "1000",
+      "exit_price": "1005",
+      "closed_quantity": 3,
+      "reason": "TAKE_PROFIT",
+      "committed": true,
+      "gross_trade_pnl": "300",
+      "open_fee": "9",
+      "close_fee": "9",
+      "net_trade_pnl": "282",
+      "ambiguous_tp_sl": false,
+      "same_entry_bar": false,
+      "price_reference_time": "2026-01-05 21:24:00+08:00",
+      "entry_cursor": 21,
+      "exit_cursor": 23,
+      "held_market_bars": 3,
+      "clock_protocol": "S3_MARKET_MINUTE",
+      "tp_market_minutes": 3,
+      "reward": 1.0
+    },
+    {
+      "entry_id": "CZCE.FG2701:1:5",
+      "reason": "FIRST_ADVERSE10",
+      "time": "2026-01-05 21:31:00+08:00",
+      "effective_bar": 7,
+      "reward": -0.2,
+      "observed": true
+    }
+  ],
+  "equity_history": [
+    {
+      "time": "2026-01-05 21:01:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:02:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:02:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:03:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:03:00+08:00",
+      "equity": 300000.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:04:00+08:00",
+      "equity": 297891.0,
+      "unrealized_pnl": -2100.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:04:00+08:00",
+      "equity": 298182.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:05:00+08:00",
+      "equity": 298182.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:05:00+08:00",
+      "equity": 298182.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:06:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:06:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:07:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:07:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:08:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:08:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:09:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:09:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:10:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:10:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:11:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:11:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:12:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:12:00+08:00",
+      "equity": 298173.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:13:00+08:00",
+      "equity": 298113.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:13:00+08:00",
+      "equity": 298464.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:14:00+08:00",
+      "equity": 298464.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:14:00+08:00",
+      "equity": 298464.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:15:00+08:00",
+      "equity": 298395.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:15:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:16:00+08:00",
+      "equity": 298395.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:16:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:17:00+08:00",
+      "equity": 298395.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:17:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:18:00+08:00",
+      "equity": 297555.0,
+      "unrealized_pnl": -900.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:18:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:19:00+08:00",
+      "equity": 298395.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:19:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:20:00+08:00",
+      "equity": 298395.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:20:00+08:00",
+      "equity": 298455.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:21:00+08:00",
+      "equity": 296355.0,
+      "unrealized_pnl": -2100.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:21:00+08:00",
+      "equity": 296646.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:22:00+08:00",
+      "equity": 296577.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:22:00+08:00",
+      "equity": 296637.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:23:00+08:00",
+      "equity": 296577.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:23:00+08:00",
+      "equity": 296637.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:24:00+08:00",
+      "equity": 296577.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:24:00+08:00",
+      "equity": 296928.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 0.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:25:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:25:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:26:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:26:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:27:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:27:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:28:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:28:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:29:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:29:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:30:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:30:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:31:00+08:00",
+      "equity": 296019.0,
+      "unrealized_pnl": -900.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:31:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:32:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:32:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    },
+    {
+      "time": "2026-01-05 21:33:00+08:00",
+      "equity": 296859.0,
+      "unrealized_pnl": -60.0,
+      "net_lots": 3.0,
+      "intrabar": true
+    },
+    {
+      "time": "2026-01-05 21:33:00+08:00",
+      "equity": 296919.0,
+      "unrealized_pnl": 0.0,
+      "net_lots": 3.0,
+      "intrabar": false
+    }
+  ],
+  "total_reward": -5.2,
+  "max_floating_loss": 2100.0,
+  "legal_add_decisions": 9,
+  "voluntary_waits": 4,
+  "status": "ACTIVE",
+  "terminated": false,
+  "truncated": false,
+  "pending_reason": null,
+  "completed_accounts": [],
+  "reward_state": {
+    "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_V2",
+    "config": {
+      "candidate": "C1",
+      "beta": 0.5,
+      "rho": 0.4,
+      "L": 3.0,
+      "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+      "clock_protocol": "S3_MARKET_MINUTE"
+    },
+    "scorer": {
+      "schema": 3,
+      "config": {
+        "beta": 0.5,
+        "rho": 0.4,
+        "lam": 0.0,
+        "alpha": 0.0,
+        "gamma": 0.996996996996997,
+        "risk_points": 10.0,
+        "take_profit_points": 5.0,
+        "clock_protocol": "S3_MARKET_MINUTE"
+      },
+      "active": {
+        "CZCE.FG2701:1:5": {
+          "entry_id": "CZCE.FG2701:1:5",
+          "side": "LONG",
+          "entry_time": "2026-01-05 21:24:00+08:00",
+          "entry_price": 1000.0,
+          "bars_seen": 9,
+          "adverse10_fired": true,
+          "adverse_first_bar": 7,
+          "early_penalty": -0.2,
+          "capacity_basis": 0.0,
+          "exit_time": null,
+          "exit_reason": null,
+          "tp_minutes": null,
+          "tp_market_minutes": null,
+          "original_tp": 0.0,
+          "timeboxed_tp": 0.0,
+          "intrabar_ambiguous": false
+        }
+      },
+      "closed": {
+        "CZCE.FG2701:1:1": {
+          "entry_id": "CZCE.FG2701:1:1",
+          "side": "LONG",
+          "entry_time": "2026-01-05 21:03:00+08:00",
+          "entry_price": 1000.0,
+          "bars_seen": 1,
+          "adverse10_fired": true,
+          "adverse_first_bar": 1,
+          "early_penalty": -0.5,
+          "capacity_basis": 0.0,
+          "exit_time": "2026-01-05 21:04:00+08:00",
+          "exit_reason": "STOP_LOSS",
+          "tp_minutes": null,
+          "tp_market_minutes": null,
+          "original_tp": 0.0,
+          "timeboxed_tp": 0.0,
+          "intrabar_ambiguous": false
+        },
+        "CZCE.FG2701:1:2": {
+          "entry_id": "CZCE.FG2701:1:2",
+          "side": "LONG",
+          "entry_time": "2026-01-05 21:05:00+08:00",
+          "entry_price": 1000.0,
+          "bars_seen": 8,
+          "adverse10_fired": false,
+          "adverse_first_bar": null,
+          "early_penalty": 0.0,
+          "capacity_basis": 0.0,
+          "exit_time": "2026-01-05 21:13:00+08:00",
+          "exit_reason": "TAKE_PROFIT",
+          "tp_minutes": null,
+          "tp_market_minutes": 8,
+          "original_tp": 0.8823529411764706,
+          "timeboxed_tp": 1.0,
+          "intrabar_ambiguous": false
+        },
+        "CZCE.FG2701:1:3": {
+          "entry_id": "CZCE.FG2701:1:3",
+          "side": "LONG",
+          "entry_time": "2026-01-05 21:14:00+08:00",
+          "entry_price": 1000.0,
+          "bars_seen": 7,
+          "adverse10_fired": true,
+          "adverse_first_bar": 4,
+          "early_penalty": -0.5,
+          "capacity_basis": 0.0,
+          "exit_time": "2026-01-05 21:21:00+08:00",
+          "exit_reason": "STOP_LOSS",
+          "tp_minutes": null,
+          "tp_market_minutes": null,
+          "original_tp": 0.0,
+          "timeboxed_tp": 0.0,
+          "intrabar_ambiguous": false
+        },
+        "CZCE.FG2701:1:4": {
+          "entry_id": "CZCE.FG2701:1:4",
+          "side": "LONG",
+          "entry_time": "2026-01-05 21:21:00+08:00",
+          "entry_price": 1000.0,
+          "bars_seen": 3,
+          "adverse10_fired": false,
+          "adverse_first_bar": null,
+          "early_penalty": 0.0,
+          "capacity_basis": 0.0,
+          "exit_time": "2026-01-05 21:24:00+08:00",
+          "exit_reason": "TAKE_PROFIT",
+          "tp_minutes": null,
+          "tp_market_minutes": 3,
+          "original_tp": 0.9523809523809523,
+          "timeboxed_tp": 1.0,
+          "intrabar_ambiguous": false
+        }
+      },
+      "seen": [
+        "CZCE.FG2701:1:1",
+        "CZCE.FG2701:1:2",
+        "CZCE.FG2701:1:3",
+        "CZCE.FG2701:1:4",
+        "CZCE.FG2701:1:5"
+      ],
+      "last_mark": 1000.0,
+      "last_end": "2026-01-05 21:33:00+08:00",
+      "step_number": 32,
+      "totals": {
+        "v0": 1.834733893557423,
+        "tp_timeboxed": 2.0,
+        "early": -1.2,
+        "potential": 0.0,
+        "capacity": 0.0,
+        "v2": 0.8,
+        "v3": 0.8,
+        "capacity_basis": 0.0
+      },
+      "discounted": {
+        "v0": 1.7450455646135528,
+        "v2": 0.7466280080897795,
+        "v3": 0.7466280080897795
+      },
+      "discount_weight": 0.9082453986666178,
+      "ambiguities": 0,
+      "tp_profile": "QUALITY_TP_V1",
+      "quality_last_day": {
+        "CZCE.FG2701:1:5": "20260106"
+      },
+      "quality_crossed_days": {
+        "CZCE.FG2701:1:5": 0
+      },
+      "sha256": "5dc6a4764a5ffae727c1d6badd567480c446e575279da5169d06eb5e7ba734b5"
+    },
+    "total": -5.2
+  },
+  "last_reward_components": {
+    "tp": 0.0,
+    "early": 0.0,
+    "sl": 0.0,
+    "other": 0.0,
+    "total": 0.0,
+    "legacy_tp": 0.0,
+    "early_first5": 0,
+    "early_next10": 0,
+    "penalized": [],
+    "intrabar_ambiguous": [],
+    "events": []
+  },
+  "e_state": {
+    "observation_identity": "83668291caf6223fc45e279f608b51918f8f2f3e3e5d0504407f3108063993f4",
+    "snapshot": {
+      "source_contract": "CZCE.FG2701",
+      "visible_cutoff": "2026-01-05T21:33:00+08:00",
+      "decision_time": "2026-01-05T21:33:00+08:00",
+      "data_identity": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "context_available_at": [
+        "2026-01-05T21:15:00+08:00",
+        "2026-01-05T21:30:00+08:00"
+      ],
+      "anchor_source": "legacy_first_observed_close",
+      "macd_5m": {
+        "algorithm": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "periods": [
+            12,
+            26,
+            9
+          ],
+          "histogram": "DIF-Signal",
+          "initialization": "first_complete_close; first_DIF_and_signal_zero",
+          "warmup": "35_complete_buckets_strictly_before_current_bucket",
+          "scale": "1000*raw/current_visible_1m_Close",
+          "invalid": "all_zero",
+          "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+          "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+          "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+          "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+          "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+          "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+        },
+        "raw": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "anchor_close": 1000.0,
+        "bucket_id": "CZCE.FG2701:2026-01-05T21:00:00+08:00:6",
+        "last_committed_bucket": "CZCE.FG2701:2026-01-05T21:00:00+08:00:5",
+        "completed_buckets": 6,
+        "state": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "state": {
+            "fast": 1000.0,
+            "slow": 1000.0,
+            "signal": 0.0,
+            "completed": 6,
+            "bucket": "CZCE.FG2701:2026-01-05T21:00:00+08:00:6",
+            "session": "2026-01-05T21:00:00+08:00",
+            "last_time": 1767619980000000000,
+            "slot": 3,
+            "output": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "raw": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "last_committed": "CZCE.FG2701:2026-01-05T21:00:00+08:00:5",
+            "session_end_ns": 1767625200000000000,
+            "observed_interval_end_ns": null,
+            "discarded_partial_buckets": 0
+          }
+        },
+        "visible_cutoff": "2026-01-05T21:33:00+08:00",
+        "available_at": "2026-01-05T21:33:00+08:00"
+      },
+      "snapshot_identity": "5dde74caceeebaa50e5ddc96fc18b2fffc5f0fba57c21107befcc8736749d791",
+      "arrays_hash": "43e508283d9213e9ca1e1c7c1de11d9e2174b064bc5bc3f5d79ce7b2a95f85ba"
+    }
+  }
+}

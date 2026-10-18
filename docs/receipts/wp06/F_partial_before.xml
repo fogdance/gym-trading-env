@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.713" timestamp="2026-10-19T05:18:48.277050+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp06_cli" name="test_F11_partial_engineering_budget_is_not_reported_complete" time="0.701"><failure message="AssertionError: assert 'F3_ENGINEERING_COMPLETE' == 'F3_ENGINEERING_PARTIAL'&#10;  &#10;  - F3_ENGINEERING_PARTIAL&#10;  ?                 ^^ ^^^&#10;  + F3_ENGINEERING_COMPLETE&#10;  ?                +++ ^^ ^">def test_F11_partial_engineering_budget_is_not_reported_complete():
+        from types import SimpleNamespace
+        from embodied.run.fg_s3_e_quality_actor import ActorRun,ActorCounters
+        run=object.__new__(ActorRun);run.settings={'optimizer_updates':4};run.identity={'controlled_small':True,'training_admitted':False}
+        run.preparation=SimpleNamespace(receipt={'identity':{'source_model':{'foundation_status':'FOUNDATION_NOT_TRAINED'}}})
+        run.counters=ActorCounters();run.counters.state.update(optimizer_updates=2,consumed_batches=2)
+        run.agent=SimpleNamespace(n_updates=2);run.cp=SimpleNamespace(latest=lambda:Path('/synthetic/checkpoint'))
+        run.source=SimpleNamespace(coverage=lambda:{})
+&gt;       assert run.result()['status']=='F3_ENGINEERING_PARTIAL'
+E       AssertionError: assert 'F3_ENGINEERING_COMPLETE' == 'F3_ENGINEERING_PARTIAL'
+E         
+E         - F3_ENGINEERING_PARTIAL
+E         ?                 ^^ ^^^
+E         + F3_ENGINEERING_COMPLETE
+E         ?                +++ ^^ ^
+
+tests/entry_v1/test_wp06_cli.py:66: AssertionError</failure></testcase></testsuite></testsuites>
