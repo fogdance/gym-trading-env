@@ -1,0 +1,417 @@
+{
+  "roles": [
+    "NATURAL"
+  ],
+  "coverage": {
+    "NATURAL": {
+      "protocol": "FG_S3_E_QUALITY_READER_STATE_V1",
+      "stage": "ACTOR_STRICT",
+      "sampling_spec": {
+        "mode": "NATURAL"
+      },
+      "source_identity": "938b53f86f2dd9ec5ade0689ec9a40249a98654ecd866e4f25a200def9e04769",
+      "index_sha256": "64e3d7009aab0f6b7dbbbea61e9233d875170b42b9fcaf0f4cfdb4a988c559ab",
+      "policies": {
+        "P0": {
+          "EARLY10_15": 13,
+          "EARLY10_5": 12,
+          "L1_raw_outcomes": 29,
+          "L2_raw_valid": 29,
+          "OTHER": 7,
+          "POLICY:P0": 30,
+          "SAME_DAY": 28,
+          "SL30": 11,
+          "STRICT_ADD": 2,
+          "STRICT_WAIT": 26,
+          "TP_FAST": 6,
+          "TP_SLOW": 4,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 0,
+          "quality_adverse_valid": 112,
+          "quality_event_valid": 196,
+          "quality_outcome_valid": 28,
+          "quality_score_valid": 21,
+          "quality_touch_valid": 224,
+          "raw_strict_ADD": 2,
+          "raw_strict_WAIT": 27,
+          "rows": 30,
+          "teacher_valid": 28
+        },
+        "P1": {
+          "EARLY10_15": 3,
+          "EARLY10_5": 3,
+          "L1_raw_outcomes": 5,
+          "L2_raw_valid": 1,
+          "OTHER": 1,
+          "POLICY:P1": 30,
+          "SAME_DAY": 4,
+          "SL30": 1,
+          "TP_FAST": 1,
+          "TP_SLOW": 1,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 4,
+          "quality_adverse_valid": 16,
+          "quality_event_valid": 28,
+          "quality_outcome_valid": 4,
+          "quality_score_valid": 3,
+          "quality_touch_valid": 32,
+          "raw_strict_WAIT": 1,
+          "rows": 30,
+          "teacher_valid": 0
+        },
+        "P2_low": {
+          "EARLY10_15": 5,
+          "EARLY10_5": 4,
+          "L1_raw_outcomes": 15,
+          "L2_raw_valid": 3,
+          "OTHER": 1,
+          "POLICY:P2_low": 30,
+          "SAME_DAY": 14,
+          "SL30": 3,
+          "STRICT_WAIT": 2,
+          "TP_FAST": 6,
+          "TP_SLOW": 4,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 12,
+          "quality_adverse_valid": 56,
+          "quality_event_valid": 98,
+          "quality_outcome_valid": 14,
+          "quality_score_valid": 13,
+          "quality_touch_valid": 112,
+          "raw_strict_WAIT": 3,
+          "rows": 30,
+          "teacher_valid": 2
+        },
+        "P2_mid": {
+          "EARLY10_15": 4,
+          "EARLY10_5": 4,
+          "L1_raw_outcomes": 8,
+          "L2_raw_valid": 2,
+          "OTHER": 2,
+          "POLICY:P2_mid": 30,
+          "SAME_DAY": 7,
+          "SL30": 2,
+          "STRICT_WAIT": 1,
+          "TP_FAST": 2,
+          "TP_SLOW": 1,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 6,
+          "quality_adverse_valid": 28,
+          "quality_event_valid": 49,
+          "quality_outcome_valid": 7,
+          "quality_score_valid": 5,
+          "quality_touch_valid": 56,
+          "raw_strict_WAIT": 2,
+          "rows": 30,
+          "teacher_valid": 1
+        },
+        "P3": {
+          "EARLY10_15": 9,
+          "EARLY10_5": 8,
+          "L1_raw_outcomes": 25,
+          "L2_raw_valid": 16,
+          "OTHER": 7,
+          "POLICY:P3": 30,
+          "SAME_DAY": 24,
+          "SL30": 7,
+          "STRICT_ADD": 1,
+          "STRICT_WAIT": 14,
+          "TP_FAST": 6,
+          "TP_SLOW": 4,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 9,
+          "quality_adverse_valid": 96,
+          "quality_event_valid": 168,
+          "quality_outcome_valid": 24,
+          "quality_score_valid": 17,
+          "quality_touch_valid": 192,
+          "raw_strict_ADD": 1,
+          "raw_strict_WAIT": 15,
+          "rows": 30,
+          "teacher_valid": 15
+        },
+        "P4": {
+          "EARLY10_15": 12,
+          "EARLY10_5": 12,
+          "L1_raw_outcomes": 27,
+          "L2_raw_valid": 27,
+          "OTHER": 6,
+          "POLICY:P4": 30,
+          "SAME_DAY": 26,
+          "SL30": 10,
+          "STRICT_ADD": 2,
+          "STRICT_WAIT": 24,
+          "TP_FAST": 6,
+          "TP_SLOW": 4,
+          "advanced": 29,
+          "decision_executed": 29,
+          "funds_outside_certificate": 0,
+          "quality_adverse_valid": 104,
+          "quality_event_valid": 182,
+          "quality_outcome_valid": 26,
+          "quality_score_valid": 20,
+          "quality_touch_valid": 208,
+          "raw_strict_ADD": 2,
+          "raw_strict_WAIT": 25,
+          "rows": 30,
+          "teacher_valid": 26
+        }
+      },
+      "unique_market_cursors": 30,
+      "distinct_account_decisions": 174,
+      "actual_optimizer_exposures": 0,
+      "delivered_unique_market_cursors": 22,
+      "delivered_unique_account_decisions": 24,
+      "delivered_counts": {
+        "batches": 1,
+        "delivered_candidate_exposures": 24,
+        "quality_pair": 42,
+        "strict_pair": 11,
+        "policy:P0": 12,
+        "stratum:NATURAL": 2,
+        "policy:P2_low": 12
+      },
+      "all_episode_strict_pairs": 114,
+      "all_episode_quality_pairs": 318,
+      "support": {
+        "12:ACTOR_STRICT": 54
+      },
+      "peak_cached_bytes": 564420,
+      "cache_budget_bytes": 67108864
+    }
+  },
+  "state": {
+    "protocol": "FG_S3_F3_READER_GROUP_V1",
+    "roles": [
+      "NATURAL"
+    ],
+    "readers": [
+      {
+        "counts": {
+          "batches": 1,
+          "delivered_candidate_exposures": 24,
+          "policy:P0": 12,
+          "policy:P2_low": 12,
+          "quality_pair": 42,
+          "stratum:NATURAL": 2,
+          "strict_pair": 11
+        },
+        "index": "64e3d7009aab0f6b7dbbbea61e9233d875170b42b9fcaf0f4cfdb4a988c559ab",
+        "protocol": "FG_S3_E_QUALITY_READER_STATE_V1",
+        "rng": {
+          "bit_generator": "PCG64",
+          "has_uint32": 0,
+          "state": {
+            "inc": 115100037077895843562177524975652467207,
+            "state": 238810549365930420020463894971440272341
+          },
+          "uinteger": 1487293487
+        },
+        "sampling_spec": {
+          "mode": "NATURAL"
+        },
+        "seen_account": [
+          [
+            "P0",
+            11
+          ],
+          [
+            "P0",
+            12
+          ],
+          [
+            "P0",
+            13
+          ],
+          [
+            "P0",
+            14
+          ],
+          [
+            "P0",
+            15
+          ],
+          [
+            "P0",
+            16
+          ],
+          [
+            "P0",
+            17
+          ],
+          [
+            "P0",
+            18
+          ],
+          [
+            "P0",
+            19
+          ],
+          [
+            "P0",
+            20
+          ],
+          [
+            "P0",
+            21
+          ],
+          [
+            "P0",
+            22
+          ],
+          [
+            "P2_low",
+            1
+          ],
+          [
+            "P2_low",
+            2
+          ],
+          [
+            "P2_low",
+            3
+          ],
+          [
+            "P2_low",
+            4
+          ],
+          [
+            "P2_low",
+            5
+          ],
+          [
+            "P2_low",
+            6
+          ],
+          [
+            "P2_low",
+            7
+          ],
+          [
+            "P2_low",
+            8
+          ],
+          [
+            "P2_low",
+            9
+          ],
+          [
+            "P2_low",
+            10
+          ],
+          [
+            "P2_low",
+            11
+          ],
+          [
+            "P2_low",
+            12
+          ]
+        ],
+        "seen_market": [
+          [
+            "CZCE.FG2701",
+            1
+          ],
+          [
+            "CZCE.FG2701",
+            2
+          ],
+          [
+            "CZCE.FG2701",
+            3
+          ],
+          [
+            "CZCE.FG2701",
+            4
+          ],
+          [
+            "CZCE.FG2701",
+            5
+          ],
+          [
+            "CZCE.FG2701",
+            6
+          ],
+          [
+            "CZCE.FG2701",
+            7
+          ],
+          [
+            "CZCE.FG2701",
+            8
+          ],
+          [
+            "CZCE.FG2701",
+            9
+          ],
+          [
+            "CZCE.FG2701",
+            10
+          ],
+          [
+            "CZCE.FG2701",
+            11
+          ],
+          [
+            "CZCE.FG2701",
+            12
+          ],
+          [
+            "CZCE.FG2701",
+            13
+          ],
+          [
+            "CZCE.FG2701",
+            14
+          ],
+          [
+            "CZCE.FG2701",
+            15
+          ],
+          [
+            "CZCE.FG2701",
+            16
+          ],
+          [
+            "CZCE.FG2701",
+            17
+          ],
+          [
+            "CZCE.FG2701",
+            18
+          ],
+          [
+            "CZCE.FG2701",
+            19
+          ],
+          [
+            "CZCE.FG2701",
+            20
+          ],
+          [
+            "CZCE.FG2701",
+            21
+          ],
+          [
+            "CZCE.FG2701",
+            22
+          ]
+        ],
+        "source": "938b53f86f2dd9ec5ade0689ec9a40249a98654ecd866e4f25a200def9e04769",
+        "stage": "ACTOR_STRICT"
+      }
+    ]
+  },
+  "shape": [
+    2,
+    13,
+    20
+  ],
+  "updates": 0
+}

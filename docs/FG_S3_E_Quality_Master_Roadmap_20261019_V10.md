@@ -8,6 +8,8 @@
 
 WP06 为 **ENGINEERING CODE_GO**，真实数据支持 **LIMITED**，**FORMAL_TRAIN / RESEARCH NO_GO**。完整工程报告：[WP06_IMPLEMENTATION_REVIEW.md](WP06_IMPLEMENTATION_REVIEW.md)。没有真实已训练 F1/F2/F3，不得称学生已学会交易。
 
+独立发布树已对 Gym `53ffea2353618be99f35673ab8f4c6c544b7273d` / Dreamer `ffe6a831877ee91769f611dd16c374fb96941ebd` 执行最终 96 个 WP06 case + 20 个共享 Guard case，均 exit 0，无跳过。后续发布文档提交的运行源码相同；全部 A–F SHA、命令和文件摘要见 [成对提交清单](WP06_COMMIT_LOCK.json)。原 FullCheckpoint 和完整账户回放在发布树 artifacts 持久保存，来源和文件 SHA 在 docs 中记录。
+
 ## WP01–WP10
 
 | WP | 当前实际状态 | 剩余/下游条件 |

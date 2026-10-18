@@ -1,0 +1,76 @@
+{
+  "scope": "EVIDENCE_COPIES_NOT_A_NEW_CORPUS_OR_REPLAY",
+  "original_complete_trace": "/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp06/release_eval_01/actor_trace",
+  "source_manifest": {
+    "schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+    "identity": {
+      "protocol": "FG_S3_E_QUALITY_ACTOR_SUPERVISED_V1",
+      "source": null,
+      "scope": "SYNTHETIC_DEV_ONLY"
+    },
+    "policy": {
+      "id": "F3_ACTOR_ARGMAX",
+      "kind": "STUDENT_ONLY",
+      "deterministic": true
+    },
+    "config_path": "None",
+    "reward_version": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+    "reward_params_hash": "0e00322430aa8760d798ed6192076badd6d54cf316c3ee72ad5b29a31775175b",
+    "obs_version": "FG_S3_E_OBSERVATION_V2",
+    "env_config_hash": "40ae8c8272c0ab1c2c44d08734b31a7b1caf3a039b71450b460ac6488cc304ec",
+    "contract": "CZCE.FG2701",
+    "records": 36,
+    "advanced": 32,
+    "valid_minutes": 32,
+    "chunk_resets": 3,
+    "sequence_starts": 0,
+    "chunks": [
+      {
+        "path": "replay/20261019T053600F164570-66SLGPMQieacquFZuszPDw-4lOJEHMpEMvMpfIgyIehx9-36.npz",
+        "uuid": "66SLGPMQieacquFZuszPDw",
+        "succ": "4lOJEHMpEMvMpfIgyIehx9",
+        "length": 36
+      }
+    ],
+    "source_rows": 40,
+    "unvisited_rows": 7,
+    "terminal_status": "ACTIVE",
+    "terminal": false,
+    "pending_reason": null,
+    "open_entries": 1,
+    "open_lots": 3.0,
+    "total_reward": -5.2,
+    "tp_events": 2,
+    "non_tp_exits": 2,
+    "array_hash": "7b1910a7c9b6c9ec7b4319d2ee18380f1a2680b3765ea081c2c0046707a85f49",
+    "event_hash": "5796021a0a62668788302fbaf799d816efa27a526415f1bb95e9eb7d550a7ef9",
+    "elapsed_seconds": 1.367618688964285,
+    "files": {
+      "account_state.json": "0c5643b9b0624fcef060aca800e8b2cb1969f1ccc8ac91a4a6f1d4198bf0588a",
+      "trade_diagnostics.json": "78a78cae5ee7210245db382f865a74169de9450bc523871cd4148a18f58df3ab",
+      "steps.jsonl.gz": "56314c8af6c5c7e61d8c586f81db958686a1279f08ff222f74773d635b99509d",
+      "replay/20261019T053600F164570-66SLGPMQieacquFZuszPDw-4lOJEHMpEMvMpfIgyIehx9-36.npz": "da39e9b9f7c33d39f5724f6fef3530f2eb4d70f6ddabde9c161ac653c7a9d308"
+    },
+    "e_observation_identity": "83668291caf6223fc45e279f608b51918f8f2f3e3e5d0504407f3108063993f4",
+    "data_identity": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "initial_state": false,
+    "bounded_observation_end": 32,
+    "training_admitted": false,
+    "protocol": "fg_s3_e_quality_corpus_v2",
+    "reward_candidate": "C1",
+    "fill_model": "minute_tp5_sl30_risk_first_v1",
+    "observation_identity": "a44954169ff619105758cf423706b0aeebe3b6966dcf7f0006ff95c30fb28a33",
+    "sl_events": 2,
+    "early10_events": 3,
+    "replay_trace_hash": "b0b71f2f5339d8d7cc68b99b8aacd5267aa3be7ce1cc4daf77ec587c164f2609",
+    "content_hash": "167a115f85ff225519ac4a5cf0d7db63db19df81942f0b3380f17574e8574eb2"
+  },
+  "complete_account_replay": {
+    "status": "PASS",
+    "records": 36,
+    "account_restores": 3,
+    "replay_trace_hash": "b0b71f2f5339d8d7cc68b99b8aacd5267aa3be7ce1cc4daf77ec587c164f2609",
+    "teacher_labels_verified": 0
+  },
+  "content_hash": "cdbbedeab67159dbed6fe5c6dab9e47c099759dea5c23b66b8300e0c5b308c0c"
+}

@@ -1,0 +1,107 @@
+{
+  "protocol": "FG_S3_WP06_COMMIT_LOCK_V1",
+  "phase_commits": {
+    "A": {
+      "gym": "389b054a3793183d139254247411c60db1da7044",
+      "dreamer": "4a662da09edab0a84291ca7c9c9e4b24d5cdbb76"
+    },
+    "B": {
+      "gym": "81a1c8f019aab3ed1f95b3f21ddfa8539e94d601",
+      "dreamer": "e846d7a878530b43b1de539b17a8e673cd180835"
+    },
+    "C": {
+      "gym": "035d1628757df24ae95b3b3f3e9fbdd8b55bca20",
+      "dreamer": "f4104b4f17ea2bc3110840de7bc3ae0df0866601"
+    },
+    "D": {
+      "gym": "34549a3fc8369d8cb8c3ad53a3ee439621d6e2ef",
+      "dreamer": "6d045035591cd614b88853c30387951edd584f4c"
+    },
+    "E": {
+      "gym": "2ac709d7344cc7e08f83cd30ccd172f514befbc7",
+      "dreamer": "085bf9ca0bd7eff11b1676d694ec5bdd686438d1"
+    },
+    "F": {
+      "gym": "53ffea2353618be99f35673ab8f4c6c544b7273d",
+      "dreamer": "ffe6a831877ee91769f611dd16c374fb96941ebd"
+    }
+  },
+  "tested_pair": {
+    "gym": "53ffea2353618be99f35673ab8f4c6c544b7273d",
+    "dreamer": "ffe6a831877ee91769f611dd16c374fb96941ebd"
+  },
+  "feature_branch": "feat/s3-e-quality-wp06-20261018",
+  "release_branch": "integration/s3-e-quality-wp06-release-20261019",
+  "public_branch": "integration/s3-next",
+  "release_validation": "PASS_SELECTED_116_CPU_CASES_READY_TO_FAST_FORWARD",
+  "formal_training_admitted": false,
+  "research_admitted": false,
+  "tested_runtime_identity": {
+    "gym": {
+      "head": "53ffea2353618be99f35673ab8f4c6c544b7273d",
+      "runtime_hash": "1689b70d2f197558c750bc287691e0ed3156cafb3c5aaeee71e30f75dfe3257e"
+    },
+    "dreamer": {
+      "head": "ffe6a831877ee91769f611dd16c374fb96941ebd",
+      "runtime_hash": "380a6dce0bc9fb7c805f6dc175dbbc82751f7e2598cec6d28fd82eaec9eaf057"
+    }
+  },
+  "results": {
+    "Release_wp06": {
+      "cases": 96,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 829.7346982109593,
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "addopts=",
+        "-q",
+        "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/docs/receipts/wp06/Release_wp06.xml",
+        "tests/entry_v1/test_wp06_contract.py",
+        "tests/entry_v1/test_wp06_transfer.py",
+        "tests/entry_v1/test_wp06_updates.py",
+        "tests/entry_v1/test_wp06_losses.py",
+        "tests/entry_v1/test_wp06_sampling.py",
+        "tests/entry_v1/test_wp06_run.py",
+        "tests/entry_v1/test_wp06_evaluation.py",
+        "tests/entry_v1/test_wp06_checkpoint.py",
+        "tests/entry_v1/test_wp06_cli.py"
+      ]
+    },
+    "Release_shared": {
+      "cases": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 193.16298069409095,
+      "command": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-p",
+        "no:cacheprovider",
+        "-o",
+        "addopts=",
+        "-q",
+        "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp06-release-20261019/gym-trading-env/docs/receipts/wp06/Release_shared.xml",
+        "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+        "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+        "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py"
+      ]
+    }
+  },
+  "data_status": "LIMITED_DEV_ONLY_FULL_CORPUS_NOT_RUN",
+  "gpu_status": "FAIL_ENVIRONMENT_GPU_UPDATE_NOT_RUN",
+  "publication_rule": "Only documentation/evidence commits may follow this tested source pair; exact resume still binds its original full HEAD.",
+  "content_hash": "e3a166c5d5b3372c52b98db20c88f2f886b7d9f7505c3f2132e16e49931f1944"
+}

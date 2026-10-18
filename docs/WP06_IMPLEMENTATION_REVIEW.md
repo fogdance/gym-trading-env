@@ -1,6 +1,8 @@
 # WP06 实施 Review（2026-10-19）
 
-结论：A–F 核心工程与定向 CPU 验证已实施；最终独立集成复核在封版清单记录。**工程可运行不等于真实策略有效，FORMAL_TRAIN / RESEARCH 仍 NO_GO。** 所有实际参数更新仅来自明确标记的合成 fixture；真实 TRAIN 更新为 0，未读取 TEST 行情、未生产 18 合约、未解除公开 E+Quality Guard。
+结论：A–F 核心工程已完成，最终独立集成 **96 个 WP06 case + 20 个共享 Guard case 全部 PASS，退出码均 0，无失败/跳过**。原始命令和逐 case 清单见 `Release_test_index.json/.tsv`。**工程可运行不等于真实策略有效，FORMAL_TRAIN / RESEARCH 仍 NO_GO。** 所有实际参数更新仅来自明确标记的合成 fixture；真实 TRAIN 更新为 0，未读取 TEST 行情、未生产 18 合约、未解除公开 E+Quality Guard。
+
+最终测试代码为下表 F 成对 SHA；此后的发布提交只归档 docs，不改运行源码/配置/测试。发布前后 runtime_hash 相同的继承证据和成对提交清单见 `WP06_COMMIT_LOCK.json`。完整冷恢复产物保存在隔离发布树 `artifacts/fg_s3_v2/e_quality_wp06/release_cold_01`；完整无 Teacher 账户回放位于 `release_eval_01/actor_trace`。256 份持久工件逐文件 SHA 和四组 CP node 见 `Release_artifact_inventory.json`，账户/动作文本副本在 `Release_native_account_evidence/`。这些是工程证据，不是正式 Corpus/Checkpoint 认证。
 
 ## 基线、目录和提交
 
@@ -18,7 +20,7 @@
 | C | `035d1628757df24ae95b3b3f3e9fbdd8b55bca20` | `f4104b4f17ea2bc3110840de7bc3ae0df0866601` |
 | D | `34549a3fc8369d8cb8c3ad53a3ee439621d6e2ef` | `6d045035591cd614b88853c30387951edd584f4c` |
 | E | `2ac709d7344cc7e08f83cd30ccd172f514befbc7` | `085bf9ca0bd7eff11b1676d694ec5bdd686438d1` |
-| F | 见封版后的 `WP06_COMMIT_LOCK.json` | 见同一成对清单 |
+| F | `53ffea2353618be99f35673ab8f4c6c544b7273d` | `ffe6a831877ee91769f611dd16c374fb96941ebd` |
 
 完整 HEAD/dirty、命令、源码摘要和每个 case 清单均保留在各次 `docs/receipts/wp06/*.json/.log/.xml`，不能用历史 PASS 代替当前版本。阶段测试的 pytest 临时目录会被框架清理；最终集成通过显式持久目录保留完整 Checkpoint/账户回放，位置在发布收据中记录。最终集成收据另记测试所用完整成对 HEAD；若最后仅补文档，明确列出运行源码哈希相同的继承证据。
 
@@ -72,6 +74,8 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 | `F_f2_cold_regression` | 原 F2 冷恢复回归，8 passed | 0 |
 | `F_partial_after` | stop_at 未完成预算标 PARTIAL；先有失败回归再修正 | 0 |
 | `F_cpu_probe`：统一 CLI 固定合成 probe | 4 次原优化器更新，5 个 Actor 参数变化，冻结 state 相同 | 0 |
+| `Release_wp06`：全部九个 test_wp06_*.py | 96 passed，816.57 秒 | 0 |
+| `Release_shared`：指定三文件 | 20 passed，187.74 秒 | 0 |
 | `F_real_read`：统一 CLI f3-read-check | 有限 TRAIN 只读 LIMITED，零更新 | 0 |
 
 不是全项目测试通过。完整 test ID 与计数以原始 XML/最终测试索引为准，不对重跑 case 重复计数。未运行的实际研究验收不计入 PASS。
@@ -92,6 +96,8 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 有效 L2 同时要求 teacher_valid、合法 WAIT/ADD、原生双动作 mask `[1,1]`、非 first/last/terminal；不能补造 WAIT。K 个真实历史步经过原 `causal_context/wm_only(training=False)`，T 个目标 id 对齐；Teacher 或 burn-in 标签变更不改变表征，历史输入变更会影响表征。
 
 Natural anchor 永远存在，辅助使用同一 Corpus 的第二条原 Reader。各自 RNG、抽样状态和 prefetched input 均恢复。Natural / auxiliary 暴露、balanced loss 分母、strict Pair、L1 一致 Pair 分开记录；没有辅助流时 auxiliary 暴露为 0。不同 batch/account/segment/Corpus 不能配对。L1 Pair 默认权重 0，只允许高分 L2 ADD→低分 L2 WAIT，分差 >=15；同动作和逆序过滤均有计数/测试。Q/Soft 禁用且不会进入 loss。
+
+Pair/count 是对应合法监督分母；权重为 0 的项只保留诊断计数，不应被读作该 loss 已提供梯度的证据。D 的明确启用消融和默认 Natural-only probe 分开报告。
 
 ## FullCheckpoint 精确冷恢复
 
@@ -132,6 +138,8 @@ env FG_WP_RECEIPTS=wp06 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp
 | 此只读诊断模型配置 | `8415c4f74c221708ad23ba41fb408de02ba9146b3536605d0d8c9e73091c5eab` |
 
 原 B01 路径 `/data/s3_corpus/early_train_20261018_cpu20_v2/batches/B01_FG809` 在本轮不存在，最初 read exit 2；当前已知两个 full-main 目录也没有 corpus_manifest。**真实完整 Corpus K32/T64/G3 验收 NOT_RUN，NO_GO**。历史 WP02/B01 报告和规划时的成功不替代本轮验收，也未读取未发布的半成品。
+
+最终追加只读来源复核：`source_inputs` 实测验证了受信 TRAIN 池/原生 Env 收据、所选 FG809 行及真实 TRAIN 日期集合。完整官方日的 source_lock 与四步 DEV 锁不同；调用原生 `_execution_scope(mode='dev', max_market_steps=4)` 后，逐字段及 content_hash 完全重现原锁，差异列表为空。见 `Release_real_source_scope.json`。未改旧 Corpus 或忽略任何字段；该证明仍不是 Native G3 / Prepared / Checkpoint 认证。
 
 ## 反向源码 Review
 

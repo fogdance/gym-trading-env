@@ -1,0 +1,20 @@
+{
+  "status": "TRUSTED_TRAIN_INPUT_AUTHORITY_VERIFIED",
+  "contract": "CZCE.FG809",
+  "original_lock_hash": "f9ca967767519776a12af2b02eb08dd4f05ed531f04c4cb4073ceec59d1cf0de",
+  "current_lock_hash": "52fd391620a8e67a51c5f1287b04ba156566a8b2cf9aaa012ba0e13fb58c1965",
+  "source_pool": {
+    "path": "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+    "sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b"
+  },
+  "env_receipt": {
+    "path": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+    "sha256": "cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad"
+  },
+  "source_selection_equal": false,
+  "native_G3_executed": false,
+  "training_admitted": false,
+  "real_TRAIN_updates": 0,
+  "source_read_fold": "TRAIN",
+  "content_hash": "7c5981784ce32c3f2e739575e7add07bf8f6e40c86d92a4287536dc8c1227b6d"
+}
