@@ -1,0 +1,106 @@
+{
+  "gym": {
+    "full": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/WP04_TEST_RESULTS.md:405: new blank line at EOF.\n",
+      "stderr": ""
+    },
+    "source": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        "configs",
+        "dreamerv3",
+        "embodied"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "authored_docs": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ":(glob)docs/WP04*.md",
+        ":(glob)docs/WP04*.json",
+        "docs/FG_S3_E_Quality_Master_Roadmap_20261018_V4.md"
+      ],
+      "exit_code": 2,
+      "stdout": "docs/WP04_TEST_RESULTS.md:405: new blank line at EOF.\n",
+      "stderr": ""
+    }
+  },
+  "dreamer": {
+    "full": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "source": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        "configs",
+        "dreamerv3",
+        "embodied"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "authored_docs": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        ":(glob)docs/WP04*.md",
+        ":(glob)docs/WP04*.json",
+        "docs/FG_S3_E_Quality_Master_Roadmap_20261018_V4.md"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}

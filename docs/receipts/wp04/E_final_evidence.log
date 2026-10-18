@@ -1,0 +1,1 @@
+{"status": "PASS", "actual_optimizer_updates": 0, "source": "640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9", "unique_target_market_cursors": 128, "unique_target_account_rows": 768, "persisted_full_state_exact": true, "original_worktrees_unchanged": true}

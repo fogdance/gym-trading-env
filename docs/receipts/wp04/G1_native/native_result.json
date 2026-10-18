@@ -1,0 +1,172 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_corpus.py",
+    "verify",
+    "--corpus",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env",
+  "exit_code": 0,
+  "producer_audit": {
+    "gym": {
+      "head": "e57189bad100465c9fee8d9bbb5601f3e5c376ad",
+      "runtime_diff_exit_code": 0,
+      "untracked_runtime": []
+    },
+    "dreamer": {
+      "head": "44a6cc62032811501631e83be977f07137dc65b8",
+      "runtime_diff_exit_code": 0,
+      "untracked_runtime": []
+    }
+  },
+  "seconds": 1286.1641751429997,
+  "log_sha256": "39836da7b8aeb00f554c125ddd872592ac954f56bfd7aa9394a8ce23555f973b",
+  "result": {
+    "status": "PASS",
+    "protocol": "FG_S3_E_QUALITY_CORPUS_V2",
+    "training_admitted": false,
+    "corpus_identity": "640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9",
+    "native_replay": [
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "0b8550e0eb21c58d729bfc0bac40c63d368fd3fca804b7614ff8dc7844f2d7b4",
+        "teacher_labels_verified": 691
+      },
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "afe6d6603396693aac182b9b394ad81d9523e379649cb766f5c519c061108022",
+        "teacher_labels_verified": 691
+      },
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "c4e4c71d48aeb19643ab6f1b76c400827288850d2360452e88b945aae4382768",
+        "teacher_labels_verified": 691
+      },
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "ed394c7dd26737c3f1f51f3dbf27676453ad35b91f7189462db89069df14f12c",
+        "teacher_labels_verified": 691
+      },
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "8cee6876e1c669b03e4b98cb0e5f1371b3c0bf94f174d45ab5a5e217e3cc3f59",
+        "teacher_labels_verified": 691
+      },
+      {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "f9df2e4d0660a958d893fee0987c67b69ae9f16fbd71308bd74c34a9cec087dc",
+        "teacher_labels_verified": 691
+      }
+    ],
+    "G3": "GO",
+    "test_prices_opened": 0,
+    "resource_budget": {
+      "workers": 6,
+      "label_workers": [
+        3,
+        3,
+        3,
+        3,
+        3,
+        3
+      ],
+      "total_worker_processes": 24,
+      "available_memory_bytes": 16328237056,
+      "observed_parent_peak_rss_bytes": 603443200,
+      "worker_budget_bytes": 643377920,
+      "observed_process_pss_bytes": 514702336,
+      "coordinator_reserve_bytes": 536870912,
+      "available_logical_cpus": 24,
+      "native_threads_per_worker": 1
+    },
+    "behavior_jobs": [
+      {
+        "behavior": "P1",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "afe6d6603396693aac182b9b394ad81d9523e379649cb766f5c519c061108022",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1070.0422419019742,
+        "peak_rss_bytes": 676098048
+      },
+      {
+        "behavior": "P2_low",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "c4e4c71d48aeb19643ab6f1b76c400827288850d2360452e88b945aae4382768",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1087.4204984420212,
+        "peak_rss_bytes": 675954688
+      },
+      {
+        "behavior": "P2_mid",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "ed394c7dd26737c3f1f51f3dbf27676453ad35b91f7189462db89069df14f12c",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1097.6547806200106,
+        "peak_rss_bytes": 678412288
+      },
+      {
+        "behavior": "P3",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "8cee6876e1c669b03e4b98cb0e5f1371b3c0bf94f174d45ab5a5e217e3cc3f59",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1100.8448742190376,
+        "peak_rss_bytes": 676626432
+      },
+      {
+        "behavior": "P0",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "0b8550e0eb21c58d729bfc0bac40c63d368fd3fca804b7614ff8dc7844f2d7b4",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1147.8010912879836,
+        "peak_rss_bytes": 658632704
+      },
+      {
+        "behavior": "P4",
+        "receipt": {
+          "status": "PASS",
+          "records": 691,
+          "account_restores": 1,
+          "replay_trace_hash": "f9df2e4d0660a958d893fee0987c67b69ae9f16fbd71308bd74c34a9cec087dc",
+          "teacher_labels_verified": 691
+        },
+        "seconds": 1167.5920395710273,
+        "peak_rss_bytes": 679825408
+      }
+    ],
+    "content_hash": "4b04875bd7262e1ba9f77a030fd654082e3faa910a76091b249916a68dc99d0b"
+  }
+}

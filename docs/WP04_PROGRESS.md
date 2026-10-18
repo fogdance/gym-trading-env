@@ -18,4 +18,8 @@ B_final：17 passed，exit0（163.17s pytest）；B_byte_review：1 passed，exi
 
 保留失败：B_smoke为Ninjax要求所有梯度目标均被读取，修复为只读module.values，不评估冻结头或添加假损失；B_targeted暴露单步测试错误，原优化器warmup首步lr=0，经独立原优化器观察确认，保留原配置并按多步验证；B_retry暴露测试把nj.grad初始化重入误认为训练，改按实际初始化生命周期保护。没有放宽WM更新、冻结或来源条件。
 
-本轮真实TRAIN参数更新、GPU、TEST、18合约生产继续NOT_RUN。后续C诊断、D完整冷恢复和E真实只读G3尚未完成。
+本轮真实TRAIN参数更新、GPU、TEST、18合约生产继续NOT_RUN。此为 B 结束时的状态；后续实际结果见下文。
+
+## C–E：已交付工程验收
+
+C 多尺度原生有效信号/全部WM叶变化与后验隔离；D 原FullCheckpoint外部Reader的真实冷进程精确恢复；E 本轮新G3和真实TRAIN只读、379 selected PASS。全部正式训练/研究仍NO_GO。实际成对 A–E SHA、42项验收、失败记录与未运行项统一见 WP04_IMPLEMENTATION_REVIEW.md 和 WP04_DELIVERY_COMMIT_LOCK.json。DEV/DATA/FORMAL 使用用户最新分级。

@@ -1,0 +1,9 @@
+import os,subprocess,sys,json
+from pathlib import Path
+base=Path('/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016')
+g=base/'gym-trading-env';d=base/'dreamerv3'
+env={**os.environ,'PYTHONPATH':f'{g}:{g}/src:{d}:{g}/tests/entry_v1','JAX_PLATFORMS':'cpu','CUDA_VISIBLE_DEVICES':'','PYTHONDONTWRITEBYTECODE':'1','OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1'}
+for repo in (g,d):print(subprocess.check_output(['git','-C',str(repo),'rev-parse','HEAD'],text=True).strip(),flush=True)
+argv=[sys.executable,'-B','-m','pytest','-p','no:cacheprovider','-o','addopts=','-q',str(d/'embodied/tests/test_fg_s3_e_model.py')+'::test_EM04_actual_policy_context_changes_rssm_and_actor']
+print(json.dumps(dict(argv=argv,cwd=str(g),PYTHONPATH=env['PYTHONPATH'])),flush=True)
+raise SystemExit(subprocess.call(argv,cwd=g,env=env))
