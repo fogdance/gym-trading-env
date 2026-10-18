@@ -2,6 +2,7 @@
 from __future__ import annotations
 import argparse
 import copy
+from datetime import date
 from concurrent.futures import ProcessPoolExecutor, as_completed
 import multiprocessing
 from dataclasses import asdict
@@ -41,10 +42,41 @@ TRUSTED_TRAIN_ROOTS={'ffc45db584106b7c348b7f3aee95096acbcb560c31a7d67fa340f30d2e
     'cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad'}
 
 
-def source_inputs(pool_path,env_receipt,contract):
+def _date_selection(start_day, end_day):
+    if start_day is None and end_day is None:
+        return None
+    if start_day is None or end_day is None:
+        raise ValueError('Explicit official start/end days must be supplied together')
+    for value in (start_day,end_day):
+        if not isinstance(value,str) or date.fromisoformat(value).isoformat()!=value:
+            raise ValueError('Explicit official days require YYYY-MM-DD')
+    if start_day>end_day:
+        raise ValueError('Explicit official start day exceeds end day')
+    return dict(start_day=start_day,end_day=end_day)
+
+
+def _sample_bounds(td, start_day=None, end_day=None):
+    selection=_date_selection(start_day,end_day)
+    available=list(td.unique())
+    if len(available)<2:raise ValueError('Two official days unavailable in TRAIN source')
+    if selection is None:
+        days=available[-2:];scope='last_two_official_days_of_main_qualification'
+    else:
+        if start_day not in available or end_day not in available:
+            raise ValueError('Explicit official days must exist in the selected TRAIN contract')
+        days=[day for day in available if start_day<=day<=end_day]
+        scope='explicit_official_day_range_with_full_train_suffix'
+    cursors=np.flatnonzero(td.isin(days))
+    start,end=int(cursors[0]),int(cursors[-1])
+    if start>=end:raise ValueError('Explicit official range needs at least two market cursors')
+    return days,start,end,scope
+
+
+def source_inputs(pool_path,env_receipt,contract,*,start_day=None,end_day=None):
     """Whitelist before ANY selected price-file access. Content hashes are
     integrity links; native verification below supplies the behavioral proof.
     """
+    selection=_date_selection(start_day,end_day)
     pool_path=_local_path(pool_path);eroot=_local_path(env_receipt)
     pool=read_manifest(pool_path)
     if set(pool)-{'product','files','source_training_hash','content_hash'} or pool.get('product')!='FG':
@@ -91,11 +123,8 @@ def source_inputs(pool_path,env_receipt,contract):
     boundary=pd.Timestamp(config['entry']['main_exit_at'])
     boundary=boundary.tz_localize('Asia/Shanghai') if boundary.tz is None else boundary
     if terms.get('expiry_basis')!='main_qualification' or boundary!=times[-1]:
-        raise ValueError('Finite sample must end at the authentic main-qualification exit')
-    if len(td.unique())<2:raise ValueError('Two official days unavailable')
-    # Latest user confirmation: last two official MAIN-QUALIFICATION days.
-    days=list(td.unique()[-2:]);start=int(np.flatnonzero(td.isin(days))[0])
-    end=len(bars)-1
+        raise ValueError('Trusted TRAIN source must end at the authentic main-qualification exit')
+    days,start,end,scope=_sample_bounds(td,start_day,end_day)
     # The explicit dated calendar, not a row/step limit, certifies the boundary.
     market=MarketData(source.bars,source.schedule,EDataConfig())
     if any(e['type']=='MINUTE_REJECTED' for e in market.events):raise ValueError('Invalid trusted TRAIN minute data')
@@ -107,11 +136,14 @@ def source_inputs(pool_path,env_receipt,contract):
         env_receipt=dict(path=str(eroot),sha256=digest(eroot/'manifest.json')),
         inputs_sha256=digest(ipath),partition_manifest=dict(path=str(partition),sha256=digest(partition)),row=row,provenance=source.provenance,
         official_days=days,start_cursor=start,end_cursor=end,
-        sample_scope='last_two_official_days_of_main_qualification',
+        sample_scope=scope,
         suffix_end_cursor=len(bars)-1,suffix_boundary_time=str(boundary),
         first_time=str(times[start]),last_time=str(times[end]),
         mathematical_schema=market.config.schema(__import__('e_data_v1.reference',fromlist=['load_legacy']).load_legacy()[1]),
         no_test_prices_opened=True,training_admitted=False)
+    # The selected Replay interval and the complete TRAIN teacher suffix are
+    # distinct. Never fabricate a financial terminal at an observation cutoff.
+    if selection is not None:lock['selection']=selection
     return signed(lock),source,market
 
 
@@ -237,7 +269,7 @@ def _behavior_job(job):
         seconds=time.monotonic()-began,peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
 
 
-def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_memory=None):
+def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_memory=None, requested_workers=None):
     """Size the CPU pool from the initialized native process, not a fixed cap.
 
     PSS accounts for shared library pages instead of charging their complete
@@ -249,6 +281,8 @@ def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_me
                            if line.startswith('MemAvailable:')))*1024
     if peak_rss is None:peak_rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
     if cpus is None:cpus=len(os.sched_getaffinity(0))
+    if requested_workers is not None and (type(requested_workers) is not int or not 1<=requested_workers<=cpus):
+        raise ValueError('Requested workers must be positive and fit the available CPU affinity')
     if process_memory is None:
         process_memory=int(next(line.split()[1] for line in Path('/proc/self/smaps_rollup').read_text().splitlines()
                                 if line.startswith('Pss:')))*1024
@@ -256,7 +290,8 @@ def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_me
     reserve=512*1024**2
     capacity=(available-reserve)//budget
     if capacity<1:raise ValueError('Insufficient available memory for one native Corpus worker')
-    slots=min(cpus,capacity)
+    requested=cpus if requested_workers is None else requested_workers
+    slots=min(requested,capacity)
     workers=min(jobs,max(1,slots//2))
     label_slots=slots-workers if slots>workers else 0
     label_workers=[label_slots//workers+int(jobs==workers and i<label_slots%workers) for i in range(workers)]
@@ -264,7 +299,8 @@ def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_me
     return dict(workers=workers,label_workers=label_workers,total_worker_processes=slots,available_memory_bytes=available,
         observed_parent_peak_rss_bytes=peak_rss,worker_budget_bytes=budget,
         observed_process_pss_bytes=process_memory,
-        coordinator_reserve_bytes=reserve,available_logical_cpus=cpus,native_threads_per_worker=1)
+        coordinator_reserve_bytes=reserve,available_logical_cpus=cpus,native_threads_per_worker=1,
+        requested_worker_processes=requested,worker_limit_reason='memory' if capacity<requested else 'cpu_budget')
 
 
 def _verification_job(job):
@@ -291,12 +327,15 @@ def _verification_job(job):
     return result
 
 
-def generate_small(pool,env_receipt,contract,out,*,seed=202):
+def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_day=None,workers=None):
     began=time.monotonic()
     out=_local_path(out)
-    if not out.is_relative_to(ARTIFACTS):raise ValueError('Corpus output must stay in this development worktree artifacts')
     independent_output(out,inputs=[pool])
-    lock,source,market=source_inputs(pool,env_receipt,contract)
+    if workers is not None and (type(workers) is not int or not 1<=workers<=len(os.sched_getaffinity(0))):
+        raise ValueError('Requested workers must be positive and fit the available CPU affinity')
+    lock,source,market=source_inputs(pool,env_receipt,contract,start_day=start_day,end_day=end_day)
+    independent_output(out,inputs=[pool,env_receipt,lock['row']['path'],lock['row']['env_config'],
+        lock['row']['contract_config'],lock['partition_manifest']['path'],PROJECT,PROJECT.parent/'dreamerv3'])
     out.mkdir(parents=True,exist_ok=False)
     write_json(out/'source_lock.json',lock)
     profile,audit=_collection(lock,source,market,out)
@@ -321,7 +360,7 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202):
         gamma_rational=[332,333],native_validation=strict.plan()['native_validation'])))
     traces=[]
     specs=behavior_specs(seed)+[dict(id='P4',kind='quality_oracle_schedule',seed_components=[seed,0,5],teacher_identity=strict.identity_hash,hindsight_behavior=True)]
-    limits=_worker_limits(len(specs));workers=limits['workers']
+    limits=_worker_limits(len(specs),requested_workers=workers);workers=limits['workers']
     print(json.dumps(dict(phase='generate',resource_budget=limits)),flush=True)
     with ProcessPoolExecutor(max_workers=workers,mp_context=multiprocessing.get_context('spawn')) as executor:
         futures=[executor.submit(_behavior_job,dict(row=row,profile=profile,spec=spec,
@@ -392,7 +431,7 @@ def _expected_binding_files(path,lock,code):
     return files
 
 
-def verify_corpus(path):
+def verify_corpus(path,*,workers=None):
     """Re-establish source, market math and every native account row read-only."""
     path=_local_path(path);m=read_manifest(path/'corpus_manifest.json')
     if m.get('protocol')!=SCHEMA or m.get('training_admitted') is not False or m.get('fold')!='TRAIN':
@@ -402,7 +441,8 @@ def verify_corpus(path):
         raise ValueError('Corpus runtime code inventory differs')
     check_files(m['code']['files'])
     saved=read_manifest(path/'source_lock.json')
-    current,_,_=source_inputs(saved['source_pool']['path'],saved['env_receipt']['path'],saved['contract'])
+    current,_,_=source_inputs(saved['source_pool']['path'],saved['env_receipt']['path'],saved['contract'],
+        **saved.get('selection',{}))
     if current!=saved or saved['content_hash']!=m['source_lock_hash']:raise ValueError('Corpus source authority differs')
     expected=_expected_binding_files(path,saved,m['code']['files'])
     if m['source_binding']['files']!=expected:
@@ -418,7 +458,7 @@ def verify_corpus(path):
     strict=QualityStrictTeacher(env,source=m['source_binding'],start_cursor=saved['start_cursor'])
     if strict.identity_hash!=m['teacher_identity'] or strict.plan()!=read_manifest(path/'p4_plan.json'):
         raise ValueError('Strict suffix proof differs')
-    limits=_worker_limits(len(m['behaviors']))
+    limits=_worker_limits(len(m['behaviors']),requested_workers=workers)
     print(json.dumps(dict(phase='verify',resource_budget=limits)),flush=True)
     with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
         futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,
@@ -444,23 +484,31 @@ def verify_corpus(path):
 def main(argv=None):
     parser=argparse.ArgumentParser(description='WP02 E Quality CPU Corpus, never training')
     sub=parser.add_subparsers(dest='command',required=True)
-    for name in ['validate','generate-small']:
+    for name in ['validate','generate-small','generate']:
         p=sub.add_parser(name);p.add_argument('--source-pool');p.add_argument('--env-receipt');p.add_argument('--contract',default='CZCE.FG201')
+        p.add_argument('--start-day',help='First official TRAIN trading day, inclusive (YYYY-MM-DD)')
+        p.add_argument('--end-day',help='Last Replay trading day, inclusive; labels may use the locked complete TRAIN suffix')
         if name=='validate':p.add_argument('--course')
-        else:p.add_argument('--out',required=True);p.add_argument('--seed',type=int,default=202)
+        else:
+            p.add_argument('--out',required=True);p.add_argument('--seed',type=int,default=202)
+            p.add_argument('--workers',type=int,help='Total CPU worker budget across account and teacher processes; default: all affinity CPUs, memory bounded')
     for name in ['verify','coverage']:
         p=sub.add_parser(name);p.add_argument('--corpus',required=True)
+        if name=='verify':p.add_argument('--workers',type=int)
     args=parser.parse_args(argv)
     try:
         if args.command=='validate' and args.course:
             result=preflight(args.course);print(json.dumps(result));return result['exit_code']
-        if args.command in ['validate','generate-small']:
+        if args.command in ['validate','generate-small','generate']:
             if not args.source_pool or not args.env_receipt:raise ValueError('Explicit real TRAIN source pool and Env receipt required')
+            if args.command=='generate' and args.start_day is None and args.end_day is None:
+                raise ValueError('Production generate requires explicit official start/end days')
             if args.command=='validate':
-                lock,_,_=source_inputs(args.source_pool,args.env_receipt,args.contract)
+                lock,_,_=source_inputs(args.source_pool,args.env_receipt,args.contract,start_day=args.start_day,end_day=args.end_day)
                 result=dict(status='SOURCE_VALIDATED_ONLY',source=lock,training_admitted=False)
-            else:result=generate_small(args.source_pool,args.env_receipt,args.contract,args.out,seed=args.seed)
-        elif args.command=='verify':result=verify_corpus(args.corpus)
+            else:result=generate_small(args.source_pool,args.env_receipt,args.contract,args.out,seed=args.seed,
+                start_day=args.start_day,end_day=args.end_day,workers=args.workers)
+        elif args.command=='verify':result=verify_corpus(args.corpus,workers=args.workers)
         else:
             path=_local_path(args.corpus);m=read_manifest(path/'corpus_manifest.json')
             _inventory(path,m)

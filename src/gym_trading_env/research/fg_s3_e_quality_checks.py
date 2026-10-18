@@ -17,11 +17,12 @@ PROJECT=Path(__file__).resolve().parents[3]
 
 
 def _output(value,corpus):
+    from e_data_v1.io import independent_output
     path=_local_path(value)
-    allowed=(PROJECT/'artifacts/fg_s3_v2/e_quality_wp03',PROJECT/'docs/receipts/wp03')
-    if (not any(path.is_relative_to(p) for p in allowed) or path.exists()
+    if (set(path.parts)&{'prepared','runs','run','ckpt','checkpoint','checkpoints'} or path.exists()
             or path.is_relative_to(_local_path(corpus))):
         raise ValueError('WP03_DIAGNOSTIC_OUTPUT_MUST_BE_NEW_AND_ISOLATED')
+    independent_output(path,inputs=[corpus,PROJECT,PROJECT.parent/'dreamerv3'])
     return path
 
 
@@ -274,6 +275,9 @@ def main(argv=None):
     source.add_argument('--corpus',required=True);source.add_argument('--out',required=True)
     source.add_argument('--purpose',choices=['development','native-verification'],default='development')
     source.add_argument('--producer-gym')
+    source.add_argument('--producer-lock',help='Operator-reviewed frozen producer pin; requires its separately supplied SHA256')
+    source.add_argument('--producer-lock-sha256')
+    source.add_argument('--workers',type=int,help='CPU process budget forwarded to native G3')
     reader=sub.add_parser('read')
     reader.add_argument('--corpus',required=True);reader.add_argument('--out',required=True)
     reader.add_argument('--length',type=int,default=64);reader.add_argument('--seed',type=int,default=202)
@@ -283,7 +287,9 @@ def main(argv=None):
         out=_output(args.out,args.corpus)
         source=SupervisionSource.from_corpus(args.corpus)
         admission=QualitySupervisionAdmission.preflight(source,purpose=getattr(args,'purpose','development'),
-            producer_gym=getattr(args,'producer_gym',None),log_path=out/'native_verify.log')
+            producer_gym=getattr(args,'producer_gym',None),log_path=out/'native_verify.log',
+            producer_lock=getattr(args,'producer_lock',None),producer_lock_sha256=getattr(args,'producer_lock_sha256',None),
+            workers=getattr(args,'workers',None))
         write_json(out/'WP03_SOURCE_ADMISSION_RECEIPT.json',admission.receipt)
         if admission.native_result is not None:
             write_json(out/'native_verification.json',admission.native_result)

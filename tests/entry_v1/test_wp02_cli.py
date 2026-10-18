@@ -29,7 +29,7 @@ def test_E02_fake_approval_and_invalid_output_write_nothing(tmp_path):
     pool=tmp_path/'pool.json';write_json(pool,signed(dict(product='FG',files=[],certified=True)))
     with pytest.raises(ValueError,match='forged'):source_inputs(pool,tmp_path,'CZCE.FG201')
     out=tmp_path/'old_run'
-    with pytest.raises(ValueError,match='worktree artifacts'):
+    with pytest.raises(ValueError,match='forged'):
         generate_small(pool,tmp_path,'CZCE.FG201',out)
     assert not out.exists()
     with pytest.raises(ValueError,match='traversal'):

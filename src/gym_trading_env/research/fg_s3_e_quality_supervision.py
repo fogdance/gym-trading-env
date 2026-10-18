@@ -131,17 +131,37 @@ def inspect_source(source):
     return m
 
 
-def frozen_producer_audit(producer_gym):
-    """Authenticate the historical verifier, only for final native evidence.
+def frozen_producer_audit(producer_gym, *, producer_lock=None, producer_lock_sha256=None):
+    """Authenticate a frozen verifier, only for final native evidence.
 
     This never inspects or constrains the current development checkout.
     HEAD alone does not prove that the executed producer has those bytes.
+    New producers require an operator-supplied pin AND its external SHA256;
+    the historical default remains fixed. Neither grants TRAIN source trust.
     """
     producer_gym=_local_path(producer_gym)
+    heads=PRODUCER_HEADS
+    pin_sha256=None
+    if producer_lock is not None or producer_lock_sha256 is not None:
+        if (producer_lock is None or not isinstance(producer_lock_sha256,str)
+                or re.fullmatch('[0-9a-f]{64}',producer_lock_sha256) is None):
+            raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
+        pin_path=_local_path(producer_lock)
+        if digest(pin_path)!=producer_lock_sha256:
+            raise ValueError('SUPERVISION_PRODUCER_PIN_SHA256_MISMATCH')
+        pin=read_manifest(pin_path)
+        if (pin.get('protocol')!='FG_S3_E_QUALITY_PRODUCER_PIN_V1'
+                or set(pin.get('repositories',{}))!={'gym','dreamer'}
+                or any(not isinstance(record,dict) for record in pin['repositories'].values())):
+            raise ValueError('SUPERVISION_PRODUCER_PIN_INVALID')
+        heads={role:record.get('sha') for role,record in pin['repositories'].items()}
+        if any(not isinstance(sha,str) or re.fullmatch('[0-9a-f]{40}',sha) is None for sha in heads.values()):
+            raise ValueError('SUPERVISION_PRODUCER_PIN_INVALID')
+        pin_sha256=producer_lock_sha256
     audit={}
     for role,root in (('gym',producer_gym),('dreamer',producer_gym.parent/'dreamerv3')):
         head=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
-        if head!=PRODUCER_HEADS[role]:raise ValueError('SUPERVISION_NATIVE_PRODUCER_MISMATCH')
+        if head!=heads[role]:raise ValueError('SUPERVISION_NATIVE_PRODUCER_MISMATCH')
         paths=(['src/gym_trading_env','e_data_v1','tools/fg_s3_e_quality_corpus.py','tools/fg_s3_v2_experiment.py']
                if role=='gym' else ['dreamerv3','embodied',':(exclude)embodied/tests/**'])
         diff=subprocess.run(['git','-C',str(root),'diff','--quiet','HEAD','--',*paths],capture_output=True)
@@ -150,23 +170,29 @@ def frozen_producer_audit(producer_gym):
                  set(Path(p).parts)&{'tests','docs','artifacts'}]
         if diff.returncode or runtime:raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
         audit[role]=dict(head=head,runtime_diff_exit_code=diff.returncode,untracked_runtime=runtime)
+    if pin_sha256 is not None:audit['operator_producer_pin_sha256']=pin_sha256
     return audit
 
 
-def native_verification(source, *, producer_gym, log_path):
-    """Execute the unchanged, exact WP02 producer; no re-signing/migration.
+def native_verification(source, *, producer_gym, log_path, producer_lock=None, producer_lock_sha256=None, workers=None):
+    """Execute an exact frozen producer; no re-signing/migration.
 
     This is required once for final REAL_DATA evidence, not for editing or
     opening the development reader. Old absolute identities remain historical
     evidence; the new reader binds relative corpus content instead.
     """
     producer_gym = _local_path(producer_gym)
-    producer_audit=frozen_producer_audit(producer_gym)
+    pin=dict(producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
+    producer_audit=frozen_producer_audit(producer_gym,**pin)
     env = {**os.environ, 'PYTHONPATH': '.:src:../dreamerv3', 'JAX_PLATFORMS': 'cpu',
            'CUDA_VISIBLE_DEVICES': '', 'PYTHONDONTWRITEBYTECODE': '1',
            'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1'}
     argv = ['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B',
             'tools/fg_s3_e_quality_corpus.py', 'verify', '--corpus', str(source.corpus_root)]
+    if workers is not None:
+        if type(workers) is not int or not 1<=workers<=len(os.sched_getaffinity(0)):
+            raise ValueError('SUPERVISION_CPU_WORKER_BUDGET')
+        argv.extend(['--workers',str(workers)])
     began = time.monotonic()
     log_path = _local_path(log_path)
     log_path.parent.mkdir(parents=True, exist_ok=True)
@@ -180,7 +206,7 @@ def native_verification(source, *, producer_gym, log_path):
             or result.get('corpus_identity') != source.corpus_content_hash
             or result.get('training_admitted') is not False):
         raise ValueError('SUPERVISION_NATIVE_RECEIPT_MISMATCH')
-    if frozen_producer_audit(producer_gym)!=producer_audit:
+    if frozen_producer_audit(producer_gym,**pin)!=producer_audit:
         raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
     return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,
                 seconds=time.monotonic() - began, log_sha256=digest(log_path), result=result)
@@ -188,7 +214,8 @@ def native_verification(source, *, producer_gym, log_path):
 
 class QualitySupervisionAdmission:
     @staticmethod
-    def preflight(source, *, purpose='development', producer_gym=None, log_path=None):
+    def preflight(source, *, purpose='development', producer_gym=None, log_path=None,
+                  producer_lock=None, producer_lock_sha256=None, workers=None):
         if purpose not in ('development', 'native-verification'):
             raise ValueError('SUPERVISION_EXPLICIT_PURPOSE_REQUIRED')
         m = inspect_source(source)
@@ -196,7 +223,8 @@ class QualitySupervisionAdmission:
         if purpose == 'native-verification':
             if producer_gym is None or log_path is None:
                 raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
-            native = native_verification(source, producer_gym=producer_gym, log_path=log_path)
+            native = native_verification(source, producer_gym=producer_gym, log_path=log_path,
+                producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,workers=workers)
             inspect_source(source)  # Reject changes while the native process ran.
         # Content identity is independent of the current filesystem location or
         # consumer Git SHA/dirty state. Legacy identities are preserved links.
