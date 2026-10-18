@@ -1,5 +1,6 @@
 import copy
 import json
+from pathlib import Path
 import shutil
 
 import numpy as np
@@ -117,11 +118,17 @@ def test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay(indexed):
     finally:r.close()
 
 
-def test_C07_relocation_preserves_reader_restore_without_old_absolute_root(indexed,tmp_path):
+def test_C07_relocation_preserves_reader_restore_without_old_absolute_root(indexed,tmp_path,monkeypatch):
     a,index=indexed;r=reader(indexed)
     try:
         r.sample(1,8);state=r.state_dict();expected=r.sample(2,8)
         root=tmp_path/'relocated';shutil.copytree(a.source.corpus_root,root)
+        original_open=Path.open
+        def without_origin(path,*args,**kwargs):
+            if path.absolute().is_relative_to(a.source.corpus_root):
+                raise AssertionError('Relocated Reader accessed original Corpus location')
+            return original_open(path,*args,**kwargs)
+        monkeypatch.setattr(Path,'open',without_origin)
         current=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(root))
         other=EQualityCourseReader.open(current,stage='WM_NATURAL',sampling_spec=dict(mode='NATURAL'),
             seed=0,index_path=index)
@@ -144,3 +151,43 @@ def test_C08_open_reader_detects_changed_sidecar_or_chunk(indexed,tmp_path):
 def test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode(indexed):
     for spec in [dict(mode=''),dict(mode='MIXED'),dict(mode='STRATIFIED'),dict(mode='MIXED',natural_weight=.5,strata_weights={'SL30':0})]:
         with pytest.raises(ValueError):reader(indexed,spec=spec)
+
+
+def test_C10_window_crosses_original_native_chunk_files_without_crossing_episode(indexed,tmp_path):
+    import embodied
+    from gym_trading_env.research.fg_replay import (iter_replay_rows,iter_sidecar,trace_manifest,
+        read_manifest,write_json,signed,digest)
+    from wp03_fixture import inventory,rewrite_rows
+    admission,_=indexed;root=tmp_path/'corpus';shutil.copytree(admission.source.corpus_root,root)
+    original=root/'policies/P0';student=root/'student_replay/P0'
+    m=trace_manifest(original,schema=E_QUALITY_SCHEMA)
+    rows=list(iter_sidecar(original))
+    replay=embodied.Replay(length=3,chunksize=8,capacity=None,directory=str(tmp_path/'native_chunks'),save_wait=True)
+    try:
+        for (ordinal,step),row in zip(iter_replay_rows(original,m),rows):
+            replay.add({k:v for k,v in step.items() if k!='stepid'},worker=0)
+            uuid,offset=replay.streams[0][-1];row['stepid']=(bytes(uuid)+offset.to_bytes(4,'big')).hex()
+        replay.save()
+        chunks=[dict(path='replay/'+c.filename,uuid=str(c.uuid),succ=str(c.succ),length=c.length)
+                for c in replay.chunks.values() if c.length]
+    finally:replay.workers.shutdown(wait=True)
+    for chunk in chunks:
+        for dest in (original,student):
+            target=dest/chunk['path'];target.parent.mkdir(exist_ok=True)
+            shutil.copyfile(tmp_path/'native_chunks'/Path(chunk['path']).name,target)
+    m.pop('content_hash');m['chunks']=chunks
+    m['files'].update({c['path']:digest(original/c['path']) for c in chunks})
+    write_json(original/'manifest.json',signed(m))
+    published=read_manifest(student/'manifest.json');published.pop('content_hash')
+    published['chunks']=chunks;published['files']={c['path']:digest(student/c['path']) for c in chunks}
+    write_json(student/'manifest.json',signed(published))
+    rewrite_rows(root,'P0',rows)
+    inventory(root,read_manifest(root/'corpus_manifest.json'))
+    current=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(root))
+    index=tmp_path/'index.sqlite';build_join_index(current,index)
+    r=EQualityCourseReader.open(current,stage='WM_NATURAL',sampling_spec=dict(mode='NATURAL',policies=['P0']),seed=202,index_path=index)
+    try:
+        batch=r.sample(1,8)
+        files={r.db.execute('SELECT chunk FROM rows WHERE stepid=?',(i.tobytes(),)).fetchone()[0] for i in batch['stepid'][0]}
+        assert len(files)>1 and not batch['is_first'][:,1:].any()
+    finally:r.close()

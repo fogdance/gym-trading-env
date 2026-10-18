@@ -1,0 +1,470 @@
+FFFFFFFFF.F                                                              [100%]
+=================================== FAILURES ===================================
+_________ test_D01_real_E_macd_quality_agent_loss_ready_without_update _________
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_D01_real_E_macd_quality_agent_loss_ready_without_update(cpu_case):
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        agent,batch=cpu_case;before=parameter_digests(agent.params)
+>       result=cpu_forward(agent,batch)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_cpu_loss.py:23: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:63: in cpu_forward
+    _,out=nj.pure(forward)(agent.params,{k:jnp.asarray(v) for k,v in batch.items()},
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:54: in forward
+    carry,obs,prev,ids=agent.model._apply_replay_context(agent.model.init_train(len(data['is_first'])),data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:516: in _apply_replay_context
+    dyn, _, _ = self.dyn.observe(
+../dreamerv3/dreamerv3/rssm.py:69: in observe
+    carry, (entries, feat) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fun = <function pure.<locals>.purified at 0x7e369c2454e0>
+carry = {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0., 0., ..., 0., 0., 0., 0.]],      dtype=float32), 'stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}
+xs = (Array([[[-0.08948162, -0.04067649,  0.21004824,  0.14564677,
+         -0.31389505, -0.1481203 , -0.02518052,  0.07945...  0.05014469, -0.0183059 ]]],      dtype=float32), {'action': Array([[0]], dtype=int32)}, Array([[ True]], dtype=bool))
+length = None, reverse = False, unroll = 1, axis = 1
+
+    @jax.named_scope('scan')
+    def scan(fun, carry, xs, length=None, reverse=False, unroll=1, axis=0):
+      if axis:
+        xs = jax.tree.map(lambda x: x.swapaxes(0, axis), xs)
+    
+      fun = pure(fun, nested=True)
+>     accessed, modified = _prerun(
+      ^^^^^^^^^^^^^^^^^^
+          fun, carry, jax.tree.map(lambda x: x[0], xs))
+E     ValueError: not enough values to unpack (expected 2, got 0)
+E     Exception happened inside Ninjax scope 'dyn'.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:334: ValueError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 30 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 30 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 30 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 30 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 30 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 30 source rows, CPU Driver
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  quality_sl       Space(bool, shape=(), low=False, high=True)
+  quality_early5   Space(bool, shape=(), low=False, high=True)
+  quality_tp       Space(bool, shape=(), low=False, high=True)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_q_c1     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_c1_valid Space(bool, shape=(), low=False, high=True)
+  quality_q_v2     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_v2_valid Space(bool, shape=(), low=False, high=True)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_soft_target Space(float32, shape=(), low=-inf, high=inf)
+  quality_soft_valid Space(bool, shape=(), low=False, high=True)
+  quality_soft_source Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_actor
+           706 quality_q_v2
+           706 pol
+           689 con
+           689 quality_score
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-wknej_u4 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+_________________ test_D02_effective_stepid_shift_is_rejected __________________
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_D02_effective_stepid_shift_is_rejected(cpu_case):
+        agent,batch=cpu_case
+>       with pytest.raises(Exception,match='S3_V2_TEACHER_REPLAY_CONTEXT_SHIFT'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'S3_V2_TEACHER_REPLAY_CONTEXT_SHIFT'
+E         Actual message: "not enough values to unpack (expected 2, got 0)\nException happened inside Ninjax scope 'dyn'."
+
+tests/entry_v1/test_wp03_cpu_loss.py:31: AssertionError
+_____ test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_q_c1_valid] _____
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+field = 'quality_q_c1_valid'
+
+    @pytest.mark.parametrize('field',['quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source'])
+    def test_D03_old_q_soft_cannot_enter_real_agent_loss(cpu_case,field):
+        agent,batch=cpu_case;bad=copy.deepcopy(batch);bad[field][:,1]=1
+>       with pytest.raises(Exception,match='Q_SOFT_FORBIDDEN'):cpu_forward(agent,bad)
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Q_SOFT_FORBIDDEN'
+E         Actual message: "not enough values to unpack (expected 2, got 0)\nException happened inside Ninjax scope 'dyn'."
+
+tests/entry_v1/test_wp03_cpu_loss.py:38: AssertionError
+_____ test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_q_v2_valid] _____
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+field = 'quality_q_v2_valid'
+
+    @pytest.mark.parametrize('field',['quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source'])
+    def test_D03_old_q_soft_cannot_enter_real_agent_loss(cpu_case,field):
+        agent,batch=cpu_case;bad=copy.deepcopy(batch);bad[field][:,1]=1
+>       with pytest.raises(Exception,match='Q_SOFT_FORBIDDEN'):cpu_forward(agent,bad)
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Q_SOFT_FORBIDDEN'
+E         Actual message: "not enough values to unpack (expected 2, got 0)\nException happened inside Ninjax scope 'dyn'."
+
+tests/entry_v1/test_wp03_cpu_loss.py:38: AssertionError
+_____ test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_soft_valid] _____
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+field = 'quality_soft_valid'
+
+    @pytest.mark.parametrize('field',['quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source'])
+    def test_D03_old_q_soft_cannot_enter_real_agent_loss(cpu_case,field):
+        agent,batch=cpu_case;bad=copy.deepcopy(batch);bad[field][:,1]=1
+>       with pytest.raises(Exception,match='Q_SOFT_FORBIDDEN'):cpu_forward(agent,bad)
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Q_SOFT_FORBIDDEN'
+E         Actual message: "not enough values to unpack (expected 2, got 0)\nException happened inside Ninjax scope 'dyn'."
+
+tests/entry_v1/test_wp03_cpu_loss.py:38: AssertionError
+____ test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_soft_source] _____
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+field = 'quality_soft_source'
+
+    @pytest.mark.parametrize('field',['quality_q_c1_valid','quality_q_v2_valid','quality_soft_valid','quality_soft_source'])
+    def test_D03_old_q_soft_cannot_enter_real_agent_loss(cpu_case,field):
+        agent,batch=cpu_case;bad=copy.deepcopy(batch);bad[field][:,1]=1
+>       with pytest.raises(Exception,match='Q_SOFT_FORBIDDEN'):cpu_forward(agent,bad)
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'Q_SOFT_FORBIDDEN'
+E         Actual message: "not enough values to unpack (expected 2, got 0)\nException happened inside Ninjax scope 'dyn'."
+
+tests/entry_v1/test_wp03_cpu_loss.py:38: AssertionError
+__ test_D04_teacher_changes_only_supervision_not_observation_logits_or_reward __
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_D04_teacher_changes_only_supervision_not_observation_logits_or_reward(cpu_case):
+>       agent,batch=cpu_case;original=cpu_forward(agent,batch)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_cpu_loss.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:63: in cpu_forward
+    _,out=nj.pure(forward)(agent.params,{k:jnp.asarray(v) for k,v in batch.items()},
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:54: in forward
+    carry,obs,prev,ids=agent.model._apply_replay_context(agent.model.init_train(len(data['is_first'])),data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:516: in _apply_replay_context
+    dyn, _, _ = self.dyn.observe(
+../dreamerv3/dreamerv3/rssm.py:69: in observe
+    carry, (entries, feat) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fun = <function pure.<locals>.purified at 0x7e36545e1760>
+carry = {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0., 0., ..., 0., 0., 0., 0.]],      dtype=float32), 'stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}
+xs = (Array([[[-0.08948162, -0.04067649,  0.21004824,  0.14564677,
+         -0.31389505, -0.1481203 , -0.02518052,  0.07945...  0.05014469, -0.0183059 ]]],      dtype=float32), {'action': Array([[0]], dtype=int32)}, Array([[ True]], dtype=bool))
+length = None, reverse = False, unroll = 1, axis = 1
+
+    @jax.named_scope('scan')
+    def scan(fun, carry, xs, length=None, reverse=False, unroll=1, axis=0):
+      if axis:
+        xs = jax.tree.map(lambda x: x.swapaxes(0, axis), xs)
+    
+      fun = pure(fun, nested=True)
+>     accessed, modified = _prerun(
+      ^^^^^^^^^^^^^^^^^^
+          fun, carry, jax.tree.map(lambda x: x[0], xs))
+E     ValueError: not enough values to unpack (expected 2, got 0)
+E     Exception happened inside Ninjax scope 'dyn'.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:334: ValueError
+________ test_D05_invalid_labels_have_zero_loss_and_parameter_gradients ________
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_D05_invalid_labels_have_zero_loss_and_parameter_gradients(cpu_case):
+        from gym_trading_env.research.fg_s3_quality_catalog_v2 import FIELDS
+>       agent,batch=cpu_case;features=cpu_forward(agent,batch)[3]
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_cpu_loss.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:63: in cpu_forward
+    _,out=nj.pure(forward)(agent.params,{k:jnp.asarray(v) for k,v in batch.items()},
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:54: in forward
+    carry,obs,prev,ids=agent.model._apply_replay_context(agent.model.init_train(len(data['is_first'])),data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:516: in _apply_replay_context
+    dyn, _, _ = self.dyn.observe(
+../dreamerv3/dreamerv3/rssm.py:69: in observe
+    carry, (entries, feat) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fun = <function pure.<locals>.purified at 0x7e373647c5e0>
+carry = {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0., 0., ..., 0., 0., 0., 0.]],      dtype=float32), 'stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}
+xs = (Array([[[-0.08948162, -0.04067649,  0.21004824,  0.14564677,
+         -0.31389505, -0.1481203 , -0.02518052,  0.07945...  0.05014469, -0.0183059 ]]],      dtype=float32), {'action': Array([[0]], dtype=int32)}, Array([[ True]], dtype=bool))
+length = None, reverse = False, unroll = 1, axis = 1
+
+    @jax.named_scope('scan')
+    def scan(fun, carry, xs, length=None, reverse=False, unroll=1, axis=0):
+      if axis:
+        xs = jax.tree.map(lambda x: x.swapaxes(0, axis), xs)
+    
+      fun = pure(fun, nested=True)
+>     accessed, modified = _prerun(
+      ^^^^^^^^^^^^^^^^^^
+          fun, carry, jax.tree.map(lambda x: x[0], xs))
+E     ValueError: not enough values to unpack (expected 2, got 0)
+E     Exception happened inside Ninjax scope 'dyn'.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:334: ValueError
+_____ test_D06_old_q_parameter_gradients_are_zero_even_with_strict_targets _____
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_D06_old_q_parameter_gradients_are_zero_even_with_strict_targets(cpu_case):
+>       agent,batch=cpu_case;result=cpu_forward(agent,batch)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_cpu_loss.py:64: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:63: in cpu_forward
+    _,out=nj.pure(forward)(agent.params,{k:jnp.asarray(v) for k,v in batch.items()},
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:54: in forward
+    carry,obs,prev,ids=agent.model._apply_replay_context(agent.model.init_train(len(data['is_first'])),data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:516: in _apply_replay_context
+    dyn, _, _ = self.dyn.observe(
+../dreamerv3/dreamerv3/rssm.py:69: in observe
+    carry, (entries, feat) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fun = <function pure.<locals>.purified at 0x7e36545e37e0>
+carry = {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0., 0., ..., 0., 0., 0., 0.]],      dtype=float32), 'stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}
+xs = (Array([[[-0.08948162, -0.04067649,  0.21004824,  0.14564677,
+         -0.31389505, -0.1481203 , -0.02518052,  0.07945...  0.05014469, -0.0183059 ]]],      dtype=float32), {'action': Array([[0]], dtype=int32)}, Array([[ True]], dtype=bool))
+length = None, reverse = False, unroll = 1, axis = 1
+
+    @jax.named_scope('scan')
+    def scan(fun, carry, xs, length=None, reverse=False, unroll=1, axis=0):
+      if axis:
+        xs = jax.tree.map(lambda x: x.swapaxes(0, axis), xs)
+    
+      fun = pure(fun, nested=True)
+>     accessed, modified = _prerun(
+      ^^^^^^^^^^^^^^^^^^
+          fun, carry, jax.tree.map(lambda x: x[0], xs))
+E     ValueError: not enough values to unpack (expected 2, got 0)
+E     Exception happened inside Ninjax scope 'dyn'.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:334: ValueError
+_________ test_D08_complete_read_only_evidence_and_cold_agent_restore __________
+
+cpu_case = (<embodied.jax.agent.Agent object at 0x7e3720c9b350>, {'market_seq': array([[[[0.        , 0.        , 0.        , ......       [1., 1.],
+        [1., 1.]]], dtype=float32), 'action': array([[0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-441/test_D08_complete_read_only_ev0')
+
+    def test_D08_complete_read_only_evidence_and_cold_agent_restore(cpu_case,tmp_path):
+        _,batch=cpu_case
+>       evidence=cpu_loss_evidence(batch,tmp_path)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_cpu_loss.py:79: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:126: in cpu_loss_evidence
+    baseline=cpu_forward(agent,batch)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:63: in cpu_forward
+    _,out=nj.pure(forward)(agent.params,{k:jnp.asarray(v) for k,v in batch.items()},
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+src/gym_trading_env/research/fg_s3_e_quality_checks.py:54: in forward
+    carry,obs,prev,ids=agent.model._apply_replay_context(agent.model.init_train(len(data['is_first'])),data)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:516: in _apply_replay_context
+    dyn, _, _ = self.dyn.observe(
+../dreamerv3/dreamerv3/rssm.py:69: in observe
+    carry, (entries, feat) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+fun = <function pure.<locals>.purified at 0x7e3634623ec0>
+carry = {'deter': Array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+        0., 0., 0., 0., 0., 0., 0., ..., 0., 0., 0., 0.]],      dtype=float32), 'stoch': Array([[[0., 0., 0., 0.],
+        [0., 0., 0., 0.]]], dtype=float32)}
+xs = (Array([[[-0.08948162, -0.04067649,  0.21004824,  0.14564677,
+         -0.31389505, -0.1481203 , -0.02518052,  0.07945...  0.05014469, -0.0183059 ]]],      dtype=float32), {'action': Array([[0]], dtype=int32)}, Array([[ True]], dtype=bool))
+length = None, reverse = False, unroll = 1, axis = 1
+
+    @jax.named_scope('scan')
+    def scan(fun, carry, xs, length=None, reverse=False, unroll=1, axis=0):
+      if axis:
+        xs = jax.tree.map(lambda x: x.swapaxes(0, axis), xs)
+    
+      fun = pure(fun, nested=True)
+>     accessed, modified = _prerun(
+      ^^^^^^^^^^^^^^^^^^
+          fun, carry, jax.tree.map(lambda x: x[0], xs))
+E     ValueError: not enough values to unpack (expected 2, got 0)
+E     Exception happened inside Ninjax scope 'dyn'.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:334: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  quality_sl       Space(bool, shape=(), low=False, high=True)
+  quality_early5   Space(bool, shape=(), low=False, high=True)
+  quality_tp       Space(bool, shape=(), low=False, high=True)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_q_c1     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_c1_valid Space(bool, shape=(), low=False, high=True)
+  quality_q_v2     Space(float32, shape=(2,), low=-inf, high=inf)
+  quality_q_v2_valid Space(bool, shape=(), low=False, high=True)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_soft_target Space(float32, shape=(), low=-inf, high=inf)
+  quality_soft_valid Space(bool, shape=(), low=False, high=True)
+  quality_soft_source Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_actor
+           706 quality_q_v2
+           706 pol
+           689 con
+           689 quality_score
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D01_real_E_macd_quality_agent_loss_ready_without_update
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D02_effective_stepid_shift_is_rejected
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_q_c1_valid]
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_q_v2_valid]
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_soft_valid]
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D03_old_q_soft_cannot_enter_real_agent_loss[quality_soft_source]
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D04_teacher_changes_only_supervision_not_observation_logits_or_reward
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D05_invalid_labels_have_zero_loss_and_parameter_gradients
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D06_old_q_parameter_gradients_are_zero_even_with_strict_targets
+FAILED tests/entry_v1/test_wp03_cpu_loss.py::test_D08_complete_read_only_evidence_and_cold_agent_restore
+10 failed, 1 passed in 73.33s (0:01:13)

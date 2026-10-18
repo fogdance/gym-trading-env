@@ -39,7 +39,8 @@ def test_A03_changed_source_or_course_bytes_rejected(tmp_path):
         QualitySupervisionAdmission.preflight(source)
 
 
-@pytest.mark.parametrize('name',['../TEST/prices.csv','/tmp/TEST/prices.csv','TEST/prices.csv','DEV/data.csv'])
+@pytest.mark.parametrize('name',['../TEST/prices.csv','/tmp/TEST/prices.csv','TEST/prices.csv','DEV/data.csv',
+                               'inputs/NEVER_OPEN_TEST.csv','inputs/prices.csv'])
 def test_A04_unsafe_nontrain_paths_rejected_before_open(tmp_path,name):
     with pytest.raises(ValueError):member(tmp_path,name)
 

@@ -1,0 +1,1435 @@
+{
+  "status": "PASS",
+  "scope": "review evidence only; not a current-development admission gate",
+  "repositories": {
+    "gym": {
+      "base": "e57189bad100465c9fee8d9bbb5601f3e5c376ad",
+      "unchanged_runtime_files": 216,
+      "changed_runtime_files": {
+        "src/gym_trading_env/research/fg_s3_quality_catalog_v2.py": {
+          "base": "ceaabcd6b40fefc7483cf46ffa4dcf56691f52a5c1093c3f582d8b38a2af8fab",
+          "current": "63102ed8f6c0ce95af342983aee72562d5d35fb1fdb071e8593618bcc3dc04dd"
+        }
+      },
+      "unchanged": {
+        "e_data_v1/__init__.py": {
+          "base": "ed54d12ed6686527754b6b691d727881b25ee8bd648fdbec3714337fc62e19f5",
+          "current": "ed54d12ed6686527754b6b691d727881b25ee8bd648fdbec3714337fc62e19f5"
+        },
+        "e_data_v1/__main__.py": {
+          "base": "bd045ddd5242d002f692dac452be9afba38deef5cde541a5fc074bfef5987b91",
+          "current": "bd045ddd5242d002f692dac452be9afba38deef5cde541a5fc074bfef5987b91"
+        },
+        "e_data_v1/cli.py": {
+          "base": "032eebe76125c8551947213f960270a77b3fd5c376811bc242f16fd3a3de5614",
+          "current": "032eebe76125c8551947213f960270a77b3fd5c376811bc242f16fd3a3de5614"
+        },
+        "e_data_v1/core.py": {
+          "base": "fede406528f4e82866f4aa9cfc7052ceb917a6eec5b5be6db7e784a3556f31e8",
+          "current": "fede406528f4e82866f4aa9cfc7052ceb917a6eec5b5be6db7e784a3556f31e8"
+        },
+        "e_data_v1/diagnostics.py": {
+          "base": "b81979052cc76b7f9545b910a94b683912ed460ad8a735ea8e73eb0ea5e1ce9d",
+          "current": "b81979052cc76b7f9545b910a94b683912ed460ad8a735ea8e73eb0ea5e1ce9d"
+        },
+        "e_data_v1/env_probe.py": {
+          "base": "c2a39af45b559fa5d57d31348807c1cb0de1f2e5bd7734640e866ae36dbfe15e",
+          "current": "c2a39af45b559fa5d57d31348807c1cb0de1f2e5bd7734640e866ae36dbfe15e"
+        },
+        "e_data_v1/io.py": {
+          "base": "c9448f4de181386152f1308c9d3ffdaa844e6ecaefb66d5b0516902872d43ea5",
+          "current": "c9448f4de181386152f1308c9d3ffdaa844e6ecaefb66d5b0516902872d43ea5"
+        },
+        "e_data_v1/isolation.py": {
+          "base": "fb9dbfb56f13f799a118ad37ec8925538587431fbc4663cb41c30528536a3219",
+          "current": "fb9dbfb56f13f799a118ad37ec8925538587431fbc4663cb41c30528536a3219"
+        },
+        "e_data_v1/provider.py": {
+          "base": "2d3ac487b3da568d69ef589d6b3633b2cd99e6db5a68939e5b4d02c4890eb515",
+          "current": "2d3ac487b3da568d69ef589d6b3633b2cd99e6db5a68939e5b4d02c4890eb515"
+        },
+        "e_data_v1/reference.py": {
+          "base": "142192dbd9ecb44f82be55e1f79c22b327d9507c734fd28b8ce9cd06ebe93057",
+          "current": "142192dbd9ecb44f82be55e1f79c22b327d9507c734fd28b8ce9cd06ebe93057"
+        },
+        "e_data_v1/schema.py": {
+          "base": "739a7e0211c5e63a6033eedef6782c6e70ba992c73b186d773cf40f2fe03d9a0",
+          "current": "739a7e0211c5e63a6033eedef6782c6e70ba992c73b186d773cf40f2fe03d9a0"
+        },
+        "e_data_v1/sources.py": {
+          "base": "10dbe229bc4dfc0f4dd5ce59e8e69aab665747827c448c3361c0282282ca63ae",
+          "current": "10dbe229bc4dfc0f4dd5ce59e8e69aab665747827c448c3361c0282282ca63ae"
+        },
+        "e_data_v1/validate_real.py": {
+          "base": "df75ee86da19db198b358c635d20ad7de5d04a0b9ea87d3ef660803bbe1f8fe5",
+          "current": "df75ee86da19db198b358c635d20ad7de5d04a0b9ea87d3ef660803bbe1f8fe5"
+        },
+        "src/__init__.py": {
+          "base": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "current": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "src/gym_trading_env/__init__.py": {
+          "base": "9bd1c38796e37e4316de179b2b8c3a58dfb8c7333d541c867937c4ea1c5dc9ce",
+          "current": "9bd1c38796e37e4316de179b2b8c3a58dfb8c7333d541c867937c4ea1c5dc9ce"
+        },
+        "src/gym_trading_env/config/settings.py": {
+          "base": "b9ebb59f1533447d2865267702033a0f1ef734a9e8e7cdec2100473d3a8d9bac",
+          "current": "b9ebb59f1533447d2865267702033a0f1ef734a9e8e7cdec2100473d3a8d9bac"
+        },
+        "src/gym_trading_env/envs/__init__.py": {
+          "base": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803",
+          "current": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803"
+        },
+        "src/gym_trading_env/envs/account.py": {
+          "base": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257",
+          "current": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257"
+        },
+        "src/gym_trading_env/envs/accounting/__init__.py": {
+          "base": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12",
+          "current": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12"
+        },
+        "src/gym_trading_env/envs/accounting/ledger.py": {
+          "base": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5",
+          "current": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5"
+        },
+        "src/gym_trading_env/envs/action.py": {
+          "base": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99",
+          "current": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99"
+        },
+        "src/gym_trading_env/envs/broker_accounts.py": {
+          "base": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151",
+          "current": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151"
+        },
+        "src/gym_trading_env/envs/callbacks.py": {
+          "base": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96",
+          "current": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96"
+        },
+        "src/gym_trading_env/envs/config.py": {
+          "base": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3",
+          "current": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3"
+        },
+        "src/gym_trading_env/envs/entry_contract.py": {
+          "base": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+          "current": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17"
+        },
+        "src/gym_trading_env/envs/entry_dataset_env.py": {
+          "base": "d55faff6d97412392a712117e9908110a5126ef70824d7cfd6d3589bbf19f998",
+          "current": "d55faff6d97412392a712117e9908110a5126ef70824d7cfd6d3589bbf19f998"
+        },
+        "src/gym_trading_env/envs/entry_env.py": {
+          "base": "ae9580d4c9f53b91d9d19197ac9785fb92569c1c7f2c9155818fd87a7136a782",
+          "current": "ae9580d4c9f53b91d9d19197ac9785fb92569c1c7f2c9155818fd87a7136a782"
+        },
+        "src/gym_trading_env/envs/entry_execution.py": {
+          "base": "64ce49dc4ce96f6ec670325189d78d6bcc1e9cc3c717fc212da82ff571985127",
+          "current": "64ce49dc4ce96f6ec670325189d78d6bcc1e9cc3c717fc212da82ff571985127"
+        },
+        "src/gym_trading_env/envs/entry_market_cache.py": {
+          "base": "b54148c9689a2ceaf5823e02d035b8d21b00367e4224f71a0e79035e6862873f",
+          "current": "b54148c9689a2ceaf5823e02d035b8d21b00367e4224f71a0e79035e6862873f"
+        },
+        "src/gym_trading_env/envs/metrics.py": {
+          "base": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db",
+          "current": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db"
+        },
+        "src/gym_trading_env/envs/position.py": {
+          "base": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c",
+          "current": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c"
+        },
+        "src/gym_trading_env/envs/position_manager.py": {
+          "base": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d",
+          "current": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d"
+        },
+        "src/gym_trading_env/envs/target_transition.py": {
+          "base": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80",
+          "current": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80"
+        },
+        "src/gym_trading_env/envs/trade_record.py": {
+          "base": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750",
+          "current": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750"
+        },
+        "src/gym_trading_env/envs/trade_record_manager.py": {
+          "base": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d",
+          "current": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d"
+        },
+        "src/gym_trading_env/envs/trading_env.py": {
+          "base": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127",
+          "current": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127"
+        },
+        "src/gym_trading_env/envs/user_accounts.py": {
+          "base": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5",
+          "current": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5"
+        },
+        "src/gym_trading_env/monte_carlo/__init__.py": {
+          "base": "6934524affebf80d472934af418dce5ae1e600e882a65d916f1aa18c9ec4b9bb",
+          "current": "6934524affebf80d472934af418dce5ae1e600e882a65d916f1aa18c9ec4b9bb"
+        },
+        "src/gym_trading_env/monte_carlo/day_block_bootstrap.py": {
+          "base": "6283a77f8183b1c02db1a780520e6f58770f3c3d9afabff0883caf5d300004a3",
+          "current": "6283a77f8183b1c02db1a780520e6f58770f3c3d9afabff0883caf5d300004a3"
+        },
+        "src/gym_trading_env/monte_carlo/io.py": {
+          "base": "85ee0a6e6312257ce213e45cd8b7b932f9c2f6ef92d9edb453d1d8baf1b1e054",
+          "current": "85ee0a6e6312257ce213e45cd8b7b932f9c2f6ef92d9edb453d1d8baf1b1e054"
+        },
+        "src/gym_trading_env/monte_carlo/session_library.py": {
+          "base": "c2f7ba1103b943eca388e315863e6f4463409d29f33ad833dd3eb1e314b9a4e2",
+          "current": "c2f7ba1103b943eca388e315863e6f4463409d29f33ad833dd3eb1e314b9a4e2"
+        },
+        "src/gym_trading_env/research/__init__.py": {
+          "base": "bf307855e6e572930b7a6358cc1986d7065425b82b4136fd80f5854344c62ae1",
+          "current": "bf307855e6e572930b7a6358cc1986d7065425b82b4136fd80f5854344c62ae1"
+        },
+        "src/gym_trading_env/research/entry_analysis.py": {
+          "base": "0383c6b020bbee80f9cd2eac8da59063cd9dd5419d1300e6aeaf4397a2ac7adb",
+          "current": "0383c6b020bbee80f9cd2eac8da59063cd9dd5419d1300e6aeaf4397a2ac7adb"
+        },
+        "src/gym_trading_env/research/entry_dataset.py": {
+          "base": "4b5f495ab1d46790186803910d08cb78edc140685ea093e5657fd6381fa6cea5",
+          "current": "4b5f495ab1d46790186803910d08cb78edc140685ea093e5657fd6381fa6cea5"
+        },
+        "src/gym_trading_env/research/entry_evaluator.py": {
+          "base": "3fc3269c9e548ce8ba4d8c441ec421c3e1879aa8a757d42ea3b2a971195ab7c2",
+          "current": "3fc3269c9e548ce8ba4d8c441ec421c3e1879aa8a757d42ea3b2a971195ab7c2"
+        },
+        "src/gym_trading_env/research/entry_outcome.py": {
+          "base": "45edacab1efdd2ef164ee0e4ac129abd7a608ea016f68836b92e1153811a62b6",
+          "current": "45edacab1efdd2ef164ee0e4ac129abd7a608ea016f68836b92e1153811a62b6"
+        },
+        "src/gym_trading_env/research/entry_pipeline.py": {
+          "base": "498ef879a87382e5c5f71786c3696d532c933c410ec842d9394657bf06f9e692",
+          "current": "498ef879a87382e5c5f71786c3696d532c933c410ec842d9394657bf06f9e692"
+        },
+        "src/gym_trading_env/research/entry_strategy_simulator.py": {
+          "base": "e5bf758c75e2c5c5827bb9595cd1ed001fe4914a64b84d552fff7399a200a609",
+          "current": "e5bf758c75e2c5c5827bb9595cd1ed001fe4914a64b84d552fff7399a200a609"
+        },
+        "src/gym_trading_env/research/fg_abcd.py": {
+          "base": "e45fba1cc12ae78e3d7f8b85c77d83e60435e6e52d7c0d740a85661c49b27caa",
+          "current": "e45fba1cc12ae78e3d7f8b85c77d83e60435e6e52d7c0d740a85661c49b27caa"
+        },
+        "src/gym_trading_env/research/fg_abcd_evaluation.py": {
+          "base": "a56dcc674234f1eb79d596b2cecaaaaff7df99b9bd8e547a5750202cb5216e2a",
+          "current": "a56dcc674234f1eb79d596b2cecaaaaff7df99b9bd8e547a5750202cb5216e2a"
+        },
+        "src/gym_trading_env/research/fg_entry_v1.py": {
+          "base": "d690fe33ec8568e66904547eab45c0893efc1e4117d8fe75a1d5712611f83930",
+          "current": "d690fe33ec8568e66904547eab45c0893efc1e4117d8fe75a1d5712611f83930"
+        },
+        "src/gym_trading_env/research/fg_history_events.py": {
+          "base": "c476f7d8bc7a3bcbcab1f9ec0f878d38841965acca3ebe30d12c8c0545c7724c",
+          "current": "c476f7d8bc7a3bcbcab1f9ec0f878d38841965acca3ebe30d12c8c0545c7724c"
+        },
+        "src/gym_trading_env/research/fg_history_fold_statistics.py": {
+          "base": "c0569a8a92b641d4f56747689936591492c5dd33e737f548d43a2be0ea5d64a8",
+          "current": "c0569a8a92b641d4f56747689936591492c5dd33e737f548d43a2be0ea5d64a8"
+        },
+        "src/gym_trading_env/research/fg_history_folds.py": {
+          "base": "7ea3f66ba98980679176f1250173b7dbafe48ae7ad35105b2a0d61cced0d15ac",
+          "current": "7ea3f66ba98980679176f1250173b7dbafe48ae7ad35105b2a0d61cced0d15ac"
+        },
+        "src/gym_trading_env/research/fg_history_parallel.py": {
+          "base": "570b5dba0810be4641a2084bbb96c18e4e508b5143ddaa7e849488bf261600c5",
+          "current": "570b5dba0810be4641a2084bbb96c18e4e508b5143ddaa7e849488bf261600c5"
+        },
+        "src/gym_trading_env/research/fg_history_profile.py": {
+          "base": "1673393fd8bd7e305b9e2456d12baadf79a978bc45b6332fc96d5d7d3b768085",
+          "current": "1673393fd8bd7e305b9e2456d12baadf79a978bc45b6332fc96d5d7d3b768085"
+        },
+        "src/gym_trading_env/research/fg_history_statistics.py": {
+          "base": "196e80ec1fe70beb80a849d85c3f28303ca87805a9344d958deaf0475b43ad29",
+          "current": "196e80ec1fe70beb80a849d85c3f28303ca87805a9344d958deaf0475b43ad29"
+        },
+        "src/gym_trading_env/research/fg_history_study.py": {
+          "base": "3dd2af2f2255d251009977a9587c521fa12d42dc94b405d4b4009775d2adfeac",
+          "current": "3dd2af2f2255d251009977a9587c521fa12d42dc94b405d4b4009775d2adfeac"
+        },
+        "src/gym_trading_env/research/fg_history_windows.py": {
+          "base": "1741171334069144ad05b13f9c8d11158ba98b472e553d6b7f4ffcdefea0380a",
+          "current": "1741171334069144ad05b13f9c8d11158ba98b472e553d6b7f4ffcdefea0380a"
+        },
+        "src/gym_trading_env/research/fg_learning_diagnostics.py": {
+          "base": "724205d8f4d218ba1432e157ac80726900b00ace9fe7d69fba9bcee6272cd155",
+          "current": "724205d8f4d218ba1432e157ac80726900b00ace9fe7d69fba9bcee6272cd155"
+        },
+        "src/gym_trading_env/research/fg_replay.py": {
+          "base": "fb747fe77af8f8c77e27a1588fc071465b267e23225b0240f78d9f73585adaa3",
+          "current": "fb747fe77af8f8c77e27a1588fc071465b267e23225b0240f78d9f73585adaa3"
+        },
+        "src/gym_trading_env/research/fg_replay_coverage.py": {
+          "base": "abf68b1206b20a07dc88a7b122da4431907b72f24702a6d0636ab828c7e4c300",
+          "current": "abf68b1206b20a07dc88a7b122da4431907b72f24702a6d0636ab828c7e4c300"
+        },
+        "src/gym_trading_env/research/fg_reward_candidates.py": {
+          "base": "cbcfb6d8f040c8db17fa8fb93200213769d19028d30218c61ef9b8bc6b1b8c8b",
+          "current": "cbcfb6d8f040c8db17fa8fb93200213769d19028d30218c61ef9b8bc6b1b8c8b"
+        },
+        "src/gym_trading_env/research/fg_reward_study.py": {
+          "base": "efe6a479662e660022f764f6f5e629558fa8f24a32a23752f1f461f2e626d064",
+          "current": "efe6a479662e660022f764f6f5e629558fa8f24a32a23752f1f461f2e626d064"
+        },
+        "src/gym_trading_env/research/fg_s3_b2_outcome_catalog.py": {
+          "base": "2c90f968a0e5a9589592cc6a58d94808bc1366c243300eca296555477b6b3b5b",
+          "current": "2c90f968a0e5a9589592cc6a58d94808bc1366c243300eca296555477b6b3b5b"
+        },
+        "src/gym_trading_env/research/fg_s3_dagger_bridge.py": {
+          "base": "21530f9b65fd2568e562903d80861fa9bd4af55ef5d3484f532c0b18ad5be99e",
+          "current": "21530f9b65fd2568e562903d80861fa9bd4af55ef5d3484f532c0b18ad5be99e"
+        },
+        "src/gym_trading_env/research/fg_s3_dagger_d0.py": {
+          "base": "751ed3f85759e805526b44d630c4e7e01277e6f30c3d922e7ea478c251654e65",
+          "current": "751ed3f85759e805526b44d630c4e7e01277e6f30c3d922e7ea478c251654e65"
+        },
+        "src/gym_trading_env/research/fg_s3_dagger_model_smoke.py": {
+          "base": "a299573a3e7aa136a4e89810a3d170928f7f90f3d13c4584bba038d04556b95a",
+          "current": "a299573a3e7aa136a4e89810a3d170928f7f90f3d13c4584bba038d04556b95a"
+        },
+        "src/gym_trading_env/research/fg_s3_dagger_verify.py": {
+          "base": "4b84825d700bcf72bffdeee763deb84664dc70185726bfb7c67b69cc52ba6cb4",
+          "current": "4b84825d700bcf72bffdeee763deb84664dc70185726bfb7c67b69cc52ba6cb4"
+        },
+        "src/gym_trading_env/research/fg_s3_e_admission.py": {
+          "base": "2bb58bf800fb6180f0c64dd7529bb19f721a5e80f977e91e6e051b3d149ee503",
+          "current": "2bb58bf800fb6180f0c64dd7529bb19f721a5e80f977e91e6e051b3d149ee503"
+        },
+        "src/gym_trading_env/research/fg_s3_e_observation.py": {
+          "base": "076586668ad8b8a120cdfa5a4f5c14cdb00b91e2619ec0254490c8dadcbc1e06",
+          "current": "076586668ad8b8a120cdfa5a4f5c14cdb00b91e2619ec0254490c8dadcbc1e06"
+        },
+        "src/gym_trading_env/research/fg_s3_e_provider.py": {
+          "base": "6df9763871722404542ea58e3e861936a1f3efaff84bf50094f72a2edc69fbe4",
+          "current": "6df9763871722404542ea58e3e861936a1f3efaff84bf50094f72a2edc69fbe4"
+        },
+        "src/gym_trading_env/research/fg_s3_e_quality_corpus.py": {
+          "base": "cac15109a3dfd68adc9ddde440b825fca163fd7d507994e110e0a76840e0b2d4",
+          "current": "cac15109a3dfd68adc9ddde440b825fca163fd7d507994e110e0a76840e0b2d4"
+        },
+        "src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": {
+          "base": "65f5451ffc28d8dff7e53f659093170d903a1cf02e54feba4b3ae8eb5d5b7264",
+          "current": "65f5451ffc28d8dff7e53f659093170d903a1cf02e54feba4b3ae8eb5d5b7264"
+        },
+        "src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py": {
+          "base": "9adb94247180738272d4eff9fa8dee74291c6f4bfcdb015f8cc87cf423402b87",
+          "current": "9adb94247180738272d4eff9fa8dee74291c6f4bfcdb015f8cc87cf423402b87"
+        },
+        "src/gym_trading_env/research/fg_s3_e_quality_strict.py": {
+          "base": "de8664694c949a7ab9ea31f8953d3393453ab716da71cc180463f13e3e873f37",
+          "current": "de8664694c949a7ab9ea31f8953d3393453ab716da71cc180463f13e3e873f37"
+        },
+        "src/gym_trading_env/research/fg_s3_eval_metrics.py": {
+          "base": "37f309d373b1d6efc21bf43fb2db34a52d92a2b047f54a098d96ad11bd777e9c",
+          "current": "37f309d373b1d6efc21bf43fb2db34a52d92a2b047f54a098d96ad11bd777e9c"
+        },
+        "src/gym_trading_env/research/fg_s3_experiment.py": {
+          "base": "78dba228fce111236f0053ba27d023d68a9b1351ddeed168d2ee31bc2b7f5278",
+          "current": "78dba228fce111236f0053ba27d023d68a9b1351ddeed168d2ee31bc2b7f5278"
+        },
+        "src/gym_trading_env/research/fg_s3_online_monitor.py": {
+          "base": "1ead5d2231ba9121bc6a4cffd6189a7ad4258ea3239cc2a0bbb5563b773e7cdf",
+          "current": "1ead5d2231ba9121bc6a4cffd6189a7ad4258ea3239cc2a0bbb5563b773e7cdf"
+        },
+        "src/gym_trading_env/research/fg_s3_online_simulation.py": {
+          "base": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e",
+          "current": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e"
+        },
+        "src/gym_trading_env/research/fg_s3_oracle_state_query.py": {
+          "base": "4cb60f5e6efccf31db6d6b25d672ab0588d9606bf40acbd5a08ded4f1523af3e",
+          "current": "4cb60f5e6efccf31db6d6b25d672ab0588d9606bf40acbd5a08ded4f1523af3e"
+        },
+        "src/gym_trading_env/research/fg_s3_prediction_evaluation.py": {
+          "base": "60cd9bf04437619ffb96df741e3bcb4535c2ad2a43d8e9faa8ee3e7be6fe27b9",
+          "current": "60cd9bf04437619ffb96df741e3bcb4535c2ad2a43d8e9faa8ee3e7be6fe27b9"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_admission.py": {
+          "base": "0f5e58611dc7bb2356473715ebd45dd574e28d6e831e34785e88f922a63be3be",
+          "current": "0f5e58611dc7bb2356473715ebd45dd574e28d6e831e34785e88f922a63be3be"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_experiment_v2.py": {
+          "base": "c64c93e1934e2352fb1f144cf6f1e17fa57359d56493957d4c209bf230af7fce",
+          "current": "c64c93e1934e2352fb1f144cf6f1e17fa57359d56493957d4c209bf230af7fce"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_label_pool.py": {
+          "base": "a344a30de4b06c45547997b5c358155d30e1199be8fa4922694eae6ebd54438e",
+          "current": "a344a30de4b06c45547997b5c358155d30e1199be8fa4922694eae6ebd54438e"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_prediction_evaluation.py": {
+          "base": "c2a90daa29a98cb26a9831bf61ed037bf8e07c474daa5b0c20908be8f57a6cb6",
+          "current": "c2a90daa29a98cb26a9831bf61ed037bf8e07c474daa5b0c20908be8f57a6cb6"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_q_v2.py": {
+          "base": "4af621dd4aab0e586b7bb719bfae8ef16e071814ba331a35d30ff9d133ccde67",
+          "current": "4af621dd4aab0e586b7bb719bfae8ef16e071814ba331a35d30ff9d133ccde67"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_score.py": {
+          "base": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+          "current": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_teacher.py": {
+          "base": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959",
+          "current": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959"
+        },
+        "src/gym_trading_env/research/fg_s3_quality_teacher_v2.py": {
+          "base": "90ec481485e7916e9c606db20ab8954eb70a6eeceadce6511bd1b3489a8c830b",
+          "current": "90ec481485e7916e9c606db20ab8954eb70a6eeceadce6511bd1b3489a8c830b"
+        },
+        "src/gym_trading_env/research/fg_s3_reader_compat.py": {
+          "base": "684b6aaa5b59650beb2e6581e6375aeb7b05fdad0cd9b00671c654d1360d1d8b",
+          "current": "684b6aaa5b59650beb2e6581e6375aeb7b05fdad0cd9b00671c654d1360d1d8b"
+        },
+        "src/gym_trading_env/research/fg_s3_teacher_catalog.py": {
+          "base": "409fd4337f4ec2bf6f7e2ef62275068cfaeccb7afd12b6bc59d6c50458306225",
+          "current": "409fd4337f4ec2bf6f7e2ef62275068cfaeccb7afd12b6bc59d6c50458306225"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_beta.py": {
+          "base": "c529fada5e89614c954b32713a86408f3017e5a8191f3e24958b8414ad0672fd",
+          "current": "c529fada5e89614c954b32713a86408f3017e5a8191f3e24958b8414ad0672fd"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_collector.py": {
+          "base": "9e7124c764fc1fa089827a2c13fd7c2f67d7548737fc58e88eed85c11a5349d9",
+          "current": "9e7124c764fc1fa089827a2c13fd7c2f67d7548737fc58e88eed85c11a5349d9"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_evaluation.py": {
+          "base": "e8b4be05f1d18ac58abf83ce88a8e51ed907b3462b3dd0bc546dbeb4f044af90",
+          "current": "e8b4be05f1d18ac58abf83ce88a8e51ed907b3462b3dd0bc546dbeb4f044af90"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_experiment.py": {
+          "base": "74908b8afb7717abdcd16c9df483ac024dd2e2adf4caf5dd2cdcaccf8090b54f",
+          "current": "74908b8afb7717abdcd16c9df483ac024dd2e2adf4caf5dd2cdcaccf8090b54f"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_gpu_check.py": {
+          "base": "ffe804a8c9e15b3e764fdd8fa3a9d2b730a7d9a7b72018829b847c6933338391",
+          "current": "ffe804a8c9e15b3e764fdd8fa3a9d2b730a7d9a7b72018829b847c6933338391"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_observation.py": {
+          "base": "93ecbbf3659f0e1305e2e32ded2b7e97aa359a9b4dc9fc1364d9264618897951",
+          "current": "93ecbbf3659f0e1305e2e32ded2b7e97aa359a9b4dc9fc1364d9264618897951"
+        },
+        "src/gym_trading_env/research/fg_s3_v2_train_pool.py": {
+          "base": "84b9b9915e23273879c74cc9dcbf009890060bffc80e22f1bb4fd1c0de413212",
+          "current": "84b9b9915e23273879c74cc9dcbf009890060bffc80e22f1bb4fd1c0de413212"
+        },
+        "src/gym_trading_env/research/fg_s3a_labels.py": {
+          "base": "b57348eb22a4c61012df74fbfc29e848500eaf86783f45104c6525ee88b010e9",
+          "current": "b57348eb22a4c61012df74fbfc29e848500eaf86783f45104c6525ee88b010e9"
+        },
+        "src/gym_trading_env/research/fg_s3b_advantage.py": {
+          "base": "233aa61a9ceb122f21e0e2fa2ed6fde55a04cd727cf70568e94a564a6993e6a5",
+          "current": "233aa61a9ceb122f21e0e2fa2ed6fde55a04cd727cf70568e94a564a6993e6a5"
+        },
+        "src/gym_trading_env/research/fg_s3b_normalization.py": {
+          "base": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25",
+          "current": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25"
+        },
+        "src/gym_trading_env/research/fg_s3b_verify.py": {
+          "base": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc",
+          "current": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc"
+        },
+        "src/gym_trading_env/research/fg_s3b_weights.py": {
+          "base": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a",
+          "current": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a"
+        },
+        "src/gym_trading_env/research/fg_single3.py": {
+          "base": "e338840cc0e1b5d7fe1b0f6ecc92e0b1a07a59023ef05f00987f1c70411e9e5c",
+          "current": "e338840cc0e1b5d7fe1b0f6ecc92e0b1a07a59023ef05f00987f1c70411e9e5c"
+        },
+        "src/gym_trading_env/research/fg_single3_coverage.py": {
+          "base": "aeb972e8246b47c5198acbd7c241cfbb7f52b98021db493b3718a55ef0fc4e0a",
+          "current": "aeb972e8246b47c5198acbd7c241cfbb7f52b98021db493b3718a55ef0fc4e0a"
+        },
+        "src/gym_trading_env/research/fg_single3_dataset.py": {
+          "base": "08ffa277c82b5e289424e8eb4793a2ab80385c2ca966a5cf6204c8695b9f92a0",
+          "current": "08ffa277c82b5e289424e8eb4793a2ab80385c2ca966a5cf6204c8695b9f92a0"
+        },
+        "src/gym_trading_env/research/fg_single3_evaluation.py": {
+          "base": "e3c8e32bdf1523c6c6ea0efcd88243b5836be845dd9bfe20dc26e46336eb1fea",
+          "current": "e3c8e32bdf1523c6c6ea0efcd88243b5836be845dd9bfe20dc26e46336eb1fea"
+        },
+        "src/gym_trading_env/research/fg_single3_experiment.py": {
+          "base": "f85cd852f17ac2d380c226f637975c72053c7d08f78644a5ee901b9457f8a490",
+          "current": "f85cd852f17ac2d380c226f637975c72053c7d08f78644a5ee901b9457f8a490"
+        },
+        "src/gym_trading_env/research/fg_single3_gate_calibration.py": {
+          "base": "d9378024e32aa98300165f5a0aabe88748b832632baf7337040a8930414e44ad",
+          "current": "d9378024e32aa98300165f5a0aabe88748b832632baf7337040a8930414e44ad"
+        },
+        "src/gym_trading_env/research/fg_single3_horizon.py": {
+          "base": "d6055b8c5f6a12c5b06f64468296f67492d5df8e08d844bd026ab727a4a39229",
+          "current": "d6055b8c5f6a12c5b06f64468296f67492d5df8e08d844bd026ab727a4a39229"
+        },
+        "src/gym_trading_env/research/fg_single3_oracle.py": {
+          "base": "914851a2cae766ece72ad824d65ee331919bbef96051a6287fea513a4c48e965",
+          "current": "914851a2cae766ece72ad824d65ee331919bbef96051a6287fea513a4c48e965"
+        },
+        "src/gym_trading_env/research/fg_single3_pilot.py": {
+          "base": "68493877d6c1664fba711b4473ac65a2f06a7f3b80873731e709c6c42e7badef",
+          "current": "68493877d6c1664fba711b4473ac65a2f06a7f3b80873731e709c6c42e7badef"
+        },
+        "src/gym_trading_env/research/fg_single3_replay.py": {
+          "base": "a6742d439899adc127165e943a6076db51c25fdf4a84fc786a1ee44ae302780e",
+          "current": "a6742d439899adc127165e943a6076db51c25fdf4a84fc786a1ee44ae302780e"
+        },
+        "src/gym_trading_env/research/fg_single3_reward.py": {
+          "base": "b68a60ef88ee97a93638c60ee8e48804e863155edae896d572340d5b49c954ad",
+          "current": "b68a60ef88ee97a93638c60ee8e48804e863155edae896d572340d5b49c954ad"
+        },
+        "src/gym_trading_env/research/walk_forward_split_builder.py": {
+          "base": "bd970d83e511bf8e75375e7ab568479a784f1674f73d23348baf6136201d91ed",
+          "current": "bd970d83e511bf8e75375e7ab568479a784f1674f73d23348baf6136201d91ed"
+        },
+        "src/gym_trading_env/rewards/__init__.py": {
+          "base": "2eb123cb3314c14d6ebfb5b6eb6b52629aab849fc798f56c55fe2846aa4eaf69",
+          "current": "2eb123cb3314c14d6ebfb5b6eb6b52629aab849fc798f56c55fe2846aa4eaf69"
+        },
+        "src/gym_trading_env/rewards/fast_take_profit_reward.py": {
+          "base": "eb7b9bcf1c8a725e416151e041efb438f297bfcaca1c1466050602d02a9a3781",
+          "current": "eb7b9bcf1c8a725e416151e041efb438f297bfcaca1c1466050602d02a9a3781"
+        },
+        "src/gym_trading_env/rewards/reward_audit.py": {
+          "base": "8ba64fe5bee3df82132b69f743eb3b56b28a432c4cbe33ab703b38a9370c7244",
+          "current": "8ba64fe5bee3df82132b69f743eb3b56b28a432c4cbe33ab703b38a9370c7244"
+        },
+        "src/gym_trading_env/rewards/reward_functions.py": {
+          "base": "a63b893cb2b93c3072c236fc839b019df1431c6e7900e5011c80b7c4bc979ed7",
+          "current": "a63b893cb2b93c3072c236fc839b019df1431c6e7900e5011c80b7c4bc979ed7"
+        },
+        "src/gym_trading_env/rewards/single3_reward.py": {
+          "base": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8",
+          "current": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8"
+        },
+        "src/gym_trading_env/utils/__init__.py": {
+          "base": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5",
+          "current": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5"
+        },
+        "src/gym_trading_env/utils/agent_features.py": {
+          "base": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889",
+          "current": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889"
+        },
+        "src/gym_trading_env/utils/atr_util.py": {
+          "base": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7",
+          "current": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7"
+        },
+        "src/gym_trading_env/utils/bar_source.py": {
+          "base": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667",
+          "current": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667"
+        },
+        "src/gym_trading_env/utils/daily_features.py": {
+          "base": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394",
+          "current": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394"
+        },
+        "src/gym_trading_env/utils/data_downloader.py": {
+          "base": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b",
+          "current": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b"
+        },
+        "src/gym_trading_env/utils/data_processing.py": {
+          "base": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09",
+          "current": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09"
+        },
+        "src/gym_trading_env/utils/decimal_util.py": {
+          "base": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af",
+          "current": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af"
+        },
+        "src/gym_trading_env/utils/feature_engineering.py": {
+          "base": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990",
+          "current": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990"
+        },
+        "src/gym_trading_env/utils/juejin_db.py": {
+          "base": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320",
+          "current": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320"
+        },
+        "src/gym_trading_env/utils/macd_5m_causal.py": {
+          "base": "16cd185fe2a62cf8b090a9ac32014ec8429b634e9b255881d01ec32a66600f28",
+          "current": "16cd185fe2a62cf8b090a9ac32014ec8429b634e9b255881d01ec32a66600f28"
+        },
+        "src/gym_trading_env/utils/market_features.py": {
+          "base": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+          "current": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06"
+        },
+        "src/gym_trading_env/utils/market_prefix.py": {
+          "base": "0b3cb170fafd6c158a9486c751620f25e11ba44765a7c8f636ae3d24cecf16d4",
+          "current": "0b3cb170fafd6c158a9486c751620f25e11ba44765a7c8f636ae3d24cecf16d4"
+        },
+        "src/gym_trading_env/utils/market_store.py": {
+          "base": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75",
+          "current": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75"
+        },
+        "src/gym_trading_env/utils/ohlcvi_contract.py": {
+          "base": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+          "current": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8"
+        },
+        "src/gym_trading_env/utils/plot_intraday.py": {
+          "base": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181",
+          "current": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181"
+        },
+        "src/gym_trading_env/utils/rpc_client.py": {
+          "base": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1",
+          "current": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1"
+        },
+        "src/gym_trading_env/utils/rpc_protocol.py": {
+          "base": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1",
+          "current": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1"
+        },
+        "src/gym_trading_env/utils/s3_market_clock.py": {
+          "base": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+          "current": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085"
+        },
+        "src/gym_trading_env/utils/session_futures_strict.py": {
+          "base": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+          "current": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5"
+        },
+        "src/gym_trading_env/utils/session_fx.py": {
+          "base": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+          "current": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c"
+        },
+        "src/gym_trading_env/utils/time_contract.py": {
+          "base": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+          "current": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e"
+        },
+        "src/gym_trading_env/utils/timebase.py": {
+          "base": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+          "current": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a"
+        },
+        "src/gym_trading_env/utils/trade_util.py": {
+          "base": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913",
+          "current": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913"
+        },
+        "tools/audit_continuous_contract.py": {
+          "base": "40bfc120559433d35dc8739e68e7c2a32b8c1babf7f5a5f7640ce2e1e8c20841",
+          "current": "40bfc120559433d35dc8739e68e7c2a32b8c1babf7f5a5f7640ce2e1e8c20841"
+        },
+        "tools/audit_entry_eval_dataset.py": {
+          "base": "d78f27222e083b51eee4c076a19f4d3c754a6064f6b24f188d20fc18e02b5636",
+          "current": "d78f27222e083b51eee4c076a19f4d3c754a6064f6b24f188d20fc18e02b5636"
+        },
+        "tools/audit_env_timing_truth.py": {
+          "base": "81870fbc6c08be0c879e8aae746619282071e9e48868c44cef7f2498f6a86e27",
+          "current": "81870fbc6c08be0c879e8aae746619282071e9e48868c44cef7f2498f6a86e27"
+        },
+        "tools/audit_fg_abcd_ready.py": {
+          "base": "2f36fde7db118c09447cf3268fa4d07fbfe94e9ea63e225de61cf699209d13ef",
+          "current": "2f36fde7db118c09447cf3268fa4d07fbfe94e9ea63e225de61cf699209d13ef"
+        },
+        "tools/audit_fg_abcd_sequential.py": {
+          "base": "be67918c8874c182484051ba35f37e3ed6513fde743a7b714dd79ba275e5fe58",
+          "current": "be67918c8874c182484051ba35f37e3ed6513fde743a7b714dd79ba275e5fe58"
+        },
+        "tools/audit_fg_abcd_smoke.py": {
+          "base": "ae66866c6765730119f4e6a99b1b99dcf9195c7741a71fd1bda6afcd5613f7d7",
+          "current": "ae66866c6765730119f4e6a99b1b99dcf9195c7741a71fd1bda6afcd5613f7d7"
+        },
+        "tools/audit_futures_intraday_reward_components.py": {
+          "base": "dd4b681cb27ae9dadeb8ef5024ba317d0bbf490ef336c2921fa0a6fafc609069",
+          "current": "dd4b681cb27ae9dadeb8ef5024ba317d0bbf490ef336c2921fa0a6fafc609069"
+        },
+        "tools/audit_jm3_pnl_aligned_no_trade_root_cause.py": {
+          "base": "29a22ce36b5f5694c8f04c4dcaedbb40420bb48ad68b93af3c208e0bfb0f9649",
+          "current": "29a22ce36b5f5694c8f04c4dcaedbb40420bb48ad68b93af3c208e0bfb0f9649"
+        },
+        "tools/audit_obs_v2_formula_reference.py": {
+          "base": "9c0f639d7a19de10418d071a2b4667be0a25208efe6eeaecf6a1ad61822fd0e7",
+          "current": "9c0f639d7a19de10418d071a2b4667be0a25208efe6eeaecf6a1ad61822fd0e7"
+        },
+        "tools/audit_walk_forward_dataset.py": {
+          "base": "993b3ec4a32e257aaa3fdffe279957afdd38050e939f857e7fa9fff63288e81f",
+          "current": "993b3ec4a32e257aaa3fdffe279957afdd38050e939f857e7fa9fff63288e81f"
+        },
+        "tools/benchmark_s3_collection.py": {
+          "base": "dd543d1107b68ee2225888429370bd1fc7bae552a4eb73902968e10453e63d69",
+          "current": "dd543d1107b68ee2225888429370bd1fc7bae552a4eb73902968e10453e63d69"
+        },
+        "tools/build_entry_dataset.py": {
+          "base": "4e7771c2fd031c00c003e41081914861355bd4c82898ce00a46304a34687c076",
+          "current": "4e7771c2fd031c00c003e41081914861355bd4c82898ce00a46304a34687c076"
+        },
+        "tools/build_fg_abcd.py": {
+          "base": "2954eccf37c868a7c25d453688b6c35f6eb79cef43a69caa3731d637958ef282",
+          "current": "2954eccf37c868a7c25d453688b6c35f6eb79cef43a69caa3731d637958ef282"
+        },
+        "tools/build_walk_forward_split.py": {
+          "base": "3a197eae5a081f9cb46d08ba4c4518eb9e01ca2fa577b9567d91a4456afd491e",
+          "current": "3a197eae5a081f9cb46d08ba4c4518eb9e01ca2fa577b9567d91a4456afd491e"
+        },
+        "tools/continue_fg_abcd_acceptance.py": {
+          "base": "2e0baf43956155d6e819633d4dbcdd09678e1210d7b2a7276bd879c41b833860",
+          "current": "2e0baf43956155d6e819633d4dbcdd09678e1210d7b2a7276bd879c41b833860"
+        },
+        "tools/diagnose_fg_learning.py": {
+          "base": "0e52544efb33d5e84fc1d3a5d0d60536885490c9951e30753d313c9a9e5f14ed",
+          "current": "0e52544efb33d5e84fc1d3a5d0d60536885490c9951e30753d313c9a9e5f14ed"
+        },
+        "tools/dreamer_checkpoint_audit.py": {
+          "base": "f3e7ed207244ac38569b50dc7fa875c47bb6418bf33112d0582f272aa33028df",
+          "current": "f3e7ed207244ac38569b50dc7fa875c47bb6418bf33112d0582f272aa33028df"
+        },
+        "tools/dreamer_equity_curve_audit.py": {
+          "base": "cd89e5cc2017763031304ebcd83c03d74cf220745037281b096ccbf92a896891",
+          "current": "cd89e5cc2017763031304ebcd83c03d74cf220745037281b096ccbf92a896891"
+        },
+        "tools/dreamer_failure_attribution.py": {
+          "base": "c6b0fc6078545506a553e19b816bd8c2fe814acaa08c174ae5a652a4759858ef",
+          "current": "c6b0fc6078545506a553e19b816bd8c2fe814acaa08c174ae5a652a4759858ef"
+        },
+        "tools/evaluate_fg_abcd.py": {
+          "base": "0f98fa208b38bdf770dfb9b74037e026d37d54415c01e0fee881ecd3e556e02e",
+          "current": "0f98fa208b38bdf770dfb9b74037e026d37d54415c01e0fee881ecd3e556e02e"
+        },
+        "tools/fg_entry_v1.py": {
+          "base": "d98af0fe13669c07e4e01e9cfd5270e2c280be3124a200c0e68b93c430a4340a",
+          "current": "d98af0fe13669c07e4e01e9cfd5270e2c280be3124a200c0e68b93c430a4340a"
+        },
+        "tools/fg_history_study.py": {
+          "base": "b8de71437dd8778bd8683ad791cdb9025835f921ddf9f6bbf779283c91d15b24",
+          "current": "b8de71437dd8778bd8683ad791cdb9025835f921ddf9f6bbf779283c91d15b24"
+        },
+        "tools/fg_replay.py": {
+          "base": "7816656701c31e2362ad3bc6c82e6e2d352e4b5e3601dad4c96783eb5711ad72",
+          "current": "7816656701c31e2362ad3bc6c82e6e2d352e4b5e3601dad4c96783eb5711ad72"
+        },
+        "tools/fg_reward_offline.py": {
+          "base": "8160657ca0488dfe79ce4a1297b6b2c6adb1d19a0491a0c019280bbb9ace211e",
+          "current": "8160657ca0488dfe79ce4a1297b6b2c6adb1d19a0491a0c019280bbb9ace211e"
+        },
+        "tools/fg_s3_arch.py": {
+          "base": "8389b1b2fc12edf7e30aeccdb8187b90b48117c6c6d725a03902f8b80c77198f",
+          "current": "8389b1b2fc12edf7e30aeccdb8187b90b48117c6c6d725a03902f8b80c77198f"
+        },
+        "tools/fg_s3_dagger_d0.py": {
+          "base": "6ffee62eaf8b3e5a180487fb292181529e3900c40b97275942598bd264b10788",
+          "current": "6ffee62eaf8b3e5a180487fb292181529e3900c40b97275942598bd264b10788"
+        },
+        "tools/fg_s3_e_quality_corpus.py": {
+          "base": "15766a3c041ac183601db3be3909a3a34f682ea182a0550920ea0a4453c23276",
+          "current": "15766a3c041ac183601db3be3909a3a34f682ea182a0550920ea0a4453c23276"
+        },
+        "tools/fg_s3_e_quality_course_preflight.py": {
+          "base": "c91a3dade141966a564602f15181fceae00bc309979d0fdc00a8e2d78ff4a23e",
+          "current": "c91a3dade141966a564602f15181fceae00bc309979d0fdc00a8e2d78ff4a23e"
+        },
+        "tools/fg_s3_experiment.py": {
+          "base": "8804be604e401a23be2f1191eee306edf0c3d7df485fa5b51e95734338566406",
+          "current": "8804be604e401a23be2f1191eee306edf0c3d7df485fa5b51e95734338566406"
+        },
+        "tools/fg_s3_quality_patch_acceptance.py": {
+          "base": "253f5025cc4864236ea5f712361127313843e6f235f2752e43e4fbd38fc5fbdf",
+          "current": "253f5025cc4864236ea5f712361127313843e6f235f2752e43e4fbd38fc5fbdf"
+        },
+        "tools/fg_s3_quality_v2.py": {
+          "base": "2cafcdaffa8172893e49837d5496d8540dae9180e74a56ccbae74a5d337b32a9",
+          "current": "2cafcdaffa8172893e49837d5496d8540dae9180e74a56ccbae74a5d337b32a9"
+        },
+        "tools/fg_s3_v2_evaluate_frozen.py": {
+          "base": "cabb93de7671bb34e447808a1a34ae4535b6e46fe1325614efc197768a18dcfa",
+          "current": "cabb93de7671bb34e447808a1a34ae4535b6e46fe1325614efc197768a18dcfa"
+        },
+        "tools/fg_s3_v2_experiment.py": {
+          "base": "0370b818d6af94a31835183e995c008b35d71bfb49af8910f5b25ce7d4cf9fe0",
+          "current": "0370b818d6af94a31835183e995c008b35d71bfb49af8910f5b25ce7d4cf9fe0"
+        },
+        "tools/fg_s3_v2_observe.py": {
+          "base": "1d3a0c28d79cf0001bcc9d82756f4cdb21566082107296638d748558ca4e0d1f",
+          "current": "1d3a0c28d79cf0001bcc9d82756f4cdb21566082107296638d748558ca4e0d1f"
+        },
+        "tools/fg_s3_wandb.py": {
+          "base": "facbb4f5fb702a9d49c8cf62702bd6fd840db232fac75aae3c6fb7aabcd65e28",
+          "current": "facbb4f5fb702a9d49c8cf62702bd6fd840db232fac75aae3c6fb7aabcd65e28"
+        },
+        "tools/fg_s3a.py": {
+          "base": "47f13b4d22c87fa5c2e48a60794de8de6ea94ebf7782b4cbcecdca31d701144d",
+          "current": "47f13b4d22c87fa5c2e48a60794de8de6ea94ebf7782b4cbcecdca31d701144d"
+        },
+        "tools/fg_s3b.py": {
+          "base": "30ae22708236b63da3c61bc6c6bc222fe0617fedf3e51250d2dc4a653248ec43",
+          "current": "30ae22708236b63da3c61bc6c6bc222fe0617fedf3e51250d2dc4a653248ec43"
+        },
+        "tools/fg_single3.py": {
+          "base": "c334c5bd3cea004ebb50e9721e7bd9d2a5fab34e27189f9ce2780eee04a570d4",
+          "current": "c334c5bd3cea004ebb50e9721e7bd9d2a5fab34e27189f9ce2780eee04a570d4"
+        },
+        "tools/fg_single3_experiment.py": {
+          "base": "354258cf9da42a96502a3e39810958ad0157330fcad87348b098224649b8c47f",
+          "current": "354258cf9da42a96502a3e39810958ad0157330fcad87348b098224649b8c47f"
+        },
+        "tools/fg_single3_gate_cause_audit.py": {
+          "base": "1a9ec61f2b9683c8584cdb5d0d692e4bb32ae19d61968cc13ae8896cdd98ab24",
+          "current": "1a9ec61f2b9683c8584cdb5d0d692e4bb32ae19d61968cc13ae8896cdd98ab24"
+        },
+        "tools/fg_single3_gate_metric_regression.py": {
+          "base": "6346ba1e715321345296f9885b93c5a67a96c260884b0ff935538090c7a02530",
+          "current": "6346ba1e715321345296f9885b93c5a67a96c260884b0ff935538090c7a02530"
+        },
+        "tools/fg_single3_gate_positive_imagination.py": {
+          "base": "281e5bf307b783b2651e16fc947337e368f9f9dfdcaffae877a398e357e89407",
+          "current": "281e5bf307b783b2651e16fc947337e368f9f9dfdcaffae877a398e357e89407"
+        },
+        "tools/fg_single3_gate_preflight.py": {
+          "base": "1f4d434506ec212730ea969c428859720e8d4e1420d911e35bc6f19d427a6b88",
+          "current": "1f4d434506ec212730ea969c428859720e8d4e1420d911e35bc6f19d427a6b88"
+        },
+        "tools/fg_single3_gate_restore_check.py": {
+          "base": "7758a928530c3665ef2211ada5fca6be2f439cc8a9bdc4e053d53d36524f035f",
+          "current": "7758a928530c3665ef2211ada5fca6be2f439cc8a9bdc4e053d53d36524f035f"
+        },
+        "tools/fg_single3_gate_windows_parallel.py": {
+          "base": "799df719716a7354013400bde54500e42ccef680e72094f68412101e9418c06e",
+          "current": "799df719716a7354013400bde54500e42ccef680e72094f68412101e9418c06e"
+        },
+        "tools/fg_single3_input_audit.py": {
+          "base": "52c1d6dd51f5cf8e9b739268557fdf09389250059c76be162657867c72408117",
+          "current": "52c1d6dd51f5cf8e9b739268557fdf09389250059c76be162657867c72408117"
+        },
+        "tools/fg_single3_pipeline.py": {
+          "base": "f2905b9cea47fdb14c1ab1fba62950573adcb0299bb429a426123ce82661a14b",
+          "current": "f2905b9cea47fdb14c1ab1fba62950573adcb0299bb429a426123ce82661a14b"
+        },
+        "tools/fg_single3_prior_audit.py": {
+          "base": "a89848196e44fd1c02703adb3295fe2d592ea228cf875a68659fcb1810fc4855",
+          "current": "a89848196e44fd1c02703adb3295fe2d592ea228cf875a68659fcb1810fc4855"
+        },
+        "tools/fg_single3_reports.py": {
+          "base": "68f2b0c8da66c9e142088807b82711799f0bc2777104fea453627f03ec44830c",
+          "current": "68f2b0c8da66c9e142088807b82711799f0bc2777104fea453627f03ec44830c"
+        },
+        "tools/jm3_old_baseline_reaudit_summary.py": {
+          "base": "3fde575bec1dff0e82440717164f8a520091294e33a06d01c92ffe0f23bb46eb",
+          "current": "3fde575bec1dff0e82440717164f8a520091294e33a06d01c92ffe0f23bb46eb"
+        },
+        "tools/old_reward_metric_reports.py": {
+          "base": "cb2e9706b559335ca36d754540837f8fbd349053e7bff54adf419e0c1ad2038a",
+          "current": "cb2e9706b559335ca36d754540837f8fbd349053e7bff54adf419e0c1ad2038a"
+        },
+        "tools/profit_lock_ab_audit_smoke.py": {
+          "base": "a70677135ed07f93be56addfbb9160a5e095e322ed7d9b627b3b8e9491ab573a",
+          "current": "a70677135ed07f93be56addfbb9160a5e095e322ed7d9b627b3b8e9491ab573a"
+        },
+        "tools/report_dreamer_multiseed_repeatability.py": {
+          "base": "2ba395debfccc43a20446f1aec6404730a22350b638656af2a3ce080fed85e2f",
+          "current": "2ba395debfccc43a20446f1aec6404730a22350b638656af2a3ce080fed85e2f"
+        },
+        "tools/report_entry_baseline_by_regime.py": {
+          "base": "321f11167ba761ff6809923ffe62d4912c58fa5fa3eba5072c87c61ed35bdb12",
+          "current": "321f11167ba761ff6809923ffe62d4912c58fa5fa3eba5072c87c61ed35bdb12"
+        },
+        "tools/report_entry_capability.py": {
+          "base": "09ab0f957156c1920b62069be13862a491424d5cf0c70aee8dd93b785502a64f",
+          "current": "09ab0f957156c1920b62069be13862a491424d5cf0c70aee8dd93b785502a64f"
+        },
+        "tools/report_fg_abcd.py": {
+          "base": "70f4e57869c3c4d5aafb70704a590c13b8333e6826d8f0cb6a7072d2ce8cddfd",
+          "current": "70f4e57869c3c4d5aafb70704a590c13b8333e6826d8f0cb6a7072d2ce8cddfd"
+        },
+        "tools/report_fg_reward_offline.py": {
+          "base": "e5b2e36eff859234ddc07625aba7a1308a7bca4a1aaf18a484b2a77da4a5f83c",
+          "current": "e5b2e36eff859234ddc07625aba7a1308a7bca4a1aaf18a484b2a77da4a5f83c"
+        },
+        "tools/reward_logging_smoke.py": {
+          "base": "677d80b28d51b21d0d3919c8f217b75bbc0d31f21d60563ebb22bf472eb34230",
+          "current": "677d80b28d51b21d0d3919c8f217b75bbc0d31f21d60563ebb22bf472eb34230"
+        },
+        "tools/reward_mtm_clean_risk_smoke.py": {
+          "base": "67893bbc0131164a92fe7f396bae8a2bb0cff8a127d435cdfa4ae8b08f7fd45d",
+          "current": "67893bbc0131164a92fe7f396bae8a2bb0cff8a127d435cdfa4ae8b08f7fd45d"
+        },
+        "tools/reward_profit_lock_smoke.py": {
+          "base": "b7dff26ace755ecfa05cff3ff5498316e05ed54cf4d964107b5d75e8d3c48cb4",
+          "current": "b7dff26ace755ecfa05cff3ff5498316e05ed54cf4d964107b5d75e8d3c48cb4"
+        },
+        "tools/run_entry_capability.py": {
+          "base": "187cadef98eb2c8c6044d3c9fa13bd32ccbddd186e45fe89643a0c0f1ea23e4e",
+          "current": "187cadef98eb2c8c6044d3c9fa13bd32ccbddd186e45fe89643a0c0f1ea23e4e"
+        },
+        "tools/run_fg_abcd.py": {
+          "base": "42cab332b8199c37243ca21352a0da3ac302ad1bca0a560c797ff0670946344b",
+          "current": "42cab332b8199c37243ca21352a0da3ac302ad1bca0a560c797ff0670946344b"
+        },
+        "tools/run_fg_abcd_smoke.py": {
+          "base": "0d87b446a5f817fdaa82b16836577fe7cb9d322f12bdc11ba3df263ca95bcd1c",
+          "current": "0d87b446a5f817fdaa82b16836577fe7cb9d322f12bdc11ba3df263ca95bcd1c"
+        },
+        "tools/s3_archive.py": {
+          "base": "2723196b836c5bd8f75f3cf4a4cc24ef4e04366c8fa48ef7c8ee6324798285b8",
+          "current": "2723196b836c5bd8f75f3cf4a4cc24ef4e04366c8fa48ef7c8ee6324798285b8"
+        },
+        "tools/score_regime_aware_validation.py": {
+          "base": "74d236b0ea706c3b2ada100eeb1f178da72ea76cb6737a974d5602720d30869a",
+          "current": "74d236b0ea706c3b2ada100eeb1f178da72ea76cb6737a974d5602720d30869a"
+        },
+        "tools/smoke_fg_single3_neural.py": {
+          "base": "3d59137a242f9f32d144457147fc7819eb54556270617b948ac458a69f35f372",
+          "current": "3d59137a242f9f32d144457147fc7819eb54556270617b948ac458a69f35f372"
+        },
+        "tools/train_entry_baseline.py": {
+          "base": "2046a584528ef6e1f89da2e5db06ecb0e923b0471176316c704be479e9508fd6",
+          "current": "2046a584528ef6e1f89da2e5db06ecb0e923b0471176316c704be479e9508fd6"
+        },
+        "tools/verify_fg_history_folds.py": {
+          "base": "6bafb178111d587aa3824a98573e87d56cae83637a353c54aaf6798dc8bcbed9",
+          "current": "6bafb178111d587aa3824a98573e87d56cae83637a353c54aaf6798dc8bcbed9"
+        },
+        "tools/watch_fg_abcd.py": {
+          "base": "d08d5d7277b66b52281ab18bc6527445dde7faa9311f2e63089816cdb8ba2cf9",
+          "current": "d08d5d7277b66b52281ab18bc6527445dde7faa9311f2e63089816cdb8ba2cf9"
+        },
+        "tools/wp02_profile_snapshot.py": {
+          "base": "8a60585872ea9e27767753709194161bf54f94604729cdeb35909534ee48db1d",
+          "current": "8a60585872ea9e27767753709194161bf54f94604729cdeb35909534ee48db1d"
+        },
+        "tools/wp02_verify.py": {
+          "base": "713ce4ae627b0a830f52e4570f2c4f1f5ff899fb94f0d7c7f100d7a647912ede",
+          "current": "713ce4ae627b0a830f52e4570f2c4f1f5ff899fb94f0d7c7f100d7a647912ede"
+        }
+      }
+    },
+    "dreamer": {
+      "base": "44a6cc62032811501631e83be977f07137dc65b8",
+      "unchanged_runtime_files": 86,
+      "changed_runtime_files": {
+        "dreamerv3/fg_s3_quality_v2.py": {
+          "base": "3edb0125ac9af84395a6f59b98d53a2781b39fc14a8c335d86489f9b87c22e06",
+          "current": "ad3a602653be4af63b43add7bdf0f0b59e9dd4fee9a15f7321b00909e579761e"
+        },
+        "dreamerv3/fg_s3_v2_agent.py": {
+          "base": "bea67d758a3dc9074568130952378ac360d38c6e77b2d9d04fb5d05640a2d477",
+          "current": "93267a1d378906f2bbdc041bb87f7b5f7de823c717544a2e11e4f87398bda132"
+        }
+      },
+      "unchanged": {
+        "dreamerv3/__init__.py": {
+          "base": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "current": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "dreamerv3/agent.py": {
+          "base": "6fb437751a2af419b6d568d02ed67f651614367413980c8780496f1b1a884fd7",
+          "current": "6fb437751a2af419b6d568d02ed67f651614367413980c8780496f1b1a884fd7"
+        },
+        "dreamerv3/configuration.py": {
+          "base": "7577cf9749da1ea4c28cc9d1fa4a40db914432f3da2661e457a67ff5c5da8ddb",
+          "current": "7577cf9749da1ea4c28cc9d1fa4a40db914432f3da2661e457a67ff5c5da8ddb"
+        },
+        "dreamerv3/fg_entry_guard.py": {
+          "base": "1f046dc6d413640943c970cd18a23f66e687177f148f556917b5e29dafddacfe",
+          "current": "1f046dc6d413640943c970cd18a23f66e687177f148f556917b5e29dafddacfe"
+        },
+        "dreamerv3/fg_s3_b2_outcome.py": {
+          "base": "fb24a72d5556f578d1026337b89e2ddfa2162d3ae8411bb924377eaedf256f41",
+          "current": "fb24a72d5556f578d1026337b89e2ddfa2162d3ae8411bb924377eaedf256f41"
+        },
+        "dreamerv3/fg_s3_composition.py": {
+          "base": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5",
+          "current": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5"
+        },
+        "dreamerv3/fg_s3_e_config.py": {
+          "base": "53748286f37d6c8d3c946723d3e1c563681862031beeacfe5f32ca5efc2b7cf9",
+          "current": "53748286f37d6c8d3c946723d3e1c563681862031beeacfe5f32ca5efc2b7cf9"
+        },
+        "dreamerv3/fg_s3_e_diagnostics.py": {
+          "base": "e7dd6e880e80473d2af2dbe5a90e324b7e3daef66bcb3a5d254c0c54d157fb9b",
+          "current": "e7dd6e880e80473d2af2dbe5a90e324b7e3daef66bcb3a5d254c0c54d157fb9b"
+        },
+        "dreamerv3/fg_s3_e_encoder.py": {
+          "base": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22",
+          "current": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22"
+        },
+        "dreamerv3/fg_s3_e_quality_course_contract.py": {
+          "base": "195781984d9daa53fb4f3f26c9a0df55310188691366167c9368364a1284a0fc",
+          "current": "195781984d9daa53fb4f3f26c9a0df55310188691366167c9368364a1284a0fc"
+        },
+        "dreamerv3/fg_s3_tutor_loss.py": {
+          "base": "4ac7bcc73471a9318253f0cbd5b7e670aff1854e935fdbf0150c35b8287a77ab",
+          "current": "4ac7bcc73471a9318253f0cbd5b7e670aff1854e935fdbf0150c35b8287a77ab"
+        },
+        "dreamerv3/fg_s3a_actor.py": {
+          "base": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+          "current": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed"
+        },
+        "dreamerv3/fg_s3a_agent.py": {
+          "base": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+          "current": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816"
+        },
+        "dreamerv3/fg_s3b_bc.py": {
+          "base": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0",
+          "current": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0"
+        },
+        "dreamerv3/fg_s3c_agent.py": {
+          "base": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e",
+          "current": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e"
+        },
+        "dreamerv3/fg_single3_offline.py": {
+          "base": "af695e2c13c53136852441ceb3c15f518c76499b4d7d114267ddac2109198253",
+          "current": "af695e2c13c53136852441ceb3c15f518c76499b4d7d114267ddac2109198253"
+        },
+        "dreamerv3/fg_stage_transfer.py": {
+          "base": "700def17392ad869249aa9da2f6b73844bf30f43241b6c652772c9e285e43070",
+          "current": "700def17392ad869249aa9da2f6b73844bf30f43241b6c652772c9e285e43070"
+        },
+        "dreamerv3/main.py": {
+          "base": "eaff77b00a0425dc2d9c14218787a2b87dd58e2842f3720f45f914033c1a47bc",
+          "current": "eaff77b00a0425dc2d9c14218787a2b87dd58e2842f3720f45f914033c1a47bc"
+        },
+        "dreamerv3/rssm.py": {
+          "base": "031b9cb9c29023501d679ca971d6dd8f6428fd107eb3c9c4748cb21c83ebcb3b",
+          "current": "031b9cb9c29023501d679ca971d6dd8f6428fd107eb3c9c4748cb21c83ebcb3b"
+        },
+        "dreamerv3/walk_forward_guard.py": {
+          "base": "6cf1ac0b6df42a4c913d168ce68870f02acd71d7356da242948e6de0c6101017",
+          "current": "6cf1ac0b6df42a4c913d168ce68870f02acd71d7356da242948e6de0c6101017"
+        },
+        "embodied/__init__.py": {
+          "base": "de1322d37227254ce32ce2358f5c0d034fdc18fc8d6d0c7e9b62757ef22e7dfb",
+          "current": "de1322d37227254ce32ce2358f5c0d034fdc18fc8d6d0c7e9b62757ef22e7dfb"
+        },
+        "embodied/core/__init__.py": {
+          "base": "a088d8ef0017eb7c1e046bb1e3021d59382086607a94e42746d30e79c6dfc681",
+          "current": "a088d8ef0017eb7c1e046bb1e3021d59382086607a94e42746d30e79c6dfc681"
+        },
+        "embodied/core/base.py": {
+          "base": "64a51beda8e7e0b211cb857843ab434e3a47269eee7771674ed8630954a3ec98",
+          "current": "64a51beda8e7e0b211cb857843ab434e3a47269eee7771674ed8630954a3ec98"
+        },
+        "embodied/core/chunk.py": {
+          "base": "427b537afa75079a9f0dfd933ec49e6f71173371388418176c16c038be005c65",
+          "current": "427b537afa75079a9f0dfd933ec49e6f71173371388418176c16c038be005c65"
+        },
+        "embodied/core/clock.py": {
+          "base": "c3a4accb9f1be9f1d47f1ac8f2802ccb06c3abfdbc1f13db203674b3a0ab8933",
+          "current": "c3a4accb9f1be9f1d47f1ac8f2802ccb06c3abfdbc1f13db203674b3a0ab8933"
+        },
+        "embodied/core/driver.py": {
+          "base": "ebfd71d6adf205ada2720a357ac42e89f2891f9f496b5de28f79aabe4f67371b",
+          "current": "ebfd71d6adf205ada2720a357ac42e89f2891f9f496b5de28f79aabe4f67371b"
+        },
+        "embodied/core/limiters.py": {
+          "base": "370d2fa708c80fbf86ddf2bc2456fea8d4d018c8e21eec2b8e71af6dbe163921",
+          "current": "370d2fa708c80fbf86ddf2bc2456fea8d4d018c8e21eec2b8e71af6dbe163921"
+        },
+        "embodied/core/random.py": {
+          "base": "38b51d892deb965c7d0ccd1df1b2905f29613245e00737fa368fc43927ad6b8d",
+          "current": "38b51d892deb965c7d0ccd1df1b2905f29613245e00737fa368fc43927ad6b8d"
+        },
+        "embodied/core/replay.py": {
+          "base": "ea70f6f0494c0520acd357190c5c78bee46b0365dd950231ca522ddb6dbdd027",
+          "current": "ea70f6f0494c0520acd357190c5c78bee46b0365dd950231ca522ddb6dbdd027"
+        },
+        "embodied/core/selectors.py": {
+          "base": "b8cb69021e8f79888df88fb5c195e8ff19e3d54065bb08bd3586fd9cbe6655d3",
+          "current": "b8cb69021e8f79888df88fb5c195e8ff19e3d54065bb08bd3586fd9cbe6655d3"
+        },
+        "embodied/core/streams.py": {
+          "base": "7ec4be50dbd22f5d8b4c8278e3e7ba8a1bc1c1db2c33f775cf6a393343341d59",
+          "current": "7ec4be50dbd22f5d8b4c8278e3e7ba8a1bc1c1db2c33f775cf6a393343341d59"
+        },
+        "embodied/core/wrappers.py": {
+          "base": "59353c68a7b9efb81014927ba3df1dceb12cce6a0114264cbd62a9f8399c952e",
+          "current": "59353c68a7b9efb81014927ba3df1dceb12cce6a0114264cbd62a9f8399c952e"
+        },
+        "embodied/envs/atari.py": {
+          "base": "41e8ffb412e83ec1f5c142ee757a6ea5728ba7674779be51f2921c191afe1ac3",
+          "current": "41e8ffb412e83ec1f5c142ee757a6ea5728ba7674779be51f2921c191afe1ac3"
+        },
+        "embodied/envs/bsuite.py": {
+          "base": "92f042177b64df4dbb65bcc5e7301bfe9d35401b789c0bc7bcab9a1741803184",
+          "current": "92f042177b64df4dbb65bcc5e7301bfe9d35401b789c0bc7bcab9a1741803184"
+        },
+        "embodied/envs/crafter.py": {
+          "base": "347a2347d54f5804277eb15c74e139f4e54461bc299558833357b12891d81067",
+          "current": "347a2347d54f5804277eb15c74e139f4e54461bc299558833357b12891d81067"
+        },
+        "embodied/envs/dmc.py": {
+          "base": "196dda5ad5148c2a5c1392234d1b6fc21060bf146a481bbc3ee8f3c7d5a35229",
+          "current": "196dda5ad5148c2a5c1392234d1b6fc21060bf146a481bbc3ee8f3c7d5a35229"
+        },
+        "embodied/envs/dmlab.py": {
+          "base": "b391a0621d5b21756e25cfd0d5f3c232126989ba5ecd920bd943d1acab20d22f",
+          "current": "b391a0621d5b21756e25cfd0d5f3c232126989ba5ecd920bd943d1acab20d22f"
+        },
+        "embodied/envs/dummy.py": {
+          "base": "0b197f4fac46ef37a567d931c1bb496f8053e67a189400a98c05dd5d85bd3352",
+          "current": "0b197f4fac46ef37a567d931c1bb496f8053e67a189400a98c05dd5d85bd3352"
+        },
+        "embodied/envs/from_dm.py": {
+          "base": "9eda0fd7046a033f07b10832319496a6996af6d5a1327689f5f4a6d49827a7e7",
+          "current": "9eda0fd7046a033f07b10832319496a6996af6d5a1327689f5f4a6d49827a7e7"
+        },
+        "embodied/envs/from_gym.py": {
+          "base": "4aca612cf791ee99788d49fac496a8f2ad6f541529c86c23a4b25fae89b9bab4",
+          "current": "4aca612cf791ee99788d49fac496a8f2ad6f541529c86c23a4b25fae89b9bab4"
+        },
+        "embodied/envs/from_gymnasium.py": {
+          "base": "1a4916a0336fc08fc569e0b1db4fe9e22afeee16d0c02bf71caf8c8182298149",
+          "current": "1a4916a0336fc08fc569e0b1db4fe9e22afeee16d0c02bf71caf8c8182298149"
+        },
+        "embodied/envs/from_gymnasium1.py": {
+          "base": "6ca39b37bc2370fb402685a012d29bf1c60d28794408fae69bda7c6394078150",
+          "current": "6ca39b37bc2370fb402685a012d29bf1c60d28794408fae69bda7c6394078150"
+        },
+        "embodied/envs/loconav.py": {
+          "base": "5a68215d97359738713393a90412619be8ec22b9545614495cabf7ced526ab20",
+          "current": "5a68215d97359738713393a90412619be8ec22b9545614495cabf7ced526ab20"
+        },
+        "embodied/envs/loconav_quadruped.py": {
+          "base": "c2ae65449a55b32c420514ef883c73261900b83a56993cc9e23a459642d0d678",
+          "current": "c2ae65449a55b32c420514ef883c73261900b83a56993cc9e23a459642d0d678"
+        },
+        "embodied/envs/minecraft.py": {
+          "base": "2f2612e6706971fd76a64bec3df5151e127df82208a12cba0f033c0587fa020c",
+          "current": "2f2612e6706971fd76a64bec3df5151e127df82208a12cba0f033c0587fa020c"
+        },
+        "embodied/envs/minecraft_flat.py": {
+          "base": "25d274e6322bbf4128a9f7338747eab688ef322aaab662775b8c4a50fee5747c",
+          "current": "25d274e6322bbf4128a9f7338747eab688ef322aaab662775b8c4a50fee5747c"
+        },
+        "embodied/envs/pinpad.py": {
+          "base": "6413315778f1b75d5ac261b912721630283da16afb3a079fdf55c5d5ab5973ea",
+          "current": "6413315778f1b75d5ac261b912721630283da16afb3a079fdf55c5d5ab5973ea"
+        },
+        "embodied/envs/procgen.py": {
+          "base": "fc357e969aa569d6d38b2607d4c64d0c67b635e6d046e78a0b43f1e923367531",
+          "current": "fc357e969aa569d6d38b2607d4c64d0c67b635e6d046e78a0b43f1e923367531"
+        },
+        "embodied/jax/__init__.py": {
+          "base": "7c55603a54144d3ea03799475056407c1596cf16d041caa24ba5a45a63444e06",
+          "current": "7c55603a54144d3ea03799475056407c1596cf16d041caa24ba5a45a63444e06"
+        },
+        "embodied/jax/agent.py": {
+          "base": "df791026bf5d7ff42d5c3a8129a5ae9a0ee48316b8b4c0abadb5825f0a62d4d9",
+          "current": "df791026bf5d7ff42d5c3a8129a5ae9a0ee48316b8b4c0abadb5825f0a62d4d9"
+        },
+        "embodied/jax/heads.py": {
+          "base": "437641cde21e7f9e3f69b88ad8f6b7e7c22e54eec8c5b19eef6127afde1a9b3f",
+          "current": "437641cde21e7f9e3f69b88ad8f6b7e7c22e54eec8c5b19eef6127afde1a9b3f"
+        },
+        "embodied/jax/internal.py": {
+          "base": "d9791c2c0d35ba5a58d78f87ed5b327483473f9f18f8a6945856a2e82d00f328",
+          "current": "d9791c2c0d35ba5a58d78f87ed5b327483473f9f18f8a6945856a2e82d00f328"
+        },
+        "embodied/jax/nets.py": {
+          "base": "9a1c0c71ad7d3596572a44416e78434f777d8f4dbcbe8ca0dd6b86bb8246392c",
+          "current": "9a1c0c71ad7d3596572a44416e78434f777d8f4dbcbe8ca0dd6b86bb8246392c"
+        },
+        "embodied/jax/opt.py": {
+          "base": "b0a2f68fd142a6e206d72d10a9fbb96d1208de3e00112c953ddbffb4d4634a80",
+          "current": "b0a2f68fd142a6e206d72d10a9fbb96d1208de3e00112c953ddbffb4d4634a80"
+        },
+        "embodied/jax/outs.py": {
+          "base": "fdce07aa00790f4693a71e73bdd3cc67d6737524cdcb0f165569b303727ac33a",
+          "current": "fdce07aa00790f4693a71e73bdd3cc67d6737524cdcb0f165569b303727ac33a"
+        },
+        "embodied/jax/transform.py": {
+          "base": "39c1ea717eddee4215538f2fef71bf7c73b9def966702fe9e14b5a3ced8724ee",
+          "current": "39c1ea717eddee4215538f2fef71bf7c73b9def966702fe9e14b5a3ced8724ee"
+        },
+        "embodied/jax/utils.py": {
+          "base": "76cd112313a19dc8524721dc7b1be86b89799b11c9865cce5e11de2a67bb1461",
+          "current": "76cd112313a19dc8524721dc7b1be86b89799b11c9865cce5e11de2a67bb1461"
+        },
+        "embodied/run/__init__.py": {
+          "base": "da52aa90ad78723600c043edf48e1616661ca8b2b47aef7d871e8a9faf1e10ad",
+          "current": "da52aa90ad78723600c043edf48e1616661ca8b2b47aef7d871e8a9faf1e10ad"
+        },
+        "embodied/run/action_mask_guard.py": {
+          "base": "9fda5d9850ca95c92921e8908005f4bf85aa6dba6b31b75afad585ab19accdc1",
+          "current": "9fda5d9850ca95c92921e8908005f4bf85aa6dba6b31b75afad585ab19accdc1"
+        },
+        "embodied/run/action_mask_warmup.py": {
+          "base": "a280a4f67566d1d95d753b537d015e389df30bce0d0295da28b1e03f5ad78c2b",
+          "current": "a280a4f67566d1d95d753b537d015e389df30bce0d0295da28b1e03f5ad78c2b"
+        },
+        "embodied/run/checkpoint_retention.py": {
+          "base": "ad704533202089c820ce42741d92cfd2881d4976fadeb3e4d494ea54e6301eb3",
+          "current": "ad704533202089c820ce42741d92cfd2881d4976fadeb3e4d494ea54e6301eb3"
+        },
+        "embodied/run/eval_only.py": {
+          "base": "13c02558758a328750f8d255e417fb878974985bff5c1add0ec0660d5a6aee0e",
+          "current": "13c02558758a328750f8d255e417fb878974985bff5c1add0ec0660d5a6aee0e"
+        },
+        "embodied/run/fg_checkpoint.py": {
+          "base": "c80bd662f63bd021b9c49af498cae05f1df618a7c46ddc57bcdbed09f4abedac",
+          "current": "c80bd662f63bd021b9c49af498cae05f1df618a7c46ddc57bcdbed09f4abedac"
+        },
+        "embodied/run/fg_learning_audit.py": {
+          "base": "92ac5c24b72344472064770614be9f3c2ad841d4ac129d1bf5b2e565f5804891",
+          "current": "92ac5c24b72344472064770614be9f3c2ad841d4ac129d1bf5b2e565f5804891"
+        },
+        "embodied/run/fg_s3_dagger_policy.py": {
+          "base": "1720a55223f1b6e5579de18ace85bfb1b31ffe2d5d2e21c672b0e4f7ec50f337",
+          "current": "1720a55223f1b6e5579de18ace85bfb1b31ffe2d5d2e21c672b0e4f7ec50f337"
+        },
+        "embodied/run/fg_s3_e_source.py": {
+          "base": "42f479627f123e4b3f34013969c061a9269f7934e8fbfe689ab5d4400acb8183",
+          "current": "42f479627f123e4b3f34013969c061a9269f7934e8fbfe689ab5d4400acb8183"
+        },
+        "embodied/run/fg_s3_gate.py": {
+          "base": "3c3c405111c18e210ac9810cd645e0cdc25dcedaad5897f6e21b038ae01a3beb",
+          "current": "3c3c405111c18e210ac9810cd645e0cdc25dcedaad5897f6e21b038ae01a3beb"
+        },
+        "embodied/run/fg_s3_source_admission.py": {
+          "base": "461c8bf2e1a407d1065e4c5a4a106f87a80b7ebf45a7ecba7d8053c28d5ebc92",
+          "current": "461c8bf2e1a407d1065e4c5a4a106f87a80b7ebf45a7ecba7d8053c28d5ebc92"
+        },
+        "embodied/run/fg_s3_source_transfer.py": {
+          "base": "2c821dd46b1b8e935f2ffac251234cde78bd64ca555b6d3b92c026b2f301725d",
+          "current": "2c821dd46b1b8e935f2ffac251234cde78bd64ca555b6d3b92c026b2f301725d"
+        },
+        "embodied/run/fg_s3_teacher_adapter.py": {
+          "base": "c0b604956e4983c6ce1fc1951501a80fff6237d94f4dddbc1ada2d0978fdb5a5",
+          "current": "c0b604956e4983c6ce1fc1951501a80fff6237d94f4dddbc1ada2d0978fdb5a5"
+        },
+        "embodied/run/fg_s3_v2_train.py": {
+          "base": "2ada0c995bb0bdb5d484bf5be8c378de5d41f0d1efc3fdc01b9ce04c2f3f28da",
+          "current": "2ada0c995bb0bdb5d484bf5be8c378de5d41f0d1efc3fdc01b9ce04c2f3f28da"
+        },
+        "embodied/run/fg_s3a_checkpoint.py": {
+          "base": "c051594f43f09321010be865229acbf3d3caf451d8a5ec6865b8b40acf053a7a",
+          "current": "c051594f43f09321010be865229acbf3d3caf451d8a5ec6865b8b40acf053a7a"
+        },
+        "embodied/run/fg_s3a_eval.py": {
+          "base": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+          "current": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da"
+        },
+        "embodied/run/fg_s3a_features.py": {
+          "base": "54b3ec6b858c6b4c0b89f3172863e8d8b7a1fb5cc4f075e0ce65b84c12440bbb",
+          "current": "54b3ec6b858c6b4c0b89f3172863e8d8b7a1fb5cc4f075e0ce65b84c12440bbb"
+        },
+        "embodied/run/fg_s3a_train.py": {
+          "base": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+          "current": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3"
+        },
+        "embodied/run/fg_s3b_checkpoint.py": {
+          "base": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970",
+          "current": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970"
+        },
+        "embodied/run/fg_s3b_train.py": {
+          "base": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960",
+          "current": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960"
+        },
+        "embodied/run/fg_s3c_stream.py": {
+          "base": "692b5e976e2d88f14e618678b45a6a3868774f65770f4c3f64067bd4b1f34df7",
+          "current": "692b5e976e2d88f14e618678b45a6a3868774f65770f4c3f64067bd4b1f34df7"
+        },
+        "embodied/run/fg_s3c_train.py": {
+          "base": "bd6b38e001ebcb6cce169ba9c6ba970d16cf486fa08edfe114e3c0cb761b292c",
+          "current": "bd6b38e001ebcb6cce169ba9c6ba970d16cf486fa08edfe114e3c0cb761b292c"
+        },
+        "embodied/run/fg_single3_audit.py": {
+          "base": "c94a3130dd945488c1da1db175d03cdd8e76e73ef7da402ba77aea3bb4231727",
+          "current": "c94a3130dd945488c1da1db175d03cdd8e76e73ef7da402ba77aea3bb4231727"
+        },
+        "embodied/run/live_trading.py": {
+          "base": "c4356065285616fef811a059995a4cbad051856dcb11dd5f03ab92f6a094bb54",
+          "current": "c4356065285616fef811a059995a4cbad051856dcb11dd5f03ab92f6a094bb54"
+        },
+        "embodied/run/monte_carlo.py": {
+          "base": "821ce9ec0c3d08cfe8c2e4ff080713ef6f310ad0ef28e030f7eb372b7d52ca27",
+          "current": "821ce9ec0c3d08cfe8c2e4ff080713ef6f310ad0ef28e030f7eb372b7d52ca27"
+        },
+        "embodied/run/offline_pretrain.py": {
+          "base": "6fd7f8fc5b71238c5565433082cdfa3f5d413e18963fd5820fd7188f2f0be599",
+          "current": "6fd7f8fc5b71238c5565433082cdfa3f5d413e18963fd5820fd7188f2f0be599"
+        },
+        "embodied/run/parallel.py": {
+          "base": "61db714fd289700aecaff89e3e2a277b86af7668071f633a9a15bedc1b8f4de6",
+          "current": "61db714fd289700aecaff89e3e2a277b86af7668071f633a9a15bedc1b8f4de6"
+        },
+        "embodied/run/train.py": {
+          "base": "467c9ca73fe79a5d904c319f063988ea803cfea2d11a0fe47fc9f3f3b1e30bc6",
+          "current": "467c9ca73fe79a5d904c319f063988ea803cfea2d11a0fe47fc9f3f3b1e30bc6"
+        },
+        "embodied/run/train_eval.py": {
+          "base": "faf98583047dfbfc0500d4c3437439404ad08f7faccfb9444604ef5fdfe32c6d",
+          "current": "faf98583047dfbfc0500d4c3437439404ad08f7faccfb9444604ef5fdfe32c6d"
+        }
+      }
+    }
+  },
+  "unchanged_function_AST": [
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "soft_teacher",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "validate_label",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "attach_quality",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "coverage",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "write_catalog_receipt",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "validate_catalog",
+      "unchanged": true
+    },
+    {
+      "file": "gym/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "function": "train_priors",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "scaled_features",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "head_modules",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "predict",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "fuse_logits",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "policy_forward",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "mean",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "teaching_objective",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "active_branches",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_quality_v2.py",
+      "function": "prediction_objective",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "masked_joint_optimizer",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "masked_joint_optimizer.update",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "masked_joint_optimizer.update.restore",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.__init__",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.ext_space",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.policy_keys",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.b2_predict",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.policy_distribution",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.quality_init_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.quality_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.quality_term_gradient_diagnostics",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.quality_term_gradient_diagnostics.terms",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.b2_init_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.b2_bc_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.wm_only",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model._components",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.v2_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.tutor_loss",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.tutor_term_gradient_diagnostics",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.tutor_term_gradient_diagnostics.terms",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "_S3V2Model.train",
+      "unchanged": true
+    },
+    {
+      "file": "dreamer/dreamerv3/fg_s3_v2_agent.py",
+      "function": "S3V2Agent.__init__",
+      "unchanged": true
+    }
+  ],
+  "catalog_FIELDS_unchanged": true
+}

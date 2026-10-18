@@ -1,0 +1,14 @@
+{
+  "D_release_final": {
+    "execution_receipt": "D_release_final.json",
+    "files": 242,
+    "all_current_bytes_equal_tested": true,
+    "mismatches": []
+  },
+  "D_real_reader_final": {
+    "execution_receipt": "D_real_reader_final.json",
+    "files": 242,
+    "all_current_bytes_equal_tested": true,
+    "mismatches": []
+  }
+}

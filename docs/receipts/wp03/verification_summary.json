@@ -1,0 +1,299 @@
+{
+  "final_selected_suite": "D_release_final",
+  "final_result": {
+    "PASS": 177,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "runs": [
+    {
+      "name": "A_final",
+      "exit_code": 0,
+      "seconds": 1.1085315101081505,
+      "test_counts": {
+        "PASS": 14,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "A_final.json",
+      "log": "A_final.log"
+    },
+    {
+      "name": "A_targeted",
+      "exit_code": 0,
+      "seconds": 1.149842063896358,
+      "test_counts": {
+        "PASS": 14,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "A_targeted.json",
+      "log": "A_targeted.log"
+    },
+    {
+      "name": "B_final",
+      "exit_code": 0,
+      "seconds": 21.227377460920252,
+      "test_counts": {
+        "PASS": 22,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "B_final.json",
+      "log": "B_final.log"
+    },
+    {
+      "name": "B_legacy_pairs",
+      "exit_code": 0,
+      "seconds": 8.842662479029968,
+      "test_counts": {
+        "PASS": 16,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "B_legacy_pairs.json",
+      "log": "B_legacy_pairs.log"
+    },
+    {
+      "name": "B_targeted",
+      "exit_code": 0,
+      "seconds": 15.539362401003018,
+      "test_counts": {
+        "PASS": 18,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "B_targeted.json",
+      "log": "B_targeted.log"
+    },
+    {
+      "name": "C_final",
+      "exit_code": 0,
+      "seconds": 31.2001451801043,
+      "test_counts": {
+        "PASS": 49,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "C_final.json",
+      "log": "C_final.log"
+    },
+    {
+      "name": "C_targeted",
+      "exit_code": 0,
+      "seconds": 14.41561654699035,
+      "test_counts": {
+        "PASS": 14,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "C_targeted.json",
+      "log": "C_targeted.log"
+    },
+    {
+      "name": "D_actual_coverage",
+      "exit_code": 0,
+      "seconds": 3.8091911260271445,
+      "test_counts": null,
+      "receipt": "D_actual_coverage.json",
+      "log": "D_actual_coverage.log"
+    },
+    {
+      "name": "D_cpu_forward_fix",
+      "exit_code": 0,
+      "seconds": 75.0273730258923,
+      "test_counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_cpu_forward_fix.json",
+      "log": "D_cpu_forward_fix.log"
+    },
+    {
+      "name": "D_cpu_retry",
+      "exit_code": 0,
+      "seconds": 154.8535465419991,
+      "test_counts": {
+        "PASS": 11,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_cpu_retry.json",
+      "log": "D_cpu_retry.log"
+    },
+    {
+      "name": "D_cpu_targeted",
+      "exit_code": 1,
+      "seconds": 77.79011627892032,
+      "test_counts": {
+        "PASS": 1,
+        "FAIL": 10,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_cpu_targeted.json",
+      "log": "D_cpu_targeted.log"
+    },
+    {
+      "name": "D_data_cli",
+      "exit_code": 0,
+      "seconds": 51.634871466085315,
+      "test_counts": {
+        "PASS": 60,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_data_cli.json",
+      "log": "D_data_cli.log"
+    },
+    {
+      "name": "D_final_review",
+      "exit_code": 1,
+      "seconds": 15.972390443901531,
+      "test_counts": {
+        "PASS": 30,
+        "FAIL": 1,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_final_review.json",
+      "log": "D_final_review.log"
+    },
+    {
+      "name": "D_native_G3",
+      "exit_code": 0,
+      "seconds": 1694.4552479150007,
+      "test_counts": null,
+      "receipt": "D_native_G3.json",
+      "log": "D_native_G3.log"
+    },
+    {
+      "name": "D_native_tie_contract",
+      "exit_code": 0,
+      "seconds": 16.93850320391357,
+      "test_counts": {
+        "PASS": 4,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_native_tie_contract.json",
+      "log": "D_native_tie_contract.log"
+    },
+    {
+      "name": "D_native_tie_fix",
+      "exit_code": 1,
+      "seconds": 2.6613754039863124,
+      "test_counts": {
+        "PASS": 0,
+        "FAIL": 1,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_native_tie_fix.json",
+      "log": "D_native_tie_fix.log"
+    },
+    {
+      "name": "D_real_reader_01",
+      "exit_code": 0,
+      "seconds": 72.06585288792849,
+      "test_counts": null,
+      "receipt": "D_real_reader_01.json",
+      "log": "D_real_reader_01.log"
+    },
+    {
+      "name": "D_real_reader_final",
+      "exit_code": 0,
+      "seconds": 65.05255940707866,
+      "test_counts": null,
+      "receipt": "D_real_reader_final.json",
+      "log": "D_real_reader_final.log"
+    },
+    {
+      "name": "D_release_final",
+      "exit_code": 0,
+      "seconds": 303.26847539190203,
+      "test_counts": {
+        "PASS": 177,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_release_final.json",
+      "log": "D_release_final.log"
+    },
+    {
+      "name": "D_release_suite",
+      "exit_code": 0,
+      "seconds": 320.21823402296286,
+      "test_counts": {
+        "PASS": 168,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_release_suite.json",
+      "log": "D_release_suite.log"
+    },
+    {
+      "name": "D_review_producer_after",
+      "exit_code": 0,
+      "seconds": 3.7915052419994026,
+      "test_counts": {
+        "PASS": 26,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_review_producer_after.json",
+      "log": "D_review_producer_after.log"
+    },
+    {
+      "name": "D_review_producer_before",
+      "exit_code": 1,
+      "seconds": 0.9448015380185097,
+      "test_counts": {
+        "PASS": 0,
+        "FAIL": 1,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_review_producer_before.json",
+      "log": "D_review_producer_before.log"
+    },
+    {
+      "name": "D_shared",
+      "exit_code": 0,
+      "seconds": 226.6175128830364,
+      "test_counts": {
+        "PASS": 20,
+        "FAIL": 0,
+        "ERROR": 0,
+        "SKIP": 0
+      },
+      "receipt": "D_shared.json",
+      "log": "D_shared.log"
+    },
+    {
+      "name": "native_verification",
+      "exit_code": 0,
+      "seconds": 1693.4544074449223,
+      "test_counts": null,
+      "receipt": "native_verification.json",
+      "log": "native_verify.log"
+    }
+  ],
+  "do_not_sum_overlapping_runs": true
+}

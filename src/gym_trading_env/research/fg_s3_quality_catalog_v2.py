@@ -85,10 +85,20 @@ def validate_corpus_label(label):
                 or event['held_market_bars']!=facts['held_market_minutes']):
             raise ValueError('Corpus L1 score differs from native Quality settlement')
     if strict.get('teacher_valid'):
+        # An originally legal ADD can be rejected on the next native bar.
+        # L1 then has no entry outcome, while L2 can independently certify an
+        # exact ADD/WAIT tie. This is not a forced-WAIT or missing-value label:
+        # both actual masks, owner, full suffix and rational witness still
+        # have to pass below. Preserve the L1 invalidity and its reason.
+        rejected_tie=(facts.get('exit_type')=='REJECTED'
+            and facts.get('immediate_outcome_verified') is False
+            and facts.get('score_valid') is False
+            and strict.get('tie') is True and strict.get('strict_action')==0)
         if (not intact(strict) or strict.get('protocol')!='FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
                 or strict.get('account_snapshot_hash')!=label['account_snapshot_hash']
                 or not facts['actual_legal_wait'] or not facts['actual_legal_add']
-                or facts.get('invalid_reason') or not strict.get('suffix_boundary_identity')):
+                or facts.get('invalid_reason') and not rejected_tie
+                or not strict.get('suffix_boundary_identity')):
             raise ValueError('Corpus strict action is not an independently valid legal decision')
         wait,add=map(Fraction,strict['value_rational_witness'])
         if (strict['strict_action']!=int(add>wait) or strict['tie']!=(add==wait)

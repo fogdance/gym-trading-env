@@ -18,7 +18,7 @@ Gym base `e57189bad100465c9fee8d9bbb5601f3e5c376ad`；Dreamer base
 原 `verify_corpus` 将 `_code_lock()['files']`（绝对路径、整仓239份源码）与生成时字典等值比较。
 `source_binding.files` 又进入L1/L2与账户来源身份；直接改写路径会使既有标签身份变化。
 因此不能靠删哈希或重签旧标签迁移。新增Reader、搬worktree与教材语义改变也不应混为一谈。
-另已确认：旧 `attach_quality` 不消费L1/L2 Envelope；Replay action是执行反馈，capture查询的是当前
+另已确认：旧 `attach_quality` 不消费L1/L2 Envelope；capture查询的是当前
 post-step观测；decision_executed由下一回调补写；原pair_identity未排除全零owner；旧Q-C1排序项
 还会消费strict标签，不能仅关闭Q value valid。
 
@@ -48,4 +48,17 @@ WP03不启动优化器、GPU或正式训练，不读TEST，不生产18合约，�
 
 ## Next recommended step
 
-按A来源与分级、B投影/Join、C统一Reader、D真实CPU证据顺序验收，并更新Master Roadmap V2。
+A–D已完成选定验收，详见WP03_IMPLEMENTATION_REVIEW.md。下一步按Master Roadmap V2设计WP04 F1；训练Guard继续关闭。
+
+## 最终复核补充
+
+本轮原生G3六账户PASS/exit0；最终177项选定CPU回归通过，真实Reader和原模型Loss exit0。
+开发Admission默认DEVELOPMENT_VALIDATED / INTEGRITY_CHECKED_ONLY / NOT_ADMITTED，明确NATIVE_G3_NOT_RUN；不把它伪装成draft课程或认证证据。
+历史239份源码哈希保留在原Corpus中，作为生成来源证据；不与当前Reader开发HEAD、dirty或位置等值比较。
+历史原生验证器额外要求实际producer运行源码与固定HEAD一致（不是只比HEAD字符串）；该限制只用于最终native-verification，不能阻塞普通开发读取。
+移动整个未变Corpus后可在新路径重建索引/恢复同源Reader，不访问旧Corpus路径；历史生产器重新G3仍需要它的固定来源环境。
+SQLite缓存及JSON自哈希只用于开发完整性，不能当正式Prepared/Checkpoint权限；正式训练须另行冻结/重建并认证索引。
+
+受控原生测试确认：合法ADD在下一bar因成交量不足未成交时，L1无Outcome，而L2能完整证明ADD/WAIT等值strict WAIT。
+Catalog原先把所有L1 invalid_reason同时当作L2无效；本轮只修复REJECTED且严格平局这个已复现边界，保留双合法、账户、完整后缀、有理数witness与原生G3认证。
+forced WAIT、现金域外、右删失、假witness负例仍拒绝。金融Env、Reward、MACD、Oracle与strict teacher本身字节不变。

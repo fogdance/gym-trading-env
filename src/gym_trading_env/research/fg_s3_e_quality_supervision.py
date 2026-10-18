@@ -10,6 +10,7 @@ from dataclasses import dataclass
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import time
 
@@ -33,7 +34,9 @@ def member(root, name):
     path = _local_path(Path(root) / name)
     if not path.is_relative_to(Path(root).absolute()):
         raise ValueError('SUPERVISION_UNSAFE_PATH')
-    if any(part.upper() in ('TEST', 'DEV', 'VALIDATION') for part in Path(name).parts):
+    if (any(re.search(r'(^|[^A-Z0-9])(TEST|DEV|VALIDATION)([^A-Z0-9]|$)',part.upper())
+            for part in Path(name).parts)
+            or Path(name).suffix.lower()=='.csv' and name!='coverage.csv'):
         raise ValueError('SUPERVISION_NON_TRAIN_PATH')
     return path
 
@@ -128,6 +131,28 @@ def inspect_source(source):
     return m
 
 
+def frozen_producer_audit(producer_gym):
+    """Authenticate the historical verifier, only for final native evidence.
+
+    This never inspects or constrains the current development checkout.
+    HEAD alone does not prove that the executed producer has those bytes.
+    """
+    producer_gym=_local_path(producer_gym)
+    audit={}
+    for role,root in (('gym',producer_gym),('dreamer',producer_gym.parent/'dreamerv3')):
+        head=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD'],text=True).strip()
+        if head!=PRODUCER_HEADS[role]:raise ValueError('SUPERVISION_NATIVE_PRODUCER_MISMATCH')
+        paths=(['src/gym_trading_env','e_data_v1','tools/fg_s3_e_quality_corpus.py','tools/fg_s3_v2_experiment.py']
+               if role=='gym' else ['dreamerv3','embodied',':(exclude)embodied/tests/**'])
+        diff=subprocess.run(['git','-C',str(root),'diff','--quiet','HEAD','--',*paths],capture_output=True)
+        untracked=subprocess.check_output(['git','-C',str(root),'ls-files','--others','--exclude-standard'],text=True).splitlines()
+        runtime=[p for p in untracked if Path(p).suffix=='.py' and not
+                 set(Path(p).parts)&{'tests','docs','artifacts'}]
+        if diff.returncode or runtime:raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
+        audit[role]=dict(head=head,runtime_diff_exit_code=diff.returncode,untracked_runtime=runtime)
+    return audit
+
+
 def native_verification(source, *, producer_gym, log_path):
     """Execute the unchanged, exact WP02 producer; no re-signing/migration.
 
@@ -136,10 +161,7 @@ def native_verification(source, *, producer_gym, log_path):
     evidence; the new reader binds relative corpus content instead.
     """
     producer_gym = _local_path(producer_gym)
-    for role, root in (('gym', producer_gym), ('dreamer', producer_gym.parent / 'dreamerv3')):
-        head = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
-        if head != PRODUCER_HEADS[role]:
-            raise ValueError('SUPERVISION_NATIVE_PRODUCER_MISMATCH')
+    producer_audit=frozen_producer_audit(producer_gym)
     env = {**os.environ, 'PYTHONPATH': '.:src:../dreamerv3', 'JAX_PLATFORMS': 'cpu',
            'CUDA_VISIBLE_DEVICES': '', 'PYTHONDONTWRITEBYTECODE': '1',
            'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1'}
@@ -158,7 +180,9 @@ def native_verification(source, *, producer_gym, log_path):
             or result.get('corpus_identity') != source.corpus_content_hash
             or result.get('training_admitted') is not False):
         raise ValueError('SUPERVISION_NATIVE_RECEIPT_MISMATCH')
-    return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,
+    if frozen_producer_audit(producer_gym)!=producer_audit:
+        raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
+    return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,
                 seconds=time.monotonic() - began, log_sha256=digest(log_path), result=result)
 
 

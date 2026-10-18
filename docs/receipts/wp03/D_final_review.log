@@ -1,0 +1,29 @@
+..............................F
+=================================== FAILURES ===================================
+_ test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-449/test_B14_real_native_quality_s0')
+
+    def test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions(tmp_path):
+        import pandas as pd
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_strict import QualityStrictTeacher
+        from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+        from gym_trading_env.research.fg_s3_e_quality_corpus import l1_labeler
+        factory,_,profile=native_factory(tmp_path/'market',minutes=8)
+        market=tmp_path/'market/market.csv';data=pd.read_csv(market)
+        for key in ('Open','High','Low','Close'):data[key]=1000.
+        data.to_csv(market,index=False)
+        profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=digest(market)
+        env=factory();source=dict(fold='TRAIN',calendar_complete=True)
+        strict=QualityStrictTeacher(env,source=source);facts=NativeQualityTeacher(env,factory,fold='TRAIN',source=source)
+        try:
+            label=l1_labeler(facts,strict)(env,None,None)
+>           assert label['L2']['teacher_valid'] and label['L2']['tie'] and label['L2']['strict_action']==0
+E           assert (True and False)
+
+tests/entry_v1/test_wp03_join.py:197: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp03_join.py::test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 30 passed in 15.36s

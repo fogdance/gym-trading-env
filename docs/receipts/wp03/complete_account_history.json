@@ -1,0 +1,80 @@
+{
+  "status": "PASS",
+  "source_corpus": "/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04",
+  "native_replay_receipt": "native_verification.json",
+  "accounts": {
+    "P0": {
+      "sha256": "874c9d6b12fef107e0264c63394048016cbeb6f39766943f60cb260f91431f91",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 0,
+      "trade_history_events": 0,
+      "reward_events": 0
+    },
+    "P1": {
+      "sha256": "da1dac4b3687727b0989c6767d72c177a8f8d11644ae5f09825ecd421d00ef8e",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 21,
+      "trade_history_events": 42,
+      "reward_events": 32
+    },
+    "P2_low": {
+      "sha256": "80cd3c713c44ce147e0b0123dffa4237d1645561408c30b118c25d04779bd5ff",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 12,
+      "trade_history_events": 24,
+      "reward_events": 19
+    },
+    "P2_mid": {
+      "sha256": "db98bc596457dd009d08a9097001433c47b7a5bc471f317eaf32bf9b561fc6b4",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 22,
+      "trade_history_events": 44,
+      "reward_events": 31
+    },
+    "P3": {
+      "sha256": "a813b4d3136cb940e9fca192950ae5ffd8c9eeef062ef9e8a0e9aa1a3cbee652",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 10,
+      "trade_history_events": 20,
+      "reward_events": 14
+    },
+    "P4": {
+      "sha256": "2d922b25914e5685e3e8459e21b43a52e1f086cf8d9bb2d45c033d47dca31155",
+      "current_step": 31259,
+      "cursor_time": "2021-12-09 15:00:00+08:00",
+      "status": "MAIN_ROLL",
+      "terminated": true,
+      "open_entries": 0,
+      "equity_history_rows": 62519,
+      "closed_trade_profits_rows": 54,
+      "trade_history_events": 108,
+      "reward_events": 54
+    }
+  },
+  "trade_history_events_are_not_trade_count": true
+}

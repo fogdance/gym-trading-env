@@ -165,3 +165,51 @@ def test_B12_mae_does_not_change_score_and_nan_is_rejected_before_loss(corpus):
     assert changed['quality_score']==original['quality_score']
     label['L1']['score']=float('nan')
     with pytest.raises(ValueError):project_label(label,row,{'action_mask':np.ones(2,np.float32)},'1'*64)
+
+
+@pytest.mark.parametrize('reason',['FORCED_WAIT_POSITION','FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE',
+                                  'ADD_RIGHT_CENSORED','NO_ACTIVE_DECISION'])
+def test_B13_invalid_strict_reasons_never_become_valid_wait(corpus,reason):
+    row=next(r for r in iter_sidecar(corpus/'policies/P0') if not r['reset'] and r['teacher']['L1']['score_valid'])
+    label=copy.deepcopy(row['teacher']);strict=label['L2'];strict.pop('content_hash')
+    strict.update(teacher_valid=False,strict_action=None,tie=None,action_value_add=None,
+                  action_value_wait=None,margin=None,reason=reason)
+    label['L2']=signed(strict);label.pop('content_hash');label=signed(label)
+    out=project_label(label,row,{'action_mask':np.ones(2,np.float32)},'1'*64)
+    assert not out['teacher_valid'] and out['quality_score_valid']
+
+
+def test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions(tmp_path):
+    import pandas as pd
+    from wp02_fixture import native_factory
+    from gym_trading_env.research.fg_s3_e_quality_strict import QualityStrictTeacher
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    from gym_trading_env.research.fg_s3_e_quality_corpus import l1_labeler
+    factory,_,profile=native_factory(tmp_path/'market',minutes=8)
+    market=tmp_path/'market/market.csv';data=pd.read_csv(market)
+    for key in ('Open','High','Low','Close'):data[key]=1000.
+    # Flat prices still incur the native MAIN_ROLL reward when ADD fills.
+    # Insufficient next-bar volume makes ADD genuinely unfilled and identical
+    # to WAIT, while both current published actions remain legal.
+    data['Volume']=1.
+    data.to_csv(market,index=False)
+    profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=digest(market)
+    env=factory();source=dict(fold='TRAIN',calendar_complete=True)
+    strict=QualityStrictTeacher(env,source=source);facts=NativeQualityTeacher(env,factory,fold='TRAIN',source=source)
+    try:
+        label=l1_labeler(facts,strict)(env,None,None)
+        assert label['L2']['teacher_valid'] and label['L2']['tie'] and label['L2']['strict_action']==0
+        row=dict(decision_executed=True,decision_valid_minute=True,reset=False,is_first=False,is_last=False,is_terminal=False)
+        out=project_label(label,row,{'action_mask':env._published_mask},'1'*64)
+        assert out['teacher_valid'] and out['teacher_action']==0
+        assert not out['quality_outcome_valid'] and not out['quality_score_valid']
+        out=project_label(label,row,{'action_mask':np.array([1,0],np.float32)},'1'*64)
+        assert not out['teacher_valid']
+        from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior,behavior_specs
+        trace,receipt=generate_behavior(factory,behavior_specs()[0],tmp_path/'tie_trace',
+            __import__('pathlib').Path(__file__).resolve().parents[3]/'dreamerv3',source=source,strict=strict)
+        assert receipt['status']=='PASS'
+        assert any(r['teacher']['L2']['teacher_valid'] and r['teacher']['L2']['tie']
+                   and not r['teacher']['L1']['immediate_outcome_verified']
+                   for r in iter_sidecar(tmp_path/'tie_trace'))
+    finally:facts.close();env.close()

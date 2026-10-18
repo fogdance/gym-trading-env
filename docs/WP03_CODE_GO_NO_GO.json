@@ -1,0 +1,59 @@
+{
+  "protocol": "WP03_IMPLEMENTATION_DECISION_V1",
+  "scope": "CPU_READER_IMPLEMENTATION_REVIEW_ONLY",
+  "branch": "feat/s3-e-quality-wp03-v2-20261016",
+  "gym_base": "e57189bad100465c9fee8d9bbb5601f3e5c376ad",
+  "dreamer_head": "446d1bc99debd2d05c313eafd7d0c414ebd2815c",
+  "gym_final_commit": "This document is in Commit D; full final SHA is in receipts/wp03/release_lock.json after commit.",
+  "WP03_CODE_GO": "GO",
+  "WP03_REAL_TRAIN_DATA_GO": "GO",
+  "WP03_CURRICULUM_SUPPORT": "LIMITED",
+  "requested_window_support": "SUPPORTED_FOR_REQUESTED_WINDOWS",
+  "E_QUALITY_FORMAL_TRAIN_GO": "NO_GO",
+  "training_admitted": false,
+  "prepared_certified": false,
+  "checkpoint_certified": false,
+  "PredictionAdmission": false,
+  "QAdmission": false,
+  "DecisionAdmission": false,
+  "final_tests": {
+    "PASS": 177,
+    "FAIL": 0,
+    "ERROR": 0,
+    "SKIP": 0
+  },
+  "native_G3": "GO",
+  "final_reader_exit_code": 0,
+  "identity": {
+    "protocol": "FG_S3_E_QUALITY_SUPERVISION_V1",
+    "corpus_identity": "640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9",
+    "course_identity": "14cadcdaaa7d96bc0f33f491ef38741494957ee8e7423a1ba5bf598fe230baba",
+    "teacher_identity": "092d822e5975fdece9f181bb7bf27447a0d2e1923aa93d119b01ef869e56bad6",
+    "observation_contract": "5ca333e52049bf5bdfe0bf18f5519e65766363c946648bdd1f45b525558052b8",
+    "source_lock": "ba359d42ace3439aab97c848dc7781cac635e2612b8aeb24525fce10099a017c"
+  },
+  "blockers": [
+    "WP04_WP07_STAGE_OPTIMIZERS_HANDOFF_AND_FORMAL_SOURCE_ADMISSION_NOT_IMPLEMENTED",
+    "PUBLIC_E_QUALITY_GUARD_CLOSED",
+    "FORMAL_TRAINING_NOT_AUTHORIZED",
+    "ONE_CONTRACT_TWO_DAYS_ONLY"
+  ],
+  "not_run": [
+    "GPU",
+    "formal_training",
+    "optimizer_update",
+    "formal_Prepared_Checkpoint_certification",
+    "WP04_WP07_runtime_lifecycle",
+    "TEST_prices",
+    "18_contract_production",
+    "full_project_suite",
+    "student_policy_performance_evaluation"
+  ],
+  "evidence": {
+    "native": "receipts/wp03/native_verification.json",
+    "tests": "receipts/wp03/D_release_final.json",
+    "reader": "WP03_COURSE_READER_COVERAGE.json",
+    "loss": "WP03_CPU_FORWARD_LOSS_EVIDENCE.json",
+    "reverse_review": "WP03_SOURCE_REVIEW.md"
+  }
+}

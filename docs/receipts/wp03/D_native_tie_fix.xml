@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.186" timestamp="2026-10-16T22:57:39.399511+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp03_join" name="test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions" time="1.633"><failure message="ValueError: Corpus strict action is not an independently valid legal decision">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-450/test_B14_real_native_quality_s0')
+
+    def test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions(tmp_path):
+        import pandas as pd
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_strict import QualityStrictTeacher
+        from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+        from gym_trading_env.research.fg_s3_e_quality_corpus import l1_labeler
+        factory,_,profile=native_factory(tmp_path/'market',minutes=8)
+        market=tmp_path/'market/market.csv';data=pd.read_csv(market)
+        for key in ('Open','High','Low','Close'):data[key]=1000.
+        # Flat prices still incur the native MAIN_ROLL reward when ADD fills.
+        # Insufficient next-bar volume makes ADD genuinely unfilled and identical
+        # to WAIT, while both current published actions remain legal.
+        data['Volume']=1.
+        data.to_csv(market,index=False)
+        profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=digest(market)
+        env=factory();source=dict(fold='TRAIN',calendar_complete=True)
+        strict=QualityStrictTeacher(env,source=source);facts=NativeQualityTeacher(env,factory,fold='TRAIN',source=source)
+        try:
+&gt;           label=l1_labeler(facts,strict)(env,None,None)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp03_join.py:200: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_corpus.py:39: in label
+    return validate_corpus_label(value)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+label = {'protocol': 'FG_S3_E_QUALITY_TEACHER_V2', 'fold': 'TRAIN', 'state_id': 'ce880fdbe89d1e89320fdd9f111f4bdd1d01e7d4ee9f601a997b0b33c9f0db47', 'account_snapshot_hash': '070d0c1ecac36712a082eb677227ca9b873c99c79f272b90aab37aa4c8287303', ...}
+
+    def validate_corpus_label(label):
+        """Validate the new corpus envelope, without granting legacy TRAIN joins.
+    
+        These hashes establish internal integrity. The corpus verifier separately
+        authenticates sources and re-executes every native L1/L2 query. Existing
+        validate_label/attach_quality still require their original admission.
+        """
+        from fractions import Fraction
+        from .fg_s3_quality_score import quality_for_exit
+        def intact(value):
+            return fingerprint({k:v for k,v in value.items() if k!='content_hash'})==value.get('content_hash')
+        if (not intact(label) or label.get('protocol')!='FG_S3_E_QUALITY_TEACHER_V2'
+                or label.get('fold')!='TRAIN' or any(label.get(k) is not False for k in
+                ('quality_q_v2_valid','prediction_admitted','decision_admitted'))):
+            raise ValueError('Corpus label identity or independent admission differs')
+        facts,strict=label['L1'],label['L2']
+        if (not intact(facts) or facts.get('protocol')!='FG_S3_QUALITY_TEACHER_V1'
+                or facts.get('score_policy')!='FG_S3_QUALITY_TP_MARKET_DAY_V1'
+                or facts.get('fold')!='TRAIN' or facts.get('training_action_label_allowed') is not False
+                or facts.get('state_id')!=label['state_id']
+                or facts.get('account_snapshot_hash')!=label['account_snapshot_hash']):
+            raise ValueError('Corpus L1 native owner/proof differs')
+        for key,shape in (('event',(7,)),('event_valid',(7,)),('touch',(4,2)),
+                          ('touch_valid',(4,2)),('adverse',(4,)),('adverse_valid',(4,))):
+            if np.asarray(facts[key]).shape!=shape:raise ValueError('Corpus L1 horizon shape differs')
+        if facts.get('score_valid'):
+            reason={'TP5':'TAKE_PROFIT','SL30':'STOP_LOSS'}.get(facts.get('exit_type'))
+            if not reason or not facts.get('immediate_outcome_verified'):
+                raise ValueError('Corpus L1 score has no completed native outcome')
+            expected,_=quality_for_exit(reason,facts['held_market_minutes'],facts['crossed_trading_days'])
+            event=facts.get('native_event')
+            if (facts['score']!=expected or not event or fingerprint(event)!=facts.get('native_event_hash')
+                    or event['reason']!=reason or event['net_trade_pnl']!=facts['net_pnl']
+                    or event['held_market_bars']!=facts['held_market_minutes']):
+                raise ValueError('Corpus L1 score differs from native Quality settlement')
+        if strict.get('teacher_valid'):
+            if (not intact(strict) or strict.get('protocol')!='FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
+                    or strict.get('account_snapshot_hash')!=label['account_snapshot_hash']
+                    or not facts['actual_legal_wait'] or not facts['actual_legal_add']
+                    or facts.get('invalid_reason') or not strict.get('suffix_boundary_identity')):
+&gt;               raise ValueError('Corpus strict action is not an independently valid legal decision')
+E               ValueError: Corpus strict action is not an independently valid legal decision
+
+src/gym_trading_env/research/fg_s3_quality_catalog_v2.py:92: ValueError</failure></testcase></testsuite></testsuites>

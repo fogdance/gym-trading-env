@@ -1,0 +1,46 @@
+{
+  "full": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "log": "D_diff_check_full.log"
+  },
+  "editable_code_tests_and_authored_docs": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      "docs/FG_S3_E_Quality_Master_Roadmap_20261016_V2.md",
+      "docs/WP03_ACCEPTANCE_MATRIX.md",
+      "docs/WP03_CODE_GO_NO_GO.json",
+      "docs/WP03_COURSE_READER_COVERAGE.json",
+      "docs/WP03_CPU_FORWARD_LOSS_EVIDENCE.json",
+      "docs/WP03_DOCUMENT_INDEX.md",
+      "docs/WP03_IMPLEMENTATION_REVIEW.md",
+      "docs/WP03_REAL_TRAIN_COVERAGE.md",
+      "docs/WP03_SOURCE_ADMISSION_RECEIPT.json",
+      "docs/WP03_SOURCE_REVIEW.md",
+      "docs/WP03_TEACHER_JOIN_AUDIT.json",
+      "docs/WP03_TEST_COMMANDS.md",
+      "docs/WP03_WP02_INTERFACE_AUDIT.md",
+      "src/gym_trading_env/research/fg_s3_e_quality_checks.py",
+      "src/gym_trading_env/research/fg_s3_e_quality_supervision.py",
+      "src/gym_trading_env/research/fg_s3_quality_catalog_v2.py",
+      "tests/entry_v1/test_wp03_admission.py",
+      "tests/entry_v1/test_wp03_cli.py",
+      "tests/entry_v1/test_wp03_cpu_loss.py",
+      "tests/entry_v1/test_wp03_join.py",
+      "tests/entry_v1/test_wp03_reader.py",
+      "tools/fg_s3_e_quality_reader.py"
+    ],
+    "exit_code": 0,
+    "log": "D_diff_check_editable.log"
+  },
+  "raw_failure_logs_and_historical_docs_preserved_unchanged": true
+}

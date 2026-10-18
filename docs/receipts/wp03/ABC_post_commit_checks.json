@@ -1,0 +1,38 @@
+{
+  "scope": "post-commit review, not a claim of pre-commit command timing",
+  "checks": [
+    {
+      "argv": [
+        "git",
+        "show",
+        "--check",
+        "--format=fuller",
+        "bb0c9a37774108834db63091686ff861f963c383"
+      ],
+      "exit_code": 0,
+      "output": "commit bb0c9a37774108834db63091686ff861f963c383\nAuthor:     fogdance <kunming.xie@hotmail.com>\nAuthorDate: Fri Oct 16 22:01:00 2026 +0800\nCommit:     fogdance <kunming.xie@hotmail.com>\nCommitDate: Fri Oct 16 22:01:00 2026 +0800\n\n    WP03 A: separate development content checks from native supervision authority\n\n"
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "--check",
+        "--format=fuller",
+        "39b8348e7acb165fa6caaa5e74418effe3dc0ee5"
+      ],
+      "exit_code": 0,
+      "output": "commit 39b8348e7acb165fa6caaa5e74418effe3dc0ee5\nAuthor:     fogdance <kunming.xie@hotmail.com>\nAuthorDate: Fri Oct 16 22:10:20 2026 +0800\nCommit:     fogdance <kunming.xie@hotmail.com>\nCommitDate: Fri Oct 16 22:10:20 2026 +0800\n\n    WP03 B: project L1 L2 through native Replay Trace Sidecar account joins\n\n"
+    },
+    {
+      "argv": [
+        "git",
+        "show",
+        "--check",
+        "--format=fuller",
+        "98bdb40d13c72112adce17774e7a474aa820418a"
+      ],
+      "exit_code": 0,
+      "output": "commit 98bdb40d13c72112adce17774e7a474aa820418a\nAuthor:     fogdance <kunming.xie@hotmail.com>\nAuthorDate: Fri Oct 16 22:18:22 2026 +0800\nCommit:     fogdance <kunming.xie@hotmail.com>\nCommitDate: Fri Oct 16 22:18:22 2026 +0800\n\n    WP03 C: sample episode-safe native course windows with exact RNG restore\n\n"
+    }
+  ]
+}

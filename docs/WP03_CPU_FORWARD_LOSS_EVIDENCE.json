@@ -1,0 +1,88 @@
+{
+  "status": "PASS_CPU_LOSS_ONLY",
+  "scope": "NO_OPTIMIZER_UPDATE_OR_STAGE_ADMISSION",
+  "source": "FRESH_PARAMETERS_ONLY",
+  "batch_shape": [
+    1,
+    65,
+    20
+  ],
+  "loss": 0.4814442992210388,
+  "wm_loss": 602.4444580078125,
+  "actor_numeric_loss": 0.7979806065559387,
+  "strict_pair_count": 295,
+  "quality_pair_count": 256,
+  "teacher_changes_actor_gradient": true,
+  "teacher_does_not_change_actor_logits": true,
+  "actor_only_policy_future_label_isolation": true,
+  "all_invalid_loss_and_gradients_zero": true,
+  "old_q_soft_contribution_and_gradients_zero": true,
+  "exact_cold_agent_restore": true,
+  "parameters_and_optimizer_unchanged": true,
+  "actual_optimizer_updates": 0,
+  "prediction_admitted": false,
+  "decision_admitted": false,
+  "training_admitted": false,
+  "head_gradient_norms": {
+    "event": 0.12928430887289946,
+    "touch": 0.03074394747502972,
+    "adverse": 0.04868080321225312,
+    "score": 0.12185686861572989,
+    "q_c1": 0.0,
+    "q_v2": 0.0
+  },
+  "per_policy": {
+    "P0": {
+      "loss": 0.5338554978370667,
+      "strict_valid": 64,
+      "outcome_valid": 64,
+      "effective_stepid_hash": "e8ded938655294ce8111b31b256e0bd0482312183d8d08ef7ca17981aa8f32a5"
+    },
+    "P1": {
+      "loss": 0.5437631607055664,
+      "strict_valid": 4,
+      "outcome_valid": 8,
+      "effective_stepid_hash": "c36b169312ffeea41058a58ca520b3185942ec8b1cdabfdce7916a295db94048"
+    },
+    "P2_low": {
+      "loss": 0.5483224391937256,
+      "strict_valid": 2,
+      "outcome_valid": 2,
+      "effective_stepid_hash": "6066dedea9a7043a6218e6d52fef63e4be3c8d4b6861280dd850762331929402"
+    },
+    "P2_mid": {
+      "loss": 0.5299131274223328,
+      "strict_valid": 13,
+      "outcome_valid": 16,
+      "effective_stepid_hash": "bd8133f54b18803a01fa6726a3c16b121e67b445ccfca62dd36d9f86c8c723f2"
+    },
+    "P3": {
+      "loss": 0.5196218490600586,
+      "strict_valid": 26,
+      "outcome_valid": 26,
+      "effective_stepid_hash": "ec1334cc186f687aff6c3ce2b12bf0aedcd192ddb95f38f2a34209f6a140f222"
+    },
+    "P4": {
+      "loss": 0.5359836220741272,
+      "strict_valid": 53,
+      "outcome_valid": 53,
+      "effective_stepid_hash": "20bec159a84923909ae70d2df34be301cd3a09dc08ff507550114832c7eac661"
+    }
+  },
+  "negative_cases": {
+    "stepid_shift": {
+      "rejected": true,
+      "error": "INTERNAL: CpuCallback error: Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/tools/fg_s3_e_quality_reader.py\", line 17, in <module>\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 292, in main\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 251, in reader_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 154, in cpu_loss_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 66, in cpu_forward\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 26, in hidewrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 160, in purified\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 55, in forward\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 115, in training_loss_fn\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 301, in cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 273, in _cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 803, in cond_bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/dispatch.py\", line 88, in apply_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 332, in cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 190, in _python_pjit_helper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1739, in _pjit_call_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1721, in call_impl_cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1675, in _pjit_call_impl_python\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py\", line 333, in wrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py\", line 1277, in __call__\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py\", line 2777, in _wrapped_callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 159, in _callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 95, in debug_callback_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 262, in _flat_callback\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 112, in fail\nValueError: S3_V2_TEACHER_REPLAY_CONTEXT_SHIFT"
+    },
+    "old_q": {
+      "rejected": true,
+      "error": "INTERNAL: CpuCallback error: Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/tools/fg_s3_e_quality_reader.py\", line 17, in <module>\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 292, in main\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 251, in reader_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 157, in cpu_loss_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 66, in cpu_forward\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 26, in hidewrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 160, in purified\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 55, in forward\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 131, in training_loss_fn\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 301, in cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 273, in _cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 803, in cond_bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/dispatch.py\", line 88, in apply_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 332, in cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 190, in _python_pjit_helper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1739, in _pjit_call_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1721, in call_impl_cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1675, in _pjit_call_impl_python\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py\", line 333, in wrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py\", line 1277, in __call__\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py\", line 2777, in _wrapped_callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 159, in _callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 95, in debug_callback_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 262, in _flat_callback\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 128, in fail\nValueError: E_QUALITY_SUPERVISION_Q_SOFT_FORBIDDEN"
+    },
+    "soft": {
+      "rejected": true,
+      "error": "INTERNAL: CpuCallback error: Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/tools/fg_s3_e_quality_reader.py\", line 17, in <module>\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 292, in main\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 251, in reader_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 157, in cpu_loss_evidence\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 66, in cpu_forward\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 26, in hidewrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py\", line 160, in purified\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py\", line 55, in forward\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 131, in training_loss_fn\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 301, in cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 273, in _cond\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/lax/control_flow/conditionals.py\", line 803, in cond_bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/dispatch.py\", line 88, in apply_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/traceback_util.py\", line 180, in reraise_with_filtered_traceback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 332, in cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 190, in _python_pjit_helper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 2782, in bind\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 443, in bind_with_trace\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py\", line 949, in process_primitive\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1739, in _pjit_call_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1721, in call_impl_cache_miss\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/pjit.py\", line 1675, in _pjit_call_impl_python\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py\", line 333, in wrapper\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/pxla.py\", line 1277, in __call__\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py\", line 2777, in _wrapped_callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 159, in _callback\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 95, in debug_callback_impl\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py\", line 262, in _flat_callback\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016/dreamerv3/dreamerv3/fg_s3_v2_agent.py\", line 128, in fail\nValueError: E_QUALITY_SUPERVISION_Q_SOFT_FORBIDDEN"
+    }
+  },
+  "seconds": 49.59022566594649,
+  "content_hash": "49e2f9c2465e71abc3090322f30f009a15e8cccb59784b84f062b6d3aaa1d6d4"
+}
