@@ -1,0 +1,89 @@
+{
+  "status": "OBSERVED_COVERAGE_ONLY",
+  "corpus_identity": "636ceada845a4cf5c73be364584147acf99dff951ca52d40b3bd3191aafc7304",
+  "corpus_manifest_sha256": "5d253bc87e269026965434bb281203f5f5a3a1840797f3dedf9c4274f19544a5",
+  "reader_report_sha256": "a2ce0a0fd35d8f3ceeb8c7e0688b6e6efa393989f725f4718bd6ba1a859a8ffc",
+  "source_lock": "f9ca967767519776a12af2b02eb08dd4f05ed531f04c4cb4073ceec59d1cf0de",
+  "market_denominators": {
+    "unique_market_cursors": 5,
+    "unique_advanced_market_minutes": 4,
+    "unique_contract_official_days": 1,
+    "distinct_account_decision_states": 24
+  },
+  "candidate_occurrences": {
+    "L1_candidates": 21,
+    "outcome/OTHER_EXIT": 21
+  },
+  "unique_contract_cursor_support": {
+    "L1_candidates": 5,
+    "outcome/OTHER_EXIT": 5
+  },
+  "candidate_denominator": "account-state counterfactuals; overlapping metrics, not independent trades",
+  "projected_mask_denominator_physical_rows": 30,
+  "projected_mask_valid_counts": {
+    "event": [
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12
+    ],
+    "touch": [
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12
+    ],
+    "adverse": [
+      12,
+      12,
+      12,
+      12
+    ]
+  },
+  "projected_mask_valid_rates": {
+    "event": [
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4
+    ],
+    "touch": [
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4,
+      0.4
+    ],
+    "adverse": [
+      0.4,
+      0.4,
+      0.4,
+      0.4
+    ]
+  },
+  "event_window_order": [
+    5,
+    15,
+    60,
+    120,
+    240,
+    "entry_day_end",
+    "next_day_end"
+  ],
+  "actual_optimizer_exposures": 0,
+  "training_admitted": false,
+  "new_native_g3": "NOT_RUN_BY_THIS_REPORTER"
+}

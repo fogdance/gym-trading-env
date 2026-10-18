@@ -1,0 +1,39 @@
+{
+  "producer": {
+    "sha": "63f2f8c35d4f84d9dfd11d2bab8e4b4d2c6d876c",
+    "parents": "7366886f3b40bf74aa4485978ffcc97e39d0d53e",
+    "stat": "63f2f8c feat(corpus): scope TRAIN production with explicit CPU budgets and frozen pins\n .../research/fg_s3_e_quality_checks.py             |  12 ++-\n .../research/fg_s3_e_quality_corpus_cli.py         |  94 ++++++++++++----\n .../research/fg_s3_e_quality_supervision.py        |  46 ++++++--\n tests/entry_v1/test_corpus_production_controls.py  | 119 +++++++++++++++++++++\n tests/entry_v1/test_wp02_cli.py                    |   2 +-\n tools/fg_s3_e_quality_corpus.py                    |   2 +\n 6 files changed, 239 insertions(+), 36 deletions(-)\n"
+  },
+  "plan": {
+    "sha": "5873d22c7be78be5c2b556bd02551e56768ea7fe",
+    "parents": "63f2f8c35d4f84d9dfd11d2bab8e4b4d2c6d876c",
+    "stat": "5873d22 docs(corpus): lock scoped CPU20 TRAIN batches and user-operated production commands\n CORPUS_COVERAGE_REPORT.md                          |  113 +\n TRAIN_CORPUS_PRODUCTION_PLAN.md                    |  124 +\n docs/train_corpus_20261018/PLAN_SHA256SUMS         |   64 +\n docs/train_corpus_20261018/RUN_TRAIN_CORPUS.sh     |  138 +\n docs/train_corpus_20261018/audit_coverage.py       |  113 +\n .../batches/B01_FG809.manifest.json                |   45 +\n .../batches/B02_FG009.manifest.json                |   45 +\n .../batches/B03_FG209.manifest.json                |   45 +\n .../batches/B04_FG405.manifest.json                |   45 +\n .../evidence/CPU_BUDGET_REVISION.json              |   11 +\n .../evidence/DELIVERY_VALIDATION.json              |   12 +\n .../evidence/FROZEN_PRODUCER_AUDIT.json            |   13 +\n .../evidence/HOST_RESOURCES.json                   |   55 +\n .../evidence/SOURCE_INVENTORY.json                 | 2644 ++++++++++++++++++++\n .../evidence/VERIFICATION_SUMMARY.json             |  760 ++++++\n .../evidence/baseline_quality.json                 |  103 +\n .../evidence/baseline_reader.command.json          |   18 +\n .../evidence/baseline_reader.log                   |    1 +\n .../WP03_COURSE_READER_COVERAGE.json               | 2257 +++++++++++++++++\n .../WP03_SOURCE_ADMISSION_RECEIPT.json             |  123 +\n .../baseline_reader/WP03_TEACHER_JOIN_AUDIT.json   |  175 ++\n .../evidence/baseline_reader/join.json             |  175 ++\n .../evidence/cli/producer_generate.txt             |   23 +\n .../evidence/cli/producer_verify.txt               |    9 +\n .../evidence/cli/reader_source.txt                 |   18 +\n .../evidence/controls_after.xml                    |    1 +\n .../evidence/controls_before.xml.gz                |  Bin 0 -> 3224 bytes\n .../evidence/controls_final.xml                    |    1 +\n .../evidence/controls_review_final.xml             |    1 +\n .../evidence/regression_final.command.json         |   41 +\n .../evidence/regression_final.log                  |    3 +\n .../evidence/regression_final.xml                  |    1 +\n .../evidence/release_code_63f2f8c.command.json     |   51 +\n .../evidence/release_code_63f2f8c.log              |    3 +\n .../evidence/release_code_63f2f8c.xml              |    1 +\n .../evidence/shared_collection.json                |  105 +\n .../source_validation/B01_FG809.command.json       |   21 +\n .../source_validation/B01_FG809.stderr.log         |    2 +\n .../source_validation/B01_FG809.stdout.json        |    1 +\n .../source_validation/B02_FG009.command.json       |   21 +\n .../source_validation/B02_FG009.stderr.log         |    2 +\n .../source_validation/B02_FG009.stdout.json        |    1 +\n .../source_validation/B03_FG209.command.json       |   21 +\n .../source_validation/B03_FG209.stderr.log         |    2 +\n .../source_validation/B03_FG209.stdout.json        |    1 +\n .../source_validation/B04_FG405.command.json       |   21 +\n .../source_validation/B04_FG405.stderr.log         |    2 +\n .../source_validation/B04_FG405.stdout.json        |    1 +\n .../source_validation/CZCE_FG009.command.json      |   17 +\n .../source_validation/CZCE_FG009.stderr.log        |    2 +\n .../source_validation/CZCE_FG009.stdout.json       |    1 +\n .../source_validation/CZCE_FG209.command.json      |   17 +\n .../source_validation/CZCE_FG209.stderr.log        |    2 +\n .../source_validation/CZCE_FG209.stdout.json       |    1 +\n .../source_validation/CZCE_FG405.command.json      |   17 +\n .../source_validation/CZCE_FG405.stderr.log        |    2 +\n .../source_validation/CZCE_FG405.stdout.json       |    1 +\n .../source_validation/CZCE_FG809.command.json      |   17 +\n .../source_validation/CZCE_FG809.stderr.log        |    2 +\n .../source_validation/CZCE_FG809.stdout.json       |    1 +\n .../locks/B01_FG809.source_lock.json               |  200 ++\n .../locks/B02_FG009.source_lock.json               |  200 ++\n .../locks/B03_FG209.source_lock.json               |  200 ++\n .../locks/B04_FG405.source_lock.json               |  200 ++\n .../locks/EXECUTED_CODE_LOCK.json                  |  257 ++\n .../train_corpus_20261018/locks/IDENTITY_LOCK.json |  278 ++\n docs/train_corpus_20261018/locks/PRODUCER_PIN.json |   12 +\n 67 files changed, 8860 insertions(+)\n"
+  },
+  "integration_before": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "sha": "6939de5b43200e6f19311804ebf1739b01f12ba5",
+      "dirty": false
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "sha": "51ed1d094c92fc52a910acda3e2a3421bc71c9e5",
+      "dirty": false
+    }
+  },
+  "gym_merge_base": "6939de5b43200e6f19311804ebf1739b01f12ba5",
+  "gym_dependencies": [
+    "5873d22 docs(corpus): lock scoped CPU20 TRAIN batches and user-operated production commands",
+    "63f2f8c feat(corpus): scope TRAIN production with explicit CPU budgets and frozen pins",
+    "7366886 WP03 D: prove native TRAIN reader and fresh CPU losses with guarded evidence",
+    "98bdb40 WP03 C: sample episode-safe native course windows with exact RNG restore",
+    "39b8348 WP03 B: project L1 L2 through native Replay Trace Sidecar account joins",
+    "bb0c9a3 WP03 A: separate development content checks from native supervision authority",
+    "e57189b WP02 E: certify bounded TRAIN corpus, native replay and audit receipts",
+    "70a947d WP02 D: certify native Quality suffix values and generate full P4 accounts",
+    "48a7eba WP02 C: generate native P0-P3 accounts and isolated Quality facts",
+    "81c577d WP02 B: carry native E Quality V2 through Driver Replay and reconciliation",
+    "e99bb03 WP02 A: publish native E V2 causal partial MACD snapshots",
+    "2904f3e Add native read-only E Quality course preflight and fail-closed CLI"
+  ]
+}

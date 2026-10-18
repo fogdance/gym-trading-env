@@ -1,0 +1,6 @@
+{
+  "status": "EXPECTED_REJECTION",
+  "old_macd": "FG_S3_E_MACD5M_CAUSAL_V2",
+  "error": "COURSE_INVALID observation.macd_5m: requires exactly bucket, continuity, errors, histogram, incomplete_tail, initialization, interval_end_marker, invalid, partial, periods, scale, schema, warmup",
+  "old_corpus_modified": false
+}

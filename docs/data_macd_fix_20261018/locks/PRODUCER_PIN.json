@@ -1,0 +1,14 @@
+{
+  "protocol": "FG_S3_E_QUALITY_PRODUCER_PIN_V1",
+  "purpose": "Final CPU TRAIN Corpus producer with causal MACD V3; no training authority",
+  "repositories": {
+    "gym": {
+      "sha": "b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46"
+    },
+    "dreamer": {
+      "sha": "fd144113ce706e2d8f1ce8e7828ece0799c8bf7a"
+    }
+  },
+  "training_admitted": false,
+  "content_hash": "ad670a50c72b86e8530aa8b24f38de30decb4941b31bfcc93a2fbe268f147a7e"
+}

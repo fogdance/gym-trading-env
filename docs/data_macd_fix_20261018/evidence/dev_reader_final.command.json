@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_reader.py",
+    "read",
+    "--corpus",
+    "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/fg809_dev_smoke_v3_final",
+    "--out",
+    "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/dev_reader_final",
+    "--length",
+    "4",
+    "--seed",
+    "202",
+    "--without-model"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env",
+  "exit_code": 2,
+  "seconds": 2.860186939011328
+}

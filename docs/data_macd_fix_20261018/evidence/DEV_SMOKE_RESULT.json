@@ -1,0 +1,101 @@
+{
+  "status": "DEV_ONLY_NOT_CERTIFIED",
+  "corpus_root": "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/fg809_dev_smoke_v3_final",
+  "corpus_identity": "636ceada845a4cf5c73be364584147acf99dff951ca52d40b3bd3191aafc7304",
+  "manifest_sha256": "5d253bc87e269026965434bb281203f5f5a3a1840797f3dedf9c4274f19544a5",
+  "source_lock_hash": "f9ca967767519776a12af2b02eb08dd4f05ed531f04c4cb4073ceec59d1cf0de",
+  "course_identity": "236498452047aba8740f570d0d142728712a862ae0072a58962ba63aa59b6b47",
+  "teacher_identity": "b4f9855ca94e674124c103ad7881d891240275c856cdeda6a863343eaeb34cde",
+  "generation_repository_state": {
+    "gym": {
+      "sha": "5873d22c7be78be5c2b556bd02551e56768ea7fe",
+      "dirty": true
+    },
+    "dreamer": {
+      "sha": "446d1bc99debd2d05c313eafd7d0c414ebd2815c",
+      "dirty": true
+    }
+  },
+  "reader_repository_state": {
+    "gym": {
+      "sha": "b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "fd144113ce706e2d8f1ce8e7828ece0799c8bf7a",
+      "dirty": false
+    }
+  },
+  "native_reconciliation": {
+    "P0": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "e0cbe0e3a5cb1fca8146b9aa2c961a6436e04a630917fc7c4539fac3fae82aa6",
+      "teacher_labels_verified": 5,
+      "content_hash": "05041851c4e0fa7657fd8466ae58df4f32aac9554b9b6a1455fd37991dc28379"
+    },
+    "P1": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "5daf9f55263e810dc565ea4f32fd38f0416a48171e128903d372d7f48ee3913e",
+      "teacher_labels_verified": 5,
+      "content_hash": "9cfc671d4b9ce6a2d9ede69a47c931579d767a67ab806185bc13c181b2ffa49f"
+    },
+    "P2_low": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "c7522bb3abd47cfabe891a6ba14dae144710057fbbfcd2d2e3037a0ccb57b7e9",
+      "teacher_labels_verified": 5,
+      "content_hash": "2a0a8ab4e036fd40df3e51dfe341c2324bfc8a8b2258eadef8b782d23594bb62"
+    },
+    "P2_mid": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "00a1260892dbe92e8948ed1de44544e028958143c2a788c351dbdfd35d4dc4a3",
+      "teacher_labels_verified": 5,
+      "content_hash": "ea62fdcaa0a2e5ffb5a4b48d37de3270356dc0736d2398e9bf0ba45624aca221"
+    },
+    "P3": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "f6ec4ce86b9d74c2026e8975ea012d5664bb31b2689599d2376b65098fefefe3",
+      "teacher_labels_verified": 5,
+      "content_hash": "af511a47629c08703f244f2973e29475d30c16571dc29c1cb30f5f8962ff1945"
+    },
+    "P4": {
+      "status": "PASS",
+      "records": 5,
+      "account_restores": 0,
+      "replay_trace_hash": "fab9f2d2f855869b8b93568096dba1e46fd1bf8ebc9643cdc85aec6a4282d8ea",
+      "teacher_labels_verified": 5,
+      "content_hash": "fafff05ddf554814be6d38ff6cc82d0609e0098c65af12f6e0b1d3e98a5dd6e5"
+    }
+  },
+  "physical_replay_rows": 30,
+  "student_macd_rows_checked": 30,
+  "macd_shape": [
+    4
+  ],
+  "market_denominators": {
+    "unique_market_cursors": 5,
+    "unique_advanced_market_minutes": 4,
+    "unique_contract_official_days": 1,
+    "distinct_account_decision_states": 24
+  },
+  "projected_strict_labels": {
+    "valid": 12,
+    "ADD": 0,
+    "WAIT": 12
+  },
+  "reader_status": "PASS_READER_ONLY",
+  "curriculum_support": "LIMITED",
+  "reader_index_sha256": "9cbcd6a92608dac8e09b9273c9deb7ddd2a3047b4a9f3ae852580332959ab52e",
+  "native_g3": "NOT_RUN",
+  "optimizer_updates": 0,
+  "content_hash": "33532f704f6f974110ff95e470382b06241d49abf78b8305c09731dc386cfe61"
+}

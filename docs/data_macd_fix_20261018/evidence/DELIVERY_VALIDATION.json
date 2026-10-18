@@ -1,0 +1,11 @@
+{
+  "status": "PASS_STATIC_DELIVERY_CHECKS",
+  "runtime_files": 242,
+  "batch_plans": 4,
+  "historical_package": "UNCHANGED_64_FILES",
+  "new_formal_root_exists": false,
+  "prepare": "NOT_RUN",
+  "formal_generation": "NOT_RUN",
+  "cpu20_runtime_verification": "NOT_RUN_PER_USER_REQUEST",
+  "optimizer_updates": 0
+}

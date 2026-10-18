@@ -1,0 +1,27 @@
+{
+  "contract": "CZCE.FG809",
+  "source_sha256": "061b3314df0d4bf52394b263754c4b0494e609ae0df76f1b4a4c36b7bdd89f62",
+  "rows": 28264,
+  "zero_duration": 3,
+  "zero_at_session_end": 3,
+  "zeros": [
+    {
+      "time": "2018-05-16 10:15:00+08:00",
+      "session_end": true,
+      "volume": 1990.0,
+      "close": 1359.0
+    },
+    {
+      "time": "2018-05-16 11:30:00+08:00",
+      "session_end": true,
+      "volume": 578.0,
+      "close": 1368.0
+    },
+    {
+      "time": "2018-07-05 11:30:00+08:00",
+      "session_end": true,
+      "volume": 22.0,
+      "close": 1457.0
+    }
+  ]
+}

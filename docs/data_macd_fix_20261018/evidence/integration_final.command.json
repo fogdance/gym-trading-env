@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "tests/entry_v1/test_macd_dated_tail.py",
+    "tests/entry_v1/test_wp02_macd.py",
+    "tests/entry_v1/test_wp03_cli.py::test_D14_reader_diagnostic_reports_missing_pair_support_without_inventing_samples",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/integration_final.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "env": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "exit_code": 0,
+  "passed": 19,
+  "junit_sha256": "96941df901ce76a914940ff274a8d55b8d525cffe4c68b89e43867d788966dc0"
+}

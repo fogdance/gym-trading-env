@@ -1,0 +1,1045 @@
+{
+  "protocol": "FG_S3_E_QUALITY_COVERAGE_V2",
+  "behaviors": {
+    "P0": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 4,
+        "filled_add": 0,
+        "voluntary_wait": 4,
+        "forced_wait": 0,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 5,
+        "l1_candidates": 5,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 5,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 5,
+        "underwater_full_valid": 5,
+        "mae_5_complete": 5,
+        "mae_60_complete": 5,
+        "mae_240_complete": 5,
+        "mae_15_complete": 5,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 5,
+        "early10_5_positive": 0,
+        "early10_15_valid": 5,
+        "early10_15_positive": 0,
+        "executed_right_censored": 0
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": null,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 5,
+          "p50": 6.0,
+          "p90": 7.0,
+          "minimum": 4.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 5,
+          "p50": 9.0,
+          "p90": 10.0,
+          "minimum": 6.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 5,
+          "p50": 11.0,
+          "p90": 12.0,
+          "minimum": 8.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 4,
+          "p50": 223.5,
+          "p90": 308.4,
+          "minimum": 138,
+          "maximum": 309
+        },
+        "underwater_minutes": {
+          "n": 5,
+          "p50": 338.0,
+          "p90": 339.6,
+          "minimum": 215,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 5,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 56,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 4,
+          "filled_add": 0,
+          "strict_valid": 5,
+          "l1_candidates": 5,
+          "l1_outcome/OTHER_EXIT": 5
+        }
+      },
+      "trace_hash": "e0cbe0e3a5cb1fca8146b9aa2c961a6436e04a630917fc7c4539fac3fae82aa6"
+    },
+    "P1": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 1,
+        "filled_add": 1,
+        "voluntary_wait": 0,
+        "forced_wait": 3,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 1,
+        "l1_candidates": 1,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 1,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 1,
+        "underwater_full_valid": 1,
+        "mae_5_complete": 1,
+        "mae_60_complete": 1,
+        "mae_240_complete": 1,
+        "mae_15_complete": 1,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 1,
+        "early10_5_positive": 0,
+        "early10_15_valid": 1,
+        "early10_15_positive": 0,
+        "executed_right_censored": 1
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": 0.0,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 1,
+          "p50": 7.0,
+          "p90": 7.0,
+          "minimum": 7.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 1,
+          "p50": 8.0,
+          "p90": 8.0,
+          "minimum": 8.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 1,
+          "p50": 8.0,
+          "p90": 8.0,
+          "minimum": 8.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 1,
+          "p50": 10.0,
+          "p90": 10.0,
+          "minimum": 10.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 1,
+          "p50": 12.0,
+          "p90": 12.0,
+          "minimum": 12.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 1,
+          "p50": 140.0,
+          "p90": 140.0,
+          "minimum": 140,
+          "maximum": 140
+        },
+        "underwater_minutes": {
+          "n": 1,
+          "p50": 340.0,
+          "p90": 340.0,
+          "minimum": 340,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 1,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 280,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 1,
+          "filled_add": 1,
+          "strict_valid": 1,
+          "l1_candidates": 1,
+          "l1_outcome/OTHER_EXIT": 1
+        }
+      },
+      "trace_hash": "5daf9f55263e810dc565ea4f32fd38f0416a48171e128903d372d7f48ee3913e"
+    },
+    "P2_low": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 3,
+        "filled_add": 1,
+        "voluntary_wait": 2,
+        "forced_wait": 1,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 3,
+        "l1_candidates": 3,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 3,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 3,
+        "underwater_full_valid": 3,
+        "mae_5_complete": 3,
+        "mae_60_complete": 3,
+        "mae_240_complete": 3,
+        "mae_15_complete": 3,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 3,
+        "early10_5_positive": 0,
+        "early10_15_valid": 3,
+        "early10_15_positive": 0,
+        "executed_right_censored": 1
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": 0.0,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 3,
+          "p50": 7.0,
+          "p90": 7.0,
+          "minimum": 6.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 3,
+          "p50": 8.0,
+          "p90": 8.0,
+          "minimum": 7.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 3,
+          "p50": 8.0,
+          "p90": 8.0,
+          "minimum": 7.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 3,
+          "p50": 10.0,
+          "p90": 10.0,
+          "minimum": 9.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 3,
+          "p50": 12.0,
+          "p90": 12.0,
+          "minimum": 11.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 3,
+          "p50": 140.0,
+          "p90": 275.2,
+          "minimum": 138,
+          "maximum": 309
+        },
+        "underwater_minutes": {
+          "n": 3,
+          "p50": 339.0,
+          "p90": 339.8,
+          "minimum": 338,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 3,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 280,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 3,
+          "filled_add": 1,
+          "strict_valid": 3,
+          "l1_candidates": 3,
+          "l1_outcome/OTHER_EXIT": 3
+        }
+      },
+      "trace_hash": "c7522bb3abd47cfabe891a6ba14dae144710057fbbfcd2d2e3037a0ccb57b7e9"
+    },
+    "P2_mid": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 2,
+        "filled_add": 1,
+        "voluntary_wait": 1,
+        "forced_wait": 2,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 2,
+        "l1_candidates": 2,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 2,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 2,
+        "underwater_full_valid": 2,
+        "mae_5_complete": 2,
+        "mae_60_complete": 2,
+        "mae_240_complete": 2,
+        "mae_15_complete": 2,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 2,
+        "early10_5_positive": 0,
+        "early10_15_valid": 2,
+        "early10_15_positive": 0,
+        "executed_right_censored": 1
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": 0.0,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 2,
+          "p50": 6.5,
+          "p90": 6.9,
+          "minimum": 6.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 2,
+          "p50": 7.5,
+          "p90": 7.9,
+          "minimum": 7.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 2,
+          "p50": 7.5,
+          "p90": 7.9,
+          "minimum": 7.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 2,
+          "p50": 9.5,
+          "p90": 9.9,
+          "minimum": 9.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 2,
+          "p50": 11.5,
+          "p90": 11.9,
+          "minimum": 11.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 2,
+          "p50": 224.5,
+          "p90": 292.1,
+          "minimum": 140,
+          "maximum": 309
+        },
+        "underwater_minutes": {
+          "n": 2,
+          "p50": 339.5,
+          "p90": 339.9,
+          "minimum": 339,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 2,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 280,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 2,
+          "filled_add": 1,
+          "strict_valid": 2,
+          "l1_candidates": 2,
+          "l1_outcome/OTHER_EXIT": 2
+        }
+      },
+      "trace_hash": "00a1260892dbe92e8948ed1de44544e028958143c2a788c351dbdfd35d4dc4a3"
+    },
+    "P3": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 4,
+        "filled_add": 0,
+        "voluntary_wait": 4,
+        "forced_wait": 0,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 5,
+        "l1_candidates": 5,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 5,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 5,
+        "underwater_full_valid": 5,
+        "mae_5_complete": 5,
+        "mae_60_complete": 5,
+        "mae_240_complete": 5,
+        "mae_15_complete": 5,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 5,
+        "early10_5_positive": 0,
+        "early10_15_valid": 5,
+        "early10_15_positive": 0,
+        "executed_right_censored": 0
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": null,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 5,
+          "p50": 6.0,
+          "p90": 7.0,
+          "minimum": 4.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 5,
+          "p50": 9.0,
+          "p90": 10.0,
+          "minimum": 6.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 5,
+          "p50": 11.0,
+          "p90": 12.0,
+          "minimum": 8.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 4,
+          "p50": 223.5,
+          "p90": 308.4,
+          "minimum": 138,
+          "maximum": 309
+        },
+        "underwater_minutes": {
+          "n": 5,
+          "p50": 338.0,
+          "p90": 339.6,
+          "minimum": 215,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 5,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 56,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 4,
+          "filled_add": 0,
+          "strict_valid": 5,
+          "l1_candidates": 5,
+          "l1_outcome/OTHER_EXIT": 5
+        }
+      },
+      "trace_hash": "f6ec4ce86b9d74c2026e8975ea012d5664bb31b2689599d2376b65098fefefe3"
+    },
+    "P4": {
+      "counts": {
+        "replay_rows": 5,
+        "advanced": 4,
+        "valid_market_minutes": 4,
+        "macd_valid_slots": 5,
+        "legal_add_opportunities": 4,
+        "filled_add": 0,
+        "voluntary_wait": 4,
+        "forced_wait": 0,
+        "nonexecuted_proposals": 1,
+        "strict_valid": 5,
+        "l1_candidates": 5,
+        "l1_outcome/TP5": 0,
+        "l1_outcome/SL30": 0,
+        "l1_outcome/OTHER_EXIT": 5,
+        "l1_outcome/RIGHT_CENSORED": 0,
+        "executed_exit/TAKE_PROFIT": 0,
+        "executed_exit/STOP_LOSS": 0,
+        "executed_exit/OTHER": 0,
+        "strict_action/0": 5,
+        "underwater_full_valid": 5,
+        "mae_5_complete": 5,
+        "mae_60_complete": 5,
+        "mae_240_complete": 5,
+        "mae_15_complete": 5,
+        "l1_same_day_tp": 0,
+        "l1_cross_day_tp": 0,
+        "early10_5_valid": 5,
+        "early10_5_positive": 0,
+        "early10_15_valid": 5,
+        "early10_15_positive": 0,
+        "executed_right_censored": 0
+      },
+      "closed_net_pnl_CNY": "0",
+      "closed_fees_CNY": "0",
+      "complete_exit_rate": null,
+      "distributions": {
+        "quality_score": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "tp_market_minutes": {
+          "n": 0,
+          "p50": null,
+          "p90": null,
+          "minimum": null,
+          "maximum": null
+        },
+        "mae_5": {
+          "n": 5,
+          "p50": 6.0,
+          "p90": 7.0,
+          "minimum": 4.0,
+          "maximum": 7.0
+        },
+        "mae_15": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_60": {
+          "n": 5,
+          "p50": 7.0,
+          "p90": 8.0,
+          "minimum": 4.0,
+          "maximum": 8.0
+        },
+        "mae_240": {
+          "n": 5,
+          "p50": 9.0,
+          "p90": 10.0,
+          "minimum": 6.0,
+          "maximum": 10.0
+        },
+        "mae_full": {
+          "n": 5,
+          "p50": 11.0,
+          "p90": 12.0,
+          "minimum": 8.0,
+          "maximum": 12.0
+        },
+        "first_adverse10_market_minutes": {
+          "n": 4,
+          "p50": 223.5,
+          "p90": 308.4,
+          "minimum": 138,
+          "maximum": 309
+        },
+        "underwater_minutes": {
+          "n": 5,
+          "p50": 338.0,
+          "p90": 339.6,
+          "minimum": 215,
+          "maximum": 340
+        },
+        "underwater_longest_minutes": {
+          "n": 5,
+          "p50": 280.0,
+          "p90": 280.0,
+          "minimum": 56,
+          "maximum": 280
+        },
+        "macd_dif": {
+          "n": 5,
+          "p50": -0.711174488067627,
+          "p90": -0.5906935572624207,
+          "minimum": -0.7660744190216064,
+          "maximum": -0.5469229817390442
+        },
+        "macd_signal": {
+          "n": 5,
+          "p50": -0.005470847245305777,
+          "p90": 0.018420614488422873,
+          "minimum": -0.016357537358999252,
+          "maximum": 0.027100350707769394
+        },
+        "macd_hist": {
+          "n": 5,
+          "p50": -0.7057036757469177,
+          "p90": -0.609114158153534,
+          "minimum": -0.7497168779373169,
+          "maximum": -0.5740233063697815
+        },
+        "raw_macd_dif": {
+          "n": 5,
+          "p50": -1.0432930021040647,
+          "p90": -0.867794426605451,
+          "minimum": -1.1230650818761205,
+          "maximum": -0.8039767627878973
+        },
+        "raw_macd_signal": {
+          "n": 5,
+          "p50": -0.008025733060111284,
+          "p90": 0.027073982039611456,
+          "minimum": -0.023980149014522445,
+          "maximum": 0.0398375148031222
+        },
+        "raw_macd_hist": {
+          "n": 5,
+          "p50": -1.0352672690439535,
+          "p90": -0.8948684086450625,
+          "minimum": -1.0990849328615981,
+          "maximum": -0.8438142775910196
+        }
+      },
+      "units": {
+        "quality_score": "0..100",
+        "tp_market_minutes": "valid_market_minutes",
+        "mae": "quoted_price_points",
+        "underwater": "valid_market_minutes",
+        "macd": "1000*raw/current_visible_close",
+        "raw_macd": "quoted_price_points"
+      },
+      "by_official_day_session": {
+        "2018-08-08|CZCE.FG809:2018-08-07T21:00:00+08:00": {
+          "replay_rows": 5,
+          "advanced_market_minutes": 4,
+          "legal_add_opportunities": 4,
+          "filled_add": 0,
+          "strict_valid": 5,
+          "l1_candidates": 5,
+          "l1_outcome/OTHER_EXIT": 5
+        }
+      },
+      "trace_hash": "fab9f2d2f855869b8b93568096dba1e46fd1bf8ebc9643cdc85aec6a4282d8ea"
+    }
+  },
+  "unique_market_cursors": 5,
+  "unique_advanced_market_minutes": 4,
+  "unique_contract_official_days": 1,
+  "distinct_account_decision_states": 24,
+  "optimizer_exposures": 0,
+  "teacher_labels_are_independent_market_samples": false,
+  "distribution_denominator": "observed L1 candidates, not executed trades; incomplete prefix MAE is observed exposure",
+  "content_hash": "10fdf1bbfdfa048bd4bc7166d6823575a7d353e16860317dd6dd6c95229c6039"
+}

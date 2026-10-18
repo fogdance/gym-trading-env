@@ -1,0 +1,21 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/e_data_v1/core.py", line 339, in macd_snapshot
+    self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
+  File "<stdin>", line 17, in push
+  File "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/src/gym_trading_env/utils/macd_5m_causal.py", line 45, in push
+    raise ValueError('MACD incomplete previous bucket')
+ValueError: MACD incomplete previous bucket
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 27, in <module>
+  File "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/src/gym_trading_env/envs/entry_env.py", line 697, in step
+    return self._get_obs(), reward, self.terminated, self.truncated, self._get_info()
+           ^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/src/gym_trading_env/envs/entry_env.py", line 398, in _get_obs
+    macd, macd_meta = self._e_market.macd_snapshot(cutoff)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/e_data_v1/core.py", line 343, in macd_snapshot
+    raise EDataError(str(exc)) from exc
+e_data_v1.core.EDataError: MACD incomplete previous bucket
