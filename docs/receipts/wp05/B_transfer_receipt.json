@@ -1306,7 +1306,10 @@
       }
     },
     "engineering_only": true,
-    "foundation_status": "FOUNDATION_NOT_TRAINED"
+    "foundation_status": "FOUNDATION_NOT_TRAINED",
+    "training_evidence": {
+      "status": "ENGINEERING_ONLY"
+    }
   },
   "engineering_only": true,
   "foundation_status": "FOUNDATION_NOT_TRAINED",
@@ -1919,5 +1922,5 @@
   "same_run_resume": false,
   "training_admitted": false,
   "nonopt_identity_hash": "d29ad0715ce098d6406bd76f25f65b69fdf981f7dc95ff8348d2bd0e102d54e1",
-  "content_hash": "74d61002bf9fb100f8348fb62d7723f2c4a593cfc78525ed7f9595b02ec16aba"
+  "content_hash": "ce2bfd610d4047e7f27d29aa36216094b63e9ecf8adf82b168b42d89e05092fc"
 }

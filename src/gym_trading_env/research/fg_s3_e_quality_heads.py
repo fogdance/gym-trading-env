@@ -95,6 +95,44 @@ def read_settings(path):
     from dreamerv3.configuration import read_config_yaml
     return validate_settings(read_config_yaml(_local_path(path)))
 
+def prepare(config,*,purpose='development',producer_gym=None):
+    from .fg_replay import signed,write_json,digest
+    from .fg_s3_e_quality_reader import build_join_index
+    settings=read_settings(config);out=Path(settings['prepared_dir'])
+    if out.exists():raise ValueError('F2_PREPARATION_OUTPUT_MUST_BE_NEW')
+    p=preflight(settings,purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+    joined=build_join_index(p.source,out/'join.sqlite')
+    from .fg_s3_e_quality_reader import EQualityCourseReader
+    reader=EQualityCourseReader.open(p.source,stage=SAMPLING_STAGE,sampling_spec=settings['sampling_spec'],seed=settings['model_init']['seed'],index_path=out/'join.sqlite')
+    try:support=F2WindowAdapter(reader,settings).validate_support()
+    finally:reader.close()
+    write_json(out/'settings.json',signed(dict(protocol=PROTOCOL,settings=p.settings)))
+    write_json(out/'f2_preparation.json',p.receipt)
+    write_json(out/'reader_binding.json',signed(dict(index_sha256=digest(out/'join.sqlite'),source_identity=p.source.receipt['content_identity'],join_report=joined,target_support=support)))
+    if p.source.native_result is not None:write_json(out/'native_verification.json',p.source.native_result)
+    return p.receipt
+
+def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_at=None):
+    if authorized is not True:raise ValueError('F2_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    import uuid
+    from .fg_replay import read_manifest,digest
+    from .fg_s3_e_quality_foundation import PROJECT
+    path=_local_path(path);settings=validate_settings(read_manifest(path/'settings.json')['settings'])
+    saved=read_manifest(path/'f2_preparation.json');binding=read_manifest(path/'reader_binding.json')
+    if saved['identity']['source_f1']['engineering_only']:raise ValueError('F2_FOUNDATION_NOT_TRAINED')
+    if saved['status']!='F2_DATA_READY':raise ValueError('F2_NATIVE_PREPARATION_REQUIRED')
+    if saved['identity']['code']!=execution_identity():raise ValueError('F2_PREPARED_CODE_CHANGED')
+    index=path/'join.sqlite'
+    if digest(index)!=binding['index_sha256']:raise ValueError('F2_PREPARED_INDEX_CHANGED')
+    root=Path(settings['run_dir'])
+    if not any(root.is_relative_to(p) for p in (PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))):raise ValueError('F2_RUN_DIRECTORY_INVALID')
+    audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp05/preflights'/uuid.uuid4().hex
+    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,log_path=audit/'native.log')
+    if current.receipt['identity']!=saved['identity'] or current.source.receipt['content_identity']!=binding['source_identity']:raise ValueError('F2_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
+    require_training_authority(current,authorized=True)
+    from embodied.run.fg_s3_e_quality_heads import HeadsRun
+    return HeadsRun(current,index,root,resume=resume,authorize_training=True).run(stop_at)
+
 def create_agent(settings,output,*,controlled_small=False):
     from embodied.run.fg_s3_source_transfer import _make_agent
     from dreamerv3.fg_s3_v2_agent import _S3V2Model
@@ -113,6 +151,42 @@ class F2WindowAdapter:
         if reader.stage!=SAMPLING_STAGE or reader.admission.source.stage!=STAGE:raise ValueError('F2_READER_STAGE_MISMATCH')
         self.reader,self.settings=reader,settings
         self.length=dimensions(settings['target_steps'],settings['burnin_steps'])
+        self.target_support=None
+
+    def validate_support(self):
+        """Prove target support in the existing index, without changing sampling.
+
+        HEADS_VALID alone covers K+T. A view whose only labels are in K would
+        otherwise consume/skip forever. Each requested sampling component must
+        have at least one enabled target loss; this check consumes no RNG/rows.
+        """
+        if self.target_support is not None:return self.target_support
+        self.reader._guard()
+        cfg=model_extensions(self.settings['target_steps'],self.settings['burnin_steps'],self.settings.get('prediction_weights'))
+        extract=lambda path:"COALESCE(json_extract(a.labels,'$."+path+"'),0)"
+        terms=[]
+        if cfg['quality_outcome_lambda']>0:
+            paths=([f'quality_event_valid[{h}]' for h in range(7)]+
+                [f'quality_touch_valid[{h}][{side}]' for h in range(4) for side in range(2)]+
+                [f'quality_adverse_valid[{h}]' for h in range(4)])
+            terms.extend(extract(path)+'=1' for path in paths)
+        if cfg['quality_score_lambda']>0:terms.append(extract('quality_score_valid')+'=1')
+        if cfg['quality_mono_lambda']>0:
+            terms.append('('+'+'.join(extract(f'quality_event_valid[{h}]') for h in range(5))+')>=2')
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        support={}
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM rows a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? AND ('+
+                ' OR '.join(terms)+')) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+            if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F2_TARGET_LOSS '+str(tag or self.reader.stage))
+            support[str(tag or 'NATURAL')]=True
+        self.target_support=dict(burnin_steps=self.settings['burnin_steps'],target_steps=self.settings['target_steps'],components=support)
+        return self.target_support
 
     def adapt(self,raw):
         import numpy as np
@@ -141,6 +215,7 @@ class F2WindowAdapter:
         return data,metadata
 
     def sample(self):
+        self.validate_support()
         state=self.reader.state_dict()
         try:return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))
         except BaseException:

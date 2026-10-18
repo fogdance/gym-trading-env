@@ -46,7 +46,7 @@ def test_D02_four_head_read_only_metrics_and_static_ablations(indexed):
   empty=score_batch(changed,out,5)
   assert empty['score_mae'] is None and empty['horizons']['0']['nll'] is None
   assert all(x['status']=='UNSUPPORTED' and x['auc'] is None for x in empty['binary_discrimination'].values())
-  Path('docs/receipts/wp05/D_diagnostics.json').write_text(json.dumps(dict(metrics=m,coverage=coverage,ablations=ab,updates=0),indent=2))
+  Path('docs/receipts/wp05/D_diagnostic_evidence.json').write_text(json.dumps(dict(metrics=m,coverage=coverage,ablations=ab,updates=0),indent=2))
  finally:r.close()
 
 @pytest.mark.parametrize('attack',['owner','shift','q','soft','valid_score','missing_support'])
@@ -90,4 +90,60 @@ def test_D04_visible_native_macd_and_context_reach_F2(indexed,tmp_path):
              and max(v['max_abs_logit_delta'].values())>0 for v in report.values())
   assert parameter_digests(a.params)==before
   Path('docs/receipts/wp05/D_visible_multiscale.json').write_text(json.dumps(report,indent=2))
+ finally:r.close()
+
+
+def test_D05_L2_and_invalid_Q_values_never_enter_F2_inputs(indexed):
+ r=reader(indexed,{'mode':'NATURAL'})
+ try:
+  raw=r.sample(1,12);adapter=F2WindowAdapter(r,indexed[1]);before,_=adapter.adapt(raw)
+  raw['teacher_action'][...]=1-raw['teacher_action'];raw['teacher_valid'][...]=~raw['teacher_valid']
+  raw['quality_q_c1'][...]=np.nan;raw['quality_q_v2'][...]=np.nan
+  after,_=adapter.adapt(raw)
+  assert all(before[k].tobytes()==after[k].tobytes() for k in before)
+  assert not any(k.startswith('teacher_') or k.startswith('quality_q') for k in after)
+ finally:r.close()
+
+def test_D06_burnin_only_labels_rejected_without_resampling_or_rng_change(indexed):
+ s={**indexed[1],'burnin_steps':90,'target_steps':8,'sampling_spec':{'mode':'NATURAL','policies':['P1']}}
+ r=reader(indexed,s['sampling_spec'])
+ try:
+  # Current native positive baseline supports normal K4/T8 in this same view.
+  assert F2WindowAdapter(r,{**s,'burnin_steps':4}).validate_support()['components']['NATURAL']
+  before=r.state_dict();raw=r.sample(1,98)
+  assert r._groups(98) and any(raw['quality_'+n+'_valid'].any() for n in ('event','touch','adverse','score'))
+  assert not any(raw['quality_'+n+'_valid'][:,91:].any() for n in ('event','touch','adverse','score'))
+  r.load_state_dict(before)
+  with pytest.raises(ValueError,match='INSUFFICIENT_CURRICULUM_SUPPORT: F2_TARGET_LOSS'):F2WindowAdapter(r,s).sample()
+  assert r.state_dict()==before
+ finally:r.close()
+
+def test_D07_target_support_guard_does_not_change_original_sampling(indexed):
+ r=reader(indexed,{'mode':'NATURAL'})
+ try:
+  state=r.state_dict();expected=r.sample(2,12);r.load_state_dict(state)
+  adapter=F2WindowAdapter(r,{**indexed[1],'batch_size':2});adapter.validate_support()
+  assert r.state_dict()==state
+  actual,_=adapter.sample()
+  from dreamerv3.fg_s3_e_quality_heads import LABELS
+  assert all(actual[k].tobytes()==expected[k].tobytes() for k in actual)
+ finally:r.close()
+
+@pytest.mark.parametrize('mode',['MIXED','STRATIFIED'])
+def test_D08_target_support_checks_each_explicit_sampling_component(indexed,mode):
+ spec={'mode':mode,'strata_weights':{'POLICY:P0':1.}}
+ if mode=='MIXED':spec['natural_weight']=.5
+ r=reader(indexed,spec)
+ try:
+  state=r.state_dict();report=F2WindowAdapter(r,{**indexed[1],'sampling_spec':spec}).validate_support()
+  assert report['components']['POLICY:P0'] and r.state_dict()==state
+ finally:r.close()
+
+@pytest.mark.parametrize('weights',[
+ {'quality_outcome_lambda':0.,'quality_mono_lambda':0.},
+ {'quality_score_lambda':0.,'quality_mono_lambda':0.},
+ {'quality_outcome_lambda':0.,'quality_score_lambda':0.}])
+def test_D09_target_support_matches_enabled_score_outcome_or_mono(indexed,weights):
+ r=reader(indexed,{'mode':'NATURAL'})
+ try:assert F2WindowAdapter(r,{**indexed[1],'prediction_weights':weights}).validate_support()['components']['NATURAL']
  finally:r.close()

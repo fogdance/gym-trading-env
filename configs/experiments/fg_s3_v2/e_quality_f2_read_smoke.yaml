@@ -1,0 +1,22 @@
+# Read-only diagnostic. No matching trained F1 exists; f2-prepare/start must refuse this source pairing.
+schema: FG_S3_E_QUALITY_F2_CONFIG_V1
+stage: QUALITY_HEADS
+sampling_stage: HEADS_VALID
+sampling_spec:
+  mode: NATURAL
+model_init:
+  seed: 202
+  presets:
+  - size1m
+batch_size: 1
+target_steps: 64
+burnin_steps: 32
+optimizer_updates: 4
+report_every_updates: 1
+save_every_updates: 2
+device: cpu
+corpus_root: /home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04
+prepared_dir: /home/v/Documents/work/research/fg-s3-e-quality-wp05-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp05/real_read_prepared_NOT_CREATED
+run_dir: /home/v/Documents/work/research/fg-s3-e-quality-wp05-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp05/real_read_run_NOT_CREATED
+source_f1_run: /home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_restore_review_final/wp04_cold0/continuous
+source_f1_checkpoint: /home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_restore_review_final/wp04_cold0/continuous/ckpt/step_000000000004

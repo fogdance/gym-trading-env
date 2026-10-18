@@ -1,0 +1,6 @@
+{
+  "before": "F_real_read_01",
+  "after": "F_real_read_02",
+  "all_policy_reports_and_parameter_hashes_equal": true,
+  "real_TRAIN_updates": 0
+}

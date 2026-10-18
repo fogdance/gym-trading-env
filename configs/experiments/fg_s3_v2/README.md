@@ -723,3 +723,18 @@ E+Quality prepare/start/resume/evaluate keep their existing public Guard.
 随机窗口不传递 carry；原首帧 prefix 后 K 步 detached burn-in，仅 T 步产生 WM 目标。K 是有限历史近似。原优化器第一次学习率因 canonical warmup 为 0，参数变化以第二步及后续更新验证。Actor/Quality/原 Critic 及其 optimizer slots 精确冻结，旧公开 E+Quality、Prediction/Q/Decision Guard 保持关闭。
 
 新离线 F1 Checkpoint 不能作为旧模型/在线 Replay 的同 Run resume。必须同代码、同模型、同 B/T/K/seed/loss/optimizer、同 source/index/Reader 规范和同包版本恢复；坏的最新 F1 bundle 不自动回滚至 step 0。CPU 精确冷恢复证据及未运行项见 `docs/WP04_IMPLEMENTATION_REVIEW.md`。
+
+## WP05 F2 Quality heads
+
+Use the same tools/fg_s3_v2_experiment.py entry. `e_quality_f2_template.yaml` is an explicit template, not an admitted training budget or source. F1 must be genuinely completed and trained; all non-opt parameters inherit, new optimizer/counters/HEADS_VALID Reader start fresh. Original prediction/decision/Q gates stay closed.
+
+```bash
+python tools/fg_s3_v2_experiment.py f2-prepare --config <resolved.yaml>
+python tools/fg_s3_v2_experiment.py f2-probe --output-dir artifacts/fg_s3_v2/e_quality_wp05/NEW_CPU_PROBE
+python tools/fg_s3_v2_experiment.py f2-probe --eval-device gpu --output-dir artifacts/fg_s3_v2/e_quality_wp05/NEW_SYNTHETIC_GPU_PROBE
+python tools/fg_s3_v2_experiment.py f2-read-check --config configs/experiments/fg_s3_v2/e_quality_f2_read_smoke.yaml --output-dir docs/receipts/wp05/NEW_READ_CHECK
+```
+
+The read smoke explicitly uses fresh small diagnostic weights, performs zero updates, consumes no F1 weights and emits no training admission. Its synthetic F1 path is unrelated to real FG201; f2-prepare/start must reject that pairing. Missing trained F1 does not block read-only diagnostics.
+
+Future FORMAL preparation additionally uses `--source-purpose native-verification --producer-gym <frozen-producer>`. Only separately authorized `f2-start --prepared <prepared> --authorize-training` and `f2-resume --prepared <same-prepared> --authorize-training` can enter training, after current native proof and completed F1 checks. No such real training is authorized or launched by this WP. Same-Run resume restores F2 FullCheckpoint and never repeats F1 handoff.

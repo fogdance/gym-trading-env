@@ -29,6 +29,7 @@ def main():
     p.add_argument('command', choices=['prepare', 'start', 'resume', 'evaluate', 'report', 'gpu_check',
                                      'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
                                      'f1-prepare', 'f1-start', 'f1-resume', 'f1-probe', 'f1-read-check',
+                                     'f2-prepare', 'f2-start', 'f2-resume', 'f2-probe', 'f2-read-check',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
     p.add_argument('--config')
@@ -60,6 +61,30 @@ def main():
                    help='F1 preparation: engineering integrity or an actual native G3 invocation')
     p.add_argument('--producer-gym',help='Frozen WP02 producer for explicit F1 native source verification')
     args = p.parse_args()
+    if args.command.startswith('f2-'):
+        os.environ['JAX_PLATFORMS']='cpu';os.environ['CUDA_VISIBLE_DEVICES']=''
+        if args.command in ('f2-start','f2-resume'):
+            if not args.authorize_training:raise ValueError('F2_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+            if not args.prepared or args.config or args.run_dir:p.error('f2-start/resume requires --prepared only; run path is frozen')
+            from gym_trading_env.research.fg_replay import read_manifest
+            device=read_manifest(Path(args.prepared)/'settings.json')['settings']['device']
+            if device=='gpu':os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
+            from gym_trading_env.research.fg_s3_e_quality_heads import start_prepared
+            result=start_prepared(args.prepared,resume=args.command=='f2-resume',authorized=True,producer_gym=args.producer_gym,stop_at=args.stop_at)
+        elif args.command=='f2-probe':
+            if not args.output_dir or args.config or args.prepared or args.authorize_training:p.error('f2-probe accepts a new --output-dir and --eval-device for built-in synthetic data only')
+            if args.eval_device=='gpu':os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
+            from gym_trading_env.research.fg_s3_e_quality_heads_checks import probe
+            result=probe(args.output_dir,device=args.eval_device)
+        elif args.command=='f2-read-check':
+            if not args.config or not args.output_dir or args.prepared or args.authorize_training:p.error('f2-read-check requires --config --output-dir without training authorization')
+            from gym_trading_env.research.fg_s3_e_quality_heads_checks import read_check
+            result=read_check(args.config,args.output_dir,purpose=args.source_purpose,producer_gym=args.producer_gym)
+        else:
+            if not args.config or args.prepared or args.authorize_training:p.error('f2-prepare requires --config without training authorization')
+            from gym_trading_env.research.fg_s3_e_quality_heads import prepare
+            result=prepare(args.config,purpose=args.source_purpose,producer_gym=args.producer_gym)
+        print(json.dumps(result,indent=2,ensure_ascii=False));return
     if args.command.startswith('f1-'):
         # F1 has a separate stage admission, never a global Composition READY.
         # All preparation is CPU; authorization is checked before any run I/O.

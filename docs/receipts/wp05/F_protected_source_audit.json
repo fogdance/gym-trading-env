@@ -1,0 +1,46 @@
+{
+  "gym": {
+    "src/gym_trading_env/envs/entry_env.py": {
+      "byte_identical": true,
+      "sha256": "ae9580d4c9f53b91d9d19197ac9785fb92569c1c7f2c9155818fd87a7136a782"
+    },
+    "src/gym_trading_env/rewards/single3_reward.py": {
+      "byte_identical": true,
+      "sha256": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8"
+    },
+    "src/gym_trading_env/research/fg_s3_e_observation.py": {
+      "byte_identical": true,
+      "sha256": "076586668ad8b8a120cdfa5a4f5c14cdb00b91e2619ec0254490c8dadcbc1e06"
+    },
+    "src/gym_trading_env/utils/macd_5m_causal.py": {
+      "byte_identical": true,
+      "sha256": "16cd185fe2a62cf8b090a9ac32014ec8429b634e9b255881d01ec32a66600f28"
+    },
+    "src/gym_trading_env/research/fg_s3_quality_score.py": {
+      "byte_identical": true,
+      "sha256": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc"
+    }
+  },
+  "dreamer": {
+    "dreamerv3/agent.py": {
+      "byte_identical": true,
+      "sha256": "dc85d510891ebab9d19661dad72f8a0ae8ffe970e348461ad1938b965a5547da"
+    },
+    "dreamerv3/rssm.py": {
+      "byte_identical": true,
+      "sha256": "031b9cb9c29023501d679ca971d6dd8f6428fd107eb3c9c4748cb21c83ebcb3b"
+    },
+    "dreamerv3/fg_s3_e_encoder.py": {
+      "byte_identical": true,
+      "sha256": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22"
+    },
+    "dreamerv3/fg_s3_e_quality_course_contract.py": {
+      "byte_identical": true,
+      "sha256": "195781984d9daa53fb4f3f26c9a0df55310188691366167c9368364a1284a0fc"
+    },
+    "embodied/run/fg_checkpoint.py": {
+      "byte_identical": true,
+      "sha256": "4f2d2c388b8d6c96d6a68aaec0337244de5193a89e4065a6ea8e42111fc481f4"
+    }
+  }
+}

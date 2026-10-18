@@ -40,7 +40,7 @@ def test_B02_parameter_failure_before_mutation(source,tmp_path,attack):
  with pytest.raises(ValueError,match='HANDOFF'):transfer_parameters(a,altered,proof)
  assert parameter_digests(a.params)==before and int(a.n_updates)==0
 
-@pytest.mark.parametrize('attack',['formal','unfinished','stage','reward','observation','model','corrupt'])
+@pytest.mark.parametrize('attack',['formal','unfinished','stage','reward','observation','clock','model','corrupt'])
 def test_B03_source_failures(source,tmp_path,attack):
  _,s,_,_=source
  if attack=='formal':
@@ -56,6 +56,7 @@ def test_B03_source_failures(source,tmp_path,attack):
   elif attack=='stage':i['preparation']['course_stage']='QUALITY_HEADS'
   elif attack=='reward':i['preparation']['reward_schema']='WRONG'
   elif attack=='observation':i['preparation']['observation']['macd_5m']['partial']='FUTURE'
+  elif attack=='clock':i['effective_model']['agent']['s3_clock_protocol']='WRONG_CLOCK'
   else:i['effective_model']['agent']['dyn']['rssm']['deter']+=1
   write_json(src/'run_identity.json',signed(dict(identity=i)))
   # Keep checksummed outer identity coherent to reach the intended validator.
