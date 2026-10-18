@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="4" time="193.454" timestamp="2026-10-19T00:36:48.101616+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp06_evaluation" name="test_E01_training_inference_same_distribution_mask_and_no_predictions" time="157.330" /><testcase classname="tests.entry_v1.test_wp06_evaluation" name="test_E02_original_model_learns_both_synthetic_classes_with_frozen_wm" time="29.830"><failure message="assert 0.6966443061828613 &lt; 0.6942111849784851">case = (PosixPath('/tmp/pytest-of-v/pytest-552/wp06_eval0'), &lt;embodied.jax.agent.Agent object at 0x7a850a0ac510&gt;, {'market_se..._CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+
+    def test_E02_original_model_learns_both_synthetic_classes_with_frozen_wm(case):
+        root,a,data,s=case;d=copy.deepcopy(data);start=33
+        before=parameter_digests(a.params);features=read_only_forward(a,d)['features']
+        legal=((d['action_mask'][:,start:]==1).all(-1) &amp; ~d['is_first'][:,start:] &amp; ~d['is_last'][:,start:] &amp; ~d['is_terminal'][:,start:])
+        # A declared synthetic, linearly learnable task on native frozen features.
+        # These are NOT certified L2 labels and are never published to the Corpus.
+        coordinate=int(np.argmax(features[...,:32][legal].var(0)));x=features[...,coordinate]
+        y=(x&gt;np.median(x[legal])).astype(np.int32)
+        d['teacher_action'][:,start:]=y;d['teacher_valid'][:,start:]=legal
+        fresh=score_batch(d,read_only_forward(a,d),start)
+        assert fresh['valid_add'] and fresh['valid_wait']
+        for _ in range(512):train(a,d,202)
+        out=read_only_forward(a,d);trained=score_batch(d,out,start);after=parameter_digests(a.params)
+&gt;       assert trained['loss']&lt;fresh['loss']
+E       assert 0.6966443061828613 &lt; 0.6942111849784851
+
+tests/entry_v1/test_wp06_evaluation.py:52: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_evaluation" name="test_E03_original_driver_native_quality_reward_and_complete_account_replay" time="3.044" /><testcase classname="tests.entry_v1.test_wp06_evaluation" name="test_E04_evaluation_refuses_wrong_stage_and_invalid_budget" time="0.001" /></testsuite></testsuites>

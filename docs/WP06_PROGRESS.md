@@ -32,3 +32,11 @@ G0 complete: 126 distinct CPU cases PASS, exit 0; real TRAIN DEV 4-minute read P
 - `D_actor_run.json` 从 D11 实际 FullCheckpoint 读取 counters/双 Reader 状态和参数 SHA；单元测试结果文件名曾与 harness 同名，已改名避免覆盖。原始 Checkpoint 未改写。
 - 自审修正统计含义：无辅助流时 balanced loss 可复用主流，但 `auxiliary_*` 暴露计数为 0；新增 `balanced_count` 单独记录实际 loss 分母。
 
+# 06.E 纯 Actor 与可学性
+
+- `E_evaluation_retry`：4 passed / exit 0 / 198.28 秒；原始失败 `E_evaluation` 为 1 failed / 3 passed，保留。
+- 修正已定位的诊断 PRNG 差异：原 Agent._seeds 使用 `[config.seed, seed_counter]` 生成 key，诊断此前直接把 202 当 key。F3 read_only_forward 现在复用原 Agent._seeds；新增第一步原 opt/loss 与诊断 Loss 一致断言。
+- 512 次固定 CPU 合成更新，32 ADD / 32 WAIT 的显式合成特征分类任务，Loss 0.693907→0.687870，准确率 29/64→35/64，恒 WAIT 为 32/64；TP=25/TN=10，冻结 state 完全相同。仅证明工程可学，不是认证 L2 或真实市场效果。
+- F3 推理直接调用同一 quality_actor/mask/unimix，predict() 被禁止时仍通过；三个 fusion delta 为 0，同特征训练/推理分布完全相同。
+- 原 ActorPolicy/Driver/金融 Env/Replay/Quality TP Reward 的 32 市场分钟完整重播通过，36 行含 3 次账户恢复。原生 fills/TP/SL 与动作提案分开报告；最后提案未执行。详见 `E_native_actor.json`。
+
