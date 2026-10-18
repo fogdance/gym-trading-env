@@ -111,6 +111,46 @@ def create_agent(settings,output,*,controlled_small=False):
     return agent
 
 
+def prepare(config,*,purpose='development',producer_gym=None):
+    from .fg_replay import signed,write_json,digest
+    from .fg_s3_e_quality_reader import build_join_index
+    from embodied.run.fg_s3_e_quality_actor import ActorStreams
+    s=read_settings(config);out=Path(s['prepared_dir'])
+    if out.exists():raise ValueError('F3_PREPARATION_OUTPUT_MUST_BE_NEW')
+    p=preflight(s,purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+    joined=build_join_index(p.source,out/'join.sqlite');streams=ActorStreams(p,out/'join.sqlite')
+    try:support={role:stream.adapter.validate_support() for role,stream in zip(streams.roles,streams.streams)}
+    finally:streams.close()
+    write_json(out/'settings.json',signed(dict(protocol=PROTOCOL,settings=p.settings)))
+    write_json(out/'f3_preparation.json',p.receipt)
+    write_json(out/'reader_binding.json',signed(dict(index_sha256=digest(out/'join.sqlite'),source_identity=p.source.receipt['content_identity'],join_report=joined,target_support=support)))
+    if p.source.native_result is not None:write_json(out/'native_verification.json',p.source.native_result)
+    return p.receipt
+
+
+def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_at=None):
+    if authorized is not True:raise ValueError('F3_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    import uuid
+    from .fg_replay import read_manifest,digest
+    from .fg_s3_e_quality_foundation import PROJECT
+    from embodied.run.fg_s3_e_quality_actor import ActorRun
+    path=_local_path(path);s=validate_settings(read_manifest(path/'settings.json')['settings'])
+    saved=read_manifest(path/'f3_preparation.json');binding=read_manifest(path/'reader_binding.json')
+    if saved['identity']['source_model']['engineering_only']:raise ValueError('F3_FOUNDATION_NOT_TRAINED')
+    if saved['status']!='F3_DATA_READY':raise ValueError('F3_NATIVE_PREPARATION_REQUIRED')
+    if saved['identity']['code']!=execution_identity():raise ValueError('F3_PREPARED_CODE_CHANGED')
+    index=path/'join.sqlite'
+    if digest(index)!=binding['index_sha256']:raise ValueError('F3_PREPARED_INDEX_CHANGED')
+    root=Path(s['run_dir'])
+    if not any(root.is_relative_to(p) for p in (PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))):raise ValueError('F3_RUN_DIRECTORY_INVALID')
+    audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp06/preflights'/uuid.uuid4().hex
+    current=preflight(s,purpose='native-verification',producer_gym=producer_gym,log_path=audit/'native.log')
+    if current.receipt['identity']!=saved['identity'] or current.source.receipt['content_identity']!=binding['source_identity']:
+        raise ValueError('F3_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
+    require_training_authority(current,authorized=True)
+    return ActorRun(current,index,root,resume=resume,authorize_training=True).run(stop_at)
+
+
 class F3WindowAdapter:
     """Loss-only labels from the existing V3 Join, with no second projection."""
     def __init__(self,reader,settings):

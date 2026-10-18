@@ -30,6 +30,7 @@ def main():
                                      'admit-e-prepare', 'admit-e-start', 'admit-e-resume',
                                      'f1-prepare', 'f1-start', 'f1-resume', 'f1-probe', 'f1-read-check',
                                      'f2-prepare', 'f2-start', 'f2-resume', 'f2-probe', 'f2-read-check',
+                                     'f3-prepare', 'f3-start', 'f3-resume', 'f3-probe', 'f3-read-check', 'f3-evaluate',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
     p.add_argument('--config')
@@ -61,6 +62,36 @@ def main():
                    help='F1 preparation: engineering integrity or an actual native G3 invocation')
     p.add_argument('--producer-gym',help='Frozen WP02 producer for explicit F1 native source verification')
     args = p.parse_args()
+    if args.command.startswith('f3-'):
+        os.environ['JAX_PLATFORMS']='cpu';os.environ['CUDA_VISIBLE_DEVICES']=''
+        if args.command in ('f3-start','f3-resume'):
+            if not args.authorize_training:raise ValueError('F3_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+            if not args.prepared or args.config or args.run_dir:p.error('f3-start/resume requires --prepared only; run path is frozen')
+            from gym_trading_env.research.fg_replay import read_manifest
+            device=read_manifest(Path(args.prepared)/'settings.json')['settings']['device']
+            if device=='gpu':os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
+            from gym_trading_env.research.fg_s3_e_quality_actor import start_prepared
+            result=start_prepared(args.prepared,resume=args.command=='f3-resume',authorized=True,producer_gym=args.producer_gym,stop_at=args.stop_at)
+        elif args.command=='f3-probe':
+            if not args.output_dir or args.config or args.prepared or args.run_dir or args.authorize_training:p.error('f3-probe accepts a new --output-dir and --eval-device for built-in synthetic data only')
+            if args.eval_device=='gpu':os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
+            from gym_trading_env.research.fg_s3_e_quality_actor_checks import probe
+            result=probe(args.output_dir,device=args.eval_device)
+        elif args.command=='f3-read-check':
+            if not args.config or not args.output_dir or args.prepared or args.run_dir or args.authorize_training:p.error('f3-read-check requires --config --output-dir without training authorization')
+            from gym_trading_env.research.fg_s3_e_quality_actor_checks import read_check
+            result=read_check(args.config,args.output_dir,purpose=args.source_purpose,producer_gym=args.producer_gym)
+        elif args.command=='f3-evaluate':
+            if (not args.run_dir or not args.source_checkpoint or not args.output_dir or args.config or args.prepared
+                    or args.authorize_training or args.diagnostic_components or args.diagnostic_q_admission):
+                p.error('f3-evaluate requires --run-dir --source-checkpoint --output-dir; prediction/teacher overrides are forbidden')
+            from gym_trading_env.research.fg_s3_e_quality_actor_checks import evaluate_checkpoint
+            result=evaluate_checkpoint(args.run_dir,args.source_checkpoint,args.output_dir,steps=args.eval_steps)
+        else:
+            if not args.config or args.prepared or args.run_dir or args.authorize_training:p.error('f3-prepare requires --config without training authorization')
+            from gym_trading_env.research.fg_s3_e_quality_actor import prepare
+            result=prepare(args.config,purpose=args.source_purpose,producer_gym=args.producer_gym)
+        print(json.dumps(result,ensure_ascii=False,indent=2));return 0
     if args.command.startswith('f2-'):
         os.environ['JAX_PLATFORMS']='cpu';os.environ['CUDA_VISIBLE_DEVICES']=''
         if args.command in ('f2-start','f2-resume'):

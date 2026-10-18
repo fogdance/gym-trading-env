@@ -1,4 +1,4 @@
-import copy,json
+import copy,json,os
 from pathlib import Path
 import jax,jax.numpy as jnp,ninjax as nj
 import numpy as np
@@ -13,7 +13,8 @@ from test_wp06_updates import train
 
 @pytest.fixture(scope='module')
 def case(tmp_path_factory):
-    root=tmp_path_factory.mktemp('wp06_eval');s=engineering_settings(root,target=64,burnin=32)
+    root=Path(os.environ['FG_WP06_EVAL_ROOT']) if 'FG_WP06_EVAL_ROOT' in os.environ else tmp_path_factory.mktemp('wp06_eval')
+    root.mkdir(parents=True,exist_ok=True);s=engineering_settings(root,target=64,burnin=32)
     p=preflight(s);index=root/'join.sqlite';build_join_index(p.source,index)
     r=EQualityCourseReader.open(p.source,stage='ACTOR_STRICT',sampling_spec=s['sampling_spec'],seed=202,index_path=index)
     try:data,_=F3WindowAdapter(r,s).sample()
@@ -84,3 +85,8 @@ def test_E04_evaluation_refuses_wrong_stage_and_invalid_budget(case,tmp_path):
     with pytest.raises(ValueError,match='BOUNDED_EVALUATION_STEPS_REQUIRED'):
         evaluate_native(a,lambda:None,tmp_path/'bad',steps=100000)
     assert not (tmp_path/'bad').exists()
+    from types import SimpleNamespace
+    wrong=SimpleNamespace(config={'quality_f3_protocol':'FG_S3_E_QUALITY_HEADS_V1'})
+    with pytest.raises(ValueError,match='ACTOR_CHECKPOINT_REQUIRED'):
+        evaluate_native(wrong,lambda:None,tmp_path/'wrong_stage',steps=1)
+    assert not (tmp_path/'wrong_stage').exists()

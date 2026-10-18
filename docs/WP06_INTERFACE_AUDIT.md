@@ -1,6 +1,6 @@
 # WP06 interface audit
 
-Observed source baseline: Gym c1679a7 + explicit V3-only Join diagnostics (7ea9556); Dreamer 0e39dfd. Public branches not advanced. This is DEV integration, not FORMAL training admission.
+Initial observed source baseline: Gym c1679a7 + explicit V3-only Join diagnostics (7ea9556); Dreamer 0e39dfd. G0 validation passed and the paired public baseline was published before creating WP06 trees. This is DEV integration, not FORMAL training admission. The final publication audit is in WP06_IMPLEMENTATION_REVIEW.md and the release receipts.
 
 | Existing interface | Reuse / required F3 extension |
 | --- | --- |

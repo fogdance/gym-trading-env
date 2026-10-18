@@ -93,11 +93,16 @@ def probe(output,*,device='cpu'):
     if device not in ('cpu','gpu'):raise ValueError('F3_PROBE_DEVICE_INVALID')
     sys.path.insert(0,str(PROJECT/'tests/entry_v1'))
     from wp04_fixture import synthetic_foundation
-    s=synthetic_foundation(out/'source',multiscale=True,device=device);origin=Path(s['run_dir'])
+    # The existing Corpus builder is CPU-only and deliberately hides CUDA.
+    # Build its F1 evidence on CPU, then explicitly select the target device.
+    s=synthetic_foundation(out/'source',multiscale=True,device='cpu');origin=Path(s['run_dir'])
+    if device=='gpu':
+        import os
+        os.environ['JAX_PLATFORMS']='cuda';os.environ.pop('CUDA_VISIBLE_DEVICES',None)
     s.update(schema='FG_S3_E_QUALITY_F3_CONFIG_V1',stage='ACTOR_SUPERVISED',sampling_stage='ACTOR_STRICT',
         source_stage='F1',source_run=str(origin),source_checkpoint=str(origin/'ckpt/step_000000000004'),
         actor_loss=dict(LOSS_DEFAULTS),aux_sampling_spec=None,max_consumed_batches=40,
-        prepared_dir=str(out/'prepared'),run_dir=str(out/'run'),target_steps=8,burnin_steps=4)
+        prepared_dir=str(out/'prepared'),run_dir=str(out/'run'),target_steps=8,burnin_steps=4,device=device)
     p=preflight(validate_settings(s));index=out/'join.sqlite';build_join_index(p.source,index)
     run=ActorRun(p,index,out/'run',_probe=engineering_permit(p));before=parameter_digests(run.agent.params)
     result=run.run();after=parameter_digests(run.agent.params)

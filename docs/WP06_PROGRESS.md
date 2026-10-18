@@ -40,3 +40,12 @@ G0 complete: 126 distinct CPU cases PASS, exit 0; real TRAIN DEV 4-minute read P
 - F3 推理直接调用同一 quality_actor/mask/unimix，predict() 被禁止时仍通过；三个 fusion delta 为 0，同特征训练/推理分布完全相同。
 - 原 ActorPolicy/Driver/金融 Env/Replay/Quality TP Reward 的 32 市场分钟完整重播通过，36 行含 3 次账户恢复。原生 fills/TP/SL 与动作提案分开报告；最后提案未执行。详见 `E_native_actor.json`。
 
+# 06.F Checkpoint、CLI 与交付
+
+- `F_cold_cli` 20 passed / exit 0 / 384.20 秒：普通 4 vs 2+冷恢复+2，首次 skip 后冷恢复，双 Reader RNG/Prefetch/全部模型/optimizer/日志逐字节一致；七类身份/损坏负例、权限、prepared/read-only CLI 均覆盖。
+- `F_shared` 20 passed / exit 0；`F_temporal_legacy` 121 passed / exit 0；原 `F_f2_cold_regression` 8 passed / exit 0（包括新解释器 exact restore）。不是全项目通过。
+- 实际有限真实 TRAIN fresh read-check exit 0，K1/T1、8 个 WAIT 暴露、2 个独立目标 cursor、7 个账户行；所有参数相同，零更新。完整 B01 缺失，K32/T64/Native G3 NOT_RUN。
+- GPU 两次尝试分别在沙箱/经批准的宿主构造前失败，宿主 cuInit CUDA_ERROR_UNKNOWN；GPU 参数更新 NOT_RUN，未改系统。
+- 反向审查发现 stop_at 小于总预算仍标 COMPLETE，回归 `F_partial_before` exit 1；仅修正结果为 PARTIAL，`F_partial_after` 1 passed / exit 0，未改准入。
+- 下一步封版 A–F，独立集成树运行当前版本回归和 cold restore，成功后更新成对 integration/s3-next；原始收据和 Review 都在 docs。
+
