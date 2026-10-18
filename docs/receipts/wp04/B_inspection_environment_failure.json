@@ -1,0 +1,7 @@
+{
+  "command": "python3: inspect controlled NPZ with numpy",
+  "exit_code": 1,
+  "error": "ModuleNotFoundError: No module named 'numpy'",
+  "cause": "system Python lacks numpy; project Dreamer Python used on retry",
+  "retry_exit_code": 0
+}

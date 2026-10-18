@@ -1,0 +1,22 @@
+{
+  "source": "/tmp/pytest-of-v/pytest-460/wp04_native0/corpus/student_replay/P0/replay/20261018T092656F014997-5S8ozfzICcDkrPyr6yIScV-0U335Dzv3sct7tMFtcq2m5-210.npz",
+  "fields": {
+    "market_macd_5m": {
+      "shape": [
+        210,
+        4
+      ],
+      "valid_count": 35,
+      "nonzero_values": 0
+    },
+    "market_context_15m": {
+      "shape": [
+        210,
+        24,
+        7
+      ],
+      "valid_count": 0,
+      "nonzero_values": 0
+    }
+  }
+}

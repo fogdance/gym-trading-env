@@ -1,0 +1,1512 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-t3_vgh0k because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 pol
+           706 quality_actor
+           706 quality_q_c1
+           706 quality_q_v2
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+{
+  "avail_actor_gate/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "opt/state/1/0": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/state/1/1/avail/head/logit/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/head/logit/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/norm1/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/head/logit/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/head/logit/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/marketseqeshared/pred/bias": {
+    "shape": [
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/marketseqeshared/pred/kernel": {
+    "shape": [
+      16,
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/positionstate/pred/bias": {
+    "shape": [
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/positionstate/pred/kernel": {
+    "shape": [
+      16,
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dyngru/bias": {
+    "shape": [
+      96
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dyngru/kernel": {
+    "shape": [
+      4,
+      8,
+      24
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0/bias": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0/kernel": {
+    "shape": [
+      4,
+      56,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0norm/scale": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1/kernel": {
+    "shape": [
+      8,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2/kernel": {
+    "shape": [
+      2,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0/kernel": {
+    "shape": [
+      48,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obslogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obslogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/priorlogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/priorlogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/context15/bias": {
+    "shape": [
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/context15/kernel": {
+    "shape": [
+      168,
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/fusion/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/fusion/kernel": {
+    "shape": [
+      160,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/macd5/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/macd5/kernel": {
+    "shape": [
+      3,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0/kernel": {
+    "shape": [
+      1091,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/head/pred/bias": {
+    "shape": [
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/head/pred/kernel": {
+    "shape": [
+      16,
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/head/pred/bias": {
+    "shape": [
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/head/pred/kernel": {
+    "shape": [
+      16,
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/head/pred/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/head/pred/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/head/pred/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/head/pred/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/0": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/state/2/1/avail/head/logit/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/head/logit/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/norm1/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/head/logit/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/head/logit/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/marketseqeshared/pred/bias": {
+    "shape": [
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/marketseqeshared/pred/kernel": {
+    "shape": [
+      16,
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/positionstate/pred/bias": {
+    "shape": [
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/positionstate/pred/kernel": {
+    "shape": [
+      16,
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dyngru/bias": {
+    "shape": [
+      96
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dyngru/kernel": {
+    "shape": [
+      4,
+      8,
+      24
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0/bias": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0/kernel": {
+    "shape": [
+      4,
+      56,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0norm/scale": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1/kernel": {
+    "shape": [
+      8,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2/kernel": {
+    "shape": [
+      2,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0/kernel": {
+    "shape": [
+      48,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obslogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obslogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/priorlogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/priorlogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/context15/bias": {
+    "shape": [
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/context15/kernel": {
+    "shape": [
+      168,
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/fusion/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/fusion/kernel": {
+    "shape": [
+      160,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/macd5/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/macd5/kernel": {
+    "shape": [
+      3,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0/kernel": {
+    "shape": [
+      1091,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/head/pred/bias": {
+    "shape": [
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/head/pred/kernel": {
+    "shape": [
+      16,
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/head/pred/bias": {
+    "shape": [
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/head/pred/kernel": {
+    "shape": [
+      16,
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/head/pred/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/head/pred/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/head/pred/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/head/pred/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/3/count": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/step/value": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "retnorm/hi/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "retnorm/lo/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "slowval_count/value": {
+    "shape": [],
+    "dtype": "int32"
+  }
+}

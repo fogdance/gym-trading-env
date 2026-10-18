@@ -1,0 +1,30 @@
+{
+  "full": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit_code": 2,
+    "output": "docs/receipts/wp04/B_retry.log:23: trailing whitespace.\n+tests/entry_v1/test_wp04_wm.py:163: \ndocs/receipts/wp04/B_retry.log:24: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_retry.log:60: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_retry.xml:19: trailing whitespace.\n+tests/entry_v1/test_wp04_wm.py:163: \ndocs/receipts/wp04/B_retry.xml:20: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_retry.xml:56: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_smoke.log:15: trailing whitespace.\n+tests/entry_v1/test_wp04_wm.py:84: \ndocs/receipts/wp04/B_smoke.log:16: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_smoke.log:41: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_smoke.log:49: trailing whitespace.\n+    \ndocs/receipts/wp04/B_smoke.log:72: trailing whitespace.\n+    \ndocs/receipts/wp04/B_smoke.xml:11: trailing whitespace.\n+tests/entry_v1/test_wp04_wm.py:84: \ndocs/receipts/wp04/B_smoke.xml:12: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_smoke.xml:37: trailing whitespace.\n+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \ndocs/receipts/wp04/B_smoke.xml:45: trailing whitespace.\n+    \ndocs/receipts/wp04/B_smoke.xml:68: trailing whitespace.\n+    \n"
+  },
+  "source_and_authored_docs": {
+    "argv": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      "src",
+      "tests",
+      "tools",
+      "configs",
+      "docs/WP04_PROGRESS.md",
+      "docs/WP04_F1_INTERFACE_LOCK.json"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "note": "Original failed pytest stdout/XML preserve trailing whitespace verbatim."
+}

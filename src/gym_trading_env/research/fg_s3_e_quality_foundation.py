@@ -79,12 +79,13 @@ def create_agent(settings, output, *, controlled_small=False):
     from embodied.run.fg_s3_source_transfer import _make_agent
     from dreamerv3.fg_s3_v2_agent import _S3V2Model
     from dreamerv3.fg_s3_composition import resolve_composition
-    from dreamerv3.fg_s3_e_quality_foundation import model_extensions, parameter_layout
+    from dreamerv3.fg_s3_e_quality_foundation import model_extensions, parameter_layout, register_state_schema
     cfg = model_config(settings,controlled_small=controlled_small)
     agent = _make_agent(cfg,output,agent_cls=_S3V2Model,device=settings['device'],bc_lambda=0.,
         extra_agent_config=model_extensions(settings['target_steps'],settings['burnin_steps']),
         composition=resolve_composition(dict(composition=dict(encoder='e_multiscale_1m15m',teaching='quality_v2'))))
     parameter_layout(agent.params)
+    register_state_schema(agent.model,agent.params)
     return agent
 
 
@@ -157,3 +158,36 @@ def require_training_authority(preparation, *, authorized=False):
             or preparation.receipt.get('status') != 'F1_DATA_READY'):
         raise ValueError('F1_ACTUAL_NATIVE_G3_REQUIRED; loaded JSON is not authority')
     return preparation
+
+
+class F1WindowAdapter:
+    """Validated native windows; posterior fields never enter Agent.spaces."""
+    def __init__(self, reader, settings):
+        if reader.stage != SAMPLING_STAGE or reader.mode != 'NATURAL' or reader.admission.source.stage != STAGE:
+            raise ValueError('F1_READER_STAGE_MISMATCH')
+        self.reader,self.settings = reader,settings
+        self.length = dimensions(settings['target_steps'],settings['burnin_steps'])
+
+    def adapt(self, raw):
+        import numpy as np
+        from .fg_replay import replay_fields,E_QUALITY_SCHEMA
+        if raw['stepid'].shape != (self.settings['batch_size'],self.length+1,20):
+            raise ValueError('F1_WINDOW_LENGTH_OR_BATCH_MISMATCH')
+        if ('consec' not in raw or raw['consec'].dtype!=np.int32 or
+                raw['consec'].shape!=raw['is_first'].shape or raw['consec'].any()):
+            raise ValueError('F1_RANDOM_WINDOWS_CANNOT_INHERIT_CARRY')
+        metadata = self.reader.audit_windows(raw)
+        keys=(*replay_fields(E_QUALITY_SCHEMA),'stepid','consec')
+        data={k:raw[k].copy() for k in keys}
+        for key,value in data.items():
+            if np.issubdtype(value.dtype,np.floating) and not np.isfinite(value).all():
+                raise ValueError('F1_NONFINITE_NATIVE_INPUT: '+key)
+        return data,metadata
+
+    def sample(self):
+        state=self.reader.state_dict()
+        try:
+            return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))
+        except BaseException:
+            self.reader.load_state_dict(state)
+            raise

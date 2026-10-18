@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="15" time="140.366" timestamp="2026-10-18T09:23:50.353273+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B01_reader_native_window_and_future_labels_are_separate" time="81.418" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[shuffle]" time="0.017" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[owner]" time="0.047" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[shift]" time="0.016" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[action]" time="0.011" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[reward]" time="0.012" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[carry]" time="0.010" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[length]" time="0.006" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B03_actual_original_optimizer_step_and_frozen_slots" time="25.525" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B04_nonzero_inherited_momentum_and_negative_zero_stay_frozen" time="0.251" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B05_only_T_targets_and_detached_K_history" time="30.464" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B06_each_window_ignores_previous_random_carry" time="0.103" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B07_unknown_parameter_and_optimizer_leaf_schema_rejected" time="0.023" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B08_insufficient_K_T_support_does_not_reduce_length" time="0.011" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B09_K32_T64_four_native_WM_updates_without_actor_forward" time="1.061"><failure message="AssertionError: F1 evaluated original Actor/Critic imagination loss&#10;Exception happened inside Ninjax scope 'opt'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.">native_case = ({'schema': 'FG_S3_E_QUALITY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec':...e_quality_reader.EQualityCourseReader object at 0x7633580e2090&gt;, PosixPath('/tmp/pytest-of-v/pytest-459/wp04_native0'))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7631f3b6e550&gt;
+
+    def test_B09_K32_T64_four_native_WM_updates_without_actor_forward(native_case,monkeypatch):
+        from pathlib import Path
+        from dreamerv3.agent import Agent as OriginalModel
+        from dreamerv3.fg_s3_v2_agent import _S3V2Model
+        s,r,root=native_case;s=copy.deepcopy(s);s.update(target_steps=64,burnin_steps=32)
+        original=OriginalModel.loss
+        def init_only(model,*args,**kwargs):
+            if not nj.creating():raise AssertionError('F1 evaluated original Actor/Critic imagination loss')
+            return original(model,*args,**kwargs)
+        monkeypatch.setattr(OriginalModel,'loss',init_only)
+        def forbidden(*args,**kwargs):raise AssertionError('F1 evaluated teacher Quality loss')
+        monkeypatch.setattr(_S3V2Model,'quality_loss',forbidden)
+&gt;       agent=create_agent(s,root/'long_window_model',controlled_small=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp04_wm.py:163: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_foundation.py:84: in create_agent
+    agent = _make_agent(cfg,output,agent_cls=_S3V2Model,device=settings['device'],bc_lambda=0.,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:48: in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+../dreamerv3/embodied/jax/agent.py:114: in __init__
+    self.params, self.train_params_sharding = self._init_params()
+                                              ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:519: in _init_params
+    params, params_sharding = transform.init(
+../dreamerv3/embodied/jax/transform.py:50: in init
+    params_shapes = fn.eval_shape(*dummy_inputs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:44: in fn
+    params, _ = inner(params, *args, seed=seed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:34: in wrapper
+    state, out = fun(*args, create=True, modify=True, ignore=True, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:428: in train
+    return Agent.train(self, carry, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:217: in train
+    metrics, (carry, entries, outs, mets) = self.opt(
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+../dreamerv3/embodied/jax/opt.py:36: in lossfn2
+    outs = lossfn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:225: in quality_init_loss
+    base,aux = self.loss(carry,obs,prevact,training)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+model = &lt;dreamerv3.fg_s3_v2_agent._S3V2Model object at 0x76335371cd90&gt;
+args = (({}, {'deter': Traced&lt;ShapedArray(float32[1,32])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'stoch': Traced&lt;ShapedArray(floa...amicJaxprTrace(level=1/0)&gt;, ...}, {'action': Traced&lt;ShapedArray(int32[1,96])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;}, True)
+kwargs = {}
+
+    def init_only(model,*args,**kwargs):
+&gt;       if not nj.creating():raise AssertionError('F1 evaluated original Actor/Critic imagination loss')
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: F1 evaluated original Actor/Critic imagination loss
+E       Exception happened inside Ninjax scope 'opt'.
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+tests/entry_v1/test_wp04_wm.py:158: AssertionError</failure></testcase></testsuite></testsuites>

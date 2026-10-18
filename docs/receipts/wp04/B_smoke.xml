@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="93.438" timestamp="2026-10-18T09:16:59.341346+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B03_actual_original_optimizer_step_and_frozen_slots" time="92.542"><failure message="RuntimeError: Trying to compute gradient with respect to key 'val/head/logits/bias' but the differentiated function does not access it.&#10;Accessed keys: ['dec/mlp/linear0/bias', 'enc/minute/mlp1norm/scale', 'dyn/dynin2norm/scale', 'dyn/priorlogit/bias', 'dec/mlp/linear0/kernel', 'dyn/dynin1norm/scale', 'enc/minute/mlp1/kernel', 'avail/head/logit/kernel', 'enc/minute/mlp0/kernel', 'enc/macd5/bias', 'enc/minute/mlp0norm/scale', 'con/head/logit/bias', 'avail/mlp/linear1/kernel', 'dyn/dynhid0norm/scale', 'rew/mlp/linear0/kernel', 'con/mlp/linear0/bias', 'dyn/obslogit/bias', 'dyn/dyngru/bias', 'dyn/prior1/kernel', 'con/head/logit/kernel', 'avail/mlp/linear0/bias', 'rew/head/logits/kernel', 'enc/minute/mlp2norm/scale', 'con/mlp/norm0/scale', 'enc/fusion/bias', 'dyn/dynhid0/bias', 'rew/head/logits/bias', 'dyn/dynhid0/kernel', 'dyn/priorlogit/kernel', 'rew/mlp/norm0/scale', 'avail/mlp/norm0/scale', 'dec/mlp/norm0/scale', 'rew/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'con/mlp/linear0/kernel', 'dyn/dynin2/bias', 'dec/vec/position_state/pred/bias', 'enc/minute/mlp2/kernel', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/kernel', 'enc/minute/mlp2/bias', 'dyn/dynin0/kernel', 'dec/vec/market_seq_e_shared/pred/bias', 'avail/head/logit/bias', 'enc/macd5/kernel', 'enc/fusion/kernel', 'enc/minute/mlp1/bias', 'dyn/obs0norm/scale', 'dyn/obs0/kernel', 'dyn/obs0/bias', 'dyn/obslogit/kernel', 'dyn/dynin1/kernel', 'enc/context15/bias', 'dyn/prior0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin2/kernel', 'dyn/dynin1/bias', 'dyn/dyngru/kernel', 'dyn/prior0/bias', 'dyn/prior1/bias', 'avail/mlp/linear1/bias', 'avail/mlp/norm1/scale', 'enc/minute/mlp0/bias', 'enc/context15/kernel', 'dyn/dynin0/bias', 'dyn/prior0norm/scale', 'dyn/prior1norm/scale']&#10;Gradient keys: ['dyn/dyngru/bias', 'dyn/dyngru/kernel', 'dyn/dynhid0/bias', 'dyn/dynhid0/kernel', 'dyn/dynhid0norm/scale', 'dyn/dynin0/bias', 'dyn/dynin0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin1/bias', 'dyn/dynin1/kernel', 'dyn/dynin1norm/scale', 'dyn/dynin2/bias', 'dyn/dynin2/kernel', 'dyn/dynin2norm/scale', 'dyn/obs0/bias', 'dyn/obs0/kernel', 'dyn/obs0norm/scale', 'dyn/obslogit/bias', 'dyn/obslogit/kernel', 'dyn/prior0/bias', 'dyn/prior0/kernel', 'dyn/prior0norm/scale', 'dyn/prior1/bias', 'dyn/prior1/kernel', 'dyn/prior1norm/scale', 'dyn/priorlogit/bias', 'dyn/priorlogit/kernel', 'enc/context15/bias', 'enc/context15/kernel', 'enc/fusion/bias', 'enc/fusion/kernel', 'enc/macd5/bias', 'enc/macd5/kernel', 'enc/minute/mlp0/bias', 'enc/minute/mlp0/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp1/bias', 'enc/minute/mlp1/kernel', 'enc/minute/mlp1norm/scale', 'enc/minute/mlp2/bias', 'enc/minute/mlp2/kernel', 'enc/minute/mlp2norm/scale', 'dec/mlp/linear0/bias', 'dec/mlp/linear0/kernel', 'dec/mlp/norm0/scale', 'dec/vec/market_seq_e_shared/pred/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/bias', 'dec/vec/position_state/pred/kernel', 'rew/head/logits/bias', 'rew/head/logits/kernel', 'rew/mlp/linear0/bias', 'rew/mlp/linear0/kernel', 'rew/mlp/norm0/scale', 'con/head/logit/bias', 'con/head/logit/kernel', 'con/mlp/linear0/bias', 'con/mlp/linear0/kernel', 'con/mlp/norm0/scale', 'avail/head/logit/bias', 'avail/head/logit/kernel', 'avail/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'avail/mlp/linear1/bias', 'avail/mlp/linear1/kernel', 'avail/mlp/norm0/scale', 'avail/mlp/norm1/scale', 'pol/head/action/logits/bias', 'pol/head/action/logits/kernel', 'pol/mlp/linear0/bias', 'pol/mlp/linear0/kernel', 'pol/mlp/norm0/scale', 'val/head/logits/bias', 'val/head/logits/kernel', 'val/mlp/linear0/bias', 'val/mlp/linear0/kernel', 'val/mlp/norm0/scale', 'quality_actor/head/action/logits/bias', 'quality_actor/head/action/logits/kernel', 'quality_actor/mlp/linear0/bias', 'quality_actor/mlp/linear0/kernel', 'quality_actor/mlp/norm0/scale', 'quality_event/head/pred/bias', 'quality_event/head/pred/kernel', 'quality_event/mlp/linear0/bias', 'quality_event/mlp/linear0/kernel', 'quality_event/mlp/norm0/scale', 'quality_touch/head/pred/bias', 'quality_touch/head/pred/kernel', 'quality_touch/mlp/linear0/bias', 'quality_touch/mlp/linear0/kernel', 'quality_touch/mlp/norm0/scale', 'quality_adverse/head/pred/bias', 'quality_adverse/head/pred/kernel', 'quality_adverse/mlp/linear0/bias', 'quality_adverse/mlp/linear0/kernel', 'quality_adverse/mlp/norm0/scale', 'quality_score/head/pred/bias', 'quality_score/head/pred/kernel', 'quality_score/mlp/linear0/bias', 'quality_score/mlp/linear0/kernel', 'quality_score/mlp/norm0/scale', 'quality_q_c1/head/pred/bias', 'quality_q_c1/head/pred/kernel', 'quality_q_c1/mlp/linear0/bias', 'quality_q_c1/mlp/linear0/kernel', 'quality_q_c1/mlp/norm0/scale', 'quality_q_v2/head/pred/bias', 'quality_q_v2/head/pred/kernel', 'quality_q_v2/mlp/linear0/bias', 'quality_q_v2/mlp/linear0/kernel', 'quality_q_v2/mlp/norm0/scale']&#10;Exception happened inside Ninjax scope 'opt'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.">wm_case = ({'schema': 'FG_S3_E_QUALITY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec':.../market_seq_e_shared/pred/bias': array([0., 0., 0., ..., 0., 0., 0.], dtype=float32), ...}, 'pending_sync': None, ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-456/test_B03_actual_original_optim0')
+
+    def test_B03_actual_original_optimizer_step_and_frozen_slots(wm_case,tmp_path):
+        s,r,agent,initial=wm_case;agent.load_exact(initial)
+        raw,_=F1WindowAdapter(r,s).sample()
+        before=parameter_digests(agent.params)
+&gt;       _,outs,metrics=train_batch(agent,raw)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp04_wm.py:84: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp04_wm.py:33: in train_batch
+    return agent.train(agent.init_train(len(raw['is_first'])),gpu_batch(agent,raw,seed))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:275: in train
+    self.params, carry, outs, mets = self._train(
+../dreamerv3/embodied/jax/transform.py:128: in fn
+    outs = inner(*args)
+           ^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:86: in fn
+    params, outs = inner(params, *args, seed=seed)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:430: in train
+    return train(self,data)
+           ^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_e_quality_foundation.py:72: in train
+    metrics,(carry,_,_,extra) = model.opt(model.wm_only,carry,obs,prevact,training=True,has_aux=True)
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (({}, {'deter': Traced&lt;ShapedArray(float32[1,32])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'stoch': Traced&lt;ShapedArray(floa...ith&lt;DynamicJaxprTrace(level=1/0)&gt;, ...}, {'action': Traced&lt;ShapedArray(int32[1,8])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;})
+kwargs = {'training': True}
+
+    @hidestack
+    def wrapper(*args, **kwargs):
+      accessed, modified = _prerun(fun, *args, **kwargs)
+    
+      strs = []
+      for target in targets:
+        if isinstance(target, Module):
+          prefix = target.path + '/'
+          matches = {k: v for k, v in ctx.items() if k.startswith(prefix)}
+        if isinstance(target, str):
+          pattern = re.compile(f'^{target}(/.*|$)')
+          matches = [k for k in ctx if pattern.match(k)]
+        if not matches:
+          existing = ', '.join(ctx.keys())
+          raise KeyError(
+              f"Gradient target '{target}' did not match any state entries. " +
+              f'Existing state entries: {existing}')
+        strs += matches
+      existing = ctx.keys()
+      assert all(key in existing for key in strs), (strs, existing)
+      x1 = {k: v for k, v in ctx.items() if k in strs}
+      x2 = {k: v for k, v in ctx.items() if k not in strs}
+      if not x1:
+        raise ValueError(
+            'No inputs to differentiate with respect to. ' +
+            f"User provided targets: '{targets}'")
+    
+      for key in x1.keys():
+        if key not in accessed:
+&gt;         raise RuntimeError(
+              f"Trying to compute gradient with respect to key '{key}' "
+              'but the differentiated function does not access it.\n'
+              f'Accessed keys: {list(accessed)}\n'
+              f'Gradient keys: {list(strs)}')
+E         RuntimeError: Trying to compute gradient with respect to key 'val/head/logits/bias' but the differentiated function does not access it.
+E         Accessed keys: ['dec/mlp/linear0/bias', 'enc/minute/mlp1norm/scale', 'dyn/dynin2norm/scale', 'dyn/priorlogit/bias', 'dec/mlp/linear0/kernel', 'dyn/dynin1norm/scale', 'enc/minute/mlp1/kernel', 'avail/head/logit/kernel', 'enc/minute/mlp0/kernel', 'enc/macd5/bias', 'enc/minute/mlp0norm/scale', 'con/head/logit/bias', 'avail/mlp/linear1/kernel', 'dyn/dynhid0norm/scale', 'rew/mlp/linear0/kernel', 'con/mlp/linear0/bias', 'dyn/obslogit/bias', 'dyn/dyngru/bias', 'dyn/prior1/kernel', 'con/head/logit/kernel', 'avail/mlp/linear0/bias', 'rew/head/logits/kernel', 'enc/minute/mlp2norm/scale', 'con/mlp/norm0/scale', 'enc/fusion/bias', 'dyn/dynhid0/bias', 'rew/head/logits/bias', 'dyn/dynhid0/kernel', 'dyn/priorlogit/kernel', 'rew/mlp/norm0/scale', 'avail/mlp/norm0/scale', 'dec/mlp/norm0/scale', 'rew/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'con/mlp/linear0/kernel', 'dyn/dynin2/bias', 'dec/vec/position_state/pred/bias', 'enc/minute/mlp2/kernel', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/kernel', 'enc/minute/mlp2/bias', 'dyn/dynin0/kernel', 'dec/vec/market_seq_e_shared/pred/bias', 'avail/head/logit/bias', 'enc/macd5/kernel', 'enc/fusion/kernel', 'enc/minute/mlp1/bias', 'dyn/obs0norm/scale', 'dyn/obs0/kernel', 'dyn/obs0/bias', 'dyn/obslogit/kernel', 'dyn/dynin1/kernel', 'enc/context15/bias', 'dyn/prior0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin2/kernel', 'dyn/dynin1/bias', 'dyn/dyngru/kernel', 'dyn/prior0/bias', 'dyn/prior1/bias', 'avail/mlp/linear1/bias', 'avail/mlp/norm1/scale', 'enc/minute/mlp0/bias', 'enc/context15/kernel', 'dyn/dynin0/bias', 'dyn/prior0norm/scale', 'dyn/prior1norm/scale']
+E         Gradient keys: ['dyn/dyngru/bias', 'dyn/dyngru/kernel', 'dyn/dynhid0/bias', 'dyn/dynhid0/kernel', 'dyn/dynhid0norm/scale', 'dyn/dynin0/bias', 'dyn/dynin0/kernel', 'dyn/dynin0norm/scale', 'dyn/dynin1/bias', 'dyn/dynin1/kernel', 'dyn/dynin1norm/scale', 'dyn/dynin2/bias', 'dyn/dynin2/kernel', 'dyn/dynin2norm/scale', 'dyn/obs0/bias', 'dyn/obs0/kernel', 'dyn/obs0norm/scale', 'dyn/obslogit/bias', 'dyn/obslogit/kernel', 'dyn/prior0/bias', 'dyn/prior0/kernel', 'dyn/prior0norm/scale', 'dyn/prior1/bias', 'dyn/prior1/kernel', 'dyn/prior1norm/scale', 'dyn/priorlogit/bias', 'dyn/priorlogit/kernel', 'enc/context15/bias', 'enc/context15/kernel', 'enc/fusion/bias', 'enc/fusion/kernel', 'enc/macd5/bias', 'enc/macd5/kernel', 'enc/minute/mlp0/bias', 'enc/minute/mlp0/kernel', 'enc/minute/mlp0norm/scale', 'enc/minute/mlp1/bias', 'enc/minute/mlp1/kernel', 'enc/minute/mlp1norm/scale', 'enc/minute/mlp2/bias', 'enc/minute/mlp2/kernel', 'enc/minute/mlp2norm/scale', 'dec/mlp/linear0/bias', 'dec/mlp/linear0/kernel', 'dec/mlp/norm0/scale', 'dec/vec/market_seq_e_shared/pred/bias', 'dec/vec/market_seq_e_shared/pred/kernel', 'dec/vec/position_state/pred/bias', 'dec/vec/position_state/pred/kernel', 'rew/head/logits/bias', 'rew/head/logits/kernel', 'rew/mlp/linear0/bias', 'rew/mlp/linear0/kernel', 'rew/mlp/norm0/scale', 'con/head/logit/bias', 'con/head/logit/kernel', 'con/mlp/linear0/bias', 'con/mlp/linear0/kernel', 'con/mlp/norm0/scale', 'avail/head/logit/bias', 'avail/head/logit/kernel', 'avail/mlp/linear0/bias', 'avail/mlp/linear0/kernel', 'avail/mlp/linear1/bias', 'avail/mlp/linear1/kernel', 'avail/mlp/norm0/scale', 'avail/mlp/norm1/scale', 'pol/head/action/logits/bias', 'pol/head/action/logits/kernel', 'pol/mlp/linear0/bias', 'pol/mlp/linear0/kernel', 'pol/mlp/norm0/scale', 'val/head/logits/bias', 'val/head/logits/kernel', 'val/mlp/linear0/bias', 'val/mlp/linear0/kernel', 'val/mlp/norm0/scale', 'quality_actor/head/action/logits/bias', 'quality_actor/head/action/logits/kernel', 'quality_actor/mlp/linear0/bias', 'quality_actor/mlp/linear0/kernel', 'quality_actor/mlp/norm0/scale', 'quality_event/head/pred/bias', 'quality_event/head/pred/kernel', 'quality_event/mlp/linear0/bias', 'quality_event/mlp/linear0/kernel', 'quality_event/mlp/norm0/scale', 'quality_touch/head/pred/bias', 'quality_touch/head/pred/kernel', 'quality_touch/mlp/linear0/bias', 'quality_touch/mlp/linear0/kernel', 'quality_touch/mlp/norm0/scale', 'quality_adverse/head/pred/bias', 'quality_adverse/head/pred/kernel', 'quality_adverse/mlp/linear0/bias', 'quality_adverse/mlp/linear0/kernel', 'quality_adverse/mlp/norm0/scale', 'quality_score/head/pred/bias', 'quality_score/head/pred/kernel', 'quality_score/mlp/linear0/bias', 'quality_score/mlp/linear0/kernel', 'quality_score/mlp/norm0/scale', 'quality_q_c1/head/pred/bias', 'quality_q_c1/head/pred/kernel', 'quality_q_c1/mlp/linear0/bias', 'quality_q_c1/mlp/linear0/kernel', 'quality_q_c1/mlp/norm0/scale', 'quality_q_v2/head/pred/bias', 'quality_q_v2/head/pred/kernel', 'quality_q_v2/mlp/linear0/bias', 'quality_q_v2/mlp/linear0/kernel', 'quality_q_v2/mlp/norm0/scale']
+E         Exception happened inside Ninjax scope 'opt'.
+E         --------------------
+E         For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:274: RuntimeError</failure></testcase></testsuite></testsuites>

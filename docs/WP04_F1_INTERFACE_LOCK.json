@@ -1,0 +1,27 @@
+{
+  "protocol": "FG_S3_E_QUALITY_F1_INTERFACE_LOCK_V1",
+  "baseline": {
+    "gym": "7366886f3b40bf74aa4485978ffcc97e39d0d53e",
+    "dreamer": "446d1bc99debd2d05c313eafd7d0c414ebd2815c"
+  },
+  "commit_A": {
+    "gym": "fa75f0151a8081342fbb3adf83e50970ae381bd7",
+    "dreamer": "d7bcbcd2a189de75cef57122d61219341b11e65d"
+  },
+  "course_stage": "FOUNDATION_WM",
+  "sampling_stage": "WM_NATURAL",
+  "reader": "EQualityCourseReader.sample(B,T+K) -> [B,T+K+1,...]",
+  "f1_model_inputs": "original native Replay/clock only; no posterior fields",
+  "world_model": "_S3V2Model.wm_only -> Agent.world_model",
+  "optimizer": "original self.opt; explicit six WM prefixes",
+  "checkpoint_backend": "external_immutable_course_reader",
+  "initial_actual_ninjax_leaves": 349,
+  "initial_actual_shared_clocks": [
+    "opt/step/value",
+    "opt/state/1/0",
+    "opt/state/2/0",
+    "opt/state/3/count"
+  ],
+  "status": "IN_PROGRESS_NOT_TRAINING_AUTHORITY",
+  "training_admitted": false
+}

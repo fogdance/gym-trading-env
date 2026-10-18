@@ -1,0 +1,69 @@
+........F
+=================================== FAILURES ===================================
+___________ test_B03_actual_original_optimizer_step_and_frozen_slots ___________
+
+wm_case = ({'schema': 'FG_S3_E_QUALITY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec':.../market_seq_e_shared/pred/bias': array([0., 0., 0., ..., 0., 0., 0.], dtype=float32), ...}, 'pending_sync': None, ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-457/test_B03_actual_original_optim0')
+
+    def test_B03_actual_original_optimizer_step_and_frozen_slots(wm_case,tmp_path):
+        s,r,agent,initial=wm_case;agent.load_exact(initial)
+        raw,_=F1WindowAdapter(r,s).sample()
+        before=parameter_digests(agent.params)
+        _,outs,metrics=train_batch(agent,raw)
+        after=parameter_digests(agent.params)
+        assert int(agent.n_updates)==1 and bool(metrics['f1/finite'])
+        np.testing.assert_array_equal(outs['effective_stepid'],raw['stepid'][:,5:])
+        assert metrics['f1/target_positions']==8 and metrics['f1/burnin_positions']==4
+        frozen=[k for k,v in agent.model.f1_mutable_keys.items() if not v]
+        assert all(before[k]==after[k] for k in frozen)
+>       assert all(any(before[k]!=after[k] for k in before if k.startswith(p))
+                   for p in ('enc/','dyn/','dec/','rew/','con/','avail/'))
+E       assert False
+E        +  where False = all(<generator object test_B03_actual_original_optimizer_step_and_frozen_slots.<locals>.<genexpr> at 0x7599f1c49240>)
+
+tests/entry_v1/test_wp04_wm.py:91: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_actor
+           706 pol
+           706 quality_q_c1
+           706 quality_q_v2
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp04_wm.py::test_B03_actual_original_optimizer_step_and_frozen_slots
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 8 passed in 107.04s (0:01:47)

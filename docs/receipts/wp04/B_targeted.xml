@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="9" time="107.033" timestamp="2026-10-18T09:20:11.620423+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B01_reader_native_window_and_future_labels_are_separate" time="80.197" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[shuffle]" time="0.016" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[owner]" time="0.045" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[shift]" time="0.015" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[action]" time="0.011" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[reward]" time="0.011" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[carry]" time="0.010" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B02_corrupt_native_window_rejected_before_optimizer[length]" time="0.006" /><testcase classname="tests.entry_v1.test_wp04_wm" name="test_B03_actual_original_optimizer_step_and_frozen_slots" time="25.873"><failure message="assert False&#10; +  where False = all(&lt;generator object test_B03_actual_original_optimizer_step_and_frozen_slots.&lt;locals&gt;.&lt;genexpr&gt; at 0x7599f1c49240&gt;)">wm_case = ({'schema': 'FG_S3_E_QUALITY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec':.../market_seq_e_shared/pred/bias': array([0., 0., 0., ..., 0., 0., 0.], dtype=float32), ...}, 'pending_sync': None, ...})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-457/test_B03_actual_original_optim0')
+
+    def test_B03_actual_original_optimizer_step_and_frozen_slots(wm_case,tmp_path):
+        s,r,agent,initial=wm_case;agent.load_exact(initial)
+        raw,_=F1WindowAdapter(r,s).sample()
+        before=parameter_digests(agent.params)
+        _,outs,metrics=train_batch(agent,raw)
+        after=parameter_digests(agent.params)
+        assert int(agent.n_updates)==1 and bool(metrics['f1/finite'])
+        np.testing.assert_array_equal(outs['effective_stepid'],raw['stepid'][:,5:])
+        assert metrics['f1/target_positions']==8 and metrics['f1/burnin_positions']==4
+        frozen=[k for k,v in agent.model.f1_mutable_keys.items() if not v]
+        assert all(before[k]==after[k] for k in frozen)
+&gt;       assert all(any(before[k]!=after[k] for k in before if k.startswith(p))
+                   for p in ('enc/','dyn/','dec/','rew/','con/','avail/'))
+E       assert False
+E        +  where False = all(&lt;generator object test_B03_actual_original_optimizer_step_and_frozen_slots.&lt;locals&gt;.&lt;genexpr&gt; at 0x7599f1c49240&gt;)
+
+tests/entry_v1/test_wp04_wm.py:91: AssertionError</failure></testcase></testsuite></testsuites>

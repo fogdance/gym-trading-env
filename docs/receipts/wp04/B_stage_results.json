@@ -1,0 +1,646 @@
+{
+  "B_smoke": {
+    "exit_code": 1,
+    "passed": 0,
+    "failed": 1,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B03_actual_original_optimizer_step_and_frozen_slots",
+        "time": "92.542"
+      }
+    ]
+  },
+  "B_targeted": {
+    "exit_code": 1,
+    "passed": 8,
+    "failed": 1,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B01_reader_native_window_and_future_labels_are_separate",
+        "time": "80.197"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shuffle]",
+        "time": "0.016"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[owner]",
+        "time": "0.045"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shift]",
+        "time": "0.015"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[action]",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[reward]",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[carry]",
+        "time": "0.010"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[length]",
+        "time": "0.006"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B03_actual_original_optimizer_step_and_frozen_slots",
+        "time": "25.873"
+      }
+    ]
+  },
+  "B_retry": {
+    "exit_code": 1,
+    "passed": 14,
+    "failed": 1,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B01_reader_native_window_and_future_labels_are_separate",
+        "time": "81.418"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shuffle]",
+        "time": "0.017"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[owner]",
+        "time": "0.047"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shift]",
+        "time": "0.016"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[action]",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[reward]",
+        "time": "0.012"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[carry]",
+        "time": "0.010"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[length]",
+        "time": "0.006"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B03_actual_original_optimizer_step_and_frozen_slots",
+        "time": "25.525"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B04_nonzero_inherited_momentum_and_negative_zero_stay_frozen",
+        "time": "0.251"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B05_only_T_targets_and_detached_K_history",
+        "time": "30.464"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B06_each_window_ignores_previous_random_carry",
+        "time": "0.103"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B07_unknown_parameter_and_optimizer_leaf_schema_rejected",
+        "time": "0.023"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B08_insufficient_K_T_support_does_not_reduce_length",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B09_K32_T64_four_native_WM_updates_without_actor_forward",
+        "time": "1.061"
+      }
+    ]
+  },
+  "B_final": {
+    "exit_code": 0,
+    "passed": 17,
+    "failed": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B01_reader_native_window_and_future_labels_are_separate",
+        "time": "82.516"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shuffle]",
+        "time": "0.016"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[owner]",
+        "time": "0.046"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[shift]",
+        "time": "0.016"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[action]",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[reward]",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[carry]",
+        "time": "0.010"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B02_corrupt_native_window_rejected_before_optimizer[length]",
+        "time": "0.006"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B03_actual_original_optimizer_step_and_frozen_slots",
+        "time": "25.380"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B04_nonzero_inherited_momentum_and_negative_zero_stay_frozen",
+        "time": "0.243"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B05_only_T_targets_and_detached_K_history",
+        "time": "27.903"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B06_each_window_ignores_previous_random_carry",
+        "time": "0.102"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B07_unknown_parameter_and_optimizer_leaf_schema_rejected",
+        "time": "0.022"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B08_insufficient_K_T_support_does_not_reduce_length",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B09_K32_T64_four_native_WM_updates_without_actor_forward",
+        "time": "25.623"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B10_nonfinite_candidate_rejected_without_parameter_optimizer_or_counter_commit",
+        "time": "0.086"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B11_original_weight_decay_and_momentum_cannot_move_frozen_leaf",
+        "time": "0.369"
+      }
+    ]
+  },
+  "B_byte_review": {
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp04_wm",
+        "name": "test_B12_signed_zero_is_a_native_byte_change_even_when_values_equal",
+        "time": "7.486"
+      }
+    ]
+  },
+  "B_shared": {
+    "exit_code": 0,
+    "passed": 20,
+    "failed": 0,
+    "cases": [
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+        "time": "0.398"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+        "time": "0.290"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+        "time": "0.042"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+        "time": "24.156"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+        "time": "20.868"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+        "time": "7.835"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+        "time": "20.861"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+        "time": "7.890"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+        "time": "0.017"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_online_model_and_environment_counters_have_separate_domains",
+        "time": "0.002"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+        "time": "21.147"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_no_inference_source_and_frozen_snapshot",
+        "time": "7.703"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_missing_baseline_requires_authenticated_features",
+        "time": "7.461"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+        "time": "0.000"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+        "time": "0.000"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_rejects_missing_gate_interface",
+        "time": "0.000"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+        "time": "0.000"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_accepts_formal_checkpoint",
+        "time": "0.000"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_eval_only_rejects_warmup_checkpoint",
+        "time": "0.002"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_live_trading_rejects_warmup_checkpoint",
+        "time": "0.001"
+      }
+    ]
+  },
+  "B_reader_regression": {
+    "exit_code": 0,
+    "passed": 56,
+    "failed": 0,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A01_development_checks_content_without_claiming_native_or_training",
+        "time": "0.048"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A02_relocated_corpus_and_unrelated_dirty_code_keep_content_identity",
+        "time": "0.022"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A03_changed_source_or_course_bytes_rejected",
+        "time": "0.011"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[../TEST/prices.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[/tmp/TEST/prices.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[TEST/prices.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[DEV/data.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/NEVER_OPEN_TEST.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/prices.csv]",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A05_symlink_rejected_before_hashing",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A06_nontrain_and_forged_training_permission_rejected",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A07_self_signed_pass_cannot_replace_native_execution",
+        "time": "0.013"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A08_missing_or_empty_purpose_never_means_draft",
+        "time": "0.007"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A09_changed_declared_identity_and_old_teacher_objective_rejected",
+        "time": "0.015"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A10_missing_published_owner_or_inventory_rejected",
+        "time": "0.012"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_admission",
+        "name": "test_A11_draft_course_cannot_be_a_supervision_source",
+        "time": "0.014"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B01_six_native_accounts_stream_to_metadata_index",
+        "time": "11.505"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[ordinal]",
+        "time": "0.145"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[stepid]",
+        "time": "0.110"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[missing]",
+        "time": "0.141"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[duplicate]",
+        "time": "0.121"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[shift]",
+        "time": "0.150"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[account]",
+        "time": "0.118"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[policy]",
+        "time": "0.125"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[executed]",
+        "time": "0.159"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[incoming_action]",
+        "time": "0.123"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B03_sidecar_or_student_chunk_exchange_is_rejected",
+        "time": "0.121"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B04_l2_invalid_does_not_erase_l1_and_forced_wait_is_not_strict",
+        "time": "0.329"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B05_current_observation_teacher_not_behavior_action",
+        "time": "0.336"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B06_each_window_mask_is_independent_and_invalid_huge_target_zeroed",
+        "time": "0.012"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B07_fake_strict_wait_and_rational_witness_rejected",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B08_pair_identity_requires_nonzero_same_owner_same_reset",
+        "time": "0.339"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B09_new_protocol_rejects_old_q_soft_weights_and_preserves_legacy",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B10_json_claim_is_not_an_admission_object",
+        "time": "0.001"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B11_resigned_student_chunk_exchange_or_macd_change_rejected",
+        "time": "0.119"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B12_mae_does_not_change_score_and_nan_is_rejected_before_loss",
+        "time": "0.013"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FORCED_WAIT_POSITION]",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE]",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[ADD_RIGHT_CENSORED]",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[NO_ACTIVE_DECISION]",
+        "time": "0.009"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_join",
+        "name": "test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions",
+        "time": "1.214"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+        "time": "10.356"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+        "time": "0.039"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+        "time": "0.040"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+        "time": "0.038"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+        "time": "0.183"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+        "time": "0.089"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+        "time": "0.090"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+        "time": "0.032"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C04_restore_rejects_source_index_stage_or_sampling_change",
+        "time": "0.042"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C05_same_price_different_account_and_reset_never_form_pair",
+        "time": "0.105"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+        "time": "0.070"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+        "time": "0.098"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C08_open_reader_detects_changed_sidecar_or_chunk",
+        "time": "0.046"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+        "time": "0.000"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp03_reader",
+        "name": "test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+        "time": "0.445"
+      }
+    ]
+  }
+}
