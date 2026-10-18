@@ -1,0 +1,79 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_D04_visible_native_macd_and_context_reach_F2 _______________
+
+indexed = (PosixPath('/tmp/pytest-of-v/pytest-507/wp05_diag0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...9e012e884c2427f2d85103b18d7bf170d8234cb5c8dea57a9d'}), PosixPath('/tmp/pytest-of-v/pytest-507/wp05_diag0/join.sqlite'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-507/test_D04_visible_native_macd_a0')
+
+    def test_D04_visible_native_macd_and_context_reach_F2(indexed,tmp_path):
+     from wp05_fixture import BASE
+     # Same preserved WP04 run; this source includes complete 320-minute prehistory.
+     source=BASE.parents[1]/'G0_cli_probe'
+     s={**indexed[1],'corpus_root':str(source/'source/corpus'),'source_f1_run':str(source/'run'),
+        'source_f1_checkpoint':str(source/'run/ckpt/step_000000000004')}
+     p=preflight(s);index=tmp_path/'join.sqlite';build_join_index(p.source,index)
+     r=EQualityCourseReader.open(p.source,stage='HEADS_VALID',sampling_spec={'mode':'NATURAL'},seed=202,index_path=index)
+     try:
+      a=create_agent(s,tmp_path/'model',controlled_small=True);data,_=F2WindowAdapter(r,s).sample();before=parameter_digests(a.params)
+      assert data['market_macd_5m'][...,-1].any() and data['market_context_15m'][...,-1].any()
+      report=ablations(a,data)
+>     assert all(v['valid_visible'] and max(v['max_abs_logit_delta'].values())>0 for v in report.values())
+E     assert False
+E      +  where False = all(<generator object test_D04_visible_native_macd_and_context_reach_F2.<locals>.<genexpr> at 0x7629bc297760>)
+
+tests/entry_v1/test_wp05_diagnostics.py:87: AssertionError
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-aadzrtpi because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_v2
+           706 quality_actor
+           706 quality_q_c1
+           706 pol
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp05_diagnostics.py::test_D04_visible_native_macd_and_context_reach_F2
+1 failed in 38.22s

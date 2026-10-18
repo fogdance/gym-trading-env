@@ -1,0 +1,20 @@
+from pathlib import Path
+import json
+from gym_trading_env.research.fg_s3_e_quality_foundation import preflight
+from embodied.run.fg_s3_e_quality_foundation import FoundationRun,synthetic_probe_permit
+root=Path('/tmp/pytest-of-v/pytest-478/wp04_cold0');s=json.loads((root/'settings.json').read_text());p=preflight(s)
+r=object.__new__(FoundationRun)
+try:FoundationRun.__init__(r,p,root/'join.sqlite',root/'split',resume=True,_probe=synthetic_probe_permit(p))
+except Exception as exc:print(type(exc).__name__,str(exc))
+a=json.loads((root/'split/run_identity.json').read_text())['identity'];b=r.identity
+def diff(x,y,path=''):
+ if type(x)!=type(y):print(path,'types',type(x).__name__,type(y).__name__,repr(x)[:100],repr(y)[:100]);return
+ if isinstance(x,dict):
+  for k in x.keys()|y.keys():
+   if k not in x or k not in y:print(path+'/'+k,'missing')
+   elif x[k]!=y[k]:diff(x[k],y[k],path+'/'+k)
+ elif isinstance(x,(list,tuple)):
+  for i,(v,w) in enumerate(zip(x,y)):
+   if v!=w:diff(v,w,path+'/'+str(i))
+ elif x!=y:print(path,repr(x),repr(y))
+diff(a,b)

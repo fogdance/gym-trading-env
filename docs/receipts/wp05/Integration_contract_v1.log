@@ -1,0 +1,52 @@
+..............E
+==================================== ERRORS ====================================
+____ ERROR at setup of test_B01_nonopt_complete_fresh_optimizer_and_mirror _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x79d614415ad0>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-526'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def source(tmp_path_factory):
+     root=tmp_path_factory.mktemp('wp05_transfer');s=engineering_settings(root)
+>    proof,data=inspect_f1(s,allow_engineering=True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp05_transfer.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+settings = {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEADS', 'sampling_stage': 'HEADS_VALID', 'sampling_spec': {'mode': 'NATURAL'}, ...}
+allow_engineering = True
+
+    def inspect_f1(settings,*,allow_engineering=False):
+        root=Path(settings['source_f1_run']);node=Path(settings['source_f1_checkpoint'])
+        if not node.is_relative_to(root/'ckpt'):raise ValueError('F2_F1_NODE_OUTSIDE_RUN')
+        identity=read_manifest(root/'run_identity.json')['identity']
+        meta=validate_bundle(node,identity)
+        if (identity.get('protocol')!='FG_S3_E_QUALITY_F1_RUN_V1'
+                or identity.get('backend')!='external_immutable_course_reader'
+                or identity.get('preparation',{}).get('course_stage')!='FOUNDATION_WM'):
+            raise ValueError('F2_SOURCE_MUST_BE_F1')
+        engineering=identity.get('controlled_small') is True
+        if engineering and not allow_engineering:raise ValueError('F2_FOUNDATION_NOT_TRAINED')
+        if not engineering and identity.get('training_admitted') is not True:raise ValueError('F2_F1_FORMAL_TRAINING_REQUIRED')
+        budget=identity['preparation']['optimizer_updates']
+        agent=pickle.loads((node/'agent.pkl').read_bytes())
+        counters=pickle.loads((node/'counters.pkl').read_bytes())
+        if (type(budget) is not int or budget<=0 or meta['step']!=budget or not meta['protected']
+                or agent['counters']['updates']!=budget or counters['optimizer_updates']!=budget
+                or counters['consumed_batches']!=budget):raise ValueError('F2_F1_NOT_COMPLETED')
+        if int(np.asarray(agent['params']['opt/step/value']))!=budget:raise ValueError('F2_F1_OPTIMIZER_COUNT_MISMATCH')
+        from gym_trading_env.research.fg_s3_e_quality_heads import model_config
+        if identity['effective_model']['agent']!=plain(model_config(settings,controlled_small=engineering))['agent']:
+            raise ValueError('F2_F1_MODEL_ARCHITECTURE_MISMATCH')
+        from gym_trading_env.research.fg_s3_e_observation import observation_contract
+        from dreamerv3.fg_s3_e_quality_course_contract import REWARD_SCHEMA
+        p=identity['preparation']
+>       if p['observation']!=observation_contract() or p['reward_schema']!=REWARD_SCHEMA:raise ValueError('F2_F1_REWARD_OBSERVATION_CLOCK_MISMATCH')
+                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: F2_F1_REWARD_OBSERVATION_CLOCK_MISMATCH
+
+../dreamerv3/embodied/run/fg_s3_e_quality_transfer.py:64: ValueError
+=========================== short test summary info ============================
+ERROR tests/entry_v1/test_wp05_transfer.py::test_B01_nonopt_complete_fresh_optimizer_and_mirror
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
+14 passed, 1 error in 14.37s

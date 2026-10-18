@@ -1,0 +1,12 @@
+import json
+import numpy as np
+import jax.numpy as jnp
+from dreamerv3.agent import Agent
+from dreamerv3.configuration import read_config_yaml
+from pathlib import Path
+cfg=read_config_yaml(Path('../dreamerv3/dreamerv3/configs.yaml'))['defaults']['agent']['opt']
+opt=Agent._make_opt(None,**cfg);params={'enc/probe/kernel':jnp.ones((2,2))};grads={'enc/probe/kernel':jnp.ones((2,2))};state=opt.init(params);changes=[]
+for i in range(3):
+ updates,state=opt.update(grads,state,params);changes.append(np.asarray(updates['enc/probe/kernel']).tolist())
+receipt=dict(original_optimizer_config=cfg,updates=changes,scope='synthetic optimizer schedule only; no real market/model updates')
+Path('docs/receipts/wp04/B_schedule_observation.json').write_text(json.dumps(receipt,indent=2)+'\n');print(json.dumps(receipt))

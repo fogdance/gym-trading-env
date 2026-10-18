@@ -1,0 +1,332 @@
+{
+  "D_admission": {
+    "exit_code": 0,
+    "seconds": 21.138069259002805,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/D_admission.xml",
+      "tests/entry_v1/test_wp04_admission.py",
+      "-k",
+      "not A05"
+    ],
+    "collected": 12,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_admission::test_A01_engineering_receipt_is_not_native_or_training_authority",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[stage-QUALITY_HEADS]",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[sampling_stage-FOUNDATION_WM]",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[sampling_spec-value2]",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[burnin_steps-0]",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[target_steps-True]",
+      "tests.entry_v1.test_wp04_admission::test_A02_stage_shape_or_old_initialization_never_falls_back[model_init-value5]",
+      "tests.entry_v1.test_wp04_admission::test_A03_wrong_reward_observation_or_nontrain_rejected_without_prepare",
+      "tests.entry_v1.test_wp04_admission::test_A04_unauthorized_cli_fails_before_reading_or_creating_run[f1-start]",
+      "tests.entry_v1.test_wp04_admission::test_A04_unauthorized_cli_fails_before_reading_or_creating_run[f1-resume]",
+      "tests.entry_v1.test_wp04_admission::test_A06_F1_must_not_enable_teacher_or_decision_losses",
+      "tests.entry_v1.test_wp04_admission::test_A07_prepare_only_writes_engineering_files_and_refuses_overwrite"
+    ]
+  },
+  "D_checkpoint_shared": {
+    "exit_code": 0,
+    "seconds": 4.469030812964775,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/D_checkpoint_shared.xml",
+      "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_checkpoint_retention.py"
+    ],
+    "collected": 15,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "embodied.tests.test_fg_full_checkpoint::test_replay_restores_partial_chunks_online_queue_rng_and_updates",
+      "embodied.tests.test_fg_full_checkpoint::test_prefetch_snapshot_restores_pending_batches_and_consecutive_context",
+      "embodied.tests.test_fg_full_checkpoint::test_runtime_restores_ratio_carry_aggregates_and_gate_samples",
+      "embodied.tests.test_fg_full_checkpoint::test_exact_schedule_resume_and_overshoot_rejection",
+      "embodied.tests.test_fg_full_checkpoint::test_atomic_full_bundle_retention_identity_and_corrupt_recovery",
+      "embodied.tests.test_fg_full_checkpoint::test_failed_save_preserves_valid_points_and_final_is_protected",
+      "embodied.tests.test_fg_full_checkpoint::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]",
+      "embodied.tests.test_fg_full_checkpoint::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]",
+      "embodied.tests.test_fg_full_checkpoint::test_deterministic_prefetch_propagates_worker_failure_without_waiting",
+      "embodied.tests.test_fg_full_checkpoint::test_fg_guard_rejects_full_checkpoint_optout_before_model_init",
+      "embodied.tests.test_checkpoint_retention::test_step_checkpoint_retention_copies_first_save_after_target",
+      "embodied.tests.test_checkpoint_retention::test_step_checkpoint_retention_accepts_comma_separated_steps",
+      "embodied.tests.test_checkpoint_retention::test_step_checkpoint_retention_writes_seed_metadata",
+      "embodied.tests.test_checkpoint_retention::test_step_checkpoint_retention_seed_metadata_is_repeatable",
+      "embodied.tests.test_checkpoint_retention::test_train_loop_retains_step_targets_and_final_due_target"
+    ]
+  },
+  "D_cli_probe": {
+    "exit_code": 0,
+    "seconds": 89.76122712704819,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "f1-probe",
+      "--output-dir",
+      "artifacts/fg_s3_v2/e_quality_wp04/G0_cli_probe"
+    ]
+  },
+  "D_cold": {
+    "exit_code": 1,
+    "seconds": 147.24217779398896,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/D_cold.xml",
+      "tests/entry_v1/test_wp04_checkpoint.py"
+    ],
+    "collected": 14,
+    "failed": 2,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_checkpoint::test_D01_actual_cold_process_full_state_and_next_batch",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D03_forged_native_dataclass_is_not_authority",
+      "tests.entry_v1.test_wp04_checkpoint::test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+      "tests.entry_v1.test_wp04_checkpoint::test_D05_initial_unknown_state_and_parameter_slots_fail_closed"
+    ]
+  },
+  "D_cold_retry": {
+    "exit_code": 1,
+    "seconds": 137.02650835597888,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/D_cold_retry.xml",
+      "tests/entry_v1/test_wp04_checkpoint.py"
+    ],
+    "collected": 14,
+    "failed": 1,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_checkpoint::test_D01_actual_cold_process_full_state_and_next_batch",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D03_forged_native_dataclass_is_not_authority",
+      "tests.entry_v1.test_wp04_checkpoint::test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+      "tests.entry_v1.test_wp04_checkpoint::test_D05_initial_unknown_state_and_parameter_slots_fail_closed"
+    ]
+  },
+  "D_final": {
+    "exit_code": 0,
+    "seconds": 125.92845250992104,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/D_final.xml",
+      "tests/entry_v1/test_wp04_checkpoint.py",
+      "--basetemp=artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final"
+    ],
+    "collected": 14,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_checkpoint::test_D01_actual_cold_process_full_state_and_next_batch",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+      "tests.entry_v1.test_wp04_checkpoint::test_D03_forged_native_dataclass_is_not_authority",
+      "tests.entry_v1.test_wp04_checkpoint::test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+      "tests.entry_v1.test_wp04_checkpoint::test_D05_initial_unknown_state_and_parameter_slots_fail_closed"
+    ]
+  },
+  "D_identity_observation": {
+    "exit_code": 0,
+    "seconds": 2.607317329966463,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/tmp/wp04_identity_inspect.py"
+    ]
+  },
+  "D_worker_continuous_start_4": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/continuous",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/join.sqlite",
+      "start",
+      "4"
+    ]
+  },
+  "D_worker_continuous_start_4_294e1c74446e4f38b2b0511a6ce1a0c7": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/continuous",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/join.sqlite",
+      "start",
+      "4"
+    ]
+  },
+  "D_worker_continuous_start_4_f83ddf3ce6114dbe84ad60cd08a6562f": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/settings.json",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/continuous",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/join.sqlite",
+      "start",
+      "4"
+    ]
+  },
+  "D_worker_split_resume_4": {
+    "exit_code": 1,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/split",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/join.sqlite",
+      "resume",
+      "4"
+    ]
+  },
+  "D_worker_split_resume_4_500d344cca5d4d83b4de1584fb21d6ba": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/split",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/join.sqlite",
+      "resume",
+      "4"
+    ]
+  },
+  "D_worker_split_resume_4_602cbea38fe841b4ac2d0229fd06c552": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/settings.json",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/split",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/join.sqlite",
+      "resume",
+      "4"
+    ]
+  },
+  "D_worker_split_start_2": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/split",
+      "/tmp/pytest-of-v/pytest-478/wp04_cold0/join.sqlite",
+      "start",
+      "2"
+    ]
+  },
+  "D_worker_split_start_2_6b7f3c9d72754ec1a846c542482f48f3": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/settings.json",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/split",
+      "/tmp/pytest-of-v/pytest-481/wp04_cold0/join.sqlite",
+      "start",
+      "2"
+    ]
+  },
+  "D_worker_split_start_2_a4e8cf0e133548cca68f969835caaf61": {
+    "exit_code": 0,
+    "seconds": null,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/settings.json",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/split",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/join.sqlite",
+      "start",
+      "2"
+    ]
+  }
+}

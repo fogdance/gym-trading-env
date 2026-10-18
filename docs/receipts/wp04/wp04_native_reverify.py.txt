@@ -1,0 +1,9 @@
+from pathlib import Path
+from gym_trading_env.research.fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
+from gym_trading_env.research.fg_replay import write_json
+out=Path('docs/receipts/wp04/G1_native')
+corpus='/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp02/real_small_04'
+producer='/home/v/Documents/work/research/fg-s3-e-quality-wp01-20261016/gym-trading-env'
+a=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus),purpose='native-verification',producer_gym=producer,log_path=out/'native.log')
+write_json(out/'admission.json',a.receipt);write_json(out/'native_result.json',a.native_result)
+print(a.receipt['status'],a.native_result['result'])

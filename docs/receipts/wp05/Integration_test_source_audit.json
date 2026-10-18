@@ -1,0 +1,25 @@
+{
+  "Integration_data_reader_v2": {
+    "runtime_source_differences": []
+  },
+  "Integration_shared_v1": {
+    "runtime_source_differences": [
+      "gym/src/gym_trading_env/research/fg_s3_e_quality_heads_checks.py"
+    ]
+  },
+  "Integration_f1_v1": {
+    "runtime_source_differences": []
+  },
+  "Integration_legacy_quality_v1": {
+    "runtime_source_differences": []
+  },
+  "Integration_wp05_v2": {
+    "runtime_source_differences": []
+  },
+  "Integration_cli_v3": {
+    "runtime_source_differences": []
+  },
+  "Integration_probe_v1": {
+    "runtime_source_differences": []
+  }
+}

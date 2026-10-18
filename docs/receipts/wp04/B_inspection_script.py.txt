@@ -1,0 +1,8 @@
+from pathlib import Path
+import json
+from wp04_fixture import settings
+from gym_trading_env.research.fg_s3_e_quality_foundation import create_agent,validate_settings
+root=Path.cwd();a=create_agent(validate_settings(settings(root/'artifacts/fg_s3_v2/e_quality_wp04/not_read')),root/'artifacts/fg_s3_v2/e_quality_wp04/layout_model',controlled_small=True)
+layout={k:dict(shape=list(v.shape),dtype=str(v.dtype)) for k,v in a.params.items()}
+(root/'docs/receipts/wp04/B_initial_layout.json').write_text(json.dumps(layout,indent=2)+'\n')
+print(json.dumps({k:v for k,v in layout.items() if not k.startswith(('enc/','dyn/','dec/','rew/','con/','avail/','pol/','val/','slowval/','quality_'))},indent=2))

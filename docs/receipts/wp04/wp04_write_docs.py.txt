@@ -1,0 +1,69 @@
+import json,subprocess,hashlib,xml.etree.ElementTree as ET,shlex
+from pathlib import Path
+from gym_trading_env.research.fg_s3_e_quality_foundation import read_settings,model_config
+from dreamerv3.fg_s3_e_quality_foundation import model_extensions,WM_GROUPS
+from gym_trading_env.envs.entry_contract import fingerprint
+from gym_trading_env.research.fg_replay import read_manifest
+root=Path.cwd();out=root/'docs/receipts/wp04';d=root.parent/'dreamerv3'
+read=json.loads((out/'G1_read_only/read_check.json').read_text());coverage=json.loads((out/'G1_coverage_evidence.json').read_text());full=json.loads((out/'E_persisted_full_state_audit.json').read_text())
+source=Path('configs/experiments/fg_s3_v2/e_quality_f1_read_check_wp04_20261018.yaml');s=read_settings(source)
+manifest=read_manifest(Path(s['corpus_root'])/'corpus_manifest.json');source_model=read_manifest(Path(s['corpus_root'])/'model_contract.json')
+formal_model_hash=fingerprint(dict(model=model_config(s),extensions=model_extensions(64,32)))
+probe_model_hash=fingerprint(dict(model=full['checkpoint_identity']['effective_model'],extensions=full['checkpoint_identity']['model_extension']))
+commits={}
+for role,repo in [('gym',root),('dreamer',d)]:
+ rows=subprocess.check_output(['git','-C',str(repo),'log','--format=%H|%s','-4'],text=True).splitlines()
+ commits[role]={line.split('|',1)[1].split('WP04 ')[1][0]:line.split('|')[0] for line in rows}
+records={};latest={}
+for p in sorted(out.glob('*.json')):
+ try:r=json.loads(p.read_text())
+ except ValueError:continue
+ if 'argv' not in r or 'exit_code' not in r:continue
+ item={k:r.get(k) for k in ('argv','exit_code','seconds')};xml=p.with_suffix('.xml')
+ if xml.exists():
+  cs=list(ET.parse(xml).iter('testcase'))
+  item.update(collected=len(cs),failed=sum(x.find('failure') is not None or x.find('error') is not None for x in cs),skipped=sum(x.find('skipped') is not None for x in cs),cases=[dict(name=x.get('name'),classname=x.get('classname'),status='FAIL' if x.find('failure') is not None or x.find('error') is not None else 'SKIP' if x.find('skipped') is not None else 'PASS') for x in cs])
+ records[p.stem]=item
+selected=['E_contracts','E_wp04','E_restore_final','D_checkpoint_shared','E_required_final','E_legacy_resume','E_teacher_loss','C_shared_model','C_shared_recheck']
+for label in selected:
+ for c in records[label]['cases']:latest[c['name']]=dict(**c,receipt=label)
+assert len(latest)==379 and all(x['status']=='PASS' for x in latest.values())
+(out/'E_stage_results.json').write_text(json.dumps(dict(selected_receipts=selected,distinct_cases=len(latest),passed=379,failed=0,skipped=0,scope='SELECTED_CONTRACTS_NOT_WHOLE_PROJECT',cases=latest,all_actual_commands=records),indent=2)+'\n')
+# Preserve raw command scripts next to command receipts.
+for p in Path('/tmp').glob('wp04_*.py'):
+ if p.name in ('wp04_write_docs.py',):continue
+ (out/(p.name+'.txt')).write_bytes(p.read_bytes())
+lines=['# WP04 实际测试与退出码','', '选定最终用例口径：**379 个不同用例 PASS，0 FAIL，0 SKIP**。不是全项目通过。`C_shared_model` 的 1 项失败以同一项 `C_shared_recheck` 修正后的实跑覆盖；其他最终集合均 exit 0。旧失败不计为通过，全部保留。', '', '| 原始命令标签 | exit | 收集 / fail / skip | 秒 | 输出 |','|---|---:|---|---:|---|']
+for name,r in records.items():
+ counts='—' if 'collected' not in r else f"{r['collected']} / {r['failed']} / {r['skipped']}"
+ secs='—' if r.get('seconds') is None else f"{r['seconds']:.2f}"
+ lines.append(f"| {name} | {r['exit_code']} | {counts} | {secs} | [receipt](receipts/wp04/{name}.json) / [log](receipts/wp04/{name}.log) |")
+lines += ['', '## 精确执行命令', '', '以下来自实际收据，不是计划命令。均从本 WP04 Gym worktree 执行；原工作树基线命令的 cwd/PYTHONPATH 在对应脚本与收据中。临时 `--cmd` 脚本同时归档为 `receipts/wp04/<文件名>.py.txt`。反复执行应使用新 receipt 标签和新输出目录，避免覆盖旧记录。', '', '公共环境：`PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES="" PYTHONDONTWRITEBYTECODE=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1`；`FG_REPLAY_DREAMER_ROOT` 指向本工作树兄弟 Dreamer。', '']
+for name,r in records.items():
+ lines += [f"### {name}（exit {r['exit_code']}）",'', '```bash',shlex.join(r['argv']),'```','']
+(root/'docs/WP04_TEST_RESULTS.md').write_text('\n'.join(lines)+'\n')
+lock=dict(protocol='FG_S3_E_QUALITY_F1_INTERFACE_LOCK_V1',status='CODE_GO_NOT_TRAINING_AUTHORITY',baseline=dict(gym='7366886f3b40bf74aa4485978ffcc97e39d0d53e',dreamer='446d1bc99debd2d05c313eafd7d0c414ebd2815c'),branch='feat/s3-e-quality-wp04-20261018',commits_A_through_D=commits,commit_E='See post-commit WP04_DELIVERY_COMMIT_LOCK.json; a commit cannot contain its own SHA.',course_stage='FOUNDATION_WM',sampling_stage='WM_NATURAL',sampling_spec=dict(mode='NATURAL'),reader_index_schema='FG_S3_E_QUALITY_JOIN_INDEX_V3',reader='EQualityCourseReader.sample(B,T+K) -> [B,T+K+1,...]',f1_model_inputs='native Replay/clock only; posterior labels removed before JAX',world_model='_S3V2Model.wm_only -> original Agent.world_model',optimizer='original single self.opt, six WM positive allowlist',trainable_prefixes=list(WM_GROUPS),initial_actual_ninjax_leaves=349,frozen_leaves=144,mutable_leaves=205,explicit_shared_clocks=full['checkpoint_identity']['effective_model']['agent']['opt'],checkpoint_backend='external_immutable_course_reader',carry_rule='FRESH_PER_RANDOM_WINDOW',burnin_rule='first original prefix + K detached original WM forward, only T loss targets',reference_geometry=dict(B=1,T=64,K=32,seed=202,updates=4,split=2),hashes=dict(corpus=manifest['content_hash'],source=read['source']['identity']['source'],course=read['source']['identity']['course'],source_model_contract=source_model['content_hash'],observation=read['source']['identity']['observation']['contract_hash'],resolved_size1m_F1_model=formal_model_hash,actual_controlled_small_F1_model=probe_model_hash,reader_index=read['join']['index_sha256']),G0='GO_CPU_SYNTHETIC_ENGINEERING',G1='GO_NATIVE_G3_AND_READ_ONLY',G2='NOT_RUN_MULTICONTRACT',WP04_CODE_GO=True,WP04_REAL_DATA_READ_GO=True,WP04_TRAIN_GO=False,WP04_MODEL_RESEARCH_GO=False,training_admitted=False,real_TRAIN_optimizer_updates=0,gpu_training='NOT_RUN',test_prices_opened=0,full_18_contracts='NOT_RUN',development_policy='DEV/DATA/FORMAL; see FG_S3_Development_Admission_Levels_20261018.md')
+# This is the actual clock allowlist, not the optimizer hyperparameters.
+lock['optimizer_configuration']=lock.pop('explicit_shared_clocks')
+lock['explicit_shared_clocks']=['opt/step/value','opt/state/1/0','opt/state/2/0','opt/state/3/count']
+(root/'docs/WP04_F1_INTERFACE_LOCK.json').write_text(json.dumps(lock,indent=2)+'\n')
+# Per-group real parameter changes and bitwise frozen slots.
+models=sorted(out.glob('C_multiscale_learning*.json'),key=lambda x:x.stat().st_mtime)
+c=json.loads(models[-1].read_text());delta={p:dict(leaves=sum(k.startswith(p) for k in c['before']),changed=sum(k.startswith(p) and c['before'][k]!=c['after'][k] for k in c['before'])) for p in ('enc/','enc/minute/','enc/context15/','enc/macd5/','enc/fusion/','dyn/','dec/','rew/','con/','avail/','pol/','val/','slowval/','quality_')}
+(out/'E_parameter_summary.json').write_text(json.dumps(dict(evidence_file=models[-1].name,groups=delta,full_initial=full['initial'],full_final=full['final'],model_hashes=lock['hashes'],source='CONTROLLED_SYNTHETIC_ONLY'),indent=2)+'\n')
+(root/'docs/WP04_PARAMETER_AND_RESTORE_EVIDENCE.md').write_text('''# WP04 参数、优化器与恢复证据
+
+实际完整布局 349 个 Ninjax 叶；正向白名单 205 个可变叶 = 67 个 WM 参数 + 134 个原优化器 slots + 4 个共享时钟；其余 144 个逐键 bitwise 冻结。Actor、Critic、slow value、Quality 头、归一化和 Gate 状态都在冻结审计内。原优化器 warmup 首步学习率为 0，使用第二步以后证明变化，不改优化器默认值。
+
+| 参数组 | 实际叶 | 四次更新后变化叶 |
+|---|---:|---:|
+'''+''.join(f"| `{p}` | {v['leaves']} | {v['changed']} |\n" for p,v in delta.items())+f'''
+以上变化来自有效 15m/MACD 原生合成源；C 最早的 210 分钟恒价样本缺少有效 15m / 非零 MACD，只作为 B 工程证明，不能代替多尺度学习证据。对应完整前后哈希、梯度和每项 Loss 在 [参数摘要](receipts/wp04/E_parameter_summary.json) 及其引用的 C 原始收据。
+
+最终恢复：连续 4 次更新与 2 + cold interpreter + 2 全状态逐字节相同。实际样本 B1/T64/K32；有效目标 256 位置/256 市场分钟、预热 128/128，更新 4，消费批次 4；原 Prefetch 另有一批待消费，Agent batch counter 因而为 5，不冒认第五次更新。Python/NumPy RNG、下一批全部字段/seed、Reader RNG/coverage、schedule、所有 Agent 参数/slots/缓冲和指标都比较。
+
+持久原件：`{full['case_root']}`。见 [最终冷恢复](receipts/wp04/D_cold_restore_evidence.json)、[重新读取原件的审查](receipts/wp04/E_persisted_full_state_audit.json)。旧失败试验使用 pytest 临时目录，不能声称旧临时原件仍存在；其命令、退出码、XML 和日志全部保留。最终原件置于隔离 artifacts，不再依赖临时目录保留期。
+
+Checkpoint 没有 Corpus/NPZ/在线 Replay 副本；runtime.pkl 包含精确恢复需要的一个待消费原生 batch（含输入数组），不能把“无整份 Corpus 副本”写成零行情字节。原 Corpus/index 外部引用在 save/load 重验。合成 Checkpoint 无真实训练来源认证，不可作为 F2/F3 正式基础权重。真实 TRAIN 所有 349 参数/slots 前后哈希相同，更新数 0。
+''')
+print(json.dumps(dict(selected_cases=379,model_hashes=lock['hashes'],parameter_groups=delta)))

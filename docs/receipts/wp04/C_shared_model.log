@@ -1,0 +1,67 @@
+....F..............                                                      [100%]
+=================================== FAILURES ===================================
+____________ test_EM04_actual_policy_context_changes_rssm_and_actor ____________
+
+raw_e = {'market_seq': array([[[[ 0.0000000e+00,  0.0000000e+00,  0.0000000e+00, ...,
+           0.0000000e+00,  0.0000000e+00... 0, 0, 1, 0, 0, 0, 0,
+        1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]],
+      dtype=int32), ...}
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-469/test_EM04_actual_policy_contex0')
+
+    def test_EM04_actual_policy_context_changes_rssm_and_actor(raw_e,tmp_path):
+        a=model(tmp_path/'policy')
+        obs={k:raw_e[k][:,40].copy() for k in a.obs_space}
+        obs['action_mask'][:]=1.
+        a.sync_policy_from_train()
+        snapshot=a.save_exact()
+        c1,_,o1=a.policy(a.init_policy(1),obs,mode='eval')
+        a.load_exact(snapshot)
+        other=copy.deepcopy(obs)
+        other['market_context_15m'][...,:6]=-100.
+        other['market_context_15m'][...,6]=1.
+        c2,_,o2=a.policy(a.init_policy(1),other,mode='eval')
+>       assert not np.array_equal(c1[1]['stoch'],c2[1]['stoch'])
+E       assert not True
+E        +  where True = <function array_equal at 0x7ea027208bf0>([Array([[0., 0., 0., 1.],\n       [1., 0., 0., 0.]], dtype=float32)], [Array([[0., 0., 0., 1.],\n       [1., 0., 0., 0.]], dtype=float32)])
+E        +    where <function array_equal at 0x7ea027208bf0> = np.array_equal
+
+../dreamerv3/embodied/tests/test_fg_s3_e_model.py:162: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 79,316 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+           994 avail
+           706 pol
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED ::test_EM04_actual_policy_context_changes_rssm_and_actor - assert not ...
+1 failed, 18 passed in 339.44s (0:05:39)

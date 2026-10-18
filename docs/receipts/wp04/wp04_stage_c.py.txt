@@ -1,0 +1,10 @@
+import subprocess,json
+from pathlib import Path
+root=Path.cwd();d=root.parent/'dreamerv3'
+files=['tests/entry_v1/wp03_fixture.py','tests/entry_v1/wp04_fixture.py','tests/entry_v1/test_wp04_diagnostics.py']
+subprocess.run(['git','add',*files],check=True)
+p='src/gym_trading_env/research/fg_s3_e_quality_foundation_checks.py'
+content=(root/p).read_text().split('\n\ndef cpu_probe(')[0].rstrip()+'\n'
+sha=subprocess.check_output(['git','hash-object','-w','--stdin'],input=content,text=True).strip()
+subprocess.run(['git','update-index','--add','--cacheinfo','100644,'+sha+','+p],check=True)
+subprocess.run(['git','-C',str(d),'add','dreamerv3/agent.py','dreamerv3/fg_s3_e_quality_foundation.py','dreamerv3/fg_s3_v2_agent.py'],check=True)

@@ -1,0 +1,11 @@
+{
+  "full_reset_forward_finite": true,
+  "encoder_token_max_abs_delta": 6.705522537231445e-08,
+  "encoder_token_atol": 1e-07,
+  "K32_vs_one_frame_deter_norm": 1.579949140548706,
+  "K32_vs_full_reset_deter_norm": 1.4306622743606567,
+  "interpretation": "Finite K approximation. Full scan and split scans consume different original RSSM PRNG partitions; stochastic states are compared, not asserted bitwise equal.",
+  "target_steps": 64,
+  "burnin_steps": 32,
+  "real_TRAIN_updates": 0
+}

@@ -1,0 +1,182 @@
+{
+  "C_burnin": {
+    "exit_code": 1,
+    "seconds": 379.521363464999,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_burnin.xml",
+      "tests/entry_v1/test_wp04_diagnostics.py::test_C06_reset_episode_full_forward_and_finite_K_comparison"
+    ],
+    "collected": 1,
+    "failed": 1,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_diagnostics::test_C06_reset_episode_full_forward_and_finite_K_comparison"
+    ]
+  },
+  "C_diagnostics": {
+    "exit_code": 0,
+    "seconds": 213.65367813408375,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_diagnostics.xml",
+      "tests/entry_v1/test_wp04_diagnostics.py"
+    ],
+    "collected": 7,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_diagnostics::test_C01_native_multiscale_gradients_and_actual_learning",
+      "tests.entry_v1.test_wp04_diagnostics::test_C02_valid_branch_ablation_and_invalid_values",
+      "tests.entry_v1.test_wp04_diagnostics::test_C03_future_labels_and_diagnostic_switch_do_not_change_loss_or_gradients",
+      "tests.entry_v1.test_wp04_diagnostics::test_C04_native_loss_events_clock_and_coverage",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[zero_reward]",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[only_wait]",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[all_censored]"
+    ]
+  },
+  "C_final": {
+    "exit_code": 1,
+    "seconds": 420.3792857460212,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_final.xml",
+      "tests/entry_v1/test_wp04_diagnostics.py"
+    ],
+    "collected": 9,
+    "failed": 1,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_diagnostics::test_C01_native_multiscale_gradients_and_actual_learning",
+      "tests.entry_v1.test_wp04_diagnostics::test_C02_valid_branch_ablation_and_invalid_values",
+      "tests.entry_v1.test_wp04_diagnostics::test_C03_future_labels_and_diagnostic_switch_do_not_change_loss_or_gradients",
+      "tests.entry_v1.test_wp04_diagnostics::test_C04_native_loss_events_clock_and_coverage",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[zero_reward]",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[only_wait]",
+      "tests.entry_v1.test_wp04_diagnostics::test_C05_pathologies_never_market_go[all_censored]",
+      "tests.entry_v1.test_wp04_diagnostics::test_C06_reset_episode_full_forward_and_finite_K_comparison",
+      "tests.entry_v1.test_wp04_diagnostics::test_C07_readonly_diagnostics_do_not_change_next_update"
+    ]
+  },
+  "C_reference_recheck": {
+    "exit_code": 0,
+    "seconds": 278.4252099399455,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_reference_recheck.xml",
+      "tests/entry_v1/test_wp04_diagnostics.py::test_C06_reset_episode_full_forward_and_finite_K_comparison"
+    ],
+    "collected": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "tests.entry_v1.test_wp04_diagnostics::test_C06_reset_episode_full_forward_and_finite_K_comparison"
+    ]
+  },
+  "C_shared_baseline": {
+    "exit_code": 1,
+    "seconds": 47.00015697197523,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/tmp/wp04_baseline_em04.py"
+    ]
+  },
+  "C_shared_model": {
+    "exit_code": 1,
+    "seconds": 353.29593895806465,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_shared_model.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_model.py",
+      "tests/entry_v1/test_wp02_macd.py"
+    ],
+    "collected": 19,
+    "failed": 1,
+    "skipped": 0,
+    "cases": [
+      "::test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[a2]",
+      "::test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[tutor]",
+      "::test_EM07_EM08_EM11_EM12_EM13_real_joint_updates_policy_sync[b2]",
+      "::test_EM06_EM07_EM09_wm_branch_gradients_decoder_whitelist_and_bc_isolation",
+      "::test_EM04_actual_policy_context_changes_rssm_and_actor",
+      "tests.entry_v1.test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double",
+      "tests.entry_v1.test_wp02_macd::test_A02_warmup_and_price_scale",
+      "tests.entry_v1.test_wp02_macd::test_A03_stream_restore_and_prefix_invariance",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[order]",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[late]",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]",
+      "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]",
+      "tests.entry_v1.test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+      "tests.entry_v1.test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+      "tests.entry_v1.test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+      "tests.entry_v1.test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+      "tests.entry_v1.test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch"
+    ]
+  },
+  "C_shared_recheck": {
+    "exit_code": 0,
+    "seconds": 44.98006213491317,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/docs/receipts/wp04/C_shared_recheck.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_e_model.py::test_EM04_actual_policy_context_changes_rssm_and_actor"
+    ],
+    "collected": 1,
+    "failed": 0,
+    "skipped": 0,
+    "cases": [
+      "embodied.tests.test_fg_s3_e_model::test_EM04_actual_policy_context_changes_rssm_and_actor"
+    ]
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "protocol": "FG_S3_E_QUALITY_F1_INTERFACE_LOCK_V1",
+  "status": "CODE_GO_NOT_TRAINING_AUTHORITY",
+  "baseline": {
+    "gym": "7366886f3b40bf74aa4485978ffcc97e39d0d53e",
+    "dreamer": "446d1bc99debd2d05c313eafd7d0c414ebd2815c"
+  },
+  "branch": "feat/s3-e-quality-wp04-20261018",
+  "commits_A_through_D": {
+    "gym": {
+      "D": "22fbb521104e173dc81ff354c953e5a2fa3d90a6",
+      "C": "f3140367e993e4cd0d502a43c17a782e4098d355",
+      "B": "a74c69883725b24dd2f08c9c19e1717aeca04828",
+      "A": "fa75f0151a8081342fbb3adf83e50970ae381bd7"
+    },
+    "dreamer": {
+      "D": "c6c35b0cb06b0947a9ebf1bc5a068f21b5b134ca",
+      "C": "09fc1223933f5aad828eb5f016958338b3787520",
+      "B": "a2cb48e5aa115d7a66de41a0efd66073ced1bf4c",
+      "A": "d7bcbcd2a189de75cef57122d61219341b11e65d"
+    }
+  },
+  "commit_E": "See post-commit WP04_DELIVERY_COMMIT_LOCK.json; a commit cannot contain its own SHA.",
+  "course_stage": "FOUNDATION_WM",
+  "sampling_stage": "WM_NATURAL",
+  "sampling_spec": {
+    "mode": "NATURAL"
+  },
+  "reader_index_schema": "FG_S3_E_QUALITY_JOIN_INDEX_V3",
+  "reader": "EQualityCourseReader.sample(B,T+K) -> [B,T+K+1,...]",
+  "f1_model_inputs": "native Replay/clock only; posterior labels removed before JAX",
+  "world_model": "_S3V2Model.wm_only -> original Agent.world_model",
+  "optimizer": "original single self.opt, six WM positive allowlist",
+  "trainable_prefixes": [
+    "enc/",
+    "dyn/",
+    "dec/",
+    "rew/",
+    "con/",
+    "avail/"
+  ],
+  "initial_actual_ninjax_leaves": 349,
+  "frozen_leaves": 144,
+  "mutable_leaves": 205,
+  "checkpoint_backend": "external_immutable_course_reader",
+  "carry_rule": "FRESH_PER_RANDOM_WINDOW",
+  "burnin_rule": "first original prefix + K detached original WM forward, only T loss targets",
+  "reference_geometry": {
+    "B": 1,
+    "T": 64,
+    "K": 32,
+    "seed": 202,
+    "updates": 4,
+    "split": 2
+  },
+  "hashes": {
+    "corpus": "640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9",
+    "source": "85405da25efa3c850fb1b14ec821c53987e61ead7f233073d2b7dd85a07e9081",
+    "course": "14cadcdaaa7d96bc0f33f491ef38741494957ee8e7423a1ba5bf598fe230baba",
+    "source_model_contract": "7152f9de6de4885b0e64c77f003c7a646a9807364c4019034ff73aa2d76cad1b",
+    "observation": "5ca333e52049bf5bdfe0bf18f5519e65766363c946648bdd1f45b525558052b8",
+    "resolved_size1m_F1_model": "6fbbf79cce3ddabe5471c532c12166287f175b2e78642ae505d9b8e493810b6e",
+    "actual_controlled_small_F1_model": "d1afc98ec90425a421760acbc9937cd5f138ce83099a243b5f98cbb2c264a8f2",
+    "reader_index": "bd2b6bc7e8095bfd1bd051392cbd86347476d000d503c9a6bfa8b4f63aa73fcb"
+  },
+  "G0": "GO_CPU_SYNTHETIC_ENGINEERING",
+  "G1": "GO_NATIVE_G3_AND_READ_ONLY",
+  "G2": "NOT_RUN_MULTICONTRACT",
+  "WP04_CODE_GO": true,
+  "WP04_REAL_DATA_READ_GO": true,
+  "WP04_TRAIN_GO": false,
+  "WP04_MODEL_RESEARCH_GO": false,
+  "training_admitted": false,
+  "real_TRAIN_optimizer_updates": 0,
+  "gpu_training": "NOT_RUN",
+  "test_prices_opened": 0,
+  "full_18_contracts": "NOT_RUN",
+  "development_policy": "DEV/DATA/FORMAL; see FG_S3_Development_Admission_Levels_20261018.md",
+  "optimizer_configuration": {
+    "agc": 0.3,
+    "anneal": 0,
+    "beta1": 0.9,
+    "beta2": 0.999,
+    "eps": 1e-20,
+    "lr": 4e-05,
+    "momentum": true,
+    "schedule": "const",
+    "warmup": 1000,
+    "wd": 0.0
+  },
+  "explicit_shared_clocks": [
+    "opt/step/value",
+    "opt/state/1/0",
+    "opt/state/2/0",
+    "opt/state/3/count"
+  ]
+}

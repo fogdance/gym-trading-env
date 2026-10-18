@@ -1,0 +1,68 @@
+import json,pickle,subprocess,hashlib
+from pathlib import Path
+import numpy as np
+from gym_trading_env.research.fg_s3_e_quality_foundation import read_settings,preflight
+from gym_trading_env.research.fg_s3_e_quality_reader import EQualityCourseReader
+from gym_trading_env.research.fg_replay import read_manifest,digest,write_json,signed
+from embodied.run.fg_checkpoint import validate_bundle
+from embodied.run.fg_s3_e_quality_foundation import synthetic_probe_permit
+from dreamerv3.fg_s3a_actor import parameter_digests
+root=Path.cwd();out=root/'docs/receipts/wp04'
+s=read_settings(root/'configs/experiments/fg_s3_v2/e_quality_f1_read_check_wp04_20261018.yaml');p=preflight(s)
+native=json.loads((out/'G1_native/native_result.json').read_text());read=json.loads((out/'G1_read_only/read_check.json').read_text())
+manifest=read_manifest(Path(s['corpus_root'])/'corpus_manifest.json')
+assert native['exit_code']==0 and native['result']['G3']=='GO'
+assert native['result']['corpus_identity']==manifest['content_hash']
+assert p.source.receipt['content_identity']==read['source']['source_receipt']['content_identity']
+assert digest(out/'G1_native/native.log')==native['log_sha256']
+try:synthetic_probe_permit(p)
+except ValueError as exc:synthetic_rejection=str(exc)
+else:raise AssertionError('Real source acquired synthetic permit')
+seen=set();account=set();burnin=set();readers={}
+for policy in sorted(read['policies']):
+ r=EQualityCourseReader.open(p.source,stage='WM_NATURAL',sampling_spec=dict(mode='NATURAL',policies=[policy]),seed=202,index_path=out/'G1_read_only/join.sqlite')
+ try:
+  for _ in range(2):
+   raw=r.sample(1,96);meta=r.audit_windows(raw)
+   for m in meta:
+    for row in m['rows'][33:]:seen.add((m['contract'],row['cursor']));account.add((m['policy'],m['segment'],row['ordinal']))
+    for row in m['rows'][1:33]:burnin.add((m['contract'],row['cursor']))
+  readers[policy]=r.coverage()
+ finally:r.close()
+write_json(out/'G1_coverage_evidence.json',signed(dict(status='PASS_READ_ONLY',native_receipt_sha256=digest(out/'G1_native/native_result.json'),corpus_identity=manifest['content_hash'],source_identity=p.source.receipt['content_identity'],raw_corpus_rows=sum(v['rows'] for v in read['join']['policies'].values()),raw_unique_market_cursors=690,raw_unique_accounts=len(readers),readonly_windows=12,target_positions=768,burnin_positions=384,delivered_unique_target_market_cursors=len(seen),delivered_unique_target_account_rows=len(account),delivered_unique_burnin_market_cursors=len(burnin),per_policy=readers,real_source_synthetic_permit_rejected=synthetic_rejection,actual_optimizer_updates=0,training_admitted=False,model_research_go=False)))
+# Reinspect actual persisted cold artifacts and byte-equal states after pytest.
+cold=json.loads((out/'D_cold_restore_evidence.json').read_text());case=Path(cold['case_root'])
+a=pickle.loads((case/'continuous/evidence_4.pkl').read_bytes());b=pickle.loads((case/'split/evidence_4.pkl').read_bytes())
+def exact(x,y):
+ if isinstance(x,dict):
+  assert x.keys()==y.keys()
+  for k in x:exact(x[k],y[k])
+ elif isinstance(x,(list,tuple)):
+  assert len(x)==len(y)
+  for v,w in zip(x,y):exact(v,w)
+ elif isinstance(x,np.ndarray):assert x.shape==y.shape and x.dtype==y.dtype and x.tobytes()==y.tobytes()
+ else:assert x==y
+exact(a,b)
+initial=pickle.loads((case/'split/ckpt/step_000000000000/agent.pkl').read_bytes())
+final=pickle.loads((case/'split/ckpt/step_000000000004/agent.pkl').read_bytes())
+cp=validate_bundle(case/'split/ckpt/step_000000000004')
+write_json(out/'E_persisted_full_state_audit.json',signed(dict(status='PASS_BITWISE_FULL_STATE',case_root=str(case),checkpoint_identity=cp['identity'],initial=parameter_digests(initial['params']),final=parameter_digests(final['params']),full_states_equal=True,counters=a['counters'],schedule=a['schedule'],agent_counters=a['agent']['counters'],reader_state=a['reader'],pending_batch_shapes={k:dict(shape=list(v.shape),dtype=str(v.dtype)) for k,v in a['next_batch'].items()},files={str(q.relative_to(case)):digest(q) for q in (case/'continuous/evidence_4.pkl',case/'split/evidence_4.pkl',case/'continuous/updates.jsonl',case/'split/updates.jsonl')},corpus_files_in_checkpoint=0,queued_native_batch_present=True)))
+# Real repository boundaries and actual baseline ancestry.
+audit={}
+for role,base in [('gym-trading-env','7366886f3b40bf74aa4485978ffcc97e39d0d53e'),('dreamerv3','446d1bc99debd2d05c313eafd7d0c414ebd2815c')]:
+ repo=root.parent/role;git=lambda *v:subprocess.check_output(['git','-C',str(repo),*v],text=True).strip()
+ subprocess.run(['git','-C',str(repo),'merge-base','--is-ancestor',base,'HEAD'],check=True)
+ changed=git('diff','--name-only',base).splitlines()
+ if role=='gym-trading-env':
+  forbidden=[v for v in changed if v.startswith(('src/gym_trading_env/envs/','src/gym_trading_env/utils/','src/gym_trading_env/rewards/','e_data_v1/'))]
+ else:forbidden=[v for v in changed if v in ('dreamerv3/rssm.py','dreamerv3/fg_s3_e_encoder.py','embodied/run/fg_s3_gate.py')]
+ assert not forbidden,forbidden
+ audit[role]=dict(base=base,head=git('rev-parse','HEAD'),branch=git('branch','--show-current'),dirty=git('status','--porcelain'),changed_files=changed,protected_runtime_changed=forbidden,integration=git('rev-parse','integration/s3-next'))
+original={}
+for name,folder in [('WP03','fg-s3-e-quality-wp03-20261016'),('WP02','fg-s3-e-quality-wp01-20261016')]:
+ for role in ('gym-trading-env','dreamerv3'):
+  repo=root.parents[1]/folder/role;git=lambda *v:subprocess.check_output(['git','-C',str(repo),*v],text=True).strip()
+  original[name+'/'+role]=dict(head=git('rev-parse','HEAD'),dirty=git('status','--porcelain'))
+  assert not original[name+'/'+role]['dirty']
+write_json(out/'E_repository_protection_audit.json',signed(dict(status='PASS',current=audit,original_worktrees=original,real_corpus_files=len(manifest['files']),real_corpus_identity=manifest['content_hash'],read_only_G3_and_data_hashes_match=True)))
+print(json.dumps(dict(status='PASS',actual_optimizer_updates=0,source=manifest['content_hash'],unique_target_market_cursors=len(seen),unique_target_account_rows=len(account),persisted_full_state_exact=True,original_worktrees_unchanged=True)))

@@ -23,7 +23,7 @@ from .fg_s3_e_observation import validate_e_snapshot
 from .fg_s3_e_quality_supervision import (
     Admission, POLICIES, member, inspect_source, project_label, PROTOCOL)
 
-INDEX_SCHEMA = 'FG_S3_E_QUALITY_JOIN_INDEX_V2'
+INDEX_SCHEMA = 'FG_S3_E_QUALITY_JOIN_INDEX_V3'
 READER_SCHEMA = 'FG_S3_E_QUALITY_READER_STATE_V1'
 SAMPLING_STAGES = ('WM_NATURAL','HEADS_VALID','ACTOR_STRICT','ACTOR_QUALITY_PAIR')
 
@@ -199,6 +199,8 @@ def build_join_index(admission, path):
                     strict_reason=label['L2']['reason'], objective='discounted_native_float32_Quality_TP_feedback',
                     action_value_add=label['L2']['action_value_add'],action_value_wait=label['L2']['action_value_wait'],
                     witness_hash=fingerprint(label['L2'].get('value_rational_witness')))
+                audit.update(incoming_action=row['incoming_action'],status=row['status'],
+                    reward_events=row['reward_events'],native_exit_reasons=[e['reason'] for e in row['exits']])
                 tags=_strata(label,projected)
                 tags.append('POLICY:'+policy)
                 db.execute('INSERT INTO rows VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
@@ -303,7 +305,9 @@ class EQualityCourseReader:
                 or receipt['source_identity']!=admission.receipt['content_identity']):
             raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
         self.index_stat=_stat(self.index_path)
-        self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True)
+        # Prefetch owns sampling; checkpoint/diagnostics access it only while
+        # that worker is paused. SQLite remains read-only and query_only.
+        self.db=sqlite3.connect(self.index_path.as_uri()+'?mode=ro',uri=True,check_same_thread=False)
         self.db.execute('PRAGMA query_only=ON');self.db.execute('PRAGMA cache_size=-4096')
         self.report=json.loads(self.db.execute("SELECT value FROM meta WHERE key='report'").fetchone()[0])
         if any(self.report[k]!=receipt[k] for k in self.report):
@@ -444,6 +448,46 @@ class EQualityCourseReader:
             support={str(length)+':'+str(tag or self.stage):sum(g[-1] for g in groups)
                      for (length,tag),groups in self._choices.items()},
             peak_cached_bytes=self.peak_cached_bytes,cache_budget_bytes=self.cache_bytes)
+
+    def audit_windows(self, batch):
+        """Bind a model window to native rows, without consulting teacher values.
+
+        Only metadata is returned. This does not construct or sample a Replay.
+        It also supplies past native reward events for F1 diagnostics.
+        """
+        self._guard()
+        ids=batch['stepid']
+        if ids.dtype!=np.uint8 or ids.ndim!=3 or ids.shape[-1]!=20:
+            raise ValueError('F1_PHYSICAL_STEPID_SHAPE')
+        fields={**replay_fields(E_QUALITY_SCHEMA),'stepid':((20,),np.dtype('uint8'))}
+        for key,(shape,dtype) in fields.items():
+            if key not in batch or batch[key].dtype!=dtype or batch[key].shape!=(*ids.shape[:2],*shape):
+                raise ValueError('F1_NATIVE_FIELD_SHAPE_OR_DTYPE: '+key)
+        metadata=[]
+        for b,window in enumerate(ids):
+            rows=[];previous=None;episode=None
+            for t,stepid in enumerate(window):
+                item=self.db.execute('SELECT policy,ordinal,segment,cursor,chunk,offset,audit FROM rows WHERE stepid=?',
+                                     (stepid.tobytes(),)).fetchone()
+                if item is None:raise ValueError('F1_UNKNOWN_STEPID')
+                policy,ordinal,segment,cursor,chunk,offset,audit=item
+                if episode is None:episode=(policy,segment)
+                if (policy,segment)!=episode or previous is not None and ordinal!=previous+1:
+                    raise ValueError('F1_OWNER_EPISODE_OR_ORDINAL_MISMATCH')
+                arrays=self._chunk(chunk)
+                for key in fields:
+                    if batch[key][b,t].tobytes()!=arrays[key][offset].tobytes():
+                        raise ValueError('F1_NATIVE_WINDOW_BYTES_MISMATCH: '+key)
+                past=json.loads(audit)
+                rows.append(dict(policy=policy,segment=segment,ordinal=ordinal,cursor=cursor,
+                    stepid=stepid.tobytes().hex(),incoming_action=past['incoming_action'],
+                    status=past['status'],reward_events=past['reward_events'],
+                    native_exit_reasons=past['native_exit_reasons']))
+                previous=ordinal
+            reset=self.db.execute('SELECT MIN(ordinal),MIN(cursor) FROM rows WHERE policy=? AND segment=?',episode).fetchone()
+            metadata.append(dict(contract=self.contract,policy=episode[0],segment=episode[1],
+                reset_ordinal=reset[0],distance_from_reset_market_minutes=rows[0]['cursor']-reset[1],rows=rows))
+        return metadata
 
     def state_dict(self):
         return json.loads(_json(dict(protocol=READER_SCHEMA,source=self.report['source_identity'],index=self.index_hash,

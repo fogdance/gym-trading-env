@@ -1,0 +1,11 @@
+# WP04 初始接口审计
+
+WP03起点：Gym 7366886f3b40bf74aa4485978ffcc97e39d0d53e / Dreamer 446d1bc99debd2d05c313eafd7d0c414ebd2815c；原树clean，新树以这对提交建立。原命令见receipts/wp04/repository_baseline.json。
+
+确认缺口：Quality HEADS_ONLY会冻结WM；_apply_replay_context只重建一帧；FullCheckpoint.save硬依赖在线replay.chunks；masked_joint_optimizer未知前缀默认激活。
+
+复用：原完整quality_init_loss、wm_only/world_model、self.opt、WP03 EQualityCourseReader及原FullCheckpoint原子bundle。
+
+F1将独立执行FOUNDATION_WM，采样WM_NATURAL；随机窗口T+K+1，每窗新carry、K步有限历史近似，不能冒称全episode历史。真实action是当前Obs下下一次执行提议；incoming_action/Reward是反馈，不将teacher整体平移。
+
+本轮只允许CPU合成更新和真实TRAIN只读核验。公开非F1 Guard保留。开发dirty/换树不绑定历史239源码；正式准备及同版本Resume严格冻结来源/代码身份。五阶段成对提交，无空提交，无patch导出。

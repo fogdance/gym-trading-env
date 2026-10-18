@@ -1,0 +1,20 @@
+{
+  "sandbox": {
+    "command": "ls -l /dev/nvidia0 /dev/nvidiactl /dev/nvidia-uvm; nvidia-smi --query-gpu=name,driver_version --format=csv,noheader",
+    "devices": "NOT_VISIBLE",
+    "nvidia_smi_exit": 9,
+    "jax_cuda12_plugin": "0.4.33"
+  },
+  "host": {
+    "command": "nvidia-smi --query-gpu=name,driver_version --format=csv,noheader; ls -l /dev/nvidia0 /dev/nvidiactl /dev/nvidia-uvm",
+    "exit": 0,
+    "device": "NVIDIA GeForce RTX 4060 Ti",
+    "driver": "595.84",
+    "device_nodes_visible": true
+  },
+  "confirmed_facts": "Sandbox device nodes are hidden; host NVIDIA driver/device nodes visible.",
+  "host_cuda_result": "cuInit CUDA_ERROR_UNKNOWN; FAILED_PRECONDITION No visible GPU devices; see F_gpu_host.log",
+  "root_cause": "NOT_CONFIRMED beyond observed CUDA initialization failure",
+  "system_changes": 0,
+  "gpu_optimizer_updates": 0
+}

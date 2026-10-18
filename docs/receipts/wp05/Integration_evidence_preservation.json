@@ -1,0 +1,22 @@
+[
+  {
+    "original": "docs/receipts/wp04/D_cold_restore_evidence.json",
+    "integration_result": "docs/receipts/wp05/Integration_evidence/wp04/D_cold_restore_evidence.json"
+  },
+  {
+    "original": "docs/receipts/wp05/B_transfer_receipt.json",
+    "integration_result": "docs/receipts/wp05/Integration_evidence/wp05/B_transfer_receipt.json"
+  },
+  {
+    "original": "docs/receipts/wp05/D_diagnostic_evidence.json",
+    "integration_result": "docs/receipts/wp05/Integration_evidence/wp05/D_diagnostic_evidence.json"
+  },
+  {
+    "original": "docs/receipts/wp05/E_cold_evidence.json",
+    "integration_result": "docs/receipts/wp05/Integration_evidence/wp05/E_cold_evidence.json"
+  },
+  {
+    "original": "docs/receipts/wp05/E_skip_evidence.json",
+    "integration_result": "docs/receipts/wp05/Integration_evidence/wp05/E_skip_evidence.json"
+  }
+]

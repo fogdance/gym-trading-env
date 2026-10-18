@@ -1,0 +1,54 @@
+{
+  "status": "REPRODUCED_INVALID_TARGET_SUPPORT",
+  "sampling_stage": "HEADS_VALID",
+  "burnin": 90,
+  "target": 8,
+  "original_window_support": [
+    [
+      "P1",
+      0,
+      0,
+      1,
+      2
+    ]
+  ],
+  "samples": [
+    {
+      "event": {
+        "all_valid": 91,
+        "target_valid": 0
+      },
+      "touch": {
+        "all_valid": 104,
+        "target_valid": 0
+      },
+      "adverse": {
+        "all_valid": 52,
+        "target_valid": 0
+      },
+      "score": {
+        "all_valid": 12,
+        "target_valid": 0
+      }
+    },
+    {
+      "event": {
+        "all_valid": 91,
+        "target_valid": 0
+      },
+      "touch": {
+        "all_valid": 104,
+        "target_valid": 0
+      },
+      "adverse": {
+        "all_valid": 52,
+        "target_valid": 0
+      },
+      "score": {
+        "all_valid": 12,
+        "target_valid": 0
+      }
+    }
+  ],
+  "optimizer_consequence": "all target valid counts zero; update skips by C02; run budget depends only on committed updates"
+}

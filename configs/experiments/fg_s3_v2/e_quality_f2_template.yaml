@@ -1,0 +1,22 @@
+# TEMPLATE ONLY: illustrative geometry/budget, not training authorization. Replace every source/output path.
+schema: FG_S3_E_QUALITY_F2_CONFIG_V1
+stage: QUALITY_HEADS
+sampling_stage: HEADS_VALID
+sampling_spec:
+  mode: NATURAL
+model_init:
+  seed: 202
+  presets:
+  - size1m
+batch_size: 16
+target_steps: 64
+burnin_steps: 32
+optimizer_updates: 1000
+report_every_updates: 100
+save_every_updates: 500
+device: gpu
+corpus_root: /path/to/immutable/TRAIN/corpus
+source_f1_run: /path/to/completed/formal_f1_run
+source_f1_checkpoint: /path/to/completed/formal_f1_run/ckpt/step_000000001000
+prepared_dir: /path/to/new/f2_prepared
+run_dir: /data/logdir/fg_single3/s3_v2/NEW_F2_RUN

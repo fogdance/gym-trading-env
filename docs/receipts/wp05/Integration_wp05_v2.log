@@ -1,0 +1,18 @@
+........................................................................ [ 94%]
+.F..                                                                     [100%]
+=================================== FAILURES ===================================
+__________ test_F05_real_read_smoke_cannot_prepare_with_synthetic_F1 ___________
+
+    def test_F05_historical_read_smoke_rejects_old_macd_before_preparation():
+     from gym_trading_env.research.fg_s3_e_quality_heads import read_settings
+     s=read_settings(PROJECT/'configs/experiments/fg_s3_v2/e_quality_f2_read_smoke.yaml')
+>    with pytest.raises(ValueError,match=r'COURSE_INVALID observation\.macd_5m'):preflight(s)
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E    AssertionError: Regex pattern did not match.
+E      Expected regex: 'F1_CORPUS_COURSE_MISMATCH'
+E      Actual message: 'COURSE_INVALID observation.macd_5m: requires exactly bucket, continuity, errors, histogram, incomplete_tail, initialization, interval_end_marker, invalid, partial, periods, scale, schema, warmup'
+
+tests/entry_v1/test_wp05_cli.py:43: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp05_cli.py::test_F05_real_read_smoke_cannot_prepare_with_synthetic_F1
+1 failed, 75 passed in 399.28s (0:06:39)

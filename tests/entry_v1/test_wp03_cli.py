@@ -10,9 +10,8 @@ from wp03_fixture import ROOT,metadata_corpus
 
 
 def test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files(tmp_path):
-    import uuid
     root=metadata_corpus(tmp_path/'corpus')
-    output=ROOT/'artifacts/fg_s3_v2/e_quality_wp03'/('cli_'+uuid.uuid4().hex)
+    output=tmp_path/'diagnostic'
     run=subprocess.run([sys.executable,'-B',str(ROOT/'tools/fg_s3_e_quality_reader.py'),'source',
         '--corpus',str(root),'--out',str(output)],capture_output=True,text=True)
     assert run.returncode==0,run.stderr+run.stdout
@@ -22,12 +21,12 @@ def test_D09_source_cli_development_is_non_authenticating_and_creates_no_trainin
     assert sorted(p.name for p in output.iterdir())==['WP03_SOURCE_ADMISSION_RECEIPT.json']
 
 
-@pytest.mark.parametrize('kind',['test','empty_purpose','bad_output'])
+@pytest.mark.parametrize('kind',['test','empty_purpose','bad_output','integration_output'])
 def test_D10_cli_negative_exit_and_no_output_side_effects(tmp_path,kind):
-    import uuid
     root=tmp_path/'TEST' if kind=='test' else metadata_corpus(tmp_path/'corpus')
-    output=ROOT/'artifacts/fg_s3_v2/e_quality_wp03'/('rejected_'+uuid.uuid4().hex)
+    output=tmp_path/'rejected'
     if kind=='bad_output':output=tmp_path/'prepared'
+    if kind=='integration_output':output=tmp_path/'fg-s3-next-integration'/'diagnostic'
     command=[sys.executable,'-B',str(ROOT/'tools/fg_s3_e_quality_reader.py'),'source','--corpus',str(root),'--out',str(output)]
     if kind=='empty_purpose':command.extend(['--purpose',''])
     run=subprocess.run(command,capture_output=True,text=True)

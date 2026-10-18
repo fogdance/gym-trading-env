@@ -1,0 +1,6 @@
+import os,subprocess,sys
+from pathlib import Path
+base=Path('/home/v/Documents/work/research/fg-s3-e-quality-wp03-20261016');g=base/'gym-trading-env';d=base/'dreamerv3'
+env={**os.environ,'PYTHONPATH':f'{g}:{g}/src:{d}:{g}/tests/entry_v1'}
+argv=[sys.executable,'-B','-m','pytest','-p','no:cacheprovider','-o','addopts=','-q',str(d/'embodied/tests/test_fg_s3_gate.py')+'::test_audited_ast_accepts_only_the_reviewed_transition']
+print(argv,flush=True);raise SystemExit(subprocess.call(argv,cwd=g,env=env))

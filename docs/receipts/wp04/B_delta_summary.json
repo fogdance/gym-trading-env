@@ -1,0 +1,20 @@
+{
+  "updates": 4,
+  "changed_WM_leaves": {
+    "enc/": 11,
+    "dyn/": 27,
+    "dec/": 7,
+    "rew/": 5,
+    "con/": 5,
+    "avail/": 8
+  },
+  "frozen_leaves": 144,
+  "frozen_exact": true,
+  "shared_clocks": [
+    "opt/state/1/0",
+    "opt/state/2/0",
+    "opt/state/3/count",
+    "opt/step/value"
+  ],
+  "real_TRAIN_updates": 0
+}

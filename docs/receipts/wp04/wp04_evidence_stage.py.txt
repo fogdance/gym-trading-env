@@ -1,0 +1,17 @@
+import json,xml.etree.ElementTree as ET
+from pathlib import Path
+root=Path.cwd();out=root/'docs/receipts/wp04'
+records={}
+for p in sorted(out.glob('C_*.json')):
+ r=json.loads(p.read_text())
+ if 'exit_code' not in r:continue
+ item=dict(exit_code=r['exit_code'],seconds=r.get('seconds'),argv=r.get('argv'))
+ xml=p.with_suffix('.xml')
+ if xml.exists():
+  tree=ET.parse(xml);cases=list(tree.iter('testcase'))
+  item.update(collected=len(cases),failed=sum(c.find('failure') is not None or c.find('error') is not None for c in cases),skipped=sum(c.find('skipped') is not None for c in cases),cases=[c.get('classname')+'::'+c.get('name') for c in cases])
+ records[p.stem]=item
+(out/'C_stage_results.json').write_text(json.dumps(records,indent=2)+'\n')
+for name in ('wp04_baseline_em04.py','wp04_native_reverify.py'):
+ p=Path('/tmp')/name
+ if p.exists():(out/(name+'.txt')).write_bytes(p.read_bytes())

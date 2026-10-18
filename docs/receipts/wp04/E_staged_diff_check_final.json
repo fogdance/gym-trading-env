@@ -1,0 +1,72 @@
+{
+  "gym": {
+    "full": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "source": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        "configs",
+        "dreamerv3",
+        "embodied"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "dreamer": {
+    "full": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "source": {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+        "diff",
+        "--cached",
+        "--check",
+        "--",
+        "src",
+        "tools",
+        "tests",
+        "configs",
+        "dreamerv3",
+        "embodied"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  }
+}

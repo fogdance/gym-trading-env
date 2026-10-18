@@ -1,0 +1,23 @@
+........................................................................ [ 71%]
+..................F..........                                            [100%]
+=================================== FAILURES ===================================
+_ test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-527/test_D09_source_cli_developmen0')
+
+    def test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files(tmp_path):
+        import uuid
+        root=metadata_corpus(tmp_path/'corpus')
+        output=ROOT/'artifacts/fg_s3_v2/e_quality_wp03'/('cli_'+uuid.uuid4().hex)
+        run=subprocess.run([sys.executable,'-B',str(ROOT/'tools/fg_s3_e_quality_reader.py'),'source',
+            '--corpus',str(root),'--out',str(output)],capture_output=True,text=True)
+>       assert run.returncode==0,run.stderr+run.stdout
+E       AssertionError: {"status": "NO_GO", "error": "Output must be independent of formal training/archive paths", "training_admitted": false}
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-ne...GO", "error": "Output must be independent of formal training/archive paths", "training_admitted": false}\n', stderr='').returncode
+
+tests/entry_v1/test_wp03_cli.py:18: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp03_cli.py::test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files
+1 failed, 100 passed in 47.53s

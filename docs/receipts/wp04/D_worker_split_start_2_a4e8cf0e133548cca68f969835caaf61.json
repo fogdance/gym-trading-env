@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/tests/entry_v1/wp04_cold_worker.py",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/settings.json",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/split",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/G0_cold_final/wp04_cold0/join.sqlite",
+    "start",
+    "2"
+  ],
+  "exit_code": 0
+}

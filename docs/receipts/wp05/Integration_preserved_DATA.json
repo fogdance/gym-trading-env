@@ -1,0 +1,21 @@
+{
+  "gym": {
+    "integration_parent": "0e4af493bcbbfddad1dfcf5eb8b30b5b81a7a65b",
+    "feature_parent": "61dd64b5428588868f374389d4f3d79e0845cdac",
+    "integration_only_runtime_preserved": {
+      "e_data_v1/core.py": true,
+      "src/gym_trading_env/research/fg_s3_e_quality_checks.py": true,
+      "src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": true,
+      "src/gym_trading_env/research/fg_s3_e_quality_supervision.py": true,
+      "src/gym_trading_env/utils/macd_5m_causal.py": true,
+      "tools/fg_s3_e_quality_corpus.py": true
+    }
+  },
+  "dreamer": {
+    "integration_parent": "fd144113ce706e2d8f1ce8e7828ece0799c8bf7a",
+    "feature_parent": "be7ce01ebbe63144e4d335b1603ca73da4fa1c79",
+    "integration_only_runtime_preserved": {
+      "dreamerv3/fg_s3_e_quality_course_contract.py": true
+    }
+  }
+}

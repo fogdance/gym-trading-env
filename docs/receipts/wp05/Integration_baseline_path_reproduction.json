@@ -1,0 +1,11 @@
+{
+  "baseline": "0e4af493bcbbfddad1dfcf5eb8b30b5b81a7a65b",
+  "status": "BASELINE_REPRODUCED",
+  "error": "Output must be independent of formal training/archive paths",
+  "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp03/baseline_path_reproduction",
+  "baseline_io_sha256": "c9448f4de181386152f1308c9d3ffdaa844e6ecaefb66d5b0516902872d43ea5",
+  "io_file_unchanged": true,
+  "diagnostic_output_function_unchanged": true,
+  "output_created": false,
+  "production_guard_modified": false
+}

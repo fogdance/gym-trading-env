@@ -1,0 +1,99 @@
+import json
+from pathlib import Path
+root=Path.cwd();docs=root/'docs';out=docs/'receipts/wp04'
+lock=json.loads((docs/'WP04_F1_INTERFACE_LOCK.json').read_text());c=lock['commits_A_through_D'];cov=json.loads((out/'G1_coverage_evidence.json').read_text());p=json.loads((out/'E_parameter_summary.json').read_text())
+rows=[
+('双仓共同 WP03 祖先、隔离 worktree、原树未改','PASS','repository_baseline / E_repository_protection_audit'),
+('新实际 Corpus/index + 原生 G3，不复用旧 PASS','PASS','G1_native_reverify / G1_native/native_result / G1_coverage_evidence'),
+('FOUNDATION_WM 与 WM_NATURAL 分开，错位拒绝','PASS','A02 / B01 / D02'),
+('原生 Quality TP + E/MACD V2，金融规则不改','PASS','E_contracts / E_repository_protection_audit'),
+('Fresh 完整模型，不继承旧 1M','PASS','A05 / E_wp04'),
+('工程/数据/训练/研究状态分层','PASS','A01 / A04 / read_check / interface lock'),
+('真实 G3 + 外部授权；loaded JSON 不能放行','PASS_NEGATIVE; FORMAL_START_NOT_RUN','A01/A04 / D03；正式正向启动未授权未运行'),
+('公开非 F1、Prediction/Q/Decision Guard','PASS','A_guards / E_required_final'),
+('唯一 Reader，T+K+1，后验隔离','PASS','B01 / C03'),
+('真实 stepid/action/prevact/reward 对齐','PASS','B02 / B03 / native G3'),
+('原 is_first/last/terminal/market_advance、账户隔离','PASS','B02 / E_contracts / G3'),
+('K 无损失/无梯度，只 T 目标','PASS','B05 / C04'),
+('支持不足明确失败，不截断补样','PASS','B08'),
+('随机窗每窗新 carry','PASS','B06 / D runtime carry=None'),
+('重复曝光与独立市场分别计数','PASS','G1_coverage_evidence / C_multiscale_learning / D_persisted_full_state_audit'),
+('重写全部后验不改变 WM loss/grad','PASS','B01 / C03 / E_teacher_loss'),
+('Reward 来自 Replay/Env，不来自老师','PASS','C04 / G3 / reward unit tests'),
+('原 Loss 键与权重，非六个参数前缀','PASS','B05 / C04 / C evidence'),
+('仅 1m 与 position 两种重建','PASS','B05 / C04'),
+('市场分钟折扣和真实终止','PASS','C04 / test_s3_market_minute / E_legacy_resume'),
+('初始化未来 F2/F3 Heads/Actor','PASS','A05 / 349-leaf layout'),
+('enc 非零梯度与参数变化','PASS','C01 / E_parameter_summary'),
+('dyn 梯度与参数变化','PASS','B03 / C01'),
+('dec 既有目标真实更新','PASS','B03 / B05 / C01'),
+('rew 非零原生事件学习信号','PASS','C01 / C04 TP+SL conditional losses'),
+('con 有效学习梯度','PASS','C01 / C04'),
+('avail 更新、post/prior ADD recall/FPR','PASS','C01 / C04 / G1 read'),
+('全部 Actor/Critic/Quality 参数 bitwise 冻结','PASS','B03/B04 / C01 / D01'),
+('冻结 slots/动量/weight decay，共享时钟例外','PASS','B04/B11 / D01 / parameter evidence'),
+('未知前缀、状态、slots 拒绝','PASS','B07 / D05'),
+('零 Reward / 无 ADD / 全删失不冒称学习 GO','PASS','C05 / support always research_go=False'),
+('有效多尺度敏感，无效位下隐藏值不敏感','PASS','C01/C02 / MACD tests'),
+('Q/Soft/融合/RL/BC/Pair/DAgger OFF','PASS','A06 / B09 / C03 / E_teacher_loss'),
+('GPU/旧 1M 权重未运行','NOT_RUN_AS_REQUIRED','CPU environment in all command receipts; no weights inherited'),
+('真实冷进程 N 与 M+N-M next batch 相同','PASS','D_final / D_persisted_full_state_audit'),
+('全部 Agent/opt/RNG/coverage/schedule/metrics 精确','PASS','D01 / persisted full state audit'),
+('外部 Corpus 不整份复制，save/load 重验','PASS','D04 / D01 / no NPZ/Replay files；仅 pending batch'),
+('source/index/stage/spec/model/Reward/code/K/opt 变化拒绝','PASS','D02/D04/D05 / E_required_final mutation checks'),
+('破损/不同身份不静默 fresh 或回滚 step0','PASS','D04 / FullCheckpoint external backend'),
+('WP03 其余三视图仍有效','PASS','E_contracts test_wp03_reader / join / admission'),
+('WP01/02/03 与共享准入/模型/恢复回归','PASS','E_contracts246 / E_teacher_loss11 / legacy6 / shared20 / C shared19'),
+('原始失败、修复、测试清单、SHA 与未运行项','PASS','WP04_TEST_RESULTS / E_stage_results / commit lock')]
+assert len(rows)==42
+lines=['# WP04 42 项验收对照','', 'PASS 表示此次授权范围内的工程证据。正式真实更新、GPU、研究成绩未授权，不能由工程 PASS 替代。', '', '| # | 合同 | 结论 | 实际证据 |','|---:|---|---|---|']
+for i,(req,status,evidence) in enumerate(rows,1):lines.append(f'| {i} | {req} | {status} | {evidence} |')
+(docs/'WP04_ACCEPTANCE_MATRIX.md').write_text('\n'.join(lines)+'\n')
+(docs/'WP04_SOURCE_REVIEW.md').write_text('''# WP04 反向源码 Review
+
+本轮在实现后重新按任务合同审查调用链、实际文件和运行产物；由同一开发代理执行，不冒称外部人工签发。独立证据检查脚本重新读取持久 FullCheckpoint，而非只信 pytest PASS 或旧报告。
+
+| 检查 | 源码证据与结论 |
+|---|---|
+| 是否另造 WM/优化器/Replay | F1 loss 最终调用 `_S3V2Model.wm_only -> Agent.world_model`；仅一次原 `self.opt`。`FoundationRun` 只协调现有 Reader/Agent/Prefetch/FullCheckpoint，无 Env collector。 |
+| 是否走旧 HEADS_ONLY / 旧权重 | 显式 FOUNDATION_WM marker；完整 quality_init_loss 初始化；非初始化分支直接 F1。没有 source-checkpoint 或旧 1M load 路由。 |
+| 是否 teacher 泄漏 | Adapter 正向枚举 native replay_fields 与 stepid/consec，删除所有 teacher/quality 后验；WM_NATURAL 不按后验标签选择窗口；C03 loss/全部梯度重写对照相同。 |
+| 时序及账户 | byte-bound 原生 stepid + 连续 ordinal + policy/segment 同一性，原 incoming/action 对齐；K+1 真实可见前史，stop_gradient，T 个目标，每窗新 carry。 |
+| 是否假学习 | 有效原生多尺度样本上 enc 的 15/15 叶均变化，context15/macd5 都有梯度与变化。恒价不足 warmup 的旧合成样本明确不作为此证明。 |
+| 是否冻结漂移 | 144 个非白名单叶逐键 bitwise 不变；真实非零动量、weight decay 和 signed zero 回归。初始化及运行时未知 schema 拒绝。 |
+| 数值失败 | finite candidate 回滚完整 Ninjax state，host 计数/政策发布前拒绝；非有限输入或原生字节不匹配在 Adapter 拒绝。 |
+| 外部恢复 | 原 FullCheckpoint 原子 manifest/checksum/inventory；独立 course_reader saveable；save/load 验证外部字节；原 Prefetch pending/source state 与 Agent batch seeds 同时保存。 |
+| 断点是否表面一致 | D_final 后再从 artifacts 读取 continuous/split 两份原件，重新比较全部字节与下一 batch，exit0。不是同进程对象复用。 |
+| 历史迁移是否被放宽 | source audit 仅识别默认 False 的新 WM 诊断签名，保留完整 AST。固定旧 Gate 两端仍通过；旧 WP03→F1、默认 True、数学/helper/factory 改动拒绝。 |
+| 真实金融/时钟/特征 | 对 WP03 祖先做全差异检查：Gym envs/utils/rewards/e_data_v1、Dreamer RSSM/E Encoder/Gate 未修改；真实 6 账户新 G3/4196? 不采用手写数量，实际为 4146 行。 |
+| 正式训练边界 | loaded JSON/伪造 native dataclass/无授权不能启动；public non-F1 Gate 保持关闭。DEV/DATA/FORMAL 按用户新规则，日常开发不重跑全 G3、不强加正式冻结。 |
+
+发现并修正：Ninjax 初始化重入测试相位、原优化器首步 lr=0 的错误断言、signed-zero 原生比较、15m/MACD 支持不足、单次 categorical 采样错误断言、配置 tuple/list 序列身份误拒绝、负例漏 index 收据、WM extraction 审计新签名冲突。旧失败与修复后正/负证据在 C/D Review 和测试总表。未改金融规则或降低 Guard。
+
+局限：K32 是有限历史近似。reset 全量扫描与分段扫描的原随机分区不同，状态差异不是历史等价证明；同 PRNG 分区改变过去输入确有状态影响。不同 batch shape 的 Encoder 对照采用明确 float32 绝对 1e-7 容差；同形状 cold restore 始终 bitwise。
+
+真实 F1 优化器更新、GPU、完整正式 start/resume、F1 基础权重、模型获利/泛化、18 合约、TEST、W&B 发布、外部人工 Review 均 NOT_RUN。代码与真实只读工程 GO 不代表这些验收通过。
+'''.replace('6 账户新 G3/4196? 不采用手写数量，实际为 4146 行。','6 账户新 G3，共 4146 行。'))
+report=['# WP04_IMPLEMENTATION_REVIEW','', '**结论：WP04_CODE_GO / WP04_REAL_DATA_READ_GO；WP04_TRAIN_GO=NO_GO，WP04_MODEL_RESEARCH_GO=NO_GO。** A→E 的工程交付完成；本轮只进行 CPU 合成更新和有限真实 TRAIN 只读。正式真实 F1 基础权重尚未产生。','', '## 分支、基线与提交','', '`feat/s3-e-quality-wp04-20261018`，成对独立 worktrees：','', f'- Gym：`{root}`',f'- Dreamer：`{root.parent}/dreamerv3`','', '从用户指定 WP03 Gym `7366886f3b40bf74aa4485978ffcc97e39d0d53e` / Dreamer `446d1bc99debd2d05c313eafd7d0c414ebd2815c` 建立；原 WP02/WP03 树仍 clean，未合并 integration，未改在用训练树。原命令及复核见 [基线](receipts/wp04/repository_baseline.json) / [最终保护审查](receipts/wp04/E_repository_protection_audit.json)。','', '| Commit | Gym SHA | Dreamer SHA |','|---|---|---|']
+for stage in 'ABCD':report.append(f"| {stage} | `{c['gym'][stage]}` | `{c['dreamer'][stage]}` |")
+report += ['| E | 见 [交付锁](WP04_DELIVERY_COMMIT_LOCK.json) | 见同一交付锁 |','', 'E 的完整 SHA 在提交完成后写交付锁，避免自引用 SHA；该锁作为本地 docs 交付文件保留。A–D 源码、E 集成文档及原始结果均已纳入 Git；没有重新导出 patch。','', '## 实现','', 'A：显式 F1 课程、fresh 完整 E+Quality 初始化和工程/数据/正式训练准入分层；复用原统一 CLI 和 WP03 Source。B：原 wm_only/单优化器，T+K+1 native byte-bound 窗口，K detached burn-in，六 WM 前缀允许更新，其他参数和 slot 精确冻结，非有限候选完整拒绝。C：原每项 Loss、native Reward/Avail 条件诊断、多尺度梯度/消融、学习支持与病理 NO_SUPPORT。D：原 FullCheckpoint 外部 immutable Reader 后端、原 Prefetch/seed、完整计数与精确冷恢复。E：当前源接口、真实 G3/只读、共享回归及逐条源码审查。','', '没有修改金融 Env、Reward、E 特征、MACD、Oracle/RSSM 的算法，没有新 Replay/WM/Optimizer/在线采集系统。Reader Index V3 只增加原生过去执行事件审计元数据；原 Corpus 不改，旧 V2 cache 不冒充本版本，其余 WP03 Reader 视图回归通过。','', '## 真实测试与负例','', '**371 个不同的选定用例按最终结果口径 PASS，0 FAIL，0 SKIP；不是全项目测试。** 所有实际命令、退出码、耗时、逐项清单与历次失败见 [测试总表](WP04_TEST_RESULTS.md) / [机器可核对清单](receipts/wp04/E_stage_results.json)。','', '| 最终集合 | 结果 | exit |','|---|---|---:|','| WP04 A/B/C 原生模型与优化器 | 40 PASS | 0 |','| F1 冷恢复与负例 | 14 PASS | 0 |','| 原 FullCheckpoint/retention | 15 PASS | 0 |','| 必跑 Gate / SourceTransfer / formal guards | 20 PASS | 0 |','| WP01/02/03、账户、时钟、Reward | 246 PASS | 0 |','| E+A2/Tutor/B2 与账户恢复 | 6 PASS | 0 |','| WP03 原 Teacher loss | 11 PASS | 0 |','| E 模型/MACD 共享 | 18 PASS + 修正单项重跑 1 PASS | 原命令1；修正项0 |','', '负例实跑包括：无授权无 Run 副作用，伪造 native dataclass/loaded JSON，课程/Reward/Observation/fold/legacy Q/Soft，未知参数/slot，账户混入/乱序/stepid错移/action或reward改写/+0↔-0、carry污染、K/T不足，有限权重溢出、继承动量/weight decay，source/index/配置/代码身份变化、损坏最新 bundle、全零 Reward/无 ADD/全部删失及多尺度无效位隐藏值。','', '失败不是表面消除：保留 Ninjax 参数读取、初始化重入、canonical warmup 首步 0、离散单次采样、不同矩阵形状 float32、tuple/list 身份及坏负例夹具的原记录；修复说明见 [C Review](WP04_C_REVIEW.md)、[D Review](WP04_D_REVIEW.md) 与 [源码反向 Review](WP04_SOURCE_REVIEW.md)。源码审计没有放行旧 WP03→F1 迁移。','', '## 参数和恢复','', '实际 349 个 Ninjax 叶，205 个允许变化、144 个精确冻结；有效样本上 enc 15/15、dyn 27/27、dec 7/7、rew 5/5、con 5/5、avail 8/8 叶变化，15m 与 MACD 分支均变化。所有原 Actor/Critic/slowval/35 个 Quality 参数叶及对应 slot 不变。详见 [前后哈希与恢复证据](WP04_PARAMETER_AND_RESTORE_EVIDENCE.md)。','', 'B1/T64/K32/seed202，4 次 CPU 合成更新；连续4与2+冷进程+2的 Agent/优化器/Reader RNG/coverage/Python-NumPy RNG/原 Prefetch queue/下一 batch/seed/计数/schedule/指标 bitwise 相同。最终原件持久保留在本 worktree artifacts；复核脚本再次读取其字节，exit0。K32 只表示有限历史近似，不冒称完整 episode 隐状态。','', '## G0 / G1 / G2 与真实数据','', '| 层级 | 本轮结论 | 证据/边界 |','|---|---|---|','| G0 | GO，工程 | 原金融 Env 合成源、真实单优化器更新、冻结和冷恢复；非市场研究结论 |','| G1 | GO，只读 | 本轮原生 G3 1288.11 秒、exit0；六账户各691行，全部 teacher/account 重播通过，TEST打开数0；不是继承旧报告 |','| G2 | NOT_RUN | 没有多日多合约/18合约数据生产 |','', '真实 source 为 FG201 主力资格末两官方交易日（2021-12-08/09），单合约 4146 物理行、690 独立市场时刻/六账户，原 119 成交=103TP+12SL+4主力换月，原资金/删失与独立有效位保持。有限只读新读取六策略各2窗，768 target +384 burn-in，128 独立 target 市场时刻、768 个 target 账户行；同一市场不能按六账户乘六。所有349叶前后哈希相同，实际真实更新0。见 [新 G3 原件](receipts/wp04/G1_native/native_result.json)、[只读报告](receipts/wp04/G1_read_only/read_check.json)、[覆盖/权限独立复核](receipts/wp04/G1_coverage_evidence.json)。','', 'G1 的 read-check 收据本身是 development/非训练诊断；本报告将其与同内容 Corpus 的本轮实际 G3 执行交叉核对，不把加载的 G3 JSON 转成训练授权。正式 f1-prepare/start/resume 仍要对应 FORMAL 准入与外部授权。','', '## 合同哈希','', '| 身份 | SHA256 |','|---|---|']
+for name,h in lock['hashes'].items():report.append(f'| {name} | `{h}` |')
+report += ['', '完整协议、维度、时钟白名单、参数矩阵与状态在 [F1 接口锁](WP04_F1_INTERFACE_LOCK.json)。`resolved_size1m_F1_model` 是正式 fresh 解析合同，未对真实数据更新；`actual_controlled_small_F1_model` 是本轮 CPU 工程模型，不冒充正式 size1m 训练结果。','', '## 未运行和边界','', '真实 TRAIN 参数更新、GPU、正式授权的 f1-start/resume 端到端、1K/10K/1M pilot、真实 F1 权重、Actor 自主交易效果/泛化、TEST、18合约全量、W&B 发布及外部人工 Review 均 **NOT_RUN**。对应训练/研究 GO 均 **NO_GO**。未经追加授权不得以本轮工程 PASS 开启上述工作。','', '用户最新 [DEV/DATA/FORMAL 分级](FG_S3_Development_Admission_Levels_20261018.md) 已纳入交付：日常开发可以临时目录、合成/有限 TRAIN、少量定向测试，失败可修复重跑，不要求每次冻结所有 SHA 或重做 G3。DATA 发布和 FORMAL 训练保留严格身份、来源、完整恢复及授权；金融、MACD 因果与后验隔离在三级均必须保持。','', '下一步可开发 WP05/WP06 工程；真实 F1 基础权重仍需独立授权、冻结配置与正式准备。总体范围 WP01–WP10 未缩减，见 [Master Roadmap V4](FG_S3_E_Quality_Master_Roadmap_20261018_V4.md)。']
+(docs/'WP04_IMPLEMENTATION_REVIEW.md').write_text('\n'.join(report)+'\n')
+# Preserve V3; V4 keeps all WP05-10 scope and updates only current facts.
+text=(docs/'FG_S3_E_Quality_Master_Roadmap_20261018_V3.md').read_text()
+text=text.replace('Master Roadmap V3','Master Roadmap V4').replace('只更新WP03实际交付、WP04正式开发合同及新增接口风险','更新 WP04 实际 A–E 交付、只读验收和 DEV/DATA/FORMAL 分级；后续范围不缩减')
+text=text.replace('[正式Codex任务就绪]','[CODE_GO + REAL_DATA_READ_GO；真实权重 NOT_RUN]')
+text=text.replace('**正式Codex开发任务已完成；源码实现未开始，训练NO-GO**。接口参见 `WP03_to_WP04_Interface_Review` / WP04正式任务V2；不可误说F1已有参数更新','**A–E 工程已交付，371 selected PASS；本轮新 G3/只读 GO**。Gym A–D 至 `22fbb52` / Dreamer 至 `c6c35b0`，E 完整 SHA 见 `WP04_DELIVERY_COMMIT_LOCK.json`。原 WM/单优化器、K burn-in、冻结和精确冷恢复均实跑；只有合成参数更新，真实 F1 权重/训练/研究 NO-GO')
+text=text.replace('**NOT_IMPLEMENTED** | quality旧HEADS_ONLY冻结WM，Reader loss只有forward，原Agent尚无F1训练路由','**CODE_GO** | 显式 FOUNDATION_WM 路由与单原优化器，合成四步有逐键变化；真实更新0')
+text=text.replace('**REVIEW_BLOCKER** | Reader提供episode-safe windows，但`consec`当前零/单帧前缀不是完整隐藏态；要求K步warmup+清晰近似口径','**ENGINEERING_PASS** | 原首帧+K32 detached warmup，T64；同窗原生动作/账户校验、每窗新 carry；有限历史近似，不冒称全历史')
+text=text.replace('**REVIEW_BLOCKER** | 原FullCheckpoint只保存在线Uniform Replay；需要外部不可变课程Reader状态适配','**ENGINEERING_PASS** | 原 FullCheckpoint external immutable Reader backend；连续4 vs2+冷恢复+2全部状态/下一批/指标 bitwise')
+text=text.replace('**REVIEW_BLOCKER** | 原joint masked优化器需按六个WM前缀explicit allowlist；防未知前缀/Adam动量漂移','**ENGINEERING_PASS** | 六组正向白名单，349实际叶，144精确冻结；非零动量/weight decay/unknown schema 负例')
+text=text.replace('**当前行动**：将 `FG_S3_E_Quality_WP04_Foundation_WM_Final_Codex_gy19_d319_20261018.md` 交Codex，从一对WP03提交开独立双worktrees；A→E开发，CPU合成2–10次真实优化器更新、逐键精确冻结、Reader warmup、checkpoint cold-resume和负例。真实TRAIN只读；后续真实训练须另行授权。','**当前行动**：核对 WP04_IMPLEMENTATION_REVIEW、42项验收表、原始测试与交付SHA；可继续 WP05/WP06 工程。真实 F1 训练另行授权，不能用合成 Checkpoint 充当真实 WM 底座。')
+text=text.replace('Review时独立比对源码与真实可运行证据，再将本路线图增至V4','本 V4 已按实际原件更新，后续 Review 独立比对源码与可运行证据')
+text += '\n## V4 本轮新增证据与开发规则\n\nWP04 新原生 G3：六账户各691行、4146总行，1288.11秒，exit0；新只读 F1 12窗/768目标、128独立市场时刻，真实参数更新0。测试371个最终不同选定用例通过，不表述全项目通过；历史失败与修复见 WP04_TEST_RESULTS。\n\n采用用户新 DEV/DATA/FORMAL 三级规则：DEV 不要求每次源码冻结或完整 G3，允许临时目录、CPU合成、有限TRAIN与最小定向测试；DATA批次发布与FORMAL保留认证。三级均要求金融、MACD因果与Teacher隔离。正式GPU/全量18合约/TEST/研究Go仍无授权。WP05–10功能与研究验收范围保持。\n'
+(docs/'FG_S3_E_Quality_Master_Roadmap_20261018_V4.md').write_text(text)
+progress=(docs/'WP04_PROGRESS.md').read_text().replace('后续C诊断、D完整冷恢复和E真实只读G3尚未完成。','此为 B 结束时的状态；后续实际结果见下文。')
+progress+='\n## C–E：已交付工程验收\n\nC 多尺度原生有效信号/全部WM叶变化与后验隔离；D 原FullCheckpoint外部Reader的真实冷进程精确恢复；E 本轮新G3和真实TRAIN只读、371 selected PASS。全部正式训练/研究仍NO_GO。实际成对 A–E SHA、42项验收、失败记录与未运行项统一见 WP04_IMPLEMENTATION_REVIEW.md 和 WP04_DELIVERY_COMMIT_LOCK.json。DEV/DATA/FORMAL 使用用户最新分级。\n'
+(docs/'WP04_PROGRESS.md').write_text(progress)
+print('WROTE_REPORTS: implementation, acceptance42, source review, roadmap V4, progress')

@@ -1,0 +1,67 @@
+{
+  "protocol": "WP05_DELIVERY_COMMIT_LOCK_V1",
+  "repositories": {
+    "gym": {
+      "head": "61dd64b5428588868f374389d4f3d79e0845cdac",
+      "branch": "feat/s3-e-quality-wp05-20261018",
+      "dirty": "",
+      "runtime_hash": "256112211bcec95044567aa75b9be6b114e2f8b1a12e7cb91aac425e4f6d6d6a"
+    },
+    "dreamer": {
+      "head": "be7ce01ebbe63144e4d335b1603ca73da4fa1c79",
+      "branch": "feat/s3-e-quality-wp05-20261018",
+      "dirty": "",
+      "runtime_hash": "b68ffe0dd3987a12283c151124eebe4d03c4abeb1f53737c7625554271b8a674"
+    }
+  },
+  "commits": {
+    "gym": {
+      "F": "61dd64b5428588868f374389d4f3d79e0845cdac",
+      "E": "55c5c0b2eaaa63926522f5a8087c5b74b0c7e4da",
+      "D": "d82d52f18a3178d4aada0411fd6833722e5e2124",
+      "C": "ebc8c3a8eca63da0a6d8cddfdcb7f1fecca256ee",
+      "B": "dd1a85e700396709f6841f4f2762f7cdc9c891df",
+      "A": "23bf7002337a2ddda9dc48f8a75afbe912573298"
+    },
+    "dreamer": {
+      "F": "be7ce01ebbe63144e4d335b1603ca73da4fa1c79",
+      "E": "f63b3ed12457b9f6479e6810a8ee42920bea3ae0",
+      "D": "081800cdc10a1df0ce66021870120a83c672385a",
+      "C": "514b054575ed9d178f2127aa46ffa10321293934",
+      "B": "c511598fe8b9f237a06ed37221c124bb06577901",
+      "A": "a9e46ed7a22c8fb8be08d0edaaf820db2f804b68"
+    }
+  },
+  "selected_CPU_distinct_PASS": 281,
+  "selected_CPU_FAIL": 0,
+  "selected_CPU_SKIP": 0,
+  "final_HEAD_cold_repeat_PASS": 8,
+  "final_recovery_receipt": "receipts/wp05/F_final_recovery_v2.json",
+  "final_recovery_seconds": 90.06531073409133,
+  "final_cold_evidence": "receipts/wp05/F_final_v2_E_cold_evidence.json",
+  "final_skip_evidence": "receipts/wp05/F_final_v2_E_skip_evidence.json",
+  "final_frozen_leaves": 285,
+  "final_head_parameter_changes": {
+    "quality_event/": 5,
+    "quality_touch/": 5,
+    "quality_adverse/": 5,
+    "quality_score/": 5
+  },
+  "real_TRAIN_updates": 0,
+  "status": {
+    "CODE_GO": "CPU_ENGINEERING_GO",
+    "REAL_DATA_READ_GO": "LIMITED",
+    "TRAIN_GO": "NO_GO",
+    "MODEL_RESEARCH_GO": "NO_GO",
+    "GPU_MODEL_UPDATE": "ATTEMPTED_FAILED_ENV"
+  },
+  "preserved_receipts": {
+    "F_final_recovery_v2.json": "d3b37ebd20ad1c7a0ab728d872f77e7579d236e909b134478e167fd0862f43b3",
+    "F_final_recovery_v2.xml": "9cd4610383c1e96b696205cec104d28210590c5ba77909beee4909ed78037569",
+    "F_final_recovery_v2.log": "7b94e8fed50740ef390d2ba86730e9fcc1b5b7ead8900b32ee01286e86ac22dc",
+    "F_final_v2_E_cold_evidence.json": "d27fb69b262aea437e8a91129f8c92fe12f0ed6612c3c47d158b4b23615cb48a",
+    "F_final_v2_E_skip_evidence.json": "bd9a3f7d472f4e944e2f457bca445e0a584a13d9870d3228272b7714d56fdbb5"
+  },
+  "source_interface_hash": "3e0724c9bee4c2af93ddd88f94b87be43326abcb0caeddc00452fd765eb5c95a",
+  "postcommit_local_artifact": true
+}

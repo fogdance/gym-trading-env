@@ -1,0 +1,20 @@
+{
+  "GPU_probe_01": {
+    "files": [
+      "join.sqlite",
+      "join.json"
+    ],
+    "checkpoint_created": false,
+    "transfer_receipt_created": false,
+    "model_update_completed": false
+  },
+  "GPU_probe_host_01": {
+    "files": [
+      "join.sqlite",
+      "join.json"
+    ],
+    "checkpoint_created": false,
+    "transfer_receipt_created": false,
+    "model_update_completed": false
+  }
+}

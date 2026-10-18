@@ -1,0 +1,24 @@
+{
+  "gym": {
+    "argv": [
+      "git",
+      "-C",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/gym-trading-env",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  },
+  "dreamer": {
+    "argv": [
+      "git",
+      "-C",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp04-20261018/dreamerv3",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": ""
+  }
+}

@@ -693,3 +693,48 @@ worktree with its newly verified E collection. Use the shared `prepare --config
 <absolute YAML>` then `start --prepared <that snapshot>` commands. Both keep
 their own prepared and Run directories under their corresponding worktree's
 `artifacts/fg_s3_v2/`; compare warmed cycles after 2K environment advances.
+
+
+### E+Quality F1 foundation (WP04)
+
+The F1 contract uses `FOUNDATION_WM` execution and `WM_NATURAL` sampling.
+The example `e_quality_f1_cpu.example.yaml` creates an engineering preparation
+only; it does not authorize real TRAIN parameter updates or GPU training.
+All relative example paths are used from the Gym worktree directory.
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f1-prepare --config configs/experiments/fg_s3_v2/e_quality_f1_cpu.example.yaml
+```
+
+`--source-purpose native-verification --producer-gym <frozen-WP02-Gym>`
+explicitly replays the native G3 before an F1_DATA_READY data receipt.
+F1_ENGINEERING_READY and F1_DATA_READY never authorize training. Ordinary
+E+Quality prepare/start/resume/evaluate keep their existing public Guard.
+
+### WP04 F1 原生世界模型
+
+仍使用 `tools/fg_s3_v2_experiment.py`。`FOUNDATION_WM` 是课程阶段，`WM_NATURAL` 是抽样阶段。示例 `e_quality_f1_cpu.example.yaml` 显式设置 B/T/K、fresh model seed、更新预算及三个独立路径。
+
+- `f1-prepare --config <yaml>`：工程完整性、三方 Join 和外部 index；不是训练许可。`--source-purpose native-verification --producer-gym <frozen WP02 Gym>` 重新运行 G3 后才输出 F1_DATA_READY，仍无训练许可。
+- `f1-probe --output-dir <本工作树 docs/receipts/wp04 或 artifacts/fg_s3_v2/e_quality_wp04 下的新路径>`：固定内置合成 Env/Corpus、CPU K32/T64 四次原生优化器更新，拒绝用户指定 Corpus/config。非正式 Prepared，不可作为真实参数来源认证。
+- `f1-read-check --config <CPU yaml> --output-dir <上述新目录>`：6 策略各 2 窗口，原生 WM 只读 Loss、事件与候选覆盖，参数/优化器零更新；development 结果不等于 native G3。
+- 正式 `f1-start/f1-resume --prepared <F1_DATA_READY preparation> --producer-gym <frozen producer> --authorize-training`：还需要外部用户授权。重验来源、冻结配置、代码、index 后才进入原 FullCheckpoint 的 external_immutable_course_reader 后端。**本轮不执行此命令。**
+
+随机窗口不传递 carry；原首帧 prefix 后 K 步 detached burn-in，仅 T 步产生 WM 目标。K 是有限历史近似。原优化器第一次学习率因 canonical warmup 为 0，参数变化以第二步及后续更新验证。Actor/Quality/原 Critic 及其 optimizer slots 精确冻结，旧公开 E+Quality、Prediction/Q/Decision Guard 保持关闭。
+
+新离线 F1 Checkpoint 不能作为旧模型/在线 Replay 的同 Run resume。必须同代码、同模型、同 B/T/K/seed/loss/optimizer、同 source/index/Reader 规范和同包版本恢复；坏的最新 F1 bundle 不自动回滚至 step 0。CPU 精确冷恢复证据及未运行项见 `docs/WP04_IMPLEMENTATION_REVIEW.md`。
+
+## WP05 F2 Quality heads
+
+Use the same tools/fg_s3_v2_experiment.py entry. `e_quality_f2_template.yaml` is an explicit template, not an admitted training budget or source. F1 must be genuinely completed and trained; all non-opt parameters inherit, new optimizer/counters/HEADS_VALID Reader start fresh. Original prediction/decision/Q gates stay closed.
+
+```bash
+python tools/fg_s3_v2_experiment.py f2-prepare --config <resolved.yaml>
+python tools/fg_s3_v2_experiment.py f2-probe --output-dir artifacts/fg_s3_v2/e_quality_wp05/NEW_CPU_PROBE
+python tools/fg_s3_v2_experiment.py f2-probe --eval-device gpu --output-dir artifacts/fg_s3_v2/e_quality_wp05/NEW_SYNTHETIC_GPU_PROBE
+python tools/fg_s3_v2_experiment.py f2-read-check --config configs/experiments/fg_s3_v2/e_quality_f2_read_smoke.yaml --output-dir docs/receipts/wp05/NEW_READ_CHECK
+```
+
+The read smoke explicitly uses fresh small diagnostic weights, performs zero updates, consumes no F1 weights and emits no training admission. Its synthetic F1 path is unrelated to real FG201; f2-prepare/start must reject that pairing. Missing trained F1 does not block read-only diagnostics.
+
+Future FORMAL preparation additionally uses `--source-purpose native-verification --producer-gym <frozen-producer>`. Only separately authorized `f2-start --prepared <prepared> --authorize-training` and `f2-resume --prepared <same-prepared> --authorize-training` can enter training, after current native proof and completed F1 checks. No such real training is authorized or launched by this WP. Same-Run resume restores F2 FullCheckpoint and never repeats F1 handoff.

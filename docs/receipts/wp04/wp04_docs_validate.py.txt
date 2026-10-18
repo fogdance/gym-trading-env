@@ -1,0 +1,45 @@
+import json,re,hashlib,subprocess,sys
+from pathlib import Path
+root=Path.cwd();out=root/'docs/receipts/wp04';docs=root/'docs'
+lock=json.loads((docs/'WP04_F1_INTERFACE_LOCK.json').read_text());tests=json.loads((out/'E_stage_results.json').read_text())
+assert lock['WP04_CODE_GO'] and lock['WP04_REAL_DATA_READ_GO']
+assert not lock['WP04_TRAIN_GO'] and not lock['WP04_MODEL_RESEARCH_GO'] and not lock['training_admitted']
+assert tests['passed']==tests['distinct_cases']==379 and tests['failed']==tests['skipped']==0
+matrix=(docs/'WP04_ACCEPTANCE_MATRIX.md').read_text();ids=[int(x) for x in re.findall(r'^\| (\d+) \|',matrix,re.M)]
+assert ids==list(range(1,43))
+report=(docs/'WP04_IMPLEMENTATION_REVIEW.md').read_text()
+for side,stages in lock['commits_A_through_D'].items():
+ for sha in stages.values():assert sha in report
+for sha in lock['hashes'].values():assert sha in report
+for name in ('WP04_SOURCE_REVIEW.md','WP04_PARAMETER_AND_RESTORE_EVIDENCE.md','WP04_TEST_RESULTS.md','FG_S3_E_Quality_Master_Roadmap_20261018_V4.md','FG_S3_Development_Admission_Levels_20261018.md'):
+ assert (docs/name).is_file()
+roadmap=(docs/'FG_S3_E_Quality_Master_Roadmap_20261018_V4.md').read_text()
+assert not any(x in roadmap for x in ('NOT_IMPLEMENTED','REVIEW_BLOCKER','源码实现未开始'))
+for n in range(5,11):assert '**'+str(n).zfill(2)+'**' in roadmap
+missing=[]
+for page in docs.glob('WP04*.md'):
+ for ref in re.findall(r'\]\(([^)]+)\)',page.read_text()):
+  if re.match('https?://',ref):continue
+  if not (page.parent/ref.split('#')[0]).exists():missing.append((page.name,ref))
+assert all(ref=='WP04_DELIVERY_COMMIT_LOCK.json' for _,ref in missing),missing
+if '--final' in sys.argv:assert not missing,missing
+# D final captured exactly the runtime bytes now committed. Documentation and
+# new test-only changes do not require redoing G3 or optimizer work.
+record=json.loads((out/'E_restore_final.json').read_text());checked=0
+for key,expected in record['execution_sources'].items():
+ side,rel=key.split('/',1);repo=root if side=='gym' else root.parent/'dreamerv3';path=repo/rel
+ assert hashlib.sha256(path.read_bytes()).hexdigest()==expected,key
+ checked+=1
+specs={}
+for name in ('FG_S3_E_Quality_WP04_Foundation_WM_Final_Codex_gy19_d319_20261018.md','FG_S3_WP03_to_WP04_Interface_Review_gy19_d319_20261018.md','FG_S3_E_Quality_Master_Roadmap_20261018_V3.md'):
+ path=docs/name;original=Path('/home/v/Downloads')/name
+ assert path.read_bytes()==original.read_bytes(),name
+ specs[name]=hashlib.sha256(path.read_bytes()).hexdigest()
+# Authoritative command sources remain readable after /tmp cleanup.
+for path in Path('/tmp').glob('wp04_*.py'):
+ (out/(path.name+'.txt')).write_bytes(path.read_bytes())
+result=dict(status='PASS',actual_selected_cases=379,acceptance_rows=42,unchanged_recorded_python_sources=checked,
+            source_receipt='E_restore_final.json',source_document_hashes=specs,delivery_lock_pending=missing,
+            formal_training_and_research_admitted=False)
+(out/('E_docs_validation_final.json' if '--final' in sys.argv else 'E_docs_validation.json')).write_text(json.dumps(result,indent=2)+'\n')
+print(json.dumps(result))

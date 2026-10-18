@@ -1,0 +1,38 @@
+{
+  "root": "/tmp/pytest-of-v/pytest-530/wp05_cold0",
+  "status": "PASS_EXACT_COLD_CPU",
+  "updates": 4,
+  "split": 2,
+  "all_state_and_next_batch_byte_equal": true,
+  "counters": {
+    "optimizer_updates": 4,
+    "consumed_batches": 4,
+    "skip_no_valid": 0,
+    "skip_disabled_loss": 0,
+    "target_positions": 256,
+    "target_market_minutes": 256,
+    "burnin_positions": 128,
+    "burnin_market_minutes": 128,
+    "head_valid_exposures": {
+      "event": 854,
+      "touch": 976,
+      "adverse": 488,
+      "score": 90
+    },
+    "head_optimizer_exposures": {
+      "event": 854,
+      "touch": 976,
+      "adverse": 488,
+      "score": 90
+    }
+  },
+  "checkpoint": "/tmp/pytest-of-v/pytest-530/wp05_cold0/split/ckpt/step_000000000004",
+  "checkpoint_files": {
+    "agent.pkl": "efd1130782d25f3f2dab86c60a63dff6d882485c3dedef58a92948f82fe5dd45",
+    "counters.pkl": "417c399e1ac90649a29a27a2ec47347ae3bdb0784a6b4af96d69367076c19392",
+    "course_reader.pkl": "579fa46b4441a15ba5d1324afe688718e78d16dc3a534246666497d0b5f638ff",
+    "runtime.pkl": "d19d8de8f5392047c3d80b58a719df19cf1f3d042b8702aafc9629c0cb2bb581",
+    "step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22"
+  },
+  "real_TRAIN_updates": 0
+}

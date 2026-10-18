@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="38.225" timestamp="2026-10-18T15:17:27.773615+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp05_diagnostics" name="test_D04_visible_native_macd_and_context_reach_F2" time="36.312"><failure message="assert False&#10; +  where False = all(&lt;generator object test_D04_visible_native_macd_and_context_reach_F2.&lt;locals&gt;.&lt;genexpr&gt; at 0x7629bc297760&gt;)">indexed = (PosixPath('/tmp/pytest-of-v/pytest-507/wp05_diag0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...9e012e884c2427f2d85103b18d7bf170d8234cb5c8dea57a9d'}), PosixPath('/tmp/pytest-of-v/pytest-507/wp05_diag0/join.sqlite'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-507/test_D04_visible_native_macd_a0')
+
+    def test_D04_visible_native_macd_and_context_reach_F2(indexed,tmp_path):
+     from wp05_fixture import BASE
+     # Same preserved WP04 run; this source includes complete 320-minute prehistory.
+     source=BASE.parents[1]/'G0_cli_probe'
+     s={**indexed[1],'corpus_root':str(source/'source/corpus'),'source_f1_run':str(source/'run'),
+        'source_f1_checkpoint':str(source/'run/ckpt/step_000000000004')}
+     p=preflight(s);index=tmp_path/'join.sqlite';build_join_index(p.source,index)
+     r=EQualityCourseReader.open(p.source,stage='HEADS_VALID',sampling_spec={'mode':'NATURAL'},seed=202,index_path=index)
+     try:
+      a=create_agent(s,tmp_path/'model',controlled_small=True);data,_=F2WindowAdapter(r,s).sample();before=parameter_digests(a.params)
+      assert data['market_macd_5m'][...,-1].any() and data['market_context_15m'][...,-1].any()
+      report=ablations(a,data)
+&gt;     assert all(v['valid_visible'] and max(v['max_abs_logit_delta'].values())&gt;0 for v in report.values())
+E     assert False
+E      +  where False = all(&lt;generator object test_D04_visible_native_macd_and_context_reach_F2.&lt;locals&gt;.&lt;genexpr&gt; at 0x7629bc297760&gt;)
+
+tests/entry_v1/test_wp05_diagnostics.py:87: AssertionError</failure></testcase></testsuite></testsuites>

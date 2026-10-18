@@ -76,7 +76,7 @@ def native_decision_audits(eval_dir):
     return audits,tape,state,context,suffix.identity
 
 
-def quality_scores(rows,prior=None, *,role=ROLE):
+def quality_scores(rows,prior=None, *,role=ROLE,include_decision=True,include_account=True):
     from .fg_s3_prediction_evaluation import calibration
     from scipy.stats import spearmanr,kendalltau
     out=dict(role=role,horizons={},score_samples=0,score_mae=None,p80_precision=None,p80_recall=None,
@@ -98,7 +98,7 @@ def quality_scores(rows,prior=None, *,role=ROLE):
                 calibration=calibration(p.max(-1),pred==y),
                 class_counts=np.bincount(y,minlength=4).tolist())
             result['by_funds']={}
-            for name,below in (('below_300000',True),('at_least_300000',False)):
+            for name,below in ((('below_300000',True),('at_least_300000',False)) if include_account else ()):
                 ix=np.asarray([(float(r['equity'])<300000)==below for r in matched])
                 cy=y[ix];cp=p[ix]
                 result['by_funds'][name]=dict(samples=int(ix.sum()),
@@ -145,14 +145,14 @@ def quality_scores(rows,prior=None, *,role=ROLE):
             p80_precision=float(positive[predicted].mean()) if predicted.any() else None,
             p80_recall=float(predicted[positive].mean()) if positive.any() else None,
             high_score_missed=float(np.mean([r.get('proposed_action',r['action'])==0
-                for r in scored if r['label']['score']>=80])) if positive.any() else None)
+                for r in scored if r['label']['score']>=80])) if positive.any() and include_decision else None)
         if prior and prior.get('score_median') is not None:
             out['score_train_prior_mae']=float(np.abs(y-prior['score_median']).mean())
         if len(y)>1 and np.ptp(y)>0 and np.ptp(p)>0:
             out.update(score_spearman=float(spearmanr(p,y).statistic),score_kendall=float(kendalltau(p,y).statistic))
         out['score_by_funds']={}
-        for name,selection in (('below_300000',lambda r:float(r['equity'])<300000),
-                               ('at_least_300000',lambda r:float(r['equity'])>=300000)):
+        for name,selection in ((('below_300000',lambda r:float(r['equity'])<300000),
+                               ('at_least_300000',lambda r:float(r['equity'])>=300000)) if include_account else ()):
             group=[r for r in scored if selection(r)]
             out['score_by_funds'][name]=dict(samples=len(group),mae=float(np.mean([
                 abs(r['prediction']['quality/score_prediction']-r['label']['score']) for r in group])) if group else None)
@@ -161,23 +161,24 @@ def quality_scores(rows,prior=None, *,role=ROLE):
             group=[r for r in scored if r['label'].get('exit_type')==kind]
             out['score_by_exit_type'][kind]=dict(samples=len(group),mae=float(np.mean([
                 abs(r['prediction']['quality/score_prediction']-r['label']['score']) for r in group])) if group else None)
-    out['decision_components']={}
-    for key in ('delta_O','delta_S','delta_Q'):
-        values=[r['prediction']['quality/'+key] for r in rows]
-        changed=sum((r['prediction']['quality/z_final']>0)!=
-                    (r['prediction']['quality/z_final']-r['prediction']['quality/'+key]>0) for r in rows)
-        out['decision_components'][key]=dict(samples=len(values),mean=float(np.mean(values)) if values else None,
-                                            leave_one_out_argmax_changes=changed)
-    c1=[r for r in rows if r.get('q_proof',{}).get('q_c1_pair_valid')]
-    v2=[r for r in rows if r.get('q_proof',{}).get('q_v2_pair_valid')]
-    if c1:
-        out['q_c1_preference_accuracy']=float(np.mean([
-            (r['prediction']['quality/q_c1_prediction'][1]>r['prediction']['quality/q_c1_prediction'][0])
-            ==bool(r['q_proof']['strict_action']) for r in c1]))
-    if v2:
-        out['q_v2_regression_error']=float(np.mean([np.mean((np.asarray(r['prediction']['quality/q_v2_prediction'])-
-                                                       r['q_proof']['q_v2'])**2) for r in v2]))
-    out.update(q_c1_proof_samples=len(c1),q_proof_samples=len(v2))
+    if include_decision:
+        out['decision_components']={}
+        for key in ('delta_O','delta_S','delta_Q'):
+            values=[r['prediction']['quality/'+key] for r in rows]
+            changed=sum((r['prediction']['quality/z_final']>0)!=
+                        (r['prediction']['quality/z_final']-r['prediction']['quality/'+key]>0) for r in rows)
+            out['decision_components'][key]=dict(samples=len(values),mean=float(np.mean(values)) if values else None,
+                                                leave_one_out_argmax_changes=changed)
+        c1=[r for r in rows if r.get('q_proof',{}).get('q_c1_pair_valid')]
+        v2=[r for r in rows if r.get('q_proof',{}).get('q_v2_pair_valid')]
+        if c1:
+            out['q_c1_preference_accuracy']=float(np.mean([
+                (r['prediction']['quality/q_c1_prediction'][1]>r['prediction']['quality/q_c1_prediction'][0])
+                ==bool(r['q_proof']['strict_action']) for r in c1]))
+        if v2:
+            out['q_v2_regression_error']=float(np.mean([np.mean((np.asarray(r['prediction']['quality/q_v2_prediction'])-
+                                                           r['q_proof']['q_v2'])**2) for r in v2]))
+        out.update(q_c1_proof_samples=len(c1),q_proof_samples=len(v2))
     return out
 
 
