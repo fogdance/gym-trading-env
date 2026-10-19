@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 from gym_trading_env.envs.entry_contract import fingerprint, read_yaml, resolve_path
+from gym_trading_env.utils.account_fingerprint import account_fingerprint
 from .fg_history_study import digest
 from .fg_reward_candidates import CandidateConfig, FGRewardScorer
 
@@ -381,7 +382,7 @@ def observed_trace_row(raw, step, last, scorer, policy, ordinal, *, single3, e_q
             raise ValueError('E Quality Replay refuses teacher/foreign fields')
         step = {k:step[k] for k in fields}
         row['e_snapshot'] = copy.deepcopy(raw.e_snapshot)
-        row['account_snapshot_hash'] = fingerprint(raw.export_state())
+        row['account_snapshot_hash'] = account_fingerprint(raw)
     return row, step
 
 
@@ -584,7 +585,7 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
                 if expected[key] != row[key]:
                     raise ValueError(f"Env/Sidecar row {ordinal} differs: {key}")
             if schema == E_QUALITY_SCHEMA:
-                if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != fingerprint(raw.export_state()):
+                if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != account_fingerprint(raw):
                     raise ValueError('Replay E snapshot or full account identity differs')
             if label_verifier is not None:
                 expected_label=label_verifier(raw,step,row)

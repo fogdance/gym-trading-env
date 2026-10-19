@@ -56,11 +56,11 @@ def validate_corpus_label(label):
     authenticates sources and re-executes every native L1/L2 query. Existing
     validate_label/attach_quality still require their original admission.
     """
-    from fractions import Fraction
+    from .fg_s3_exact_witness import decode,ENCODING
     from .fg_s3_quality_score import quality_for_exit
     def intact(value):
         return fingerprint({k:v for k,v in value.items() if k!='content_hash'})==value.get('content_hash')
-    if (not intact(label) or label.get('protocol')!='FG_S3_E_QUALITY_TEACHER_V2'
+    if (not intact(label) or label.get('protocol')!='FG_S3_E_QUALITY_TEACHER_V3'
             or label.get('fold')!='TRAIN' or any(label.get(k) is not False for k in
             ('quality_q_v2_valid','prediction_admitted','decision_admitted'))):
         raise ValueError('Corpus label identity or independent admission differs')
@@ -94,13 +94,14 @@ def validate_corpus_label(label):
             and facts.get('immediate_outcome_verified') is False
             and facts.get('score_valid') is False
             and strict.get('tie') is True and strict.get('strict_action')==0)
-        if (not intact(strict) or strict.get('protocol')!='FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
+        if (not intact(strict) or strict.get('protocol')!='FG_S3_E_QUALITY_STRICT_SUFFIX_V3'
+                or strict.get('value_witness_encoding')!=ENCODING
                 or strict.get('account_snapshot_hash')!=label['account_snapshot_hash']
                 or not facts['actual_legal_wait'] or not facts['actual_legal_add']
                 or facts.get('invalid_reason') and not rejected_tie
                 or not strict.get('suffix_boundary_identity')):
             raise ValueError('Corpus strict action is not an independently valid legal decision')
-        wait,add=map(Fraction,strict['value_rational_witness'])
+        wait,add=map(decode,strict['value_rational_witness'])
         if (strict['strict_action']!=int(add>wait) or strict['tie']!=(add==wait)
                 or strict['action_value_add']!=float(add) or strict['action_value_wait']!=float(wait)
                 or strict['margin']!=float(add-wait)

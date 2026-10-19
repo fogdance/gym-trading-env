@@ -12,6 +12,7 @@ import time
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import check_files, digest, signed
 from .fg_s3_oracle_state_query import decision_state, rules_identity
+from gym_trading_env.utils.account_fingerprint import account_fingerprint,prime_account_fingerprint
 from .fg_s3_quality_score import PROTOCOL as SCORE_POLICY, quality_for_exit
 
 PROTOCOL = 'FG_S3_QUALITY_TEACHER_V1'
@@ -287,6 +288,9 @@ class NativeQualityTeacher:
         if self.e_fork is not None:
             self.identity['e_fork'] = self.e_fork
         self.identity_hash = fingerprint(self.identity)
+        initial_snapshot=env.export_state()
+        prime_account_fingerprint(env,initial_snapshot)
+        prime_account_fingerprint(self.clone,initial_snapshot)
 
     def _check_source_stats(self):
         from pathlib import Path
@@ -312,7 +316,7 @@ class NativeQualityTeacher:
             raise ValueError('Quality requires the real published action mask')
         self.statistics['queries']+=1
         state=env.export_state()
-        snapshot_hash=fingerprint(state)
+        snapshot_hash=account_fingerprint(env,state)
         if snapshot_hash in self._cache:
             self.statistics['cache_hits']+=1
             self._cache.move_to_end(snapshot_hash)
@@ -421,13 +425,13 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         if event is not None and clone._calculate_equity() - before != Decimal(event['net_trade_pnl']):
             raise ValueError('Native counterfactual account/PnL reconciliation failed')
         result=dict(facts, immediate_outcome_verified=True, decision_cursor=decision,
-            account_snapshot_hash=fingerprint(state),
+            account_snapshot_hash=account_fingerprint(env,state),
             native_entry=copy.deepcopy(opened),
             native_event=copy.deepcopy(event), original_c1_reward=original_reward if shadow is not None else None,
             censor_reason=('EXPOSURE_BUDGET' if budget_censored else 'NATIVE_DATA_BOUNDARY') if event is None else None,
             configured_reward=sum(r[1] for r in rewards), reward_feedback=rewards,
             reward_schema=env.reward_config.schema, funds_after=str(clone._calculate_equity()),
-            final_state_hash=fingerprint(clone.export_state()))
+            final_state_hash=account_fingerprint(clone))
         is_tp=event is not None and event['reason']=='TAKE_PROFIT'
         old_tp=float(shadow.scorer.closed[event['entry_id']].timeboxed_tp) if is_tp and shadow is not None else None
         new_tp=facts['score']/100 if is_tp else None

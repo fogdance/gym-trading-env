@@ -13,8 +13,8 @@ from .fg_replay import (collect_trace, reconcile_trace, signed, write_json,
 from .fg_single3_replay import Single3BehaviorPolicy
 from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
 
-SCHEMA='FG_S3_E_QUALITY_CORPUS_V2'
-TEACHER_SCHEMA='FG_S3_E_QUALITY_TEACHER_V2'
+SCHEMA='FG_S3_E_QUALITY_CORPUS_V3'
+TEACHER_SCHEMA='FG_S3_E_QUALITY_TEACHER_V3'
 
 
 def behavior_specs(seed=202):

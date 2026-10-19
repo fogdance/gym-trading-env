@@ -78,7 +78,7 @@ def inspect_source(source):
     if source.stage not in STAGES:
         raise ValueError('SUPERVISION_STAGE_INVALID')
     m = read_manifest(root / 'corpus_manifest.json')
-    if (m.get('protocol') != 'FG_S3_E_QUALITY_CORPUS_V2'
+    if (m.get('protocol') != 'FG_S3_E_QUALITY_CORPUS_V3'
             or m.get('fold') != 'TRAIN' or m.get('training_admitted') is not False
             or m.get('behaviors') != list(POLICIES)):
         raise ValueError('SUPERVISION_CORPUS_CONTRACT')
@@ -92,6 +92,7 @@ def inspect_source(source):
     required = {'course_v2.json', 'source_lock.json', 'teacher_manifest.json', 'model_contract.json'}
     # Validate nested paths BEFORE any array/file inventory is hashed.
     from .fg_replay import trace_manifest
+    from .fg_s3_exact_witness import ENCODING
     for policy in POLICIES:
         for kind in ('policies', 'student_replay'):
             folder = member(root, f'{kind}/{policy}')
@@ -123,7 +124,8 @@ def inspect_source(source):
             or model.get('protocol') != 'FG_S3_E_MODEL_CONTRACT_V2'
             or model['observation'] != observation_contract()
             or model['content_hash'] != m['model_contract_hash']
-            or teacher.get('protocol') != 'FG_S3_E_QUALITY_TEACHER_V2'
+            or teacher.get('protocol') != 'FG_S3_E_QUALITY_TEACHER_V3'
+            or teacher.get('value_witness_encoding') != ENCODING
             or teacher.get('fold') != 'TRAIN'
             or teacher['strict_identity'] != source.teacher_identity_hash
             or teacher['source_lock_hash'] != source.source_lock_hash

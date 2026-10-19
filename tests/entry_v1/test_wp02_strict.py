@@ -15,6 +15,7 @@ def test_suffix_anchor_dynamic_values_equal_full_exact_reward_sum(tmp_path):
     env=factory();env.reset(seed=0)
     teacher=QualityStrictTeacher(env,source=dict(fold='TRAIN'))
     try:
+        expected_values={}
         for cursor in reversed(range(teacher.query.end)):
             expected=Fraction(0);entry=teacher.query.first[cursor]
             while entry is not None:
@@ -23,7 +24,14 @@ def test_suffix_anchor_dynamic_values_equal_full_exact_reward_sum(tmp_path):
                     expected+=GAMMA**teacher.clock.reward_exponent(cursor,step)*Fraction.from_float(reward)
                 entry=teacher.query.first[row['release_cursor']]
             assert teacher._value(cursor)==expected
-        assert set(teacher._values)<=set(teacher.query.plan['add_cursors'])|{teacher.query.end}
+            expected_values[cursor]=expected
+        anchors={entry for entry in teacher.query.first if entry is not None}
+        assert set(teacher._values)<=anchors|{teacher.query.end}
+        teacher._values={teacher.query.end:Fraction(0)}
+        teacher.compile_value_store(tmp_path/'exact_cache')
+        try:
+            for cursor,expected in expected_values.items():assert teacher._value(cursor)==expected
+        finally:teacher._value_store.close()
     finally:env.close()
 
 

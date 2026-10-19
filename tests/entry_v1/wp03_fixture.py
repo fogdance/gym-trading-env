@@ -39,7 +39,8 @@ def metadata_corpus(root):
     write_json(root/'course_v2.json', spec)
     lock = signed(dict(fold='TRAIN', row=dict(role='train', eligible_for_training=True)))
     write_json(root/'source_lock.json', lock)
-    teacher = signed(dict(protocol='FG_S3_E_QUALITY_TEACHER_V2', fold='TRAIN',
+    teacher = signed(dict(protocol='FG_S3_E_QUALITY_TEACHER_V3', fold='TRAIN',
+        value_witness_encoding='FG_S3_EXACT_RATIONAL_HEX_V1',
         strict_identity='1'*64, source_lock_hash=lock['content_hash'],
         objective='discounted_native_float32_Quality_TP_feedback', gamma_rational=[332,333],
         reward_schema=spec['reward']['schema']))
@@ -54,7 +55,7 @@ def metadata_corpus(root):
         p = root/'teacher_sidecar'/policy/'steps.jsonl.gz'
         p.parent.mkdir(parents=True)
         with gzip.open(p,'wt') as f: f.write('')
-    m = dict(protocol='FG_S3_E_QUALITY_CORPUS_V2',fold='TRAIN',training_admitted=False,
+    m = dict(protocol='FG_S3_E_QUALITY_CORPUS_V3',fold='TRAIN',training_admitted=False,
         behaviors=list(POLICIES),observation=observation_contract(),teacher_identity='1'*64,
         source_lock_hash=lock['content_hash'],model_contract_hash=model['content_hash'],
         course_identity_hash=fingerprint(course.course_identity_payload(normalized)))
@@ -87,7 +88,8 @@ def native_corpus(root, *, minutes=30, chunk=9, factory_bundle=None, initial_sta
         shutil.copyfile(metadata/name,root/name)
     lock=signed(dict(fold='TRAIN',contract=env.contract,row=dict(role='train',eligible_for_training=True)))
     write_json(root/'source_lock.json',lock)
-    teacher=signed(dict(protocol='FG_S3_E_QUALITY_TEACHER_V2',fold='TRAIN',
+    teacher=signed(dict(protocol='FG_S3_E_QUALITY_TEACHER_V3',fold='TRAIN',
+        value_witness_encoding='FG_S3_EXACT_RATIONAL_HEX_V1',
         strict_identity=strict.identity_hash,source_lock_hash=lock['content_hash'],
         objective=strict.identity['objective'],gamma_rational=[332,333],reward_schema=env.reward_config.schema))
     write_json(root/'teacher_manifest.json',teacher)
@@ -100,7 +102,7 @@ def native_corpus(root, *, minutes=30, chunk=9, factory_bundle=None, initial_sta
         behavior['boundary'].update(contracts=[env.contract],time_bounds=bounds)
     write_json(root/'course_v2.json',spec)
     model=json.loads((root/'model_contract.json').read_text())
-    m=dict(protocol='FG_S3_E_QUALITY_CORPUS_V2',fold='TRAIN',training_admitted=False,
+    m=dict(protocol='FG_S3_E_QUALITY_CORPUS_V3',fold='TRAIN',training_admitted=False,
         behaviors=list(POLICIES),observation=observation_contract(),teacher_identity=strict.identity_hash,
         source_lock_hash=lock['content_hash'],model_contract_hash=model['content_hash'],
         e_profile_identity=profile.identity,source_binding=source,

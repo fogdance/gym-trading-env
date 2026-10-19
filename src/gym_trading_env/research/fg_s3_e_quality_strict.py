@@ -12,9 +12,10 @@ import numpy as np
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import signed,digest
 from .fg_s3_quality_q_v2 import build_quality_suffix,GAMMA
+from .fg_s3_exact_witness import ENCODING,encode
 from .fg_single3_replay import Single3BehaviorPolicy
 
-PROTOCOL='FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
+PROTOCOL='FG_S3_E_QUALITY_STRICT_SUFFIX_V3'
 
 
 class QualityStrictTeacher:
@@ -40,7 +41,9 @@ class QualityStrictTeacher:
         self.profile_identity=env._e_profile.identity
         self.clock=env.market_clock_counter
         self._values={self.query.end:Fraction(0)}
+        self._value_store=None
         self.identity=dict(protocol=PROTOCOL,fold='TRAIN',reward_schema=env.reward_config.schema,
+            value_witness_encoding=ENCODING,
             score_policy='FG_S3_QUALITY_TP_MARKET_DAY_V1',
             base_identity=self.query.identity_hash,e_identity=self.e_identity,
             profile_identity=self.profile_identity,start_cursor=start_cursor,
@@ -57,6 +60,8 @@ class QualityStrictTeacher:
         if cursor in self._values:return self._values[cursor]
         first=self.query.first[cursor]
         if first is None:return Fraction(0)
+        if self._value_store is not None:
+            return GAMMA**self.clock.advance(cursor,first)*self._value_store.get(first)
         pending=[];t=first
         while t is not None and t not in self._values:
             pending.append(t)
@@ -71,8 +76,20 @@ class QualityStrictTeacher:
             self._values[entry]=local+future
         return GAMMA**self.clock.advance(cursor,first)*self._values[first]
 
+    def compile_value_store(self,directory):
+        """Compile once; spawned accounts share immutable numeric bytes only."""
+        from .fg_s3_suffix_store import ExactSuffixStore
+        # Forced ADD roots can rejoin an optimum that is not on the initial
+        # plan. Compile every first-entry anchor, including those alternatives.
+        for entry in sorted({entry for entry in self.query.first[self.start:self.query.end]
+                             if entry is not None},reverse=True):
+            self._value(entry)
+        self._value_store=ExactSuffixStore.write(directory,self._values)
+        self._values={self.query.end:Fraction(0)}
+
     def query_values(self,env,mask):
-        return self._query_values(env,mask,fingerprint(env.export_state()))
+        from gym_trading_env.utils.account_fingerprint import account_fingerprint
+        return self._query_values(env,mask,account_fingerprint(env))
 
     def _query_values(self,env,mask,account_snapshot_hash):
         """Internal label composition reuses the just-verified native L1 hash.
@@ -81,6 +98,7 @@ class QualityStrictTeacher:
         Public calls always compute their own complete account snapshot.
         """
         result=dict(protocol=PROTOCOL,teacher_identity=self.identity_hash,
+            value_witness_encoding=ENCODING,
             strict_action=None,teacher_valid=False,tie=None,action_value_add=None,
             action_value_wait=None,margin=None,reason='NO_PROOF',
             account_snapshot_hash=account_snapshot_hash,
@@ -118,11 +136,12 @@ class QualityStrictTeacher:
             raise ValueError('Strict paired values disagree with the certified native optimum')
         return signed({**result,'teacher_valid':True,'strict_action':action,'tie':add==wait,
             'action_value_add':float(add),'action_value_wait':float(wait),'margin':float(add-wait),
-            'value_rational_witness':[str(wait),str(add)],'forced_add_funding_proof':funding,
+            'value_rational_witness':[encode(wait),encode(add)],'forced_add_funding_proof':funding,
             'reason':'NATIVE_QUALITY_TP_COMPLETE_SUFFIX'})
 
     def plan(self):
         return signed(dict(protocol=PROTOCOL,fold='TRAIN',reward_schema=self.identity['reward_schema'],
+            value_witness_encoding=ENCODING,
             score_policy=self.identity['score_policy'],teacher_identity=self.identity_hash,
             suffix_boundary_identity=self.identity['suffix_boundary_identity'],
             gamma_rational=[332,333],add_cursors=self.query.plan['add_cursors'],

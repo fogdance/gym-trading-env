@@ -66,7 +66,7 @@ def _join_row(row, step, ordinal, trace, corpus):
             or facts['state_proof']['source_hash'] != fingerprint(trace['identity']['source'])
             or facts['actual_legal_wait'] != bool(step['action_mask'][0])
             or facts['actual_legal_add'] != bool(step['action_mask'][1])
-            or strict.get('protocol') != 'FG_S3_E_QUALITY_STRICT_SUFFIX_V2'
+            or strict.get('protocol') != 'FG_S3_E_QUALITY_STRICT_SUFFIX_V3'
             or strict.get('teacher_identity') != corpus['teacher_identity']
             or strict.get('account_snapshot_hash') != row['account_snapshot_hash']
             or read_signed(strict) is None):

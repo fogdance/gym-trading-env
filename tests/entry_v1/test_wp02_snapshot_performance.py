@@ -25,6 +25,28 @@ def test_account_snapshot_copy_retains_json_normalization_and_full_independent_h
     assert len(state['equity_history'][1]['extra'])==2
 
 
+def test_cached_history_fingerprint_is_original_sha_for_append_rewind_and_mutation():
+    from gym_trading_env.utils.account_fingerprint import AccountFingerprint
+    from decimal import Decimal
+    history=[dict(time='中文',equity=300000.,unrealized_pnl=-0.,net_lots=0.,intrabar=False)]
+    cache=AccountFingerprint(history)
+    state=dict(a=Decimal('1.25'),equity_history=copy.deepcopy(history),z={'nested':['x',1]})
+    assert cache.digest(state)==fingerprint(state)
+    state['equity_history'][0]['unrealized_pnl']=0.
+    assert cache.digest(state)==fingerprint(state)
+    state['equity_history'][0]['intrabar']=0
+    assert cache.digest(state)==fingerprint(state)
+    state['equity_history']=copy.deepcopy(history)
+    state['equity_history'].append({**history[0],'equity':299999.})
+    assert cache.digest(state)==fingerprint(state)
+    state['equity_history'][0]['equity']=123.
+    assert cache.digest(state)==fingerprint(state)
+    assert cache.history[0]['equity']==300000.
+    state['equity_history'].clear()
+    assert cache.digest(state)==fingerprint(state)
+    assert AccountFingerprint([]).digest(state)==fingerprint(state)
+
+
 def test_worker_budget_uses_real_memory_cpu_and_independent_job_count():
     from gym_trading_env.research.fg_s3_e_quality_corpus_cli import _worker_limits
     gib = 1024**3

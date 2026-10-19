@@ -377,8 +377,10 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
     source_binding=dict(fold='TRAIN',source_lock_hash=lock['content_hash'],files={**frozen,**code['files'],**anchors},
         state_cache_entries=0,calendar_complete=True,source_guard_interval=1024)
     strict=QualityStrictTeacher(env,source=source_binding,start_cursor=lock['start_cursor'])
+    strict.compile_value_store(out/'strict_value_cache')
     write_json(out/'p4_plan.json',strict.plan())
     write_json(out/'teacher_manifest.json',signed(dict(protocol=TEACHER_SCHEMA,fold='TRAIN',
+        value_witness_encoding=strict.identity['value_witness_encoding'],
         reward_schema=strict.identity['reward_schema'],score_policy=strict.identity['score_policy'],
         strict_identity=strict.identity_hash,source_lock_hash=lock['content_hash'],
         e_profile_identity=profile.identity,objective=strict.identity['objective'],
@@ -491,11 +493,18 @@ def verify_corpus(path,*,workers=None):
         raise ValueError('Strict suffix proof differs')
     limits=_worker_limits(len(m['behaviors']),requested_workers=workers)
     print(json.dumps(dict(phase='verify',resource_budget=limits)),flush=True)
-    with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
-        futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,
-            row=row,profile=profile,initial=initial,source=m['source_binding'],strict=strict,
-            label_workers=limits['label_workers'][i%limits['workers']])) for i,name in enumerate(m['behaviors'])]
-        jobs=[future.result() for future in as_completed(futures)]
+    # Rebuild a separate cache from this verifier's native Oracle. Never load
+    # the producer's value cache as the expected answer for G3.
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix='fg_g3_exact_') as temporary:
+        strict.compile_value_store(Path(temporary)/'values')
+        try:
+            with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
+                futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,
+                    row=row,profile=profile,initial=initial,source=m['source_binding'],strict=strict,
+                    label_workers=limits['label_workers'][i%limits['workers']])) for i,name in enumerate(m['behaviors'])]
+                jobs=[future.result() for future in as_completed(futures)]
+        finally:strict._value_store.close()
     by_name={job['behavior']:job['receipt'] for job in jobs}
     receipts=[by_name[name] for name in m['behaviors']]
     if any(r['teacher_labels_verified']!=r['records'] or not r['records'] for r in receipts):
