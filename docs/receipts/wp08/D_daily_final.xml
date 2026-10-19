@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.078" timestamp="2026-10-19T12:08:11.343268+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_metrics" name="test_native_trade_denominators_risk_fees_and_daily_accounts" time="0.963"><failure message="ValueError: EXAM_METRICS_OUTPUT_MUST_BE_NEW">def test_native_trade_denominators_risk_fees_and_daily_accounts():
+        from gym_trading_env.research.fg_s3_e_quality_exam_metrics import analyze_trace
+        root=ARTIFACTS/'C_native_04'
+        source=native_source(root/'source')
+        output=Path(os.environ.get('FG_WP08_D_ROOT',ARTIFACTS/'D_metrics_01')).absolute()
+&gt;       report=analyze_trace(root/'session/trace',source,output)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_metrics.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/session/trace')
+source = ExamSource(factory=&lt;function native_source.&lt;locals&gt;.factory at 0x7e175c0f7420&gt;, initial_state={'schema': 3, 'contract'...'}, 'test_prices_accessed': False, 'content_hash': '651ab2d709b1ea34dc06e6bbca820cb9a70e8d5262408e61b2f218e51bc4c1ab'})
+output = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/D_metrics_01')
+
+    def analyze_trace(directory,source,output):
+        """Only original trace/fills and native executable quotes define results."""
+        directory=Path(directory);output=Path(output)
+&gt;       if output.exists():raise ValueError('EXAM_METRICS_OUTPUT_MUST_BE_NEW')
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       ValueError: EXAM_METRICS_OUTPUT_MUST_BE_NEW
+
+src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py:23: ValueError</failure></testcase></testsuite></testsuites>
