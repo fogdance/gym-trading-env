@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="21.756" timestamp="2026-10-19T08:59:24.993294+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_rl" name="test_real_imaginary_same_actor_and_legacy_pol_independent" time="20.960"><error message="failed on setup with &quot;KeyError: &quot;Gradient target 'MLPHead(pol)' did not match any state entries. Existing state entries: enc/minute/mlp0/kernel, enc/minute/mlp0/bias, enc/minute/mlp0norm/scale, enc/minute/mlp1/kernel, enc/minute/mlp1/bias, enc/minute/mlp1norm/scale, enc/minute/mlp2/kernel, enc/minute/mlp2/bias, enc/minute/mlp2norm/scale, enc/context15/kernel, enc/context15/bias, enc/macd5/kernel, enc/macd5/bias, enc/fusion/kernel, enc/fusion/bias, dyn/dynin0/kernel, dyn/dynin0/bias, dyn/dynin0norm/scale, dyn/dynin1/kernel, dyn/dynin1/bias, dyn/dynin1norm/scale, dyn/dynin2/kernel, dyn/dynin2/bias, dyn/dynin2norm/scale, dyn/dynhid0/kernel, dyn/dynhid0/bias, dyn/dynhid0norm/scale, dyn/dyngru/kernel, dyn/dyngru/bias, dyn/obs0/kernel, dyn/obs0/bias, dyn/obs0norm/scale, dyn/obslogit/kernel, dyn/obslogit/bias, dyn/prior0/kernel, dyn/prior0/bias, dyn/prior0norm/scale, dyn/prior1/kernel, dyn/prior1/bias, dyn/prior1norm/scale, dyn/priorlogit/kernel, dyn/priorlogit/bias, dec/mlp/linear0/kernel, dec/mlp/linear0/bias, dec/mlp/norm0/scale, dec/vec/market_seq_e_shared/pred/kernel, dec/vec/market_seq_e_shared/pred/bias, dec/vec/position_state/pred/kernel, dec/vec/position_state/pred/bias, rew/mlp/linear0/kernel, rew/mlp/linear0/bias, rew/mlp/norm0/scale, rew/head/logits/kernel, rew/head/logits/bias, con/mlp/linear0/kernel, con/mlp/linear0/bias, con/mlp/norm0/scale, con/head/logit/kernel, con/head/logit/bias, avail/mlp/linear0/kernel, avail/mlp/linear0/bias, avail/mlp/norm0/scale, avail/mlp/linear1/kernel, avail/mlp/linear1/bias, avail/mlp/norm1/scale, avail/head/logit/kernel, avail/head/logit/bias, quality_actor/mlp/linear0/kernel, quality_actor/mlp/linear0/bias, quality_actor/mlp/norm0/scale, quality_actor/head/action/logits/kernel, quality_actor/head/action/logits/bias, val/mlp/linear0/kernel, val/mlp/linear0/bias, val/mlp/norm0/scale, val/head/logits/kernel, val/head/logits/bias, slowval/mlp/linear0/kernel, slowval/mlp/linear0/bias, slowval/mlp/norm0/scale, slowval/head/logits/kernel, slowval/head/logits/bias, retnorm/lo/value, retnorm/hi/value, avail_actor_gate/value, quality_event/mlp/linear0/kernel, quality_event/mlp/linear0/bias, quality_event/mlp/norm0/scale, quality_event/head/pred/kernel, quality_event/head/pred/bias, quality_touch/mlp/linear0/kernel, quality_touch/mlp/linear0/bias, quality_touch/mlp/norm0/scale, quality_touch/head/pred/kernel, quality_touch/head/pred/bias, quality_adverse/mlp/linear0/kernel, quality_adverse/mlp/linear0/bias, quality_adverse/mlp/norm0/scale, quality_adverse/head/pred/kernel, quality_adverse/head/pred/bias, quality_score/mlp/linear0/kernel, quality_score/mlp/linear0/bias, quality_score/mlp/norm0/scale, quality_score/head/pred/kernel, quality_score/head/pred/bias, quality_q_c1/mlp/linear0/kernel, quality_q_c1/mlp/linear0/bias, quality_q_c1/mlp/norm0/scale, quality_q_c1/head/pred/kernel, quality_q_c1/head/pred/bias, quality_q_v2/mlp/linear0/kernel, quality_q_v2/mlp/linear0/bias, quality_q_v2/mlp/norm0/scale, quality_q_v2/head/pred/kernel, quality_q_v2/head/pred/bias&quot;&#10;Exception happened inside Ninjax scope 'opt'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.&quot;">live = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/E_rl_01'), &lt;gym_trading_env.research.fg_s3_e_quality_online_collector.On...at 0x7e703030e090&gt;, &lt;gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x7e6fbc2d0250&gt;)
+
+    @pytest.fixture(scope='module')
+    def rl(live):
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from embodied.run.fg_s3_e_quality_online import inspect_f3
+        from embodied.run.fg_s3_e_quality_transfer import transfer_parameters
+        root,c,p,r=live;p.publish();s=copy.deepcopy(f3_source());s['batch_size']=4
+&gt;       a=create_agent(s,root/'rl_model',controlled_small=True,execution_mode='ONLINE_RL_CONTROLLED')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_rl.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:111: in create_agent
+    agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:48: in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+../dreamerv3/embodied/jax/agent.py:114: in __init__
+    self.params, self.train_params_sharding = self._init_params()
+                                              ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:528: in _init_params
+    params, params_sharding = transform.init(
+../dreamerv3/embodied/jax/transform.py:50: in init
+    params_shapes = fn.eval_shape(*dummy_inputs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:44: in fn
+    params, _ = inner(params, *args, seed=seed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:34: in wrapper
+    state, out = fun(*args, create=True, modify=True, ignore=True, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:467: in train
+    return Agent.train(self, carry, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:217: in train
+    metrics, (carry, entries, outs, mets) = self.opt(
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (({}, {'deter': Traced&lt;ShapedArray(float32[1,32])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'stoch': Traced&lt;ShapedArray(floa...th&lt;DynamicJaxprTrace(level=1/0)&gt;, ...}, {'action': Traced&lt;ShapedArray(int32[1,12])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;})
+kwargs = {'training': True}
+
+    @hidestack
+    def wrapper(*args, **kwargs):
+      accessed, modified = _prerun(fun, *args, **kwargs)
+    
+      strs = []
+      for target in targets:
+        if isinstance(target, Module):
+          prefix = target.path + '/'
+          matches = {k: v for k, v in ctx.items() if k.startswith(prefix)}
+        if isinstance(target, str):
+          pattern = re.compile(f'^{target}(/.*|$)')
+          matches = [k for k in ctx if pattern.match(k)]
+        if not matches:
+          existing = ', '.join(ctx.keys())
+&gt;         raise KeyError(
+              f"Gradient target '{target}' did not match any state entries. " +
+              f'Existing state entries: {existing}')
+E         KeyError: "Gradient target 'MLPHead(pol)' did not match any state entries. Existing state entries: enc/minute/mlp0/kernel, enc/minute/mlp0/bias, enc/minute/mlp0norm/scale, enc/minute/mlp1/kernel, enc/minute/mlp1/bias, enc/minute/mlp1norm/scale, enc/minute/mlp2/kernel, enc/minute/mlp2/bias, enc/minute/mlp2norm/scale, enc/context15/kernel, enc/context15/bias, enc/macd5/kernel, enc/macd5/bias, enc/fusion/kernel, enc/fusion/bias, dyn/dynin0/kernel, dyn/dynin0/bias, dyn/dynin0norm/scale, dyn/dynin1/kernel, dyn/dynin1/bias, dyn/dynin1norm/scale, dyn/dynin2/kernel, dyn/dynin2/bias, dyn/dynin2norm/scale, dyn/dynhid0/kernel, dyn/dynhid0/bias, dyn/dynhid0norm/scale, dyn/dyngru/kernel, dyn/dyngru/bias, dyn/obs0/kernel, dyn/obs0/bias, dyn/obs0norm/scale, dyn/obslogit/kernel, dyn/obslogit/bias, dyn/prior0/kernel, dyn/prior0/bias, dyn/prior0norm/scale, dyn/prior1/kernel, dyn/prior1/bias, dyn/prior1norm/scale, dyn/priorlogit/kernel, dyn/priorlogit/bias, dec/mlp/linear0/kernel, dec/mlp/linear0/bias, dec/mlp/norm0/scale, dec/vec/market_seq_e_shared/pred/kernel, dec/vec/market_seq_e_shared/pred/bias, dec/vec/position_state/pred/kernel, dec/vec/position_state/pred/bias, rew/mlp/linear0/kernel, rew/mlp/linear0/bias, rew/mlp/norm0/scale, rew/head/logits/kernel, rew/head/logits/bias, con/mlp/linear0/kernel, con/mlp/linear0/bias, con/mlp/norm0/scale, con/head/logit/kernel, con/head/logit/bias, avail/mlp/linear0/kernel, avail/mlp/linear0/bias, avail/mlp/norm0/scale, avail/mlp/linear1/kernel, avail/mlp/linear1/bias, avail/mlp/norm1/scale, avail/head/logit/kernel, avail/head/logit/bias, quality_actor/mlp/linear0/kernel, quality_actor/mlp/linear0/bias, quality_actor/mlp/norm0/scale, quality_actor/head/action/logits/kernel, quality_actor/head/action/logits/bias, val/mlp/linear0/kernel, val/mlp/linear0/bias, val/mlp/norm0/scale, val/head/logits/kernel, val/head/logits/bias, slowval/mlp/linear0/kernel, slowval/mlp/linear0/bias, slowval/mlp/norm0/scale, slowval/head/logits/kernel, slowval/head/logits/bias, retnorm/lo/value, retnorm/hi/value, avail_actor_gate/value, quality_event/mlp/linear0/kernel, quality_event/mlp/linear0/bias, quality_event/mlp/norm0/scale, quality_event/head/pred/kernel, quality_event/head/pred/bias, quality_touch/mlp/linear0/kernel, quality_touch/mlp/linear0/bias, quality_touch/mlp/norm0/scale, quality_touch/head/pred/kernel, quality_touch/head/pred/bias, quality_adverse/mlp/linear0/kernel, quality_adverse/mlp/linear0/bias, quality_adverse/mlp/norm0/scale, quality_adverse/head/pred/kernel, quality_adverse/head/pred/bias, quality_score/mlp/linear0/kernel, quality_score/mlp/linear0/bias, quality_score/mlp/norm0/scale, quality_score/head/pred/kernel, quality_score/head/pred/bias, quality_q_c1/mlp/linear0/kernel, quality_q_c1/mlp/linear0/bias, quality_q_c1/mlp/norm0/scale, quality_q_c1/head/pred/kernel, quality_q_c1/head/pred/bias, quality_q_v2/mlp/linear0/kernel, quality_q_v2/mlp/linear0/bias, quality_q_v2/mlp/norm0/scale, quality_q_v2/head/pred/kernel, quality_q_v2/head/pred/bias"
+E         Exception happened inside Ninjax scope 'opt'.
+E         --------------------
+E         For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:259: KeyError</error></testcase><testcase classname="tests.entry_v1.test_wp07_rl" name="test_native_rl_updates_quality_actor_value_not_old_pol_or_wm" time="0.001"><error message="failed on setup with &quot;KeyError: &quot;Gradient target 'MLPHead(pol)' did not match any state entries. Existing state entries: enc/minute/mlp0/kernel, enc/minute/mlp0/bias, enc/minute/mlp0norm/scale, enc/minute/mlp1/kernel, enc/minute/mlp1/bias, enc/minute/mlp1norm/scale, enc/minute/mlp2/kernel, enc/minute/mlp2/bias, enc/minute/mlp2norm/scale, enc/context15/kernel, enc/context15/bias, enc/macd5/kernel, enc/macd5/bias, enc/fusion/kernel, enc/fusion/bias, dyn/dynin0/kernel, dyn/dynin0/bias, dyn/dynin0norm/scale, dyn/dynin1/kernel, dyn/dynin1/bias, dyn/dynin1norm/scale, dyn/dynin2/kernel, dyn/dynin2/bias, dyn/dynin2norm/scale, dyn/dynhid0/kernel, dyn/dynhid0/bias, dyn/dynhid0norm/scale, dyn/dyngru/kernel, dyn/dyngru/bias, dyn/obs0/kernel, dyn/obs0/bias, dyn/obs0norm/scale, dyn/obslogit/kernel, dyn/obslogit/bias, dyn/prior0/kernel, dyn/prior0/bias, dyn/prior0norm/scale, dyn/prior1/kernel, dyn/prior1/bias, dyn/prior1norm/scale, dyn/priorlogit/kernel, dyn/priorlogit/bias, dec/mlp/linear0/kernel, dec/mlp/linear0/bias, dec/mlp/norm0/scale, dec/vec/market_seq_e_shared/pred/kernel, dec/vec/market_seq_e_shared/pred/bias, dec/vec/position_state/pred/kernel, dec/vec/position_state/pred/bias, rew/mlp/linear0/kernel, rew/mlp/linear0/bias, rew/mlp/norm0/scale, rew/head/logits/kernel, rew/head/logits/bias, con/mlp/linear0/kernel, con/mlp/linear0/bias, con/mlp/norm0/scale, con/head/logit/kernel, con/head/logit/bias, avail/mlp/linear0/kernel, avail/mlp/linear0/bias, avail/mlp/norm0/scale, avail/mlp/linear1/kernel, avail/mlp/linear1/bias, avail/mlp/norm1/scale, avail/head/logit/kernel, avail/head/logit/bias, quality_actor/mlp/linear0/kernel, quality_actor/mlp/linear0/bias, quality_actor/mlp/norm0/scale, quality_actor/head/action/logits/kernel, quality_actor/head/action/logits/bias, val/mlp/linear0/kernel, val/mlp/linear0/bias, val/mlp/norm0/scale, val/head/logits/kernel, val/head/logits/bias, slowval/mlp/linear0/kernel, slowval/mlp/linear0/bias, slowval/mlp/norm0/scale, slowval/head/logits/kernel, slowval/head/logits/bias, retnorm/lo/value, retnorm/hi/value, avail_actor_gate/value, quality_event/mlp/linear0/kernel, quality_event/mlp/linear0/bias, quality_event/mlp/norm0/scale, quality_event/head/pred/kernel, quality_event/head/pred/bias, quality_touch/mlp/linear0/kernel, quality_touch/mlp/linear0/bias, quality_touch/mlp/norm0/scale, quality_touch/head/pred/kernel, quality_touch/head/pred/bias, quality_adverse/mlp/linear0/kernel, quality_adverse/mlp/linear0/bias, quality_adverse/mlp/norm0/scale, quality_adverse/head/pred/kernel, quality_adverse/head/pred/bias, quality_score/mlp/linear0/kernel, quality_score/mlp/linear0/bias, quality_score/mlp/norm0/scale, quality_score/head/pred/kernel, quality_score/head/pred/bias, quality_q_c1/mlp/linear0/kernel, quality_q_c1/mlp/linear0/bias, quality_q_c1/mlp/norm0/scale, quality_q_c1/head/pred/kernel, quality_q_c1/head/pred/bias, quality_q_v2/mlp/linear0/kernel, quality_q_v2/mlp/linear0/bias, quality_q_v2/mlp/norm0/scale, quality_q_v2/head/pred/kernel, quality_q_v2/head/pred/bias&quot;&#10;Exception happened inside Ninjax scope 'opt'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.&quot;">live = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/E_rl_01'), &lt;gym_trading_env.research.fg_s3_e_quality_online_collector.On...at 0x7e703030e090&gt;, &lt;gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x7e6fbc2d0250&gt;)
+
+    @pytest.fixture(scope='module')
+    def rl(live):
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from embodied.run.fg_s3_e_quality_online import inspect_f3
+        from embodied.run.fg_s3_e_quality_transfer import transfer_parameters
+        root,c,p,r=live;p.publish();s=copy.deepcopy(f3_source());s['batch_size']=4
+&gt;       a=create_agent(s,root/'rl_model',controlled_small=True,execution_mode='ONLINE_RL_CONTROLLED')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_rl.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:111: in create_agent
+    agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:48: in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+../dreamerv3/embodied/jax/agent.py:114: in __init__
+    self.params, self.train_params_sharding = self._init_params()
+                                              ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:528: in _init_params
+    params, params_sharding = transform.init(
+../dreamerv3/embodied/jax/transform.py:50: in init
+    params_shapes = fn.eval_shape(*dummy_inputs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:44: in fn
+    params, _ = inner(params, *args, seed=seed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:34: in wrapper
+    state, out = fun(*args, create=True, modify=True, ignore=True, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:467: in train
+    return Agent.train(self, carry, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:217: in train
+    metrics, (carry, entries, outs, mets) = self.opt(
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (({}, {'deter': Traced&lt;ShapedArray(float32[1,32])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'stoch': Traced&lt;ShapedArray(floa...th&lt;DynamicJaxprTrace(level=1/0)&gt;, ...}, {'action': Traced&lt;ShapedArray(int32[1,12])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;})
+kwargs = {'training': True}
+
+    @hidestack
+    def wrapper(*args, **kwargs):
+      accessed, modified = _prerun(fun, *args, **kwargs)
+    
+      strs = []
+      for target in targets:
+        if isinstance(target, Module):
+          prefix = target.path + '/'
+          matches = {k: v for k, v in ctx.items() if k.startswith(prefix)}
+        if isinstance(target, str):
+          pattern = re.compile(f'^{target}(/.*|$)')
+          matches = [k for k in ctx if pattern.match(k)]
+        if not matches:
+          existing = ', '.join(ctx.keys())
+&gt;         raise KeyError(
+              f"Gradient target '{target}' did not match any state entries. " +
+              f'Existing state entries: {existing}')
+E         KeyError: "Gradient target 'MLPHead(pol)' did not match any state entries. Existing state entries: enc/minute/mlp0/kernel, enc/minute/mlp0/bias, enc/minute/mlp0norm/scale, enc/minute/mlp1/kernel, enc/minute/mlp1/bias, enc/minute/mlp1norm/scale, enc/minute/mlp2/kernel, enc/minute/mlp2/bias, enc/minute/mlp2norm/scale, enc/context15/kernel, enc/context15/bias, enc/macd5/kernel, enc/macd5/bias, enc/fusion/kernel, enc/fusion/bias, dyn/dynin0/kernel, dyn/dynin0/bias, dyn/dynin0norm/scale, dyn/dynin1/kernel, dyn/dynin1/bias, dyn/dynin1norm/scale, dyn/dynin2/kernel, dyn/dynin2/bias, dyn/dynin2norm/scale, dyn/dynhid0/kernel, dyn/dynhid0/bias, dyn/dynhid0norm/scale, dyn/dyngru/kernel, dyn/dyngru/bias, dyn/obs0/kernel, dyn/obs0/bias, dyn/obs0norm/scale, dyn/obslogit/kernel, dyn/obslogit/bias, dyn/prior0/kernel, dyn/prior0/bias, dyn/prior0norm/scale, dyn/prior1/kernel, dyn/prior1/bias, dyn/prior1norm/scale, dyn/priorlogit/kernel, dyn/priorlogit/bias, dec/mlp/linear0/kernel, dec/mlp/linear0/bias, dec/mlp/norm0/scale, dec/vec/market_seq_e_shared/pred/kernel, dec/vec/market_seq_e_shared/pred/bias, dec/vec/position_state/pred/kernel, dec/vec/position_state/pred/bias, rew/mlp/linear0/kernel, rew/mlp/linear0/bias, rew/mlp/norm0/scale, rew/head/logits/kernel, rew/head/logits/bias, con/mlp/linear0/kernel, con/mlp/linear0/bias, con/mlp/norm0/scale, con/head/logit/kernel, con/head/logit/bias, avail/mlp/linear0/kernel, avail/mlp/linear0/bias, avail/mlp/norm0/scale, avail/mlp/linear1/kernel, avail/mlp/linear1/bias, avail/mlp/norm1/scale, avail/head/logit/kernel, avail/head/logit/bias, quality_actor/mlp/linear0/kernel, quality_actor/mlp/linear0/bias, quality_actor/mlp/norm0/scale, quality_actor/head/action/logits/kernel, quality_actor/head/action/logits/bias, val/mlp/linear0/kernel, val/mlp/linear0/bias, val/mlp/norm0/scale, val/head/logits/kernel, val/head/logits/bias, slowval/mlp/linear0/kernel, slowval/mlp/linear0/bias, slowval/mlp/norm0/scale, slowval/head/logits/kernel, slowval/head/logits/bias, retnorm/lo/value, retnorm/hi/value, avail_actor_gate/value, quality_event/mlp/linear0/kernel, quality_event/mlp/linear0/bias, quality_event/mlp/norm0/scale, quality_event/head/pred/kernel, quality_event/head/pred/bias, quality_touch/mlp/linear0/kernel, quality_touch/mlp/linear0/bias, quality_touch/mlp/norm0/scale, quality_touch/head/pred/kernel, quality_touch/head/pred/bias, quality_adverse/mlp/linear0/kernel, quality_adverse/mlp/linear0/bias, quality_adverse/mlp/norm0/scale, quality_adverse/head/pred/kernel, quality_adverse/head/pred/bias, quality_score/mlp/linear0/kernel, quality_score/mlp/linear0/bias, quality_score/mlp/norm0/scale, quality_score/head/pred/kernel, quality_score/head/pred/bias, quality_q_c1/mlp/linear0/kernel, quality_q_c1/mlp/linear0/bias, quality_q_c1/mlp/norm0/scale, quality_q_c1/head/pred/kernel, quality_q_c1/head/pred/bias, quality_q_v2/mlp/linear0/kernel, quality_q_v2/mlp/linear0/bias, quality_q_v2/mlp/norm0/scale, quality_q_v2/head/pred/kernel, quality_q_v2/head/pred/bias"
+E         Exception happened inside Ninjax scope 'opt'.
+E         --------------------
+E         For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:259: KeyError</error></testcase></testsuite></testsuites>

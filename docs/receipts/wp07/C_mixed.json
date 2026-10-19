@@ -18,33 +18,33 @@
             "sources": [
               {
                 "corpus_id": "alpha",
-                "source_identity": "635b5c225a9b0049f407482bb56aa50e03cca057ab9dc9f3c6b26621cff18bd5",
-                "corpus_identity": "de47b47607c35712777471c6d594023134a88379fc4a124beced781a109fe40f",
-                "course_identity": "5a4d34dc091d6ddefa3e29b350798f790dbccaa72620c938fc8846076b260ce9",
-                "teacher_identity": "76b8d8c17b27ca1887320d435af308cf4c892bc058af4c0b7883c9c779c07093",
+                "source_identity": "ad61c1988a087f25f9efcf42192d86fbea7b96bec666f9ed51693eec8533627b",
+                "corpus_identity": "0cb6f1cb997c20ced511fa291034f1b21cb537fbff287e2b048e7eb8fb177e7c",
+                "course_identity": "bb040d7706a375e62e6c516ad5845b98f91ea95168b1172ab51eb71d83447cfc",
+                "teacher_identity": "513905414b90b58f7f800051211b89993341ca8aa6df2e7003632f9c474e5672",
                 "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
-                "index_sha256": "7a8f93b7c57e2ae1134268375c3133a6566e88752183f5b4da3f8932261011c8",
-                "index_receipt_sha256": "a63cb7c159b6ebd931aa210be7e022a5a7f058e4fb3ad55fb0eb86ecc2f8a26a",
+                "index_sha256": "6e740149242c02523b8ec616293891bb2f659370c51b5f68055c2c4275e20fb5",
+                "index_receipt_sha256": "b693bccb7e4db36a1126b03c5865643935d9033ae6e4592b3fe23aae4584daba",
                 "sampling_spec": {
                   "mode": "NATURAL"
                 },
                 "weight": 1.0,
-                "reader_seed": 57220682953581147225858160724508888952106056313221241234971020934526157067609
+                "reader_seed": 27609785008506188098248282996761903626314953024049883374981275171155955454214
               },
               {
                 "corpus_id": "beta",
-                "source_identity": "2a6a17693702bcc3c6990a6c1d2ca38a0e75f82cbaa47a3120dbbcdd0b78308f",
-                "corpus_identity": "65b5fa61ceeb5cc6630cbdfa0517734dcdded66caf0dec36ede1463f872970ed",
-                "course_identity": "6e56e26846c6c7b69a036b465255eb2a8f92b72d0fbddfd3d5de9be6553be4ea",
-                "teacher_identity": "41281d30e30114d10e8ada7fa54726b6d4d5ba58c554b0ac038fca13231189ff",
+                "source_identity": "b360280d3c6e84437cbe9ce09ef287bdd895ccd758694eeef098252137bcba1c",
+                "corpus_identity": "4294207a371d89a20a0740876865ee7d1689807800dfc85053ad76f71662d205",
+                "course_identity": "5483945d2714645e99f51ca1107d8b56cb145b4e7d96f2c008fb97124800d201",
+                "teacher_identity": "cff4eb455e445d636d684cbe1703e4668658139510eb3052117a4df66e9921c8",
                 "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
-                "index_sha256": "9453badfd5e2a9186879594e68c001f73b4be6f258f3bffcf0d6ded10a8ae4cc",
-                "index_receipt_sha256": "1e1cfa98aa6409ef4e1670e0a5adfddcdfafe64467ac8d825c51ab2eea1f6eee",
+                "index_sha256": "5a642ee49fa2605a748c3218d211388177456c5aa4ae3c3be28f10706849a675",
+                "index_receipt_sha256": "bfc3d426b874e3295e573fe7bbce00a42199ac5683ede5a4b8ef5f215acb4e51",
                 "sampling_spec": {
                   "mode": "NATURAL"
                 },
                 "weight": 1.0,
-                "reader_seed": 23876901866987778919899840671174418168850634319689087599259990893281991901471
+                "reader_seed": 38344963413009179925252056942920647499035942809639224251500136212633712554580
               }
             ],
             "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
@@ -231,15 +231,15 @@
             "fold": "TRAIN",
             "training_admitted": false
           },
-          "stream_identity": "ce03cf7a897ff5763142cb2f8c4f099f2fb36eb630ee3cc7cc997885aa15eb74",
-          "adapter_identity": "bdad74aeb1f084391647a3c2bbe72391bb7353ca636e11d98c6fc9a534b68bba"
+          "stream_identity": "e802dbd5ee3bdbb8f5f4660573754e5164150403235551f252edfac784115e31",
+          "adapter_identity": "6f865fc815833887359b8b2d0c2cd991e25f41061717cd6ce7e9ed9c5948e27e"
         }
       ],
       "master_seed": 202,
       "seed_rule": "FINGERPRINT_MASTER_SEED_AND_F3_ROLE_V1",
       "training_admitted": false
     },
-    "identity_hash": "7994db4041db86099c410a9a0907d52f9d15e56691ef48ce8582df421a3c1a01",
+    "identity_hash": "8357970f38f3b39054b1ac06edba220008437da6ef9e564afcfab1540b9401b9",
     "roles": {
       "NATURAL": {
         "protocol": "FG_S3_E_MULTICORPUS_STREAM_V1",
@@ -249,33 +249,33 @@
           "sources": [
             {
               "corpus_id": "alpha",
-              "source_identity": "635b5c225a9b0049f407482bb56aa50e03cca057ab9dc9f3c6b26621cff18bd5",
-              "corpus_identity": "de47b47607c35712777471c6d594023134a88379fc4a124beced781a109fe40f",
-              "course_identity": "5a4d34dc091d6ddefa3e29b350798f790dbccaa72620c938fc8846076b260ce9",
-              "teacher_identity": "76b8d8c17b27ca1887320d435af308cf4c892bc058af4c0b7883c9c779c07093",
+              "source_identity": "ad61c1988a087f25f9efcf42192d86fbea7b96bec666f9ed51693eec8533627b",
+              "corpus_identity": "0cb6f1cb997c20ced511fa291034f1b21cb537fbff287e2b048e7eb8fb177e7c",
+              "course_identity": "bb040d7706a375e62e6c516ad5845b98f91ea95168b1172ab51eb71d83447cfc",
+              "teacher_identity": "513905414b90b58f7f800051211b89993341ca8aa6df2e7003632f9c474e5672",
               "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
-              "index_sha256": "7a8f93b7c57e2ae1134268375c3133a6566e88752183f5b4da3f8932261011c8",
-              "index_receipt_sha256": "a63cb7c159b6ebd931aa210be7e022a5a7f058e4fb3ad55fb0eb86ecc2f8a26a",
+              "index_sha256": "6e740149242c02523b8ec616293891bb2f659370c51b5f68055c2c4275e20fb5",
+              "index_receipt_sha256": "b693bccb7e4db36a1126b03c5865643935d9033ae6e4592b3fe23aae4584daba",
               "sampling_spec": {
                 "mode": "NATURAL"
               },
               "weight": 1.0,
-              "reader_seed": 57220682953581147225858160724508888952106056313221241234971020934526157067609
+              "reader_seed": 27609785008506188098248282996761903626314953024049883374981275171155955454214
             },
             {
               "corpus_id": "beta",
-              "source_identity": "2a6a17693702bcc3c6990a6c1d2ca38a0e75f82cbaa47a3120dbbcdd0b78308f",
-              "corpus_identity": "65b5fa61ceeb5cc6630cbdfa0517734dcdded66caf0dec36ede1463f872970ed",
-              "course_identity": "6e56e26846c6c7b69a036b465255eb2a8f92b72d0fbddfd3d5de9be6553be4ea",
-              "teacher_identity": "41281d30e30114d10e8ada7fa54726b6d4d5ba58c554b0ac038fca13231189ff",
+              "source_identity": "b360280d3c6e84437cbe9ce09ef287bdd895ccd758694eeef098252137bcba1c",
+              "corpus_identity": "4294207a371d89a20a0740876865ee7d1689807800dfc85053ad76f71662d205",
+              "course_identity": "5483945d2714645e99f51ca1107d8b56cb145b4e7d96f2c008fb97124800d201",
+              "teacher_identity": "cff4eb455e445d636d684cbe1703e4668658139510eb3052117a4df66e9921c8",
               "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
-              "index_sha256": "9453badfd5e2a9186879594e68c001f73b4be6f258f3bffcf0d6ded10a8ae4cc",
-              "index_receipt_sha256": "1e1cfa98aa6409ef4e1670e0a5adfddcdfafe64467ac8d825c51ab2eea1f6eee",
+              "index_sha256": "5a642ee49fa2605a748c3218d211388177456c5aa4ae3c3be28f10706849a675",
+              "index_receipt_sha256": "bfc3d426b874e3295e573fe7bbce00a42199ac5683ede5a4b8ef5f215acb4e51",
               "sampling_spec": {
                 "mode": "NATURAL"
               },
               "weight": 1.0,
-              "reader_seed": 23876901866987778919899840671174418168850634319689087599259990893281991901471
+              "reader_seed": 38344963413009179925252056942920647499035942809639224251500136212633712554580
             }
           ],
           "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
@@ -462,7 +462,7 @@
           "fold": "TRAIN",
           "training_admitted": false
         },
-        "identity_hash": "ce03cf7a897ff5763142cb2f8c4f099f2fb36eb630ee3cc7cc997885aa15eb74",
+        "identity_hash": "e802dbd5ee3bdbb8f5f4660573754e5164150403235551f252edfac784115e31",
         "delivered_counts": {
           "batches": 5,
           "windows": 20,
@@ -487,8 +487,8 @@
             "sampling_spec": {
               "mode": "NATURAL"
             },
-            "source_identity": "635b5c225a9b0049f407482bb56aa50e03cca057ab9dc9f3c6b26621cff18bd5",
-            "index_sha256": "7a8f93b7c57e2ae1134268375c3133a6566e88752183f5b4da3f8932261011c8",
+            "source_identity": "ad61c1988a087f25f9efcf42192d86fbea7b96bec666f9ed51693eec8533627b",
+            "index_sha256": "6e740149242c02523b8ec616293891bb2f659370c51b5f68055c2c4275e20fb5",
             "policies": {
               "P0": {
                 "EARLY10_15": 25,
@@ -643,16 +643,16 @@
             "unique_market_cursors": 40,
             "distinct_account_decisions": 234,
             "actual_optimizer_exposures": 0,
-            "delivered_unique_market_cursors": 35,
-            "delivered_unique_account_decisions": 46,
+            "delivered_unique_market_cursors": 37,
+            "delivered_unique_account_decisions": 54,
             "delivered_counts": {
               "batches": 5,
               "delivered_candidate_exposures": 72,
-              "quality_pair": 154,
-              "strict_pair": 62,
-              "policy:P4": 36,
+              "quality_pair": 153,
+              "strict_pair": 72,
+              "policy:P0": 48,
               "stratum:NATURAL": 6,
-              "policy:P0": 36
+              "policy:P4": 24
             },
             "all_episode_strict_pairs": 215,
             "all_episode_quality_pairs": 872,
@@ -668,8 +668,8 @@
             "sampling_spec": {
               "mode": "NATURAL"
             },
-            "source_identity": "2a6a17693702bcc3c6990a6c1d2ca38a0e75f82cbaa47a3120dbbcdd0b78308f",
-            "index_sha256": "9453badfd5e2a9186879594e68c001f73b4be6f258f3bffcf0d6ded10a8ae4cc",
+            "source_identity": "b360280d3c6e84437cbe9ce09ef287bdd895ccd758694eeef098252137bcba1c",
+            "index_sha256": "5a642ee49fa2605a748c3218d211388177456c5aa4ae3c3be28f10706849a675",
             "policies": {
               "P0": {
                 "EARLY10_15": 25,
@@ -824,29 +824,30 @@
             "unique_market_cursors": 40,
             "distinct_account_decisions": 234,
             "actual_optimizer_exposures": 0,
-            "delivered_unique_market_cursors": 33,
-            "delivered_unique_account_decisions": 83,
+            "delivered_unique_market_cursors": 38,
+            "delivered_unique_account_decisions": 109,
             "delivered_counts": {
               "batches": 5,
               "delivered_candidate_exposures": 168,
-              "quality_pair": 305,
-              "strict_pair": 138,
-              "policy:P0": 36,
+              "quality_pair": 320,
+              "strict_pair": 117,
+              "policy:P0": 48,
               "stratum:NATURAL": 14,
-              "policy:P4": 72,
-              "policy:P3": 60
+              "policy:P4": 60,
+              "policy:P3": 48,
+              "policy:P2_low": 12
             },
             "all_episode_strict_pairs": 215,
             "all_episode_quality_pairs": 872,
             "support": {
               "12:ACTOR_STRICT": 74
             },
-            "peak_cached_bytes": 1128840,
+            "peak_cached_bytes": 1505120,
             "cache_budget_bytes": 33554432
           }
         },
         "cache_budget_bytes": 67108864,
-        "peak_cached_bytes_upper_bound": 1881400,
+        "peak_cached_bytes_upper_bound": 2257680,
         "source_selection": {
           "basis": "EXPLICIT_CONFIGURED_SOURCE_WEIGHTS",
           "probabilities": {
@@ -865,22 +866,22 @@
       }
     },
     "cache_budget_bytes": 67108864,
-    "peak_cached_bytes_upper_bound": 1881400,
+    "peak_cached_bytes_upper_bound": 2257680,
     "sampling_statistics": {
       "NATURAL": {
         "alpha": {
           "windows": 6,
           "target_positions": 48,
           "teacher_add": 5,
-          "teacher_wait": 39,
-          "teacher_invalid": 4
+          "teacher_wait": 42,
+          "teacher_invalid": 1
         },
         "beta": {
           "windows": 14,
           "target_positions": 112,
           "teacher_add": 9,
-          "teacher_wait": 86,
-          "teacher_invalid": 17
+          "teacher_wait": 73,
+          "teacher_invalid": 30
         }
       }
     },
@@ -891,23 +892,23 @@
           "windows": 6,
           "target_positions": 48,
           "teacher_add": 5,
-          "teacher_wait": 39,
-          "teacher_invalid": 4
+          "teacher_wait": 42,
+          "teacher_invalid": 1
         },
         "beta": {
           "windows": 14,
           "target_positions": 112,
           "teacher_add": 9,
-          "teacher_wait": 86,
-          "teacher_invalid": 17
+          "teacher_wait": 73,
+          "teacher_invalid": 30
         }
       },
       "global_counts": {
         "windows": 20,
         "target_positions": 160,
         "teacher_add": 14,
-        "teacher_wait": 125,
-        "teacher_invalid": 21
+        "teacher_wait": 115,
+        "teacher_invalid": 31
       },
       "source_reference_account_labels": {
         "alpha": {

@@ -1,0 +1,9 @@
+......................................                                   [100%]
+=============================== warnings summary ===============================
+tests/entry_v1/test_data_multi_f3.py::test_f3_cli_and_original_checkpoint_cold_processes[None]
+tests/entry_v1/test_data_multi_f3.py::test_f3_cli_and_original_checkpoint_cold_processes[MIXED]
+  tests/entry_v1/test_data_multi_f3.py:188: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize('mode', [None, 'MIXED'])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+38 passed, 2 warnings in 181.59s (0:03:01)

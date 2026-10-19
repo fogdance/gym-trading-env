@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="2" failures="0" skipped="0" tests="2" time="22.824" timestamp="2026-10-19T09:00:34.580131+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_rl" name="test_real_imaginary_same_actor_and_legacy_pol_independent" time="21.786"><error message="failed on setup with &quot;RuntimeError: Pass create=True to pure functions to allow them to create new state entries or use nj.init(). You were trying to set quality_actor/mlp/linear0/kernel to shape (40, 16).&#10;Exception happened inside Ninjax scope 'quality_actor/mlp/linear0'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.&quot;">live = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/E_rl_02'), &lt;gym_trading_env.research.fg_s3_e_quality_online_collector.On...at 0x7557603cf650&gt;, &lt;gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x755724355d50&gt;)
+
+    @pytest.fixture(scope='module')
+    def rl(live):
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from embodied.run.fg_s3_e_quality_online import inspect_f3
+        from embodied.run.fg_s3_e_quality_transfer import transfer_parameters
+        root,c,p,r=live;p.publish();s=copy.deepcopy(f3_source());s['batch_size']=4
+&gt;       a=create_agent(s,root/'rl_model',controlled_small=True,execution_mode='ONLINE_RL_CONTROLLED')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_rl.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:111: in create_agent
+    agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:48: in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+../dreamerv3/embodied/jax/agent.py:114: in __init__
+    self.params, self.train_params_sharding = self._init_params()
+                                              ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:528: in _init_params
+    params, params_sharding = transform.init(
+../dreamerv3/embodied/jax/transform.py:50: in init
+    params_shapes = fn.eval_shape(*dummy_inputs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:44: in fn
+    params, _ = inner(params, *args, seed=seed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:34: in wrapper
+    state, out = fun(*args, create=True, modify=True, ignore=True, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:467: in train
+    return Agent.train(self, carry, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:217: in train
+    metrics, (carry, entries, outs, mets) = self.opt(
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/opt.py:36: in lossfn2
+    outs = lossfn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:264: in quality_init_loss
+    base,aux = self.loss(carry,obs,prevact,training)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:345: in loss
+    los, imgloss_out, mets = self.imagination_loss(dyn_entries, dyn_carry, repfeat, training)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:304: in imagination_loss
+    _, imgfeat, imgprevact = self.dyn.imagine(starts, policyfn, H, training)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:108: in imagine
+    carry, (feat, action) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:109: in &lt;lambda&gt;
+    lambda c, _: self.imagine(c, policy, 1, training, single=True),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:96: in imagine
+    action = policy(sg(carry)) if callable(policy) else policy
+             ^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:303: in &lt;lambda&gt;
+    policyfn = lambda feat: self._sample_imag_action(feat, 1)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:425: in _sample_imag_action
+    action = sample(self._imagination_distribution(feat, mask, bdims))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:216: in _imagination_distribution
+    return distribution(self,self.feat2tensor(feat),mask,bdims)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_e_quality_actor.py:103: in distribution
+    raw=model.quality_actor(jax.lax.stop_gradient(feat),bdims)[model.action_key].logits
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/heads.py:39: in __call__
+    x = self.mlp(x)
+        ^^^^^^^^^^^
+../dreamerv3/embodied/jax/nets.py:583: in __call__
+    x = self.sub(f'linear{i}', Linear, self.units, **self.kw)(x)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/nets.py:244: in __call__
+    x = x @ self.value('kernel', self._scaled_winit, shape).astype(x.dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = {'dyn/dynin0/kernel': Traced&lt;ShapedArray(float32[32,16])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'dyn/dynin0/bias': Traced...xprTrace(level=1/0)&gt;, 'pol/head/action/logits/bias': Traced&lt;ShapedArray(float32[2])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;}
+key = 'quality_actor/mlp/linear0/kernel'
+value = Traced&lt;ShapedArray(float32[40,16])&gt;with&lt;DynamicJaxprTrace(level=2/0)&gt;
+
+    def __setitem__(self, key, value):
+      if key in self:
+        self.modified.add(key)
+      else:
+        self.created.add(key)
+      if self.ignore and key in self:
+        return  # Do not overwrite existing entries.
+      if not self.create and key not in self:
+&gt;       raise RuntimeError(
+            'Pass create=True to pure functions to allow them to create new '
+            f'state entries or use nj.init(). You were trying to set {key} to '
+            f'shape {value.shape}.')
+E       RuntimeError: Pass create=True to pure functions to allow them to create new state entries or use nj.init(). You were trying to set quality_actor/mlp/linear0/kernel to shape (40, 16).
+E       Exception happened inside Ninjax scope 'quality_actor/mlp/linear0'.
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:95: RuntimeError</error></testcase><testcase classname="tests.entry_v1.test_wp07_rl" name="test_native_rl_updates_quality_actor_value_not_old_pol_or_wm" time="0.001"><error message="failed on setup with &quot;RuntimeError: Pass create=True to pure functions to allow them to create new state entries or use nj.init(). You were trying to set quality_actor/mlp/linear0/kernel to shape (40, 16).&#10;Exception happened inside Ninjax scope 'quality_actor/mlp/linear0'.&#10;--------------------&#10;For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.&quot;">live = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/E_rl_02'), &lt;gym_trading_env.research.fg_s3_e_quality_online_collector.On...at 0x7557603cf650&gt;, &lt;gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x755724355d50&gt;)
+
+    @pytest.fixture(scope='module')
+    def rl(live):
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from embodied.run.fg_s3_e_quality_online import inspect_f3
+        from embodied.run.fg_s3_e_quality_transfer import transfer_parameters
+        root,c,p,r=live;p.publish();s=copy.deepcopy(f3_source());s['batch_size']=4
+&gt;       a=create_agent(s,root/'rl_model',controlled_small=True,execution_mode='ONLINE_RL_CONTROLLED')
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_rl.py:21: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:111: in create_agent
+    agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
+../dreamerv3/embodied/run/fg_s3_source_transfer.py:62: in _make_agent
+    return (agent_cls or Agent)(obs, act, elements.Config(**dict(cfg.agent), **extra,
+../dreamerv3/embodied/jax/agent.py:48: in __new__
+    outer.__init__(model, obs_space, act_space, config, jaxcfg)
+../dreamerv3/embodied/jax/agent.py:114: in __init__
+    self.params, self.train_params_sharding = self._init_params()
+                                              ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:528: in _init_params
+    params, params_sharding = transform.init(
+../dreamerv3/embodied/jax/transform.py:50: in init
+    params_shapes = fn.eval_shape(*dummy_inputs)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:44: in fn
+    params, _ = inner(params, *args, seed=seed)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/transform.py:34: in wrapper
+    state, out = fun(*args, create=True, modify=True, ignore=True, **kwargs)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:41: in hidewrapper
+    raise e
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:467: in train
+    return Agent.train(self, carry, data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:217: in train
+    metrics, (carry, entries, outs, mets) = self.opt(
+../dreamerv3/embodied/jax/opt.py:44: in __call__
+    loss, params, grads, aux = nj.grad(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/opt.py:36: in lossfn2
+    outs = lossfn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:264: in quality_init_loss
+    base,aux = self.loss(carry,obs,prevact,training)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:345: in loss
+    los, imgloss_out, mets = self.imagination_loss(dyn_entries, dyn_carry, repfeat, training)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:304: in imagination_loss
+    _, imgfeat, imgprevact = self.dyn.imagine(starts, policyfn, H, training)
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:108: in imagine
+    carry, (feat, action) = nj.scan(
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:109: in &lt;lambda&gt;
+    lambda c, _: self.imagine(c, policy, 1, training, single=True),
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/rssm.py:96: in imagine
+    action = policy(sg(carry)) if callable(policy) else policy
+             ^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:303: in &lt;lambda&gt;
+    policyfn = lambda feat: self._sample_imag_action(feat, 1)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/agent.py:425: in _sample_imag_action
+    action = sample(self._imagination_distribution(feat, mask, bdims))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_v2_agent.py:216: in _imagination_distribution
+    return distribution(self,self.feat2tensor(feat),mask,bdims)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/dreamerv3/fg_s3_e_quality_actor.py:103: in distribution
+    raw=model.quality_actor(jax.lax.stop_gradient(feat),bdims)[model.action_key].logits
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/heads.py:39: in __call__
+    x = self.mlp(x)
+        ^^^^^^^^^^^
+../dreamerv3/embodied/jax/nets.py:583: in __call__
+    x = self.sub(f'linear{i}', Linear, self.units, **self.kw)(x)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/nets.py:244: in __call__
+    x = x @ self.value('kernel', self._scaled_winit, shape).astype(x.dtype)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = {'dyn/dynin0/kernel': Traced&lt;ShapedArray(float32[32,16])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;, 'dyn/dynin0/bias': Traced...xprTrace(level=1/0)&gt;, 'pol/head/action/logits/bias': Traced&lt;ShapedArray(float32[2])&gt;with&lt;DynamicJaxprTrace(level=1/0)&gt;}
+key = 'quality_actor/mlp/linear0/kernel'
+value = Traced&lt;ShapedArray(float32[40,16])&gt;with&lt;DynamicJaxprTrace(level=2/0)&gt;
+
+    def __setitem__(self, key, value):
+      if key in self:
+        self.modified.add(key)
+      else:
+        self.created.add(key)
+      if self.ignore and key in self:
+        return  # Do not overwrite existing entries.
+      if not self.create and key not in self:
+&gt;       raise RuntimeError(
+            'Pass create=True to pure functions to allow them to create new '
+            f'state entries or use nj.init(). You were trying to set {key} to '
+            f'shape {value.shape}.')
+E       RuntimeError: Pass create=True to pure functions to allow them to create new state entries or use nj.init(). You were trying to set quality_actor/mlp/linear0/kernel to shape (40, 16).
+E       Exception happened inside Ninjax scope 'quality_actor/mlp/linear0'.
+E       --------------------
+E       For simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/ninjax/ninjax.py:95: RuntimeError</error></testcase></testsuite></testsuites>

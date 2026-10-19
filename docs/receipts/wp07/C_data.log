@@ -1,0 +1,220 @@
+EEE...........F.......................                                   [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_pending_is_invalid_not_wait_then_native_post_step_publication _
+
+    @pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+>       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+>           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError
+---------------------------- Captured stdout setup -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 con
+           689 quality_score
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+_______ ERROR at setup of test_live_owner_label_attacks_and_rng_restore ________
+
+    @pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+>       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+>           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError
+_ ERROR at setup of test_shared_multi_history_and_online_sampler_exact_all_states _
+
+    @pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+>       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+>           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError
+=================================== FAILURES ===================================
+___________ test_f3_cli_and_original_checkpoint_cold_processes[None] ___________
+
+corpus_pair = ({'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytes...'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, PosixPath('/tmp/pytest-of-v/pytest-582/multi_f3_native0/sources.json'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-582/test_f3_cli_and_original_check0')
+record_property = <function record_property.<locals>.append_property at 0x79e49c68f1a0>
+mode = None
+
+    @pytest.mark.parametrize('mode', [None, 'MIXED'])
+    def test_f3_cli_and_original_checkpoint_cold_processes(corpus_pair, tmp_path, record_property, mode):
+        config, _ = corpus_pair
+        config = copy.deepcopy(config)
+        if mode:
+            config['f3_auxiliary_sampling_spec'] = specs(mode)
+        path = tmp_path/'f3.json'; path.write_text(json.dumps(config, indent=2)+'\n')
+        output = tmp_path/'diagnostic'
+        argv = [sys.executable, '-B', str(Path(__file__).resolve().parents[2]/'tools/fg_s3_e_quality_reader.py'),
+                'multi-read', '--config', str(path), '--out', str(output), '--adapter', 'f3',
+                '--batch-size', '4', '--length', '12', '--burnin-steps', '4']
+        result = subprocess.run(argv, capture_output=True, text=True)
+        (tmp_path/'cli.log').write_text(result.stdout+result.stderr)
+>       assert result.returncode == 0, result.stdout[-3000:]+result.stderr[-5000:]
+E       AssertionError: {"status": "NO_GO", "error": "MULTI_COLD_PROBE_FAILED: Traceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\", line 374, in <module>\n    print(json.dumps(checkpoint_probe(args.probe_config, args.probe_out, resume=args.resume,\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\", line 251, in checkpoint_probe\n    cp.load()\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 345, in load\n    selected = path or self.latest()\n                       ^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 245, in latest\n    validate_bundle(path, self._identity)\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 212, in validate_bundle\n    raise ValueError('FG full checkpoint identity mismatch')\nValueError: FG full checkpoint identity mismatch\n", "training_admitted": false}
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...identity mismatch\')\\nValueError: FG full checkpoint identity mismatch\\n", "training_admitted": false}\n', stderr='').returncode
+
+tests/entry_v1/test_data_multi_f3.py:201: AssertionError
+=============================== warnings summary ===============================
+tests/entry_v1/test_data_multi_f3.py::test_f3_cli_and_original_checkpoint_cold_processes[None]
+tests/entry_v1/test_data_multi_f3.py::test_f3_cli_and_original_checkpoint_cold_processes[MIXED]
+  tests/entry_v1/test_data_multi_f3.py:188: PytestWarning: record_property is incompatible with junit_family 'xunit2' (use 'legacy' or 'xunit1')
+    @pytest.mark.parametrize('mode', [None, 'MIXED'])
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_data_multi_f3.py::test_f3_cli_and_original_checkpoint_cold_processes[None]
+ERROR tests/entry_v1/test_wp07_data.py::test_pending_is_invalid_not_wait_then_native_post_step_publication
+ERROR tests/entry_v1/test_wp07_data.py::test_live_owner_label_attacks_and_rng_restore
+ERROR tests/entry_v1/test_wp07_data.py::test_shared_multi_history_and_online_sampler_exact_all_states
+1 failed, 34 passed, 2 warnings, 3 errors in 145.57s (0:02:25)
