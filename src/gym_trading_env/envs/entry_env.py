@@ -762,13 +762,15 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self._get_obs()
             state['e_state'] = dict(observation_identity=self.e_observation_identity,
                 snapshot=copy.deepcopy(self.e_snapshot))
-        return json.loads(json.dumps(state, default=str))
+        from gym_trading_env.utils.snapshot_json import copy_account_snapshot
+        return copy_account_snapshot(state)
 
     def import_state(self, state):
-        # export_state is a JSON snapshot. A JSON round trip preserves that
-        # public contract and independent ownership without Python deepcopy's
-        # per-object traversal of the full account history.
-        state = json.loads(json.dumps(state, default=str))
+        # Preserve the full independently owned JSON snapshot. Native history
+        # rows already consist of JSON primitives; don't reformat every float
+        # in the growing history on each counterfactual account restore.
+        from gym_trading_env.utils.snapshot_json import copy_account_snapshot
+        state = copy_account_snapshot(state)
         if self._e_profile is not None:
             if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
                 raise ValueError('E V2 checkpoint observation/source identity differs')

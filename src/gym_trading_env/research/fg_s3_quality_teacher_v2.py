@@ -267,12 +267,17 @@ class NativeQualityTeacher:
         if type(self.cache_entries) is not int or not 0<=self.cache_entries<=4096:
             raise ValueError('Quality exact-state cache must contain 0..4096 entries')
         self._cache=OrderedDict()
+        self.source_guard_interval=source.get('source_guard_interval',1)
+        if type(self.source_guard_interval) is not int or not 1<=self.source_guard_interval<=1024:
+            raise ValueError('Quality source guard interval must be 1..1024 queries')
         self.statistics=dict(queries=0,native_traces=0,cache_hits=0,trace_seconds=0.,
                              independently_observed_market_minutes=0,cache_peak_entries=0)
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
             market_hash=self.market_hash, code_sha256=digest(__file__),
             clock_protocol='S3_MARKET_MINUTE', score_policy=SCORE_POLICY,
-            source_guard='SHA256_on_open_then_device_inode_size_mtime_ns_ctime_ns_each_query',
+            source_guard=('SHA256_on_open_then_device_inode_size_mtime_ns_ctime_ns_each_query'
+                if self.source_guard_interval==1 else dict(open='SHA256',
+                    block_queries=self.source_guard_interval,block_and_close='device_inode_size_mtime_ns_ctime_ns')),
             state_cache=dict(protocol='COMPLETE_NATIVE_STATE_LRU_V1',entries=self.cache_entries,
                              key='teacher_identity + full export_state SHA256; source/mask checked before lookup'),
             max_market_steps=self.max_market_steps,calendar_metadata='immutable_teacher_private_index',
@@ -283,13 +288,16 @@ class NativeQualityTeacher:
             self.identity['e_fork'] = self.e_fork
         self.identity_hash = fingerprint(self.identity)
 
-    def query_state(self, env, mask, *, snapshot=None):
+    def _check_source_stats(self):
         from pathlib import Path
         from gym_trading_env.envs.entry_market_cache import _stat_identity
         for name,(resolved,stat) in self._source_stats.items():
             path=Path(name)
             if str(path.resolve(strict=True))!=resolved or _stat_identity(path)!=stat:
                 raise ValueError('Frozen quality source changed during collection: '+name)
+
+    def query_state(self, env, mask, *, snapshot=None):
+        if self.statistics['queries']%self.source_guard_interval==0:self._check_source_stats()
         if self.e_fork is not None and (
                 env.e_observation_identity != self.clone.e_observation_identity or
                 env._e_profile.identity != self.e_fork['source_identity'] or
@@ -351,8 +359,10 @@ class NativeQualityTeacher:
     def close(self):
         # Native Env.close() may persist state_path. A research executor owns
         # no external resources requiring that side effect.
-        self.clone=None
-        self._cache.clear()
+        try:self._check_source_stats()
+        finally:
+            self.clone=None
+            self._cache.clear()
 
 
 def trace_native_trade(env,clone, *, day_complete=False,state=None,calendar_index=None,max_market_steps=None):

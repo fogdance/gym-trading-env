@@ -266,7 +266,7 @@ def _behavior_job(job):
         job['source'],job['strict'],identity,job['label_workers'])) if job.get('label_workers') else None
     trace,receipt=generate_behavior(factory,spec,job['out'],PROJECT.parent/'dreamerv3',
         source=job['source'],initial_state=job['initial'],end_cursor=job['end'],strict=job['strict'],
-        labeler_factory=labels)
+        labeler_factory=labels,verify_labels=False)
     return dict(behavior=spec['id'],trace_hash=trace['replay_trace_hash'],reconciliation=receipt,
         seconds=time.monotonic()-began,peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024)
 
@@ -375,7 +375,7 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         str(Path(env_receipt)/'inputs/inputs.json'):lock['inputs_sha256'],
         lock['partition_manifest']['path']:lock['partition_manifest']['sha256']}
     source_binding=dict(fold='TRAIN',source_lock_hash=lock['content_hash'],files={**frozen,**code['files'],**anchors},
-        state_cache_entries=0,calendar_complete=True)
+        state_cache_entries=0,calendar_complete=True,source_guard_interval=1024)
     strict=QualityStrictTeacher(env,source=source_binding,start_cursor=lock['start_cursor'])
     write_json(out/'p4_plan.json',strict.plan())
     write_json(out/'teacher_manifest.json',signed(dict(protocol=TEACHER_SCHEMA,fold='TRAIN',
@@ -417,6 +417,8 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
     manifest=signed(dict(protocol=SCHEMA,fold='TRAIN',execution_mode=mode,
         status='DEV_ONLY_NOT_CERTIFIED' if mode=='dev' else 'CORPUS_PRODUCED',
         certification='NOT_CERTIFIED' if mode=='dev' else 'INDEPENDENT_NATIVE_G3_REQUIRED',
+        verification_state='COLLECTED_UNVERIFIED',
+        generation_label_verification='DEFERRED_TO_INDEPENDENT_NATIVE_G3',
         training_admitted=False,source_lock_hash=lock['content_hash'],course_identity_hash=course_hash,
         observation=observation_contract(),model_contract_hash=fingerprint(model_contract),
         teacher_identity=strict.identity_hash,e_profile_identity=profile.identity,code=code,
@@ -496,6 +498,8 @@ def verify_corpus(path,*,workers=None):
         jobs=[future.result() for future in as_completed(futures)]
     by_name={job['behavior']:job['receipt'] for job in jobs}
     receipts=[by_name[name] for name in m['behaviors']]
+    if any(r['teacher_labels_verified']!=r['records'] or not r['records'] for r in receipts):
+        raise ValueError('Native G3 must independently recompute every teacher label')
     check_files(expected)
     _verify_publications(path,m['behaviors'])
     report=coverage([path/'policies'/name for name in m['behaviors']])
@@ -506,6 +510,7 @@ def verify_corpus(path,*,workers=None):
     spec=course.validate_course_spec(json.loads((path/'course_v2.json').read_text()))
     if fingerprint(course.course_identity_payload(spec))!=m['course_identity_hash']:raise ValueError('Course hash differs')
     return signed(dict(status='PASS',protocol=SCHEMA,training_admitted=False,
+        verification_state='NATIVE_G3_VERIFIED',
         corpus_identity=m['content_hash'],native_replay=receipts,G3='GO',test_prices_opened=0,
         resource_budget=limits,behavior_jobs=jobs))
 

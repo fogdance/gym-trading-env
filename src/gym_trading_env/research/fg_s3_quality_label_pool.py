@@ -14,7 +14,7 @@ def _initialize(row, profile, initial, source, strict, teacher_identity):
     from .fg_s3_e_quality_corpus_cli import _factory
     from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
     from .fg_s3_e_quality_corpus import l1_labeler
-    global _env, _teacher, _label, _history
+    global _env, _teacher, _label, _history, _initial_history
     factory = _factory(row, profile)
     _env = factory()
     _env.import_state(initial)
@@ -23,16 +23,36 @@ def _initialize(row, profile, initial, source, strict, teacher_identity):
         raise ValueError('Parallel teacher differs from the native starting account identity')
     _label = l1_labeler(_teacher, strict)
     _history = initial['equity_history']
+    _initial_history = tuple(_history)
 
 
-def _query(state, suffix, mask):
-    # Transport deduplication only: the original complete financial state is
-    # restored, including the full native WAIT history before the sample.
-    state['equity_history'] = _history + suffix
+def _begin_stream():
+    global _history
+    _teacher._check_source_stats()
+    _history = list(_initial_history)
+
+
+def _finish_stream():
+    _teacher.close()
+
+
+def _query(state, delta, mask, expected_snapshot_hash, base_count):
+    # Each executor owns one ordered account-history replica. Only newly
+    # appended samples travel over IPC; restore still receives ALL samples.
+    if len(_history) != base_count:
+        raise ValueError('Parallel account history delta is missing or out of order')
+    _history.extend(delta)
+    state['equity_history'] = _history
     _env.import_state(state)
     if not np.array_equal(mask, _env._published_mask):
         raise ValueError('Parallel teacher mask differs from native snapshot')
-    return _label(_env, None, None)
+    label = _label(_env, None, None)
+    # Bind reconstruction to the complete snapshot independently emitted by
+    # the Driver/reconciler, including every old history row. A modified or
+    # omitted prefix cannot silently reuse this worker's initial history.
+    if label['account_snapshot_hash'] != expected_snapshot_hash:
+        raise ValueError('Parallel transport changed the complete native account snapshot')
+    return label
 
 
 class NativeLabelPool:
@@ -41,17 +61,41 @@ class NativeLabelPool:
             raise ValueError('Positive native label worker count required')
         self._history = initial['equity_history']
         self.queue_depth = 2*workers
-        self._pool = ProcessPoolExecutor(max_workers=workers,
+        self._pools = [ProcessPoolExecutor(max_workers=1,
             mp_context=multiprocessing.get_context('spawn'), initializer=_initialize,
-            initargs=(row, profile, initial, source, strict, teacher_identity))
+            initargs=(row, profile, initial, source, strict, teacher_identity)) for _ in range(workers)]
+        self._sent = [len(self._history)]*workers
+        self._closed = False
+        self.statistics = dict(queries=0,delta_history_items=0,full_history_items=0,
+                               history_replicas=workers)
 
     def __call__(self, env, step, row):
         state = env.export_state()
         history = state.pop('equity_history')
-        count = len(self._history)
-        if history[:count] != self._history:
-            raise ValueError('Parallel label transport changed complete starting financial history')
-        return self._pool.submit(_query, state, history[count:], env._published_mask.copy())
+        worker = self.statistics['queries'] % len(self._pools)
+        count = self._sent[worker]
+        if len(history) < count:
+            raise ValueError('Parallel account history cannot rewind within one stream')
+        delta = history[count:]
+        from gym_trading_env.envs.entry_contract import fingerprint
+        expected = row['account_snapshot_hash'] if row is not None else fingerprint(
+            dict(state,equity_history=history))
+        future = self._pools[worker].submit(_query,state,delta,env._published_mask.copy(),expected,count)
+        self._sent[worker] = len(history)
+        self.statistics['queries'] += 1
+        self.statistics['delta_history_items'] += len(delta)
+        self.statistics['full_history_items'] += len(history)
+        return future
 
     def close(self):
-        self._pool.shutdown(wait=True, cancel_futures=True)
+        if self._closed:return
+        self._closed = True
+        try:
+            for future in [pool.submit(_finish_stream) for pool in self._pools]:future.result()
+        finally:
+            for pool in self._pools:pool.shutdown(wait=True, cancel_futures=True)
+
+    def begin_stream(self):
+        """Explicitly rewind replicas for a new independent account replay."""
+        for future in [pool.submit(_begin_stream) for pool in self._pools]:future.result()
+        self._sent = [len(self._history)]*len(self._pools)

@@ -42,7 +42,7 @@ def l1_labeler(teacher, strict=None):
 
 def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_state=None,
                       end_cursor=None, strict=None, policy_factory=Single3BehaviorPolicy,
-                      labeler_factory=None):
+                      labeler_factory=None, verify_labels=True):
     if source.get('fold')!='TRAIN':raise ValueError('Corpus requires explicit TRAIN source')
     env=factory()
     if env.entry_config.get('state_path'):
@@ -64,7 +64,15 @@ def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_st
             teacher_identity=teacher.identity_hash,training_admitted=False),dreamer_root,
             env_factory=lambda:env,protocol=E_QUALITY_PROTOCOL,policy_factory=policy_factory,
             initial_state=initial_state,end_cursor=end_cursor,labeler=labels)
-        receipt=reconcile_trace(output,dreamer_root,env_factory=factory,schema=E_QUALITY_SCHEMA,label_verifier=labels)
+        if verify_labels and hasattr(labels,'begin_stream'):labels.begin_stream()
+        # CLI production performs all-label verification in a separate native
+        # G3 process. Keep the complete local financial/observation replay,
+        # without executing the same expensive L1/L2 queries a second time.
+        receipt=reconcile_trace(output,dreamer_root,env_factory=factory,schema=E_QUALITY_SCHEMA,
+            label_verifier=labels if verify_labels else None)
+        receipt['label_verification']=('ALL_ROWS_RECOMPUTED' if verify_labels else
+            'DEFERRED_TO_INDEPENDENT_NATIVE_G3')
+        if hasattr(labels,'statistics'):receipt['label_transport']=dict(labels.statistics)
         write_json(Path(output)/'reconciliation.json',signed(receipt))
         return trace,receipt
     finally:

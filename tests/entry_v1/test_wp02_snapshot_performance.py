@@ -8,6 +8,23 @@ from gym_trading_env.utils.market_prefix import MarketPrefix
 from wp02_fixture import native_factory
 
 
+def test_account_snapshot_copy_retains_json_normalization_and_full_independent_history():
+    import json
+    from decimal import Decimal
+    from gym_trading_env.utils.snapshot_json import copy_account_snapshot
+    row=dict(time='2021-12-09 09:01:00+08:00',equity=300000.,
+             unrealized_pnl=-0.,net_lots=0.,intrabar=False)
+    state=dict(equity_history=[row,dict(extra=[Decimal('1.25'),('a','b')])],
+               amount=Decimal('2.5'),rng={'state':2**127})
+    expected=json.loads(json.dumps(state,default=str))
+    actual=copy_account_snapshot(state)
+    assert actual==expected
+    actual['equity_history'][0]['equity']=0
+    actual['equity_history'][1]['extra'].clear()
+    assert state['equity_history'][0]['equity']==300000.
+    assert len(state['equity_history'][1]['extra'])==2
+
+
 def test_worker_budget_uses_real_memory_cpu_and_independent_job_count():
     from gym_trading_env.research.fg_s3_e_quality_corpus_cli import _worker_limits
     gib = 1024**3
@@ -42,6 +59,43 @@ def test_parallel_teacher_transport_matches_serial_native_accounts_and_labels(tm
     assert serial['array_hash'] == parallel['array_hash']
     assert [r['teacher'] for r in iter_sidecar(tmp_path/'serial')] == [r['teacher'] for r in iter_sidecar(tmp_path/'parallel')]
     env.close()
+
+
+def test_ordered_history_transport_rejects_changed_old_account_samples(tmp_path):
+    from gym_trading_env.research.fg_s3_quality_label_pool import NativeLabelPool
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    factory,config,profile=native_factory(tmp_path/'market',minutes=20)
+    env=factory();env.reset(seed=0)
+    source=dict(fold='TRAIN',state_cache_entries=0)
+    teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source=source)
+    pool=NativeLabelPool(dict(env_config=str(config)),profile,env.export_state(),source,
+                         None,teacher.identity_hash,workers=1)
+    try:
+        first=pool(env,None,None).result()
+        env.step(0)
+        second=pool(env,None,None).result()
+        assert second['account_snapshot_hash']!=first['account_snapshot_hash']
+        assert pool.statistics['delta_history_items']<pool.statistics['full_history_items']
+        env.equity_history[0]['equity']+=1
+        with pytest.raises(ValueError,match='complete native account snapshot'):
+            pool(env,None,None).result()
+    finally:pool.close();teacher.close();env.close()
+
+
+def test_block_source_guard_rechecks_changes_before_teacher_closes(tmp_path):
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    from gym_trading_env.research.fg_replay import digest
+    factory,_,_=native_factory(tmp_path/'market',minutes=20)
+    marker=tmp_path/'source.txt';marker.write_text('frozen')
+    env=factory();env.reset(seed=0)
+    teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source=dict(
+        fold='TRAIN',files={str(marker):digest(marker)},source_guard_interval=1024))
+    teacher.query_state(env,env._published_mask)
+    marker.write_text('changed')
+    try:
+        with pytest.raises(ValueError,match='Frozen quality source changed'):
+            teacher.close()
+    finally:env.close()
 
 
 def test_prefix_json_matches_original_hash_and_does_not_include_suffix(tmp_path):

@@ -107,3 +107,24 @@ def test_C07_coverage_separates_market_accounts_and_counterfactuals(tmp_path):
     a,b=tmp_path/'a.csv',tmp_path/'b.csv'
     write_coverage_csv(a,report);write_coverage_csv(b,coverage(paths))
     assert a.read_bytes()==b.read_bytes() and b'official_day_session' in a.read_bytes()
+
+
+def test_generation_can_defer_labels_but_independent_replay_still_recomputes_them(tmp_path):
+    from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior, behavior_specs, l1_labeler
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    from gym_trading_env.research.fg_replay import reconcile_trace, E_QUALITY_SCHEMA
+    factory, _, _ = native_factory(tmp_path/'market', minutes=20)
+    env = factory(); env.reset(seed=0)
+    source = dict(fold='TRAIN', state_cache_entries=0)
+    root = Path(__file__).resolve().parents[3]/'dreamerv3'
+    trace, financial = generate_behavior(factory, behavior_specs()[0], tmp_path/'trace', root,
+        source=source, verify_labels=False)
+    assert financial['status'] == 'PASS' and financial['teacher_labels_verified'] == 0
+    assert financial['label_verification'] == 'DEFERRED_TO_INDEPENDENT_NATIVE_G3'
+    teacher = NativeQualityTeacher(env, factory, fold='TRAIN', source=source)
+    try:
+        checked = reconcile_trace(tmp_path/'trace', root, env_factory=factory,
+            schema=E_QUALITY_SCHEMA, label_verifier=l1_labeler(teacher))
+        assert checked['teacher_labels_verified'] == checked['records'] == trace['records']
+    finally:
+        teacher.close(); env.close()
