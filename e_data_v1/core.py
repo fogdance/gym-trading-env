@@ -321,43 +321,56 @@ class MarketData:
             self._macd_stream = CausalMACD5m()
             self._macd_through = -1
             self._macd_anchor_close = None
-            self._macd_sessions = [(local_timestamp(s['start']), local_timestamp(s['end']))
-                                   for s in self.schedule['dated_sessions']]
+            # _calendar already rejected overlapping dated minute intervals.
+            # Map each row once rather than scanning every historic session
+            # and constructing a mixed Pandas Series on every prefix advance.
+            self._macd_sessions = sorted((local_timestamp(s['start']), local_timestamp(s['end']))
+                                        for s in self.schedule['dated_sessions'])
+            starts = np.array([a.value for a,b in self._macd_sessions],np.int64)
+            ends = np.array([b.value for a,b in self._macd_sessions],np.int64)
+            session_index = np.searchsorted(starts,self.frame.index.asi8,side='left')-1
+            valid = (session_index>=0) & (self.frame.index.asi8<=ends[np.maximum(session_index,0)])
+            self._macd_session_index = np.where(valid,session_index,-1)
+            self._macd_close = self.frame.Close.to_numpy(copy=True)
+            self._macd_good = self.frame._good.to_numpy(copy=True)
+            self._macd_legal = self.frame._legal.to_numpy(copy=True)
+            self._macd_duration = self.frame._duration.to_numpy(copy=True)
+            self._macd_available = pd.DatetimeIndex(self.frame.available_at)
         for i in range(self._macd_through+1, through+1):
-            row = self.frame.iloc[i]; t = self.frame.index[i]
-            if row.available_at > cutoff:
+            t = self.frame.index[i]; available = self._macd_available[i]
+            if available > cutoff:
                 raise EDataError('MACD unavailable prefix minute')
-            if not row._good:
+            if not self._macd_good[i]:
                 raise EDataError('MACD invalid visible minute')
-            sessions = [(a,b) for a,b in self._macd_sessions if a < t <= b]
-            closing_mark = (not row._legal and row._duration == 0 and
-                            len(sessions) == 1 and t == sessions[0][1])
-            if row._legal or closing_mark:
-                if len(sessions) != 1:
+            session = int(self._macd_session_index[i])
+            closing_mark = (not self._macd_legal[i] and self._macd_duration[i] == 0 and
+                            session>=0 and t == self._macd_sessions[session][1])
+            if self._macd_legal[i] or closing_mark:
+                if session<0:
                     raise EDataError('MACD untrusted dated session')
-                a,b = sessions[0]
+                a,b = self._macd_sessions[session]
                 ordinal = int((t-a).total_seconds()/60)-1
                 bucket = self.contract+':'+a.isoformat()+':'+str(ordinal//5)
                 try:
-                    if row._legal:
-                        self._macd_stream.push(float(row.Close), bucket=bucket, session=a.isoformat(),
-                            slot=ordinal%5+1, time_ns=t.value, available_ns=row.available_at.value,
+                    if self._macd_legal[i]:
+                        self._macd_stream.push(float(self._macd_close[i]), bucket=bucket, session=a.isoformat(),
+                            slot=ordinal%5+1, time_ns=t.value, available_ns=available.value,
                             session_end_ns=b.value)
-                        self._macd_anchor_close = float(row.Close)
+                        self._macd_anchor_close = float(self._macd_close[i])
                     else:
                         self._macd_stream.observe_interval_end(session=a.isoformat(),time_ns=t.value,
-                            available_ns=row.available_at.value,session_end_ns=b.value)
+                            available_ns=available.value,session_end_ns=b.value)
                 except ValueError as exc:
                     prior=self._macd_stream
                     context=dict(type='MACD_REJECTED',contract=self.contract,cursor=i,
-                        trading_date=str(row.trading_date),time=t.isoformat(),
+                        trading_date=str(self.frame.trading_date.iloc[i]),time=t.isoformat(),
                         previous_time_ns=prior.last_time,previous_session=prior.session,
                         previous_interval_end_ns=prior.session_end_ns,
                         previous_bucket=prior.bucket,previous_slot=prior.slot,
                         session_start=a.isoformat(),session_end=b.isoformat(),bucket=bucket,
                         slot=ordinal%5+1,expected_slot=prior.slot+1 if bucket==prior.bucket else 1,
-                        source_valid=bool(row._good),valid_minute=bool(row._legal),
-                        available_at=row.available_at.isoformat())
+                        source_valid=bool(self._macd_good[i]),valid_minute=bool(self._macd_legal[i]),
+                        available_at=available.isoformat())
                     raise EDataError(str(exc)+'; context='+json.dumps(context,sort_keys=True),[context]) from exc
             state = self._macd_stream.snapshot()
             value = np.asarray(self._macd_stream.output, np.float32)
@@ -367,7 +380,7 @@ class MarketData:
                 raw=self._macd_stream.raw.copy(), anchor_close=self._macd_anchor_close,
                 bucket_id=self._macd_stream.bucket, last_committed_bucket=self._macd_stream.last_committed,
                 completed_buckets=self._macd_stream.completed, state=state,
-                visible_cutoff=t.isoformat(), available_at=row.available_at.isoformat()))
+                visible_cutoff=t.isoformat(), available_at=available.isoformat()))
             self._macd_through = i
         if through < 0:
             raise EDataError('MACD no visible source')
