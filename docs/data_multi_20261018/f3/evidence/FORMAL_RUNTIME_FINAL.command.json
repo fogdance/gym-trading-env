@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "junit_family=xunit1",
+    "tests/entry_v1/test_corpus_rational_runtime.py",
+    "-q",
+    "-x",
+    "--junitxml=docs/data_multi_20261018/f3/evidence/FORMAL_RUNTIME_FINAL.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+  "env_overrides": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "MPLCONFIGDIR": "/tmp/data_multi_mpl",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "start_utc": "2026-10-19T00:26:10.802526+00:00",
+  "source_commit": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+  "script_sha256": "9d674b41348f4c84fc3267402f04f8d3203aa516c5d1e593b932c0b7b1bb71ac",
+  "exit_code": 0,
+  "end_utc": "2026-10-19T00:26:15.309092+00:00"
+}

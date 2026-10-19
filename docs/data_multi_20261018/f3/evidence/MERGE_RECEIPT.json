@@ -1,0 +1,19 @@
+{
+  "gym": {
+    "before": "d397ff9df2ba62fda223f290ee9b4aab68b58df4",
+    "source_s3_next": "d5153268bcd33d5a4e54721767c8782f895283f9",
+    "merge_commit": "b5c6f2dca3bf0396ced3f6bc519e37ae9ab4197e",
+    "parents": "d397ff9df2ba62fda223f290ee9b4aab68b58df4 d5153268bcd33d5a4e54721767c8782f895283f9",
+    "strategy": "merge --no-ff; no conflicts"
+  },
+  "dreamer": {
+    "before": "0e39dfd498f9146e10f966cfe118a24b20e5143e",
+    "source_s3_next": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+    "after": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+    "strategy": "merge --ff-only"
+  },
+  "direction": "integration/s3-next -> feat/data-multi-20261018",
+  "merge_back_to_s3_next": false,
+  "WP04_modified": false,
+  "WP06_worktree_modified": false
+}

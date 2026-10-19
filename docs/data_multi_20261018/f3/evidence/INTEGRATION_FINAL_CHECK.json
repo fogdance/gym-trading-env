@@ -1,0 +1,14 @@
+{
+  "status": "PASS_RUNTIME_TREES_UNCHANGED_AFTER_FORMAL_MERGE",
+  "gym": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+  "dreamer": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+  "original_interface_smoke_sha256": "e4d51e09faec27e02d73f5415c7b3155ca00dcbee57563f642132bd3bbd661be",
+  "unchanged_runtime_scope": [
+    "Gym src/tools/configs",
+    "Dreamer embodied/dreamerv3"
+  ],
+  "inherited_f1_f2_f3_interface_smoke": "PASS",
+  "formal_runtime_regression": "3_PASS",
+  "data_multi_shared_tests": "168_PASS",
+  "optimizer_updates": 0
+}

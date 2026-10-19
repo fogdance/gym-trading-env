@@ -1,0 +1,93 @@
+{
+  "status": "PASS_INTEGRATION_PUBLIC_F1_F2_F3",
+  "observed_utc": "2026-10-19T00:24:36.391056+00:00",
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "gym": "a8d6b3edc13683f4c975a272e4ce038648484c34",
+  "dreamer": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+  "f3_import_path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py",
+  "results": [
+    {
+      "stage": "F1",
+      "status": "PASS_PUBLIC_INTERFACE_RESTORE",
+      "shape": [
+        4,
+        13,
+        20
+      ],
+      "identity": "782febb12c655405dc69169300211a84366d9dc42618a796e369075fddf7308e"
+    },
+    {
+      "stage": "F2",
+      "status": "PASS_PUBLIC_INTERFACE_RESTORE",
+      "shape": [
+        4,
+        13,
+        20
+      ],
+      "identity": "23a8c0c7e75c5afef2281c0b25d980d1aea44f5e3e871c29417fd36e1bd64844"
+    },
+    {
+      "stage": "F3",
+      "status": "PASS_PUBLIC_INTERFACE_RESTORE",
+      "shape": [
+        8,
+        13,
+        20
+      ],
+      "identity": "e2c4e053c4a576bf5a3b445d3c264218050a5a50e3c0c93c62c27b804ed10987",
+      "statistics": {
+        "scope": "DELIVERED_POST_BURNIN_TEACHER_LABEL_EXPOSURES",
+        "per_source": {
+          "alpha": {
+            "windows": 2,
+            "target_positions": 16,
+            "teacher_add": 2,
+            "teacher_wait": 13,
+            "teacher_invalid": 1
+          },
+          "beta": {
+            "windows": 6,
+            "target_positions": 48,
+            "teacher_add": 3,
+            "teacher_wait": 37,
+            "teacher_invalid": 8
+          }
+        },
+        "global_counts": {
+          "windows": 8,
+          "target_positions": 64,
+          "teacher_add": 5,
+          "teacher_wait": 50,
+          "teacher_invalid": 9
+        },
+        "source_reference_account_labels": {
+          "alpha": {
+            "STRICT_ADD": 7,
+            "STRICT_WAIT": 84
+          },
+          "beta": {
+            "STRICT_ADD": 7,
+            "STRICT_WAIT": 84
+          }
+        },
+        "source_selection": {
+          "basis": "EXPLICIT_CONFIGURED_SOURCE_WEIGHTS",
+          "probabilities": {
+            "alpha": 0.5,
+            "beta": 0.5
+          },
+          "delivered_window_shares": {
+            "alpha": 0.25,
+            "beta": 0.75
+          },
+          "represents_true_market_natural_distribution": false
+        },
+        "represents_true_market_natural_distribution": false,
+        "loss_or_optimizer_exposure": "NOT_MEASURED_BY_DATA_LAYER"
+      }
+    }
+  ],
+  "tested_runtime_tree_equal": true,
+  "optimizer_updates": 0,
+  "training_admitted": false
+}

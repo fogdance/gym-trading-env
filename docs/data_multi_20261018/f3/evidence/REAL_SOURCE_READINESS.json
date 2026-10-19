@@ -1,0 +1,19 @@
+{
+  "observed_utc": "2026-10-19T00:15:48.197115+00:00",
+  "roots": [
+    {
+      "root": "/data/s3_corpus/train_full_main_20261018_cpu20_v1",
+      "exists": true,
+      "published_batch_manifests": []
+    },
+    {
+      "root": "/data/s3_corpus/train_full_main_20261018_cpu20_v2",
+      "exists": true,
+      "published_batch_manifests": []
+    }
+  ],
+  "status": "NOT_RUN",
+  "reason": "Await real V3 Corpus publication and subsequent integration acceptance; synthetic DEV verification only in this delivery.",
+  "optimizer_updates": 0,
+  "prices_opened": 0
+}

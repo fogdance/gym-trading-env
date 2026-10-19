@@ -1,0 +1,50 @@
+{
+  "schema": "FG_S3_E_MULTICORPUS_CONFIG_V1",
+  "sources": [
+    {
+      "corpus_id": "TRAIN01_FG809_FULL_MAIN",
+      "corpus_root": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/batches/TRAIN01_FG809_FULL_MAIN",
+      "index_path": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/receipts/TRAIN01_FG809_FULL_MAIN/reader/join.sqlite",
+      "batch_manifest": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/receipts/TRAIN01_FG809_FULL_MAIN/BATCH_MANIFEST.json"
+    },
+    {
+      "corpus_id": "TRAIN02_FG901_FULL_MAIN",
+      "corpus_root": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/batches/TRAIN02_FG901_FULL_MAIN",
+      "index_path": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/receipts/TRAIN02_FG901_FULL_MAIN/reader/join.sqlite",
+      "batch_manifest": "/data/s3_corpus/train_full_main_20261018_cpu20_v2/receipts/TRAIN02_FG901_FULL_MAIN/BATCH_MANIFEST.json"
+    }
+  ],
+  "stage": "ACTOR_STRICT",
+  "per_source_sampling_spec": {
+    "TRAIN01_FG809_FULL_MAIN": {
+      "mode": "NATURAL"
+    },
+    "TRAIN02_FG901_FULL_MAIN": {
+      "mode": "NATURAL"
+    }
+  },
+  "source_mix_weights": {
+    "TRAIN01_FG809_FULL_MAIN": 1.0,
+    "TRAIN02_FG901_FULL_MAIN": 1.0
+  },
+  "seed": 202,
+  "cache_bytes": 67108864,
+  "f3_auxiliary_sampling_spec": {
+    "TRAIN01_FG809_FULL_MAIN": {
+      "mode": "MIXED",
+      "natural_weight": 0.5,
+      "strata_weights": {
+        "STRICT_ADD": 1,
+        "STRICT_WAIT": 1
+      }
+    },
+    "TRAIN02_FG901_FULL_MAIN": {
+      "mode": "MIXED",
+      "natural_weight": 0.5,
+      "strata_weights": {
+        "STRICT_ADD": 1,
+        "STRICT_WAIT": 1
+      }
+    }
+  }
+}

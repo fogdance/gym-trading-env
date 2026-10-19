@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="29.811" timestamp="2026-10-19T08:10:30.738859+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_pair_owner_keeps_teacher_suffix_domain" file="tests/entry_v1/test_data_multi_f3.py" line="253" time="28.680"><failure message="AssertionError: &#10;Arrays are not equal&#10;&#10;Mismatched elements: 8 / 8 (100%)&#10;Max absolute difference: 2062087603&#10;Max relative difference: 1.&#10; x: array([0, 0, 0, 0, 0, 0, 0, 0], dtype=uint32)&#10; y: array([ 559092878, 2276848139,  772394200, 1893828782, 2623028042,&#10;       2062087603, 1733232081, 1226837262], dtype=uint32)">corpus_pair = ({'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytes...'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, PosixPath('/tmp/pytest-of-v/pytest-569/multi_f3_native0/sources.json'))
+
+    def test_f3_pair_owner_keeps_teacher_suffix_domain(corpus_pair):
+        from gym_trading_env.envs.entry_contract import fingerprint
+        from gym_trading_env.research.fg_replay import trace_manifest, iter_sidecar, E_QUALITY_SCHEMA
+        config, _ = corpus_pair
+        stream = open_f3(config)
+        try:
+            data, audit = stream.sample()
+            for b, row in enumerate(audit):
+                reader = stream.role_streams['NATURAL'].stream.readers[row['corpus_id']]
+                original = reader.root/'policies'/row['policy']
+                trace = trace_manifest(original, schema=E_QUALITY_SCHEMA)
+                sidecar = {native['ordinal']: native for native in iter_sidecar(original)}
+                # The original Join binds Corpus, account trace, Teacher and suffix.
+                for t, native in enumerate(row['rows'][1:], 1):
+                    owner = reader.db.execute('SELECT owner FROM eligibility WHERE policy=? AND ordinal=?',
+                                              (native['policy'], native['ordinal'])).fetchone()[0]
+                    expected = fingerprint(dict(protocol='FG_S3_E_QUALITY_PAIR_OWNER_V1',
+                        corpus=reader.admission.source.corpus_content_hash, policy=native['policy'],
+                        trace=trace['replay_trace_hash'], segment=native['segment'],
+                        teacher=reader.corpus['teacher_identity'],
+                        suffix=sidecar[native['ordinal']]['teacher']['L2']['suffix_boundary_identity']))
+                    assert owner == expected
+&gt;                   np.testing.assert_array_equal(data['quality_owner'][b, t],
+                        np.frombuffer(bytes.fromhex(owner), '&gt;u4').astype(np.uint32))
+
+tests/entry_v1/test_data_multi_f3.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+args = (&lt;built-in function eq&gt;, array([0, 0, 0, 0, 0, 0, 0, 0], dtype=uint32), array([ 559092878, 2276848139,  772394200, 1893828782, 2623028042,
+       2062087603, 1733232081, 1226837262], dtype=uint32))
+kwds = {'err_msg': '', 'verbose': True, 'header': 'Arrays are not equal', 'strict': False}
+
+    @wraps(func)
+    def inner(*args, **kwds):
+        with self._recreate_cm():
+&gt;           return func(*args, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^
+E           AssertionError: 
+E           Arrays are not equal
+E           
+E           Mismatched elements: 8 / 8 (100%)
+E           Max absolute difference: 2062087603
+E           Max relative difference: 1.
+E            x: array([0, 0, 0, 0, 0, 0, 0, 0], dtype=uint32)
+E            y: array([ 559092878, 2276848139,  772394200, 1893828782, 2623028042,
+E                  2062087603, 1733232081, 1226837262], dtype=uint32)
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: AssertionError</failure></testcase></testsuite></testsuites>

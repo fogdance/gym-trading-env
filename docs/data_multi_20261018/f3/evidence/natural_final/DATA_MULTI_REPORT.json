@@ -1,0 +1,252 @@
+{
+  "protocol": "FG_S3_E_MULTICORPUS_READONLY_EVIDENCE_V1",
+  "status": "DEV_PASS",
+  "real_source_acceptance": "NOT_RUN",
+  "sources_published": [],
+  "identity": {
+    "protocol": "FG_S3_E_MULTICORPUS_F3_STREAM_V1",
+    "settings": {
+      "batch_size": 4,
+      "target_steps": 8,
+      "burnin_steps": 4
+    },
+    "roles": [
+      {
+        "role": "NATURAL",
+        "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
+        "stream": {
+          "protocol": "FG_S3_E_MULTICORPUS_STREAM_V1",
+          "stage": "ACTOR_STRICT",
+          "sources": [
+            {
+              "corpus_id": "alpha",
+              "source_identity": "3482c56256eabef063ff5649a0d44cff7fcc2892e007dda54245f626d16da430",
+              "corpus_identity": "697fd62809a56a7d0c6d817b06c41d6768d688ca29d5620aea5ce9f813460413",
+              "course_identity": "c47570ee438bcb59bd11c72fabbc7e2742e79ff265ce596d54449fe8921194c5",
+              "teacher_identity": "d8b6c4d0d4b8d6839a3d4fdc7814fd8711ae0ebdbe8ca475f34bdbce1b7f3324",
+              "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+              "index_sha256": "c57f93af85a51f26b1ab9e995f4a78bf86b1047fbfaa753354f26209c0b291ef",
+              "index_receipt_sha256": "db022b71e5f51a2d68ecb2b95f724fc3574c818fc3e6e6a64152a0d1d18aaaab",
+              "sampling_spec": {
+                "mode": "NATURAL"
+              },
+              "weight": 1.0,
+              "reader_seed": 114421764601537653611987672486376351782079816505862984037939565185202072620314
+            },
+            {
+              "corpus_id": "beta",
+              "source_identity": "c5c91d8f05c670b8ab4f5d1bfda49db2d48d16511813069313569a0e66219e5e",
+              "corpus_identity": "bc8a2f4c69fddcb4671a96550cf3758e5c3d88d6ddecbefbb7ea2d0781fd0917",
+              "course_identity": "0b6b23dcf9f1bb7cdcbfeba33cc14f6e41d38309aa3e7552ae2a3a5ee7f30784",
+              "teacher_identity": "b898e0c798d627320681fb762685da4dfe2277ea88166ac9c7d773734dffccc5",
+              "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+              "index_sha256": "a1602baac7b9eb5afe01188610dc04850dd62d7e70c2eb0197f7e6eaae994e00",
+              "index_receipt_sha256": "11ad51090e7c20732eda6d453f32f3dc9ec3834e2c959b6dcbf42b242ec3086e",
+              "sampling_spec": {
+                "mode": "NATURAL"
+              },
+              "weight": 1.0,
+              "reader_seed": 50539608479253008054369867037493972809857042264761688457942699117708848989695
+            }
+          ],
+          "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
+          "seed_rule": "FINGERPRINT_SEED_AND_STABLE_SOURCE_ID_V1",
+          "scheduler": "IID_PER_BATCH_ROW_SOURCE_ORDER_V1",
+          "compatibility": {
+            "observation": {
+              "observation_schema": "FG_S3_E_OBSERVATION_V2",
+              "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+              "decoder_schema": "FG_S3_E_DECODER_V1",
+              "fields": {
+                "market_seq": {
+                  "shape": [
+                    60,
+                    18
+                  ],
+                  "dtype": "float32"
+                },
+                "position_state": {
+                  "shape": [
+                    9
+                  ],
+                  "dtype": "float32"
+                },
+                "action_mask": {
+                  "shape": [
+                    2
+                  ],
+                  "dtype": "float32"
+                },
+                "action": {
+                  "shape": [],
+                  "dtype": "int32"
+                },
+                "reward": {
+                  "shape": [],
+                  "dtype": "float32"
+                },
+                "is_first": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "is_last": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "is_terminal": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "market_seq_e_shared": {
+                  "shape": [
+                    60,
+                    18
+                  ],
+                  "dtype": "float32"
+                },
+                "market_context_15m": {
+                  "shape": [
+                    24,
+                    7
+                  ],
+                  "dtype": "float32"
+                },
+                "market_macd_5m": {
+                  "shape": [
+                    4
+                  ],
+                  "dtype": "float32"
+                }
+              },
+              "encoder_keys": [
+                "market_seq_e_shared",
+                "position_state",
+                "action_mask",
+                "market_context_15m",
+                "market_macd_5m"
+              ],
+              "decoder_keys": [
+                "market_seq_e_shared",
+                "position_state"
+              ],
+              "audit_only": [
+                "market_seq"
+              ],
+              "context_fields": [
+                "rel_open",
+                "rel_high",
+                "rel_low",
+                "rel_close",
+                "vol_relative",
+                "oi_change",
+                "valid"
+              ],
+              "macd_5m": {
+                "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+                "periods": [
+                  12,
+                  26,
+                  9
+                ],
+                "histogram": "DIF-Signal",
+                "initialization": "first_complete_close; first_DIF_and_signal_zero",
+                "warmup": "35_complete_buckets_strictly_before_current_bucket",
+                "scale": "1000*raw/current_visible_1m_Close",
+                "invalid": "all_zero",
+                "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+                "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+                "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+                "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+                "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+                "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+              },
+              "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+            },
+            "model_contract": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+            "reward": {
+              "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+              "candidate": "C1",
+              "beta": 0.5,
+              "rho": 0.4,
+              "L": 3.0,
+              "clock_protocol": "S3_MARKET_MINUTE"
+            },
+            "teacher": {
+              "kind": "quality_v2",
+              "fold": "TRAIN",
+              "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+              "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+              "label_schema": "FG_S3_E_QUALITY_TEACHER_V2",
+              "label_location": "SIDECAR",
+              "layers": {
+                "strict_action": {
+                  "valid_fields": [
+                    "teacher_valid"
+                  ],
+                  "source": "quality_tp_strict_suffix"
+                },
+                "score": {
+                  "valid_fields": [
+                    "quality_score_valid"
+                  ],
+                  "source": "native_trade_outcome"
+                },
+                "outcome": {
+                  "valid_fields": [
+                    "quality_outcome_valid",
+                    "quality_event_valid",
+                    "quality_touch_valid",
+                    "quality_adverse_valid"
+                  ],
+                  "source": "native_trade_outcome"
+                },
+                "soft": {
+                  "valid_fields": [
+                    "quality_soft_valid"
+                  ],
+                  "source": "quality_soft_source",
+                  "sources": [
+                    "INVALID",
+                    "HEURISTIC_V2",
+                    "Q_V2_VERIFIED"
+                  ]
+                },
+                "q": {
+                  "valid_fields": [
+                    "quality_q_c1_valid",
+                    "quality_q_v2_valid"
+                  ],
+                  "source": "native_certified_q"
+                }
+              },
+              "strict_objective": {
+                "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                "gamma_rational": [
+                  332,
+                  333
+                ],
+                "tie_break": "WAIT",
+                "scope": "TRAIN_NATIVE_COMPLETE_SUFFIX_ONLY"
+              }
+            }
+          },
+          "fold": "TRAIN",
+          "training_admitted": false
+        },
+        "stream_identity": "ec731bd1a49320baadcfb6b92c01020f391489ec4561424951673bf6517e8210",
+        "adapter_identity": "741eb51a0309992239296af3920b876428fe9b4b061a9b781bf502b90d5d92b5"
+      }
+    ],
+    "master_seed": 202,
+    "seed_rule": "FINGERPRINT_MASTER_SEED_AND_F3_ROLE_V1",
+    "training_admitted": false
+  },
+  "identity_hash": "295f4ff5d4b59f15778d88695141a82d35e8458c00bf0ab1787e972c5871d5b5",
+  "adapter_mode": "f3",
+  "cold_restore": "PASS_EXACT_COLD_DATA_STATE",
+  "optimizer_updates": 0,
+  "training_admitted": false,
+  "new_native_g3": "NOT_RUN",
+  "model_or_optimizer_checkpoint": "NOT_RUN",
+  "content_hash": "ae0b91a4f028cd416d499d360c4d151c0d5d5e43ad23d6779bc63d890144a8d0"
+}

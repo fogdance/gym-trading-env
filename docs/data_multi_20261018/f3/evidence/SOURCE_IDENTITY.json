@@ -1,0 +1,51 @@
+{
+  "observed_utc": "2026-10-19T00:22:31.941279+00:00",
+  "gym": {
+    "path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+    "branch": "feat/data-multi-20261018",
+    "source_commit": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+    "dirty": false,
+    "f3_implementation_commit": "a8d6b3edc13683f4c975a272e4ce038648484c34"
+  },
+  "dreamer": {
+    "path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/dreamerv3",
+    "branch": "feat/data-multi-20261018",
+    "source_commit": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+    "dirty": false
+  },
+  "source_sha256": {
+    "src/gym_trading_env/research/fg_s3_e_quality_checks.py": "0a518426759618e71fdf6cab828a3db4efba8a3fa268572e81461aa9825fe5ce",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi.py": "0aed523a5fa9e07a75ddf4a4a73ed49b4d6ae555959a380665d4f09877769e54",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py": "3d04149b20ad6fc0f8f5fb7302d417a1f7bad995d15324c53089b757b1157af4",
+    "src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py": "92d47685f5df0eb118928f7ae0110ffa4138d97868174261e197dba33761d717",
+    "tests/entry_v1/test_data_multi_f3.py": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632",
+    "tests/entry_v1/test_data_multi.py": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885",
+    "tests/entry_v1/data_multi_fixture.py": "4f84637c37083b51f2e912225b37b93387931e032d5ab1ef8f5a10dbfd3a771f",
+    "src/gym_trading_env/research/fg_s3_e_quality_reader.py": "4e70c2c74714d64736a1299ce2f5ed2b7084bdde7172d4f0f663e0de87c88d28",
+    "src/gym_trading_env/research/fg_s3_e_quality_actor.py": "6c4f5c20ca36649f127d8fde5838df52be1d9edd58f7cb4b9953bcabbead1cdb",
+    "../dreamerv3/embodied/run/fg_s3_e_quality_actor.py": "d5d00c5b8f5f1364222748fc3961ddb654a1c68c9866d3d8ef6080431479e65f",
+    "../dreamerv3/embodied/run/fg_s3_e_quality_foundation.py": "c138cf686c90d58cf128852a0d2128eef533cac8033c21a3b39428db46601fcf",
+    "../dreamerv3/dreamerv3/fg_s3_e_quality_actor.py": "ceacce071eda01c6d901a01d4c8b2fa47767c7010390ede14f1d1c4a594c6662"
+  },
+  "committed_tested_bytes_equal": true,
+  "test_timing": "Final tests ran before source commits, on dirty worktrees based on the recorded incoming WP06 commits. Every recorded tested file hash equals the corresponding committed blob.",
+  "training_authorization": false,
+  "WP07_worktree_written": false,
+  "formal_production": {
+    "status": "MERGED_AND_RUNTIME_REGRESSION_PASS",
+    "observed_utc": "2026-10-19T00:27:28.077279+00:00",
+    "incoming_plan_commit": "692d9de62e719d40b2ebca4e3bb591540626087c",
+    "runtime_fix_commit": "9f0f847979e2047a5c9b2d87206c4423ecf111a3",
+    "data_multi_merge_commit": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+    "integration_after": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+    "integration_before": "a8d6b3edc13683f4c975a272e4ce038648484c34",
+    "existing_producer_b0_already_ancestor": true,
+    "frozen_producer_not_modified": true,
+    "runtime_setting": "PYTHONINTMAXSTRDIGITS=0",
+    "script_syntax": "PASS",
+    "plan_checksums": "PASS",
+    "formal_production": "NOT_RUN",
+    "optimizer_updates": 0,
+    "WP07_worktree_modified": false
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "status": "PASS_EXACT_STATISTICS_AND_AUDIT",
+  "scenarios": [
+    {
+      "mode": "natural",
+      "cold_status": "PASS_EXACT_COLD_DATA_STATE",
+      "consumed_batches": 6,
+      "statistics_equal": true,
+      "statistics": {
+        "NATURAL": {
+          "alpha": {
+            "windows": 12,
+            "target_positions": 96,
+            "teacher_add": 8,
+            "teacher_wait": 65,
+            "teacher_invalid": 23
+          },
+          "beta": {
+            "windows": 20,
+            "target_positions": 160,
+            "teacher_add": 15,
+            "teacher_wait": 126,
+            "teacher_invalid": 19
+          }
+        }
+      },
+      "wrapper_protocol": "FG_S3_E_MULTICORPUS_F3_STREAM_V1",
+      "pending_batches": 2,
+      "optimizer_updates": 0
+    },
+    {
+      "mode": "auxiliary",
+      "cold_status": "PASS_EXACT_COLD_DATA_STATE",
+      "consumed_batches": 6,
+      "statistics_equal": true,
+      "statistics": {
+        "NATURAL": {
+          "alpha": {
+            "windows": 12,
+            "target_positions": 96,
+            "teacher_add": 8,
+            "teacher_wait": 65,
+            "teacher_invalid": 23
+          },
+          "beta": {
+            "windows": 20,
+            "target_positions": 160,
+            "teacher_add": 15,
+            "teacher_wait": 126,
+            "teacher_invalid": 19
+          }
+        },
+        "AUXILIARY": {
+          "alpha": {
+            "windows": 15,
+            "target_positions": 120,
+            "teacher_add": 11,
+            "teacher_wait": 86,
+            "teacher_invalid": 23
+          },
+          "beta": {
+            "windows": 17,
+            "target_positions": 136,
+            "teacher_add": 10,
+            "teacher_wait": 113,
+            "teacher_invalid": 13
+          }
+        }
+      },
+      "wrapper_protocol": "FG_S3_E_MULTICORPUS_F3_STREAM_V1",
+      "pending_batches": 2,
+      "optimizer_updates": 0
+    }
+  ]
+}

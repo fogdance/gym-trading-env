@@ -1,0 +1,41 @@
+{
+  "backend": "external_immutable_course_reader",
+  "files": {
+    "agent.pkl": "c0b22bb60958c885d80b89f4379a741dae64ef5a7f3f755bdf0d1445521db461",
+    "course_reader.pkl": "049e5cd4b8fdf0a7b500c7d2f3a128ea948ab8fbca8011f0ee0f1f7b17c1ce94",
+    "runtime.pkl": "a2bbe4c7bd697043a78da55cba5993d38211e9531a55f29279da6db3eb53ac85",
+    "step.pkl": "31068125b3d6543518fbb7ce7878b1db2ebfb1268f2af67483779f91f5c99530"
+  },
+  "identity": {
+    "adapter": "e2c4e053c4a576bf5a3b445d3c264218050a5a50e3c0c93c62c27b804ed10987",
+    "adapter_mode": "f3",
+    "batch_size": 4,
+    "burnin_steps": 4,
+    "code_sha256": "0aed523a5fa9e07a75ddf4a4a73ed49b4d6ae555959a380665d4f09877769e54",
+    "data_only": true,
+    "f3_adapter_sha256": "6c4f5c20ca36649f127d8fde5838df52be1d9edd58f7cb4b9953bcabbead1cdb",
+    "f3_code_sha256": "3d04149b20ad6fc0f8f5fb7302d417a1f7bad995d15324c53089b757b1157af4",
+    "length": 12,
+    "packages": {
+      "cloudpickle": "3.1.0",
+      "elements": "3.20.0",
+      "gymnasium": "1.0.0",
+      "jax": "0.4.33",
+      "jaxlib": "0.4.33",
+      "ninjax": "3.5.1",
+      "numpy": "1.26.4",
+      "optax": "0.2.4",
+      "pandas": "2.2.3",
+      "portal": "3.5.1"
+    },
+    "prefetch": 2,
+    "probe_code_sha256": "92d47685f5df0eb118928f7ae0110ffa4138d97868174261e197dba33761d717",
+    "protocol": "FG_S3_DATA_MULTI_COLD_PROBE_V1",
+    "role_composer_sha256": "d5d00c5b8f5f1364222748fc3961ddb654a1c68c9866d3d8ef6080431479e65f",
+    "source": "e2c4e053c4a576bf5a3b445d3c264218050a5a50e3c0c93c62c27b804ed10987"
+  },
+  "protected": true,
+  "protocol": "FG_FULL_V1",
+  "schema": 1,
+  "step": 6
+}

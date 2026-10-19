@@ -1,0 +1,72 @@
+[
+  {
+    "label": "natural",
+    "cwd": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_e_quality_reader.py",
+      "multi-read",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/synthetic_natural.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/natural_final",
+      "--adapter",
+      "f3",
+      "--batch-size",
+      "4",
+      "--length",
+      "12",
+      "--burnin-steps",
+      "4"
+    ],
+    "env_overrides": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "MPLCONFIGDIR": "/tmp/data_multi_mpl",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "start_utc": "2026-10-19T00:18:14.680036+00:00",
+    "end_utc": "2026-10-19T00:18:26.490350+00:00",
+    "stdout_stderr": "natural_final.log"
+  },
+  {
+    "label": "auxiliary",
+    "cwd": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_e_quality_reader.py",
+      "multi-read",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/synthetic_auxiliary.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/auxiliary_final",
+      "--adapter",
+      "f3",
+      "--batch-size",
+      "4",
+      "--length",
+      "12",
+      "--burnin-steps",
+      "4"
+    ],
+    "env_overrides": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "MPLCONFIGDIR": "/tmp/data_multi_mpl",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "start_utc": "2026-10-19T00:18:26.490742+00:00",
+    "end_utc": "2026-10-19T00:18:53.091423+00:00",
+    "stdout_stderr": "auxiliary_final.log"
+  }
+]

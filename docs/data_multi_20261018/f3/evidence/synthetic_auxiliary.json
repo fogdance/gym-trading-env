@@ -1,0 +1,48 @@
+{
+  "schema": "FG_S3_E_MULTICORPUS_CONFIG_V1",
+  "sources": [
+    {
+      "corpus_id": "alpha",
+      "corpus_root": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/alpha",
+      "index_path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/alpha.sqlite"
+    },
+    {
+      "corpus_id": "beta",
+      "corpus_root": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/beta",
+      "index_path": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/beta.sqlite"
+    }
+  ],
+  "stage": "ACTOR_STRICT",
+  "per_source_sampling_spec": {
+    "alpha": {
+      "mode": "NATURAL"
+    },
+    "beta": {
+      "mode": "NATURAL"
+    }
+  },
+  "source_mix_weights": {
+    "alpha": 1.0,
+    "beta": 1.0
+  },
+  "seed": 202,
+  "cache_bytes": 1048576,
+  "f3_auxiliary_sampling_spec": {
+    "alpha": {
+      "mode": "MIXED",
+      "natural_weight": 0.5,
+      "strata_weights": {
+        "STRICT_ADD": 1,
+        "STRICT_WAIT": 1
+      }
+    },
+    "beta": {
+      "mode": "MIXED",
+      "natural_weight": 0.5,
+      "strata_weights": {
+        "STRICT_ADD": 1,
+        "STRICT_WAIT": 1
+      }
+    }
+  }
+}

@@ -1,0 +1,925 @@
+{
+  "status": "DEV_INTERFACE_PASS",
+  "unique_executed_cases": 171,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "runs": [
+    {
+      "receipt": "TARGETED_FINAL.xml",
+      "command": "TARGETED_FINAL.command.json",
+      "tests": 42,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 154.876,
+      "cases": [
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_native_mixed_batch_and_provenance_all_stages[WM_NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_native_mixed_batch_and_provenance_all_stages[HEADS_VALID]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_native_mixed_batch_and_provenance_all_stages[ACTOR_STRICT]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_native_mixed_batch_and_provenance_all_stages[ACTOR_QUALITY_PAIR]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_exact_rng_restore_and_independent_source_rng[NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_exact_rng_restore_and_independent_source_rng[STRATIFIED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_exact_rng_restore_and_independent_source_rng[MIXED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_missing_support_and_invalid_restore_preserve_all_states",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_aggregate_identity_changes_refuse_resume[order]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_aggregate_identity_changes_refuse_resume[weights]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_aggregate_identity_changes_refuse_resume[spec]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_aggregate_identity_changes_refuse_resume[source_list]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_aggregate_identity_changes_refuse_resume[stage]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_cross_source_splice_and_owner_collision_never_create_pair",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_source_mutation_rejected_even_when_source_not_selected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_hot_path_does_not_rehash_sources_and_adapter_reuses_f1_f2",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_invalid_source_contracts_fail_before_sampling[duplicate_id]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_invalid_source_contracts_fail_before_sampling[duplicate_content]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_invalid_source_contracts_fail_before_sampling[zero_weight]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_invalid_source_contracts_fail_before_sampling[underflow_weight]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_adapter_failure_rolls_back_scheduler_and_every_reader",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_two_corpus_original_checkpoint_cold_processes_and_cli",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_real_receipts_required_and_reject_output_inside_either_corpus",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_bound_index_and_receipt_mutation_refuse_restore[index]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_bound_index_and_receipt_mutation_refuse_restore[receipt]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi.py",
+          "name": "test_incompatible_model_contract_and_changed_adapter_bytes_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_roles_native_bytes_provenance_and_exact_state[None]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_roles_native_bytes_provenance_and_exact_state[NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_roles_native_bytes_provenance_and_exact_state[STRATIFIED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_roles_native_bytes_provenance_and_exact_state[MIXED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_auxiliary_rng_and_objective_preserve_natural_stream",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_auxiliary_failure_and_bad_restore_roll_back_whole_group",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_role_identity_changes_refuse_restore[auxiliary]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_role_identity_changes_refuse_restore[spec]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_role_identity_changes_refuse_restore[geometry]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_missing_support_and_canonical_label_attack",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_changed_external_source_invalidates_group",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_cli_and_original_checkpoint_cold_processes[None]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_cli_and_original_checkpoint_cold_processes[MIXED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_cli_requires_explicit_geometry_and_natural_specs",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_natural_statistics_preserve_source_and_global_denominators",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_data_multi_f3.py",
+          "name": "test_f3_pair_owner_keeps_teacher_suffix_domain",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "receipt": "SHARED_FINAL.xml",
+      "command": "SHARED_FINAL.command.json",
+      "tests": 126,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 72.856,
+      "cases": [
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C11_writer_and_reader_use_only_V3",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C04_restore_rejects_source_index_stage_or_sampling_change",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C05_same_price_different_account_and_reset_never_form_pair",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C08_open_reader_detects_changed_sidecar_or_chunk",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_reader.py",
+          "name": "test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B01_six_native_accounts_stream_to_metadata_index",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[ordinal]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[stepid]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[missing]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[duplicate]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[shift]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[account]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[policy]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[executed]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B02_resigned_three_way_or_time_attacks_fail_closed[incoming_action]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B03_sidecar_or_student_chunk_exchange_is_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B04_l2_invalid_does_not_erase_l1_and_forced_wait_is_not_strict",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B05_current_observation_teacher_not_behavior_action",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B06_each_window_mask_is_independent_and_invalid_huge_target_zeroed",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B07_fake_strict_wait_and_rational_witness_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B08_pair_identity_requires_nonzero_same_owner_same_reset",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B09_new_protocol_rejects_old_q_soft_weights_and_preserves_legacy",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B10_json_claim_is_not_an_admission_object",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B11_resigned_student_chunk_exchange_or_macd_change_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B12_mae_does_not_change_score_and_nan_is_rejected_before_loss",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FORCED_WAIT_POSITION]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[ADD_RIGHT_CENSORED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B13_invalid_strict_reasons_never_become_valid_wait[NO_ACTIVE_DECISION]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_join.py",
+          "name": "test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A01_development_checks_content_without_claiming_native_or_training",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A02_relocated_corpus_and_unrelated_dirty_code_keep_content_identity",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A03_changed_source_or_course_bytes_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[../TEST/prices.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[/tmp/TEST/prices.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[TEST/prices.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[DEV/data.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/NEVER_OPEN_TEST.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/prices.csv]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A05_symlink_rejected_before_hashing",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A06_nontrain_and_forged_training_permission_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A07_self_signed_pass_cannot_replace_native_execution",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A08_missing_or_empty_purpose_never_means_draft",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A09_changed_declared_identity_and_old_teacher_objective_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A10_missing_published_owner_or_inventory_rejected",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_admission.py",
+          "name": "test_A11_draft_course_cannot_be_a_supervision_source",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D09_source_cli_development_is_non_authenticating_and_creates_no_training_files",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D10_cli_negative_exit_and_no_output_side_effects[test]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D10_cli_negative_exit_and_no_output_side_effects[empty_purpose]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D10_cli_negative_exit_and_no_output_side_effects[bad_output]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D10_cli_negative_exit_and_no_output_side_effects[integration_output]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D11_native_verification_rejects_wrong_producer_before_launch_or_write",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[prepare]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[start]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[resume]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D12_public_E_quality_lifecycle_stays_closed_without_outputs[evaluate]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D13_matching_head_but_modified_frozen_verifier_cannot_certify",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp03_cli.py",
+          "name": "test_D14_reader_diagnostic_reports_missing_pair_support_without_inventing_samples",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_replay_restores_partial_chunks_online_queue_rng_and_updates",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_prefetch_snapshot_restores_pending_batches_and_consecutive_context",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_runtime_restores_ratio_carry_aggregates_and_gate_samples",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_exact_schedule_resume_and_overshoot_rejection",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_atomic_full_bundle_retention_identity_and_corrupt_recovery",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_failed_save_preserves_valid_points_and_final_is_protected",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_deterministic_prefetch_propagates_worker_failure_without_waiting",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+          "name": "test_fg_guard_rejects_full_checkpoint_optout_before_model_init",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+          "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+          "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+          "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+          "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+          "name": "test_online_model_and_environment_counters_have_separate_domains",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_require_formal_actor_rejects_missing_gate_interface",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_require_formal_actor_accepts_formal_checkpoint",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_eval_only_rejects_warmup_checkpoint",
+          "result": "PASS"
+        },
+        {
+          "file": "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+          "name": "test_live_trading_rejects_warmup_checkpoint",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D08_original_readers_roles_rng_restore_and_bounded_cache[None]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D08_original_readers_roles_rng_restore_and_bounded_cache[NATURAL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D08_original_readers_roles_rng_restore_and_bounded_cache[STRATIFIED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D08_original_readers_roles_rng_restore_and_bounded_cache[MIXED]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D09_auxiliary_failure_restores_both_consumption_states",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D10_missing_auxiliary_support_is_no_go_not_resampled",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_sampling.py",
+          "name": "test_D14_labels_only_in_burnin_do_not_count_as_target_support",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D01_natural_balanced_denominators_and_single_class_fallback",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D02_l1_conflicts_never_reverse_l2_and_default_off",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D03_no_pairs_across_owner_segment_batch_or_zero_owner",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D04_l2_flip_changes_gradient_and_invalid_placeholders_are_zero",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D05_actual_dual_mask_and_reset_terminal_define_valid_l2",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D06_auxiliary_never_changes_natural_prior_or_pairs_across_streams",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_losses.py",
+          "name": "test_D07_pair_temperature_and_explicit_weight_ablation",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A01_execution_subset_preserves_course",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_stage-CONTROLLED_FULL]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_f3_protocol-FAKE]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_f2_protocol-FAKE]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_q_v2_lambda-1.0]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_soft_lambda-1.0]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_outcome_lambda-1.0]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_decision_admitted-True]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A02_guard_rejects_bypass[quality_fuse_score-True]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[source_stage-OLD]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[source_run-]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[burnin_steps-0]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[sampling_spec-value3]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[actor_loss-value4]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[actor_loss-value5]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[max_consumed_batches-1]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A03_invalid_settings[actor_loss-value7]",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_wp06_contract.py",
+          "name": "test_A04_complete_model_no_teacher_policy_inputs",
+          "result": "PASS"
+        }
+      ]
+    },
+    {
+      "receipt": "FORMAL_RUNTIME_FINAL.xml",
+      "command": "FORMAL_RUNTIME_FINAL.command.json",
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 4.04,
+      "cases": [
+        {
+          "file": "tests/entry_v1/test_corpus_rational_runtime.py",
+          "name": "test_default_runtime_reproduces_both_decimal_conversion_failures",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_corpus_rational_runtime.py",
+          "name": "test_user_launcher_covers_parent_spawn_and_native_verifier_process",
+          "result": "PASS"
+        },
+        {
+          "file": "tests/entry_v1/test_corpus_rational_runtime.py",
+          "name": "test_frozen_reader_catalog_preserves_long_exact_witness",
+          "result": "PASS"
+        }
+      ]
+    }
+  ],
+  "not_run": {
+    "reason": "These fixture paths call ActorBC.update twice; actual optimizer updates are forbidden in this task.",
+    "evidence": "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py:87",
+    "required_shared_collected": 20,
+    "required_shared_executed": 12,
+    "required_shared_not_run": [
+      "embodied/tests/test_fg_s3_gate.py::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "embodied/tests/test_fg_s3_gate.py::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "embodied/tests/test_fg_s3_gate.py::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "embodied/tests/test_fg_s3_gate.py::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "embodied/tests/test_fg_s3_source_transfer.py::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "embodied/tests/test_fg_s3_source_transfer.py::test_no_inference_source_and_frozen_snapshot",
+      "embodied/tests/test_fg_s3_source_transfer.py::test_missing_baseline_requires_authenticated_features"
+    ],
+    "additional_not_run": [
+      "REAL_V3_MULTI_CORPUS_ACCEPTANCE",
+      "F1_F2_F3_PREPARE_START_RESUME_WIRING",
+      "NEURAL_MODEL_AND_OPTIMIZER_COLD_RESTORE",
+      "GPU_EXECUTION",
+      "FORMAL_TRAINING_ADMISSION"
+    ]
+  },
+  "optimizer_updates": 0,
+  "training_admitted": false,
+  "development_failures": "Two earlier test expectations corrected; retained separately in DEV_*.xml, not final-source regressions.",
+  "data_multi_and_shared_cases": 168,
+  "formal_runtime_cases": 3
+}

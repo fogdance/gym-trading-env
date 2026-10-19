@@ -1,0 +1,17 @@
+{
+  "status": "MERGED_AND_RUNTIME_REGRESSION_PASS",
+  "observed_utc": "2026-10-19T00:27:28.077279+00:00",
+  "incoming_plan_commit": "692d9de62e719d40b2ebca4e3bb591540626087c",
+  "runtime_fix_commit": "9f0f847979e2047a5c9b2d87206c4423ecf111a3",
+  "data_multi_merge_commit": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+  "integration_after": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+  "integration_before": "a8d6b3edc13683f4c975a272e4ce038648484c34",
+  "existing_producer_b0_already_ancestor": true,
+  "frozen_producer_not_modified": true,
+  "runtime_setting": "PYTHONINTMAXSTRDIGITS=0",
+  "script_syntax": "PASS",
+  "plan_checksums": "PASS",
+  "formal_production": "NOT_RUN",
+  "optimizer_updates": 0,
+  "WP07_worktree_modified": false
+}

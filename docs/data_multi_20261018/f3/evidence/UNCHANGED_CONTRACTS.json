@@ -1,0 +1,92 @@
+{
+  "status": "PASS_EXPLICIT_SOURCE_EQUIVALENCE",
+  "files": [
+    {
+      "repo": "gym-trading-env",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_actor.py",
+      "baseline": "d5153268bcd33d5a4e54721767c8782f895283f9",
+      "sha256": "6c4f5c20ca36649f127d8fde5838df52be1d9edd58f7cb4b9953bcabbead1cdb",
+      "byte_identical": true
+    },
+    {
+      "repo": "gym-trading-env",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_reader.py",
+      "baseline": "d5153268bcd33d5a4e54721767c8782f895283f9",
+      "sha256": "4e70c2c74714d64736a1299ce2f5ed2b7084bdde7172d4f0f663e0de87c88d28",
+      "byte_identical": true
+    },
+    {
+      "repo": "gym-trading-env",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_supervision.py",
+      "baseline": "d5153268bcd33d5a4e54721767c8782f895283f9",
+      "sha256": "15b5e4fc126e07f7541e0af0bfaf48acd98819ec03fb466419773b9ac4775180",
+      "byte_identical": true
+    },
+    {
+      "repo": "gym-trading-env",
+      "path": "src/gym_trading_env/research/fg_s3_e_observation.py",
+      "baseline": "d5153268bcd33d5a4e54721767c8782f895283f9",
+      "sha256": "076586668ad8b8a120cdfa5a4f5c14cdb00b91e2619ec0254490c8dadcbc1e06",
+      "byte_identical": true
+    },
+    {
+      "repo": "gym-trading-env",
+      "path": "tools/fg_s3_v2_experiment.py",
+      "baseline": "d5153268bcd33d5a4e54721767c8782f895283f9",
+      "sha256": "ddc24413ca9fd234de8e5784beba5b3c5a3d8ed0bac196bfbe5d79fb9af9e379",
+      "byte_identical": true
+    },
+    {
+      "repo": "dreamerv3",
+      "path": "dreamerv3/fg_s3_e_quality_actor.py",
+      "baseline": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+      "sha256": "ceacce071eda01c6d901a01d4c8b2fa47767c7010390ede14f1d1c4a594c6662",
+      "byte_identical": true
+    },
+    {
+      "repo": "dreamerv3",
+      "path": "dreamerv3/fg_s3_quality_v2.py",
+      "baseline": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+      "sha256": "1693b53e4a4eb9a2df89d3e07a4a44052919d5f63c982bd7e9811ebb6e1cdccb",
+      "byte_identical": true
+    },
+    {
+      "repo": "dreamerv3",
+      "path": "dreamerv3/fg_s3_e_quality_heads.py",
+      "baseline": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+      "sha256": "825e126bfc6f448362550d3365ff9d43828d083618a71328fd6c2276069f26e9",
+      "byte_identical": true
+    },
+    {
+      "repo": "dreamerv3",
+      "path": "embodied/run/fg_s3_e_quality_heads.py",
+      "baseline": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+      "sha256": "4e180197e7baba9601ee8cd12b991784c2fc9109fd2cb8d8b53d4c95d2adeca3",
+      "byte_identical": true
+    },
+    {
+      "repo": "dreamerv3",
+      "path": "embodied/run/fg_checkpoint.py",
+      "baseline": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+      "sha256": "4f2d2c388b8d6c96d6a68aaec0337244de5193a89e4065a6ea8e42111fc481f4",
+      "byte_identical": true
+    }
+  ],
+  "training_coordinators": [
+    {
+      "path": "embodied/run/fg_s3_e_quality_actor.py",
+      "class_name": "ActorRun",
+      "AST_equal_to_pinned_WP06": true
+    },
+    {
+      "path": "embodied/run/fg_s3_e_quality_actor.py",
+      "class_name": "ActorCounters",
+      "AST_equal_to_pinned_WP06": true
+    },
+    {
+      "path": "embodied/run/fg_s3_e_quality_foundation.py",
+      "class_name": "FoundationRun",
+      "AST_equal_to_pinned_WP06": true
+    }
+  ]
+}

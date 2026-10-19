@@ -1,0 +1,137 @@
+{
+  "status": "PASS_EXACT_COLD_DATA_STATE",
+  "calls": [
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/synthetic_natural.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--adapter",
+        "f3",
+        "--burnin-steps",
+        "4",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/natural_final/continuous",
+        "--stop",
+        "6"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7853e93bec9379b5fd80cd5f74360498680b25b0cbd4377e6aba2cbcfccd767b"
+    },
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/synthetic_natural.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--adapter",
+        "f3",
+        "--burnin-steps",
+        "4",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/natural_final/split",
+        "--stop",
+        "3"
+      ],
+      "exit_code": 0,
+      "log_sha256": "505881c0ab8baf930d10b7a557310a1c9b0d5bf40d6367cb494d131a4d75f54e"
+    },
+    {
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "gym_trading_env.research.fg_s3_e_quality_multi_checks",
+        "--probe-config",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/synthetic_natural.json",
+        "--batch-size",
+        "4",
+        "--length",
+        "12",
+        "--adapter",
+        "f3",
+        "--burnin-steps",
+        "4",
+        "--probe-out",
+        "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/f3/evidence/natural_final/split",
+        "--stop",
+        "6",
+        "--resume"
+      ],
+      "exit_code": 0,
+      "log_sha256": "7853e93bec9379b5fd80cd5f74360498680b25b0cbd4377e6aba2cbcfccd767b"
+    }
+  ],
+  "batches": 6,
+  "split_at": 3,
+  "prefetched_batches": 2,
+  "scheduler_and_all_reader_states_equal": true,
+  "all_native_array_bytes_and_provenance_equal": true,
+  "runtime_and_pending_queue_equal": true,
+  "batch_history": [
+    "0dbbf27923d4040074dd58dfeb689194afd13531aedf883efabde5dd4703b874",
+    "7cb7a469ee3b4bfc7a7bde09e6764588468d7767a7f726433daee4e48efda0fd",
+    "ba3ce7639dc340401dc22818d775176771b0740abb1957ce97862f9c0f0d2e6b",
+    "1262aee741033f4c7ec11723af19cff5e2a8fcd0cb9cc7be3a06460a5b21b9ab",
+    "d83d8847fa212adafa1bbd69cc45adb94a30e55808d0de1332a00ca8e62944f8",
+    "a00258bb8fb5f88451cea3cad322b4c616aeb59ccba1719fe495d143cc60e719"
+  ],
+  "checkpoint_manifest": {
+    "backend": "external_immutable_course_reader",
+    "files": {
+      "agent.pkl": "c0b22bb60958c885d80b89f4379a741dae64ef5a7f3f755bdf0d1445521db461",
+      "course_reader.pkl": "3ede497c4f315ae091942c1fefbc770ba4592ec004fae41357edb01475a5d168",
+      "runtime.pkl": "46168f3637afb21085225462d56fbc00a37fe8afd4b6c54f075a1f65856b6fb9",
+      "step.pkl": "31068125b3d6543518fbb7ce7878b1db2ebfb1268f2af67483779f91f5c99530"
+    },
+    "identity": {
+      "adapter": "295f4ff5d4b59f15778d88695141a82d35e8458c00bf0ab1787e972c5871d5b5",
+      "adapter_mode": "f3",
+      "batch_size": 4,
+      "burnin_steps": 4,
+      "code_sha256": "0aed523a5fa9e07a75ddf4a4a73ed49b4d6ae555959a380665d4f09877769e54",
+      "data_only": true,
+      "f3_adapter_sha256": "6c4f5c20ca36649f127d8fde5838df52be1d9edd58f7cb4b9953bcabbead1cdb",
+      "f3_code_sha256": "3d04149b20ad6fc0f8f5fb7302d417a1f7bad995d15324c53089b757b1157af4",
+      "length": 12,
+      "packages": {
+        "cloudpickle": "3.1.0",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "numpy": "1.26.4",
+        "optax": "0.2.4",
+        "pandas": "2.2.3",
+        "portal": "3.5.1"
+      },
+      "prefetch": 2,
+      "probe_code_sha256": "92d47685f5df0eb118928f7ae0110ffa4138d97868174261e197dba33761d717",
+      "protocol": "FG_S3_DATA_MULTI_COLD_PROBE_V1",
+      "role_composer_sha256": "d5d00c5b8f5f1364222748fc3961ddb654a1c68c9866d3d8ef6080431479e65f",
+      "source": "295f4ff5d4b59f15778d88695141a82d35e8458c00bf0ab1787e972c5871d5b5"
+    },
+    "protected": true,
+    "protocol": "FG_FULL_V1",
+    "schema": 1,
+    "step": 6
+  },
+  "optimizer_updates": 0,
+  "neural_training_checkpoint": "NOT_RUN",
+  "copied_corpus_chunks": 0,
+  "content_hash": "8c56ac418e400ac52b2a75fed63b8b70745838f8bfa89c2abfb517af6e9ed884"
+}

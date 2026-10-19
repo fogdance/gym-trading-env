@@ -1,0 +1,10 @@
+{
+  "scope": "NATIVE_SYNTHETIC_DEV_ONLY",
+  "retained_config": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/artifacts/fg_s3_v2/data_multi_delivery_20261019/sources/sources.json",
+  "original_inventory": "/home/v/Documents/work/research/fg-s3-data-multi-20261018/gym-trading-env/docs/data_multi_20261018/evidence/SYNTHETIC_SOURCE_REFERENCES.json",
+  "inventory_sha256": "051b40531af8248fac5bcc0708976e4ce5f0bdb1ac70b681ea38799fe950b789",
+  "real_prices_used": 0,
+  "independent_collections": 2,
+  "policies_per_corpus": 6,
+  "source_rows_per_corpus": 40
+}

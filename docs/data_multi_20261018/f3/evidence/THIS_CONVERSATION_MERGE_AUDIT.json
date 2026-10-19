@@ -1,0 +1,129 @@
+{
+  "protocol": "FG_S3_THIS_CONVERSATION_MERGE_AUDIT_V1",
+  "observed_utc": "2026-10-19T00:34:40.598353+00:00",
+  "scope": "Only branches used in this conversation; no other branches included.",
+  "method": [
+    "git rev-parse <explicit-branch>",
+    "git log --format=%H %s <integration-sha>..<branch-sha>",
+    "git merge-base --is-ancestor <explicit-sha> <integration-sha>"
+  ],
+  "repositories": [
+    {
+      "repository": "gym-trading-env",
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "integration_source_head": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+      "branches": [
+        {
+          "branch": "feat/data-multi-20261018",
+          "head": "b0201f0b130e92674c716c5344f1bc1856d5a0c9",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "docs/formal-train-corpus-plan-20261018",
+          "head": "692d9de62e719d40b2ebca4e3bb591540626087c",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "feat/fg-s3-train-corpus-cpu-20261018",
+          "head": "5873d22c7be78be5c2b556bd02551e56768ea7fe",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "integration/s3-data",
+          "head": "0e4af493bcbbfddad1dfcf5eb8b30b5b81a7a65b",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "docs/data-quality-b01-audit-20261018",
+          "head": "c1679a7966abe8d6ce6f335647d6df45eed48556",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "integration/s3-e-quality-wp06-baseline-20261018",
+          "head": "7ea95563166bf7fa03c6ce836e7484053cac0b96",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "feat/s3-e-quality-wp06-20261018",
+          "head": "d5153268bcd33d5a4e54721767c8782f895283f9",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        }
+      ],
+      "confirmed_commits": [
+        {
+          "sha": "a8d6b3edc13683f4c975a272e4ce038648484c34",
+          "subject": "feat(data): add F3 multi-Corpus roles and exact Natural sampling state",
+          "ancestor": true
+        },
+        {
+          "sha": "9f0f847979e2047a5c9b2d87206c4423ecf111a3",
+          "subject": "Fix exact rational witness runtime for full-main Corpus production",
+          "ancestor": true
+        },
+        {
+          "sha": "aeb65fb7a981a0414b8b7011fa45cf708904a69e",
+          "subject": "Fix causal MACD interval endings and bound TRAIN developer diagnostics",
+          "ancestor": true
+        },
+        {
+          "sha": "b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46",
+          "subject": "Report unsupported course windows and separate DEV DATA FORMAL requirements",
+          "ancestor": true
+        }
+      ]
+    },
+    {
+      "repository": "dreamerv3",
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "integration_source_head": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+      "branches": [
+        {
+          "branch": "feat/data-multi-20261018",
+          "head": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "integration/s3-data",
+          "head": "fd144113ce706e2d8f1ce8e7828ece0799c8bf7a",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "integration/s3-e-quality-wp06-baseline-20261018",
+          "head": "0e39dfd498f9146e10f966cfe118a24b20e5143e",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        },
+        {
+          "branch": "feat/s3-e-quality-wp06-20261018",
+          "head": "e8c2688bc817662e5e6fa7e8cee62825bcf80b00",
+          "unmerged_commit_count": 0,
+          "unmerged_commits": []
+        }
+      ],
+      "confirmed_commits": [
+        {
+          "sha": "208a499a7a3afa1dfd240e51de5c6a1e27dd1c47",
+          "subject": "feat(data): compose native F3 roles over shared reader lifecycle streams",
+          "ancestor": true
+        },
+        {
+          "sha": "fd144113ce706e2d8f1ce8e7828ece0799c8bf7a",
+          "subject": "Version E Quality MACD contract for causal dated interval tails",
+          "ancestor": true
+        }
+      ]
+    }
+  ],
+  "unmerged_source_commit_count": 0,
+  "documentation_note": "This receipt and the F3 interface/evidence package are committed after the recorded source heads. Final delivery commits contain only docs/data_multi_20261018/f3; they do not change the verified runtime source.",
+  "other_branches_audited_in_this_receipt": false
+}
