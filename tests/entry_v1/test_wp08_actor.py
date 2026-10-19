@@ -51,6 +51,7 @@ def test_actual_f3_readonly_loading_and_teacher_free_argmax(tmp_path,monkeypatch
 def test_policy_rng_state_and_frozen_mutation_rejection(tmp_path):
     actor=controlled_actor(tmp_path/'model')
     state=actor.save();actor.load(state)
+    with pytest.raises(ValueError,match='NOT_JSON'):actor.require_mode(dict(exam_mode='DEV_EXAM'))
     with pytest.raises(ValueError):actor.agent.load_policy_state({**state['inference'],'seed':-1})
     key=next(k for k in actor.agent.params if k.startswith('val/'))
     actor.agent.params[key]=actor.agent.params[key]+1

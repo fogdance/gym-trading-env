@@ -6,13 +6,17 @@ from .fg_s3_e_quality_exam_contract import identity
 from .fg_replay import digest,signed,check_files
 from .fg_single3_evaluation import ActorPolicy
 
+_LOADED_ACTORS={}
+
 
 class ExamFrozenActor:
     def __init__(self,agent,source,*,source_files=None):
         from dreamerv3.fg_s3a_actor import parameter_digests
         from embodied.run.fg_checkpoint import plain
         self.agent=agent;self.source=copy.deepcopy(source);self.source_files=source_files or {}
-        if agent.config.get('s3_v2_mode')!='quality_v2':raise ValueError('EXAM_QUALITY_ACTOR_REQUIRED')
+        from dreamerv3.fg_s3_e_quality_actor import PROTOCOL
+        if agent.config.get('s3_v2_mode')!='quality_v2' or agent.config.get('quality_f3_protocol')!=PROTOCOL:
+            raise ValueError('EXAM_CURRENT_E_QUALITY_ACTOR_REQUIRED')
         forbidden=('quality_decision_admitted','quality_prediction_admitted','quality_q_admitted',
                    'quality_fuse_score','quality_fuse_outcome')
         if any(agent.model.quality[k] for k in forbidden):raise ValueError('EXAM_TEACHER_FREE_POLICY_REQUIRED')
@@ -87,7 +91,19 @@ class ExamFrozenActor:
         root=Path(run);node=Path(checkpoint)
         files={**initial_files,**{str(node/k):v for k,v in source['member_hashes'].items()}}
         files.update({str(root/'run_identity.json'):source['run_identity_sha256'],str(node/'manifest.json'):source['checkpoint_manifest_sha256']})
-        return cls(agent,source,source_files=files)
+        result=cls(agent,source,source_files=files)
+        import weakref
+        key=id(result)
+        _LOADED_ACTORS[key]=(weakref.ref(result,lambda _: _LOADED_ACTORS.pop(key,None)),
+            identity(result.receipt),identity(result.source))
+        return result
+
+    def require_mode(self,plan):
+        if plan['exam_mode']=='DEV_EXAM':
+            proof=_LOADED_ACTORS.get(id(self))
+            if (proof is None or proof[0]() is not self or proof[1:]!=(identity(self.receipt),identity(self.source))
+                    or self.source.get('engineering_only') is not False):
+                raise ValueError('EXAM_AUTHENTICATED_FORMAL_ACTOR_REQUIRED_NOT_JSON')
 
     @property
     def last_diagnostics(self):return self.policy.last_diagnostics

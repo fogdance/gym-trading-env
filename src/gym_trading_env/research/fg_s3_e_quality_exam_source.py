@@ -17,6 +17,7 @@ from .fg_s3_e_quality_exam_contract import identity, validate_plan
 TRUSTED_VALIDATION_ROOTS={
     'ebe0477a4ff9bad5b0d720b3ddb9f37288591d8df63db73a280224b698068bac':
     'cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad'}
+_VALIDATION_ADMISSIONS={}
 
 
 @dataclass
@@ -29,6 +30,14 @@ class ExamSource:
     def verify(self):
         for path in self.receipt['frozen_inputs']:_local_path(path)
         check_files(self.receipt['frozen_inputs'])
+
+    def require_mode(self,plan):
+        if plan['exam_mode']=='DEV_EXAM':
+            proof=_VALIDATION_ADMISSIONS.get(id(self))
+            if (proof is None or proof[0] is not self or proof[1] is not self.factory
+                    or proof[2:]!=(identity(self.receipt),identity(self.initial_state),self.end_cursor)
+                    or self.receipt['start_day']!=plan['start_day'] or self.receipt['end_day']!=plan['end_day']):
+                raise ValueError('EXAM_NATIVE_VALIDATION_ADMISSION_REQUIRED_NOT_JSON')
 
 
 class ExamEProfile:
@@ -166,4 +175,6 @@ def prepare_validation(plan,contract,directory):
             frozen_inputs=frozen,test_prices_accessed=False,teacher_used=False))
     finally:env.close()
     write_json(out/'source_receipt.json',receipt);write_json(out/'initial_state.json',initial)
-    return ExamSource(factory,initial,end,receipt)
+    result=ExamSource(factory,initial,end,receipt)
+    _VALIDATION_ADMISSIONS[id(result)]=(result,factory,identity(receipt),identity(initial),end)
+    return result

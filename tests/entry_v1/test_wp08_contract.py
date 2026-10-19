@@ -65,3 +65,11 @@ def test_symlink_and_forged_validation_receipt_refused(tmp_path):
     p['source']['manifest']=str(metadata)
     with pytest.raises(ValueError,match='DEV_SOURCE_NOT_AVAILABLE'):validation_members(p)
     assert not (tmp_path/'out').exists()
+
+
+def test_json_cannot_mint_native_validation_admission(tmp_path):
+    from gym_trading_env.research.fg_s3_e_quality_exam_source import ExamSource
+    fake=ExamSource(lambda:None,{},1,dict(role='validation',eligible_for_training=False,
+        start_day='2026-01-08',end_day='2026-01-13',frozen_inputs={}))
+    p=plan(tmp_path/'out');p['exam_mode']='DEV_EXAM'
+    with pytest.raises(ValueError,match='NOT_JSON'):fake.require_mode(p)

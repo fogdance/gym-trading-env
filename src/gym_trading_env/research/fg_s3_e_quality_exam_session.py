@@ -31,6 +31,8 @@ class ExamSession:
         self.root=_local_path(directory);self.policy_id=policy_id
         if not self.root.is_relative_to(Path(plan['output_dir'])):raise ValueError('EXAM_SESSION_OUTSIDE_PLAN_OUTPUT')
         if self.root.exists()!=existing:raise ValueError('EXAM_SESSION_NEW_OUTPUT_OR_EXPLICIT_RESUME_REQUIRED')
+        source.require_mode(plan)
+        if hasattr(policy,'require_mode'):policy.require_mode(plan)
         source.verify();self.raw=source.factory()
         if (self.raw._e_profile is None or self.raw.reward_config.schema!='FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'
                 or self.raw.entry_config.get('state_path') or self.raw.chunk_steps):
@@ -40,6 +42,7 @@ class ExamSession:
             self.raw.close();raise ValueError('EXAM_DEV_SOURCE_ADMISSION_REQUIRED')
         if self.raw.contract not in plan['contracts']:raise ValueError('EXAM_CONTRACT_NOT_IN_PLAN')
         self.initial_state=copy.deepcopy(source.initial_state)
+        if self.initial_state['entries']:raise ValueError('EXAM_NEW_FLAT_ACCOUNT_INITIAL_STATE_REQUIRED')
         self.raw.import_state(self.initial_state)
         self.scorer=copy.deepcopy(self.raw.reward_function)
         self.identity=dict(protocol=self.protocol,plan_hash=plan_hash(plan),source=identity(source.receipt),
@@ -53,7 +56,9 @@ class ExamSession:
             first_reset=True
             last=None
             def reset(self,*,seed=None,options=None):
-                if options is not None:raise ValueError('EXAM_ACCOUNT_RESET_FORBIDDEN')
+                if options is not None:
+                    if set(options)!={'resume'}:raise ValueError('EXAM_ACCOUNT_RESET_FORBIDDEN')
+                    return self.env.reset(options=options)
                 if not self.first_reset:raise ValueError('EXAM_UNEXPECTED_ACCOUNT_RESET')
                 obs,self.last=execute_observed(self.env,seed=seed,resume_state=session.initial_state)
                 self.first_reset=False
@@ -113,6 +118,10 @@ class ExamSession:
             self._append(prior,arrays)
         self.pending=(row,{k:np.array(v,copy=True) for k,v in step.items()})
         self.records+=1;self.advanced+=int(row['advanced']);self.valid_minutes+=int(row['valid_bar'])
+        self.metrics_state['reward']=self.metrics_state.get('reward',0.)+row['official_reward']
+        self.metrics_state['entries']=self.metrics_state.get('entries',0)+sum(f['reason']=='ENTRY' and f['committed'] for f in row['fills'])
+        days=self.metrics_state.setdefault('official_day_valid_minutes',{})
+        if row['valid_bar']:days[row['trading_date']]=days.get(row['trading_date'],0)+1
 
     def advance(self,target_minutes=None):
         if self.finished:raise ValueError('EXAM_SESSION_ALREADY_FINISHED')
@@ -178,3 +187,11 @@ class ExamSession:
         return result
 
     def close(self):self.driver.close()
+
+    def commit(self):
+        from .fg_s3_e_quality_exam_state import commit
+        return commit(self)
+
+    def restore(self):
+        from .fg_s3_e_quality_exam_state import restore
+        return restore(self)
