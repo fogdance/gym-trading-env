@@ -20,7 +20,8 @@ class OnlineCollector(V2Collector):
     protocol = 'FG_S3_E_QUALITY_ONLINE_COLLECTOR_V1'
 
     def __init__(self, env, source, directory, dreamer_root, *, agent, seed, budget,
-                 capacity=2048, initial_state=None, existing=False, replay_length=65, chunksize=1024):
+                 capacity=2048, initial_state=None, existing=False, replay_length=65, chunksize=1024,
+                 exploration_rate=0., exploration_seed=0):
         from embodied.run.fg_s3_e_quality_online import OnlinePolicy
         from .fg_s3_oracle_state_query import rules_identity
         from .fg_s3_e_observation import OBS_SCHEMA
@@ -35,7 +36,7 @@ class OnlineCollector(V2Collector):
             initial_state=env.export_state()
         self.initial_state=copy.deepcopy(initial_state)
         self.replay_length=replay_length;self.chunk_size=chunksize
-        self.trace_policy=OnlinePolicy(agent)
+        self.trace_policy=OnlinePolicy(agent,exploration_rate=exploration_rate,seed=exploration_seed)
         # Identity-only handle. No teacher/query object or future reader exists
         # in this adapter; the inherited disabled mailbox only reads metadata.
         handle=SimpleNamespace(identity=dict(fold='TRAIN',source=source),
@@ -45,7 +46,7 @@ class OnlineCollector(V2Collector):
             observation_schema=OBS_SCHEMA,e_profile=env._e_profile,
             replay_capacity=capacity,max_env_steps=max(65,budget))
         self.identity.update(execution_protocol=self.protocol,source=copy.deepcopy(source),
-            replay_length=replay_length,chunksize=chunksize)
+            replay_length=replay_length,chunksize=chunksize,exploration_rate=exploration_rate,exploration_seed=exploration_seed)
         self.identity_hash=fingerprint(self.identity)
         self.rows=[];self.snapshots={};self.index={};self.scorer=env._new_reward()
         self.archived=[]
@@ -168,7 +169,7 @@ class OnlineCollector(V2Collector):
                 snapshots=self.snapshots,counts=dict(self.counts),scorer=self.scorer,
                 observed_last=getattr(self.observed,'last',None),
                 mixing_rng=self.policy.rng.bit_generator.state,decision=self.policy.decision,
-                actor_diagnostics=self.trace_policy.last_diagnostics,archived=self.archived))
+                actor_diagnostics=self.trace_policy.last_diagnostics,actor_policy=self.trace_policy.save(),archived=self.archived))
 
     def load(self,state):
         if state['protocol']!=self.protocol or state['identity']!=self.identity_hash:
@@ -179,7 +180,7 @@ class OnlineCollector(V2Collector):
             self.scorer=copy.deepcopy(state['scorer']);self.observed.last=copy.deepcopy(state['observed_last'])
             self.policy.rng.bit_generator.state=copy.deepcopy(state['mixing_rng'])
             self.policy.decision=copy.deepcopy(state['decision'])
-            self.trace_policy.original.last_diagnostics=copy.deepcopy(state['actor_diagnostics'])
+            self.trace_policy.load(state['actor_policy'])
             self.archived=copy.deepcopy(state['archived'])
 
     def close(self):

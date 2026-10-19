@@ -1,0 +1,54 @@
+{
+  "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+  "ready": {
+    "COLLECTION_VALID": true,
+    "SUPERVISED_STABLE": false,
+    "WM_VALID_FOR_RL": false,
+    "RL_NUMERIC_READY": false
+  },
+  "blockers": [
+    "SUPERVISED_STABLE",
+    "WM_VALID_FOR_RL",
+    "RL_NUMERIC_READY"
+  ],
+  "mask_policy": {
+    "protocol": "FG_SINGLE3_MASK_GATE_V1",
+    "classification_threshold": 0.3,
+    "classification_rule": "float32_ge_half_legacy_boundary_v1",
+    "opening": {
+      "thresholds": {
+        "post_accuracy": 0.995,
+        "post_exact": 0.99,
+        "prior_accuracy": 0.9915,
+        "prior_exact": 0.98,
+        "prior_fpr": 0.004,
+        "img_fallback": 0.0001,
+        "post_add_recall": 0.8,
+        "prior_add_recall": 0.8
+      },
+      "consecutive_reports": 20
+    },
+    "source_opening": null,
+    "config": {
+      "enabled": true,
+      "min_train_samples": 25000,
+      "consecutive_reports": 5,
+      "regression_reports": 5,
+      "stop_on_regression": true,
+      "post_accuracy": 0.995,
+      "post_exact": 0.99,
+      "prior_accuracy": 0.99,
+      "prior_exact": 0.98,
+      "prior_fpr": 0.005,
+      "img_fallback": 0.0001,
+      "add_recall_enabled": true,
+      "min_add_positives": 16,
+      "post_add_recall": 0.8,
+      "prior_add_recall": 0.8
+    }
+  },
+  "wm_policy": null,
+  "formal_rl_admitted": false,
+  "unique_calibration_owner_steps": 18,
+  "prediction_q_decision_fusion": false
+}
