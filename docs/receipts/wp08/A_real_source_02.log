@@ -1,0 +1,3 @@
+/home/v/.config/matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /tmp/matplotlib-qey6gl6o because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+{"status": "DEV_SOURCE_ENGINEERING_ONLY_NOT_STRATEGY_EXAM", "market_advances": 32, "teacher_used": false, "training_updates": 0, "real_dev_strategy_exam": "NOT_RUN", "reason": "FORMAL_TRAINED_F3_F4_MODEL_NOT_PROVIDED", "cursor": 721, "content_hash": "4eaec575c3218e5c4cb9622b2f255bb51130fbdf1c3b83267bf9ddc436c4ad3f"}

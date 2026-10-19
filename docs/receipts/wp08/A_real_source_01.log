@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tools/wp08_source_probe.py", line 17, in <module>
+    source=prepare_validation(plan,'CZCE.FG409',out/'source')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_source.py", line 85, in prepare_validation
+    plan=validate_plan(plan);rows,partition,em,inputs=validation_members(plan)
+                                                      ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_source.py", line 45, in validation_members
+    source=plan['source'];path=_local_path(source['manifest']);root=_local_path(source['env_receipt'])
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py", line 38, in _local_path
+    raise ValueError('COURSE_PATH_INVALID: symlink path refused')
+ValueError: COURSE_PATH_INVALID: symlink path refused
