@@ -99,13 +99,17 @@ def model_config(settings,*,controlled_small=False):
     return cfg
 
 
-def create_agent(settings,output,*,controlled_small=False):
+def create_agent(settings,output,*,controlled_small=False,execution_mode=None):
     from embodied.run.fg_s3_source_transfer import _make_agent
     from dreamerv3.fg_s3_v2_agent import _S3V2Model
     from dreamerv3.fg_s3_composition import resolve_composition
     from dreamerv3.fg_s3_e_quality_actor import register_state_schema
+    extensions=model_extensions(settings['target_steps'],settings['burnin_steps'],settings['actor_loss'])
+    if execution_mode is not None:
+        from dreamerv3.fg_s3_e_quality_online import model_extensions as online_extensions
+        extensions=online_extensions(settings['target_steps'],settings['burnin_steps'],execution_mode,settings['actor_loss'])
     agent=_make_agent(model_config(settings,controlled_small=controlled_small),output,agent_cls=_S3V2Model,
-        device=settings['device'],bc_lambda=0.,extra_agent_config=model_extensions(settings['target_steps'],settings['burnin_steps'],settings['actor_loss']),
+        device=settings['device'],bc_lambda=0.,extra_agent_config=extensions,
         composition=resolve_composition(dict(composition=dict(encoder='e_multiscale_1m15m',teaching='quality_v2'))))
     register_state_schema(agent.model,agent.params)
     return agent
