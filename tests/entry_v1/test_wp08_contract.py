@@ -73,3 +73,25 @@ def test_json_cannot_mint_native_validation_admission(tmp_path):
         start_day='2026-01-08',end_day='2026-01-13',frozen_inputs={}))
     p=plan(tmp_path/'out');p['exam_mode']='DEV_EXAM'
     with pytest.raises(ValueError,match='NOT_JSON'):fake.require_mode(p)
+
+
+def test_actual_training_corpus_manifest_is_not_a_dev_market_source(tmp_path):
+    from wp08_fixture import f3_reference
+    from gym_trading_env.research.fg_s3_e_quality_exam_source import validation_members
+    p=plan(tmp_path/'out');p['exam_mode']='DEV_EXAM'
+    p['source']=dict(kind='VALIDATION',manifest=str(Path(f3_reference()['corpus_root'])/'corpus_manifest.json'),
+        env_receipt=str(tmp_path/'missing'))
+    with pytest.raises(ValueError,match='DEV_SOURCE_NOT_AVAILABLE'):validation_members(p)
+    assert not (tmp_path/'out').exists()
+
+
+def test_disjoint_contract_windows_are_explicit_and_inside_study(tmp_path):
+    from gym_trading_env.research.fg_s3_e_quality_exam_contract import contract_window
+    p=plan(tmp_path/'out');p['contracts']=['CZCE.FG2701','CZCE.FG2705']
+    p['contract_windows']={'CZCE.FG2701':dict(start_day='2026-01-08',end_day='2026-01-09'),
+        'CZCE.FG2705':dict(start_day='2026-01-12',end_day='2026-01-13')}
+    assert contract_window(validate_plan(p),'CZCE.FG2705')['start_day']=='2026-01-12'
+    bad=copy.deepcopy(p);bad['contract_windows'].pop('CZCE.FG2705')
+    with pytest.raises(ValueError,match='ALL_CONTRACT_WINDOWS'):validate_plan(bad)
+    bad=copy.deepcopy(p);bad['contract_windows']['CZCE.FG2705']['end_day']='2026-01-14'
+    with pytest.raises(ValueError,match='OUTSIDE_STUDY_ENVELOPE'):validate_plan(bad)

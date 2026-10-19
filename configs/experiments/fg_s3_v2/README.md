@@ -770,3 +770,23 @@ Future FORMAL preparation additionally uses `--source-purpose native-verificatio
 `online-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受同版本的真实认证 TRAIN 来源，预算 1–512，复用原 ActorPolicy/Env/Driver/reconciler，固定 argmax、无教师和探索。合成 probe 用同一原生评价原语留下工程收据；其交易结果不代表研究效果。
 
 完整恢复使用原 FullCheckpoint，严格最新节点，保存 live Replay、账户/Driver、历史 Reader/RNG、预取、探索 RNG、标签发布/消费、Gate、预算和日志提交点。历史 Corpus 只存身份与 Reader 状态，不复制为新 Replay。详见 [WP07 工程报告](../../../docs/WP07_IMPLEMENTATION_REVIEW.md)。
+
+# WP08：独立 Actor-only 考试
+
+统一入口新增 `exam-plan / exam-run / exam-resume / exam-verify / exam-compare / exam-report`。只读加载冻结的 F3/F4 `quality_actor`，不实例化 OnlineRun/Teacher，不接受训练、GPU或预测/Q修正参数。原 `f3-evaluate/online-evaluate` 的 TRAIN与512步诊断语义保留。
+
+`e_quality_wp08_exam_synthetic.yaml` 是固定生成行情的CPU工程/参考基线示例，默认没有学生模型，不可宣称真实DEV。`e_quality_wp08_exam_dev.yaml` 指向已审查的validation来源；需显式填入正式已受训模型的 Run 和 Checkpoint，空字符串、缺失来源与合成模型都会失败。`SEALED_TEST_FINAL` 始终拒绝，留待 WP10。
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-plan --config configs/experiments/fg_s3_v2/e_quality_wp08_exam_synthetic.yaml
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config configs/experiments/fg_s3_v2/e_quality_wp08_exam_synthetic.yaml --stop-at 33
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-resume --eval-dir artifacts/fg_s3_v2/e_quality_wp08/example_NEW
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-verify --eval-dir artifacts/fg_s3_v2/e_quality_wp08/example_NEW --output-dir artifacts/fg_s3_v2/e_quality_wp08/verify_NEW
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-report --eval-dir artifacts/fg_s3_v2/e_quality_wp08/example_NEW --output-dir docs/receipts/wp08/report_NEW
+```
+
+每次使用新的 `output_dir`；允许先建计划后开始，已完成考试不可覆盖。暂停/恢复沿用同一份计划与执行代码，保存原生账户、Driver、RSSM carry、partial MACD、推理/随机基线状态、完整chunks和日志边界，不保存优化器。每合约独立账户，跨chunk不reset。F3/F4共享显式考试seed，源模型的训练seed和全部参数不变。
+
+不同合约可在同一计划增加 `contract_windows: {CZCE.FGxxxx: {start_day: 'YYYY-MM-DD', end_day: 'YYYY-MM-DD'}, ...}`。使用此项时每个合约都需显式声明，且位于全局 `start_day/end_day` 研究区间内；各合约只运行自身合法连续区间，不要求不同主力合约具有重叠的交易日。所有策略在同一合约内严格共享该区间、成本与起始资金。
+
+基线为 WAIT、合法ADD、Random_P10（预注册全部seed）、仅用可见市场分钟的Delay15；禁止实时P4 Oracle。验证独立复现全部策略动作、原生金融对账并重算 TP速度、MAE、逆行10/SL30、费用、Reward、PnL和回撤。全WAIT的TP率为N/A，无入场技能证据；支持量不足和缺少预注册质量规则明确报告。合成工程成功不等于策略有效，不自动授予DEV研究、训练或TEST权限。详见 [WP08 实施报告](../../../docs/WP08_IMPLEMENTATION_REVIEW.md)。

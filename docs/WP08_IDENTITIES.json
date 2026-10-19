@@ -1,0 +1,590 @@
+{
+  "status": "ENGINEERING_IDENTITY_MATRIX_NOT_FORMAL_DEV_ADMISSION",
+  "models": [
+    {
+      "policy": "F3_FROZEN",
+      "receipt": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_E_01/CZCE.FG2701/F3_FROZEN/MODEL_READONLY_RECEIPT.json",
+      "receipt_sha256": "fa5d4af78fff45152f07be3e2f541226fa890c840ebe18f7461b719595c287f5",
+      "stage": "F3",
+      "engineering_only": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3/ckpt/step_000000000004",
+      "checkpoint_manifest_sha256": "cc18522f2df6569f2bcf4dafdbe4115df0e203afcf48b74ea282b865df665ad8",
+      "full_agent_pickle_sha256": "04754fd5e8df25025c2d5eff9d7dbcc65b52b39037550ec22f4ff34c4b880dff",
+      "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+      "observation": {
+        "observation_schema": "FG_S3_E_OBSERVATION_V2",
+        "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+        "decoder_schema": "FG_S3_E_DECODER_V1",
+        "fields": {
+          "market_seq": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "position_state": {
+            "shape": [
+              9
+            ],
+            "dtype": "float32"
+          },
+          "action_mask": {
+            "shape": [
+              2
+            ],
+            "dtype": "float32"
+          },
+          "action": {
+            "shape": [],
+            "dtype": "int32"
+          },
+          "reward": {
+            "shape": [],
+            "dtype": "float32"
+          },
+          "is_first": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_last": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_terminal": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "market_seq_e_shared": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "market_context_15m": {
+            "shape": [
+              24,
+              7
+            ],
+            "dtype": "float32"
+          },
+          "market_macd_5m": {
+            "shape": [
+              4
+            ],
+            "dtype": "float32"
+          }
+        },
+        "encoder_keys": [
+          "market_seq_e_shared",
+          "position_state",
+          "action_mask",
+          "market_context_15m",
+          "market_macd_5m"
+        ],
+        "decoder_keys": [
+          "market_seq_e_shared",
+          "position_state"
+        ],
+        "audit_only": [
+          "market_seq"
+        ],
+        "context_fields": [
+          "rel_open",
+          "rel_high",
+          "rel_low",
+          "rel_close",
+          "vol_relative",
+          "oi_change",
+          "valid"
+        ],
+        "macd_5m": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "periods": [
+            12,
+            26,
+            9
+          ],
+          "histogram": "DIF-Signal",
+          "initialization": "first_complete_close; first_DIF_and_signal_zero",
+          "warmup": "35_complete_buckets_strictly_before_current_bucket",
+          "scale": "1000*raw/current_visible_1m_Close",
+          "invalid": "all_zero",
+          "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+          "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+          "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+          "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+          "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+          "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+        },
+        "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+      },
+      "parameter_digest_matrix_sha256": "d4dc8e09d6d6167fa39c6db524cdb21d2599bcfe8eb0274c9e85ed7077bd4ddd",
+      "policy_digest_matrix_sha256": "2e02b7a0498841b2ac14ea1f69936ce8a2e608d758a910bbd48d4f5bd7c4834e",
+      "parameter_leaf_count": 349,
+      "original_model_seed": 202,
+      "evaluation_seed": 202,
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      }
+    },
+    {
+      "policy": "F4_SHADOW",
+      "receipt": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_E_01/CZCE.FG2701/F4_SHADOW/MODEL_READONLY_RECEIPT.json",
+      "receipt_sha256": "b48ebb1425e9e7241a1fe73abe93f3a6811e7d9476773101c0a55f2a6d9faab9",
+      "stage": "F4",
+      "engineering_only": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/SHADOW/continuous/ckpt/step_000000000003",
+      "checkpoint_manifest_sha256": "59e00f5b71bb75d7e899b6ed817df13ea98adea191ef0c7bfc465a77eea6cefe",
+      "full_agent_pickle_sha256": "2964e14c10aa419b2a8ae53ab288d8ff7524c4a740d71d411b466a3c0e9d2ff1",
+      "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+      "observation": {
+        "observation_schema": "FG_S3_E_OBSERVATION_V2",
+        "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+        "decoder_schema": "FG_S3_E_DECODER_V1",
+        "fields": {
+          "market_seq": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "position_state": {
+            "shape": [
+              9
+            ],
+            "dtype": "float32"
+          },
+          "action_mask": {
+            "shape": [
+              2
+            ],
+            "dtype": "float32"
+          },
+          "action": {
+            "shape": [],
+            "dtype": "int32"
+          },
+          "reward": {
+            "shape": [],
+            "dtype": "float32"
+          },
+          "is_first": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_last": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_terminal": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "market_seq_e_shared": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "market_context_15m": {
+            "shape": [
+              24,
+              7
+            ],
+            "dtype": "float32"
+          },
+          "market_macd_5m": {
+            "shape": [
+              4
+            ],
+            "dtype": "float32"
+          }
+        },
+        "encoder_keys": [
+          "market_seq_e_shared",
+          "position_state",
+          "action_mask",
+          "market_context_15m",
+          "market_macd_5m"
+        ],
+        "decoder_keys": [
+          "market_seq_e_shared",
+          "position_state"
+        ],
+        "audit_only": [
+          "market_seq"
+        ],
+        "context_fields": [
+          "rel_open",
+          "rel_high",
+          "rel_low",
+          "rel_close",
+          "vol_relative",
+          "oi_change",
+          "valid"
+        ],
+        "macd_5m": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "periods": [
+            12,
+            26,
+            9
+          ],
+          "histogram": "DIF-Signal",
+          "initialization": "first_complete_close; first_DIF_and_signal_zero",
+          "warmup": "35_complete_buckets_strictly_before_current_bucket",
+          "scale": "1000*raw/current_visible_1m_Close",
+          "invalid": "all_zero",
+          "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+          "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+          "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+          "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+          "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+          "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+        },
+        "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+      },
+      "parameter_digest_matrix_sha256": "0bfcf8df24e41f861aa5e470f20216237752a4702d74a013793299f9bb3579ee",
+      "policy_digest_matrix_sha256": "2e02b7a0498841b2ac14ea1f69936ce8a2e608d758a910bbd48d4f5bd7c4834e",
+      "parameter_leaf_count": 349,
+      "original_model_seed": 303,
+      "evaluation_seed": 202,
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      }
+    },
+    {
+      "policy": "F4_BC",
+      "receipt": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_E_01/CZCE.FG2701/F4_BC/MODEL_READONLY_RECEIPT.json",
+      "receipt_sha256": "76adc966e551c9a8275bb5a2d870d5f20183dbc78cb02389a92c56f0f648b8f6",
+      "stage": "F4",
+      "engineering_only": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/continuous/ckpt/step_000000000003",
+      "checkpoint_manifest_sha256": "1f60b10a36fb5c2a6013920537157bc893910bc22dc3a6a85d586a7fd38dce88",
+      "full_agent_pickle_sha256": "69b4115815fe3c9a841f74f38f1643414ed217bff89c6998b3275dbdae080c0f",
+      "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+      "observation": {
+        "observation_schema": "FG_S3_E_OBSERVATION_V2",
+        "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+        "decoder_schema": "FG_S3_E_DECODER_V1",
+        "fields": {
+          "market_seq": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "position_state": {
+            "shape": [
+              9
+            ],
+            "dtype": "float32"
+          },
+          "action_mask": {
+            "shape": [
+              2
+            ],
+            "dtype": "float32"
+          },
+          "action": {
+            "shape": [],
+            "dtype": "int32"
+          },
+          "reward": {
+            "shape": [],
+            "dtype": "float32"
+          },
+          "is_first": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_last": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_terminal": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "market_seq_e_shared": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "market_context_15m": {
+            "shape": [
+              24,
+              7
+            ],
+            "dtype": "float32"
+          },
+          "market_macd_5m": {
+            "shape": [
+              4
+            ],
+            "dtype": "float32"
+          }
+        },
+        "encoder_keys": [
+          "market_seq_e_shared",
+          "position_state",
+          "action_mask",
+          "market_context_15m",
+          "market_macd_5m"
+        ],
+        "decoder_keys": [
+          "market_seq_e_shared",
+          "position_state"
+        ],
+        "audit_only": [
+          "market_seq"
+        ],
+        "context_fields": [
+          "rel_open",
+          "rel_high",
+          "rel_low",
+          "rel_close",
+          "vol_relative",
+          "oi_change",
+          "valid"
+        ],
+        "macd_5m": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "periods": [
+            12,
+            26,
+            9
+          ],
+          "histogram": "DIF-Signal",
+          "initialization": "first_complete_close; first_DIF_and_signal_zero",
+          "warmup": "35_complete_buckets_strictly_before_current_bucket",
+          "scale": "1000*raw/current_visible_1m_Close",
+          "invalid": "all_zero",
+          "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+          "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+          "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+          "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+          "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+          "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+        },
+        "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+      },
+      "parameter_digest_matrix_sha256": "1b9bd675f4de03c6b2741b0042e30ed079c3b7e8a6473d7deafd422aed764ac8",
+      "policy_digest_matrix_sha256": "26d94bd3c49bd7793c30c06e98b94432bde61e66250980c1fcd74b87ac42ee9a",
+      "parameter_leaf_count": 349,
+      "original_model_seed": 303,
+      "evaluation_seed": 202,
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      }
+    },
+    {
+      "policy": "F4_RL",
+      "receipt": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_E_01/CZCE.FG2701/F4_RL/MODEL_READONLY_RECEIPT.json",
+      "receipt_sha256": "f6bd0b7214c7a454e447c7ea9cec06d8d9d8ff41eea81b6a4d30569522b937c8",
+      "stage": "F4",
+      "engineering_only": true,
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000003",
+      "checkpoint_manifest_sha256": "dda3946e967f0a6622e9302f667637bbc196fef889605dabd0aa8456b6d5ac60",
+      "full_agent_pickle_sha256": "a58eaa5bec66fab2e59fe2c399b89437e39d8c36eb2488b2ff79b10020de2d89",
+      "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+      "observation": {
+        "observation_schema": "FG_S3_E_OBSERVATION_V2",
+        "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+        "decoder_schema": "FG_S3_E_DECODER_V1",
+        "fields": {
+          "market_seq": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "position_state": {
+            "shape": [
+              9
+            ],
+            "dtype": "float32"
+          },
+          "action_mask": {
+            "shape": [
+              2
+            ],
+            "dtype": "float32"
+          },
+          "action": {
+            "shape": [],
+            "dtype": "int32"
+          },
+          "reward": {
+            "shape": [],
+            "dtype": "float32"
+          },
+          "is_first": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_last": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "is_terminal": {
+            "shape": [],
+            "dtype": "bool"
+          },
+          "market_seq_e_shared": {
+            "shape": [
+              60,
+              18
+            ],
+            "dtype": "float32"
+          },
+          "market_context_15m": {
+            "shape": [
+              24,
+              7
+            ],
+            "dtype": "float32"
+          },
+          "market_macd_5m": {
+            "shape": [
+              4
+            ],
+            "dtype": "float32"
+          }
+        },
+        "encoder_keys": [
+          "market_seq_e_shared",
+          "position_state",
+          "action_mask",
+          "market_context_15m",
+          "market_macd_5m"
+        ],
+        "decoder_keys": [
+          "market_seq_e_shared",
+          "position_state"
+        ],
+        "audit_only": [
+          "market_seq"
+        ],
+        "context_fields": [
+          "rel_open",
+          "rel_high",
+          "rel_low",
+          "rel_close",
+          "vol_relative",
+          "oi_change",
+          "valid"
+        ],
+        "macd_5m": {
+          "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+          "periods": [
+            12,
+            26,
+            9
+          ],
+          "histogram": "DIF-Signal",
+          "initialization": "first_complete_close; first_DIF_and_signal_zero",
+          "warmup": "35_complete_buckets_strictly_before_current_bucket",
+          "scale": "1000*raw/current_visible_1m_Close",
+          "invalid": "all_zero",
+          "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+          "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+          "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+          "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+          "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+          "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+        },
+        "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+      },
+      "parameter_digest_matrix_sha256": "48a81e929aa1b272dc75d926c626c3a81c99788736b2d1bbe7c92b216924fbd0",
+      "policy_digest_matrix_sha256": "7f004889544ac775ae1677777d8c7267b65799636b1ec5823f3bb47c4f90e62f",
+      "parameter_leaf_count": 349,
+      "original_model_seed": 303,
+      "evaluation_seed": 202,
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      }
+    }
+  ],
+  "sources": [
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/source_probe_04/readiness_reopen.json",
+      "sha256": "71a4af85d505a197f44c44100aa7a7040bd8570eb014bd11cc4643339fa61de5",
+      "role": "validation",
+      "scope": "DEV_SOURCE_ENGINEERING_ONLY_NOT_STRATEGY_EXAM",
+      "contract": "CZCE.FG409",
+      "source_identity": "09e3501373a0663de96162232a4f8f0bb0672179e84a06e8c1184b6d76f9f80d",
+      "profile": "5a7301a00b9061f743a1d45ac353397ee0113989bb90763fc3202c55155689dd",
+      "frozen_inputs": {
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json": "ebe0477a4ff9bad5b0d720b3ddb9f37288591d8df63db73a280224b698068bac",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/manifest.json": "cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0019_CZCE_FG409_main_1m.csv": "304e6cc2a6902e4135b6af2a506b417971247b439a899ddd2d51e5476ef08b03",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG409_env.yaml": "5946f653ac871ee0374ac2f5a9e23c88142181bfcfdc6e8ba8dd9dd5f275dc3a",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG409_contract.yaml": "2fea3c23ea124f217340367a90c366bedbaf19e6b399eca5b1af19edba81b4e7",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/source_probe_04/source/quality_tp.yaml": "e3967c19d91ee90ca82bdd86c05c818b97274d6cb0662fb5bf27c9d5efcbd61f",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/source_probe_04/source/env.yaml": "9730be3b846bf584e106c676954a4a9e1fcb07b05f785a24cc37e8e611c7e55f"
+      },
+      "training_admitted": false
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/train_probe_01/readiness.json",
+      "sha256": "66f43369699dd2f49aa97e6f0ad36e4adaffbf42ff5f74d83159c82bc2f42f8c",
+      "role": "train",
+      "scope": "FINITE_TRAIN_ENGINEERING_ONLY_NOT_DEV_EXAM",
+      "contract": "CZCE.FG809",
+      "source_identity": "0eaa3908ce52a3907a0bd47c37be27a433ace307a29f5900cb8586858b613c1e",
+      "profile": "ef273027b0fb4f85debc36a365e4dad53449cf7690887d82b3070dd529a70983",
+      "frozen_inputs": {
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/train_probe_01/source/inputs/CZCE.FG809/single3.yaml": "e3967c19d91ee90ca82bdd86c05c818b97274d6cb0662fb5bf27c9d5efcbd61f",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG809_env.yaml": "411ccfb493912bd23be52cf19e50f4528eb39df8f6713559c4be230071546641",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0001_CZCE_FG809_main_1m.csv": "061b3314df0d4bf52394b263754c4b0494e609ae0df76f1b4a4c36b7bdd89f62",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/train_probe_01/source/inputs/CZCE.FG809/env.yaml": "a50bb0d86cd10fe18ce55dfc13a5d7977a8844690bdbde6a1001a6b5bba2f083",
+        "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG809_contract.yaml": "60f4162938d99b549c64d63fa0a4e47f970cc849e79040fca2b41a1a44aeb1e0",
+        "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/manifest.json": "cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad"
+      },
+      "training_admitted": false
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source/source.json",
+      "sha256": "b9fcf53f1844b569a7ab366e9959f9e07d483399c02392140e443a4171f1cf46",
+      "role": "synthetic",
+      "source_identity": "5bd985f2454d3ac8b173739da5726b809b6dfca4789912fe604b73cc20f43223",
+      "frozen_inputs": {
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source/market.csv": "b516c76f2efafcad3cccf7c907ea148db76e90ee75c22ef4c9a603386234394f",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source/env.yaml": "02a375e08366a232e93839efffe37a53e96f61e8294cc282ec4fe45308159e21",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source/contract.yaml": "1f0fae358a18312d1578f1fe91fdeb4ef0b4daa2d7e5929078d4daff56ca874a",
+        "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source/directions.yaml": "23efe16adc81ea8d5c1b4ca98bcfcbdff582ab733f990da4975936d034dd7b31"
+      }
+    }
+  ],
+  "all_model_bytes_equal": true,
+  "real_dev_strategy_exam": "NOT_RUN",
+  "test_prices_accessed": false
+}

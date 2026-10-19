@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_v2_experiment.py",
+    "online-probe",
+    "--output-dir",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/baseline_wrong_probe_path",
+    "--execution-mode",
+    "ONLINE_SUPERVISED"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "head": "0a425534bc6a06e5bc47f9683c58a08d645d59b1",
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 325, in <module>\n    main()\n  File \"/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 89, in main\n    result=cpu_probe(args.output_dir,args.execution_mode)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py\", line 114, in cpu_probe\n    raise ValueError('ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED')\nValueError: ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED\n",
+  "classification": "TEST_HARNESS_OUTPUT_PATH_VIOLATES_EXISTING_UNCHANGED_GUARD"
+}

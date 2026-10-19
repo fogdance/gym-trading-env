@@ -125,6 +125,7 @@ def compare_sessions(cases,output):
         if key in by_contract and by_contract[key]!=common:raise ValueError('EXAM_COMPARISON_UNEQUAL_SOURCE_OR_INTERVAL')
         by_contract[key]=common;prepared.append((root,source,receipt))
     if not prepared:raise ValueError('EXAM_COMPARISON_REQUIRES_CASES')
+    if len({r['plan_hash'] for _,_,r in prepared})!=1:raise ValueError('EXAM_COMPARISON_REQUIRES_ONE_STUDY_PLAN')
     out.mkdir(parents=True);summaries=[];blocks=[];evidence=[]
     seen=set()
     for root,source,receipt in prepared:
@@ -147,13 +148,24 @@ def compare_sessions(cases,output):
         evidence.append(dict(directory=str(root),receipt=receipt,replay=replay))
     paired=[]
     for block in blocks:
-        baseline=next((x for x in blocks if x['contract']==block['contract'] and x['official_day']==block['official_day']
-            and x['policy']=='ALWAYS_WAIT'),None)
-        if baseline is None:raise ValueError('EXAM_FAIR_COMPARISON_REQUIRES_WAIT_REFERENCE')
-        paired.append(dict(contract=block['contract'],official_day=block['official_day'],policy=block['policy'],
-            reference='ALWAYS_WAIT',net_pnl_delta=block['net_pnl']-baseline['net_pnl'],
-            reward_delta=block['reward']-baseline['reward'],drawdown_delta=block['max_drawdown']-baseline['max_drawdown'],
-            entries=block['entries'],tp_le_5=block['tp_le_5'],mae_15_mean=block['mae_15_mean']))
+        reference_names=['ALWAYS_WAIT']
+        if block['policy'] in plan['actors']:
+            reference_names += [j['label'] for j in policy_jobs(plan) if j['contract']==block['contract']
+                and (j['policy'] not in plan['actors'] or plan['actors'][j['policy']]['kind']=='F3')]
+        for reference in dict.fromkeys(reference_names):
+            if reference==block['policy'] and reference!='ALWAYS_WAIT':continue
+            baseline=next((x for x in blocks if x['contract']==block['contract'] and x['official_day']==block['official_day']
+                and x['policy']==reference),None)
+            if baseline is None:raise ValueError('EXAM_FAIR_COMPARISON_REFERENCE_BLOCK_MISSING')
+            paired.append(dict(contract=block['contract'],official_day=block['official_day'],policy=block['policy'],
+                reference=reference,net_pnl_delta=block['net_pnl']-baseline['net_pnl'],
+                reward_delta=block['reward']-baseline['reward'],drawdown_delta=block['max_drawdown']-baseline['max_drawdown'],
+                entries=block['entries'],entry_delta=block['entries']-baseline['entries'],
+                entry_density_delta=block['entries']/block['valid_minutes']-baseline['entries']/baseline['valid_minutes'],
+                tp_le_5=block['tp_le_5'],tp_le_5_delta=block['tp_le_5']-baseline['tp_le_5'],
+                sl30_delta=block['sl30']-baseline['sl30'],mae_15_mean=block['mae_15_mean'],
+                mae_15_mean_delta=None if block['mae_15_mean'] is None or baseline['mae_15_mean'] is None
+                    else block['mae_15_mean']-baseline['mae_15_mean']))
     unique={(b['contract'],b['official_day']) for b in blocks}
     report=signed(dict(protocol='FG_S3_E_QUALITY_EXAM_COMPARISON_V1',status='SAME_SOURCE_NATIVE_ACCOUNTS_RECONCILED',
         summaries=summaries,blocks=blocks,paired_deltas=paired,independent_contract_days=len(unique),

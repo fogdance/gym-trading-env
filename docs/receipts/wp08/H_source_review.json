@@ -1,0 +1,44 @@
+{
+  "review_kind": "separate_read_only_source_boundary_audit",
+  "independent_external_human_review": "NOT_RUN",
+  "repositories": {
+    "gym": {
+      "head": "cc12783bf88d748882a5979ad22fa1bb3a570b78",
+      "base": "0a425534bc6a06e5bc47f9683c58a08d645d59b1",
+      "status": "M configs/experiments/fg_s3_v2/README.md\n M docs/receipts/wp08/B_f3_readonly.json\n M docs/receipts/wp08/D_accounting.json\n M e_data_v1/io.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_compare.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_contract.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_session.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_source.py\n M src/gym_trading_env/research/fg_s3_e_quality_exam_state.py\n M tests/entry_v1/test_wp08_actor.py\n M tests/entry_v1/test_wp08_checkpoint.py\n M tests/entry_v1/test_wp08_compare.py\n M tests/entry_v1/test_wp08_contract.py\n M tests/entry_v1/test_wp08_metrics.py\n M tests/entry_v1/wp07_regression_worker.py\n M tests/entry_v1/wp08_exam_worker.py\n M tests/entry_v1/wp08_fixture.py\n M tools/fg_s3_v2_experiment.py\n M tools/wp03_verify.py\n M tools/wp08_source_probe.py\n?? configs/experiments/fg_s3_v2/e_quality_wp08_exam_dev.yaml\n?? configs/experiments/fg_s3_v2/e_quality_wp08_exam_synthetic.yaml\n?? src/gym_trading_env/research/fg_s3_e_quality_exam.py\n?? src/gym_trading_env/research/fg_s3_e_quality_exam_synthetic.py\n?? src/gym_trading_env/research/fg_s3_e_quality_exam_verify.py\n?? src/gym_trading_env/research/fg_s3_e_quality_exam_worker.py\n?? tests/entry_v1/test_wp08_boundaries.py\n?? tests/entry_v1/test_wp08_cli.py\n?? tests/entry_v1/test_wp08_metric_windows.py\n?? tools/wp08_regress.py\n?? tools/wp08_train_probe.py",
+      "changed_python": {
+        "e_data_v1/io.py": "fafabcb224d12153db37c8a1789785014b1d495af1a5420b06dc42771a675b2d",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam.py": "fa1855def47daf5103602d66e8d9e71da8191ed28a8aa53f5e7b021d7c4a6eb9",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py": "faacb20f9f1ddad49658c319a494db28571afa85675dfc5230ada430ed779497",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_compare.py": "385c6739c8b5752a2704b3ef8ed979e0deb78e0489d2789002e11ff64db4dc98",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_contract.py": "166b840a6f1885a5b8ee59b10a15cfae86f63bce9b4e97462ce28c38dd976856",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_evidence.py": "d42c0a408234fe1b9fb31d4ff918d68d2cf5058c822ea31360a443219216b777",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py": "e83ab72e81f838657ef679ef9703a344146db673251be6a55ed889ef4b8bcc22",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_session.py": "8432164a74848df66563ca5acc76da9b0e7f8f52987533ef92d19848077eb568",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_source.py": "7236ecb1f4d35f5c35719b3031664ac94c018f574d84f78b9d406a7975546202",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_state.py": "efd4e9b7b46ca6ac63683a5916fb41292fe4cb73df8912e98a7337c4fe17f58d",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_synthetic.py": "a31e94f5a2435452cfb39416d66e6698a122a11ecabf99eb2babf03263b38519",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_verify.py": "bd01b690c890cc4402d2328a9ad343b9c20e4177bf73c0260f20cead9686fbad",
+        "src/gym_trading_env/research/fg_s3_e_quality_exam_worker.py": "4ca0c84f6c040deca80a8f53bce0db232bfa06462102d237c4fe9ad8898cbe05",
+        "tools/fg_s3_v2_experiment.py": "d990a5efb80ef2b42f259d0b496e2a35151515984e7427b82a1d68814df3714e",
+        "tools/wp03_verify.py": "3745cc3be08ad56e402c3bcb6d19527dd95ec089af14620a377fcd856e5a5bb2",
+        "tools/wp08_regress.py": "63f45d8d1fb83a1054af44ce0432b896cebd2fe865ec8d268459949690c3d8af",
+        "tools/wp08_source_probe.py": "dedba65ce93f5865f9d2c9c2b9f693d23e9646e65a5a802cc6dd1cf8da2744b2",
+        "tools/wp08_train_probe.py": "ad4591ab2e1c04c18c688ec87e544dc4326c9deced65b5e9b32cfd2fcfe28bb1"
+      },
+      "unexpected_changes": []
+    },
+    "dreamer": {
+      "head": "26be0506c344af139c11ea0160b65f2135a2e27b",
+      "base": "745b7e0c22165769b516f5c91545b032e9511357",
+      "status": "?? docs/WP08_DREAMER_INTERFACE.md",
+      "changed_python": {
+        "embodied/jax/agent.py": "ff987d074c3b08d30a958e1351538d65bbac0d99881420c5dc69b5b430578a84",
+        "embodied/run/fg_s3_e_quality_exam.py": "7ba6aebbb41d6b3372103c4c5178ccc8566973ee3ac7e35d11420ebd234c5926"
+      },
+      "unexpected_changes": []
+    }
+  },
+  "protected_financial_env_reward_macd_oracle_diff": "EMPTY",
+  "status": "PASS_SOURCE_BOUNDARIES"
+}

@@ -31,7 +31,7 @@ def local_path(value):
 def validate_plan(raw):
     required={'protocol','exam_mode','contracts','source','actors','baselines','start_day','end_day',
               'chunk_steps','seed','random_seeds','output_dir','evidence_policy'}
-    if not isinstance(raw,dict) or set(raw)!=required or raw['protocol']!=PROTOCOL:
+    if not isinstance(raw,dict) or set(raw)-{'contract_windows'}!=required or raw['protocol']!=PROTOCOL:
         raise ValueError('EXAM_EXPLICIT_PLAN_FIELDS_REQUIRED')
     if raw['exam_mode']=='SEALED_TEST_FINAL':
         raise ValueError('EXAM_TEST_SEALED_UNTIL_WP10')
@@ -46,6 +46,18 @@ def validate_plan(raw):
             if date.fromisoformat(raw[key]).isoformat()!=raw[key]:raise ValueError()
         except (TypeError,ValueError):raise ValueError('EXAM_OFFICIAL_ISO_DAYS_REQUIRED') from None
     if raw['start_day']>raw['end_day']:raise ValueError('EXAM_REVERSED_DAYS')
+    if 'contract_windows' in raw:
+        windows=raw['contract_windows']
+        if not isinstance(windows,dict) or set(windows)!=set(contracts):
+            raise ValueError('EXAM_ALL_CONTRACT_WINDOWS_MUST_BE_EXPLICIT')
+        for window in windows.values():
+            if not isinstance(window,dict) or set(window)!={'start_day','end_day'}:
+                raise ValueError('EXAM_OFFICIAL_CONTRACT_WINDOW_REQUIRED')
+            try:
+                if any(date.fromisoformat(v).isoformat()!=v for v in window.values()):raise ValueError()
+            except (ValueError,TypeError):raise ValueError('EXAM_OFFICIAL_ISO_CONTRACT_WINDOW_REQUIRED') from None
+            if not raw['start_day']<=window['start_day']<=window['end_day']<=raw['end_day']:
+                raise ValueError('EXAM_CONTRACT_WINDOW_OUTSIDE_STUDY_ENVELOPE')
     for key,minimum in (('chunk_steps',1),('seed',0)):
         if type(raw[key]) is not int or raw[key]<minimum:raise ValueError('EXAM_INTEGER_REQUIRED: '+key)
     seeds=raw['random_seeds']
@@ -74,6 +86,7 @@ def validate_plan(raw):
     if (not isinstance(baselines,list) or not baselines or len(set(baselines))!=len(baselines)
             or any(b not in (*BASELINES,*actors) for b in baselines)):
         raise ValueError('EXAM_SUPPORTED_UNIQUE_BASELINES_REQUIRED')
+    if 'ALWAYS_WAIT' not in baselines:raise ValueError('EXAM_WAIT_REFERENCE_REQUIRED')
     output=PurePosixPath(local_path(raw['output_dir']))
     for actor in actors.values():
         run=PurePosixPath(actor['run'])
@@ -95,3 +108,9 @@ def validate_plan(raw):
 
 def plan_hash(raw):
     return identity(validate_plan(raw))
+
+
+def contract_window(plan,contract):
+    if contract not in plan['contracts']:raise ValueError('EXAM_CONTRACT_NOT_IN_PLAN')
+    return plan.get('contract_windows',{}).get(contract,
+        dict(start_day=plan['start_day'],end_day=plan['end_day']))

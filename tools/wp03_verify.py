@@ -44,7 +44,7 @@ with (out / (name + '.log')).open('x') as stream:
     run = subprocess.run(argv, cwd=root, env=env, stdout=stream, stderr=subprocess.STDOUT)
 record = dict(argv=argv, cwd=str(root), environment={k:env[k] for k in env if k in
     ('PYTHONPATH', 'JAX_PLATFORMS', 'CUDA_VISIBLE_DEVICES', 'PYTHONDONTWRITEBYTECODE',
-     'FG_REPLAY_DREAMER_ROOT', 'OPENBLAS_NUM_THREADS', 'OMP_NUM_THREADS')},
+     'FG_REPLAY_DREAMER_ROOT', 'OPENBLAS_NUM_THREADS', 'OMP_NUM_THREADS') or k.startswith('FG_WP')},
     repositories=versions, execution_sources=sources, exit_code=run.returncode,
     seconds=time.monotonic()-began)
 (out / (name + '.json')).write_text(json.dumps(record, indent=2) + '\n')

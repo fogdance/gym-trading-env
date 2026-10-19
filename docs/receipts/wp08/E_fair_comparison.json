@@ -29,6 +29,7 @@
       "open_position_open_fees": 0.0,
       "fees": 0,
       "max_drawdown": 0.0,
+      "max_floating_loss": 0.0,
       "tp_rate": null,
       "sl_rate": null,
       "mae_15_valid_count": 0,
@@ -47,12 +48,16 @@
       "entry_evidence": "NO_ENTRY_SKILL_EVIDENCE",
       "tp_le_5": 0,
       "tp_le_5_rate": null,
+      "tp_le_5_valid_count": 0,
       "tp_le_15": 0,
       "tp_le_15_rate": null,
+      "tp_le_15_valid_count": 0,
       "tp_le_30": 0,
       "tp_le_30_rate": null,
+      "tp_le_30_valid_count": 0,
       "tp_le_60": 0,
-      "tp_le_60_rate": null
+      "tp_le_60_rate": null,
+      "tp_le_60_valid_count": 0
     },
     {
       "policy": "ALWAYS_ADD",
@@ -80,6 +85,7 @@
       "open_position_open_fees": 9.0,
       "fees": 3159.0,
       "max_drawdown": 121323.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5340909090909091,
       "sl_rate": 0.4602272727272727,
       "mae_15_valid_count": 175,
@@ -98,12 +104,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.14772727272727273,
+      "tp_le_5_valid_count": 176,
       "tp_le_15": 94,
       "tp_le_15_rate": 0.5340909090909091,
+      "tp_le_15_valid_count": 175,
       "tp_le_30": 94,
       "tp_le_30_rate": 0.5340909090909091,
+      "tp_le_30_valid_count": 175,
       "tp_le_60": 94,
-      "tp_le_60_rate": 0.5340909090909091
+      "tp_le_60_rate": 0.5340909090909091,
+      "tp_le_60_valid_count": 175
     },
     {
       "policy": "RANDOM_P10_seed101",
@@ -131,6 +141,7 @@
       "open_position_open_fees": 0.0,
       "fees": 1566.0,
       "max_drawdown": 68439.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.4942528735632184,
       "sl_rate": 0.5057471264367817,
       "mae_15_valid_count": 87,
@@ -149,12 +160,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 17,
       "tp_le_5_rate": 0.19540229885057472,
+      "tp_le_5_valid_count": 87,
       "tp_le_15": 43,
       "tp_le_15_rate": 0.4942528735632184,
+      "tp_le_15_valid_count": 87,
       "tp_le_30": 43,
       "tp_le_30_rate": 0.4942528735632184,
+      "tp_le_30_valid_count": 87,
       "tp_le_60": 43,
-      "tp_le_60_rate": 0.4942528735632184
+      "tp_le_60_rate": 0.4942528735632184,
+      "tp_le_60_valid_count": 87
     },
     {
       "policy": "RANDOM_P10_seed202",
@@ -182,6 +197,7 @@
       "open_position_open_fees": 9.0,
       "fees": 1809.0,
       "max_drawdown": 62673.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5643564356435643,
       "sl_rate": 0.42574257425742573,
       "mae_15_valid_count": 100,
@@ -200,12 +216,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.25742574257425743,
+      "tp_le_5_valid_count": 100,
       "tp_le_15": 57,
       "tp_le_15_rate": 0.5643564356435643,
+      "tp_le_15_valid_count": 100,
       "tp_le_30": 57,
       "tp_le_30_rate": 0.5643564356435643,
+      "tp_le_30_valid_count": 100,
       "tp_le_60": 57,
-      "tp_le_60_rate": 0.5643564356435643
+      "tp_le_60_rate": 0.5643564356435643,
+      "tp_le_60_valid_count": 100
     },
     {
       "policy": "RANDOM_P10_seed303",
@@ -233,6 +253,7 @@
       "open_position_open_fees": 0.0,
       "fees": 1386.0,
       "max_drawdown": 46341.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5844155844155844,
       "sl_rate": 0.4155844155844156,
       "mae_15_valid_count": 77,
@@ -251,12 +272,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 19,
       "tp_le_5_rate": 0.24675324675324675,
+      "tp_le_5_valid_count": 77,
       "tp_le_15": 45,
       "tp_le_15_rate": 0.5844155844155844,
+      "tp_le_15_valid_count": 77,
       "tp_le_30": 45,
       "tp_le_30_rate": 0.5844155844155844,
+      "tp_le_30_valid_count": 77,
       "tp_le_60": 45,
-      "tp_le_60_rate": 0.5844155844155844
+      "tp_le_60_rate": 0.5844155844155844,
+      "tp_le_60_valid_count": 77
     },
     {
       "policy": "DELAY_15",
@@ -284,6 +309,7 @@
       "open_position_open_fees": 0.0,
       "fees": 1440.0,
       "max_drawdown": 142095.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.025,
       "sl_rate": 0.975,
       "mae_15_valid_count": 80,
@@ -302,12 +328,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 1,
       "tp_le_5_rate": 0.0125,
+      "tp_le_5_valid_count": 80,
       "tp_le_15": 2,
       "tp_le_15_rate": 0.025,
+      "tp_le_15_valid_count": 80,
       "tp_le_30": 2,
       "tp_le_30_rate": 0.025,
+      "tp_le_30_valid_count": 80,
       "tp_le_60": 2,
-      "tp_le_60_rate": 0.025
+      "tp_le_60_rate": 0.025,
+      "tp_le_60_valid_count": 80
     },
     {
       "policy": "F3_FROZEN",
@@ -335,6 +365,7 @@
       "open_position_open_fees": 9.0,
       "fees": 3105.0,
       "max_drawdown": 120069.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5317919075144508,
       "sl_rate": 0.4624277456647399,
       "mae_15_valid_count": 172,
@@ -353,12 +384,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.15028901734104047,
+      "tp_le_5_valid_count": 173,
       "tp_le_15": 92,
       "tp_le_15_rate": 0.5317919075144508,
+      "tp_le_15_valid_count": 172,
       "tp_le_30": 92,
       "tp_le_30_rate": 0.5317919075144508,
+      "tp_le_30_valid_count": 172,
       "tp_le_60": 92,
-      "tp_le_60_rate": 0.5317919075144508
+      "tp_le_60_rate": 0.5317919075144508,
+      "tp_le_60_valid_count": 172
     },
     {
       "policy": "F4_SHADOW",
@@ -386,6 +421,7 @@
       "open_position_open_fees": 9.0,
       "fees": 3105.0,
       "max_drawdown": 120069.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5317919075144508,
       "sl_rate": 0.4624277456647399,
       "mae_15_valid_count": 172,
@@ -404,12 +440,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.15028901734104047,
+      "tp_le_5_valid_count": 173,
       "tp_le_15": 92,
       "tp_le_15_rate": 0.5317919075144508,
+      "tp_le_15_valid_count": 172,
       "tp_le_30": 92,
       "tp_le_30_rate": 0.5317919075144508,
+      "tp_le_30_valid_count": 172,
       "tp_le_60": 92,
-      "tp_le_60_rate": 0.5317919075144508
+      "tp_le_60_rate": 0.5317919075144508,
+      "tp_le_60_valid_count": 172
     },
     {
       "policy": "F4_BC",
@@ -437,6 +477,7 @@
       "open_position_open_fees": 9.0,
       "fees": 3105.0,
       "max_drawdown": 120069.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5317919075144508,
       "sl_rate": 0.4624277456647399,
       "mae_15_valid_count": 172,
@@ -455,12 +496,16 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.15028901734104047,
+      "tp_le_5_valid_count": 173,
       "tp_le_15": 92,
       "tp_le_15_rate": 0.5317919075144508,
+      "tp_le_15_valid_count": 172,
       "tp_le_30": 92,
       "tp_le_30_rate": 0.5317919075144508,
+      "tp_le_30_valid_count": 172,
       "tp_le_60": 92,
-      "tp_le_60_rate": 0.5317919075144508
+      "tp_le_60_rate": 0.5317919075144508,
+      "tp_le_60_valid_count": 172
     },
     {
       "policy": "F4_RL",
@@ -488,6 +533,7 @@
       "open_position_open_fees": 9.0,
       "fees": 3105.0,
       "max_drawdown": 120069.0,
+      "max_floating_loss": 2100.0,
       "tp_rate": 0.5317919075144508,
       "sl_rate": 0.4624277456647399,
       "mae_15_valid_count": 172,
@@ -506,13 +552,17 @@
       "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
       "tp_le_5": 26,
       "tp_le_5_rate": 0.15028901734104047,
+      "tp_le_5_valid_count": 173,
       "tp_le_15": 92,
       "tp_le_15_rate": 0.5317919075144508,
+      "tp_le_15_valid_count": 172,
       "tp_le_30": 92,
       "tp_le_30_rate": 0.5317919075144508,
+      "tp_le_30_valid_count": 172,
       "tp_le_60": 92,
-      "tp_le_60_rate": 0.5317919075144508
+      "tp_le_60_rate": 0.5317919075144508,
+      "tp_le_60_valid_count": 172
     }
   ],
-  "comparison_path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/E_compare_02/comparison"
+  "comparison_path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_E_01/comparison"
 }

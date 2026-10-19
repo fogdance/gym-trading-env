@@ -11,7 +11,7 @@ import shutil
 import numpy as np
 
 from .fg_replay import (execute_observed,observed_trace_row,observed_trace_manifest,
-    update_array_hash,write_json,signed,digest,E_QUALITY_PROTOCOL,E_QUALITY_SCHEMA,reconcile_trace)
+    update_array_hash,write_json,read_manifest,signed,digest,E_QUALITY_PROTOCOL,E_QUALITY_SCHEMA,reconcile_trace)
 from .fg_s3_e_quality_exam_contract import validate_plan,plan_hash,identity
 from .fg_s3_e_quality_course_preflight import _local_path
 
@@ -48,6 +48,8 @@ class ExamSession:
         self.identity=dict(protocol=self.protocol,plan_hash=plan_hash(plan),source=identity(source.receipt),
             actor=identity(policy.receipt) if hasattr(policy,'receipt') else identity(policy.spec),
             contract=self.raw.contract,policy_id=policy_id,code=execution_identity())
+        if existing and read_manifest(self.root/'SESSION_IDENTITY.json')!=signed(self.identity):
+            self.raw.close();raise ValueError('EXAM_SESSION_HEADER_IDENTITY_MISMATCH')
         self.chunk_ids=ChunkIdentity(identity(self.identity));self.chunks=[];self.chunk=None
         self.chunk_rows=[];self.pending=None;self.records=0;self.advanced=0;self.valid_minutes=0
         self.finished=False;self.metrics_state={};self._new_chunk()
@@ -140,7 +142,7 @@ class ExamSession:
         yield from copy.deepcopy(self.chunk_rows)
         if include_pending and self.pending is not None:yield copy.deepcopy(self.pending[0])
 
-    def finish(self,*,verify=True):
+    def finish(self):
         from .fg_s3_e_quality_foundation import PROJECT
         from .fg_single3_evaluation import embodied_runtime
         if self.finished:raise ValueError('EXAM_SESSION_ALREADY_FINISHED')
@@ -174,7 +176,7 @@ class ExamSession:
             event_hash.hexdigest(),None,single3=True,e_quality=True)
         write_json(out/'manifest.json',signed(manifest))
         replay=reconcile_trace(out,PROJECT.parent/'dreamerv3',env_factory=self.source.factory,
-            schema=E_QUALITY_SCHEMA,runtime_factory=embodied_runtime) if verify else None
+            schema=E_QUALITY_SCHEMA,runtime_factory=embodied_runtime)
         frozen=self.policy.verify_frozen() if hasattr(self.policy,'verify_frozen') else dict(training_updates=0)
         self.source.verify()
         result=signed(dict(protocol=self.protocol,exam_mode=self.plan['exam_mode'],contract=self.raw.contract,

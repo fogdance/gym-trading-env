@@ -22,6 +22,9 @@ class ExamFrozenActor:
         if any(agent.model.quality[k] for k in forbidden):raise ValueError('EXAM_TEACHER_FREE_POLICY_REQUIRED')
         agent.sync_policy_from_train(reset_counter=True)
         agent.configure_evaluation_seed(int(agent.config.seed) if evaluation_seed is None else evaluation_seed)
+        def refuse_training(*args,**kwargs):
+            raise RuntimeError('EXAM_FROZEN_AGENT_TRAINING_FORBIDDEN')
+        agent.train=refuse_training
         self.policy=ActorPolicy(agent)
         self.before=parameter_digests(agent.params)
         self.policy_before=parameter_digests(agent.policy_params)

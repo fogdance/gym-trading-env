@@ -1,0 +1,20 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+__________ test_censored_risk_does_not_invent_negative_sl_or_tp_label __________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-634/test_censored_risk_does_not_in0')
+
+    def test_censored_risk_does_not_invent_negative_sl_or_tp_label(tmp_path):
+        report=native_trade(tmp_path,cutoff=3,adverse_at=2);trade=report['trades'][0]
+        assert trade['exit_reason']=='RIGHT_CENSORED' and trade['first_adverse10']==2
+        assert not trade['mae_5_valid'] and not trade['mae_15_valid'] and not trade['mae_full_valid']
+        assert not trade['adverse10_le_5_then_sl30_valid'] and not trade['tp_le_5_valid']
+        assert not trade['underwater_full_valid'] and report['summary']['entries']==1
+        assert report['summary']['tp_le_5_rate']==0. and report['summary']['tp_le_5_valid_count']==0
+>       assert report['daily'][0]['mae_15_mean'] is None
+E       assert 11.0 is None
+
+tests/entry_v1/test_wp08_metric_windows.py:68: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp08_metric_windows.py::test_censored_risk_does_not_invent_negative_sl_or_tp_label
+1 failed in 4.28s

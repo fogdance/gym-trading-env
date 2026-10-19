@@ -52,6 +52,10 @@ def test_same_source_full_interval_baselines_and_f3_f4():
     wait=next(s for s in report['summaries'] if s['policy']=='ALWAYS_WAIT')
     assert wait['entries']==0 and wait['tp_rate'] is None and wait['entry_evidence']=='NO_ENTRY_SKILL_EVIDENCE'
     assert all(s['account_reconciled'] and s['illegal_add']==0 for s in report['summaries'])
+    actor_pairs=[r for r in report['paired_deltas'] if r['policy']=='F4_RL']
+    assert {r['reference'] for r in actor_pairs}=={'ALWAYS_WAIT','ALWAYS_ADD','DELAY_15',
+        'RANDOM_P10_seed101','RANDOM_P10_seed202','RANDOM_P10_seed303','F3_FROZEN'}
+    assert all('entry_density_delta' in r and 'mae_15_mean_delta' in r for r in actor_pairs)
     for root in roots:
         assert (root/'MODEL_READONLY_RECEIPT.json').exists()
     Path('docs/receipts/wp08/E_fair_comparison.json').write_text(json.dumps(dict(

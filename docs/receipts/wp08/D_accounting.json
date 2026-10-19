@@ -23,8 +23,10 @@
     "open_position_open_fees": 9.0,
     "fees": 2367.0,
     "max_drawdown": 89913.0,
+    "max_floating_loss": 2100.0,
     "tp_rate": 0.5378787878787878,
     "sl_rate": 0.45454545454545453,
+    "mae_15_valid_count": 131,
     "mae_15_mean": 17.114503816793892,
     "p_add_quantiles": {
       "0.0": 0.8617571592330933,
@@ -40,12 +42,16 @@
     "entry_evidence": "ACTUAL_ENTRY_SUPPORT",
     "tp_le_5": 20,
     "tp_le_5_rate": 0.15151515151515152,
+    "tp_le_5_valid_count": 132,
     "tp_le_15": 71,
     "tp_le_15_rate": 0.5378787878787878,
+    "tp_le_15_valid_count": 131,
     "tp_le_30": 71,
     "tp_le_30_rate": 0.5378787878787878,
+    "tp_le_30_valid_count": 131,
     "tp_le_60": 71,
-    "tp_le_60_rate": 0.5378787878787878
+    "tp_le_60_rate": 0.5378787878787878,
+    "tp_le_60_valid_count": 131
   },
   "daily": [
     {
@@ -53,6 +59,7 @@
       "official_day": "2026-01-08",
       "start_equity": 300000.0,
       "end_equity": 270681.0,
+      "valid_minutes": 345,
       "net_pnl": -29319.0,
       "closed_net_pnl": -29310.0,
       "unrealized_pnl": 0.0,
@@ -65,6 +72,7 @@
       "tp": 25,
       "sl30": 21,
       "tp_le_5": 7,
+      "mae_15_valid_count": 46,
       "mae_15_mean": 17.065217391304348,
       "fees": 819.0,
       "trade_count_basis": "entry_cohort; cashflow_and_exit_fees_at_actual_official_day"
@@ -74,6 +82,7 @@
       "official_day": "2026-01-09",
       "start_equity": 270681.0,
       "end_equity": 240525.0,
+      "valid_minutes": 345,
       "net_pnl": -30156.0,
       "closed_net_pnl": -30156.0,
       "unrealized_pnl": 0.0,
@@ -86,6 +95,7 @@
       "tp": 22,
       "sl30": 20,
       "tp_le_5": 6,
+      "mae_15_valid_count": 42,
       "mae_15_mean": 17.714285714285715,
       "fees": 756.0,
       "trade_count_basis": "entry_cohort; cashflow_and_exit_fees_at_actual_official_day"
@@ -95,6 +105,7 @@
       "official_day": "2026-01-12",
       "start_equity": 240525.0,
       "end_equity": 210933.0,
+      "valid_minutes": 334,
       "net_pnl": -29592.0,
       "closed_net_pnl": -29592.0,
       "unrealized_pnl": 0.0,
@@ -107,7 +118,8 @@
       "tp": 24,
       "sl30": 19,
       "tp_le_5": 7,
-      "mae_15_mean": 16.25,
+      "mae_15_valid_count": 43,
+      "mae_15_mean": 16.58139534883721,
       "fees": 792.0,
       "trade_count_basis": "entry_cohort; cashflow_and_exit_fees_at_actual_official_day"
     }
@@ -117,6 +129,11 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-08",
       "session": "day",
+      "eligible_add_states": 29,
+      "eligible_add_valid_minutes": 29,
+      "add_proposals": 29,
+      "active_wait": 0,
+      "forced_wait": 196,
       "market_advances": 225,
       "valid_minutes": 225,
       "entries": 29
@@ -125,6 +142,11 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-08",
       "session": "night",
+      "eligible_add_states": 17,
+      "eligible_add_valid_minutes": 17,
+      "add_proposals": 17,
+      "active_wait": 0,
+      "forced_wait": 103,
       "market_advances": 120,
       "valid_minutes": 120,
       "entries": 17
@@ -133,6 +155,11 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-09",
       "session": "day",
+      "eligible_add_states": 28,
+      "eligible_add_valid_minutes": 28,
+      "add_proposals": 28,
+      "active_wait": 0,
+      "forced_wait": 197,
       "market_advances": 225,
       "valid_minutes": 225,
       "entries": 28
@@ -141,6 +168,11 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-09",
       "session": "night",
+      "eligible_add_states": 14,
+      "eligible_add_valid_minutes": 14,
+      "add_proposals": 14,
+      "active_wait": 0,
+      "forced_wait": 106,
       "market_advances": 120,
       "valid_minutes": 120,
       "entries": 14
@@ -149,6 +181,11 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-12",
       "session": "day",
+      "eligible_add_states": 28,
+      "eligible_add_valid_minutes": 28,
+      "add_proposals": 28,
+      "active_wait": 0,
+      "forced_wait": 186,
       "market_advances": 214,
       "valid_minutes": 214,
       "entries": 28
@@ -157,10 +194,15 @@
       "contract": "CZCE.FG2701",
       "official_day": "2026-01-12",
       "session": "night",
+      "eligible_add_states": 16,
+      "eligible_add_valid_minutes": 16,
+      "add_proposals": 16,
+      "active_wait": 0,
+      "forced_wait": 104,
       "market_advances": 120,
       "valid_minutes": 120,
       "entries": 16
     }
   ],
-  "metrics_path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/D_metrics_02"
+  "metrics_path": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_D_01"
 }

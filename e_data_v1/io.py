@@ -36,8 +36,12 @@ def git_identity(root):
                 dirty=bool(git("status", "--porcelain")))
 
 
-def independent_output(path, *, inputs=()):
-    """Reject formal run paths, source files and existing symlink destinations."""
+def independent_output(path, *, inputs=(), allow_existing=False):
+    """Reject protected/source paths. Existing owned sessions opt in explicitly.
+
+    New data production retains the default no-overwrite requirement. The
+    caller of an existing-session read/resume also validates its own identity.
+    """
     path = Path(path).expanduser()
     resolved = path.resolve()
     parts = resolved.parts
@@ -51,7 +55,7 @@ def independent_output(path, *, inputs=()):
         source = Path(source).resolve()
         if resolved == source or source.is_relative_to(resolved):
             raise ValueError("Output directory contains a source file")
-    if path.exists():
+    if path.exists() and not (allow_existing and path.is_dir()):
         raise FileExistsError("Output already exists; choose a new directory: " + str(path))
     return resolved
 

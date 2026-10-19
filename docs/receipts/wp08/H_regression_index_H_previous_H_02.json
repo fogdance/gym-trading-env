@@ -1,0 +1,26 @@
+[
+  {
+    "group": "online_h",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/wp07_regression_worker.py",
+      "online_h",
+      "H_previous_H_02_online_h"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env",
+    "environment": {
+      "FG_WP_RECEIPTS": "wp08",
+      "FG_WP_REGRESSION_RECEIPTS": "wp08",
+      "FG_WP07_SOURCE_ROOT": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01",
+      "FG_WP07_B_ROOT": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_H_02/online_h_B",
+      "FG_WP07_C_ROOT": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_H_02/online_h_C",
+      "FG_WP07_G_ROOT": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_H_02/online_h_G",
+      "FG_WP07_H_PROBE": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/wp08_H_previous_H_02_online_h_probe",
+      "FG_WP06_EVAL_ROOT": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_H_02/online_h_eval"
+    },
+    "exit_code": 0,
+    "seconds": 104.78997229109518,
+    "log": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_H_02/online_h.log"
+  }
+]

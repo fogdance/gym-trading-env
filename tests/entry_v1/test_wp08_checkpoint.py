@@ -71,3 +71,23 @@ def test_strict_latest_corrupt_chunk_and_source_change_refuse(tmp_path):
         orphan=root/'chunks/uncommitted_tail';orphan.write_text('keep')
         t.restore();assert list((root/'recovery_chunks').rglob('uncommitted_tail'))
     finally:t.close()
+
+
+def test_random_baseline_rng_and_driver_restore_in_new_process():
+    from wp07_fixture import exact
+    base=Path(os.environ.get('FG_WP08_RANDOM_ROOT',ARTIFACTS/'H_random_cold_01')).absolute();base.mkdir(parents=True)
+    def call(name,operation,target):
+        root=base/name;argv=[sys.executable,'-B',str(Path(__file__).with_name('wp08_exam_worker.py')),
+            str(base),str(root),operation,str(target),str(ARTIFACTS/'C_native_04/source'),'RANDOM_P10','64']
+        log=base/(name+'_'+operation+'.log')
+        with log.open('x') as stream:r=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
+        log.with_suffix('.command.json').write_text(json.dumps(dict(argv=argv,exit_code=r.returncode),indent=2)+'\n')
+        assert r.returncode==0,log.read_text()[-5000:]
+    with concurrent.futures.ThreadPoolExecutor(2) as pool:
+        a=pool.submit(call,'continuous','start',64)
+        call('split','start',23);call('split','resume',64);a.result()
+    a=pickle.loads((base/'continuous/evidence.pkl').read_bytes());b=pickle.loads((base/'split/evidence.pkl').read_bytes())
+    exact(a,b)
+    Path('docs/receipts/wp08/H_random_cold.json').write_text(json.dumps(dict(
+        status='PASS_EXACT_RANDOM_BASELINE_NEW_PROCESS_64_EQ_23_PLUS_41',root=str(base),
+        policy=a['policy'],receipt=a['receipt']),indent=2)+'\n')

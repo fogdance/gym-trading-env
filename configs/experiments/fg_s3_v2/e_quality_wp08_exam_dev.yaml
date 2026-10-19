@@ -1,0 +1,21 @@
+# Fill both real trained model paths. Empty strings fail; this is not draft.
+protocol: FG_S3_E_QUALITY_EXAM_PLAN_V1
+exam_mode: DEV_EXAM
+contracts: [CZCE.FG409]
+source:
+  kind: VALIDATION
+  manifest: /home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json
+  env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+actors:
+  F3_FROZEN:
+    kind: F3
+    run: ''
+    checkpoint: ''
+baselines: [ALWAYS_WAIT, ALWAYS_ADD, RANDOM_P10, DELAY_15, F3_FROZEN]
+start_day: '2024-04-11'
+end_day: '2024-04-12'
+chunk_steps: 256
+seed: 202
+random_seeds: [101, 202, 303]
+output_dir: artifacts/fg_s3_v2/e_quality_wp08/dev_NEW
+evidence_policy: null

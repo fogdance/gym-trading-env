@@ -1,0 +1,74 @@
+[
+  {
+    "contract": "CZCE.FG2701",
+    "owner": "82b81d90868e74db9c91583a22611e46ef202033a5dd964c9dfafef022d68104",
+    "inference_actions": 9,
+    "receipt": {
+      "protocol": "FG_S3_E_QUALITY_EXAM_SESSION_V1",
+      "exam_mode": "SYNTHETIC_DEV",
+      "contract": "CZCE.FG2701",
+      "policy_id": "F3_FIXED_SYNTHETIC",
+      "plan_hash": "0c774e053cd22c84ecc3e6031731e75676a49578230e97f32d51aa33f6b59b00",
+      "session_identity": "2bd19982a8c326912e6ab3d9d3df9a616258d2975d0e3c0f7ca22e31fcca7200",
+      "source_hash": "016b2a471c95ca87688c5fe91a6bab25b03de2c5b525a82c57638853a494b7a2",
+      "actor_identity": "c1eff3dcc6240d08e0a6b87e83f9af37f7144b9d5e193ceabfd0269bc38a0716",
+      "valid_minutes": 8,
+      "trace_hash": "047cd306f78d14bb150799b62e7edcbf35945ae1f42ee9b02d8ac8fb4fbfc9f3",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 9,
+        "account_restores": 0,
+        "replay_trace_hash": "047cd306f78d14bb150799b62e7edcbf35945ae1f42ee9b02d8ac8fb4fbfc9f3",
+        "teacher_labels_verified": 0
+      },
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      },
+      "teacher_used": false,
+      "training_updates": 0,
+      "test_prices_accessed": false,
+      "complete_interval": false,
+      "content_hash": "9f86fcc75129c22e57b6a5bd0d4ad4a0967e70a42e971622371fa08ad1f69156"
+    }
+  },
+  {
+    "contract": "CZCE.FG2705",
+    "owner": "34c9a4842110e90fbc5d11350794eaef464e23bc116004b9b746dd7df5d732f1",
+    "inference_actions": 9,
+    "receipt": {
+      "protocol": "FG_S3_E_QUALITY_EXAM_SESSION_V1",
+      "exam_mode": "SYNTHETIC_DEV",
+      "contract": "CZCE.FG2705",
+      "policy_id": "F3_FIXED_SYNTHETIC",
+      "plan_hash": "0c774e053cd22c84ecc3e6031731e75676a49578230e97f32d51aa33f6b59b00",
+      "session_identity": "b3789dac0fdd77d87c1cab11bb5fee6795fab475419cf50d97b98363ef49086f",
+      "source_hash": "b4eb2f191ef3fb3ecfd15a161859ce5f59aa98707c2eee695272b158dbe9c88b",
+      "actor_identity": "c1eff3dcc6240d08e0a6b87e83f9af37f7144b9d5e193ceabfd0269bc38a0716",
+      "valid_minutes": 8,
+      "trace_hash": "f1830684afc3628170fc0ab4fdc26a543a43d315226e4c6691bacab5270c58ed",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 9,
+        "account_restores": 0,
+        "replay_trace_hash": "f1830684afc3628170fc0ab4fdc26a543a43d315226e4c6691bacab5270c58ed",
+        "teacher_labels_verified": 0
+      },
+      "frozen": {
+        "all_parameter_bytes_equal": true,
+        "policy_bytes_equal": true,
+        "training_counters_equal": true,
+        "source_files_unchanged": true,
+        "training_updates": 0
+      },
+      "teacher_used": false,
+      "training_updates": 0,
+      "test_prices_accessed": false,
+      "complete_interval": false,
+      "content_hash": "ac39ba06d164d1ba5bfa48dd0e20849ddd26d0ac4442b239da1a3d375069df83"
+    }
+  }
+]

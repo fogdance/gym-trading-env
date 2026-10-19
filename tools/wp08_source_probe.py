@@ -8,13 +8,15 @@ from gym_trading_env.research.fg_s3_e_quality_exam_source import prepare_validat
 from gym_trading_env.research.fg_replay import signed,write_json
 
 out=Path(sys.argv[1]).absolute()
-if out.exists():raise ValueError('New probe output required')
+reopen=len(sys.argv)==3 and sys.argv[2]=='--reopen'
+if out.exists()!=reopen:raise ValueError('New probe output or explicit reopen required')
 plan=dict(protocol=PROTOCOL,exam_mode='DEV_EXAM',contracts=['CZCE.FG409'],
     source=dict(kind='VALIDATION',manifest='/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json',
         env_receipt='/data/logdir/fg_s3_market_minute/20261013_v2/env/v1'),
     actors={},baselines=['ALWAYS_WAIT'],start_day='2024-04-11',end_day='2024-04-11',
     chunk_steps=256,seed=202,random_seeds=[101,202,303],output_dir=str(out),evidence_policy=None)
-source=prepare_validation(plan,'CZCE.FG409',out/'source')
+source=prepare_validation(plan,'CZCE.FG409',out/'source',existing=reopen)
+source.require_mode(plan)
 env=source.factory()
 try:
     env.import_state(source.initial_state)
@@ -23,6 +25,8 @@ try:
         source=source.receipt,market_advances=32,teacher_used=False,training_updates=0,
         real_dev_strategy_exam='NOT_RUN',reason='FORMAL_TRAINED_F3_F4_MODEL_NOT_PROVIDED',
         cursor=env.current_step,e_snapshot=env.e_snapshot))
-    write_json(out/'readiness.json',r)
+    report=out/('readiness_reopen.json' if reopen else 'readiness.json')
+    if report.exists():raise ValueError('Probe report must be new')
+    write_json(report,r)
     print(json.dumps({k:v for k,v in r.items() if k not in ('source','e_snapshot')}))
 finally:env.close()

@@ -12,7 +12,7 @@ import json
 
 from .fg_replay import digest, read_manifest, signed, write_json, check_files
 from .fg_s3_e_quality_course_preflight import _local_path
-from .fg_s3_e_quality_exam_contract import identity, validate_plan
+from .fg_s3_e_quality_exam_contract import identity, validate_plan,contract_window
 
 TRUSTED_VALIDATION_ROOTS={
     'ebe0477a4ff9bad5b0d720b3ddb9f37288591d8df63db73a280224b698068bac':
@@ -34,9 +34,12 @@ class ExamSource:
     def require_mode(self,plan):
         if plan['exam_mode']=='DEV_EXAM':
             proof=_VALIDATION_ADMISSIONS.get(id(self))
+            if proof is None or proof[0] is not self:
+                raise ValueError('EXAM_NATIVE_VALIDATION_ADMISSION_REQUIRED_NOT_JSON')
+            window=contract_window(plan,self.receipt.get('contract'))
             if (proof is None or proof[0] is not self or proof[1] is not self.factory
                     or proof[2:]!=(identity(self.receipt),identity(self.initial_state),self.end_cursor)
-                    or self.receipt['start_day']!=plan['start_day'] or self.receipt['end_day']!=plan['end_day']):
+                    or self.receipt['start_day']!=window['start_day'] or self.receipt['end_day']!=window['end_day']):
                 raise ValueError('EXAM_NATIVE_VALIDATION_ADMISSION_REQUIRED_NOT_JSON')
 
 
@@ -84,15 +87,17 @@ def validation_members(plan):
     if not train_rows or any(pd.Timestamp(r['first_timestamp'])<=max(pd.Timestamp(t['last_timestamp']) for t in train_rows) for r in selected):
         raise ValueError('EXAM_TRAIN_DEV_TIMESTAMPS_OVERLAP')
     for row in selected:
-        if not row['first_day']<=plan['start_day']<=plan['end_day']<=row['last_day']:
+        window=contract_window(plan,row['contract'])
+        if not row['first_day']<=window['start_day']<=window['end_day']<=row['last_day']:
             raise ValueError('EXAM_DATES_OUTSIDE_VALIDATION')
         for k in ('path','env_config','contract_config'):_local_path(row[k])
     return selected,partition,em,inputs
 
 
-def prepare_validation(plan,contract,directory):
+def prepare_validation(plan,contract,directory,*,existing=False):
     """Derive immutable evaluation configs, preserving native market/cost/clock."""
     plan=validate_plan(plan);rows,partition,em,inputs=validation_members(plan)
+    window=contract_window(plan,contract)
     row=next((r for r in rows if r['contract']==contract),None)
     if row is None:raise ValueError('EXAM_CONTRACT_NOT_IN_PLAN')
     frozen={plan['source']['manifest']:digest(plan['source']['manifest']),
@@ -125,7 +130,7 @@ def prepare_validation(plan,contract,directory):
             or raw['entry']['contract']!=contract):
         raise ValueError('EXAM_MARKET_ENV_CONTRACT_SOURCE_MISMATCH')
     out=_local_path(directory)
-    if out.exists():raise ValueError('EXAM_SOURCE_OUTPUT_MUST_BE_NEW')
+    if out.exists()!=existing:raise ValueError('EXAM_SOURCE_OUTPUT_MUST_BE_NEW_OR_EXPLICIT_REOPEN')
     # Resolve once, never modify the original configs or source files.
     master_file=out/'quality_tp.yaml';env_file=out/'env.yaml'
     raw['entry'].pop('state_path',None)
@@ -136,8 +141,14 @@ def prepare_validation(plan,contract,directory):
     profile=ExamEProfile(dict(protocol='FG_S3_E_EXAM_PROFILE_V1',role='validation',
         observation=observation_contract(),schema_sha256=EDataConfig().schema(load_legacy()[1])['schema_sha256'],
         sources={contract:{'market':dict(path=row['path'],sha256=row['sha256'])}}))
-    out.mkdir(parents=True)
-    master_file.write_text(yaml.safe_dump(master,sort_keys=False));env_file.write_text(yaml.safe_dump(raw,sort_keys=False))
+    master_text=yaml.safe_dump(master,sort_keys=False);env_text=yaml.safe_dump(raw,sort_keys=False)
+    if existing:
+        for p,text in ((master_file,master_text),(env_file,env_text)):
+            _local_path(p)
+            if p.read_text()!=text:raise ValueError('EXAM_DERIVED_NATIVE_CONFIG_CHANGED')
+    else:
+        out.mkdir(parents=True)
+        master_file.write_text(master_text);env_file.write_text(env_text)
     frozen.update({str(p):digest(p) for p in (master_file,env_file)})
     def factory():
         check_files(frozen)
@@ -152,8 +163,8 @@ def prepare_validation(plan,contract,directory):
         days=[env._trading_day(t) for t in env._raw.index]
         if not set(int(d.replace('-','')) for d in days)<=set(partition['roles']['validation']):
             raise ValueError('EXAM_MARKET_OUTSIDE_VALIDATION_OFFICIAL_DAYS')
-        selected=np.flatnonzero([(plan['start_day']<=d<=plan['end_day']) for d in days])
-        if not len(selected) or days[selected[0]]!=plan['start_day'] or days[selected[-1]]!=plan['end_day']:
+        selected=np.flatnonzero([(window['start_day']<=d<=window['end_day']) for d in days])
+        if not len(selected) or days[selected[0]]!=window['start_day'] or days[selected[-1]]!=window['end_day']:
             raise ValueError('EXAM_OFFICIAL_DAY_NOT_AVAILABLE')
         start=int(selected[0])-1;end=int(selected[-1])
         if start<60:raise ValueError('EXAM_DEV_VISIBLE_WARMUP_INSUFFICIENT')
@@ -167,14 +178,74 @@ def prepare_validation(plan,contract,directory):
         receipt=signed(dict(protocol='FG_S3_E_QUALITY_EXAM_SOURCE_V1',role='validation',
             exam_mode='DEV_EXAM',contract=contract,training_admitted=False,eligible_for_training=False,
             train_days=partition['roles']['train'],dev_days=partition['roles']['validation'],
-            start_day=plan['start_day'],end_day=plan['end_day'],start_cursor=start,end_cursor=end,
+            start_day=window['start_day'],end_day=window['end_day'],start_cursor=start,end_cursor=end,
             profile_identity=profile.identity,profile=profile.source_receipt,
             observation=observation_contract(),reward_schema=QUALITY_TP_SCHEMA,
             native_config=env.config_hash,initial_account_hash=identity(initial),
             costs_basis=terms.get('costs_basis','native_contract_terms'),cost_terms=terms['terms'],
             frozen_inputs=frozen,test_prices_accessed=False,teacher_used=False))
     finally:env.close()
-    write_json(out/'source_receipt.json',receipt);write_json(out/'initial_state.json',initial)
+    if existing:
+        if read_manifest(out/'source_receipt.json')!=receipt or json.loads((out/'initial_state.json').read_text())!=initial:
+            raise ValueError('EXAM_VALIDATION_REOPEN_SOURCE_OR_NATIVE_INITIAL_STATE_CHANGED')
+    else:
+        write_json(out/'source_receipt.json',receipt);write_json(out/'initial_state.json',initial)
     result=ExamSource(factory,initial,end,receipt)
     _VALIDATION_ADMISSIONS[id(result)]=(result,factory,identity(receipt),identity(initial),end)
     return result
+
+
+def prepare_finite_train(plan,contract,directory,*,existing=False):
+    """Bounded engineering on the original authenticated TRAIN whitelist only."""
+    plan=validate_plan(plan)
+    if plan['exam_mode']!='SYNTHETIC_DEV' or plan['source']['kind']!='FINITE_TRAIN':
+        raise ValueError('EXAM_FINITE_TRAIN_ENGINEERING_ONLY')
+    from .fg_s3_e_quality_corpus_cli import source_inputs,_factory,_prefix
+    from .fg_s3_quality_experiment_v2 import _derive_rows
+    from .fg_s3_e_observation import observation_contract
+    from gym_trading_env.rewards.single3_reward import Single3RewardConfig,QUALITY_TP_SCHEMA
+    from dataclasses import asdict
+    import yaml
+    source=plan['source'];out=_local_path(directory)
+    window=contract_window(plan,contract)
+    lock,_,_=source_inputs(source['manifest'],source['env_receipt'],contract,
+        start_day=window['start_day'],end_day=window['end_day'])
+    if out.exists()!=existing:raise ValueError('EXAM_TRAIN_SOURCE_NEW_OUTPUT_OR_EXPLICIT_REOPEN_REQUIRED')
+    profile=ExamEProfile(dict(protocol='FG_S3_E_EXAM_PROFILE_V1',role='train',
+        observation=observation_contract(),schema_sha256=lock['mathematical_schema']['schema_sha256'],
+        sources={contract:{'market':lock['provenance']['market']}}))
+    if existing:
+        saved=read_manifest(out/'source_receipt.json')
+        if saved['source_lock']!=lock:raise ValueError('EXAM_FINITE_TRAIN_SOURCE_CHANGED')
+        row=saved['row'];frozen=saved['frozen_inputs'];check_files(frozen)
+    else:
+        out.mkdir(parents=True)
+        rows,frozen,_,_=_derive_rows(dict(env_receipt=source['env_receipt'],contracts=[contract],
+            reward=asdict(Single3RewardConfig(candidate='C1',beta=.5,rho=.4,L=3.,schema=QUALITY_TP_SCHEMA))),out)
+        row=rows[0];cfg=yaml.safe_load(Path(row['env_config']).read_text());cfg['entry']['chunk_steps']=0
+        master_path=Path(cfg['entry']['strategy_config']);master=yaml.safe_load(master_path.read_text())
+        master['environment']['entry']['chunk_steps']=0
+        master_path.write_text(yaml.safe_dump(master,sort_keys=False))
+        Path(row['env_config']).write_text(yaml.safe_dump(cfg,sort_keys=False))
+        row['env_sha256']=digest(row['env_config'])
+        frozen.update({str(p):digest(p) for p in (master_path,Path(row['env_config']))})
+        frozen[source['manifest']]=digest(source['manifest'])
+        frozen[str(Path(source['env_receipt'])/'manifest.json')]=digest(Path(source['env_receipt'])/'manifest.json')
+    factory=_factory(row,profile);env,initial=_prefix(factory,lock['start_cursor'])
+    try:
+        if env.current_step<60:raise ValueError('EXAM_TRAIN_VISIBLE_PREFIX_INSUFFICIENT')
+        end=min(lock['end_cursor'],lock['start_cursor']+512)
+        receipt=signed(dict(protocol='FG_S3_E_QUALITY_EXAM_SOURCE_V1',role='train',
+            exam_mode='SYNTHETIC_DEV',scope='FINITE_TRAIN_READ_ONLY_NOT_DEV_EXAM',
+            contract=contract,source_lock=lock,row=row,profile=profile.source_receipt,
+            eligible_for_training=False,training_admitted=False,start_cursor=env.current_step,end_cursor=end,
+            maximum_engineering_advances=512,initial_account_hash=identity(initial),frozen_inputs=frozen,
+            start_day=window['start_day'],end_day=window['end_day'],test_prices_accessed=False,
+            env_seed=0,policy_seed=plan['seed']))
+    finally:env.close()
+    if existing:
+        if saved!=receipt or json.loads((out/'initial_state.json').read_text())!=initial:
+            raise ValueError('EXAM_FINITE_TRAIN_REOPEN_INITIAL_STATE_CHANGED')
+    else:
+        write_json(out/'source_receipt.json',receipt);write_json(out/'initial_state.json',initial)
+    return ExamSource(factory,initial,end,receipt)

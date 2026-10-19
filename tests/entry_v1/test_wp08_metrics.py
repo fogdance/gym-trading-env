@@ -23,11 +23,14 @@ def test_native_trade_denominators_risk_fees_and_daily_accounts():
     assert summary['fees']==pytest.approx(sum(t['open_fee']+t['close_fee'] for t in trades))
     assert summary['net_pnl']==pytest.approx(sum(d['net_pnl'] for d in report['daily']))
     assert any(t['adverse10_le_5_then_sl30'] for t in trades)
+    assert all(t['first_adverse10_observed_bar_time'] is not None for t in trades if t['first_adverse10'] is not None)
+    assert all(t['max_adverse_cash_observed']==t['mae_full']*t['quantity']*t['multiplier'] for t in trades)
     assert all(t['mae_5']<=t['mae_15']<=t['mae_full'] for t in trades)
     assert all(t['held_market_minutes']>=1 for t in trades)
     for h in (5,15,30,60):
         assert summary['tp_le_'+str(h)+'_rate']==sum(t['tp_le_'+str(h)] for t in trades)/len(entries)
     assert sum(c['valid_minutes'] for c in report['coverage'])==1024
+    assert sum(c['eligible_add_states'] for c in report['coverage'])==summary['eligible_add_states']
     Path('docs/receipts/wp08/D_accounting.json').write_text(json.dumps(dict(
         summary=summary,daily=report['daily'],coverage=report['coverage'],metrics_path=str(output)),indent=2)+'\n')
     with pytest.raises(ValueError,match='NEW'):analyze_trace(root/'session/trace',source,output)

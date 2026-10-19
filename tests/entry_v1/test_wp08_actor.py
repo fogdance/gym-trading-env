@@ -50,12 +50,26 @@ def test_actual_f3_readonly_loading_and_teacher_free_argmax(tmp_path,monkeypatch
 
 def test_policy_rng_state_and_frozen_mutation_rejection(tmp_path):
     actor=controlled_actor(tmp_path/'model')
+    with pytest.raises(RuntimeError,match='TRAINING_FORBIDDEN'):actor.agent.train(None,None)
     state=actor.save();actor.load(state)
     with pytest.raises(ValueError,match='NOT_JSON'):actor.require_mode(dict(exam_mode='DEV_EXAM'))
     with pytest.raises(ValueError):actor.agent.load_policy_state({**state['inference'],'seed':-1})
     key=next(k for k in actor.agent.params if k.startswith('val/'))
     actor.agent.params[key]=actor.agent.params[key]+1
     with pytest.raises(ValueError,match='STATE_CHANGED'):actor.verify_frozen()
+
+
+def test_corrupt_actual_source_checkpoint_rejected_before_model_construction(tmp_path,monkeypatch):
+    import shutil
+    from gym_trading_env.research import fg_s3_e_quality_actor as construction
+    from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+    s=f3_reference();clone=tmp_path/'clone';shutil.copytree(s['run_dir'],clone)
+    node=clone/'ckpt/step_000000000004';p=node/'agent.pkl'
+    p.write_bytes(p.read_bytes()+b'CORRUPT')
+    def forbidden(*a,**k):raise AssertionError('MODEL_CREATED_BEFORE_SOURCE_AUTHENTICATION')
+    monkeypatch.setattr(construction,'create_agent',forbidden)
+    with pytest.raises(ValueError,match='corrupt file'):ExamFrozenActor.from_f3_checkpoint(clone,node,tmp_path/'model',engineering=True)
+    assert not (tmp_path/'model').exists()
 
 
 @pytest.mark.parametrize('mode',['SHADOW','ONLINE_SUPERVISED','ONLINE_RL_CONTROLLED'])

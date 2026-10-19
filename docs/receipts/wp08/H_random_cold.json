@@ -1,0 +1,52 @@
+{
+  "status": "PASS_EXACT_RANDOM_BASELINE_NEW_PROCESS_64_EQ_23_PLUS_41",
+  "root": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_random_cold_02",
+  "policy": {
+    "protocol": "FG_S3_E_QUALITY_EXAM_BASELINE_STATE_V1",
+    "spec_identity": "2f02d2e7d3e7124bc5bcb15a7fdfe2b778330b1e9f3946e3cd6d5e1441180fe2",
+    "rng": {
+      "bit_generator": "PCG64",
+      "state": {
+        "state": 38794232165215186356947329751134472673,
+        "inc": 179482519297773025622808290273199605883
+      },
+      "has_uint32": 0,
+      "uinteger": 0
+    },
+    "cursor": 753,
+    "waited": 0,
+    "waiting": false,
+    "diagnostics": {
+      "p_add": 0.1,
+      "baseline": "RANDOM_P10",
+      "teacher_used": false
+    }
+  },
+  "receipt": {
+    "protocol": "FG_S3_E_QUALITY_EXAM_SESSION_V1",
+    "exam_mode": "SYNTHETIC_DEV",
+    "contract": "CZCE.FG2701",
+    "policy_id": "RANDOM_P10",
+    "plan_hash": "4a244544464fd0cf109adb18f7570819eba09b33077984d8c27ace58efdbc47c",
+    "session_identity": "70c62803fbd8a9d983a8e1b011eac1f9e905acf392342cf032c3ac53f82a65c6",
+    "source_hash": "5bd985f2454d3ac8b173739da5726b809b6dfca4789912fe604b73cc20f43223",
+    "actor_identity": "2f02d2e7d3e7124bc5bcb15a7fdfe2b778330b1e9f3946e3cd6d5e1441180fe2",
+    "valid_minutes": 64,
+    "trace_hash": "d1ad70f22140c30468ad1419e63d043300ee338bd121a475be1dc2eba2987e9e",
+    "reconciliation": {
+      "status": "PASS",
+      "records": 65,
+      "account_restores": 0,
+      "replay_trace_hash": "d1ad70f22140c30468ad1419e63d043300ee338bd121a475be1dc2eba2987e9e",
+      "teacher_labels_verified": 0
+    },
+    "frozen": {
+      "training_updates": 0
+    },
+    "teacher_used": false,
+    "training_updates": 0,
+    "test_prices_accessed": false,
+    "complete_interval": false,
+    "content_hash": "768b71eefd20b18c57eb64da48f18327e1b366d99365592fe930276aaa36ccc1"
+  }
+}

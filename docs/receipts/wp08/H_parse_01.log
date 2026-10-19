@@ -1,0 +1,86 @@
+usage: fg_s3_v2_experiment.py [-h] [--config CONFIG] [--prepared PREPARED]
+                              [--source-checkpoint SOURCE_CHECKPOINT]
+                              [--eval-device {cpu,gpu}] [--run-dir RUN_DIR]
+                              [--stop-at STOP_AT] [--verify-resume-only]
+                              [--eval-steps EVAL_STEPS]
+                              [--holdout-contract HOLDOUT_CONTRACT]
+                              [--diagnostic-components DIAGNOSTIC_COMPONENTS]
+                              [--diagnostic-q-admission DIAGNOSTIC_Q_ADMISSION]
+                              [--time-fold TIME_FOLD] [--eval-dir EVAL_DIR]
+                              [--reference-dir REFERENCE_DIR]
+                              [--output-dir OUTPUT_DIR]
+                              [--runner-pid RUNNER_PID] [--interval INTERVAL]
+                              [--once] [--json] [--until UNTIL] [--check-only]
+                              [--resume-online] [--authorize-training]
+                              [--source-purpose {development,native-verification}]
+                              [--producer-gym PRODUCER_GYM]
+                              [--execution-mode {SHADOW,ONLINE_SUPERVISED,ONLINE_RL_CONTROLLED}]
+                              [--authorize-rl] [--rl-review RL_REVIEW]
+                              [--rl-review-sha256 RL_REVIEW_SHA256]
+                              {prepare,start,resume,evaluate,report,gpu_check,admit-e-prepare,admit-e-start,admit-e-resume,f1-prepare,f1-start,f1-resume,f1-probe,f1-read-check,f2-prepare,f2-start,f2-resume,f2-probe,f2-read-check,f3-prepare,f3-start,f3-resume,f3-probe,f3-read-check,f3-evaluate,online-prepare,online-start,online-resume,online-probe,online-evaluate,online-report,exam-plan,exam-run,exam-resume,exam-verify,exam-compare,exam-report,score-predictions,simulate-online,monitor-online,describe-composition,evaluate-source,evaluate-reference,compare-predictions}
+
+Prepare, train, evaluate S3-V2 and simulate frozen Actors on live DB bars.
+
+positional arguments:
+  {prepare,start,resume,evaluate,report,gpu_check,admit-e-prepare,admit-e-start,admit-e-resume,f1-prepare,f1-start,f1-resume,f1-probe,f1-read-check,f2-prepare,f2-start,f2-resume,f2-probe,f2-read-check,f3-prepare,f3-start,f3-resume,f3-probe,f3-read-check,f3-evaluate,online-prepare,online-start,online-resume,online-probe,online-evaluate,online-report,exam-plan,exam-run,exam-resume,exam-verify,exam-compare,exam-report,score-predictions,simulate-online,monitor-online,describe-composition,evaluate-source,evaluate-reference,compare-predictions}
+
+options:
+  -h, --help            show this help message and exit
+  --config CONFIG
+  --prepared PREPARED
+  --source-checkpoint SOURCE_CHECKPOINT
+                        Completed historical source for read-only reference
+                        evaluation
+  --eval-device {cpu,gpu}
+  --run-dir RUN_DIR
+  --stop-at STOP_AT
+  --verify-resume-only  Internal bounded E cold-resume next-update probe;
+                        publishes no checkpoint
+  --eval-steps EVAL_STEPS
+  --holdout-contract HOLDOUT_CONTRACT
+                        Whitelisted TRAIN contract excluded from quality-head
+                        training
+  --diagnostic-components DIAGNOSTIC_COMPONENTS
+                        Read-only HEADS_ONLY evaluation fork: outcome,score,q
+                        in that order
+  --diagnostic-q-admission DIAGNOSTIC_Q_ADMISSION
+                        Verified Q source copied into a private evaluation
+                        model; also use for its baseline
+  --time-fold TIME_FOLD
+                        Pretraining-frozen official-day window for compare-
+                        predictions
+  --eval-dir EVAL_DIR   Existing sealed Actor-only evaluation for CPU post-
+                        processing
+  --reference-dir REFERENCE_DIR
+                        Posthoc reference predictions on the same sealed
+                        causal tape
+  --output-dir OUTPUT_DIR
+                        New evaluation/scoring directory or online monitor
+                        observations
+  --runner-pid RUNNER_PID
+                        Online runner PID for optional process health checks
+  --interval INTERVAL   Online monitor sampling interval in seconds
+  --once                Sample the online monitor once
+  --json                Print online console events as JSON
+  --until UNTIL         Optional online monitor end time (ISO); default is
+                        continuous
+  --check-only          Online DB/model/RPC preflight; emits no orders
+  --resume-online       Restore the same online account and policy carry
+  --authorize-training  Explicit authorization for formal 1M and any new
+                        Quality GPU start/resume
+  --source-purpose {development,native-verification}
+                        F1 preparation: engineering integrity or an actual
+                        native G3 invocation
+  --producer-gym PRODUCER_GYM
+                        Frozen WP02 producer for explicit F1 native source
+                        verification
+  --execution-mode {SHADOW,ONLINE_SUPERVISED,ONLINE_RL_CONTROLLED}
+                        Built-in bounded synthetic online-probe mode only
+  --authorize-rl        Separate reviewed formal RL authorization; never
+                        implied by BC authorization
+  --rl-review RL_REVIEW
+                        Independent operator-reviewed RL document, not
+                        generated by the trainer
+  --rl-review-sha256 RL_REVIEW_SHA256
+                        Explicit operator-approved hash of the independent RL
+                        review

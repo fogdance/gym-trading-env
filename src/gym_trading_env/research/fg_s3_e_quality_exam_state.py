@@ -56,7 +56,8 @@ def snapshot(session):
 def validate_snapshot(session,state):
     from .fg_s3_e_quality_exam_contract import identity,plan_hash
     if (plan_hash(session.plan)!=session.identity['plan_hash']
-            or identity(session.source.receipt)!=session.identity['source']):
+            or identity(session.source.receipt)!=session.identity['source']
+            or identity(session.policy.receipt if hasattr(session.policy,'receipt') else session.policy.spec)!=session.identity['actor']):
         raise ValueError('EXAM_CURRENT_PLAN_OR_SOURCE_CHANGED')
     if (state.get('protocol')!=PROTOCOL or state.get('identity')!=session.identity
             or state.get('initial_state')!=session.initial_state or state.get('source_end')!=session.source.end_cursor):

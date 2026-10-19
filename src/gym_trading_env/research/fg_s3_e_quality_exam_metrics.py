@@ -35,16 +35,29 @@ def analyze_trace(directory,source,output):
     env=source.factory();trades={};decisions=[];coverage=defaultdict(lambda:Counter());daily_reward=Counter()
     row_days={r['time']:r['trading_date'] for r in rows}
     try:
-        for row in rows:
+        multiplier=float(env.terms.multiplier)
+        for index,row in enumerate(rows):
             if row['advanced']:
                 key=(contract,row['trading_date'],row['session'])
                 coverage[key]['market_advances']+=1;coverage[key]['valid_minutes']+=int(row['valid_bar'])
                 daily_reward[row['trading_date']]+=row['official_reward']
             if row['decision_executed']:
                 diag=row.get('policy_diagnostics',{})
+                if index+1>=len(rows) or rows[index+1]['incoming_action']!=row['action']:
+                    raise ValueError('EXAM_DECISION_EXECUTION_JOIN_MISMATCH')
+                following=rows[index+1]
+                key=(contract,following['trading_date'],following['session'])
+                coverage[key]['eligible_add_states']+=int(row['legal_add'])
+                coverage[key]['eligible_add_valid_minutes']+=int(row['legal_add'] and following['valid_bar'])
+                coverage[key]['add_proposals']+=int(row['action']==1)
+                coverage[key]['active_wait']+=int(row['action']==0 and row['legal_add'])
+                coverage[key]['forced_wait']+=int(row['action']==0 and not row['legal_add'])
                 decisions.append(dict(contract=contract,account_owner=row['account_owner'],stepid=row['stepid'],
                     cursor=row['cursor'],signal_time=row['time'],official_day=row['trading_date'],session=row['session'],
                     action=row['action'],legal_add=row['legal_add'],valid_market_minute=row['decision_valid_minute'],
+                    execution_official_day=following['trading_date'],execution_feedback_time=following['time'],
+                    execution_bar_open=following['bar']['bar_open'] if following['bar'] is not None else None,
+                    actual_entry_ids='|'.join(f['entry_id'] for f in following['fills'] if f['reason']=='ENTRY' and f['committed']),
                     active_wait=row['action']==0 and row['legal_add'],forced_wait=row['action']==0 and not row['legal_add'],
                     illegal_add=row['action']==1 and not row['legal_add'],p_add=diag.get('p_add')))
             for fill in row['fills']:
@@ -54,7 +67,10 @@ def analyze_trace(directory,source,output):
                 trades[eid]=dict(contract=contract,account_owner=row['account_owner'],entry_id=eid,
                     side=fill['side'],entry_time=fill['time'],entry_price=float(fill['price']),
                     entry_official_day=row['trading_date'],entry_session=row['session'],
-                    adverse=[],underwater=0,longest_underwater=0,underwater_run=0,first_adverse10=None)
+                    quantity=fill['quantity'],multiplier=multiplier,
+                    decision_stepid=rows[index-1]['stepid'] if index else None,
+                    adverse=[],underwater=0,longest_underwater=0,underwater_run=0,first_adverse10=None,
+                    first_adverse10_observed_bar_time=None)
                 coverage[(contract,row['trading_date'],row['session'])]['entries']+=1
             if not row['valid_bar']:continue
             exiting={e['entry_id']:e for e in row['exits']}
@@ -65,7 +81,8 @@ def analyze_trace(directory,source,output):
                 quote=float(env._price(bar['low'] if sign==1 else bar['high'],side,row['time']))
                 adverse=max(0.,-sign*(quote-trade['entry_price']));trade['adverse'].append(adverse)
                 age=len(trade['adverse'])
-                if adverse>=10-1e-10 and trade['first_adverse10'] is None:trade['first_adverse10']=age
+                if adverse>=10-1e-10 and trade['first_adverse10'] is None:
+                    trade['first_adverse10']=age;trade['first_adverse10_observed_bar_time']=row['time']
                 # Same-bar extremes carry native risk-first OHLC ambiguity.
                 # Exit closes are never counted as a still-held close.
                 if eid not in exiting:
@@ -83,6 +100,8 @@ def analyze_trace(directory,source,output):
         trade.update(exit_reason=reason,exit_time=event['exit_time'] if closed else None,
             exit_price=float(event['exit_price']) if closed else None,held_market_minutes=age,
             observed_risk_minutes=age,mae_full=max(adverse,default=0.),mae_full_valid=closed,
+            max_adverse_cash_observed=max(adverse,default=0.)*trade['quantity']*trade['multiplier'],
+            max_adverse_cash_full_valid=closed,
             mae_observed_valid=bool(age),mae_5=max(adverse[:5],default=0.),mae_15=max(adverse[:15],default=0.),
             mae_5_valid=closed or age>=5,mae_15_valid=closed or age>=15,
             risk_price_basis='native_executable_adverse_quote; native_risk_first_OHLC',
@@ -94,9 +113,15 @@ def analyze_trace(directory,source,output):
             open_fee=float(event['open_fee']) if closed else float(state['entries'][eid]['open_fee']),
             close_fee=float(event['close_fee']) if closed else 0.,
             native_reward_adverse10_minute=first_native.get(eid,{}).get('effective_bar'),
+            native_reward_adverse10_time=first_native.get(eid,{}).get('time'),
             intrabar_ambiguous=bool(event and (event.get('intrabar_ambiguous',False) or event.get('ambiguous_tp_sl',False))))
-        for h in (5,15,30,60):trade['tp_le_'+str(h)]=reason=='TAKE_PROFIT' and age<=h
-        for h in (5,15):trade['adverse10_le_'+str(h)+'_then_sl30']=reason=='STOP_LOSS' and trade['first_adverse10'] is not None and trade['first_adverse10']<=h
+        for h in (5,15,30,60):
+            trade['tp_le_'+str(h)]=reason=='TAKE_PROFIT' and age<=h
+            trade['tp_le_'+str(h)+'_valid']=closed or age>=h
+        for h in (5,15):
+            hit=trade['first_adverse10'] is not None and trade['first_adverse10']<=h
+            trade['adverse10_le_'+str(h)+'_then_sl30']=reason=='STOP_LOSS' and hit
+            trade['adverse10_le_'+str(h)+'_then_sl30_valid']=closed or age>=h and not hit
         result.append(trade)
     n=len(result);closed_pnl=sum(Decimal(str(t['net_pnl'])) for t in result if t['net_pnl'] is not None)
     open_fees=sum(Decimal(e['open_fee']) for e in state['entries'].values())
@@ -119,6 +144,7 @@ def analyze_trace(directory,source,output):
         reward=total_reward,net_pnl=float(pnl),closed_net_pnl=float(closed_pnl),unrealized_pnl=float(state['unrealized_pnl']),
         open_position_open_fees=float(open_fees),fees=sum(t['open_fee']+t['close_fee'] for t in result),
         max_drawdown=float((np.maximum.accumulate(values)-values).max()),
+        max_floating_loss=float(state['max_floating_loss']),
         tp_rate=None if not n else sum(t['exit_reason']=='TAKE_PROFIT' for t in result)/n,
         sl_rate=None if not n else sum(t['exit_reason']=='STOP_LOSS' for t in result)/n,
         mae_15_valid_count=sum(t['mae_15_valid'] for t in result),
@@ -131,6 +157,7 @@ def analyze_trace(directory,source,output):
     for h in (5,15,30,60):
         summary['tp_le_'+str(h)]=sum(t['tp_le_'+str(h)] for t in result)
         summary['tp_le_'+str(h)+'_rate']=None if not n else summary['tp_le_'+str(h)]/n
+        summary['tp_le_'+str(h)+'_valid_count']=sum(t['tp_le_'+str(h)+'_valid'] for t in result)
     daily=[];previous=float(values[0]);previous_unreal=float(initial['unrealized_pnl']);previous_open_fees=0.
     day_equity=defaultdict(list)
     for e in equity:
@@ -144,6 +171,7 @@ def analyze_trace(directory,source,output):
         ds=[previous,*[float(e['equity']) for e in group]];peak=ds[0];dd=0.
         for value in ds:peak=max(peak,value);dd=max(dd,peak-value)
         ts=[t for t in result if t['entry_official_day']==day]
+        valid_risk=[t['mae_15'] for t in ts if t['mae_15_valid']]
         exits=[t for t in result if not t['censored'] and t['exit_official_day']==day]
         last_row=next(r for r in reversed(rows) if r['trading_date']==day and r['advanced'])
         outstanding=sum(float(e['open_fee']) for e in last_row['active_entries'])
@@ -151,12 +179,14 @@ def analyze_trace(directory,source,output):
         account_delta=closed_day+unreal-previous_unreal-outstanding+previous_open_fees
         if abs(account_delta-(mark-previous))>1e-6:raise ValueError('EXAM_OFFICIAL_DAY_LEDGER_RECONCILIATION_FAILED')
         daily.append(dict(contract=contract,official_day=day,start_equity=previous,end_equity=mark,
+            valid_minutes=sum(r['valid_bar'] for r in rows if r['trading_date']==day),
             net_pnl=mark-previous,closed_net_pnl=closed_day,unrealized_pnl=unreal,
             unrealized_delta=unreal-previous_unreal,open_position_open_fees=outstanding,
             ledger_reconciled=True,reward=daily_reward[day],max_drawdown=dd,
             entries=len(ts),tp=sum(t['exit_reason']=='TAKE_PROFIT' for t in ts),
             sl30=sum(t['exit_reason']=='STOP_LOSS' for t in ts),
-            tp_le_5=sum(t['tp_le_5'] for t in ts),mae_15_mean=None if not ts else sum(t['mae_15'] for t in ts)/len(ts),
+            tp_le_5=sum(t['tp_le_5'] for t in ts),mae_15_valid_count=len(valid_risk),
+            mae_15_mean=None if not valid_risk else sum(valid_risk)/len(valid_risk),
             fees=sum(t['open_fee'] for t in ts)+sum(t['close_fee'] for t in exits),
             trade_count_basis='entry_cohort; cashflow_and_exit_fees_at_actual_official_day'))
         previous=mark;previous_unreal=unreal;previous_open_fees=outstanding

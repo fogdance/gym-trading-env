@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="4.172" timestamp="2026-10-19T15:58:55.840811+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_metric_windows" name="test_censored_risk_does_not_invent_negative_sl_or_tp_label" time="3.371"><failure message="assert 11.0 is None">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-634/test_censored_risk_does_not_in0')
+
+    def test_censored_risk_does_not_invent_negative_sl_or_tp_label(tmp_path):
+        report=native_trade(tmp_path,cutoff=3,adverse_at=2);trade=report['trades'][0]
+        assert trade['exit_reason']=='RIGHT_CENSORED' and trade['first_adverse10']==2
+        assert not trade['mae_5_valid'] and not trade['mae_15_valid'] and not trade['mae_full_valid']
+        assert not trade['adverse10_le_5_then_sl30_valid'] and not trade['tp_le_5_valid']
+        assert not trade['underwater_full_valid'] and report['summary']['entries']==1
+        assert report['summary']['tp_le_5_rate']==0. and report['summary']['tp_le_5_valid_count']==0
+&gt;       assert report['daily'][0]['mae_15_mean'] is None
+E       assert 11.0 is None
+
+tests/entry_v1/test_wp08_metric_windows.py:68: AssertionError</failure></testcase></testsuite></testsuites>

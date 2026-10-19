@@ -4970,6 +4970,7 @@
     "prediction_fusion": false,
     "q_fusion": false,
     "training_updates": 0,
+    "evaluation_seed": 202,
     "parameter_digests": {
       "avail/head/logit/bias": "5ca4bbf58f053635953e2feb9c615c56a55c5fa95c57da5f70f706e292ab78c3",
       "avail/head/logit/kernel": "e46b29ff3d02af2b5800f41a8077246b97f2583c73c86539e04021ee781961b4",
@@ -5795,7 +5796,7 @@
       },
       "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
     },
-    "content_hash": "fc669dbf2a991eba19199c5e319eeb8ddd0bcb61659752ca93ea62ba9ef1fdd7"
+    "content_hash": "903006a5bba009445d86da1f96a7db44714803a91754bf3bc9a5530ca8ba3612"
   },
   "frozen": {
     "all_parameter_bytes_equal": true,

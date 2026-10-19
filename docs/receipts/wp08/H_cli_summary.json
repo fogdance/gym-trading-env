@@ -1,0 +1,104 @@
+{
+  "root": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01",
+  "complete": {
+    "protocol": "FG_S3_E_QUALITY_EXAM_RUN_V1",
+    "status": "EXAM_COMPLETE",
+    "plan_hash": "5eec88b1794fe1e60edb41f33bceb56ebfca9ca816356e6dd2ea144b3adcf208",
+    "exam_mode": "SYNTHETIC_DEV",
+    "jobs": [
+      {
+        "job": {
+          "contract": "CZCE.FG2701",
+          "policy": "ALWAYS_WAIT",
+          "random_seed": null,
+          "label": "ALWAYS_WAIT"
+        },
+        "argv": [
+          "/home/v/miniconda3/envs/dreamerv3/bin/python",
+          "-B",
+          "-m",
+          "gym_trading_env.research.fg_s3_e_quality_exam_worker",
+          "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/PLAN.json",
+          "{\"contract\":\"CZCE.FG2701\",\"policy\":\"ALWAYS_WAIT\",\"random_seed\":null,\"label\":\"ALWAYS_WAIT\"}",
+          "resume",
+          "end"
+        ],
+        "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env",
+        "exit_code": 0,
+        "log": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/logs/CZCE.FG2701__ALWAYS_WAIT__resume.log"
+      },
+      {
+        "job": {
+          "contract": "CZCE.FG2701",
+          "policy": "ALWAYS_ADD",
+          "random_seed": null,
+          "label": "ALWAYS_ADD"
+        },
+        "argv": [
+          "/home/v/miniconda3/envs/dreamerv3/bin/python",
+          "-B",
+          "-m",
+          "gym_trading_env.research.fg_s3_e_quality_exam_worker",
+          "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/PLAN.json",
+          "{\"contract\":\"CZCE.FG2701\",\"policy\":\"ALWAYS_ADD\",\"random_seed\":null,\"label\":\"ALWAYS_ADD\"}",
+          "resume",
+          "end"
+        ],
+        "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env",
+        "exit_code": 0,
+        "log": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/logs/CZCE.FG2701__ALWAYS_ADD__resume.log"
+      },
+      {
+        "job": {
+          "contract": "CZCE.FG2701",
+          "policy": "F3_FROZEN",
+          "random_seed": null,
+          "label": "F3_FROZEN"
+        },
+        "argv": [
+          "/home/v/miniconda3/envs/dreamerv3/bin/python",
+          "-B",
+          "-m",
+          "gym_trading_env.research.fg_s3_e_quality_exam_worker",
+          "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/PLAN.json",
+          "{\"contract\":\"CZCE.FG2701\",\"policy\":\"F3_FROZEN\",\"random_seed\":null,\"label\":\"F3_FROZEN\"}",
+          "resume",
+          "end"
+        ],
+        "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env",
+        "exit_code": 0,
+        "log": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_H_01/exam/logs/CZCE.FG2701__F3_FROZEN__resume.log"
+      }
+    ],
+    "workers": 3,
+    "training_updates": 0,
+    "teacher_used": false,
+    "test_prices_accessed": false,
+    "content_hash": "b36fad62958dfd0f5ff445f6efefced41df1041e42cfc290aa68a98f2d130638"
+  },
+  "eval_state_members": [
+    "advanced",
+    "chunk",
+    "chunk_ids",
+    "chunk_rows",
+    "chunks",
+    "driver",
+    "finished",
+    "first_reset",
+    "identity",
+    "initial_state",
+    "log_prefixes",
+    "metrics_state",
+    "observed_last",
+    "pending",
+    "policy",
+    "protocol",
+    "records",
+    "scorer",
+    "source_end",
+    "valid_minutes"
+  ],
+  "real_dev_exam": "NOT_RUN",
+  "teacher_calls": 0,
+  "training_updates": 0
+}
