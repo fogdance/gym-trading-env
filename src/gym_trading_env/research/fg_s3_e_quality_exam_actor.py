@@ -10,7 +10,7 @@ _LOADED_ACTORS={}
 
 
 class ExamFrozenActor:
-    def __init__(self,agent,source,*,source_files=None):
+    def __init__(self,agent,source,*,source_files=None,evaluation_seed=None):
         from dreamerv3.fg_s3a_actor import parameter_digests
         from embodied.run.fg_checkpoint import plain
         self.agent=agent;self.source=copy.deepcopy(source);self.source_files=source_files or {}
@@ -21,6 +21,7 @@ class ExamFrozenActor:
                    'quality_fuse_score','quality_fuse_outcome')
         if any(agent.model.quality[k] for k in forbidden):raise ValueError('EXAM_TEACHER_FREE_POLICY_REQUIRED')
         agent.sync_policy_from_train(reset_counter=True)
+        agent.configure_evaluation_seed(int(agent.config.seed) if evaluation_seed is None else evaluation_seed)
         self.policy=ActorPolicy(agent)
         self.before=parameter_digests(agent.params)
         self.policy_before=parameter_digests(agent.policy_params)
@@ -29,20 +30,21 @@ class ExamFrozenActor:
         self.receipt=signed(dict(protocol='FG_S3_E_QUALITY_EXAM_FROZEN_ACTOR_V1',source=source,
             actor='quality_actor',mode='masked_argmax',teacher_used=False,exploration_rate=0.,
             prediction_fusion=False,q_fusion=False,training_updates=0,
+            evaluation_seed=agent.save_policy_state()['seed'],
             parameter_digests=self.before,policy_digests=self.policy_before,
             training_counters=self.counters_before,model_config=config,
             observation=__import__('gym_trading_env.research.fg_s3_e_observation',fromlist=['observation_contract']).observation_contract()))
 
     @classmethod
-    def from_f3_checkpoint(cls,run,checkpoint,output,*,engineering=False):
-        return cls._load('F3',run,checkpoint,output,engineering=engineering)
+    def from_f3_checkpoint(cls,run,checkpoint,output,*,engineering=False,evaluation_seed=None):
+        return cls._load('F3',run,checkpoint,output,engineering=engineering,evaluation_seed=evaluation_seed)
 
     @classmethod
-    def from_f4_checkpoint(cls,run,checkpoint,output,*,engineering=False):
-        return cls._load('F4',run,checkpoint,output,engineering=engineering)
+    def from_f4_checkpoint(cls,run,checkpoint,output,*,engineering=False,evaluation_seed=None):
+        return cls._load('F4',run,checkpoint,output,engineering=engineering,evaluation_seed=evaluation_seed)
 
     @classmethod
-    def _load(cls,kind,run,checkpoint,output,*,engineering):
+    def _load(cls,kind,run,checkpoint,output,*,engineering,evaluation_seed):
         from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
         from .fg_s3_e_quality_actor import create_agent
         from dreamerv3.fg_s3a_actor import parameter_digests
@@ -91,7 +93,7 @@ class ExamFrozenActor:
         root=Path(run);node=Path(checkpoint)
         files={**initial_files,**{str(node/k):v for k,v in source['member_hashes'].items()}}
         files.update({str(root/'run_identity.json'):source['run_identity_sha256'],str(node/'manifest.json'):source['checkpoint_manifest_sha256']})
-        result=cls(agent,source,source_files=files)
+        result=cls(agent,source,source_files=files,evaluation_seed=evaluation_seed)
         import weakref
         key=id(result)
         _LOADED_ACTORS[key]=(weakref.ref(result,lambda _: _LOADED_ACTORS.pop(key,None)),
@@ -127,7 +129,9 @@ class ExamFrozenActor:
         check_files(self.source_files)
         if (self.before!=parameter_digests(self.agent.params) or self.policy_before!=parameter_digests(self.agent.policy_params)
                 or self.counters_before!={k:v for k,v in self.agent.save()['counters'].items() if k!='actions'}
-                or self.agent.pending_sync is not None):raise ValueError('EXAM_MODEL_OR_TRAINING_STATE_CHANGED')
+                or self.agent.pending_sync is not None
+                or self.agent.save_policy_state()['seed']!=self.receipt['evaluation_seed']):
+            raise ValueError('EXAM_MODEL_OR_TRAINING_STATE_CHANGED')
         return dict(all_parameter_bytes_equal=True,policy_bytes_equal=True,training_counters_equal=True,
             source_files_unchanged=True,training_updates=0)
 
