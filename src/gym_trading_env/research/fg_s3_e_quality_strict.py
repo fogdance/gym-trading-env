@@ -51,25 +51,46 @@ class QualityStrictTeacher:
         self.identity_hash=fingerprint(self.identity)
 
     def _value(self,cursor):
+        # Values at selected-entry anchors are common to every account/root.
+        # Build each continuation once, backwards, rather than resumming the
+        # complete selected trading suffix for every minute's ADD/WAIT pair.
         if cursor in self._values:return self._values[cursor]
-        total=Fraction(0);t=self.query.first[cursor]
-        while t is not None:
-            row=self.query.candidates[t]
-            for step,reward in row['rewards']['C1']:
-                total+=GAMMA**self.clock.reward_exponent(cursor,step)*Fraction.from_float(reward)
-            t=self.query.first[row['release_cursor']]
-        self._values[cursor]=total
-        return total
+        first=self.query.first[cursor]
+        if first is None:return Fraction(0)
+        pending=[];t=first
+        while t is not None and t not in self._values:
+            pending.append(t)
+            t=self.query.first[self.query.candidates[t]['release_cursor']]
+        for entry in reversed(pending):
+            row=self.query.candidates[entry];release=row['release_cursor']
+            local=sum((GAMMA**self.clock.reward_exponent(entry,s)*Fraction.from_float(v)
+                       for s,v in row['rewards']['C1']),Fraction(0))
+            following=self.query.first[release]
+            future=(Fraction(0) if following is None else
+                GAMMA**self.clock.advance(entry,following)*self._values[following])
+            self._values[entry]=local+future
+        return GAMMA**self.clock.advance(cursor,first)*self._values[first]
 
     def query_values(self,env,mask):
+        return self._query_values(env,mask,fingerprint(env.export_state()))
+
+    def _query_values(self,env,mask,account_snapshot_hash):
+        """Internal label composition reuses the just-verified native L1 hash.
+
+        Account validity and funding are still checked on the actual Env.
+        Public calls always compute their own complete account snapshot.
+        """
         result=dict(protocol=PROTOCOL,teacher_identity=self.identity_hash,
             strict_action=None,teacher_valid=False,tie=None,action_value_add=None,
             action_value_wait=None,margin=None,reason='NO_PROOF',
-            account_snapshot_hash=fingerprint(env.export_state()),
+            account_snapshot_hash=account_snapshot_hash,
             suffix_boundary_identity=self.identity['suffix_boundary_identity'])
         if (env.e_observation_identity!=self.e_identity or env._e_profile.identity!=self.profile_identity):
             raise ValueError('Strict E source/observation identity differs')
-        answer=self.query.query(env,mask)
+        # The audited Oracle accepts its causal financial descriptor and
+        # revalidates it against the actual account; no full history is needed
+        # for its action/funding proof. The label above keeps the full owner.
+        answer=self.query.query(env,mask,snapshot=self.query.decision_state(env))
         if not answer['valid'] or not self.start<=env.current_step<self.query.end:
             return signed({**result,'reason':answer['reason'] if not answer['valid'] else 'OUTSIDE_SUFFIX_ROOT'})
         t=env.current_step;row=self.query.candidates.get(t)

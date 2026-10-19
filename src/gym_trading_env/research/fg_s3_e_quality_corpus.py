@@ -29,7 +29,7 @@ def behavior_specs(seed=202):
 def l1_labeler(teacher, strict=None):
     def label(env, step, row):
         facts=teacher.query_state(env,env._published_mask)
-        l2=(strict.query_values(env,env._published_mask) if strict is not None else
+        l2=(strict._query_values(env,env._published_mask,facts['account_snapshot_hash']) if strict is not None else
             dict(strict_action=None,teacher_valid=False,reason='NO_STRICT_TEACHER_BOUND',
                  action_value_add=None,action_value_wait=None,margin=None,tie=None))
         value=signed(dict(protocol=TEACHER_SCHEMA,fold='TRAIN',

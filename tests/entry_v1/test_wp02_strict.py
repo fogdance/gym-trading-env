@@ -9,6 +9,24 @@ from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior
 from gym_trading_env.research.fg_replay import iter_sidecar
 
 
+def test_suffix_anchor_dynamic_values_equal_full_exact_reward_sum(tmp_path):
+    from gym_trading_env.research.fg_s3_e_quality_strict import GAMMA
+    factory,_,_=native_factory(tmp_path/'market',minutes=40)
+    env=factory();env.reset(seed=0)
+    teacher=QualityStrictTeacher(env,source=dict(fold='TRAIN'))
+    try:
+        for cursor in reversed(range(teacher.query.end)):
+            expected=Fraction(0);entry=teacher.query.first[cursor]
+            while entry is not None:
+                row=teacher.query.candidates[entry]
+                for step,reward in row['rewards']['C1']:
+                    expected+=GAMMA**teacher.clock.reward_exponent(cursor,step)*Fraction.from_float(reward)
+                entry=teacher.query.first[row['release_cursor']]
+            assert teacher._value(cursor)==expected
+        assert set(teacher._values)<=set(teacher.query.plan['add_cursors'])|{teacher.query.end}
+    finally:env.close()
+
+
 def test_D01_quality_paired_values_match_independent_native_exhaustion(tmp_path):
     factory,_,_=native_factory(tmp_path/'market',minutes=20)
     env=factory();env.reset(seed=0)
