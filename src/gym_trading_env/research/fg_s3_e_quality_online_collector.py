@@ -21,7 +21,7 @@ class OnlineCollector(V2Collector):
 
     def __init__(self, env, source, directory, dreamer_root, *, agent, seed, budget,
                  capacity=2048, initial_state=None, existing=False, replay_length=65, chunksize=1024,
-                 exploration_rate=0., exploration_seed=0):
+                 exploration_rate=0., exploration_seed=0, chunk_identity=None, execution_identity=None):
         from embodied.run.fg_s3_e_quality_online import OnlinePolicy
         from .fg_s3_oracle_state_query import rules_identity
         from .fg_s3_e_observation import OBS_SCHEMA
@@ -36,6 +36,7 @@ class OnlineCollector(V2Collector):
             initial_state=env.export_state()
         self.initial_state=copy.deepcopy(initial_state)
         self.replay_length=replay_length;self.chunk_size=chunksize
+        self.existing=existing;self.chunk_identity=chunk_identity
         self.trace_policy=OnlinePolicy(agent,exploration_rate=exploration_rate,seed=exploration_seed)
         # Identity-only handle. No teacher/query object or future reader exists
         # in this adapter; the inherited disabled mailbox only reads metadata.
@@ -46,7 +47,9 @@ class OnlineCollector(V2Collector):
             observation_schema=OBS_SCHEMA,e_profile=env._e_profile,
             replay_capacity=capacity,max_env_steps=max(65,budget))
         self.identity.update(execution_protocol=self.protocol,source=copy.deepcopy(source),
-            replay_length=replay_length,chunksize=chunksize,exploration_rate=exploration_rate,exploration_seed=exploration_seed)
+            replay_length=replay_length,chunksize=chunksize,exploration_rate=exploration_rate,exploration_seed=exploration_seed,
+            execution_identity=execution_identity or fingerprint(dict(diagnostic_root=str(self.root))))
+        if chunk_identity is not None:self.identity['chunk_identity']=chunk_identity.identity
         self.identity_hash=fingerprint(self.identity)
         self.rows=[];self.snapshots={};self.index={};self.scorer=env._new_reward()
         self.archived=[]
@@ -55,7 +58,8 @@ class OnlineCollector(V2Collector):
 
     def make_replay(self,embodied,seed):
         return embodied.Replay(length=self.replay_length,capacity=self.replay_capacity,online=True,
-            directory=str(self.root/'replay'),chunksize=self.chunk_size,save_wait=True,seed=seed)
+            directory=str(self.root/'replay'),chunksize=self.chunk_size,save_wait=True,seed=seed,
+            chunk_identity=self.chunk_identity)
 
     def context_snapshot(self):
         # Inherited V2's implementation calls oracle.decision_state even with
@@ -159,7 +163,8 @@ class OnlineCollector(V2Collector):
             valid_minutes=sum(r['valid_bar'] for r in rows),chunk_resets=sum(r['reset'] and r['cursor']>0 for r in rows))
         m=observed_trace_manifest(self.env,out,state,chunks,identity,dict(id='ONLINE_QUALITY_ACTOR',kind='STUDENT_ONLY'),
             None,E_QUALITY_PROTOCOL,self.initial_state,self.env.current_step,hasher.hexdigest(),events.hexdigest(),
-            0.,single3=True,e_quality=True)
+            None,single3=True,e_quality=True)
+        m['elapsed_scope']='NOT_MEASURED_BY_INCREMENTAL_SNAPSHOT'
         write_json(out/'manifest.json',signed(m))
         return m
 
@@ -172,8 +177,7 @@ class OnlineCollector(V2Collector):
                 actor_diagnostics=self.trace_policy.last_diagnostics,actor_policy=self.trace_policy.save(),archived=self.archived))
 
     def load(self,state):
-        if state['protocol']!=self.protocol or state['identity']!=self.identity_hash:
-            raise ValueError('ONLINE_COLLECTOR_IDENTITY_MISMATCH')
+        self.validate_snapshot(state)
         with self.commit_lock:
             self.rows=copy.deepcopy(state['rows']);self.snapshots=copy.deepcopy(state['snapshots'])
             self.index={r['stepid']:r for r in self.rows};self.counts.clear();self.counts.update(state['counts'])
@@ -182,6 +186,26 @@ class OnlineCollector(V2Collector):
             self.policy.decision=copy.deepcopy(state['decision'])
             self.trace_policy.load(state['actor_policy'])
             self.archived=copy.deepcopy(state['archived'])
+
+    def validate_snapshot(self,state=None):
+        from .fg_replay import digest
+        state=self.save() if state is None else state
+        if state['protocol']!=self.protocol or state['identity']!=self.identity_hash:
+            raise ValueError('ONLINE_COLLECTOR_IDENTITY_MISMATCH')
+        rows=state['rows']
+        if (len(rows)!=state['counts'].get('native_rows',0) or len({r['stepid'] for r in rows})!=len(rows)
+                or [r['ordinal'] for r in rows]!=list(range(len(rows)))
+                or set(state['snapshots'])!={r['stepid'] for r in rows}):
+            raise ValueError('ONLINE_COLLECTOR_COMMIT_BOUNDARY_MISMATCH')
+        for row in rows:
+            snapshot=state['snapshots'][row['stepid']]
+            expected=fingerprint(dict(run=self.identity_hash,contract=snapshot['contract'],
+                account_sequence=snapshot['account_sequence']))
+            if row['account_owner']!=expected or fingerprint(snapshot)!=row['account_snapshot_hash']:
+                raise ValueError('ONLINE_COLLECTOR_ACCOUNT_SNAPSHOT_CHANGED')
+        for chunk in state['archived']:
+            if digest(self.archive/chunk['path'])!=chunk['sha256']:
+                raise ValueError('ONLINE_IMMUTABLE_TRACE_CHUNK_CHANGED')
 
     def close(self):
         self.replay.workers.shutdown(wait=True)

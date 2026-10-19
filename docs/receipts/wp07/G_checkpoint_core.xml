@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="2" time="0.469" timestamp="2026-10-19T10:29:43.736559+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_checkpoint_core" name="test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore" time="0.004"><failure message="ValueError: Checkpointed object 'agent' must implement save() and load().">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-585/test_seeded_native_chunks_and_0')
+
+    def test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore(tmp_path):
+        from wp07_fixture import exact
+&gt;       a,ra=make(tmp_path/'cp')
+             ^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_checkpoint_core.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp07_checkpoint_core.py:22: in make
+    cp.replay=replay;cp.agent=State(123);cp.step=cp._step
+                     ^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x778e5943b050&gt;
+name = 'agent'
+value = &lt;test_wp07_checkpoint_core.State object at 0x778e5e96f250&gt;
+
+    def __setattr__(self, name, value):
+      if name.startswith('_'):
+        return super().__setattr__(name, value)
+      has_load = hasattr(value, 'load') and callable(value.load)
+      has_save = hasattr(value, 'save') and callable(value.save)
+      if not (has_load and has_save):
+&gt;       raise ValueError(
+            f"Checkpointed object '{name}' must implement save() and load().")
+E       ValueError: Checkpointed object 'agent' must implement save() and load().
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/elements/checkpoint.py:67: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp07_checkpoint_core" name="test_corrupt_latest_and_external_identity_refuse_before_model_mutation" time="0.001"><failure message="ValueError: Checkpointed object 'agent' must implement save() and load().">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-585/test_corrupt_latest_and_extern0')
+
+    def test_corrupt_latest_and_external_identity_refuse_before_model_mutation(tmp_path):
+        class Guard:
+            def __init__(self):self.identity='original'
+            def save(self):return self.identity
+            def validate_snapshot(self,value=None):
+                if value is not None and value!=self.identity:raise ValueError('EXTERNAL_IDENTITY_CHANGED')
+            def load(self,value):self.validate_snapshot(value)
+&gt;       cp,replay=make(tmp_path/'cp');guard=Guard();cp.course_reader=guard
+                  ^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_checkpoint_core.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp07_checkpoint_core.py:22: in make
+    cp.replay=replay;cp.agent=State(123);cp.step=cp._step
+                     ^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x778e5946dbd0&gt;
+name = 'agent'
+value = &lt;test_wp07_checkpoint_core.State object at 0x778e5946dd50&gt;
+
+    def __setattr__(self, name, value):
+      if name.startswith('_'):
+        return super().__setattr__(name, value)
+      has_load = hasattr(value, 'load') and callable(value.load)
+      has_save = hasattr(value, 'save') and callable(value.save)
+      if not (has_load and has_save):
+&gt;       raise ValueError(
+            f"Checkpointed object '{name}' must implement save() and load().")
+E       ValueError: Checkpointed object 'agent' must implement save() and load().
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/elements/checkpoint.py:67: ValueError</failure></testcase></testsuite></testsuites>

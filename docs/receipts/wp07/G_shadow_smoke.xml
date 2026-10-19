@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="31.842" timestamp="2026-10-19T10:32:13.750601+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_checkpoint" name="test_native_shadow_run_smoke" time="31.692"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tests/entry_v1/wp07_online_worker.py&quot;, line 28, in &lt;module&gt;&#10;      permit=engineering_permit(spec,numeric_rl=spec['execution_mode']=='ONLINE_RL_CONTROLLED')&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py&quot;, line 33, in engineering_permit&#10;      proof,_=inspect_f3(spec,allow_engineering=True)&#10;              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online.py&quot;, line 19, in inspect_f3&#10;      s = validate_execution(spec)&#10;          ^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_quality_online.py&quot;, line 53, in validate_execution&#10;      raise ValueError('SHADOW_REQUIRES_ZERO_UPDATES')&#10;  ValueError: SHADOW_REQUIRES_ZERO_UPDATES&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...7-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/run', 'start', '16'], returncode=1).returncode">common = (PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality...: 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}, ...})
+
+    def test_native_shadow_run_smoke(common):
+        config,root=config_for(common,'SHADOW_smoke')
+        cfg=json.loads(config.read_text());cfg['spec']['execution_mode']='SHADOW'
+        config.write_text(json.dumps(cfg))
+&gt;       worker(config,root/'run','start',16)
+
+tests/entry_v1/test_wp07_checkpoint.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/config.json')
+root = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/run')
+operation = 'start', target = 16
+
+    def worker(config,root,operation,target):
+        root.parent.mkdir(parents=True,exist_ok=True)
+        argv=[sys.executable,'-B',str(Path(__file__).with_name('wp07_online_worker.py')),str(config),str(root),operation,str(target)]
+        log=root.parent/(root.name+'_'+operation+'_'+str(target)+'.log')
+        with log.open('w') as stream:result=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
+        (log.with_suffix('.command.json')).write_text(json.dumps(dict(argv=argv,exit_code=result.returncode),indent=2)+'\n')
+&gt;       assert result.returncode==0,log.read_text()[-6000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tests/entry_v1/wp07_online_worker.py", line 28, in &lt;module&gt;
+E             permit=engineering_permit(spec,numeric_rl=spec['execution_mode']=='ONLINE_RL_CONTROLLED')
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py", line 33, in engineering_permit
+E             proof,_=inspect_f3(spec,allow_engineering=True)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online.py", line 19, in inspect_f3
+E             s = validate_execution(spec)
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_quality_online.py", line 53, in validate_execution
+E             raise ValueError('SHADOW_REQUIRES_ZERO_UPDATES')
+E         ValueError: SHADOW_REQUIRES_ZERO_UPDATES
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...7-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/run', 'start', '16'], returncode=1).returncode
+
+tests/entry_v1/test_wp07_checkpoint.py:60: AssertionError</failure></testcase></testsuite></testsuites>

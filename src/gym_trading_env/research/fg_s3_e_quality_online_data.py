@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 import copy
+import hashlib
+import json
+from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
@@ -10,6 +13,29 @@ from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import signed
 from .fg_s3_e_quality_reader import audit_physical_row, _join_row
 from .fg_s3_e_quality_supervision import project_label
+
+
+def journal_boundary(path):
+    path=Path(path);raw=path.read_bytes() if path.exists() else b''
+    return dict(bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest(),lines=len(raw.splitlines()))
+
+
+def validate_journal_boundary(path,state):
+    path=Path(path);raw=path.read_bytes() if path.exists() else b''
+    if (set(state)!={'bytes','sha256','lines'} or type(state['bytes']) is not int or state['bytes']<0
+            or len(raw)<state['bytes'] or hashlib.sha256(raw[:state['bytes']]).hexdigest()!=state['sha256']
+            or len(raw[:state['bytes']].splitlines())!=state['lines']):
+        raise ValueError('ONLINE_COMMITTED_JOURNAL_MISSING_OR_CHANGED: '+path.name)
+
+
+def restore_journal_boundary(path,state):
+    import uuid
+    path=Path(path);validate_journal_boundary(path,state)
+    raw=path.read_bytes() if path.exists() else b''
+    if len(raw)>state['bytes']:
+        backup=path.parent/'recovery_logs';backup.mkdir(exist_ok=True)
+        (backup/(path.name+'.tail.'+uuid.uuid4().hex)).write_bytes(raw[state['bytes']:])
+        with path.open('r+b') as f:f.truncate(state['bytes'])
 
 
 class LabelPublisher:
@@ -23,6 +49,10 @@ class LabelPublisher:
         self.collector=collector;self.env=factory();self.source=copy.deepcopy(source)
         if self.env.e_observation_identity!=collector.env.e_observation_identity:
             raise ValueError('ONLINE_TEACHER_SOURCE_OBSERVATION_MISMATCH')
+        # Native fork proof includes the complete initial account and RNG.
+        # Bind it to the authenticated execution initial state, never the
+        # factory's fresh entropy-dependent default RNG on each process.
+        self.env.import_state(collector.initial_state)
         self.teacher=NativeQualityTeacher(self.env,factory,fold='TRAIN',source=source)
         self.blockers=[]
         try:self.strict=QualityStrictTeacher(self.env,source=source)
@@ -31,6 +61,9 @@ class LabelPublisher:
         self.identity=fingerprint(dict(protocol=self.protocol,collector=collector.identity_hash,
             teacher=self.teacher.identity_hash,strict=None if self.strict is None else self.strict.identity_hash))
         self.ledger={};self.sequence=0;self.consumed={}
+        self.journal=collector.root/'publication.jsonl'
+        if not self.journal.exists():self.journal.touch()
+        elif not collector.existing:raise ValueError('ONLINE_PUBLICATION_JOURNAL_EXISTS')
 
     def scan(self):
         for r in self.collector.rows:
@@ -55,6 +88,8 @@ class LabelPublisher:
                 self.sequence+=1
                 entry.update(status='CERTIFIED' if label['L2']['teacher_valid'] else 'INVALID',
                     publication_seq=self.sequence,label=label)
+                with self.journal.open('a') as f:
+                    f.write(json.dumps(dict(stepid=r['stepid'],**entry),sort_keys=True,allow_nan=False)+'\n')
                 published+=1
         return published
 
@@ -82,11 +117,16 @@ class LabelPublisher:
 
     def save(self):
         return copy.deepcopy(dict(protocol=self.protocol,identity=self.identity,sequence=self.sequence,
-            ledger=self.ledger,consumed=self.consumed))
+            ledger=self.ledger,consumed=self.consumed,journal=journal_boundary(self.journal),
+            binding=dict(teacher=self.teacher.identity_hash,strict=None if self.strict is None else self.strict.identity_hash,
+                initial_account=fingerprint(self.collector.initial_state))))
     def validate_snapshot(self,state=None):
         if state is None:state=self.save()
         if state.get('protocol')!=self.protocol or state.get('identity')!=self.identity:
             raise ValueError('ONLINE_PUBLICATION_IDENTITY_MISMATCH')
+        if state['binding']!=self.save()['binding']:raise ValueError('ONLINE_PUBLICATION_SOURCE_BINDING_MISMATCH')
+        validate_journal_boundary(self.journal,state['journal'])
+        if state['journal']['lines']!=state['sequence']:raise ValueError('ONLINE_PUBLICATION_JOURNAL_SEQUENCE_MISMATCH')
         seq=[r['publication_seq'] for r in state['ledger'].values() if r['status']!='PENDING']
         if sorted(seq)!=list(range(1,state['sequence']+1)):
             raise ValueError('ONLINE_PUBLICATION_SEQUENCE_MISMATCH')
@@ -97,6 +137,7 @@ class LabelPublisher:
                 raise ValueError('ONLINE_PENDING_LABEL_FORGED')
     def load(self,state):
         self.validate_snapshot(state)
+        restore_journal_boundary(self.journal,state['journal'])
         self.sequence=state['sequence'];self.ledger=copy.deepcopy(state['ledger']);self.consumed=copy.deepcopy(state['consumed'])
     def close(self):
         self.teacher.close();self.env.close()
