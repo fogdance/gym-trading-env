@@ -1,0 +1,15 @@
+{
+  "published": 48,
+  "pending": 1,
+  "teacher_add": 4,
+  "teacher_wait": 44,
+  "actor_actions": "ALL_WAIT_SYNTHETIC_FIXTURE",
+  "no_action_derived_labels": true,
+  "coverage": {
+    "protocol": "FG_S3_E_QUALITY_ONLINE_READER_V1",
+    "batches": 1,
+    "eligible_windows": 37,
+    "pending": 1,
+    "training_admitted": false
+  }
+}
