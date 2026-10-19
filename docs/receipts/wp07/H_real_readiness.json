@@ -1,0 +1,36 @@
+{
+  "scope": "METADATA_ONLY_NOT_A_HOST_RESOURCE_PROBE",
+  "test_prices_opened": false,
+  "read_only": true,
+  "paths": [
+    {
+      "path": "/data/logdir/fg_single3/s3_v2",
+      "exists": true,
+      "run_identities": [
+        "/data/logdir/fg_single3/s3_v2/A2_GPU_FORMAL_1M_BETA_v1/run_identity.json",
+        "/data/logdir/fg_single3/s3_v2/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/run_identity.json",
+        "/data/logdir/fg_single3/s3_v2/E_ONLY_MARKET_MINUTE_FORMAL_1M_v1_20261016/run_identity.json",
+        "/data/logdir/fg_single3/s3_v2/E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261015/run_identity.json",
+        "/data/logdir/fg_single3/s3_v2/TUTOR_CD_V0_MARKET_MINUTE_FORMAL_1M_v1/run_identity.json",
+        "/data/logdir/fg_single3/s3_v2/TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/run_identity.json"
+      ],
+      "corpus_manifest_present": false
+    },
+    {
+      "path": "/data/s3_corpus/early_train_20261018_cpu20_v2/batches/B01_FG809",
+      "exists": false,
+      "run_identities": [],
+      "corpus_manifest_present": false
+    },
+    {
+      "path": "/home/v/Documents/work/research/fg-s3-data-integration-20261018/gym-trading-env/artifacts/fg_s3_v2/data_macd_blocker_20261018/fg809_dev_smoke_v3_final",
+      "exists": true,
+      "run_identities": [],
+      "corpus_manifest_present": true
+    }
+  ],
+  "formal_trained_F3": "NOT_SUPPLIED_NOT_VERIFIED",
+  "two_published_TRAIN_Corpora": "NOT_RUN",
+  "formal_updates": "NOT_RUN",
+  "formal_rl": "NO_GO"
+}

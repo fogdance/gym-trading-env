@@ -91,3 +91,59 @@ def formal_mask_policy(settings):
     from embodied.run.fg_s3_gate import gate_policy
     from .fg_s3_e_quality_foundation import model_config
     return gate_policy(model_config(settings,controlled_small=False),diagnostic=False)
+
+
+def cpu_probe(output,mode='ONLINE_SUPERVISED'):
+    """Fixed bounded native synthetic source, never an editable TRAIN bypass."""
+    import json
+    import random
+    import sys
+    from pathlib import Path
+    import numpy as np
+    from .fg_s3_e_quality_foundation import PROJECT
+    from .fg_s3_e_quality_course_preflight import _local_path
+    from .fg_replay import write_json,signed
+    from .fg_s3_e_quality_actor_checks import evaluate_native
+    from .fg_s3_e_quality_multi_actor import MultiCorpusF3Stream
+    from dreamerv3.fg_s3_e_quality_online import MODES
+    from dreamerv3.fg_s3a_actor import parameter_digests
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun,engineering_permit
+    out=_local_path(output)
+    if out.exists() or not any(out.is_relative_to(p) for p in
+            (PROJECT/'artifacts/fg_s3_v2/e_quality_wp07',PROJECT/'docs/receipts/wp07')):
+        raise ValueError('ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED')
+    if mode not in MODES:raise ValueError('ONLINE_EXECUTION_MODE_INVALID')
+    random.seed(202);np.random.seed(202)
+    sys.path.insert(0,str(PROJECT/'tests/entry_v1'))
+    from wp07_fixture import execution
+    from wp02_fixture import native_factory
+    from data_multi_fixture import build_sources,descriptors
+    factory,_,_=native_factory(out/'market',minutes=100,chunk=35)
+    spec=execution(out/'run',mode);spec.update(env_steps=64,max_consumed_batches=0 if mode=='SHADOW' else 16)
+    history=None
+    if mode!='SHADOW':
+        config=json.loads(build_sources(out/'history').read_text())
+        history=MultiCorpusF3Stream.open(descriptors(config,'ACTOR_STRICT'),settings=dict(batch_size=1,burnin_steps=4,target_steps=8),
+            per_source_sampling_spec=config['per_source_sampling_spec'],source_mix_weights=config['source_mix_weights'],seed=202,
+            aux_per_source_sampling_spec={s['corpus_id']:dict(mode='MIXED',natural_weight=.5,
+                strata_weights=dict(STRICT_ADD=1,STRICT_WAIT=1)) for s in config['sources']})
+    permit=engineering_permit(spec,numeric_rl=mode=='ONLINE_RL_CONTROLLED')
+    run=OnlineRun(spec,factory,dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY'),history,_probe=permit)
+    try:
+        before=parameter_digests(run.agent.params);result=run.run_to();after=parameter_digests(run.agent.params)
+        proof=run.verify_collection()
+        evaluation=evaluate_native(run.agent,factory,out/'actor_only',steps=32,
+            initial_state=run.collector.initial_state,
+            source=dict(execution=run.identity['protocol']),scope='BUILTIN_SYNTHETIC_NOT_RESEARCH')
+        repeated=evaluate_native(run.agent,factory,out/'actor_only_repeat',steps=32,
+            initial_state=run.collector.initial_state,
+            source=dict(execution=run.identity['protocol']),scope='BUILTIN_SYNTHETIC_NOT_RESEARCH')
+        if evaluation['trace_identity']!=repeated['trace_identity']:
+            raise AssertionError('ONLINE_ACTOR_ONLY_EVALUATION_NOT_DETERMINISTIC')
+        result.update(scope='BUILTIN_SYNTHETIC_ENGINEERING_ONLY',before=before,after=after,
+            changed_keys=[k for k in before if before[k]!=after[k]],
+            complete_account_replay=proof,actor_only=evaluation,actor_only_repeat_trace=repeated['trace_identity'],
+            actor_only_deterministic=True,real_TRAIN_updates=0,
+            formal_rl_admitted=False,research_admitted=False)
+        write_json(out/'probe.json',signed(result));return result
+    finally:run.close()

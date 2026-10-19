@@ -1,0 +1,1798 @@
+[
+  {
+    "name": "Baseline_shared",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/Baseline_shared.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 139.58288149000145,
+    "cases": [
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_audited_ast_accepts_only_the_reviewed_transition",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_gate_only_audit_rejects_market_minute_semantic_change",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_full_source_dependency_inventory_includes_stream_and_serializer",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_online_model_and_environment_counters_have_separate_domains",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_no_inference_source_and_frozen_snapshot",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_missing_baseline_requires_authenticated_features",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_train_warmup_preserves_loaded_formal_actor_gate",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_train_warmup_keeps_warmup_checkpoint_disabled",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_rejects_missing_gate_interface",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_accepts_formal_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_eval_only_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_live_trading_rejects_warmup_checkpoint",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 20,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "A_contract",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/A_contract.xml",
+      "tests/entry_v1/test_wp07_contract.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 139.56441243202426,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_modes_preserve_course_and_owner_policy",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[fold-TEST]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[source_stage-F1]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[execution_mode-ONLINE_ADAPT]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[source_run-]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[model_seed-True]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[exploration_rate-nan]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[updates_per_collect-1]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_actual_f3_source_and_fresh_all_parameter_handoff",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_contract::test_source_tamper_and_wrong_stage_refuse_before_run",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 10,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "B_shadow_archive",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/B_shadow_archive.xml",
+      "tests/entry_v1/test_wp07_shadow.py",
+      "tests/entry_v1/test_wp03_reader.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 44.53948028292507,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_shadow::test_native_shadow_teacher_raises_full_replay_and_frozen_model[0]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_shadow::test_native_shadow_teacher_raises_full_replay_and_frozen_model[330]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C11_writer_and_reader_use_only_V3",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C04_restore_rejects_source_index_stage_or_sampling_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C05_same_price_different_account_and_reset_never_form_pair",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C08_open_reader_detects_changed_sidecar_or_chunk",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 21,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "C_data_retry",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/C_data_retry.xml",
+      "tests/entry_v1/test_wp07_data.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 55.132345750927925,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_pending_is_invalid_not_wait_then_native_post_step_publication",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_live_owner_label_attacks_and_rng_restore",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_shared_multi_history_and_online_sampler_exact_all_states",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 3,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "C_data_stable",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/C_data_stable.xml",
+      "tests/entry_v1/test_wp07_data.py",
+      "tests/entry_v1/test_data_multi_f3.py",
+      "tests/entry_v1/test_wp03_reader.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 183.29875473689754,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_pending_is_invalid_not_wait_then_native_post_step_publication",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_live_owner_label_attacks_and_rng_restore",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_data::test_shared_multi_history_and_online_sampler_exact_all_states",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[None]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[STRATIFIED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[MIXED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_auxiliary_rng_and_objective_preserve_natural_stream",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_auxiliary_failure_and_bad_restore_roll_back_whole_group",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[auxiliary]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[spec]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[geometry]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_missing_support_and_canonical_label_attack",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_changed_external_source_invalidates_group",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_cli_and_original_checkpoint_cold_processes[None]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_cli_and_original_checkpoint_cold_processes[MIXED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_cli_requires_explicit_geometry_and_natural_specs",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_natural_statistics_preserve_source_and_global_denominators",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_data_multi_f3::test_f3_pair_owner_keeps_teacher_suffix_domain",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C11_writer_and_reader_use_only_V3",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C04_restore_rejects_source_index_stage_or_sampling_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C05_same_price_different_account_and_reset_never_form_pair",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C08_open_reader_detects_changed_sidecar_or_chunk",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 38,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "D_supervised_candidate",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/D_supervised_candidate.xml",
+      "tests/entry_v1/test_wp07_supervised.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 60.583753345068544,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_supervised::test_real_online_l2_updates_only_original_actor_and_slots",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_supervised::test_no_label_and_nonfinite_freeze_inherited_optimizer_state",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_supervised::test_future_targets_never_change_actor_features_and_shadow_rejects_training",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 3,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "E_rl_stable_initialization",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/E_rl_stable_initialization.xml",
+      "tests/entry_v1/test_wp07_rl.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 78.38825861399528,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_rl::test_real_imaginary_same_actor_and_legacy_pol_independent",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_rl::test_native_rl_updates_quality_actor_value_not_old_pol_or_wm",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "E_shared",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/E_shared.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 146.10941276699305,
+    "cases": [
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_audited_ast_accepts_only_the_reviewed_transition",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_gate_only_audit_rejects_market_minute_semantic_change",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_gate::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_full_source_dependency_inventory_includes_stream_and_serializer",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_online_model_and_environment_counters_have_separate_domains",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_no_inference_source_and_frozen_snapshot",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_fg_s3_source_transfer::test_missing_baseline_requires_authenticated_features",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_train_warmup_preserves_loaded_formal_actor_gate",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_train_warmup_keeps_warmup_checkpoint_disabled",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_rejects_missing_gate_interface",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_require_formal_actor_accepts_formal_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_eval_only_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "embodied.tests.test_action_mask_formal_guards::test_live_trading_rejects_warmup_checkpoint",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 20,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "F_gates_identity",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/F_gates_identity.xml",
+      "tests/entry_v1/test_wp07_gates.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 42.37028457899578,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_gates::test_actual_multistep_calibration_gates_and_formal_no_go",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_gates::test_exploration_inside_real_mask_and_restore_rng",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 2,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "G_uuid_restore_regression",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/G_uuid_restore_regression.xml",
+      "tests/entry_v1/test_wp07_checkpoint_core.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 3.227842091000639,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_corrupt_latest_and_external_identity_refuse_before_model_mutation",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_native_uuid_lookup_survives_different_process_hash_seeds",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 3,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "G_native_cold_binding",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/G_native_cold_binding.xml",
+      "tests/entry_v1/test_wp07_checkpoint.py::test_four_native_online_cold_restore_scenarios"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 140.86633444204926,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint::test_four_native_online_cold_restore_scenarios",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 1,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_cli",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/H_cli.xml",
+      "tests/entry_v1/test_wp07_cli.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 95.18882085604127,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_cli::test_explicit_draft_exit_files_and_forbidden_side_effects",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_cli::test_missing_empty_path_test_and_synthetic_formal_sources_rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_cli::test_independent_rl_authority_cannot_be_self_certified",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_cli::test_unified_cli_native_probe_report_and_teacher_free_evaluation",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 4,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_four_cold",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/H_four_cold.xml",
+      "tests/entry_v1/test_wp07_checkpoint.py::test_four_native_online_cold_restore_scenarios",
+      "tests/entry_v1/test_wp07_checkpoint_core.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 160.77724906499498,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint::test_four_native_online_cold_restore_scenarios",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_corrupt_latest_and_external_identity_refuse_before_model_mutation",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp07_checkpoint_core::test_native_uuid_lookup_survives_different_process_hash_seeds",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 4,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_shared",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/H_shared.xml",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_driver_account_checkpoint.py",
+      "tests/entry_v1/test_s3_market_minute.py",
+      "tests/entry_v1/test_macd_dated_tail.py",
+      "tests/entry_v1/test_fg_s3_e_quality_course_preflight.py",
+      "tests/entry_v1/test_wp03_reader.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 222.98061202303506,
+    "cases": [
+      {
+        "name": "::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_audited_ast_accepts_only_the_reviewed_transition",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_gate_only_audit_rejects_market_minute_semantic_change",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_full_source_dependency_inventory_includes_stream_and_serializer",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_online_model_and_environment_counters_have_separate_domains",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_no_inference_source_and_frozen_snapshot",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_missing_baseline_requires_authenticated_features",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_train_warmup_preserves_loaded_formal_actor_gate",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_train_warmup_keeps_warmup_checkpoint_disabled",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_require_formal_actor_rejects_missing_gate_interface",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_require_formal_actor_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_require_formal_actor_accepts_formal_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_eval_only_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_live_trading_rejects_warmup_checkpoint",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_replay_restores_partial_chunks_online_queue_rng_and_updates",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_prefetch_snapshot_restores_pending_batches_and_consecutive_context",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_runtime_restores_ratio_carry_aggregates_and_gate_samples",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_exact_schedule_resume_and_overshoot_rejection",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_atomic_full_bundle_retention_identity_and_corrupt_recovery",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_failed_save_preserves_valid_points_and_final_is_protected",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_deterministic_prefetch_propagates_worker_failure_without_waiting",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_fg_guard_rejects_full_checkpoint_optout_before_model_init",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_driver_explicitly_fetches_jax_carry_under_transfer_guard",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_driver_resumes_pending_actions_and_account[False]",
+        "status": "PASS"
+      },
+      {
+        "name": "::test_driver_resumes_pending_actions_and_account[True]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[1]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[5]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[6]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[15]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[16]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[60]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_inclusive_fill_reward_age_and_sparse_oracle[61]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_closed_hours_metadata_zero_volume_and_chunk_restore[lunch]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_closed_hours_metadata_zero_volume_and_chunk_restore[overnight]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_zero_volume_real_bar_counts_and_censored_or_rejected_is_not_tp",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_first_adverse_market_bar_boundaries[5--0.5]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_first_adverse_market_bar_boundaries[6--0.2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_first_adverse_market_bar_boundaries[15--0.2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_first_adverse_market_bar_boundaries[16-0.0]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_metadata_discount_matches_independent_env_enumeration_and_s3b",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_cross_semantic_snapshot_rejected_before_model_use",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_s3_market_minute::test_model_return_uses_feedback_aligned_market_discounts",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_macd_dated_tail::test_certified_short_interval_does_not_commit_its_partial_close",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_macd_dated_tail::test_missing_last_minute_cannot_be_disguised_as_a_session_break",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_macd_dated_tail::test_previous_schema_snapshot_cannot_resume_with_new_tail_semantics",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_macd_dated_tail::test_zero_duration_interval_end_is_a_marker_not_a_fifth_close",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_01_12_native_draft_calls_reward_validator_and_never_loads_markets",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_13_cli_repeated_drafts_have_identical_non_authenticated_receipts",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_cli_disables_bytecode_without_external_python_flags",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_13_native_hash_changes_for_order_seed_or_source_hash",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_12_formal_complete_matching_metadata_still_fails_without_certification",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_08_declared_oracle_evidence_never_certifies_a_draft",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[composition]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[old_reward]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[candidate]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[minute_shape]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[context_shape]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[clock]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[lots]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[test_fold]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[leak]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[fake_oracle]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[unknown_behavior]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[blank_mode]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[blank_source]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[empty_sources]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[implicit_formal]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[forged_ready]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_02_to_12_cli_negative_status_exit_files_and_no_side_effects[forged_matrix]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[missing_mode]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[missing_source]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[duplicate_json]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_12_16_missing_or_invalid_json_never_becomes_draft[malformed_json]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[missing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[hash]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[profile]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[test_source]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[teacher_reward]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[forged]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[malformed_pool]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_06_08_formal_source_errors_are_nonzero_and_write_nothing[false_eligibility]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[existing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[reserved]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[formal_root]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[symlink_parent]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_16_report_paths_cannot_overwrite_or_touch_protected_outputs[source_directory]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_native_validator_failures_are_not_suppressed[reward]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_native_validator_failures_are_not_suppressed[observation]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_native_validator_failures_are_not_suppressed[score]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_native_validator_failures_are_not_suppressed[public_guard]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_fg_s3_e_quality_course_preflight::test_WP01_14_real_legacy_quality_and_e_configurations_keep_their_contracts",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C11_writer_and_reader_use_only_V3",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C04_restore_rejects_source_index_stage_or_sampling_change",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C05_same_price_different_account_and_reset_never_form_pair",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C08_open_reader_detects_changed_sidecar_or_chunk",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp03_reader::test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 119,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_macd",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "-o",
+      "addopts=",
+      "-q",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/docs/receipts/wp07/H_macd.xml",
+      "tests/entry_v1/test_wp02_macd.py"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 6.805089570931159,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A02_warmup_and_price_scale",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A03_stream_restore_and_prefix_invariance",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[order]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[late]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 14,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_f1",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tests/entry_v1/wp07_regression_worker.py",
+      "f1",
+      "H_f1_regression_01"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 356.7138506070478,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp04_wm::test_B01_reader_native_window_and_future_labels_are_separate",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_wm::test_B03_actual_original_optimizer_step_and_frozen_slots",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_wm::test_B05_only_T_targets_and_detached_K_history",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_wm::test_B06_each_window_ignores_previous_random_carry",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D01_actual_cold_process_full_state_and_next_batch",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D03_forged_native_dataclass_is_not_authority",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp04_checkpoint::test_D05_initial_unknown_state_and_parameter_slots_fail_closed",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 18,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_f2",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tests/entry_v1/wp07_regression_worker.py",
+      "f2",
+      "H_f2_regression_01"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 267.0426583130611,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C01_each_head_updates_only_its_params_and_slots[event]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C01_each_head_updates_only_its_params_and_slots[touch]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C01_each_head_updates_only_its_params_and_slots[adverse]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C01_each_head_updates_only_its_params_and_slots[score]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C02_all_invalid_skips_with_fresh_or_inherited_momentum",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C03_teacher_changes_loss_only_and_burnin_is_not_supervised",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C04_frozen_nonzero_momentum_negative_zero",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C05_nonfinite_rejected_and_all_state_rolled_back",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C06_unknown_leaf_or_slot_rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C07_invalid_placeholders_safe_no_q_computation",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C08_disabled_weights_do_not_activate_heads",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_updates::test_C09_positive_allowlist_rejects_injected_wm_rule",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E01_four_vs_two_cold_two_full_exact",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[settings]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[code]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[index]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[source_f1]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[corrupt_latest]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp05_checkpoint::test_E04_no_authorization_no_run_side_effects",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 20,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  },
+  {
+    "name": "H_f3",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tests/entry_v1/wp07_regression_worker.py",
+      "f3",
+      "H_f3_regression_01"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env",
+    "exit_code": 0,
+    "seconds": 372.4656423369888,
+    "cases": [
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C01_actual_actor_update_complete_parameter_and_slot_freeze",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C02_no_valid_labels_freezes_all_state_including_inherited_slots",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C03_teacher_never_changes_features_and_burnin_never_supervised",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C04_nonzero_frozen_momentum_and_negative_zero_survive",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C05_nonfinite_candidate_entire_state_rollback",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C06_unknown_slots_or_dynamic_wm_rule_rejected",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[teacher_action]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[teacher_valid]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[quality_owner]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C07_canonical_post_step_labels_reject_shift_or_owner_forgery[quality_score]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C08_q_soft_and_bad_native_window_reject_before_model",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_updates::test_C09_reset_terminal_single_action_masks_never_become_wait_truth",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[settings]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[stage]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[source]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[code]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[index]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[corrupt_latest]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[architecture]",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forever",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_checkpoint::test_F04_f1_checkpoint_is_not_f3_resume",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_run::test_D11_real_original_loop_two_readers_and_actor_only_updates",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_run::test_D12_consumption_bound_and_all_invalid_do_not_loop_or_update",
+        "status": "PASS"
+      },
+      {
+        "name": "tests.entry_v1.test_wp06_run::test_D13_no_permission_no_run_side_effect",
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "PASS": 26,
+      "FAIL": 0,
+      "ERROR": 0,
+      "SKIP": 0
+    }
+  }
+]

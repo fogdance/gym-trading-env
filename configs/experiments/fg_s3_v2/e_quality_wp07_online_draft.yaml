@@ -1,0 +1,24 @@
+schema: FG_S3_E_QUALITY_ONLINE_CONFIG_V1
+spec_mode: draft
+prepared_dir: artifacts/fg_s3_v2/e_quality_wp07/formal_prepared
+history_config: null
+wm_policy: null
+execution:
+  protocol: FG_S3_E_QUALITY_F4_EXECUTION_V1
+  source_stage: ACTOR_SUPERVISED
+  execution_mode: SHADOW
+  fold: TRAIN
+  source_run: null
+  source_checkpoint: null
+  run_dir: artifacts/fg_s3_v2/e_quality_wp07/formal_run
+  model_seed: 303
+  env_seed: 202
+  replay_seed: 404
+  env_steps: 128
+  collect_every: 16
+  updates_per_collect: 0
+  max_consumed_batches: 0
+  save_every: 32
+  replay_capacity: 512
+  exploration_rate: 0.0
+  history_ratio: 0.5

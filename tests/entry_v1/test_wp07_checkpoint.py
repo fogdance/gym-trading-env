@@ -100,4 +100,4 @@ def test_four_native_online_cold_restore_scenarios(common):
     names=['SHADOW','ONLINE_SUPERVISED','publication','ONLINE_RL_CONTROLLED']
     with concurrent.futures.ThreadPoolExecutor(4) as pool:
         results=list(pool.map(lambda name:run_case(common,name),names))
-    Path('docs/receipts/wp07/G_cold_cases.json').write_text(json.dumps(results,indent=2)+'\n')
+    Path('docs/receipts/wp07/'+os.environ.get('FG_WP07_CASE_RECEIPT','G_cold_cases.json')).write_text(json.dumps(results,indent=2)+'\n')
