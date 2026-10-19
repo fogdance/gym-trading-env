@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="3" failures="1" skipped="0" tests="38" time="145.548" timestamp="2026-10-19T08:52:21.432913+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_data" name="test_pending_is_invalid_not_wait_then_native_post_step_publication" time="14.565"><error message="failed on setup with &quot;ValueError: Foreign Embodied runtime&quot;">@pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+&gt;       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+&gt;           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError</error></testcase><testcase classname="tests.entry_v1.test_wp07_data" name="test_live_owner_label_attacks_and_rng_restore" time="0.000"><error message="failed on setup with &quot;ValueError: Foreign Embodied runtime&quot;">@pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+&gt;       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+&gt;           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError</error></testcase><testcase classname="tests.entry_v1.test_wp07_data" name="test_shared_multi_history_and_online_sampler_exact_all_states" time="0.000"><error message="failed on setup with &quot;ValueError: Foreign Embodied runtime&quot;">@pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+&gt;       c=OnlineCollector(factory(),source,root/'rollout',ARTIFACTS.parents[4]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:43: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+src/gym_trading_env/research/fg_s3_dagger_d0.py:102: in __init__
+    embodied = self.runtime(dreamer_root)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+root = PosixPath('/home/v/Documents/work/research/dreamerv3')
+
+    def embodied_runtime(root):
+        """Do not override the backend of an already initialized neural Agent."""
+        if str(root) not in sys.path:
+            sys.path.insert(0,str(root))
+        import embodied
+        if Path(embodied.__file__).resolve().parent != Path(root) / 'embodied':
+&gt;           raise ValueError('Foreign Embodied runtime')
+E           ValueError: Foreign Embodied runtime
+
+src/gym_trading_env/research/fg_single3_evaluation.py:24: ValueError</error></testcase><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_roles_native_bytes_provenance_and_exact_state[None]" time="31.647" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_roles_native_bytes_provenance_and_exact_state[NATURAL]" time="11.100" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_roles_native_bytes_provenance_and_exact_state[STRATIFIED]" time="10.611" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_roles_native_bytes_provenance_and_exact_state[MIXED]" time="10.988" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_auxiliary_rng_and_objective_preserve_natural_stream" time="5.978" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_auxiliary_failure_and_bad_restore_roll_back_whole_group" time="3.775" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_role_identity_changes_refuse_restore[auxiliary]" time="0.395" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_role_identity_changes_refuse_restore[spec]" time="0.514" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_role_identity_changes_refuse_restore[geometry]" time="0.506" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_missing_support_and_canonical_label_attack" time="1.099" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_changed_external_source_invalidates_group" time="0.283" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_cli_and_original_checkpoint_cold_processes[None]" time="9.836"><failure message="AssertionError: {&quot;status&quot;: &quot;NO_GO&quot;, &quot;error&quot;: &quot;MULTI_COLD_PROBE_FAILED: Traceback (most recent call last):\n  File \&quot;&lt;frozen runpy&gt;\&quot;, line 198, in _run_module_as_main\n  File \&quot;&lt;frozen runpy&gt;\&quot;, line 88, in _run_code\n  File \&quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\&quot;, line 374, in &lt;module&gt;\n    print(json.dumps(checkpoint_probe(args.probe_config, args.probe_out, resume=args.resume,\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \&quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\&quot;, line 251, in checkpoint_probe\n    cp.load()\n  File \&quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\&quot;, line 345, in load\n    selected = path or self.latest()\n                       ^^^^^^^^^^^^^\n  File \&quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\&quot;, line 245, in latest\n    validate_bundle(path, self._identity)\n  File \&quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\&quot;, line 212, in validate_bundle\n    raise ValueError('FG full checkpoint identity mismatch')\nValueError: FG full checkpoint identity mismatch\n&quot;, &quot;training_admitted&quot;: false}&#10;  &#10;assert 2 == 0&#10; +  where 2 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...identity mismatch\')\\nValueError: FG full checkpoint identity mismatch\\n&quot;, &quot;training_admitted&quot;: false}\n', stderr='').returncode">corpus_pair = ({'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytes...'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, PosixPath('/tmp/pytest-of-v/pytest-582/multi_f3_native0/sources.json'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-582/test_f3_cli_and_original_check0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x79e49c68f1a0&gt;
+mode = None
+
+    @pytest.mark.parametrize('mode', [None, 'MIXED'])
+    def test_f3_cli_and_original_checkpoint_cold_processes(corpus_pair, tmp_path, record_property, mode):
+        config, _ = corpus_pair
+        config = copy.deepcopy(config)
+        if mode:
+            config['f3_auxiliary_sampling_spec'] = specs(mode)
+        path = tmp_path/'f3.json'; path.write_text(json.dumps(config, indent=2)+'\n')
+        output = tmp_path/'diagnostic'
+        argv = [sys.executable, '-B', str(Path(__file__).resolve().parents[2]/'tools/fg_s3_e_quality_reader.py'),
+                'multi-read', '--config', str(path), '--out', str(output), '--adapter', 'f3',
+                '--batch-size', '4', '--length', '12', '--burnin-steps', '4']
+        result = subprocess.run(argv, capture_output=True, text=True)
+        (tmp_path/'cli.log').write_text(result.stdout+result.stderr)
+&gt;       assert result.returncode == 0, result.stdout[-3000:]+result.stderr[-5000:]
+E       AssertionError: {"status": "NO_GO", "error": "MULTI_COLD_PROBE_FAILED: Traceback (most recent call last):\n  File \"&lt;frozen runpy&gt;\", line 198, in _run_module_as_main\n  File \"&lt;frozen runpy&gt;\", line 88, in _run_code\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\", line 374, in &lt;module&gt;\n    print(json.dumps(checkpoint_probe(args.probe_config, args.probe_out, resume=args.resume,\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py\", line 251, in checkpoint_probe\n    cp.load()\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 345, in load\n    selected = path or self.latest()\n                       ^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 245, in latest\n    validate_bundle(path, self._identity)\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_checkpoint.py\", line 212, in validate_bundle\n    raise ValueError('FG full checkpoint identity mismatch')\nValueError: FG full checkpoint identity mismatch\n", "training_admitted": false}
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...identity mismatch\')\\nValueError: FG full checkpoint identity mismatch\\n", "training_admitted": false}\n', stderr='').returncode
+
+tests/entry_v1/test_data_multi_f3.py:201: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_cli_and_original_checkpoint_cold_processes[MIXED]" time="24.025"><properties><property name="diagnostic_root" value="/tmp/pytest-of-v/pytest-582/test_f3_cli_and_original_check1/diagnostic" /><property name="cli_argv" value="[&quot;/home/v/miniconda3/envs/dreamerv3/bin/python&quot;, &quot;-B&quot;, &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tools/fg_s3_e_quality_reader.py&quot;, &quot;multi-read&quot;, &quot;--config&quot;, &quot;/tmp/pytest-of-v/pytest-582/test_f3_cli_and_original_check1/f3.json&quot;, &quot;--out&quot;, &quot;/tmp/pytest-of-v/pytest-582/test_f3_cli_and_original_check1/diagnostic&quot;, &quot;--adapter&quot;, &quot;f3&quot;, &quot;--batch-size&quot;, &quot;4&quot;, &quot;--length&quot;, &quot;12&quot;, &quot;--burnin-steps&quot;, &quot;4&quot;]" /></properties></testcase><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_cli_requires_explicit_geometry_and_natural_specs" time="0.037" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_natural_statistics_preserve_source_and_global_denominators" time="3.540" /><testcase classname="tests.entry_v1.test_data_multi_f3" name="test_f3_pair_owner_keeps_teacher_suffix_domain" time="1.503" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C11_writer_and_reader_use_only_V3" time="11.595" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]" time="0.021" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C12_old_or_forged_index_versions_refused_without_writes[missing]" time="0.019" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]" time="0.032" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]" time="0.141" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]" time="0.043" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]" time="0.045" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]" time="0.042" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]" time="0.201" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]" time="0.099" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]" time="0.099" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C03_missing_class_is_support_failure_without_exposure_or_rng_change" time="0.035" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C04_restore_rejects_source_index_stage_or_sampling_change" time="0.045" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C05_same_price_different_account_and_reset_never_form_pair" time="0.122" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay" time="0.079" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C07_relocation_preserves_reader_restore_without_old_absolute_root" time="0.106" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C08_open_reader_detects_changed_sidecar_or_chunk" time="0.050" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode" time="0.000" /><testcase classname="tests.entry_v1.test_wp03_reader" name="test_C10_window_crosses_original_native_chunk_files_without_crossing_episode" time="0.457" /></testsuite></testsuites>

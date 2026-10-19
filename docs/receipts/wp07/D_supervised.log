@@ -1,0 +1,83 @@
+.F.                                                                      [100%]
+=================================== FAILURES ===================================
+_________ test_no_label_and_nonfinite_freeze_inherited_optimizer_state _________
+
+online = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/D_supervised_01'), <embodied.jax.agent.Agent object at 0x7843442f4690>, <gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x7843cc3f6590>)
+
+    def test_no_label_and_nonfinite_freeze_inherited_optimizer_state(online):
+        from test_wp06_updates import train
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        _,a,r=online;data,_=r.sample();before=parameter_digests(a.params)
+        invalid={**data,'teacher_valid':np.zeros_like(data['teacher_valid'])}
+        _,_,m=train(a,invalid);assert not m['f3/updated'] and before==parameter_digests(a.params)
+        bad=copy.deepcopy(data);bad['market_seq_e_shared'][0,1]=np.nan
+>       with pytest.raises(FloatingPointError):train(a,bad)
+                                               ^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_supervised.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_updates.py:25: in train
+    return a.train(a.init_train(len(data['is_first'])),gpu_batch(a,copy.deepcopy(data),seed))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:286: in train
+    ready = self._take_outs(internal.fetch_async(mets))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:491: in _take_outs
+    outs = jax.tree.map(lambda x: x.__array__(), outs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree.py:155: in map
+    return tree_util.tree_map(f, tree, *rest, is_leaf=is_leaf)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree_util.py:344: in tree_map
+    return treedef.unflatten(f(*xs) for xs in zip(*all_leaves))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree_util.py:344: in <genexpr>
+    return treedef.unflatten(f(*xs) for xs in zip(*all_leaves))
+                             ^^^^^^
+../dreamerv3/embodied/jax/agent.py:491: in <lambda>
+    outs = jax.tree.map(lambda x: x.__array__(), outs)
+                                  ^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:414: in __array__
+    return np.asarray(self._value, dtype=dtype, **kwds)
+                      ^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py:333: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <[XlaRuntimeError('INTERNAL: Compute error: CpuCallback error: Traceback (most recent call last):\n  File "/home/v/min...fail\nValueError: E Encoder nonfinite input or nonbinary valid mask') raised in repr()] ArrayImpl object at 0x3a141e20>
+
+    @property
+    @functools.partial(profiler.annotate_function, name="np.asarray(jax.Array)")
+    def _value(self) -> np.ndarray:
+      self._check_if_deleted()
+    
+      if self._npy_value is None:
+        if self.is_fully_replicated:
+>         self._npy_value = self._single_device_array_to_np_array()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         jaxlib.xla_extension.XlaRuntimeError: INTERNAL: Compute error: CpuCallback error: Traceback (most recent call last):
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py", line 2777, in _wrapped_callback
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 159, in _callback
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 95, in debug_callback_impl
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 262, in _flat_callback
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_encoder.py", line 66, in fail
+E         ValueError: E Encoder nonfinite input or nonbinary valid mask
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:613: XlaRuntimeError
+------------------------------ Captured log call -------------------------------
+ERROR    jax._src.debugging:debugging.py:94 jax.debug.callback failed
+Traceback (most recent call last):
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 92, in debug_callback_impl
+    callback(*args)
+  File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 262, in _flat_callback
+    callback(*args, **kwargs)
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_encoder.py", line 66, in fail
+    raise ValueError('E Encoder nonfinite input or nonbinary valid mask')
+ValueError: E Encoder nonfinite input or nonbinary valid mask
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp07_supervised.py::test_no_label_and_nonfinite_freeze_inherited_optimizer_state
+1 failed, 2 passed in 58.23s

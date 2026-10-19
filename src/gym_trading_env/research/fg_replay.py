@@ -355,6 +355,71 @@ def iter_replay_rows(directory, manifest=None):
         raise ValueError("Saved Replay record count mismatch")
 
 
+def observed_trace_row(raw, step, last, scorer, policy, ordinal, *, single3, e_quality):
+    """Original observation/account row construction shared by live collection."""
+    row = copy.deepcopy(last)
+    if single3:
+        step = {**step, 'market_advance': np.int32(row['valid_bar'])}
+    if row["advanced"]:
+        diagnostics = scorer.step(row['bar'],raw.terms.multiplier) if single3 else scorer.step(row["bar"])
+        score = diagnostics['total'] if single3 else diagnostics['v0']
+        if not np.isclose(score, row["official_reward"], rtol=0, atol=1e-9):
+            raise RuntimeError("Committed TP events disagree with Env V1 reward")
+        row["diagnostics"] = {k: diagnostics[k] for k in
+            ("early_first5", "early_next10", "penalized", "intrabar_ambiguous")}
+    else:
+        row["diagnostics"] = dict(early_first5=0, early_next10=0, penalized=[], intrabar_ambiguous=[])
+    row.update(ordinal=ordinal, action=int(step["action"]),
+               legal_add=bool(step["action_mask"][1]),
+               p3_waited=policy.waited, p3_waiting=policy.waiting)
+    if hasattr(policy, 'last_diagnostics'):
+        row['policy_diagnostics'] = copy.deepcopy(policy.last_diagnostics)
+    if e_quality:
+        fields = replay_fields(E_QUALITY_SCHEMA)
+        host_logs = {k for k in raw._get_info() if k.startswith('log/')}
+        if set(step)-host_logs != set(fields):
+            raise ValueError('E Quality Replay refuses teacher/foreign fields')
+        step = {k:step[k] for k in fields}
+        row['e_snapshot'] = copy.deepcopy(raw.e_snapshot)
+        row['account_snapshot_hash'] = fingerprint(raw.export_state())
+    return row, step
+
+
+def observed_trace_manifest(raw, directory, state, chunks, identity, spec, config_path, protocol,
+                            initial_state, end_cursor, array_hash, event_hash, elapsed_seconds,
+                            *, single3, e_quality):
+    """Original manifest math and inventory; no alternate financial semantics."""
+    source_rows = len(raw._raw)
+    payload = dict(schema=E_QUALITY_SCHEMA if e_quality else SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
+                   reward_version=raw.reward_config.schema if single3 else "V1",
+                   reward_params_hash=raw.reward_config.hash if single3 else fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
+                   obs_version='FG_S3_E_OBSERVATION_V2' if e_quality else 'FG_SINGLE3_MARKET_MINUTE_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
+                   contract=raw.contract, records=state["records"], advanced=state["advanced"],
+                   valid_minutes=state["valid_minutes"], chunk_resets=state["chunk_resets"],
+                   sequence_starts=max(0, state["records"] - 64), chunks=chunks,
+                   source_rows=source_rows, unvisited_rows=source_rows - raw.current_step - 1,
+                   terminal_status=raw.status, terminal=raw.terminated,
+                   pending_reason=raw.pending_reason,
+                   open_entries=len(raw.entries), open_lots=float(raw.net_lots), total_reward=raw.total_reward,
+                   tp_events=sum(e['reason']=='TAKE_PROFIT' for e in raw.attributions) if single3 else len(raw.reward_events),
+                   non_tp_exits=sum(e["reason"] != "TAKE_PROFIT" for e in raw.attributions),
+                   array_hash=array_hash, event_hash=event_hash,
+                   elapsed_seconds=elapsed_seconds,
+                   files={str(p.relative_to(directory)): digest(p) for p in directory.rglob("*") if p.is_file()})
+    if e_quality:
+        payload.update(e_observation_identity=raw.e_observation_identity,
+            data_identity=raw._e_profile.identity, initial_state=initial_state is not None,
+            bounded_observation_end=end_cursor, training_admitted=False)
+    if single3:
+        payload.update(protocol=protocol,reward_candidate=raw.reward_config.candidate,
+                       fill_model=raw.fill_model, observation_identity=raw.observation_identity,
+                       sl_events=sum(e['reason']=='STOP_LOSS' for e in raw.attributions),
+                       early10_events=sum(e['reason']=='FIRST_ADVERSE10' for e in raw.reward_events))
+    payload["replay_trace_hash"] = fingerprint({k: payload[k] for k in
+        ("identity", "policy", "env_config_hash", "reward_version", "array_hash", "event_hash")})
+    return payload
+
+
 def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_factory=None,
                   protocol='fg_entry_v1', policy_factory=None, runtime_factory=None,
                   initial_state=None, end_cursor=None, labeler=None):
@@ -430,31 +495,9 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
                 if len(queued)>=max(1,getattr(labeler,'queue_depth',1)):
                     emit(queued.popleft(),stream)
             def capture(step, worker):
-                row = copy.deepcopy(observed.last)
-                if single3:
-                    step = {**step, 'market_advance': np.int32(row['valid_bar'])}
-                if row["advanced"]:
-                    diagnostics = scorer.step(row['bar'],raw.terms.multiplier) if single3 else scorer.step(row["bar"])
-                    score = diagnostics['total'] if single3 else diagnostics['v0']
-                    if not np.isclose(score, row["official_reward"], rtol=0, atol=1e-9):
-                        raise RuntimeError("Committed TP events disagree with Env V1 reward")
-                    row["diagnostics"] = {k: diagnostics[k] for k in
-                        ("early_first5", "early_next10", "penalized", "intrabar_ambiguous")}
-                else:
-                    row["diagnostics"] = dict(early_first5=0, early_next10=0, penalized=[], intrabar_ambiguous=[])
-                row.update(ordinal=state["records"], action=int(step["action"]),
-                           legal_add=bool(step["action_mask"][1]),
-                           p3_waited=policy.waited, p3_waiting=policy.waiting)
-                if hasattr(policy, 'last_diagnostics'):
-                    row['policy_diagnostics'] = copy.deepcopy(policy.last_diagnostics)
+                row, step = observed_trace_row(raw, step, observed.last, scorer, policy,
+                    state['records'], single3=single3, e_quality=e_quality)
                 if e_quality:
-                    fields = replay_fields(E_QUALITY_SCHEMA)
-                    host_logs = {k for k in raw._get_info() if k.startswith('log/')}
-                    if set(step)-host_logs != set(fields):
-                        raise ValueError('E Quality Replay refuses teacher/foreign fields')
-                    step = {k:step[k] for k in fields}
-                    row['e_snapshot'] = copy.deepcopy(raw.e_snapshot)
-                    row['account_snapshot_hash'] = fingerprint(raw.export_state())
                     if labeler is not None:
                         row['teacher'] = labeler(raw, step, row)
                 replay.add(step, worker=worker)
@@ -491,34 +534,9 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
             if not e_quality and trade["status"] == "right_censored" and raw.pending_reason:
                 trade["status"] = "terminal_failure_unfilled"
         write_json(directory / "trade_diagnostics.json", trades)
-        source_rows = len(raw._raw)
-        payload = dict(schema=E_QUALITY_SCHEMA if e_quality else SINGLE3_SCHEMA if single3 else SCHEMA, identity=identity, policy=spec, config_path=str(config_path),
-                       reward_version=raw.reward_config.schema if single3 else "V1",
-                       reward_params_hash=raw.reward_config.hash if single3 else fingerprint(dict(formula="60/(60+T_minutes)", quantity=3, tp_points=5)),
-                       obs_version='FG_S3_E_OBSERVATION_V2' if e_quality else 'FG_SINGLE3_MARKET_MINUTE_60x18_9_2' if single3 else "FG_ENTRY_V1_60x18_9_2", env_config_hash=raw.config_hash,
-                       contract=raw.contract, records=state["records"], advanced=state["advanced"],
-                       valid_minutes=state["valid_minutes"], chunk_resets=state["chunk_resets"],
-                       sequence_starts=max(0, state["records"] - 64), chunks=chunks,
-                       source_rows=source_rows, unvisited_rows=source_rows - raw.current_step - 1,
-                       terminal_status=raw.status, terminal=raw.terminated,
-                       pending_reason=raw.pending_reason,
-                       open_entries=len(raw.entries), open_lots=float(raw.net_lots), total_reward=raw.total_reward,
-                       tp_events=sum(e['reason']=='TAKE_PROFIT' for e in raw.attributions) if single3 else len(raw.reward_events),
-                       non_tp_exits=sum(e["reason"] != "TAKE_PROFIT" for e in raw.attributions),
-                       array_hash=array_hash.hexdigest(), event_hash=event_hash.hexdigest(),
-                       elapsed_seconds=time.monotonic() - began,
-                       files={str(p.relative_to(directory)): digest(p) for p in directory.rglob("*") if p.is_file()})
-        if e_quality:
-            payload.update(e_observation_identity=raw.e_observation_identity,
-                data_identity=raw._e_profile.identity, initial_state=initial_state is not None,
-                bounded_observation_end=end_cursor, training_admitted=False)
-        if single3:
-            payload.update(protocol=protocol,reward_candidate=raw.reward_config.candidate,
-                           fill_model=raw.fill_model, observation_identity=raw.observation_identity,
-                           sl_events=sum(e['reason']=='STOP_LOSS' for e in raw.attributions),
-                           early10_events=sum(e['reason']=='FIRST_ADVERSE10' for e in raw.reward_events))
-        payload["replay_trace_hash"] = fingerprint({k: payload[k] for k in
-            ("identity", "policy", "env_config_hash", "reward_version", "array_hash", "event_hash")})
+        payload = observed_trace_manifest(raw, directory, state, chunks, identity, spec,
+            config_path, protocol, initial_state, end_cursor, array_hash.hexdigest(),
+            event_hash.hexdigest(), time.monotonic()-began, single3=single3, e_quality=e_quality)
         write_json(directory / "manifest.json", signed(payload))
         return payload
     finally:

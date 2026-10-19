@@ -1,0 +1,23 @@
+[
+  {
+    "action": "save",
+    "hash_seed": "11",
+    "exit_code": 0,
+    "stdout": "PASS\n",
+    "stderr": ""
+  },
+  {
+    "action": "load",
+    "hash_seed": "22",
+    "exit_code": 0,
+    "stdout": "PASS\n",
+    "stderr": ""
+  },
+  {
+    "action": "mutant",
+    "hash_seed": "22",
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 24, in <module>\nAssertionError: FRESH_NATIVE_UUID_LOOKUP_FAILED\n"
+  }
+]

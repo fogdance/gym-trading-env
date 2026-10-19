@@ -1,0 +1,73 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+________________ test_four_native_online_cold_restore_scenarios ________________
+
+common = (PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality...: 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}, ...})
+
+    def test_four_native_online_cold_restore_scenarios(common):
+        names=['SHADOW','ONLINE_SUPERVISED','publication','ONLINE_RL_CONTROLLED']
+        with concurrent.futures.ThreadPoolExecutor(4) as pool:
+>           results=list(pool.map(lambda name:run_case(common,name),names))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_checkpoint.py:100: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:619: in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:317: in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_wp07_checkpoint.py:100: in <lambda>
+    results=list(pool.map(lambda name:run_case(common,name),names))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_wp07_checkpoint.py:89: in run_case
+    compare(x,y)
+tests/entry_v1/test_wp07_checkpoint.py:19: in compare
+    for k in a:compare(a[k],b[k],path+'.'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_wp07_checkpoint.py:19: in compare
+    for k in a:compare(a[k],b[k],path+'.'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = {6gHzBDTk0mrLC42B9s86E8: 32, 5ARej4j8Rtgswp98jv1pkN: 33, 4kMpBwBF71iN4XP23Q9uQT: 4}
+b = {6gHzBDTk0mrLC42B9s86E8: 32, 5ARej4j8Rtgswp98jv1pkN: 33, 4kMpBwBF71iN4XP23Q9uQT: 4}
+path = 'root.replay.refs'
+
+    def compare(a,b,path='root'):
+        if isinstance(a,dict):
+>           assert a.keys()==b.keys(),path
+E           AssertionError: root.replay.refs
+E           assert dict_keys([6g...iN4XP23Q9uQT]) == dict_keys([6g...iN4XP23Q9uQT])
+E             
+E             Use -v to get more diff
+
+tests/entry_v1/test_wp07_checkpoint.py:18: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-fhs2skge because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp07_checkpoint.py::test_four_native_online_cold_restore_scenarios
+1 failed in 105.65s (0:01:45)

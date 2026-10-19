@@ -1,0 +1,31 @@
+[
+  {
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "online-prepare",
+      "--config",
+      "/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/draft.json",
+      "--output-dir",
+      "/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/diagnostic"
+    ],
+    "exit_code": 0,
+    "stdout": "{\n  \"protocol\": \"FG_S3_E_QUALITY_F4_EXECUTION_V1\",\n  \"status\": \"CONTRACT_ONLY\",\n  \"admission\": \"NOT_ADMITTED\",\n  \"spec_mode\": \"draft\",\n  \"settings\": {\n    \"schema\": \"FG_S3_E_QUALITY_ONLINE_CONFIG_V1\",\n    \"spec_mode\": \"draft\",\n    \"prepared_dir\": \"/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/prepared\",\n    \"history_config\": null,\n    \"wm_policy\": null,\n    \"execution\": {\n      \"protocol\": \"FG_S3_E_QUALITY_F4_EXECUTION_V1\",\n      \"source_stage\": \"ACTOR_SUPERVISED\",\n      \"execution_mode\": \"SHADOW\",\n      \"fold\": \"TRAIN\",\n      \"source_run\": null,\n      \"source_checkpoint\": null,\n      \"run_dir\": \"/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/run\",\n      \"model_seed\": 303,\n      \"env_seed\": 202,\n      \"replay_seed\": 404,\n      \"env_steps\": 128,\n      \"collect_every\": 16,\n      \"updates_per_collect\": 0,\n      \"max_consumed_batches\": 0,\n      \"save_every\": 32,\n      \"replay_capacity\": 512,\n      \"exploration_rate\": 0.0,\n      \"history_ratio\": 0.5\n    }\n  },\n  \"blockers\": [\n    \"DRAFT_IS_DIAGNOSTIC_ONLY\",\n    \"SOURCE_F3_NOT_VERIFIED\",\n    \"LIVE_TRAIN_SOURCE_NOT_VERIFIED\",\n    \"MISSING_SOURCE_RUN\",\n    \"MISSING_SOURCE_CHECKPOINT\"\n  ],\n  \"authenticated\": false,\n  \"training_admitted\": false,\n  \"prepared_created\": false,\n  \"checkpoint_source_authenticated\": false,\n  \"research_admitted\": false,\n  \"content_hash\": \"bc9d7b946d7c5662c1ea1d50f626272a034953ab08f59fd1df5c568124d9b2c8\"\n}\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "online-start",
+      "--prepared",
+      "/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/diagnostic",
+      "--authorize-training"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 325, in <module>\n    main()\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 83, in main\n    result=online.start_prepared(args.prepared,resume=args.command=='online-resume',authorized=args.authorize_training,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 184, in start_prepared\n    root=_local_path(path);p=read_manifest(root/'prepared.json');identity=p['identity'];s=validate_settings(identity['settings'])\n                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/src/gym_trading_env/research/fg_replay.py\", line 67, in read_manifest\n    data = json.loads(Path(path).read_text())\n                      ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py\", line 1058, in read_text\n    with self.open(mode='r', encoding=encoding, errors=errors) as f:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py\", line 1044, in open\n    return io.open(self, mode, buffering, encoding, errors, newline)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nFileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-v/pytest-595/test_explicit_draft_exit_files0/diagnostic/prepared.json'\n"
+  }
+]

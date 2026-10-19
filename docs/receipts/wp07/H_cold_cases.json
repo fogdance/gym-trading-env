@@ -1,0 +1,523 @@
+[
+  {
+    "case": "SHADOW",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "SHADOW",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 0,
+        "consumed_batches": 0,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 0,
+        "target_market_minutes": 0,
+        "burnin_positions": 0,
+        "burnin_market_minutes": 0,
+        "exposures": {
+          "natural_count": 0,
+          "natural_add": 0,
+          "natural_wait": 0,
+          "auxiliary_count": 0,
+          "auxiliary_add": 0,
+          "auxiliary_wait": 0,
+          "balanced_count": 0,
+          "strict_pair_count": 0,
+          "quality_pair_count": 0,
+          "quality_pair_candidates": 0,
+          "quality_pair_conflicts": 0,
+          "quality_pair_same_action_filtered": 0,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": false,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "SUPERVISED_STABLE",
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {},
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/SHADOW/split/ckpt/step_000000000003",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/SHADOW/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/SHADOW/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "ONLINE_SUPERVISED",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 7,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 1,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 46,
+          "natural_add": 5,
+          "natural_wait": 41,
+          "auxiliary_count": 56,
+          "auxiliary_add": 6,
+          "auxiliary_wait": 50,
+          "balanced_count": 56,
+          "strict_pair_count": 40,
+          "quality_pair_count": 12,
+          "quality_pair_candidates": 37,
+          "quality_pair_conflicts": 25,
+          "quality_pair_same_action_filtered": 25,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 3,
+          "valid_wait": 30
+        },
+        "[\"AUXILIARY\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 5,
+          "valid_wait": 43
+        },
+        "[\"NATURAL\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 11
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"0affe2f5f8d5cee330af1521194a62dd77c8d03ce767b2aca1cb2e22fc400710\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_SUPERVISED/split/ckpt/step_000000000004",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_SUPERVISED/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_SUPERVISED/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "publication",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 7,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 1,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 46,
+          "natural_add": 5,
+          "natural_wait": 41,
+          "auxiliary_count": 56,
+          "auxiliary_add": 6,
+          "auxiliary_wait": 50,
+          "balanced_count": 56,
+          "strict_pair_count": 40,
+          "quality_pair_count": 12,
+          "quality_pair_candidates": 37,
+          "quality_pair_conflicts": 25,
+          "quality_pair_same_action_filtered": 25,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 3,
+          "valid_wait": 30
+        },
+        "[\"AUXILIARY\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 5,
+          "valid_wait": 43
+        },
+        "[\"NATURAL\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 11
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"5f8aea6a65ec459ea669a10df060befa2b2875719cc962d7aabb820349f56b31\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/publication/split/ckpt/step_000000000005",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/publication/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/publication/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "ONLINE_RL_CONTROLLED",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_RL_CONTROLLED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 8,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 46,
+          "natural_add": 5,
+          "natural_wait": 41,
+          "auxiliary_count": 56,
+          "auxiliary_add": 6,
+          "auxiliary_wait": 50,
+          "balanced_count": 56,
+          "strict_pair_count": 40,
+          "quality_pair_count": 12,
+          "quality_pair_candidates": 37,
+          "quality_pair_conflicts": 25,
+          "quality_pair_same_action_filtered": 25,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 8
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": true
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 3,
+          "valid_wait": 30
+        },
+        "[\"AUXILIARY\",\"beta\",\"cb5591a55729f527e1bd9ae64cab6013c95d9d8eaa6a224fdc71fb97979c068a\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 5,
+          "valid_wait": 43
+        },
+        "[\"NATURAL\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 11
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"e97abb415e09393f3a17c67808199d4b5de139a59812009e6de62ed6904ac9bc\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"f637d4f99bed05e45a8e108bbd5755e346c4afa3fb523b9c69dda94e01ed47a4\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000003",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_RL_CONTROLLED/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/H_cold_01/ONLINE_RL_CONTROLLED/split/evidence.pkl"
+    ]
+  }
+]

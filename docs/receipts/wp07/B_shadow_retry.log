@@ -1,0 +1,213 @@
+FF...................                                                    [100%]
+=================================== FAILURES ===================================
+______ test_native_shadow_teacher_raises_full_replay_and_frozen_model[0] _______
+
+actor = <embodied.jax.agent.Agent object at 0x7157acc6dc50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7157985cd510>
+start = 0
+
+    @pytest.mark.parametrize('start',[0,330])
+    def test_native_shadow_teacher_raises_full_replay_and_frozen_model(actor,monkeypatch,start):
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_replay import reconcile_trace,E_QUALITY_SCHEMA,digest,write_json
+        from gym_trading_env.research.fg_single3_evaluation import embodied_runtime
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        import pandas as pd
+        root=Path(os.environ.get('FG_WP07_B_ROOT',ARTIFACTS/'B_shadow_01'))/str(start)
+        factory,_,profile=native_factory(root/'market',minutes=600,chunk=19)
+        import yaml
+        directions=root/'market/directions.yaml'
+        d=yaml.safe_load(directions.read_text())
+        for row in d['intervals']:row['direction']='SHORT'
+        directions.write_text(yaml.safe_dump(d))
+        path=root/'market/market.csv';frame=pd.read_csv(path)
+        frame['High']=[1035 if i%17==3 else 1002 for i in range(len(frame))]
+        frame['Low']=[990 if i%13==4 and i%17!=3 else 999 for i in range(len(frame))]
+        frame.to_csv(path,index=False)
+        profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=digest(path)
+        def forbidden(*args,**kwargs):raise AssertionError('Teacher consulted by live execution')
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_strict.QualityStrictTeacher',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_quality_teacher_v2.NativeQualityTeacher',forbidden)
+        env=factory();initial=None
+        if start:
+            for _ in range(start):
+                env.step(0)
+                if env.truncated:env.reset(options={'resume':env.export_state()})
+            initial=env.export_state()
+        before=parameter_digests(actor.params)
+        c=OnlineCollector(env,dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY'),root/'rollout',
+            Path(__file__).resolve().parents[3]/'dreamerv3',agent=actor,seed=202,budget=128,
+            capacity=512,initial_state=initial,replay_length=13,chunksize=32)
+        # Fail on *any* attempt to use the old Oracle state/query route.
+        c.oracle.decision_state=forbidden;c.oracle.query=forbidden
+        try:
+            c.advance(128)
+            manifest=c.snapshot_trace(root/'trace',dict(scope='SYNTHETIC_ACTOR_BIAS_FIXTURE_NO_RESEARCH'))
+            rows=c.rows
+            assert all(not any(k.startswith(('teacher','oracle')) for k in row.get('policy_diagnostics',{})) for row in rows)
+            assert all(not row['action'] or row['legal_add'] for row in rows)
+            assert c.counts['tp_events'] and c.counts['sl_events']
+            assert any(r['action']==0 for r in rows) and any(r['action']==1 for r in rows)
+            assert start==0 or len({r['trading_date'] for r in rows})==2
+>           result=reconcile_trace(root/'trace',Path(__file__).resolve().parents[3]/'dreamerv3',
+                env_factory=factory,schema=E_QUALITY_SCHEMA,runtime_factory=embodied_runtime)
+
+tests/entry_v1/test_wp07_shadow.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+directory = PosixPath('artifacts/fg_s3_v2/e_quality_wp07/B_shadow_02/0/trace')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3')
+env_factory = <function native_factory.<locals>.factory at 0x7157ac9fa160>
+schema = 'FG_S3_E_REPLAY_MARKET_MINUTE_V2'
+runtime_factory = <function embodied_runtime at 0x7157af1f9c60>
+label_verifier = None
+
+    def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None, label_verifier=None):
+        """Replay frozen actions through a second original Env, checking every row."""
+        (runtime_factory or cpu_runtime)(dreamer_root)
+        from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+        directory = Path(directory)
+        manifest = trace_manifest(directory,schema=schema)
+        raw = env_factory() if env_factory else FixedDirectionEntryEnv(config_path=manifest["config_path"])
+        if raw.single3 != (schema in (SINGLE3_SCHEMA,E_QUALITY_SCHEMA)):
+            raise ValueError('Replay/Env protocol mismatch')
+        initial_state = None
+        if schema == E_QUALITY_SCHEMA:
+            if raw.e_observation_identity != manifest['e_observation_identity']:
+                raise ValueError('Replay E source/observation identity differs')
+            if manifest['initial_state']:
+                initial_state = json.loads((directory/'initial_state.json').read_text())
+                raw.import_state(initial_state)
+        hasher, event_hash = hashlib.sha256(), hashlib.sha256()
+        pending = None
+        sidecar = iter(iter_sidecar(directory))
+        count, restores = 0, 0
+        from collections import deque
+        label_checks=deque()
+        def check_label():
+            saved,expected_label=label_checks.popleft()
+            if saved!=expected_label.result():
+                raise ValueError('Teacher posterior facts or strict action differ from native reconstruction')
+        try:
+            for ordinal, step in iter_replay_rows(directory, manifest):
+                row = next(sidecar, None)
+                if row is None or row["ordinal"] != ordinal or row["stepid"] != step["stepid"].tobytes().hex():
+                    raise ValueError("Sidecar row identity mismatch")
+                incoming = None if pending is None or pending["is_last"] else pending["action"]
+                obs, expected = execute_observed(raw, incoming, seed=0 if ordinal == 0 else None,
+                    resume_state=initial_state if ordinal == 0 else None)
+                if incoming != row["incoming_action"]:
+                    raise ValueError("Driver action/feedback alignment mismatch")
+                for key in expected:
+                    if expected[key] != row[key]:
+                        raise ValueError(f"Env/Sidecar row {ordinal} differs: {key}")
+                if schema == E_QUALITY_SCHEMA:
+                    if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != fingerprint(raw.export_state()):
+>                       raise ValueError('Replay E snapshot or full account identity differs')
+E                       ValueError: Replay E snapshot or full account identity differs
+
+src/gym_trading_env/research/fg_replay.py:588: ValueError
+---------------------------- Captured stdout setup -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 pol
+           706 quality_q_c1
+           706 quality_actor
+           706 quality_q_v2
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-y2u_vex_ because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+_____ test_native_shadow_teacher_raises_full_replay_and_frozen_model[330] ______
+
+actor = <embodied.jax.agent.Agent object at 0x7157acc6dc50>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x71576041f410>
+start = 330
+
+    @pytest.mark.parametrize('start',[0,330])
+    def test_native_shadow_teacher_raises_full_replay_and_frozen_model(actor,monkeypatch,start):
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_replay import reconcile_trace,E_QUALITY_SCHEMA,digest,write_json
+        from gym_trading_env.research.fg_single3_evaluation import embodied_runtime
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        import pandas as pd
+        root=Path(os.environ.get('FG_WP07_B_ROOT',ARTIFACTS/'B_shadow_01'))/str(start)
+        factory,_,profile=native_factory(root/'market',minutes=600,chunk=19)
+        import yaml
+        directions=root/'market/directions.yaml'
+        d=yaml.safe_load(directions.read_text())
+        for row in d['intervals']:row['direction']='SHORT'
+        directions.write_text(yaml.safe_dump(d))
+        path=root/'market/market.csv';frame=pd.read_csv(path)
+        frame['High']=[1035 if i%17==3 else 1002 for i in range(len(frame))]
+        frame['Low']=[990 if i%13==4 and i%17!=3 else 999 for i in range(len(frame))]
+        frame.to_csv(path,index=False)
+        profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=digest(path)
+        def forbidden(*args,**kwargs):raise AssertionError('Teacher consulted by live execution')
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_strict.QualityStrictTeacher',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_quality_teacher_v2.NativeQualityTeacher',forbidden)
+        env=factory();initial=None
+        if start:
+            for _ in range(start):
+>               env.step(0)
+
+tests/entry_v1/test_wp07_shadow.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7156fc4b4410>
+action = 0
+
+    def step(self, action):
+        if not self.action_space.contains(action):
+            raise ValueError(f"Invalid Entry action: {action}")
+        if self.terminated or self.truncated:
+>           raise RuntimeError("Episode paused/ended; continuation or explicit reset required")
+E           RuntimeError: Episode paused/ended; continuation or explicit reset required
+
+src/gym_trading_env/envs/entry_env.py:584: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp07_shadow.py::test_native_shadow_teacher_raises_full_replay_and_frozen_model[0]
+FAILED tests/entry_v1/test_wp07_shadow.py::test_native_shadow_teacher_raises_full_replay_and_frozen_model[330]
+2 failed, 19 passed in 34.86s

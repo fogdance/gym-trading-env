@@ -1,0 +1,7 @@
+{
+  "cause": "Bound F3 adapter file changed between child processes during concurrent development; exact resume correctly refused.",
+  "original_adapter_sha256": "6c4f5c20ca36649f127d8fde5838df52be1d9edd58f7cb4b9953bcabbead1cdb",
+  "current_adapter_sha256": "80b1fd83c284c031695566e731b45681931360e1046c5e743b823f6d2bd1dde9",
+  "different": true,
+  "stable_retry": "C_data_stable: 38 passed, 0 failures/errors/skips; original guards unchanged"
+}

@@ -32,7 +32,7 @@ def _json(value):
     return json.dumps(value, sort_keys=True, separators=(',',':'), allow_nan=False)
 
 
-def _join_row(row, step, ordinal, trace, corpus):
+def audit_physical_row(row, step, ordinal):
     if (row['ordinal'] != ordinal or row['stepid'] != step['stepid'].tobytes().hex()
             or step['stepid'].shape != (20,) or step['stepid'].dtype != np.uint8
             or row['action'] != int(step['action'])
@@ -48,6 +48,10 @@ def _join_row(row, step, ordinal, trace, corpus):
     for name, value in step.items():
         if np.issubdtype(value.dtype, np.floating) and not np.isfinite(value).all():
             raise ValueError('SUPERVISION_NONFINITE_REPLAY: ' + name)
+
+
+def _join_row(row, step, ordinal, trace, corpus):
+    audit_physical_row(row,step,ordinal)
     label = row.get('teacher')
     # Original native corpus rows include labels, including invalid terminal
     # facts. Missing labels are not silently converted to a fake WAIT.

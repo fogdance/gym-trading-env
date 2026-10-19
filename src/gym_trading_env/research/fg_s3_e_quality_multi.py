@@ -19,6 +19,12 @@ STAGES = dict(WM_NATURAL='FOUNDATION_WM', HEADS_VALID='QUALITY_HEADS',
               ACTOR_STRICT='ACTOR_SUPERVISED', ACTOR_QUALITY_PAIR='ACTOR_SUPERVISED')
 
 
+def native_compatibility_contract(corpus,course):
+    """Common native ABI/math; each source retains its own full course identity."""
+    return dict(observation=corpus['observation'],model_contract=corpus['model_contract_hash'],
+                reward=course['reward'],teacher=course['teacher'])
+
+
 def _clone(value):
     return copy.deepcopy(value)
 
@@ -101,9 +107,7 @@ class MultiCorpusCourseStream:
                     cache_bytes=cache_bytes // len(ids) + int(number < cache_bytes % len(ids)))
                 self.readers[name] = reader
                 course = json.loads((reader.root/'course_v2.json').read_text())
-                contract = dict(observation=reader.corpus['observation'],
-                    model_contract=reader.corpus['model_contract_hash'], reward=course['reward'],
-                    teacher=course['teacher'])
+                contract = native_compatibility_contract(reader.corpus,course)
                 if compatibility is not None and compatibility != contract:
                     raise ValueError('MULTI_INCOMPATIBLE_NATIVE_CONTRACTS')
                 compatibility = contract

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="3" time="58.234" timestamp="2026-10-19T08:55:05.544384+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp07_supervised" name="test_real_online_l2_updates_only_original_actor_and_slots" time="44.170" /><testcase classname="tests.entry_v1.test_wp07_supervised" name="test_no_label_and_nonfinite_freeze_inherited_optimizer_state" time="0.219"><failure message="jaxlib.xla_extension.XlaRuntimeError: INTERNAL: Compute error: CpuCallback error: Traceback (most recent call last):&#10;  File &quot;/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py&quot;, line 2777, in _wrapped_callback&#10;  File &quot;/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py&quot;, line 159, in _callback&#10;  File &quot;/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py&quot;, line 95, in debug_callback_impl&#10;  File &quot;/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py&quot;, line 262, in _flat_callback&#10;  File &quot;/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_encoder.py&quot;, line 66, in fail&#10;ValueError: E Encoder nonfinite input or nonbinary valid mask">online = (PosixPath('artifacts/fg_s3_v2/e_quality_wp07/D_supervised_01'), &lt;embodied.jax.agent.Agent object at 0x7843442f4690&gt;, &lt;gym_trading_env.research.fg_s3_e_quality_online_data.OnlineWindowReader object at 0x7843cc3f6590&gt;)
+
+    def test_no_label_and_nonfinite_freeze_inherited_optimizer_state(online):
+        from test_wp06_updates import train
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        _,a,r=online;data,_=r.sample();before=parameter_digests(a.params)
+        invalid={**data,'teacher_valid':np.zeros_like(data['teacher_valid'])}
+        _,_,m=train(a,invalid);assert not m['f3/updated'] and before==parameter_digests(a.params)
+        bad=copy.deepcopy(data);bad['market_seq_e_shared'][0,1]=np.nan
+&gt;       with pytest.raises(FloatingPointError):train(a,bad)
+                                               ^^^^^^^^^^^^
+
+tests/entry_v1/test_wp07_supervised.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/test_wp06_updates.py:25: in train
+    return a.train(a.init_train(len(data['is_first'])),gpu_batch(a,copy.deepcopy(data),seed))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:286: in train
+    ready = self._take_outs(internal.fetch_async(mets))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/jax/agent.py:491: in _take_outs
+    outs = jax.tree.map(lambda x: x.__array__(), outs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree.py:155: in map
+    return tree_util.tree_map(f, tree, *rest, is_leaf=is_leaf)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree_util.py:344: in tree_map
+    return treedef.unflatten(f(*xs) for xs in zip(*all_leaves))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/tree_util.py:344: in &lt;genexpr&gt;
+    return treedef.unflatten(f(*xs) for xs in zip(*all_leaves))
+                             ^^^^^^
+../dreamerv3/embodied/jax/agent.py:491: in &lt;lambda&gt;
+    outs = jax.tree.map(lambda x: x.__array__(), outs)
+                                  ^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:414: in __array__
+    return np.asarray(self._value, dtype=dtype, **kwds)
+                      ^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/profiler.py:333: in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;[XlaRuntimeError('INTERNAL: Compute error: CpuCallback error: Traceback (most recent call last):\n  File "/home/v/min...fail\nValueError: E Encoder nonfinite input or nonbinary valid mask') raised in repr()] ArrayImpl object at 0x3a141e20&gt;
+
+    @property
+    @functools.partial(profiler.annotate_function, name="np.asarray(jax.Array)")
+    def _value(self) -&gt; np.ndarray:
+      self._check_if_deleted()
+    
+      if self._npy_value is None:
+        if self.is_fully_replicated:
+&gt;         self._npy_value = self._single_device_array_to_np_array()
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         jaxlib.xla_extension.XlaRuntimeError: INTERNAL: Compute error: CpuCallback error: Traceback (most recent call last):
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/interpreters/mlir.py", line 2777, in _wrapped_callback
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 159, in _callback
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 95, in debug_callback_impl
+E           File "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/debugging.py", line 262, in _flat_callback
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_encoder.py", line 66, in fail
+E         ValueError: E Encoder nonfinite input or nonbinary valid mask
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:613: XlaRuntimeError</failure></testcase><testcase classname="tests.entry_v1.test_wp07_supervised" name="test_future_targets_never_change_actor_features_and_shadow_rejects_training" time="13.605" /></testsuite></testsuites>

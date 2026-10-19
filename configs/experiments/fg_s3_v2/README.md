@@ -750,3 +750,23 @@ Future FORMAL preparation additionally uses `--source-purpose native-verificatio
 ```
 
 正式 `f3-prepare --config ... --source-purpose native-verification --producer-gym ...` 需要真实完整 TRAIN Corpus、完整受训 F1/F2 和实际 native 证明；prepare 不授予训练权。`f3-start/f3-resume --prepared ... --authorize-training` 仍需用户授权并重新校验原生来源，工程 fixture 不可升级为正式训练。`f3-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受完整 F3 Checkpoint，在原 Env 做有限 TRAIN 只读参数诊断，不允许 Teacher/预测替换动作。真实研究考试仍属 WP08。
+
+# WP07：SHADOW / 在线监督 / 受控 RL
+
+统一入口新增 `online-prepare / online-start / online-resume / online-probe / online-evaluate / online-report`，默认 CPU。原 F1/F2/F3、原公开 E+Quality Guard 和 `ONLINE_ADAPT` 不变。SHADOW、在线 BC 使用明确 F3 continuation；RL 使用版本化 execution 合同，真实与想象路径都是同一个 `quality_actor`。
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-prepare --config configs/experiments/fg_s3_v2/e_quality_wp07_online_draft.yaml --output-dir docs/receipts/wp07/NEW_CONTRACT_DIAGNOSTIC
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-probe --execution-mode ONLINE_SUPERVISED --output-dir artifacts/fg_s3_v2/e_quality_wp07/NEW_CPU_PROBE
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-report --run-dir artifacts/fg_s3_v2/e_quality_wp07/NEW_CPU_PROBE/run
+```
+
+显式 draft 仅输出 `CONTRACT_ONLY / NOT_ADMITTED` 非认证诊断，允许结构合法的 `source_run/source_checkpoint: null`，拒绝空串、遗漏和非法路径；不创建 Prepared、Run、Checkpoint 或任何来源认证。切换 `spec_mode: formal` 后所有真实来源必需，合成来源不得使用。prepare 不授权更新。
+
+正式配置填入完成受训 F3 的 Run/Checkpoint；在线市场复用其原 Corpus 的认证 TRAIN、E profile 和 initial account，不接收任意价格文件。更新模式另需 `ACTOR_STRICT` DATA-MULTI JSON 的 `history_config`（两个发布 Corpus、可选 `f3_auxiliary_sampling_spec`）；分别锁定各 Corpus 的完整课程/来源身份，并按通用 Reader 的 Observation/model/Reward/Teacher 合同检查兼容性。Run、prepared 输出路径独立，预算限于已认证 E 可见窗口。`online-start/resume --prepared ... --authorize-training` 会重跑真实 native 来源验证；本次未执行这类真实更新。
+
+`ONLINE_RL_CONTROLLED` 的四个技术 Gate 与独立研究授权分开；无校准政策、样本支持或独立审核即保持 RL_OFF。明确的 `--authorize-rl --rl-review <review.json> --rl-review-sha256 <operator-approved-sha>` 还必须绑定当前 Gate/WM/来源证据及新鲜 native F3 证明，不能由训练器生成一份 PASS 自我授权。合成 `online-probe` 的有限数值许可不是正式 RL 许可。
+
+`online-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受同版本的真实认证 TRAIN 来源，预算 1–512，复用原 ActorPolicy/Env/Driver/reconciler，固定 argmax、无教师和探索。合成 probe 用同一原生评价原语留下工程收据；其交易结果不代表研究效果。
+
+完整恢复使用原 FullCheckpoint，严格最新节点，保存 live Replay、账户/Driver、历史 Reader/RNG、预取、探索 RNG、标签发布/消费、Gate、预算和日志提交点。历史 Corpus 只存身份与 Reader 状态，不复制为新 Replay。详见 [WP07 工程报告](../../../docs/WP07_IMPLEMENTATION_REVIEW.md)。

@@ -1,0 +1,63 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_________________________ test_native_shadow_run_smoke _________________________
+
+common = (PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality...: 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}, ...})
+
+    def test_native_shadow_run_smoke(common):
+        config,root=config_for(common,'SHADOW_smoke')
+        cfg=json.loads(config.read_text());cfg['spec']['execution_mode']='SHADOW'
+        config.write_text(json.dumps(cfg))
+>       worker(config,root/'run','start',16)
+
+tests/entry_v1/test_wp07_checkpoint.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/config.json')
+root = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/run')
+operation = 'start', target = 16
+
+    def worker(config,root,operation,target):
+        root.parent.mkdir(parents=True,exist_ok=True)
+        argv=[sys.executable,'-B',str(Path(__file__).with_name('wp07_online_worker.py')),str(config),str(root),operation,str(target)]
+        log=root.parent/(root.name+'_'+operation+'_'+str(target)+'.log')
+        with log.open('w') as stream:result=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
+        (log.with_suffix('.command.json')).write_text(json.dumps(dict(argv=argv,exit_code=result.returncode),indent=2)+'\n')
+>       assert result.returncode==0,log.read_text()[-6000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/gym-trading-env/tests/entry_v1/wp07_online_worker.py", line 28, in <module>
+E             permit=engineering_permit(spec,numeric_rl=spec['execution_mode']=='ONLINE_RL_CONTROLLED')
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py", line 33, in engineering_permit
+E             proof,_=inspect_f3(spec,allow_engineering=True)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online.py", line 19, in inspect_f3
+E             s = validate_execution(spec)
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp07-20261019/dreamerv3/dreamerv3/fg_s3_e_quality_online.py", line 53, in validate_execution
+E             raise ValueError('SHADOW_REQUIRES_ZERO_UPDATES')
+E         ValueError: SHADOW_REQUIRES_ZERO_UPDATES
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...7-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/G_cold_01/SHADOW_smoke/run', 'start', '16'], returncode=1).returncode
+
+tests/entry_v1/test_wp07_checkpoint.py:60: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-5sayi22b because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp07_checkpoint.py::test_native_shadow_run_smoke
+1 failed in 31.84s

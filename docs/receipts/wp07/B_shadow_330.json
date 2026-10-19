@@ -1,0 +1,17 @@
+{
+  "evidence": "artifacts/fg_s3_v2/e_quality_wp07/B_shadow_04/330/evidence.json",
+  "replay": {
+    "status": "PASS",
+    "records": 136,
+    "account_restores": 7,
+    "replay_trace_hash": "8f952f677ad7b22d9e194ba5f96f72710f59a16d676930a4c6efa26d49e0d8c6",
+    "teacher_labels_verified": 0
+  },
+  "counts": {
+    "env_steps": 128,
+    "native_rows": 136,
+    "resets": 8,
+    "tp_events": 7,
+    "sl_events": 7
+  }
+}
