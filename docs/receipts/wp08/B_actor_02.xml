@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="29.250" timestamp="2026-10-19T11:58:50.975291+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f3_readonly_loading_and_teacher_free_argmax" time="16.544"><failure message="AssertionError: (['action_mask', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_macd_5m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward'], ['action_mask', 'is_first', 'is_last', 'is_terminal', 'market_context_15m', 'market_macd_5m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward'])">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-607/test_actual_f3_readonly_loadin0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x760c961ced90&gt;
+
+    def test_actual_f3_readonly_loading_and_teacher_free_argmax(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+        from wp02_fixture import native_factory
+        from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
+        s=f3_reference();node=Path(s['run_dir'])/'ckpt/step_000000000004'
+        actor=ExamFrozenActor.from_f3_checkpoint(s['run_dir'],node,tmp_path/'model',engineering=True)
+        def forbidden(*a,**k):raise AssertionError('TEACHER_OR_TRAINING_USED')
+        monkeypatch.setattr(actor.agent,'train',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_strict.QualityStrictTeacher',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_quality_teacher_v2.NativeQualityTeacher',forbidden)
+        factory,_,_=native_factory(tmp_path/'market',minutes=60,chunk=0)
+        env=factory()
+        try:
+            obs=env.reset(seed=202)[0]
+            obs=dict(obs,reward=np.float32(0),is_first=True,is_last=False,is_terminal=False,
+                 market_advance=np.int32(0))
+            batched={k:np.asarray(v)[None] for k,v in obs.items()}
+&gt;           state=actor.save();carry,action,_=actor(None,batched)
+                                              ^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_actor.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py:65: in __call__
+    carry,action,out=self.policy(carry,obs)
+                     ^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/research/fg_single3_evaluation.py:43: in __call__
+    carry, action, out = self.agent.policy(carry,obs,mode='eval')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/contextlib.py:81: in inner
+    return func(*args, **kwds)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.jax.agent.Agent object at 0x760c7c5054d0&gt;
+carry = ({}, {'deter': [Array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0., 0.,
+       0., 0., 0., 0., 0., ...'stoch': [Array([[0., 0., 0., 0.],
+       [0., 0., 0., 0.]], dtype=float32)]}, {}, {'action': [Array(0, dtype=int32)]})
+obs = {'market_seq': array([[[0.        , 0.        , 0.        , ..., 0.        ,
+         0.        , 0.        ],
+       ...
+        [3.        , 0.88134277, 0.        , ..., 1.        ,
+         0.7818315 , 0.6234898 ]]], dtype=float32), ...}
+mode = 'eval'
+
+    @elements.timer.section('jaxagent_policy')
+    def policy(self, carry, obs, mode='train'):
+      if not self.jaxcfg.enable_policy:
+        raise Exception('Policy not available when enable_policy=False')
+      assert not any(k.startswith('log/') for k in obs), obs.keys()
+&gt;     assert sorted(obs.keys()) == sorted(self.obs_space.keys()), (
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+          sorted(obs.keys()), sorted(self.obs_space.keys()))
+E     AssertionError: (['action_mask', 'is_first', 'is_last', 'is_terminal', 'market_advance', 'market_context_15m', 'market_macd_5m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward'], ['action_mask', 'is_first', 'is_last', 'is_terminal', 'market_context_15m', 'market_macd_5m', 'market_seq', 'market_seq_e_shared', 'position_state', 'reward'])
+
+../dreamerv3/embodied/jax/agent.py:225: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp08_actor" name="test_policy_rng_state_and_frozen_mutation_rejection" time="12.525" /></testsuite></testsuites>

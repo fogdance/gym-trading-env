@@ -1,0 +1,2810 @@
+{
+  "source": {
+    "protocol": "FG_S3_E_QUALITY_FROZEN_ACTOR_SOURCE_V1",
+    "kind": "F4",
+    "run": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/continuous",
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/continuous/ckpt/step_000000000003",
+    "run_identity_sha256": "f4d9990d07194f873fdd0a3d4a0cfbe80e13a38eadb0d8877e6762a0e0fb542d",
+    "checkpoint_manifest_sha256": "1f60b10a36fb5c2a6013920537157bc893910bc22dc3a6a85d586a7fd38dce88",
+    "source_identity": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "spec": {
+        "protocol": "FG_S3_E_QUALITY_F4_EXECUTION_V1",
+        "source_stage": "ACTOR_SUPERVISED",
+        "execution_mode": "ONLINE_SUPERVISED",
+        "fold": "TRAIN",
+        "source_run": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3",
+        "source_checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3/ckpt/step_000000000004",
+        "run_dir": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/logical/ONLINE_SUPERVISED",
+        "model_seed": 303,
+        "env_seed": 202,
+        "replay_seed": 404,
+        "env_steps": 64,
+        "collect_every": 16,
+        "updates_per_collect": 2,
+        "max_consumed_batches": 16,
+        "save_every": 32,
+        "replay_capacity": 512,
+        "exploration_rate": 0.2,
+        "history_ratio": 0.5
+      },
+      "execution_contract": {
+        "protocol": "FG_S3_E_QUALITY_F4_EXECUTION_V1",
+        "source_stage": "ACTOR_SUPERVISED",
+        "execution_mode": "ONLINE_SUPERVISED",
+        "execution_kind": "F3_ONLINE_CONTINUATION",
+        "effective_trainable_groups": [
+          "quality_actor/"
+        ],
+        "parameter_group_policy": {
+          "enc/": "FROZEN",
+          "dyn/": "FROZEN",
+          "dec/": "FROZEN",
+          "rew/": "FROZEN",
+          "con/": "FROZEN",
+          "avail/": "FROZEN",
+          "pol/": "FROZEN",
+          "val/": "FROZEN",
+          "slowval/": "FROZEN",
+          "quality_event/": "FROZEN",
+          "quality_touch/": "FROZEN",
+          "quality_adverse/": "FROZEN",
+          "quality_score/": "FROZEN",
+          "quality_q_c1/": "FROZEN",
+          "quality_q_v2/": "FROZEN",
+          "quality_actor/": "CONDITIONAL"
+        },
+        "teacher_controls_action": false,
+        "prediction_fusion": false,
+        "q_fusion": false,
+        "formal_online_adapt_admitted": false
+      },
+      "source_manifest": "cc18522f2df6569f2bcf4dafdbe4115df0e203afcf48b74ea282b865df665ad8",
+      "source_run_identity": "4654def82b5118ac185d25afabe728f4eb2a7418e15e50470c32daee77a0f185",
+      "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+      "source_nonopt": "aced20b9f19f668520990dd50a4485ad553dc2cfec6c65e460d1fb012ce4d6fc",
+      "history": "04d0b890c758bc932f6d87273a107b8219e66c5bca04cedd9a2445765f134432",
+      "live_source": {
+        "fold": "TRAIN",
+        "scope": "BUILTIN_SYNTHETIC_ONLY"
+      },
+      "env_config_hash": "ded8f52390ced8dd353eb5de303a0dad7e1debd3948b83b2aa3421ebfe49293d",
+      "e_identity": "83668291caf6223fc45e279f608b51918f8f2f3e3e5d0504407f3108063993f4",
+      "initial_account": null,
+      "chunksize": 32,
+      "code": {
+        "gym": {
+          "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+          "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+        },
+        "dreamer": {
+          "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+          "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+        }
+      },
+      "packages": {
+        "jax": "0.4.33",
+        "jaxlib": "0.4.33",
+        "ninjax": "3.5.1",
+        "optax": "0.2.4",
+        "numpy": "1.26.4",
+        "elements": "3.20.0",
+        "gymnasium": "1.0.0",
+        "pandas": "2.2.3",
+        "portal": "3.5.1",
+        "cloudpickle": "3.1.0"
+      },
+      "controlled_small": true,
+      "numeric_probe": false,
+      "training_admitted": false,
+      "checkpoint_position": "ATOMIC_TRANSACTION_SEQUENCE",
+      "checkpoint_policy": "STRICT_LATEST_NO_FALLBACK"
+    },
+    "source_proof": {
+      "protocol": "FG_S3_F3_ONLINE_SOURCE_V1",
+      "identity": {
+        "protocol": "FG_S3_E_QUALITY_F3_RUN_V1",
+        "backend": "external_immutable_course_reader",
+        "preparation": {
+          "protocol": "FG_S3_E_QUALITY_ACTOR_SUPERVISED_V1",
+          "settings": {
+            "schema": "FG_S3_E_QUALITY_F3_CONFIG_V1",
+            "stage": "ACTOR_SUPERVISED",
+            "sampling_stage": "ACTOR_STRICT",
+            "sampling_spec": {
+              "mode": "NATURAL"
+            },
+            "model_init": {
+              "seed": 202,
+              "presets": [
+                "size1m"
+              ]
+            },
+            "batch_size": 1,
+            "target_steps": 8,
+            "burnin_steps": 4,
+            "optimizer_updates": 4,
+            "report_every_updates": 1,
+            "save_every_updates": 2,
+            "device": "cpu",
+            "corpus_root": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f1/corpus",
+            "prepared_dir": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3_prepared",
+            "run_dir": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3",
+            "max_consumed_batches": 40,
+            "source_stage": "F1",
+            "actor_loss": {
+              "natural": 1.0,
+              "balanced": 0.0,
+              "strict_pair": 0.0,
+              "quality_pair": 0.0,
+              "pair_tau": 1.0
+            },
+            "aux_sampling_spec": null,
+            "source_run": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f1/run",
+            "source_checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f1/run/ckpt/step_000000000004"
+          },
+          "source": "8bb47cfaee5cea91e5bbfeb1263d1dc22611cb6f50a96eaa6566cf1e140d2210",
+          "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+          "observation": {
+            "observation_schema": "FG_S3_E_OBSERVATION_V2",
+            "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+            "decoder_schema": "FG_S3_E_DECODER_V1",
+            "fields": {
+              "market_seq": {
+                "shape": [
+                  60,
+                  18
+                ],
+                "dtype": "float32"
+              },
+              "position_state": {
+                "shape": [
+                  9
+                ],
+                "dtype": "float32"
+              },
+              "action_mask": {
+                "shape": [
+                  2
+                ],
+                "dtype": "float32"
+              },
+              "action": {
+                "shape": [],
+                "dtype": "int32"
+              },
+              "reward": {
+                "shape": [],
+                "dtype": "float32"
+              },
+              "is_first": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "is_last": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "is_terminal": {
+                "shape": [],
+                "dtype": "bool"
+              },
+              "market_seq_e_shared": {
+                "shape": [
+                  60,
+                  18
+                ],
+                "dtype": "float32"
+              },
+              "market_context_15m": {
+                "shape": [
+                  24,
+                  7
+                ],
+                "dtype": "float32"
+              },
+              "market_macd_5m": {
+                "shape": [
+                  4
+                ],
+                "dtype": "float32"
+              }
+            },
+            "encoder_keys": [
+              "market_seq_e_shared",
+              "position_state",
+              "action_mask",
+              "market_context_15m",
+              "market_macd_5m"
+            ],
+            "decoder_keys": [
+              "market_seq_e_shared",
+              "position_state"
+            ],
+            "audit_only": [
+              "market_seq"
+            ],
+            "context_fields": [
+              "rel_open",
+              "rel_high",
+              "rel_low",
+              "rel_close",
+              "vol_relative",
+              "oi_change",
+              "valid"
+            ],
+            "macd_5m": {
+              "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+              "periods": [
+                12,
+                26,
+                9
+              ],
+              "histogram": "DIF-Signal",
+              "initialization": "first_complete_close; first_DIF_and_signal_zero",
+              "warmup": "35_complete_buckets_strictly_before_current_bucket",
+              "scale": "1000*raw/current_visible_1m_Close",
+              "invalid": "all_zero",
+              "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+              "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+              "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+              "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+              "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+              "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+            },
+            "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+          },
+          "source_model": {
+            "protocol": "FG_S3_F1_SOURCE_V1",
+            "run_identity_sha256": "b62c60b24b35818e656d7db142afe170611bfa719e8199ebea66cf545328a7d2",
+            "manifest_sha256": "f19dd4719f551cc674432662d1f93a51f169ef2d3845077a39542719d329ce0b",
+            "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f1/run/ckpt/step_000000000004",
+            "run": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f1/run",
+            "identity": {
+              "protocol": "FG_S3_E_QUALITY_F1_RUN_V1",
+              "backend": "external_immutable_course_reader",
+              "preparation": {
+                "protocol": "FG_S3_E_QUALITY_FOUNDATION_WM_V1",
+                "course_stage": "FOUNDATION_WM",
+                "sampling_stage": "WM_NATURAL",
+                "sampling_spec": {
+                  "mode": "NATURAL"
+                },
+                "source": "8bb47cfaee5cea91e5bbfeb1263d1dc22611cb6f50a96eaa6566cf1e140d2210",
+                "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+                "observation": {
+                  "observation_schema": "FG_S3_E_OBSERVATION_V2",
+                  "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+                  "decoder_schema": "FG_S3_E_DECODER_V1",
+                  "fields": {
+                    "market_seq": {
+                      "shape": [
+                        60,
+                        18
+                      ],
+                      "dtype": "float32"
+                    },
+                    "position_state": {
+                      "shape": [
+                        9
+                      ],
+                      "dtype": "float32"
+                    },
+                    "action_mask": {
+                      "shape": [
+                        2
+                      ],
+                      "dtype": "float32"
+                    },
+                    "action": {
+                      "shape": [],
+                      "dtype": "int32"
+                    },
+                    "reward": {
+                      "shape": [],
+                      "dtype": "float32"
+                    },
+                    "is_first": {
+                      "shape": [],
+                      "dtype": "bool"
+                    },
+                    "is_last": {
+                      "shape": [],
+                      "dtype": "bool"
+                    },
+                    "is_terminal": {
+                      "shape": [],
+                      "dtype": "bool"
+                    },
+                    "market_seq_e_shared": {
+                      "shape": [
+                        60,
+                        18
+                      ],
+                      "dtype": "float32"
+                    },
+                    "market_context_15m": {
+                      "shape": [
+                        24,
+                        7
+                      ],
+                      "dtype": "float32"
+                    },
+                    "market_macd_5m": {
+                      "shape": [
+                        4
+                      ],
+                      "dtype": "float32"
+                    }
+                  },
+                  "encoder_keys": [
+                    "market_seq_e_shared",
+                    "position_state",
+                    "action_mask",
+                    "market_context_15m",
+                    "market_macd_5m"
+                  ],
+                  "decoder_keys": [
+                    "market_seq_e_shared",
+                    "position_state"
+                  ],
+                  "audit_only": [
+                    "market_seq"
+                  ],
+                  "context_fields": [
+                    "rel_open",
+                    "rel_high",
+                    "rel_low",
+                    "rel_close",
+                    "vol_relative",
+                    "oi_change",
+                    "valid"
+                  ],
+                  "macd_5m": {
+                    "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+                    "periods": [
+                      12,
+                      26,
+                      9
+                    ],
+                    "histogram": "DIF-Signal",
+                    "initialization": "first_complete_close; first_DIF_and_signal_zero",
+                    "warmup": "35_complete_buckets_strictly_before_current_bucket",
+                    "scale": "1000*raw/current_visible_1m_Close",
+                    "invalid": "all_zero",
+                    "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+                    "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+                    "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+                    "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+                    "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+                    "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+                  },
+                  "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+                },
+                "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                "model": {
+                  "logdir": "~/logdir/{timestamp}",
+                  "replica": 0,
+                  "replicas": 1,
+                  "method": "name",
+                  "task": "dummy_disc",
+                  "seed": 202,
+                  "experiment_seed": 0,
+                  "dreamer": {
+                    "seed": 202
+                  },
+                  "fg_entry": {
+                    "manifest": ""
+                  },
+                  "fg_single3_offline": {
+                    "profile": "pilot_2k",
+                    "enabled": false,
+                    "authorized": false,
+                    "dataset": "",
+                    "coverage": "",
+                    "horizon": "",
+                    "candidate": "",
+                    "pool": "",
+                    "identity_hash": ""
+                  },
+                  "audit": {
+                    "matched_random_seed": 20260615,
+                    "entry_eval_version": "",
+                    "entry_eval_config": "",
+                    "split_manifest_hash": "",
+                    "execution_timing": ""
+                  },
+                  "walk_forward_guard": {
+                    "enabled": true,
+                    "allow_non_holdout_training": false,
+                    "data_root": "/data/logdir/trading_contracts"
+                  },
+                  "walk_forward_guard_result": {
+                    "status": "",
+                    "reason": "",
+                    "role_map_source": "",
+                    "entry_eval_version": "",
+                    "entry_eval_config": "",
+                    "split_manifest_path": "",
+                    "split_manifest_hash": "",
+                    "split_fold_name": "",
+                    "env_config_path": "",
+                    "training_market_csv": "",
+                    "training_data": {
+                      "path": "",
+                      "min_day": 0,
+                      "max_day": 0,
+                      "first_timestamp": "",
+                      "last_timestamp": ""
+                    },
+                    "roles": {
+                      "train": {
+                        "min_day": 0,
+                        "max_day": 0,
+                        "days": 0
+                      },
+                      "validation": {
+                        "min_day": 0,
+                        "max_day": 0,
+                        "days": 0
+                      },
+                      "test": {
+                        "min_day": 0,
+                        "max_day": 0,
+                        "days": 0
+                      }
+                    },
+                    "execution_timing": "",
+                    "manifest_execution_timing": "",
+                    "validation_overlap_days": [
+                      0
+                    ],
+                    "validation_overlap_count": 0,
+                    "test_overlap_days": [
+                      0
+                    ],
+                    "test_overlap_count": 0,
+                    "training_min_before_split_train": false,
+                    "training_max_exceeds_split_train": false,
+                    "problems": [
+                      ""
+                    ]
+                  },
+                  "seed_protocol": {
+                    "experiment_seed": 0,
+                    "dreamer_seed": 0,
+                    "train_env_seed": 101,
+                    "replay_seed": 202,
+                    "eval_env_seed": 0,
+                    "matched_random_seed": 20260615,
+                    "config_seed": 0,
+                    "config_seed_sync": "",
+                    "dreamer_seed_source": "dreamer.seed",
+                    "train_env_seed_source": "experiment_seed*1000+101",
+                    "replay_seed_source": "experiment_seed*1000+202",
+                    "eval_env_seed_source": "env.eval_seed",
+                    "matched_random_seed_source": "audit.matched_random_seed",
+                    "entry_eval_version": "",
+                    "entry_eval_config": "",
+                    "split_manifest_hash": "",
+                    "execution_timing": "",
+                    "train_env_seed_usage": "",
+                    "replay_seed_usage": "",
+                    "eval_env_seed_usage": "",
+                    "eval_policy_mode": "",
+                    "matched_random_seed_usage": "",
+                    "gymnasium_constructor_seed_usage": "",
+                    "eval_determinism": ""
+                  },
+                  "script": "train",
+                  "batch_size": 1,
+                  "batch_length": 96,
+                  "report_length": 96,
+                  "consec_train": 1,
+                  "consec_report": 1,
+                  "replay_context": 1,
+                  "random_agent": false,
+                  "action_mask_warmup": {
+                    "enabled": true,
+                    "min_train_samples": 25000,
+                    "consecutive_reports": 5,
+                    "regression_reports": 5,
+                    "stop_on_regression": true,
+                    "post_accuracy": 0.995,
+                    "post_exact": 0.99,
+                    "prior_accuracy": 0.99,
+                    "prior_exact": 0.98,
+                    "prior_fpr": 0.005,
+                    "img_fallback": 0.0001,
+                    "add_recall_enabled": true,
+                    "min_add_positives": 16,
+                    "post_add_recall": 0.8,
+                    "prior_add_recall": 0.8
+                  },
+                  "clock_addr": "",
+                  "clock_port": "",
+                  "ipv6": false,
+                  "errfile": false,
+                  "logger": {
+                    "outputs": [
+                      "tensorboard",
+                      "jsonl",
+                      "scope"
+                    ],
+                    "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+                    "timer": true,
+                    "fps": 15,
+                    "user": ""
+                  },
+                  "env": {
+                    "train_seed": 0,
+                    "eval_seed": 0,
+                    "atari": {
+                      "size": [
+                        96,
+                        96
+                      ],
+                      "repeat": 4,
+                      "sticky": true,
+                      "gray": true,
+                      "actions": "all",
+                      "lives": "unused",
+                      "noops": 30,
+                      "autostart": false,
+                      "pooling": 2,
+                      "aggregate": "max",
+                      "resize": "pillow",
+                      "clip_reward": false
+                    },
+                    "procgen": {
+                      "size": [
+                        96,
+                        96
+                      ],
+                      "resize": "pillow"
+                    },
+                    "crafter": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "logs": false
+                    },
+                    "atari100k": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "repeat": 4,
+                      "sticky": false,
+                      "gray": false,
+                      "actions": "needed",
+                      "lives": "unused",
+                      "noops": 30,
+                      "autostart": false,
+                      "resize": "pillow",
+                      "clip_reward": false
+                    },
+                    "dmlab": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "repeat": 4,
+                      "episodic": true,
+                      "use_seed": true
+                    },
+                    "minecraft": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "break_speed": 100.0,
+                      "logs": false,
+                      "length": 36000
+                    },
+                    "dmc": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "repeat": 1,
+                      "proprio": true,
+                      "image": true,
+                      "camera": -1
+                    },
+                    "loconav": {
+                      "size": [
+                        64,
+                        64
+                      ],
+                      "repeat": 1,
+                      "camera": -1
+                    },
+                    "gymnasium": {
+                      "config_path": ""
+                    }
+                  },
+                  "replay": {
+                    "seed": 0,
+                    "size": 5000000.0,
+                    "online": true,
+                    "fracs": {
+                      "uniform": 1.0,
+                      "priority": 0.0,
+                      "recency": 0.0
+                    },
+                    "prio": {
+                      "exponent": 0.8,
+                      "maxfrac": 0.5,
+                      "initial": "inf",
+                      "zero_on_sample": true
+                    },
+                    "priosignal": "model",
+                    "recexp": 1.0,
+                    "chunksize": 1024
+                  },
+                  "run": {
+                    "env_checkpoint": false,
+                    "fg_single3_offline": false,
+                    "fg_single3_identity": "",
+                    "replay_dir": "",
+                    "steps": 10000000000.0,
+                    "duration": 0,
+                    "train_ratio": 32.0,
+                    "log_every": 120,
+                    "report_every": 300,
+                    "save_every": 900,
+                    "envs": 16,
+                    "eval_envs": 4,
+                    "eval_eps": 1,
+                    "report_batches": 1,
+                    "from_checkpoint": "",
+                    "fg_stage_transfer": "",
+                    "fg_source_steps": 0,
+                    "fg_learning_audit": false,
+                    "fg_full_checkpoint": false,
+                    "fg_report_every_steps": 5000,
+                    "fg_save_every_steps": 10000,
+                    "fg_key_steps": [
+                      70000,
+                      100000,
+                      700000,
+                      1000000
+                    ],
+                    "fg_reserve_gib": 10,
+                    "fg_keep_all_checkpoints": false,
+                    "fg_single3_audit": false,
+                    "checkpoint_retention": {
+                      "enabled": false,
+                      "steps": [
+                        0
+                      ],
+                      "directory": "ckpt_retained"
+                    },
+                    "episode_timeout": 180,
+                    "actor_addr": "localhost:{auto}",
+                    "replay_addr": "localhost:{auto}",
+                    "logger_addr": "localhost:{auto}",
+                    "actor_batch": -1,
+                    "actor_threads": 1,
+                    "agent_process": false,
+                    "remote_replay": false,
+                    "remote_envs": false,
+                    "usage": {
+                      "psutil": true,
+                      "nvsmi": true,
+                      "gputil": false,
+                      "malloc": false,
+                      "gc": false
+                    },
+                    "debug": true
+                  },
+                  "jax": {
+                    "platform": "cuda",
+                    "compute_dtype": "float32",
+                    "policy_devices": [
+                      0
+                    ],
+                    "train_devices": [
+                      0
+                    ],
+                    "mock_devices": 0,
+                    "prealloc": true,
+                    "jit": true,
+                    "debug": false,
+                    "expect_devices": 0,
+                    "enable_policy": true,
+                    "sync_train_metrics": false,
+                    "precompile": true,
+                    "profiler": true,
+                    "coordinator_address": ""
+                  },
+                  "agent": {
+                    "replay_context_mode": "recompute_prefix",
+                    "update_diagnostics": true,
+                    "loss_scales": {
+                      "rec": 1.0,
+                      "rew": 1.0,
+                      "con": 1.0,
+                      "dyn": 1.0,
+                      "rep": 0.1,
+                      "avail_post": 1.0,
+                      "avail_prior": 1.0,
+                      "policy": 1.0,
+                      "value": 1.0,
+                      "repval": 0.3
+                    },
+                    "opt": {
+                      "lr": 4e-05,
+                      "agc": 0.3,
+                      "eps": 1e-20,
+                      "beta1": 0.9,
+                      "beta2": 0.999,
+                      "momentum": true,
+                      "wd": 0.0,
+                      "schedule": "const",
+                      "warmup": 1000,
+                      "anneal": 0
+                    },
+                    "ac_grads": false,
+                    "dyn": {
+                      "typ": "rssm",
+                      "rssm": {
+                        "deter": 512,
+                        "hidden": 64,
+                        "stoch": 32,
+                        "classes": 4,
+                        "act": "silu",
+                        "norm": "rms",
+                        "unimix": 0.01,
+                        "outscale": 1.0,
+                        "winit": "trunc_normal_in",
+                        "imglayers": 2,
+                        "obslayers": 1,
+                        "dynlayers": 1,
+                        "absolute": false,
+                        "blocks": 8,
+                        "free_nats": 1.0
+                      }
+                    },
+                    "enc": {
+                      "typ": "e_multiscale_1m15m",
+                      "simple": {
+                        "depth": 4,
+                        "mults": [
+                          2,
+                          3,
+                          4,
+                          4
+                        ],
+                        "layers": 3,
+                        "units": 64,
+                        "act": "silu",
+                        "norm": "rms",
+                        "winit": "trunc_normal_in",
+                        "symlog": true,
+                        "outer": false,
+                        "kernel": 5,
+                        "strided": false
+                      },
+                      "e_multiscale_1m15m": {
+                        "units": 64,
+                        "norm": "rms",
+                        "act": "silu",
+                        "symlog": true,
+                        "winit": "trunc_normal_in",
+                        "layers": 3,
+                        "context_units": 128
+                      }
+                    },
+                    "dec": {
+                      "typ": "simple",
+                      "simple": {
+                        "depth": 4,
+                        "mults": [
+                          2,
+                          3,
+                          4,
+                          4
+                        ],
+                        "layers": 3,
+                        "units": 64,
+                        "act": "silu",
+                        "norm": "rms",
+                        "outscale": 1.0,
+                        "winit": "trunc_normal_in",
+                        "outer": false,
+                        "kernel": 5,
+                        "bspace": 8,
+                        "strided": false
+                      }
+                    },
+                    "rewhead": {
+                      "layers": 1,
+                      "units": 64,
+                      "act": "silu",
+                      "norm": "rms",
+                      "output": "symexp_twohot",
+                      "outscale": 0.0,
+                      "winit": "trunc_normal_in",
+                      "bins": 255
+                    },
+                    "conhead": {
+                      "layers": 1,
+                      "units": 64,
+                      "act": "silu",
+                      "norm": "rms",
+                      "output": "binary",
+                      "outscale": 1.0,
+                      "winit": "trunc_normal_in"
+                    },
+                    "availhead": {
+                      "layers": 2,
+                      "units": 64,
+                      "act": "silu",
+                      "norm": "rms",
+                      "output": "binary",
+                      "outscale": 1.0,
+                      "winit": "trunc_normal_in"
+                    },
+                    "policy": {
+                      "layers": 3,
+                      "units": 64,
+                      "act": "silu",
+                      "norm": "rms",
+                      "minstd": 0.2,
+                      "maxstd": 1.0,
+                      "outscale": 0.01,
+                      "unimix": 0.05,
+                      "winit": "trunc_normal_in"
+                    },
+                    "value": {
+                      "layers": 3,
+                      "units": 64,
+                      "act": "silu",
+                      "norm": "rms",
+                      "output": "symexp_twohot",
+                      "outscale": 0.0,
+                      "winit": "trunc_normal_in",
+                      "bins": 255
+                    },
+                    "policy_dist_disc": "categorical",
+                    "policy_dist_cont": "bounded_normal",
+                    "imag_last": 0,
+                    "imag_length": 15,
+                    "horizon": 333,
+                    "contdisc": true,
+                    "imag_loss": {
+                      "slowtar": false,
+                      "lam": 0.95,
+                      "actent": 0.01,
+                      "slowreg": 1.0
+                    },
+                    "repl_loss": {
+                      "slowtar": false,
+                      "lam": 0.95,
+                      "slowreg": 1.0
+                    },
+                    "slowvalue": {
+                      "rate": 0.02,
+                      "every": 1
+                    },
+                    "retnorm": {
+                      "impl": "perc",
+                      "rate": 0.01,
+                      "limit": 1.0,
+                      "perclo": 5.0,
+                      "perchi": 95.0,
+                      "debias": false
+                    },
+                    "valnorm": {
+                      "impl": "none",
+                      "rate": 0.01,
+                      "limit": 1e-08
+                    },
+                    "advnorm": {
+                      "impl": "none",
+                      "rate": 0.01,
+                      "limit": 1e-08
+                    },
+                    "reward_grad": true,
+                    "avail_post_grad": true,
+                    "avail_prior_grad": true,
+                    "avail_threshold": 0.3,
+                    "avail_always_available_index": 0,
+                    "avail_actor_enabled": false,
+                    "repval_loss": true,
+                    "repval_grad": true,
+                    "report": true,
+                    "report_gradnorms": false,
+                    "s3_clock_protocol": "S3_MARKET_MINUTE"
+                  }
+                },
+                "model_init": {
+                  "seed": 202,
+                  "presets": [
+                    "size1m"
+                  ]
+                },
+                "batch_size": 1,
+                "target_steps": 64,
+                "burnin_steps": 32,
+                "optimizer_updates": 4,
+                "report_every_updates": 1,
+                "save_every_updates": 2,
+                "device": "cpu",
+                "code": {
+                  "gym": {
+                    "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+                    "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+                  },
+                  "dreamer": {
+                    "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+                    "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+                  }
+                },
+                "checkpoint_backend": "external_immutable_course_reader",
+                "parameter_policy": {
+                  "enc/": "TRAIN",
+                  "dyn/": "TRAIN",
+                  "dec/": "TRAIN",
+                  "rew/": "TRAIN",
+                  "con/": "TRAIN",
+                  "avail/": "TRAIN",
+                  "pol/": "FROZEN",
+                  "val/": "FROZEN",
+                  "slowval/": "FROZEN",
+                  "quality_event/": "FROZEN",
+                  "quality_touch/": "FROZEN",
+                  "quality_adverse/": "FROZEN",
+                  "quality_score/": "FROZEN",
+                  "quality_q_c1/": "FROZEN",
+                  "quality_q_v2/": "FROZEN",
+                  "quality_actor/": "FROZEN"
+                }
+              },
+              "index_sha256": "63940b5e003948260f008e372d0f67bff361316479ccff12091616003ad55359",
+              "index_receipt_sha256": "57eda3192bcc7d3e1e8872f7339286c0189d3a3e915c129569730708ebe6464b",
+              "code": {
+                "gym": {
+                  "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+                  "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+                },
+                "dreamer": {
+                  "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+                  "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+                }
+              },
+              "packages": {
+                "jax": "0.4.33",
+                "jaxlib": "0.4.33",
+                "ninjax": "3.5.1",
+                "optax": "0.2.4",
+                "numpy": "1.26.4",
+                "elements": "3.20.0",
+                "gymnasium": "1.0.0",
+                "pandas": "2.2.3",
+                "portal": "3.5.1",
+                "cloudpickle": "3.1.0"
+              },
+              "controlled_small": true,
+              "carry_rule": "FRESH_PER_RANDOM_WINDOW",
+              "training_admitted": false,
+              "effective_model": {
+                "logdir": "~/logdir/{timestamp}",
+                "replica": 0,
+                "replicas": 1,
+                "method": "name",
+                "task": "dummy_disc",
+                "seed": 202,
+                "experiment_seed": 0,
+                "dreamer": {
+                  "seed": 0
+                },
+                "fg_entry": {
+                  "manifest": ""
+                },
+                "fg_single3_offline": {
+                  "profile": "pilot_2k",
+                  "enabled": false,
+                  "authorized": false,
+                  "dataset": "",
+                  "coverage": "",
+                  "horizon": "",
+                  "candidate": "",
+                  "pool": "",
+                  "identity_hash": ""
+                },
+                "audit": {
+                  "matched_random_seed": 20260615,
+                  "entry_eval_version": "",
+                  "entry_eval_config": "",
+                  "split_manifest_hash": "",
+                  "execution_timing": ""
+                },
+                "walk_forward_guard": {
+                  "enabled": true,
+                  "allow_non_holdout_training": false,
+                  "data_root": "/data/logdir/trading_contracts"
+                },
+                "walk_forward_guard_result": {
+                  "status": "",
+                  "reason": "",
+                  "role_map_source": "",
+                  "entry_eval_version": "",
+                  "entry_eval_config": "",
+                  "split_manifest_path": "",
+                  "split_manifest_hash": "",
+                  "split_fold_name": "",
+                  "env_config_path": "",
+                  "training_market_csv": "",
+                  "training_data": {
+                    "path": "",
+                    "min_day": 0,
+                    "max_day": 0,
+                    "first_timestamp": "",
+                    "last_timestamp": ""
+                  },
+                  "roles": {
+                    "train": {
+                      "min_day": 0,
+                      "max_day": 0,
+                      "days": 0
+                    },
+                    "validation": {
+                      "min_day": 0,
+                      "max_day": 0,
+                      "days": 0
+                    },
+                    "test": {
+                      "min_day": 0,
+                      "max_day": 0,
+                      "days": 0
+                    }
+                  },
+                  "execution_timing": "",
+                  "manifest_execution_timing": "",
+                  "validation_overlap_days": [
+                    0
+                  ],
+                  "validation_overlap_count": 0,
+                  "test_overlap_days": [
+                    0
+                  ],
+                  "test_overlap_count": 0,
+                  "training_min_before_split_train": false,
+                  "training_max_exceeds_split_train": false,
+                  "problems": [
+                    ""
+                  ]
+                },
+                "seed_protocol": {
+                  "experiment_seed": 0,
+                  "dreamer_seed": 0,
+                  "train_env_seed": 101,
+                  "replay_seed": 202,
+                  "eval_env_seed": 0,
+                  "matched_random_seed": 20260615,
+                  "config_seed": 0,
+                  "config_seed_sync": "",
+                  "dreamer_seed_source": "dreamer.seed",
+                  "train_env_seed_source": "experiment_seed*1000+101",
+                  "replay_seed_source": "experiment_seed*1000+202",
+                  "eval_env_seed_source": "env.eval_seed",
+                  "matched_random_seed_source": "audit.matched_random_seed",
+                  "entry_eval_version": "",
+                  "entry_eval_config": "",
+                  "split_manifest_hash": "",
+                  "execution_timing": "",
+                  "train_env_seed_usage": "",
+                  "replay_seed_usage": "",
+                  "eval_env_seed_usage": "",
+                  "eval_policy_mode": "",
+                  "matched_random_seed_usage": "",
+                  "gymnasium_constructor_seed_usage": "",
+                  "eval_determinism": ""
+                },
+                "script": "train",
+                "batch_size": 1,
+                "batch_length": 96,
+                "report_length": 96,
+                "consec_train": 1,
+                "consec_report": 1,
+                "replay_context": 1,
+                "random_agent": false,
+                "action_mask_warmup": {
+                  "enabled": false,
+                  "min_train_samples": 25000,
+                  "consecutive_reports": 5,
+                  "regression_reports": 5,
+                  "stop_on_regression": true,
+                  "post_accuracy": 0.995,
+                  "post_exact": 0.99,
+                  "prior_accuracy": 0.99,
+                  "prior_exact": 0.98,
+                  "prior_fpr": 0.005,
+                  "img_fallback": 0.0001,
+                  "add_recall_enabled": false,
+                  "min_add_positives": 16,
+                  "post_add_recall": 0.8,
+                  "prior_add_recall": 0.8
+                },
+                "clock_addr": "",
+                "clock_port": "",
+                "ipv6": false,
+                "errfile": false,
+                "logger": {
+                  "outputs": [
+                    "tensorboard",
+                    "jsonl",
+                    "scope"
+                  ],
+                  "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+                  "timer": true,
+                  "fps": 15,
+                  "user": ""
+                },
+                "env": {
+                  "train_seed": 0,
+                  "eval_seed": 0,
+                  "atari": {
+                    "size": [
+                      96,
+                      96
+                    ],
+                    "repeat": 4,
+                    "sticky": true,
+                    "gray": true,
+                    "actions": "all",
+                    "lives": "unused",
+                    "noops": 30,
+                    "autostart": false,
+                    "pooling": 2,
+                    "aggregate": "max",
+                    "resize": "pillow",
+                    "clip_reward": false
+                  },
+                  "procgen": {
+                    "size": [
+                      96,
+                      96
+                    ],
+                    "resize": "pillow"
+                  },
+                  "crafter": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "logs": false
+                  },
+                  "atari100k": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "repeat": 4,
+                    "sticky": false,
+                    "gray": false,
+                    "actions": "needed",
+                    "lives": "unused",
+                    "noops": 30,
+                    "autostart": false,
+                    "resize": "pillow",
+                    "clip_reward": false
+                  },
+                  "dmlab": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "repeat": 4,
+                    "episodic": true,
+                    "use_seed": true
+                  },
+                  "minecraft": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "break_speed": 100.0,
+                    "logs": false,
+                    "length": 36000
+                  },
+                  "dmc": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "repeat": 1,
+                    "proprio": true,
+                    "image": true,
+                    "camera": -1
+                  },
+                  "loconav": {
+                    "size": [
+                      64,
+                      64
+                    ],
+                    "repeat": 1,
+                    "camera": -1
+                  },
+                  "gymnasium": {
+                    "config_path": ""
+                  }
+                },
+                "replay": {
+                  "seed": 0,
+                  "size": 5000000.0,
+                  "online": true,
+                  "fracs": {
+                    "uniform": 1.0,
+                    "priority": 0.0,
+                    "recency": 0.0
+                  },
+                  "prio": {
+                    "exponent": 0.8,
+                    "maxfrac": 0.5,
+                    "initial": "inf",
+                    "zero_on_sample": true
+                  },
+                  "priosignal": "model",
+                  "recexp": 1.0,
+                  "chunksize": 1024
+                },
+                "run": {
+                  "env_checkpoint": false,
+                  "fg_single3_offline": false,
+                  "fg_single3_identity": "",
+                  "replay_dir": "",
+                  "steps": 10000000000.0,
+                  "duration": 0,
+                  "train_ratio": 32.0,
+                  "log_every": 120,
+                  "report_every": 300,
+                  "save_every": 900,
+                  "envs": 16,
+                  "eval_envs": 4,
+                  "eval_eps": 1,
+                  "report_batches": 1,
+                  "from_checkpoint": "",
+                  "fg_stage_transfer": "",
+                  "fg_source_steps": 0,
+                  "fg_learning_audit": false,
+                  "fg_full_checkpoint": false,
+                  "fg_report_every_steps": 5000,
+                  "fg_save_every_steps": 10000,
+                  "fg_key_steps": [
+                    70000,
+                    100000,
+                    700000,
+                    1000000
+                  ],
+                  "fg_reserve_gib": 10,
+                  "fg_keep_all_checkpoints": false,
+                  "fg_single3_audit": false,
+                  "checkpoint_retention": {
+                    "enabled": false,
+                    "steps": [
+                      0
+                    ],
+                    "directory": "ckpt_retained"
+                  },
+                  "episode_timeout": 180,
+                  "actor_addr": "localhost:{auto}",
+                  "replay_addr": "localhost:{auto}",
+                  "logger_addr": "localhost:{auto}",
+                  "actor_batch": -1,
+                  "actor_threads": 1,
+                  "agent_process": false,
+                  "remote_replay": false,
+                  "remote_envs": false,
+                  "usage": {
+                    "psutil": true,
+                    "nvsmi": true,
+                    "gputil": false,
+                    "malloc": false,
+                    "gc": false
+                  },
+                  "debug": true
+                },
+                "jax": {
+                  "platform": "cuda",
+                  "compute_dtype": "float32",
+                  "policy_devices": [
+                    0
+                  ],
+                  "train_devices": [
+                    0
+                  ],
+                  "mock_devices": 0,
+                  "prealloc": true,
+                  "jit": true,
+                  "debug": false,
+                  "expect_devices": 0,
+                  "enable_policy": true,
+                  "sync_train_metrics": false,
+                  "precompile": true,
+                  "profiler": true,
+                  "coordinator_address": ""
+                },
+                "agent": {
+                  "replay_context_mode": "recompute_prefix",
+                  "update_diagnostics": true,
+                  "loss_scales": {
+                    "rec": 1.0,
+                    "rew": 1.0,
+                    "con": 1.0,
+                    "dyn": 1.0,
+                    "rep": 0.1,
+                    "avail_post": 1.0,
+                    "avail_prior": 1.0,
+                    "policy": 1.0,
+                    "value": 1.0,
+                    "repval": 0.3
+                  },
+                  "opt": {
+                    "lr": 4e-05,
+                    "agc": 0.3,
+                    "eps": 1e-20,
+                    "beta1": 0.9,
+                    "beta2": 0.999,
+                    "momentum": true,
+                    "wd": 0.0,
+                    "schedule": "const",
+                    "warmup": 1000,
+                    "anneal": 0
+                  },
+                  "ac_grads": false,
+                  "dyn": {
+                    "typ": "rssm",
+                    "rssm": {
+                      "deter": 32,
+                      "hidden": 16,
+                      "stoch": 2,
+                      "classes": 4,
+                      "act": "silu",
+                      "norm": "rms",
+                      "unimix": 0.01,
+                      "outscale": 1.0,
+                      "winit": "trunc_normal_in",
+                      "imglayers": 2,
+                      "obslayers": 1,
+                      "dynlayers": 1,
+                      "absolute": false,
+                      "blocks": 4,
+                      "free_nats": 1.0
+                    }
+                  },
+                  "enc": {
+                    "typ": "e_multiscale_1m15m",
+                    "simple": {
+                      "depth": 64,
+                      "mults": [
+                        2,
+                        3,
+                        4,
+                        4
+                      ],
+                      "layers": 1,
+                      "units": 16,
+                      "act": "silu",
+                      "norm": "rms",
+                      "winit": "trunc_normal_in",
+                      "symlog": true,
+                      "outer": false,
+                      "kernel": 5,
+                      "strided": false
+                    },
+                    "e_multiscale_1m15m": {
+                      "units": 16,
+                      "norm": "rms",
+                      "act": "silu",
+                      "symlog": true,
+                      "winit": "trunc_normal_in",
+                      "layers": 3,
+                      "context_units": 128
+                    }
+                  },
+                  "dec": {
+                    "typ": "simple",
+                    "simple": {
+                      "depth": 64,
+                      "mults": [
+                        2,
+                        3,
+                        4,
+                        4
+                      ],
+                      "layers": 1,
+                      "units": 16,
+                      "act": "silu",
+                      "norm": "rms",
+                      "outscale": 1.0,
+                      "winit": "trunc_normal_in",
+                      "outer": false,
+                      "kernel": 5,
+                      "bspace": 8,
+                      "strided": false
+                    }
+                  },
+                  "rewhead": {
+                    "layers": 1,
+                    "units": 16,
+                    "act": "silu",
+                    "norm": "rms",
+                    "output": "symexp_twohot",
+                    "outscale": 0.0,
+                    "winit": "trunc_normal_in",
+                    "bins": 255
+                  },
+                  "conhead": {
+                    "layers": 1,
+                    "units": 16,
+                    "act": "silu",
+                    "norm": "rms",
+                    "output": "binary",
+                    "outscale": 1.0,
+                    "winit": "trunc_normal_in"
+                  },
+                  "availhead": {
+                    "layers": 2,
+                    "units": 16,
+                    "act": "silu",
+                    "norm": "rms",
+                    "output": "binary",
+                    "outscale": 1.0,
+                    "winit": "trunc_normal_in"
+                  },
+                  "policy": {
+                    "layers": 1,
+                    "units": 16,
+                    "act": "silu",
+                    "norm": "rms",
+                    "minstd": 0.2,
+                    "maxstd": 1.0,
+                    "outscale": 0.01,
+                    "unimix": 0.05,
+                    "winit": "trunc_normal_in"
+                  },
+                  "value": {
+                    "layers": 1,
+                    "units": 16,
+                    "act": "silu",
+                    "norm": "rms",
+                    "output": "symexp_twohot",
+                    "outscale": 0.0,
+                    "winit": "trunc_normal_in",
+                    "bins": 255
+                  },
+                  "policy_dist_disc": "categorical",
+                  "policy_dist_cont": "bounded_normal",
+                  "imag_last": 0,
+                  "imag_length": 3,
+                  "horizon": 333,
+                  "contdisc": true,
+                  "imag_loss": {
+                    "slowtar": false,
+                    "lam": 0.95,
+                    "actent": 0.01,
+                    "slowreg": 1.0
+                  },
+                  "repl_loss": {
+                    "slowtar": false,
+                    "lam": 0.95,
+                    "slowreg": 1.0
+                  },
+                  "slowvalue": {
+                    "rate": 0.02,
+                    "every": 1
+                  },
+                  "retnorm": {
+                    "impl": "perc",
+                    "rate": 0.01,
+                    "limit": 1.0,
+                    "perclo": 5.0,
+                    "perchi": 95.0,
+                    "debias": false
+                  },
+                  "valnorm": {
+                    "impl": "none",
+                    "rate": 0.01,
+                    "limit": 1e-08
+                  },
+                  "advnorm": {
+                    "impl": "none",
+                    "rate": 0.01,
+                    "limit": 1e-08
+                  },
+                  "reward_grad": true,
+                  "avail_post_grad": true,
+                  "avail_prior_grad": true,
+                  "avail_threshold": 0.3,
+                  "avail_always_available_index": 0,
+                  "avail_actor_enabled": false,
+                  "repval_loss": true,
+                  "repval_grad": true,
+                  "report": true,
+                  "report_gradnorms": false,
+                  "s3_clock_protocol": "S3_MARKET_MINUTE"
+                }
+              },
+              "model_extension": {
+                "quality_alpha": 0.8,
+                "quality_kappa": 1.0,
+                "quality_wmax": 2.0,
+                "quality_strict_pair_lambda": 0.0,
+                "quality_pair_lambda": 0.0,
+                "quality_soft_lambda": 0.0,
+                "quality_outcome_lambda": 0.0,
+                "quality_score_lambda": 0.0,
+                "quality_q_c1_lambda": 0.0,
+                "quality_q_v2_lambda": 0.0,
+                "quality_mono_lambda": 0.0,
+                "quality_repr_grad_scale": 0.0,
+                "quality_pair_tau": 1.0,
+                "quality_q_scale": 1.0,
+                "quality_stage": "FOUNDATION_WM",
+                "quality_f1_protocol": "FG_S3_E_QUALITY_FOUNDATION_WM_V1",
+                "quality_f1_target_steps": 64,
+                "quality_f1_burnin_steps": 32,
+                "quality_supervision_protocol": "FG_S3_E_QUALITY_SUPERVISION_V1",
+                "quality_prediction_admitted": false,
+                "quality_decision_admitted": false,
+                "quality_fuse_outcome": false,
+                "quality_fuse_score": false,
+                "quality_q_admitted": false,
+                "quality_weighting": false,
+                "quality_gradient_every_updates": 0,
+                "s3_v2_mode": "quality_v2",
+                "quality_variant": "FULL"
+              }
+            },
+            "engineering_only": true,
+            "foundation_status": "FOUNDATION_NOT_TRAINED",
+            "training_evidence": {
+              "status": "ENGINEERING_ONLY"
+            },
+            "source_stage": "F1",
+            "source_freeze": {
+              "initial_manifest_sha256": "35043fd5bfcbcbbfc5873f39c0d1e37df98dd99a2776a18afad45bce3bf75311",
+              "changed_parameters": [
+                "avail/head/logit/bias",
+                "avail/head/logit/kernel",
+                "avail/mlp/linear0/bias",
+                "avail/mlp/linear0/kernel",
+                "avail/mlp/linear1/bias",
+                "avail/mlp/linear1/kernel",
+                "avail/mlp/norm0/scale",
+                "avail/mlp/norm1/scale",
+                "con/head/logit/bias",
+                "con/head/logit/kernel",
+                "con/mlp/linear0/bias",
+                "con/mlp/linear0/kernel",
+                "con/mlp/norm0/scale",
+                "dec/mlp/linear0/bias",
+                "dec/mlp/linear0/kernel",
+                "dec/mlp/norm0/scale",
+                "dec/vec/market_seq_e_shared/pred/bias",
+                "dec/vec/market_seq_e_shared/pred/kernel",
+                "dec/vec/position_state/pred/bias",
+                "dec/vec/position_state/pred/kernel",
+                "dyn/dyngru/bias",
+                "dyn/dyngru/kernel",
+                "dyn/dynhid0/bias",
+                "dyn/dynhid0/kernel",
+                "dyn/dynhid0norm/scale",
+                "dyn/dynin0/bias",
+                "dyn/dynin0/kernel",
+                "dyn/dynin0norm/scale",
+                "dyn/dynin1/bias",
+                "dyn/dynin1/kernel",
+                "dyn/dynin1norm/scale",
+                "dyn/dynin2/bias",
+                "dyn/dynin2/kernel",
+                "dyn/dynin2norm/scale",
+                "dyn/obs0/bias",
+                "dyn/obs0/kernel",
+                "dyn/obs0norm/scale",
+                "dyn/obslogit/bias",
+                "dyn/obslogit/kernel",
+                "dyn/prior0/bias",
+                "dyn/prior0/kernel",
+                "dyn/prior0norm/scale",
+                "dyn/prior1/bias",
+                "dyn/prior1/kernel",
+                "dyn/prior1norm/scale",
+                "dyn/priorlogit/bias",
+                "dyn/priorlogit/kernel",
+                "enc/context15/bias",
+                "enc/context15/kernel",
+                "enc/fusion/bias",
+                "enc/fusion/kernel",
+                "enc/macd5/bias",
+                "enc/macd5/kernel",
+                "enc/minute/mlp0/bias",
+                "enc/minute/mlp0/kernel",
+                "enc/minute/mlp0norm/scale",
+                "enc/minute/mlp1/bias",
+                "enc/minute/mlp1/kernel",
+                "enc/minute/mlp1norm/scale",
+                "enc/minute/mlp2/bias",
+                "enc/minute/mlp2/kernel",
+                "enc/minute/mlp2norm/scale",
+                "rew/head/logits/bias",
+                "rew/head/logits/kernel",
+                "rew/mlp/linear0/bias",
+                "rew/mlp/linear0/kernel",
+                "rew/mlp/norm0/scale"
+              ],
+              "frozen_keys": [
+                "avail_actor_gate/value",
+                "opt/state/1/1/pol/head/action/logits/bias",
+                "opt/state/1/1/pol/head/action/logits/kernel",
+                "opt/state/1/1/pol/mlp/linear0/bias",
+                "opt/state/1/1/pol/mlp/linear0/kernel",
+                "opt/state/1/1/pol/mlp/norm0/scale",
+                "opt/state/1/1/qualityactor/head/action/logits/bias",
+                "opt/state/1/1/qualityactor/head/action/logits/kernel",
+                "opt/state/1/1/qualityactor/mlp/linear0/bias",
+                "opt/state/1/1/qualityactor/mlp/linear0/kernel",
+                "opt/state/1/1/qualityactor/mlp/norm0/scale",
+                "opt/state/1/1/qualityadverse/head/pred/bias",
+                "opt/state/1/1/qualityadverse/head/pred/kernel",
+                "opt/state/1/1/qualityadverse/mlp/linear0/bias",
+                "opt/state/1/1/qualityadverse/mlp/linear0/kernel",
+                "opt/state/1/1/qualityadverse/mlp/norm0/scale",
+                "opt/state/1/1/qualityevent/head/pred/bias",
+                "opt/state/1/1/qualityevent/head/pred/kernel",
+                "opt/state/1/1/qualityevent/mlp/linear0/bias",
+                "opt/state/1/1/qualityevent/mlp/linear0/kernel",
+                "opt/state/1/1/qualityevent/mlp/norm0/scale",
+                "opt/state/1/1/qualityqc1/head/pred/bias",
+                "opt/state/1/1/qualityqc1/head/pred/kernel",
+                "opt/state/1/1/qualityqc1/mlp/linear0/bias",
+                "opt/state/1/1/qualityqc1/mlp/linear0/kernel",
+                "opt/state/1/1/qualityqc1/mlp/norm0/scale",
+                "opt/state/1/1/qualityqv2/head/pred/bias",
+                "opt/state/1/1/qualityqv2/head/pred/kernel",
+                "opt/state/1/1/qualityqv2/mlp/linear0/bias",
+                "opt/state/1/1/qualityqv2/mlp/linear0/kernel",
+                "opt/state/1/1/qualityqv2/mlp/norm0/scale",
+                "opt/state/1/1/qualityscore/head/pred/bias",
+                "opt/state/1/1/qualityscore/head/pred/kernel",
+                "opt/state/1/1/qualityscore/mlp/linear0/bias",
+                "opt/state/1/1/qualityscore/mlp/linear0/kernel",
+                "opt/state/1/1/qualityscore/mlp/norm0/scale",
+                "opt/state/1/1/qualitytouch/head/pred/bias",
+                "opt/state/1/1/qualitytouch/head/pred/kernel",
+                "opt/state/1/1/qualitytouch/mlp/linear0/bias",
+                "opt/state/1/1/qualitytouch/mlp/linear0/kernel",
+                "opt/state/1/1/qualitytouch/mlp/norm0/scale",
+                "opt/state/1/1/val/head/logits/bias",
+                "opt/state/1/1/val/head/logits/kernel",
+                "opt/state/1/1/val/mlp/linear0/bias",
+                "opt/state/1/1/val/mlp/linear0/kernel",
+                "opt/state/1/1/val/mlp/norm0/scale",
+                "opt/state/2/1/pol/head/action/logits/bias",
+                "opt/state/2/1/pol/head/action/logits/kernel",
+                "opt/state/2/1/pol/mlp/linear0/bias",
+                "opt/state/2/1/pol/mlp/linear0/kernel",
+                "opt/state/2/1/pol/mlp/norm0/scale",
+                "opt/state/2/1/qualityactor/head/action/logits/bias",
+                "opt/state/2/1/qualityactor/head/action/logits/kernel",
+                "opt/state/2/1/qualityactor/mlp/linear0/bias",
+                "opt/state/2/1/qualityactor/mlp/linear0/kernel",
+                "opt/state/2/1/qualityactor/mlp/norm0/scale",
+                "opt/state/2/1/qualityadverse/head/pred/bias",
+                "opt/state/2/1/qualityadverse/head/pred/kernel",
+                "opt/state/2/1/qualityadverse/mlp/linear0/bias",
+                "opt/state/2/1/qualityadverse/mlp/linear0/kernel",
+                "opt/state/2/1/qualityadverse/mlp/norm0/scale",
+                "opt/state/2/1/qualityevent/head/pred/bias",
+                "opt/state/2/1/qualityevent/head/pred/kernel",
+                "opt/state/2/1/qualityevent/mlp/linear0/bias",
+                "opt/state/2/1/qualityevent/mlp/linear0/kernel",
+                "opt/state/2/1/qualityevent/mlp/norm0/scale",
+                "opt/state/2/1/qualityqc1/head/pred/bias",
+                "opt/state/2/1/qualityqc1/head/pred/kernel",
+                "opt/state/2/1/qualityqc1/mlp/linear0/bias",
+                "opt/state/2/1/qualityqc1/mlp/linear0/kernel",
+                "opt/state/2/1/qualityqc1/mlp/norm0/scale",
+                "opt/state/2/1/qualityqv2/head/pred/bias",
+                "opt/state/2/1/qualityqv2/head/pred/kernel",
+                "opt/state/2/1/qualityqv2/mlp/linear0/bias",
+                "opt/state/2/1/qualityqv2/mlp/linear0/kernel",
+                "opt/state/2/1/qualityqv2/mlp/norm0/scale",
+                "opt/state/2/1/qualityscore/head/pred/bias",
+                "opt/state/2/1/qualityscore/head/pred/kernel",
+                "opt/state/2/1/qualityscore/mlp/linear0/bias",
+                "opt/state/2/1/qualityscore/mlp/linear0/kernel",
+                "opt/state/2/1/qualityscore/mlp/norm0/scale",
+                "opt/state/2/1/qualitytouch/head/pred/bias",
+                "opt/state/2/1/qualitytouch/head/pred/kernel",
+                "opt/state/2/1/qualitytouch/mlp/linear0/bias",
+                "opt/state/2/1/qualitytouch/mlp/linear0/kernel",
+                "opt/state/2/1/qualitytouch/mlp/norm0/scale",
+                "opt/state/2/1/val/head/logits/bias",
+                "opt/state/2/1/val/head/logits/kernel",
+                "opt/state/2/1/val/mlp/linear0/bias",
+                "opt/state/2/1/val/mlp/linear0/kernel",
+                "opt/state/2/1/val/mlp/norm0/scale",
+                "pol/head/action/logits/bias",
+                "pol/head/action/logits/kernel",
+                "pol/mlp/linear0/bias",
+                "pol/mlp/linear0/kernel",
+                "pol/mlp/norm0/scale",
+                "quality_actor/head/action/logits/bias",
+                "quality_actor/head/action/logits/kernel",
+                "quality_actor/mlp/linear0/bias",
+                "quality_actor/mlp/linear0/kernel",
+                "quality_actor/mlp/norm0/scale",
+                "quality_adverse/head/pred/bias",
+                "quality_adverse/head/pred/kernel",
+                "quality_adverse/mlp/linear0/bias",
+                "quality_adverse/mlp/linear0/kernel",
+                "quality_adverse/mlp/norm0/scale",
+                "quality_event/head/pred/bias",
+                "quality_event/head/pred/kernel",
+                "quality_event/mlp/linear0/bias",
+                "quality_event/mlp/linear0/kernel",
+                "quality_event/mlp/norm0/scale",
+                "quality_q_c1/head/pred/bias",
+                "quality_q_c1/head/pred/kernel",
+                "quality_q_c1/mlp/linear0/bias",
+                "quality_q_c1/mlp/linear0/kernel",
+                "quality_q_c1/mlp/norm0/scale",
+                "quality_q_v2/head/pred/bias",
+                "quality_q_v2/head/pred/kernel",
+                "quality_q_v2/mlp/linear0/bias",
+                "quality_q_v2/mlp/linear0/kernel",
+                "quality_q_v2/mlp/norm0/scale",
+                "quality_score/head/pred/bias",
+                "quality_score/head/pred/kernel",
+                "quality_score/mlp/linear0/bias",
+                "quality_score/mlp/linear0/kernel",
+                "quality_score/mlp/norm0/scale",
+                "quality_touch/head/pred/bias",
+                "quality_touch/head/pred/kernel",
+                "quality_touch/mlp/linear0/bias",
+                "quality_touch/mlp/linear0/kernel",
+                "quality_touch/mlp/norm0/scale",
+                "retnorm/hi/value",
+                "retnorm/lo/value",
+                "slowval/head/logits/bias",
+                "slowval/head/logits/kernel",
+                "slowval/mlp/linear0/bias",
+                "slowval/mlp/linear0/kernel",
+                "slowval/mlp/norm0/scale",
+                "slowval_count/value",
+                "val/head/logits/bias",
+                "val/head/logits/kernel",
+                "val/mlp/linear0/bias",
+                "val/mlp/linear0/kernel",
+                "val/mlp/norm0/scale"
+              ],
+              "all_frozen_bytes_equal": true
+            }
+          },
+          "effective_model": {
+            "logdir": "~/logdir/{timestamp}",
+            "replica": 0,
+            "replicas": 1,
+            "method": "name",
+            "task": "dummy_disc",
+            "seed": 202,
+            "experiment_seed": 0,
+            "dreamer": {
+              "seed": 0
+            },
+            "fg_entry": {
+              "manifest": ""
+            },
+            "fg_single3_offline": {
+              "profile": "pilot_2k",
+              "enabled": false,
+              "authorized": false,
+              "dataset": "",
+              "coverage": "",
+              "horizon": "",
+              "candidate": "",
+              "pool": "",
+              "identity_hash": ""
+            },
+            "audit": {
+              "matched_random_seed": 20260615,
+              "entry_eval_version": "",
+              "entry_eval_config": "",
+              "split_manifest_hash": "",
+              "execution_timing": ""
+            },
+            "walk_forward_guard": {
+              "enabled": true,
+              "allow_non_holdout_training": false,
+              "data_root": "/data/logdir/trading_contracts"
+            },
+            "walk_forward_guard_result": {
+              "status": "",
+              "reason": "",
+              "role_map_source": "",
+              "entry_eval_version": "",
+              "entry_eval_config": "",
+              "split_manifest_path": "",
+              "split_manifest_hash": "",
+              "split_fold_name": "",
+              "env_config_path": "",
+              "training_market_csv": "",
+              "training_data": {
+                "path": "",
+                "min_day": 0,
+                "max_day": 0,
+                "first_timestamp": "",
+                "last_timestamp": ""
+              },
+              "roles": {
+                "train": {
+                  "min_day": 0,
+                  "max_day": 0,
+                  "days": 0
+                },
+                "validation": {
+                  "min_day": 0,
+                  "max_day": 0,
+                  "days": 0
+                },
+                "test": {
+                  "min_day": 0,
+                  "max_day": 0,
+                  "days": 0
+                }
+              },
+              "execution_timing": "",
+              "manifest_execution_timing": "",
+              "validation_overlap_days": [
+                0
+              ],
+              "validation_overlap_count": 0,
+              "test_overlap_days": [
+                0
+              ],
+              "test_overlap_count": 0,
+              "training_min_before_split_train": false,
+              "training_max_exceeds_split_train": false,
+              "problems": [
+                ""
+              ]
+            },
+            "seed_protocol": {
+              "experiment_seed": 0,
+              "dreamer_seed": 0,
+              "train_env_seed": 101,
+              "replay_seed": 202,
+              "eval_env_seed": 0,
+              "matched_random_seed": 20260615,
+              "config_seed": 0,
+              "config_seed_sync": "",
+              "dreamer_seed_source": "dreamer.seed",
+              "train_env_seed_source": "experiment_seed*1000+101",
+              "replay_seed_source": "experiment_seed*1000+202",
+              "eval_env_seed_source": "env.eval_seed",
+              "matched_random_seed_source": "audit.matched_random_seed",
+              "entry_eval_version": "",
+              "entry_eval_config": "",
+              "split_manifest_hash": "",
+              "execution_timing": "",
+              "train_env_seed_usage": "",
+              "replay_seed_usage": "",
+              "eval_env_seed_usage": "",
+              "eval_policy_mode": "",
+              "matched_random_seed_usage": "",
+              "gymnasium_constructor_seed_usage": "",
+              "eval_determinism": ""
+            },
+            "script": "train",
+            "batch_size": 1,
+            "batch_length": 12,
+            "report_length": 12,
+            "consec_train": 1,
+            "consec_report": 1,
+            "replay_context": 1,
+            "random_agent": false,
+            "action_mask_warmup": {
+              "enabled": false,
+              "min_train_samples": 25000,
+              "consecutive_reports": 5,
+              "regression_reports": 5,
+              "stop_on_regression": true,
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.99,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.005,
+              "img_fallback": 0.0001,
+              "add_recall_enabled": false,
+              "min_add_positives": 16,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "clock_addr": "",
+            "clock_port": "",
+            "ipv6": false,
+            "errfile": false,
+            "logger": {
+              "outputs": [
+                "tensorboard",
+                "jsonl",
+                "scope"
+              ],
+              "filter": "score|length|fps|ratio|train/loss/|train/rand/|train/avail/|action_mask_warmup/|action_mask_gate_eval/|env/",
+              "timer": true,
+              "fps": 15,
+              "user": ""
+            },
+            "env": {
+              "train_seed": 0,
+              "eval_seed": 0,
+              "atari": {
+                "size": [
+                  96,
+                  96
+                ],
+                "repeat": 4,
+                "sticky": true,
+                "gray": true,
+                "actions": "all",
+                "lives": "unused",
+                "noops": 30,
+                "autostart": false,
+                "pooling": 2,
+                "aggregate": "max",
+                "resize": "pillow",
+                "clip_reward": false
+              },
+              "procgen": {
+                "size": [
+                  96,
+                  96
+                ],
+                "resize": "pillow"
+              },
+              "crafter": {
+                "size": [
+                  64,
+                  64
+                ],
+                "logs": false
+              },
+              "atari100k": {
+                "size": [
+                  64,
+                  64
+                ],
+                "repeat": 4,
+                "sticky": false,
+                "gray": false,
+                "actions": "needed",
+                "lives": "unused",
+                "noops": 30,
+                "autostart": false,
+                "resize": "pillow",
+                "clip_reward": false
+              },
+              "dmlab": {
+                "size": [
+                  64,
+                  64
+                ],
+                "repeat": 4,
+                "episodic": true,
+                "use_seed": true
+              },
+              "minecraft": {
+                "size": [
+                  64,
+                  64
+                ],
+                "break_speed": 100.0,
+                "logs": false,
+                "length": 36000
+              },
+              "dmc": {
+                "size": [
+                  64,
+                  64
+                ],
+                "repeat": 1,
+                "proprio": true,
+                "image": true,
+                "camera": -1
+              },
+              "loconav": {
+                "size": [
+                  64,
+                  64
+                ],
+                "repeat": 1,
+                "camera": -1
+              },
+              "gymnasium": {
+                "config_path": ""
+              }
+            },
+            "replay": {
+              "seed": 0,
+              "size": 5000000.0,
+              "online": true,
+              "fracs": {
+                "uniform": 1.0,
+                "priority": 0.0,
+                "recency": 0.0
+              },
+              "prio": {
+                "exponent": 0.8,
+                "maxfrac": 0.5,
+                "initial": "inf",
+                "zero_on_sample": true
+              },
+              "priosignal": "model",
+              "recexp": 1.0,
+              "chunksize": 1024
+            },
+            "run": {
+              "env_checkpoint": false,
+              "fg_single3_offline": false,
+              "fg_single3_identity": "",
+              "replay_dir": "",
+              "steps": 10000000000.0,
+              "duration": 0,
+              "train_ratio": 32.0,
+              "log_every": 120,
+              "report_every": 300,
+              "save_every": 900,
+              "envs": 16,
+              "eval_envs": 4,
+              "eval_eps": 1,
+              "report_batches": 1,
+              "from_checkpoint": "",
+              "fg_stage_transfer": "",
+              "fg_source_steps": 0,
+              "fg_learning_audit": false,
+              "fg_full_checkpoint": false,
+              "fg_report_every_steps": 5000,
+              "fg_save_every_steps": 10000,
+              "fg_key_steps": [
+                70000,
+                100000,
+                700000,
+                1000000
+              ],
+              "fg_reserve_gib": 10,
+              "fg_keep_all_checkpoints": false,
+              "fg_single3_audit": false,
+              "checkpoint_retention": {
+                "enabled": false,
+                "steps": [
+                  0
+                ],
+                "directory": "ckpt_retained"
+              },
+              "episode_timeout": 180,
+              "actor_addr": "localhost:{auto}",
+              "replay_addr": "localhost:{auto}",
+              "logger_addr": "localhost:{auto}",
+              "actor_batch": -1,
+              "actor_threads": 1,
+              "agent_process": false,
+              "remote_replay": false,
+              "remote_envs": false,
+              "usage": {
+                "psutil": true,
+                "nvsmi": true,
+                "gputil": false,
+                "malloc": false,
+                "gc": false
+              },
+              "debug": true
+            },
+            "jax": {
+              "platform": "cuda",
+              "compute_dtype": "float32",
+              "policy_devices": [
+                0
+              ],
+              "train_devices": [
+                0
+              ],
+              "mock_devices": 0,
+              "prealloc": true,
+              "jit": true,
+              "debug": false,
+              "expect_devices": 0,
+              "enable_policy": true,
+              "sync_train_metrics": false,
+              "precompile": true,
+              "profiler": true,
+              "coordinator_address": ""
+            },
+            "agent": {
+              "replay_context_mode": "recompute_prefix",
+              "update_diagnostics": true,
+              "loss_scales": {
+                "rec": 1.0,
+                "rew": 1.0,
+                "con": 1.0,
+                "dyn": 1.0,
+                "rep": 0.1,
+                "avail_post": 1.0,
+                "avail_prior": 1.0,
+                "policy": 1.0,
+                "value": 1.0,
+                "repval": 0.3
+              },
+              "opt": {
+                "lr": 4e-05,
+                "agc": 0.3,
+                "eps": 1e-20,
+                "beta1": 0.9,
+                "beta2": 0.999,
+                "momentum": true,
+                "wd": 0.0,
+                "schedule": "const",
+                "warmup": 1000,
+                "anneal": 0
+              },
+              "ac_grads": false,
+              "dyn": {
+                "typ": "rssm",
+                "rssm": {
+                  "deter": 32,
+                  "hidden": 16,
+                  "stoch": 2,
+                  "classes": 4,
+                  "act": "silu",
+                  "norm": "rms",
+                  "unimix": 0.01,
+                  "outscale": 1.0,
+                  "winit": "trunc_normal_in",
+                  "imglayers": 2,
+                  "obslayers": 1,
+                  "dynlayers": 1,
+                  "absolute": false,
+                  "blocks": 4,
+                  "free_nats": 1.0
+                }
+              },
+              "enc": {
+                "typ": "e_multiscale_1m15m",
+                "simple": {
+                  "depth": 64,
+                  "mults": [
+                    2,
+                    3,
+                    4,
+                    4
+                  ],
+                  "layers": 1,
+                  "units": 16,
+                  "act": "silu",
+                  "norm": "rms",
+                  "winit": "trunc_normal_in",
+                  "symlog": true,
+                  "outer": false,
+                  "kernel": 5,
+                  "strided": false
+                },
+                "e_multiscale_1m15m": {
+                  "units": 16,
+                  "norm": "rms",
+                  "act": "silu",
+                  "symlog": true,
+                  "winit": "trunc_normal_in",
+                  "layers": 3,
+                  "context_units": 128
+                }
+              },
+              "dec": {
+                "typ": "simple",
+                "simple": {
+                  "depth": 64,
+                  "mults": [
+                    2,
+                    3,
+                    4,
+                    4
+                  ],
+                  "layers": 1,
+                  "units": 16,
+                  "act": "silu",
+                  "norm": "rms",
+                  "outscale": 1.0,
+                  "winit": "trunc_normal_in",
+                  "outer": false,
+                  "kernel": 5,
+                  "bspace": 8,
+                  "strided": false
+                }
+              },
+              "rewhead": {
+                "layers": 1,
+                "units": 16,
+                "act": "silu",
+                "norm": "rms",
+                "output": "symexp_twohot",
+                "outscale": 0.0,
+                "winit": "trunc_normal_in",
+                "bins": 255
+              },
+              "conhead": {
+                "layers": 1,
+                "units": 16,
+                "act": "silu",
+                "norm": "rms",
+                "output": "binary",
+                "outscale": 1.0,
+                "winit": "trunc_normal_in"
+              },
+              "availhead": {
+                "layers": 2,
+                "units": 16,
+                "act": "silu",
+                "norm": "rms",
+                "output": "binary",
+                "outscale": 1.0,
+                "winit": "trunc_normal_in"
+              },
+              "policy": {
+                "layers": 1,
+                "units": 16,
+                "act": "silu",
+                "norm": "rms",
+                "minstd": 0.2,
+                "maxstd": 1.0,
+                "outscale": 0.01,
+                "unimix": 0.05,
+                "winit": "trunc_normal_in"
+              },
+              "value": {
+                "layers": 1,
+                "units": 16,
+                "act": "silu",
+                "norm": "rms",
+                "output": "symexp_twohot",
+                "outscale": 0.0,
+                "winit": "trunc_normal_in",
+                "bins": 255
+              },
+              "policy_dist_disc": "categorical",
+              "policy_dist_cont": "bounded_normal",
+              "imag_last": 0,
+              "imag_length": 3,
+              "horizon": 333,
+              "contdisc": true,
+              "imag_loss": {
+                "slowtar": false,
+                "lam": 0.95,
+                "actent": 0.01,
+                "slowreg": 1.0
+              },
+              "repl_loss": {
+                "slowtar": false,
+                "lam": 0.95,
+                "slowreg": 1.0
+              },
+              "slowvalue": {
+                "rate": 0.02,
+                "every": 1
+              },
+              "retnorm": {
+                "impl": "perc",
+                "rate": 0.01,
+                "limit": 1.0,
+                "perclo": 5.0,
+                "perchi": 95.0,
+                "debias": false
+              },
+              "valnorm": {
+                "impl": "none",
+                "rate": 0.01,
+                "limit": 1e-08
+              },
+              "advnorm": {
+                "impl": "none",
+                "rate": 0.01,
+                "limit": 1e-08
+              },
+              "reward_grad": true,
+              "avail_post_grad": true,
+              "avail_prior_grad": true,
+              "avail_threshold": 0.3,
+              "avail_always_available_index": 0,
+              "avail_actor_enabled": false,
+              "repval_loss": true,
+              "repval_grad": true,
+              "report": true,
+              "report_gradnorms": false,
+              "s3_clock_protocol": "S3_MARKET_MINUTE"
+            }
+          },
+          "execution_contract": {
+            "protocol": "FG_S3_E_QUALITY_ACTOR_SUPERVISED_V1",
+            "stage": "ACTOR_SUPERVISED",
+            "effective_trainable_groups": [
+              "quality_actor/"
+            ],
+            "parameter_group_policy": {
+              "enc/": "FROZEN",
+              "dyn/": "FROZEN",
+              "dec/": "FROZEN",
+              "rew/": "FROZEN",
+              "con/": "FROZEN",
+              "avail/": "FROZEN",
+              "pol/": "FROZEN",
+              "val/": "FROZEN",
+              "slowval/": "FROZEN",
+              "quality_event/": "FROZEN",
+              "quality_touch/": "FROZEN",
+              "quality_adverse/": "FROZEN",
+              "quality_score/": "FROZEN",
+              "quality_q_c1/": "FROZEN",
+              "quality_q_v2/": "FROZEN",
+              "quality_actor/": "TRAIN_WITH_VALID_L2"
+            },
+            "prediction_admitted": false,
+            "q_admitted": false,
+            "decision_admitted": false
+          },
+          "execution_contract_hash": "65c5bb50e5407d4ee206b590d411df755e3200ffb5c4ebc7e5af5519c7908683",
+          "code": {
+            "gym": {
+              "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+              "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+            },
+            "dreamer": {
+              "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+              "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+            }
+          },
+          "backend": "external_immutable_course_reader"
+        },
+        "index_sha256": "63940b5e003948260f008e372d0f67bff361316479ccff12091616003ad55359",
+        "index_receipt_sha256": "3fe8aff414023e5ef78356462199395b9fd0fafbf4ba7edd18214f28a988d744",
+        "code": {
+          "gym": {
+            "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+            "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+          },
+          "dreamer": {
+            "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+            "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+          }
+        },
+        "packages": {
+          "jax": "0.4.33",
+          "jaxlib": "0.4.33",
+          "ninjax": "3.5.1",
+          "optax": "0.2.4",
+          "numpy": "1.26.4",
+          "elements": "3.20.0",
+          "gymnasium": "1.0.0",
+          "pandas": "2.2.3",
+          "portal": "3.5.1",
+          "cloudpickle": "3.1.0"
+        },
+        "controlled_small": true,
+        "training_admitted": false,
+        "carry_rule": "FRESH_PER_RANDOM_WINDOW",
+        "checkpoint_position": "CONSUMED_BATCHES"
+      },
+      "manifest_sha256": "cc18522f2df6569f2bcf4dafdbe4115df0e203afcf48b74ea282b865df665ad8",
+      "run_identity_sha256": "4654def82b5118ac185d25afabe728f4eb2a7418e15e50470c32daee77a0f185",
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3/ckpt/step_000000000004",
+      "run": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/synthetic_source_01/f3",
+      "engineering_only": true,
+      "foundation_status": "FOUNDATION_NOT_TRAINED",
+      "source_freeze": {
+        "initial_manifest_sha256": "004bfd19f1a4b6e15dd880915fc0024d322a360f2be57641a98587ac35f38507",
+        "changed_parameters": [
+          "quality_actor/head/action/logits/bias",
+          "quality_actor/head/action/logits/kernel",
+          "quality_actor/mlp/linear0/bias",
+          "quality_actor/mlp/linear0/kernel",
+          "quality_actor/mlp/norm0/scale"
+        ],
+        "frozen_keys": [
+          "avail/head/logit/bias",
+          "avail/head/logit/kernel",
+          "avail/mlp/linear0/bias",
+          "avail/mlp/linear0/kernel",
+          "avail/mlp/linear1/bias",
+          "avail/mlp/linear1/kernel",
+          "avail/mlp/norm0/scale",
+          "avail/mlp/norm1/scale",
+          "avail_actor_gate/value",
+          "con/head/logit/bias",
+          "con/head/logit/kernel",
+          "con/mlp/linear0/bias",
+          "con/mlp/linear0/kernel",
+          "con/mlp/norm0/scale",
+          "dec/mlp/linear0/bias",
+          "dec/mlp/linear0/kernel",
+          "dec/mlp/norm0/scale",
+          "dec/vec/market_seq_e_shared/pred/bias",
+          "dec/vec/market_seq_e_shared/pred/kernel",
+          "dec/vec/position_state/pred/bias",
+          "dec/vec/position_state/pred/kernel",
+          "dyn/dyngru/bias",
+          "dyn/dyngru/kernel",
+          "dyn/dynhid0/bias",
+          "dyn/dynhid0/kernel",
+          "dyn/dynhid0norm/scale",
+          "dyn/dynin0/bias",
+          "dyn/dynin0/kernel",
+          "dyn/dynin0norm/scale",
+          "dyn/dynin1/bias",
+          "dyn/dynin1/kernel",
+          "dyn/dynin1norm/scale",
+          "dyn/dynin2/bias",
+          "dyn/dynin2/kernel",
+          "dyn/dynin2norm/scale",
+          "dyn/obs0/bias",
+          "dyn/obs0/kernel",
+          "dyn/obs0norm/scale",
+          "dyn/obslogit/bias",
+          "dyn/obslogit/kernel",
+          "dyn/prior0/bias",
+          "dyn/prior0/kernel",
+          "dyn/prior0norm/scale",
+          "dyn/prior1/bias",
+          "dyn/prior1/kernel",
+          "dyn/prior1norm/scale",
+          "dyn/priorlogit/bias",
+          "dyn/priorlogit/kernel",
+          "enc/context15/bias",
+          "enc/context15/kernel",
+          "enc/fusion/bias",
+          "enc/fusion/kernel",
+          "enc/macd5/bias",
+          "enc/macd5/kernel",
+          "enc/minute/mlp0/bias",
+          "enc/minute/mlp0/kernel",
+          "enc/minute/mlp0norm/scale",
+          "enc/minute/mlp1/bias",
+          "enc/minute/mlp1/kernel",
+          "enc/minute/mlp1norm/scale",
+          "enc/minute/mlp2/bias",
+          "enc/minute/mlp2/kernel",
+          "enc/minute/mlp2norm/scale",
+          "opt/state/1/1/avail/head/logit/bias",
+          "opt/state/1/1/avail/head/logit/kernel",
+          "opt/state/1/1/avail/mlp/linear0/bias",
+          "opt/state/1/1/avail/mlp/linear0/kernel",
+          "opt/state/1/1/avail/mlp/linear1/bias",
+          "opt/state/1/1/avail/mlp/linear1/kernel",
+          "opt/state/1/1/avail/mlp/norm0/scale",
+          "opt/state/1/1/avail/mlp/norm1/scale",
+          "opt/state/1/1/con/head/logit/bias",
+          "opt/state/1/1/con/head/logit/kernel",
+          "opt/state/1/1/con/mlp/linear0/bias",
+          "opt/state/1/1/con/mlp/linear0/kernel",
+          "opt/state/1/1/con/mlp/norm0/scale",
+          "opt/state/1/1/dec/mlp/linear0/bias",
+          "opt/state/1/1/dec/mlp/linear0/kernel",
+          "opt/state/1/1/dec/mlp/norm0/scale",
+          "opt/state/1/1/dec/vec/marketseqeshared/pred/bias",
+          "opt/state/1/1/dec/vec/marketseqeshared/pred/kernel",
+          "opt/state/1/1/dec/vec/positionstate/pred/bias",
+          "opt/state/1/1/dec/vec/positionstate/pred/kernel",
+          "opt/state/1/1/dyn/dyngru/bias",
+          "opt/state/1/1/dyn/dyngru/kernel",
+          "opt/state/1/1/dyn/dynhid0/bias",
+          "opt/state/1/1/dyn/dynhid0/kernel",
+          "opt/state/1/1/dyn/dynhid0norm/scale",
+          "opt/state/1/1/dyn/dynin0/bias",
+          "opt/state/1/1/dyn/dynin0/kernel",
+          "opt/state/1/1/dyn/dynin0norm/scale",
+          "opt/state/1/1/dyn/dynin1/bias",
+          "opt/state/1/1/dyn/dynin1/kernel",
+          "opt/state/1/1/dyn/dynin1norm/scale",
+          "opt/state/1/1/dyn/dynin2/bias",
+          "opt/state/1/1/dyn/dynin2/kernel",
+          "opt/state/1/1/dyn/dynin2norm/scale",
+          "opt/state/1/1/dyn/obs0/bias",
+          "opt/state/1/1/dyn/obs0/kernel",
+          "opt/state/1/1/dyn/obs0norm/scale",
+          "opt/state/1/1/dyn/obslogit/bias",
+          "opt/state/1/1/dyn/obslogit/kernel",
+          "opt/state/1/1/dyn/prior0/bias",
+          "opt/state/1/1/dyn/prior0/kernel",
+          "opt/state/1/1/dyn/prior0norm/scale",
+          "opt/state/1/1/dyn/prior1/bias",
+          "opt/state/1/1/dyn/prior1/kernel",
+          "opt/state/1/1/dyn/prior1norm/scale",
+          "opt/state/1/1/dyn/priorlogit/bias",
+          "opt/state/1/1/dyn/priorlogit/kernel",
+          "opt/state/1/1/enc/context15/bias",
+          "opt/state/1/1/enc/context15/kernel",
+          "opt/state/1/1/enc/fusion/bias",
+          "opt/state/1/1/enc/fusion/kernel",
+          "opt/state/1/1/enc/macd5/bias",
+          "opt/state/1/1/enc/macd5/kernel",
+          "opt/state/1/1/enc/minute/mlp0/bias",
+          "opt/state/1/1/enc/minute/mlp0/kernel",
+          "opt/state/1/1/enc/minute/mlp0norm/scale",
+          "opt/state/1/1/enc/minute/mlp1/bias",
+          "opt/state/1/1/enc/minute/mlp1/kernel",
+          "opt/state/1/1/enc/minute/mlp1norm/scale",
+          "opt/state/1/1/enc/minute/mlp2/bias",
+          "opt/state/1/1/enc/minute/mlp2/kernel",
+          "opt/state/1/1/enc/minute/mlp2norm/scale",
+          "opt/state/1/1/pol/head/action/logits/bias",
+          "opt/state/1/1/pol/head/action/logits/kernel",
+          "opt/state/1/1/pol/mlp/linear0/bias",
+          "opt/state/1/1/pol/mlp/linear0/kernel",
+          "opt/state/1/1/pol/mlp/norm0/scale",
+          "opt/state/1/1/qualityadverse/head/pred/bias",
+          "opt/state/1/1/qualityadverse/head/pred/kernel",
+          "opt/state/1/1/qualityadverse/mlp/linear0/bias",
+          "opt/state/1/1/qualityadverse/mlp/linear0/kernel",
+          "opt/state/1/1/qualityadverse/mlp/norm0/scale",
+          "opt/state/1/1/qualityevent/head/pred/bias",
+          "opt/state/1/1/qualityevent/head/pred/kernel",
+          "opt/state/1/1/qualityevent/mlp/linear0/bias",
+          "opt/state/1/1/qualityevent/mlp/linear0/kernel",
+          "opt/state/1/1/qualityevent/mlp/norm0/scale",
+          "opt/state/1/1/qualityqc1/head/pred/bias",
+          "opt/state/1/1/qualityqc1/head/pred/kernel",
+          "opt/state/1/1/qualityqc1/mlp/linear0/bias",
+          "opt/state/1/1/qualityqc1/mlp/linear0/kernel",
+          "opt/state/1/1/qualityqc1/mlp/norm0/scale",
+          "opt/state/1/1/qualityqv2/head/pred/bias",
+          "opt/state/1/1/qualityqv2/head/pred/kernel",
+          "opt/state/1/1/qualityqv2/mlp/linear0/bias",
+          "opt/state/1/1/qualityqv2/mlp/linear0/kernel",
+          "opt/state/1/1/qualityqv2/mlp/norm0/scale",
+          "opt/state/1/1/qualityscore/head/pred/bias",
+          "opt/state/1/1/qualityscore/head/pred/kernel",
+          "opt/state/1/1/qualityscore/mlp/linear0/bias",
+          "opt/state/1/1/qualityscore/mlp/linear0/kernel",
+          "opt/state/1/1/qualityscore/mlp/norm0/scale",
+          "opt/state/1/1/qualitytouch/head/pred/bias",
+          "opt/state/1/1/qualitytouch/head/pred/kernel",
+          "opt/state/1/1/qualitytouch/mlp/linear0/bias",
+          "opt/state/1/1/qualitytouch/mlp/linear0/kernel",
+          "opt/state/1/1/qualitytouch/mlp/norm0/scale",
+          "opt/state/1/1/rew/head/logits/bias",
+          "opt/state/1/1/rew/head/logits/kernel",
+          "opt/state/1/1/rew/mlp/linear0/bias",
+          "opt/state/1/1/rew/mlp/linear0/kernel",
+          "opt/state/1/1/rew/mlp/norm0/scale",
+          "opt/state/1/1/val/head/logits/bias",
+          "opt/state/1/1/val/head/logits/kernel",
+          "opt/state/1/1/val/mlp/linear0/bias",
+          "opt/state/1/1/val/mlp/linear0/kernel",
+          "opt/state/1/1/val/mlp/norm0/scale",
+          "opt/state/2/1/avail/head/logit/bias",
+          "opt/state/2/1/avail/head/logit/kernel",
+          "opt/state/2/1/avail/mlp/linear0/bias",
+          "opt/state/2/1/avail/mlp/linear0/kernel",
+          "opt/state/2/1/avail/mlp/linear1/bias",
+          "opt/state/2/1/avail/mlp/linear1/kernel",
+          "opt/state/2/1/avail/mlp/norm0/scale",
+          "opt/state/2/1/avail/mlp/norm1/scale",
+          "opt/state/2/1/con/head/logit/bias",
+          "opt/state/2/1/con/head/logit/kernel",
+          "opt/state/2/1/con/mlp/linear0/bias",
+          "opt/state/2/1/con/mlp/linear0/kernel",
+          "opt/state/2/1/con/mlp/norm0/scale",
+          "opt/state/2/1/dec/mlp/linear0/bias",
+          "opt/state/2/1/dec/mlp/linear0/kernel",
+          "opt/state/2/1/dec/mlp/norm0/scale",
+          "opt/state/2/1/dec/vec/marketseqeshared/pred/bias",
+          "opt/state/2/1/dec/vec/marketseqeshared/pred/kernel",
+          "opt/state/2/1/dec/vec/positionstate/pred/bias",
+          "opt/state/2/1/dec/vec/positionstate/pred/kernel",
+          "opt/state/2/1/dyn/dyngru/bias",
+          "opt/state/2/1/dyn/dyngru/kernel",
+          "opt/state/2/1/dyn/dynhid0/bias",
+          "opt/state/2/1/dyn/dynhid0/kernel",
+          "opt/state/2/1/dyn/dynhid0norm/scale",
+          "opt/state/2/1/dyn/dynin0/bias",
+          "opt/state/2/1/dyn/dynin0/kernel",
+          "opt/state/2/1/dyn/dynin0norm/scale",
+          "opt/state/2/1/dyn/dynin1/bias",
+          "opt/state/2/1/dyn/dynin1/kernel",
+          "opt/state/2/1/dyn/dynin1norm/scale",
+          "opt/state/2/1/dyn/dynin2/bias",
+          "opt/state/2/1/dyn/dynin2/kernel",
+          "opt/state/2/1/dyn/dynin2norm/scale",
+          "opt/state/2/1/dyn/obs0/bias",
+          "opt/state/2/1/dyn/obs0/kernel",
+          "opt/state/2/1/dyn/obs0norm/scale",
+          "opt/state/2/1/dyn/obslogit/bias",
+          "opt/state/2/1/dyn/obslogit/kernel",
+          "opt/state/2/1/dyn/prior0/bias",
+          "opt/state/2/1/dyn/prior0/kernel",
+          "opt/state/2/1/dyn/prior0norm/scale",
+          "opt/state/2/1/dyn/prior1/bias",
+          "opt/state/2/1/dyn/prior1/kernel",
+          "opt/state/2/1/dyn/prior1norm/scale",
+          "opt/state/2/1/dyn/priorlogit/bias",
+          "opt/state/2/1/dyn/priorlogit/kernel",
+          "opt/state/2/1/enc/context15/bias",
+          "opt/state/2/1/enc/context15/kernel",
+          "opt/state/2/1/enc/fusion/bias",
+          "opt/state/2/1/enc/fusion/kernel",
+          "opt/state/2/1/enc/macd5/bias",
+          "opt/state/2/1/enc/macd5/kernel",
+          "opt/state/2/1/enc/minute/mlp0/bias",
+          "opt/state/2/1/enc/minute/mlp0/kernel",
+          "opt/state/2/1/enc/minute/mlp0norm/scale",
+          "opt/state/2/1/enc/minute/mlp1/bias",
+          "opt/state/2/1/enc/minute/mlp1/kernel",
+          "opt/state/2/1/enc/minute/mlp1norm/scale",
+          "opt/state/2/1/enc/minute/mlp2/bias",
+          "opt/state/2/1/enc/minute/mlp2/kernel",
+          "opt/state/2/1/enc/minute/mlp2norm/scale",
+          "opt/state/2/1/pol/head/action/logits/bias",
+          "opt/state/2/1/pol/head/action/logits/kernel",
+          "opt/state/2/1/pol/mlp/linear0/bias",
+          "opt/state/2/1/pol/mlp/linear0/kernel",
+          "opt/state/2/1/pol/mlp/norm0/scale",
+          "opt/state/2/1/qualityadverse/head/pred/bias",
+          "opt/state/2/1/qualityadverse/head/pred/kernel",
+          "opt/state/2/1/qualityadverse/mlp/linear0/bias",
+          "opt/state/2/1/qualityadverse/mlp/linear0/kernel",
+          "opt/state/2/1/qualityadverse/mlp/norm0/scale",
+          "opt/state/2/1/qualityevent/head/pred/bias",
+          "opt/state/2/1/qualityevent/head/pred/kernel",
+          "opt/state/2/1/qualityevent/mlp/linear0/bias",
+          "opt/state/2/1/qualityevent/mlp/linear0/kernel",
+          "opt/state/2/1/qualityevent/mlp/norm0/scale",
+          "opt/state/2/1/qualityqc1/head/pred/bias",
+          "opt/state/2/1/qualityqc1/head/pred/kernel",
+          "opt/state/2/1/qualityqc1/mlp/linear0/bias",
+          "opt/state/2/1/qualityqc1/mlp/linear0/kernel",
+          "opt/state/2/1/qualityqc1/mlp/norm0/scale",
+          "opt/state/2/1/qualityqv2/head/pred/bias",
+          "opt/state/2/1/qualityqv2/head/pred/kernel",
+          "opt/state/2/1/qualityqv2/mlp/linear0/bias",
+          "opt/state/2/1/qualityqv2/mlp/linear0/kernel",
+          "opt/state/2/1/qualityqv2/mlp/norm0/scale",
+          "opt/state/2/1/qualityscore/head/pred/bias",
+          "opt/state/2/1/qualityscore/head/pred/kernel",
+          "opt/state/2/1/qualityscore/mlp/linear0/bias",
+          "opt/state/2/1/qualityscore/mlp/linear0/kernel",
+          "opt/state/2/1/qualityscore/mlp/norm0/scale",
+          "opt/state/2/1/qualitytouch/head/pred/bias",
+          "opt/state/2/1/qualitytouch/head/pred/kernel",
+          "opt/state/2/1/qualitytouch/mlp/linear0/bias",
+          "opt/state/2/1/qualitytouch/mlp/linear0/kernel",
+          "opt/state/2/1/qualitytouch/mlp/norm0/scale",
+          "opt/state/2/1/rew/head/logits/bias",
+          "opt/state/2/1/rew/head/logits/kernel",
+          "opt/state/2/1/rew/mlp/linear0/bias",
+          "opt/state/2/1/rew/mlp/linear0/kernel",
+          "opt/state/2/1/rew/mlp/norm0/scale",
+          "opt/state/2/1/val/head/logits/bias",
+          "opt/state/2/1/val/head/logits/kernel",
+          "opt/state/2/1/val/mlp/linear0/bias",
+          "opt/state/2/1/val/mlp/linear0/kernel",
+          "opt/state/2/1/val/mlp/norm0/scale",
+          "pol/head/action/logits/bias",
+          "pol/head/action/logits/kernel",
+          "pol/mlp/linear0/bias",
+          "pol/mlp/linear0/kernel",
+          "pol/mlp/norm0/scale",
+          "quality_adverse/head/pred/bias",
+          "quality_adverse/head/pred/kernel",
+          "quality_adverse/mlp/linear0/bias",
+          "quality_adverse/mlp/linear0/kernel",
+          "quality_adverse/mlp/norm0/scale",
+          "quality_event/head/pred/bias",
+          "quality_event/head/pred/kernel",
+          "quality_event/mlp/linear0/bias",
+          "quality_event/mlp/linear0/kernel",
+          "quality_event/mlp/norm0/scale",
+          "quality_q_c1/head/pred/bias",
+          "quality_q_c1/head/pred/kernel",
+          "quality_q_c1/mlp/linear0/bias",
+          "quality_q_c1/mlp/linear0/kernel",
+          "quality_q_c1/mlp/norm0/scale",
+          "quality_q_v2/head/pred/bias",
+          "quality_q_v2/head/pred/kernel",
+          "quality_q_v2/mlp/linear0/bias",
+          "quality_q_v2/mlp/linear0/kernel",
+          "quality_q_v2/mlp/norm0/scale",
+          "quality_score/head/pred/bias",
+          "quality_score/head/pred/kernel",
+          "quality_score/mlp/linear0/bias",
+          "quality_score/mlp/linear0/kernel",
+          "quality_score/mlp/norm0/scale",
+          "quality_touch/head/pred/bias",
+          "quality_touch/head/pred/kernel",
+          "quality_touch/mlp/linear0/bias",
+          "quality_touch/mlp/linear0/kernel",
+          "quality_touch/mlp/norm0/scale",
+          "retnorm/hi/value",
+          "retnorm/lo/value",
+          "rew/head/logits/bias",
+          "rew/head/logits/kernel",
+          "rew/mlp/linear0/bias",
+          "rew/mlp/linear0/kernel",
+          "rew/mlp/norm0/scale",
+          "slowval/head/logits/bias",
+          "slowval/head/logits/kernel",
+          "slowval/mlp/linear0/bias",
+          "slowval/mlp/linear0/kernel",
+          "slowval/mlp/norm0/scale",
+          "slowval_count/value",
+          "val/head/logits/bias",
+          "val/head/logits/kernel",
+          "val/mlp/linear0/bias",
+          "val/mlp/linear0/kernel",
+          "val/mlp/norm0/scale"
+        ],
+        "all_frozen_bytes_equal": true
+      },
+      "verified_updates": 4,
+      "update_log_sha256": "030d50d7db7d0fa306dd41738fd2bda85da472f3b1e10cb477d838e31816c417",
+      "content_hash": "7d78bcdba3427a3ac5493ec7c568b6d6f397a5c51a1666b082dd85a7588e2539"
+    },
+    "engineering_only": true,
+    "execution_mode": "ONLINE_SUPERVISED",
+    "member_hashes": {
+      "agent.pkl": "69b4115815fe3c9a841f74f38f1643414ed217bff89c6998b3275dbdae080c0f",
+      "collector.pkl": "dddf137f4cf7e84c21283f24f5a05edb007d832602531a84df85fe8fcf4af34a",
+      "consumed_step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22",
+      "counters.pkl": "85261ed0c02db560b8e2b3d1eff3d4d5e7579bc544a861f140326e8618d72903",
+      "course_reader.pkl": "4483449246d8c3c6ff3d7d58450f30951afbbf6f82448e1af84be67a36bdd3bc",
+      "driver.pkl": "0ef4e1bfdfec1ce63564dd7b8e66e6a86585d31c7158ceab58e430c43529456c",
+      "gates.pkl": "cf60d036e97c5074aaa34ba4e15624a482ac407c09569542c62d3ccd083c9afe",
+      "logs.pkl": "882ab66480ba7e2cc9443e1ea4870c2d171213bfb8284bed310692981bc39296",
+      "market_step.pkl": "078c752c552894da845e987fe1299284cb89927dddc409d5a2d986b3f053a397",
+      "phase.pkl": "1296de78f07244002e7931cebab49f6ea7f4b8923568b7aba2b3c1e904042439",
+      "publisher.pkl": "be379f05972489910b688d186c53a716b6e3d361c5a9ef4e4a36ed570a3a600a",
+      "replay.pkl": "187f06e09e407ecc0cd0a28bc8a9d2ba2ede46a82ee3c770bd08cbc3a8383fa3",
+      "replay/2g3UABL0WnJBp6lYUxblUY.npz": "21756f0f2f10d5e51863153f10254a357c8b311f7160f09df4cd7b8759a2745a",
+      "replay/4Ac84ZMKRp8g54sgfN46jt.npz": "efd9c4f19ce8bd1967c5182b21e276250a1db60d6f22ef23a1048ac31baf1645",
+      "runtime.pkl": "dbd693ce353d619b3311ce1d2be970a67765c64f05c9e408d13e9e80e4721d8f",
+      "source_exposures.pkl": "8210f532754627786477318de02988313cd34099a0d65bb63dc66905d4f13761",
+      "step.pkl": "f20eca1c87acdcf3a9f44026687be53c96b2f817533b8d55da475996e5bacdc1"
+    },
+    "course": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+    "source_freeze": {
+      "initial_manifest_sha256": "c61223119464e05a9ac63bebc40cb2608171ac6fef03c8c6ca556cd186c2c65e",
+      "changed_leaves": [
+        "opt/state/1/0",
+        "opt/state/1/1/qualityactor/head/action/logits/bias",
+        "opt/state/1/1/qualityactor/head/action/logits/kernel",
+        "opt/state/1/1/qualityactor/mlp/linear0/bias",
+        "opt/state/1/1/qualityactor/mlp/linear0/kernel",
+        "opt/state/1/1/qualityactor/mlp/norm0/scale",
+        "opt/state/2/0",
+        "opt/state/2/1/qualityactor/head/action/logits/bias",
+        "opt/state/2/1/qualityactor/head/action/logits/kernel",
+        "opt/state/2/1/qualityactor/mlp/linear0/bias",
+        "opt/state/2/1/qualityactor/mlp/linear0/kernel",
+        "opt/state/2/1/qualityactor/mlp/norm0/scale",
+        "opt/state/3/count",
+        "opt/step/value",
+        "quality_actor/head/action/logits/bias",
+        "quality_actor/head/action/logits/kernel",
+        "quality_actor/mlp/linear0/bias",
+        "quality_actor/mlp/linear0/kernel",
+        "quality_actor/mlp/norm0/scale"
+      ],
+      "all_frozen_bytes_equal": true,
+      "native_control_state": {}
+    },
+    "content_hash": "eafbfb5f4d6a508775eae7c63c38056b1084564e32fcdab041dd78bc2396b879"
+  },
+  "frozen": {
+    "all_parameter_bytes_equal": true,
+    "policy_bytes_equal": true,
+    "training_counters_equal": true,
+    "source_files_unchanged": true,
+    "training_updates": 0
+  },
+  "all_state_leaves_preserved": true
+}

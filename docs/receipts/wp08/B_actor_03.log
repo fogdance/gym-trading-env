@@ -1,0 +1,112 @@
+F....                                                                    [100%]
+=================================== FAILURES ===================================
+___________ test_actual_f3_readonly_loading_and_teacher_free_argmax ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-608/test_actual_f3_readonly_loadin0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ad85de49ad0>
+
+    def test_actual_f3_readonly_loading_and_teacher_free_argmax(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+        from wp02_fixture import native_factory
+        from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
+        s=f3_reference();node=Path(s['run_dir'])/'ckpt/step_000000000004'
+        actor=ExamFrozenActor.from_f3_checkpoint(s['run_dir'],node,tmp_path/'model',engineering=True)
+        def forbidden(*a,**k):raise AssertionError('TEACHER_OR_TRAINING_USED')
+        monkeypatch.setattr(actor.agent,'train',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_strict.QualityStrictTeacher',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_quality_teacher_v2.NativeQualityTeacher',forbidden)
+        factory,_,_=native_factory(tmp_path/'market',minutes=60,chunk=0)
+        env=factory()
+        try:
+            obs=env.reset(seed=202)[0]
+            obs=dict(obs,reward=np.float32(0),is_first=True,is_last=False,is_terminal=False)
+            batched={k:np.asarray(v)[None] for k,v in obs.items()}
+            state=actor.save();carry,action,_=actor(None,batched)
+            actor.load(state);carry2,action2,_=actor(None,batched)
+            np.testing.assert_array_equal(action['action'],action2['action'])
+            from wp07_fixture import exact
+>           exact(carry,carry2)
+
+tests/entry_v1/test_wp08_actor.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/wp07_fixture.py:56: in exact
+    for x,y in zip(a,b):exact(x,y)
+                        ^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:53: in exact
+    for k in a:exact(a[k],b[k])
+               ^^^^^^^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:56: in exact
+    for x,y in zip(a,b):exact(x,y)
+                        ^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:59: in exact
+    else:assert a==b
+                ^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:278: in __bool__
+    core.check_bool_conversion(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arr = Array([ True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,...   True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True], dtype=bool)
+
+    def check_bool_conversion(arr: Array):
+      if arr.size == 0:
+        raise ValueError("The truth value of an empty array is ambiguous. Use"
+                         " `array.size > 0` to check that an array is not empty.")
+      if arr.size > 1:
+>       raise ValueError("The truth value of an array with more than one element"
+                         " is ambiguous. Use a.any() or a.all()")
+E       ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py:677: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 rew
+         5,007 val
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 pol
+           706 quality_q_v2
+           706 quality_actor
+           689 con
+           689 quality_score
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp08_actor.py::test_actual_f3_readonly_loading_and_teacher_free_argmax
+1 failed, 4 passed in 66.66s (0:01:06)

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="63.030" timestamp="2026-10-19T12:03:54.606830+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f3_readonly_loading_and_teacher_free_argmax" time="17.225" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_policy_rng_state_and_frozen_mutation_rejection" time="12.818" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[SHADOW]" time="10.235" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]" time="12.459" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]" time="10.148"><failure message="ValueError: EXAM_F4_SOURCE_FROZEN_STATE_CHANGED: avail_actor_gate/value">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-613/test_actual_f4_complete_schema2')
+mode = 'ONLINE_RL_CONTROLLED'
+
+    @pytest.mark.parametrize('mode',['SHADOW','ONLINE_SUPERVISED','ONLINE_RL_CONTROLLED'])
+    def test_actual_f4_complete_schema_and_value_preserved(tmp_path,mode):
+        from wp08_fixture import RELEASE
+        from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+        from gym_trading_env.research.fg_replay import read_manifest
+        import pickle
+        root=RELEASE/'Release_G_native_01'/mode/'continuous'
+        node=root/'ckpt/step_000000000003'
+&gt;       actor=ExamFrozenActor.from_f4_checkpoint(root,node,tmp_path/'model',engineering=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_actor.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py:38: in from_f4_checkpoint
+    return cls._load('F4',run,checkpoint,output,engineering=engineering)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = &lt;class 'gym_trading_env.research.fg_s3_e_quality_exam_actor.ExamFrozenActor'&gt;
+kind = 'F4'
+run = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous')
+checkpoint = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000003')
+output = PosixPath('/tmp/pytest-of-v/pytest-613/test_actual_f4_complete_schema2/model')
+engineering = True
+
+    @classmethod
+    def _load(cls,kind,run,checkpoint,output,*,engineering):
+        from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
+        from .fg_s3_e_quality_actor import create_agent
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        source,state,settings=inspect_exam_actor(kind,run,checkpoint,engineering=engineering)
+        settings['device']='cpu'
+        agent=create_agent(settings,output,controlled_small=source['engineering_only'],execution_mode=source['execution_mode'])
+        if (set(agent.params)!=set(state['params']) or any(agent.params[k].shape!=v.shape
+                or agent.params[k].dtype!=v.dtype for k,v in state['params'].items())):
+            raise ValueError('EXAM_FULL_CHECKPOINT_PARAMETER_SCHEMA_MISMATCH')
+        initial_files={}
+        if kind=='F4':
+            import pickle
+            from embodied.run.fg_checkpoint import validate_bundle
+            initial=Path(run)/'ckpt/step_000000000001'
+            initial_meta=validate_bundle(initial,source['source_identity'])
+            first=pickle.loads((initial/'agent.pkl').read_bytes())['params']
+            if (first.keys()!=state['params'].keys() or any(first[k].shape!=v.shape or first[k].dtype!=v.dtype
+                    for k,v in state['params'].items())):raise ValueError('EXAM_F4_INITIAL_SCHEMA_MISMATCH')
+            mode=source['execution_mode'];changed=[]
+            for k,v in state['params'].items():
+                if first[k].tobytes()==v.tobytes():continue
+                owner=agent.model.f3_state_owner[k]
+                allowed=mode!='SHADOW' and (owner in ('CLOCK','quality_actor/') or mode=='ONLINE_RL_CONTROLLED' and (
+                    k.startswith(('val/','slowval/','slowval_count/','retnorm/','valnorm/','advnorm/'))
+                    or k.startswith('opt/') and 'val/' in k))
+&gt;               if not allowed:raise ValueError('EXAM_F4_SOURCE_FROZEN_STATE_CHANGED: '+k)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               ValueError: EXAM_F4_SOURCE_FROZEN_STATE_CHANGED: avail_actor_gate/value
+
+src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py:67: ValueError</failure></testcase></testsuite></testsuites>

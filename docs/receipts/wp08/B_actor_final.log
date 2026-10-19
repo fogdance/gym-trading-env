@@ -1,0 +1,115 @@
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+___ test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-613/test_actual_f4_complete_schema2')
+mode = 'ONLINE_RL_CONTROLLED'
+
+    @pytest.mark.parametrize('mode',['SHADOW','ONLINE_SUPERVISED','ONLINE_RL_CONTROLLED'])
+    def test_actual_f4_complete_schema_and_value_preserved(tmp_path,mode):
+        from wp08_fixture import RELEASE
+        from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+        from gym_trading_env.research.fg_replay import read_manifest
+        import pickle
+        root=RELEASE/'Release_G_native_01'/mode/'continuous'
+        node=root/'ckpt/step_000000000003'
+>       actor=ExamFrozenActor.from_f4_checkpoint(root,node,tmp_path/'model',engineering=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_actor.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py:38: in from_f4_checkpoint
+    return cls._load('F4',run,checkpoint,output,engineering=engineering)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+cls = <class 'gym_trading_env.research.fg_s3_e_quality_exam_actor.ExamFrozenActor'>
+kind = 'F4'
+run = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous')
+checkpoint = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000003')
+output = PosixPath('/tmp/pytest-of-v/pytest-613/test_actual_f4_complete_schema2/model')
+engineering = True
+
+    @classmethod
+    def _load(cls,kind,run,checkpoint,output,*,engineering):
+        from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
+        from .fg_s3_e_quality_actor import create_agent
+        from dreamerv3.fg_s3a_actor import parameter_digests
+        source,state,settings=inspect_exam_actor(kind,run,checkpoint,engineering=engineering)
+        settings['device']='cpu'
+        agent=create_agent(settings,output,controlled_small=source['engineering_only'],execution_mode=source['execution_mode'])
+        if (set(agent.params)!=set(state['params']) or any(agent.params[k].shape!=v.shape
+                or agent.params[k].dtype!=v.dtype for k,v in state['params'].items())):
+            raise ValueError('EXAM_FULL_CHECKPOINT_PARAMETER_SCHEMA_MISMATCH')
+        initial_files={}
+        if kind=='F4':
+            import pickle
+            from embodied.run.fg_checkpoint import validate_bundle
+            initial=Path(run)/'ckpt/step_000000000001'
+            initial_meta=validate_bundle(initial,source['source_identity'])
+            first=pickle.loads((initial/'agent.pkl').read_bytes())['params']
+            if (first.keys()!=state['params'].keys() or any(first[k].shape!=v.shape or first[k].dtype!=v.dtype
+                    for k,v in state['params'].items())):raise ValueError('EXAM_F4_INITIAL_SCHEMA_MISMATCH')
+            mode=source['execution_mode'];changed=[]
+            for k,v in state['params'].items():
+                if first[k].tobytes()==v.tobytes():continue
+                owner=agent.model.f3_state_owner[k]
+                allowed=mode!='SHADOW' and (owner in ('CLOCK','quality_actor/') or mode=='ONLINE_RL_CONTROLLED' and (
+                    k.startswith(('val/','slowval/','slowval_count/','retnorm/','valnorm/','advnorm/'))
+                    or k.startswith('opt/') and 'val/' in k))
+>               if not allowed:raise ValueError('EXAM_F4_SOURCE_FROZEN_STATE_CHANGED: '+k)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E               ValueError: EXAM_F4_SOURCE_FROZEN_STATE_CHANGED: avail_actor_gate/value
+
+src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py:67: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_actor
+           706 quality_q_v2
+           706 quality_q_c1
+           706 pol
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp08_actor.py::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]
+1 failed, 4 passed in 63.03s (0:01:03)

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="5" time="66.658" timestamp="2026-10-19T11:59:41.390099+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f3_readonly_loading_and_teacher_free_argmax" time="18.174"><failure message="ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-608/test_actual_f3_readonly_loadin0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7ad85de49ad0&gt;
+
+    def test_actual_f3_readonly_loading_and_teacher_free_argmax(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_actor import ExamFrozenActor
+        from wp02_fixture import native_factory
+        from embodied.run.fg_s3_e_quality_exam import inspect_exam_actor
+        s=f3_reference();node=Path(s['run_dir'])/'ckpt/step_000000000004'
+        actor=ExamFrozenActor.from_f3_checkpoint(s['run_dir'],node,tmp_path/'model',engineering=True)
+        def forbidden(*a,**k):raise AssertionError('TEACHER_OR_TRAINING_USED')
+        monkeypatch.setattr(actor.agent,'train',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_strict.QualityStrictTeacher',forbidden)
+        monkeypatch.setattr('gym_trading_env.research.fg_s3_quality_teacher_v2.NativeQualityTeacher',forbidden)
+        factory,_,_=native_factory(tmp_path/'market',minutes=60,chunk=0)
+        env=factory()
+        try:
+            obs=env.reset(seed=202)[0]
+            obs=dict(obs,reward=np.float32(0),is_first=True,is_last=False,is_terminal=False)
+            batched={k:np.asarray(v)[None] for k,v in obs.items()}
+            state=actor.save();carry,action,_=actor(None,batched)
+            actor.load(state);carry2,action2,_=actor(None,batched)
+            np.testing.assert_array_equal(action['action'],action2['action'])
+            from wp07_fixture import exact
+&gt;           exact(carry,carry2)
+
+tests/entry_v1/test_wp08_actor.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/wp07_fixture.py:56: in exact
+    for x,y in zip(a,b):exact(x,y)
+                        ^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:53: in exact
+    for k in a:exact(a[k],b[k])
+               ^^^^^^^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:56: in exact
+    for x,y in zip(a,b):exact(x,y)
+                        ^^^^^^^^^^
+tests/entry_v1/wp07_fixture.py:59: in exact
+    else:assert a==b
+                ^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/array.py:278: in __bool__
+    core.check_bool_conversion(self)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+arr = Array([ True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True,  True,...   True,  True,  True,  True,  True,  True,  True,  True,  True,
+        True,  True,  True,  True,  True], dtype=bool)
+
+    def check_bool_conversion(arr: Array):
+      if arr.size == 0:
+        raise ValueError("The truth value of an empty array is ambiguous. Use"
+                         " `array.size &gt; 0` to check that an array is not empty.")
+      if arr.size &gt; 1:
+&gt;       raise ValueError("The truth value of an array with more than one element"
+                         " is ambiguous. Use a.any() or a.all()")
+E       ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/jax/_src/core.py:677: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_wp08_actor" name="test_policy_rng_state_and_frozen_mutation_rejection" time="12.701" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[SHADOW]" time="11.866" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]" time="11.616" /><testcase classname="tests.entry_v1.test_wp08_actor" name="test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]" time="12.070" /></testsuite></testsuites>
