@@ -18,7 +18,7 @@ import time
 PYTHON = '/home/v/miniconda3/envs/dreamerv3/bin/python'
 POOL = '/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json'
 ENV_RECEIPT = '/data/logdir/fg_s3_market_minute/20261013_v2/env/v1'
-SAMPLES = dict(short=('2021-12-09','2021-12-09',128), long=('2021-12-03','2021-12-09',None))
+SAMPLES = dict(short=('2021-12-09','2021-12-09',128), long=('2021-12-08','2021-12-09',None))
 ENV = dict(PYTHONPATH='.:src:../dreamerv3', JAX_PLATFORMS='cpu', CUDA_VISIBLE_DEVICES='',
     PYTHONDONTWRITEBYTECODE='1', PYTHONINTMAXSTRDIGITS='0', MPLCONFIGDIR='/tmp/fg_data_perf_mpl',
     OPENBLAS_NUM_THREADS='1', OMP_NUM_THREADS='1', MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1')
