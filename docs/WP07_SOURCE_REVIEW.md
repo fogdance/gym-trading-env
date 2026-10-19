@@ -26,6 +26,7 @@
 3. 使用原 DATA-MULTI ABI/math 兼容检查；完整课程 hash 本来含来源，不强迫不同来源同 hash，也不改原文件。
 4. 独立 RL 审核封存审核时的 evidence；后续合法 numeric counters 更新不使审核自动失效。每次启用仍验证当前技术 Gate、同一 WM 和 native F3 authority；改变 WM 必须重审。
 5. H 冷恢复详细结果单独归档为 H_cold_cases，G 原始收据恢复为其已提交版本；发布复验使用隔离 cwd，不覆盖旧阶段历史。
+6. 最终文档生成器一度使用 compact JSON 计算 runtime_hash，与原生 fingerprint 的 JSON 空格约定不同，文档断言 exit 1。已改为复用未修改的原生 helper，重新核对 SHA/全部运行源码摘要及 25 个文档链接，exit 0；见 `receipts/wp07/Release_documentation_audit.json`。只修正文档摘要，未改运行源码、准入或任何测试结果。
 
 ## 未验证的边界
 

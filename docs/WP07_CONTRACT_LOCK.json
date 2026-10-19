@@ -1,0 +1,226 @@
+{
+  "observation": {
+    "observation_schema": "FG_S3_E_OBSERVATION_V2",
+    "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+    "decoder_schema": "FG_S3_E_DECODER_V1",
+    "fields": {
+      "market_seq": {
+        "shape": [
+          60,
+          18
+        ],
+        "dtype": "float32"
+      },
+      "position_state": {
+        "shape": [
+          9
+        ],
+        "dtype": "float32"
+      },
+      "action_mask": {
+        "shape": [
+          2
+        ],
+        "dtype": "float32"
+      },
+      "action": {
+        "shape": [],
+        "dtype": "int32"
+      },
+      "reward": {
+        "shape": [],
+        "dtype": "float32"
+      },
+      "is_first": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "is_last": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "is_terminal": {
+        "shape": [],
+        "dtype": "bool"
+      },
+      "market_seq_e_shared": {
+        "shape": [
+          60,
+          18
+        ],
+        "dtype": "float32"
+      },
+      "market_context_15m": {
+        "shape": [
+          24,
+          7
+        ],
+        "dtype": "float32"
+      },
+      "market_macd_5m": {
+        "shape": [
+          4
+        ],
+        "dtype": "float32"
+      }
+    },
+    "encoder_keys": [
+      "market_seq_e_shared",
+      "position_state",
+      "action_mask",
+      "market_context_15m",
+      "market_macd_5m"
+    ],
+    "decoder_keys": [
+      "market_seq_e_shared",
+      "position_state"
+    ],
+    "audit_only": [
+      "market_seq"
+    ],
+    "context_fields": [
+      "rel_open",
+      "rel_high",
+      "rel_low",
+      "rel_close",
+      "vol_relative",
+      "oi_change",
+      "valid"
+    ],
+    "macd_5m": {
+      "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+      "periods": [
+        12,
+        26,
+        9
+      ],
+      "histogram": "DIF-Signal",
+      "initialization": "first_complete_close; first_DIF_and_signal_zero",
+      "warmup": "35_complete_buckets_strictly_before_current_bucket",
+      "scale": "1000*raw/current_visible_1m_Close",
+      "invalid": "all_zero",
+      "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+      "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+      "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+      "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+      "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+      "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+    },
+    "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+  },
+  "execution": {
+    "SHADOW": {
+      "contract": {
+        "protocol": "FG_S3_E_QUALITY_F4_EXECUTION_V1",
+        "source_stage": "ACTOR_SUPERVISED",
+        "execution_mode": "SHADOW",
+        "execution_kind": "F3_ONLINE_CONTINUATION",
+        "effective_trainable_groups": [],
+        "parameter_group_policy": {
+          "enc/": "FROZEN",
+          "dyn/": "FROZEN",
+          "dec/": "FROZEN",
+          "rew/": "FROZEN",
+          "con/": "FROZEN",
+          "avail/": "FROZEN",
+          "pol/": "FROZEN",
+          "val/": "FROZEN",
+          "slowval/": "FROZEN",
+          "quality_event/": "FROZEN",
+          "quality_touch/": "FROZEN",
+          "quality_adverse/": "FROZEN",
+          "quality_score/": "FROZEN",
+          "quality_q_c1/": "FROZEN",
+          "quality_q_v2/": "FROZEN",
+          "quality_actor/": "FROZEN"
+        },
+        "teacher_controls_action": false,
+        "prediction_fusion": false,
+        "q_fusion": false,
+        "formal_online_adapt_admitted": false
+      },
+      "hash": "1043bc27285524efb4ccf270a31dd97bf8b949929b4c666ae5ab6aa3a097473b"
+    },
+    "ONLINE_SUPERVISED": {
+      "contract": {
+        "protocol": "FG_S3_E_QUALITY_F4_EXECUTION_V1",
+        "source_stage": "ACTOR_SUPERVISED",
+        "execution_mode": "ONLINE_SUPERVISED",
+        "execution_kind": "F3_ONLINE_CONTINUATION",
+        "effective_trainable_groups": [
+          "quality_actor/"
+        ],
+        "parameter_group_policy": {
+          "enc/": "FROZEN",
+          "dyn/": "FROZEN",
+          "dec/": "FROZEN",
+          "rew/": "FROZEN",
+          "con/": "FROZEN",
+          "avail/": "FROZEN",
+          "pol/": "FROZEN",
+          "val/": "FROZEN",
+          "slowval/": "FROZEN",
+          "quality_event/": "FROZEN",
+          "quality_touch/": "FROZEN",
+          "quality_adverse/": "FROZEN",
+          "quality_score/": "FROZEN",
+          "quality_q_c1/": "FROZEN",
+          "quality_q_v2/": "FROZEN",
+          "quality_actor/": "CONDITIONAL"
+        },
+        "teacher_controls_action": false,
+        "prediction_fusion": false,
+        "q_fusion": false,
+        "formal_online_adapt_admitted": false
+      },
+      "hash": "3e21b9fcab83fd3592ae77643d33468c35fe3b53770bfcafd54fab6e8b7458de"
+    },
+    "ONLINE_RL_CONTROLLED": {
+      "contract": {
+        "protocol": "FG_S3_E_QUALITY_F4_EXECUTION_V1",
+        "source_stage": "ACTOR_SUPERVISED",
+        "execution_mode": "ONLINE_RL_CONTROLLED",
+        "execution_kind": "CONTROLLED_F4_EXECUTION",
+        "effective_trainable_groups": [
+          "quality_actor/",
+          "val/",
+          "slowval/"
+        ],
+        "parameter_group_policy": {
+          "enc/": "FROZEN",
+          "dyn/": "FROZEN",
+          "dec/": "FROZEN",
+          "rew/": "FROZEN",
+          "con/": "FROZEN",
+          "avail/": "FROZEN",
+          "pol/": "FROZEN",
+          "val/": "CONDITIONAL",
+          "slowval/": "CONDITIONAL",
+          "quality_event/": "FROZEN",
+          "quality_touch/": "FROZEN",
+          "quality_adverse/": "FROZEN",
+          "quality_score/": "FROZEN",
+          "quality_q_c1/": "FROZEN",
+          "quality_q_v2/": "FROZEN",
+          "quality_actor/": "CONDITIONAL"
+        },
+        "teacher_controls_action": false,
+        "prediction_fusion": false,
+        "q_fusion": false,
+        "formal_online_adapt_admitted": false
+      },
+      "hash": "4354751f7eca89c4dfcad2a17115bb6197325e32623b78f7271c4e4c9fa06e46"
+    }
+  },
+  "synthetic_f3_source": {
+    "scope": "BUILTIN_SYNTHETIC_NOT_FORMAL",
+    "run_identity_sha256": "4654def82b5118ac185d25afabe728f4eb2a7418e15e50470c32daee77a0f185",
+    "checkpoint_manifest_sha256": "cc18522f2df6569f2bcf4dafdbe4115df0e203afcf48b74ea282b865df665ad8",
+    "agent_state_sha256": "04754fd5e8df25025c2d5eff9d7dbcc65b52b39037550ec22f4ff34c4b880dff",
+    "course_identity": "c45880d5661f9257dd8421f40d317e2123a0e2ab273805ef35db37cf360a82ac",
+    "corpus_identity": "451be4479709ea7e52a59ae423f7b0ed464b20f9939d707dd9442f5a1d88b891",
+    "model_contract": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+    "effective_model_hash": "e20739443271c03fec30280d52728d86f46b1dd326fb036cbd4aaf88ad588d36"
+  },
+  "formal_model_and_data": "NOT_RUN_NOT_PROVIDED"
+}

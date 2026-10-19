@@ -1,0 +1,28 @@
+[
+  {
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "online-prepare",
+      "--config",
+      "/tmp/pytest-of-v/pytest-602/test_missing_empty_path_test_a0/formal.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 325, in <module>\n    main()\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 80, in main\n    result=online.prepare(args.config,diagnostic_output=args.output_dir)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 136, in prepare\n    s=read_settings(config)\n      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 31, in read_settings\n    return validate_settings(read_config_yaml(_local_path(path)))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 53, in validate_settings\n    checked=validate_execution(spec)\n            ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/dreamerv3/dreamerv3/fg_s3_e_quality_online.py\", line 60, in validate_execution\n    result[k] = str(_local_path(raw[k]))\n                    ^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py\", line 35, in _local_path\n    raise ValueError('COURSE_PATH_INVALID: explicit local path without parent traversal required')\nValueError: COURSE_PATH_INVALID: explicit local path without parent traversal required\n"
+  },
+  {
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "online-prepare",
+      "--config",
+      "/tmp/pytest-of-v/pytest-602/test_missing_empty_path_test_a0/formal.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 325, in <module>\n    main()\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py\", line 80, in main\n    result=online.prepare(args.config,diagnostic_output=args.output_dir)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 157, in prepare\n    receipt=preflight(s['execution']);proof=receipt['source']\n            ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py\", line 14, in preflight\n    proof, _ = inspect_f3(s, allow_engineering=allow_engineering)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/dreamerv3/embodied/run/fg_s3_e_quality_online.py\", line 31, in inspect_f3\n    raise ValueError('ONLINE_SYNTHETIC_SOURCE_NOT_FORMAL')\nValueError: ONLINE_SYNTHETIC_SOURCE_NOT_FORMAL\n"
+  }
+]

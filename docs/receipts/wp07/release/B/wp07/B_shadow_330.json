@@ -1,0 +1,17 @@
+{
+  "evidence": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_B_native_01/330/evidence.json",
+  "replay": {
+    "status": "PASS",
+    "records": 136,
+    "account_restores": 7,
+    "replay_trace_hash": "ef7c0d57d5a7b081db8a52f20d80a9cc409049aba65273185a9bbb5444c0c873",
+    "teacher_labels_verified": 0
+  },
+  "counts": {
+    "env_steps": 128,
+    "native_rows": 136,
+    "resets": 8,
+    "tp_events": 7,
+    "sl_events": 7
+  }
+}

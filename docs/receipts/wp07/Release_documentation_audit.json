@@ -1,0 +1,152 @@
+{
+  "scope": "POST_TEST_DOCUMENTATION_VALIDATION_NOT_TRAINING_ADMISSION",
+  "initial_hash_assert_exit": 1,
+  "confirmed_cause": "Archive generator used compact JSON separators instead of native entry_contract.fingerprint whitespace convention.",
+  "original_archive_hashes": {
+    "gym": "20a7ccd75b7362a4109dd85fa0469bb85b6d9850f2a1dae0a82cb6088e552485",
+    "dreamer": "723ac50eef8a9705a1b5e9e5972ba14432ef227b7ed7970ad8aec25d9a18ba80"
+  },
+  "native_runtime": {
+    "gym": {
+      "head": "1a28f0a20866ea2f6c2d38f31a963b42ca92155a",
+      "runtime_hash": "c1948fda541ce852e17bf1cb5d52a84f5677511dacb9172835e404073b210f44"
+    },
+    "dreamer": {
+      "head": "232e57f70b2751adfc9733d7e695d834b73ce439",
+      "runtime_hash": "8984f975389118be7896a9fa6e98f3b1d4192c46e7d7d0be6b90d30ce995918c"
+    }
+  },
+  "fix": "Use unchanged native fingerprint helper for documentation digest.",
+  "final_hash_assert_exit": 0,
+  "link_check_exit": 0,
+  "links": [
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_test_index.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_test_index.tsv",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "WP07_COMMIT_LOCK.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "WP07_BASELINE.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/H_STAGE_TEST_INDEX.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/D_actor_delta.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/E_rl_delta.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/C_publication.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/B_shadow_0.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/B_shadow_330.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_parameter_summary.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "WP07_CONTRACT_LOCK.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_cold_evidence.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_artifact_inventory.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/G_cold_cases.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/H_cold_cases.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "WP07_ACCEPTANCE_MATRIX.md",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/H_real_readiness.json",
+      "exists": true
+    },
+    {
+      "document": "docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "receipts/wp07/Release_real_readiness.json",
+      "exists": true
+    },
+    {
+      "document": "docs/FG_S3_E_Quality_Master_Roadmap_20261019_V11.md",
+      "target": "FG_S3_E_Quality_Master_Roadmap_20261019_V10.md",
+      "exists": true
+    },
+    {
+      "document": "docs/FG_S3_E_Quality_Master_Roadmap_20261019_V11.md",
+      "target": "WP07_IMPLEMENTATION_REVIEW.md",
+      "exists": true
+    },
+    {
+      "document": "../dreamerv3/docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "../../gym-trading-env/docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "exists": true
+    },
+    {
+      "document": "../dreamerv3/docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "../../gym-trading-env/docs/WP07_COMMIT_LOCK.json",
+      "exists": true
+    },
+    {
+      "document": "../dreamerv3/docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "../../gym-trading-env/docs/WP07_SOURCE_REVIEW.md",
+      "exists": true
+    },
+    {
+      "document": "../dreamerv3/docs/WP07_IMPLEMENTATION_REVIEW.md",
+      "target": "../../gym-trading-env/docs/FG_S3_E_Quality_Master_Roadmap_20261019_V11.md",
+      "exists": true
+    }
+  ],
+  "production_files_changed": false,
+  "selected_CPU_tests": 247,
+  "selected_CPU_test_failures": 0
+}

@@ -1,0 +1,555 @@
+[
+  {
+    "case": "SHADOW",
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/SHADOW/split/ckpt/step_000000000003",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "SHADOW",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 0,
+        "consumed_batches": 0,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 0,
+        "target_market_minutes": 0,
+        "burnin_positions": 0,
+        "burnin_market_minutes": 0,
+        "exposures": {
+          "natural_count": 0,
+          "natural_add": 0,
+          "natural_wait": 0,
+          "auxiliary_count": 0,
+          "auxiliary_add": 0,
+          "auxiliary_wait": 0,
+          "balanced_count": 0,
+          "strict_pair_count": 0,
+          "quality_pair_count": 0,
+          "quality_pair_candidates": 0,
+          "quality_pair_conflicts": 0,
+          "quality_pair_same_action_filtered": 0,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": false,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "SUPERVISED_STABLE",
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {},
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/SHADOW/split/ckpt/step_000000000003",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence": [
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/SHADOW/continuous/evidence.pkl",
+        "sha256": "ad3dea303e44dc232f0edb48ac2c67a77892702bf6461a3c616a5ef9926ff368",
+        "bytes": 3730911
+      },
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/SHADOW/split/evidence.pkl",
+        "sha256": "94361ec6b91db227019075df01174abcc974ea447c8b0b850bfecf6ed8560963",
+        "bytes": 3735739
+      }
+    ]
+  },
+  {
+    "case": "ONLINE_SUPERVISED",
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/split/ckpt/step_000000000004",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 7,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 1,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 51,
+          "natural_add": 4,
+          "natural_wait": 47,
+          "auxiliary_count": 54,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 47,
+          "balanced_count": 54,
+          "strict_pair_count": 47,
+          "quality_pair_count": 26,
+          "quality_pair_candidates": 74,
+          "quality_pair_conflicts": 48,
+          "quality_pair_same_action_filtered": 48,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 32
+        },
+        "[\"AUXILIARY\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 6,
+          "valid_wait": 41
+        },
+        "[\"NATURAL\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 0,
+          "valid_wait": 15
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"c983e6016305c1de812b1f52df44827e8a222b4b44de0e069da16978ba6e8d77\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 6
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/split/ckpt/step_000000000004",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence": [
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/continuous/evidence.pkl",
+        "sha256": "1f8dd81146a3048307ada2bd6e14fc3f772c01bf418f14e66dc8cce3f4935e2e",
+        "bytes": 4464611
+      },
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_SUPERVISED/split/evidence.pkl",
+        "sha256": "14ecf0899c01c453f3307cfce16003314d3394d25834b920d4ca465e13c8ce34",
+        "bytes": 4474689
+      }
+    ]
+  },
+  {
+    "case": "publication",
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/publication/split/ckpt/step_000000000005",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 7,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 1,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 51,
+          "natural_add": 4,
+          "natural_wait": 47,
+          "auxiliary_count": 54,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 47,
+          "balanced_count": 54,
+          "strict_pair_count": 47,
+          "quality_pair_count": 26,
+          "quality_pair_candidates": 74,
+          "quality_pair_conflicts": 48,
+          "quality_pair_same_action_filtered": 48,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 32
+        },
+        "[\"AUXILIARY\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 6,
+          "valid_wait": 41
+        },
+        "[\"NATURAL\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 0,
+          "valid_wait": 15
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"f94c8091b1f518b78f7e04712f3e272a56c90058a99d7b8539e890e42b92974b\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 6
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/publication/split/ckpt/step_000000000005",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence": [
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/publication/continuous/evidence.pkl",
+        "sha256": "4b90df483c86eea77c0a90cb0feaf30e0a7c743ea8bfdeb34b7ebdacec5ff3b8",
+        "bytes": 4464611
+      },
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/publication/split/evidence.pkl",
+        "sha256": "85d57423212e859c0370ca439fbd580e49bc577833b9b726ff47e48f55f40f01",
+        "bytes": 4471462
+      }
+    ]
+  },
+  {
+    "case": "ONLINE_RL_CONTROLLED",
+    "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000003",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+      "status": "ONLINE_ENGINEERING_COMPLETE",
+      "execution_mode": "ONLINE_RL_CONTROLLED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 8,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 51,
+          "natural_add": 4,
+          "natural_wait": 47,
+          "auxiliary_count": 54,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 47,
+          "balanced_count": 54,
+          "strict_pair_count": 47,
+          "quality_pair_count": 26,
+          "quality_pair_candidates": 74,
+          "quality_pair_conflicts": 48,
+          "quality_pair_same_action_filtered": 48,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 8
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V1",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": true
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 32
+        },
+        "[\"AUXILIARY\",\"beta\",\"bde45bb99eea85ecc7783af63aa72895b74d15ac3498829152937ae91c3cdbb5\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 6,
+          "valid_wait": 41
+        },
+        "[\"NATURAL\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 0,
+          "valid_wait": 15
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"c0860f095d557bf17492717805dbefad57e3de72e6acb8647a6f517bde93c44c\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"5c9526a337b9d5f520c1d1e76f8b536ea14365a87eee71f781552e17d9713eaf\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 1,
+          "valid_wait": 6
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000003",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false
+    },
+    "evidence": [
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/continuous/evidence.pkl",
+        "sha256": "37fa61fa50e22be4331620be0be53cb0adc3aca20920a211e1c782987556e5a4",
+        "bytes": 4466532
+      },
+      {
+        "path": "/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/Release_G_native_01/ONLINE_RL_CONTROLLED/split/evidence.pkl",
+        "sha256": "842c2c52e77a8ce09f066892d37189ee00ea96beea862d9f8fcf22c48504d265",
+        "bytes": 4476610
+      }
+    ]
+  }
+]

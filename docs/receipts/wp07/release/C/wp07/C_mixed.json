@@ -1,0 +1,954 @@
+{
+  "history": {
+    "protocol": "FG_S3_E_MULTICORPUS_F3_STREAM_V1",
+    "identity": {
+      "protocol": "FG_S3_E_MULTICORPUS_F3_STREAM_V1",
+      "settings": {
+        "batch_size": 4,
+        "burnin_steps": 4,
+        "target_steps": 8
+      },
+      "roles": [
+        {
+          "role": "NATURAL",
+          "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
+          "stream": {
+            "protocol": "FG_S3_E_MULTICORPUS_STREAM_V1",
+            "stage": "ACTOR_STRICT",
+            "sources": [
+              {
+                "corpus_id": "alpha",
+                "source_identity": "6a1e75b2a0156248eb04857898badff65047800736365788f7f802a424a0d3ac",
+                "corpus_identity": "ed2e87beeb2da0728aae35cfbd0c345b9899aac319bb71634475209b23fefe18",
+                "course_identity": "ccb309b92eab7003b503560d66277b5cf91e2be82e6fa2a3c220747616221df8",
+                "teacher_identity": "e1b6fe4136ae9880a0df8571260df7318747b338f8cfa269c3ee867430704264",
+                "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+                "index_sha256": "fd4d147f91d9015739fc7d6e3e61fecee6b9b81bc776c92decb25c26c4bd6ae7",
+                "index_receipt_sha256": "d2d5a82eb50bf32e085293cbccd85ab34e91302e9771ff6383991a8f42f87ff6",
+                "sampling_spec": {
+                  "mode": "NATURAL"
+                },
+                "weight": 1.0,
+                "reader_seed": 1657793326255948742046357759058471969701622265367469646722399282317781970220
+              },
+              {
+                "corpus_id": "beta",
+                "source_identity": "de35469bbab930452d0191e84bd5aa5cee7646365c735997f53b2142330fd950",
+                "corpus_identity": "6abd66dabec5e47d100302272e32097646df011113e409ebec795a66098d35f5",
+                "course_identity": "1319247130fef150a179838dd8e44ef660453038368455fcc6de2c36b827bd7b",
+                "teacher_identity": "8615dfec4df2637d0f5d3bf3cc097f7230335dac2841ee94dbef42704d7e1642",
+                "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+                "index_sha256": "f6bec219c7645683da71a9403751f9cbea1080560c59e6b2ab966977e9915e14",
+                "index_receipt_sha256": "c7edf1cbba078487f352b4b1828fd28347effcfce9ad16c9ee0590efe30dbd44",
+                "sampling_spec": {
+                  "mode": "NATURAL"
+                },
+                "weight": 1.0,
+                "reader_seed": 40791986035274384261668436432395620322145509961262227576176945075809739778517
+              }
+            ],
+            "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
+            "seed_rule": "FINGERPRINT_SEED_AND_STABLE_SOURCE_ID_V1",
+            "scheduler": "IID_PER_BATCH_ROW_SOURCE_ORDER_V1",
+            "compatibility": {
+              "observation": {
+                "observation_schema": "FG_S3_E_OBSERVATION_V2",
+                "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+                "decoder_schema": "FG_S3_E_DECODER_V1",
+                "fields": {
+                  "market_seq": {
+                    "shape": [
+                      60,
+                      18
+                    ],
+                    "dtype": "float32"
+                  },
+                  "position_state": {
+                    "shape": [
+                      9
+                    ],
+                    "dtype": "float32"
+                  },
+                  "action_mask": {
+                    "shape": [
+                      2
+                    ],
+                    "dtype": "float32"
+                  },
+                  "action": {
+                    "shape": [],
+                    "dtype": "int32"
+                  },
+                  "reward": {
+                    "shape": [],
+                    "dtype": "float32"
+                  },
+                  "is_first": {
+                    "shape": [],
+                    "dtype": "bool"
+                  },
+                  "is_last": {
+                    "shape": [],
+                    "dtype": "bool"
+                  },
+                  "is_terminal": {
+                    "shape": [],
+                    "dtype": "bool"
+                  },
+                  "market_seq_e_shared": {
+                    "shape": [
+                      60,
+                      18
+                    ],
+                    "dtype": "float32"
+                  },
+                  "market_context_15m": {
+                    "shape": [
+                      24,
+                      7
+                    ],
+                    "dtype": "float32"
+                  },
+                  "market_macd_5m": {
+                    "shape": [
+                      4
+                    ],
+                    "dtype": "float32"
+                  }
+                },
+                "encoder_keys": [
+                  "market_seq_e_shared",
+                  "position_state",
+                  "action_mask",
+                  "market_context_15m",
+                  "market_macd_5m"
+                ],
+                "decoder_keys": [
+                  "market_seq_e_shared",
+                  "position_state"
+                ],
+                "audit_only": [
+                  "market_seq"
+                ],
+                "context_fields": [
+                  "rel_open",
+                  "rel_high",
+                  "rel_low",
+                  "rel_close",
+                  "vol_relative",
+                  "oi_change",
+                  "valid"
+                ],
+                "macd_5m": {
+                  "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+                  "periods": [
+                    12,
+                    26,
+                    9
+                  ],
+                  "histogram": "DIF-Signal",
+                  "initialization": "first_complete_close; first_DIF_and_signal_zero",
+                  "warmup": "35_complete_buckets_strictly_before_current_bucket",
+                  "scale": "1000*raw/current_visible_1m_Close",
+                  "invalid": "all_zero",
+                  "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+                  "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+                  "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+                  "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+                  "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+                  "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+                },
+                "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+              },
+              "model_contract": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+              "reward": {
+                "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                "candidate": "C1",
+                "beta": 0.5,
+                "rho": 0.4,
+                "L": 3.0,
+                "clock_protocol": "S3_MARKET_MINUTE"
+              },
+              "teacher": {
+                "kind": "quality_v2",
+                "fold": "TRAIN",
+                "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+                "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                "label_schema": "FG_S3_E_QUALITY_TEACHER_V2",
+                "label_location": "SIDECAR",
+                "layers": {
+                  "strict_action": {
+                    "valid_fields": [
+                      "teacher_valid"
+                    ],
+                    "source": "quality_tp_strict_suffix"
+                  },
+                  "score": {
+                    "valid_fields": [
+                      "quality_score_valid"
+                    ],
+                    "source": "native_trade_outcome"
+                  },
+                  "outcome": {
+                    "valid_fields": [
+                      "quality_outcome_valid",
+                      "quality_event_valid",
+                      "quality_touch_valid",
+                      "quality_adverse_valid"
+                    ],
+                    "source": "native_trade_outcome"
+                  },
+                  "soft": {
+                    "valid_fields": [
+                      "quality_soft_valid"
+                    ],
+                    "source": "quality_soft_source",
+                    "sources": [
+                      "INVALID",
+                      "HEURISTIC_V2",
+                      "Q_V2_VERIFIED"
+                    ]
+                  },
+                  "q": {
+                    "valid_fields": [
+                      "quality_q_c1_valid",
+                      "quality_q_v2_valid"
+                    ],
+                    "source": "native_certified_q"
+                  }
+                },
+                "strict_objective": {
+                  "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                  "gamma_rational": [
+                    332,
+                    333
+                  ],
+                  "tie_break": "WAIT",
+                  "scope": "TRAIN_NATIVE_COMPLETE_SUFFIX_ONLY"
+                }
+              }
+            },
+            "fold": "TRAIN",
+            "training_admitted": false
+          },
+          "stream_identity": "ed2067a967744bf39e23813a51b4fad2740b6b82275f725f61797298cf6ab10b",
+          "adapter_identity": "4a340651f14dc6505888343c0f4b554a9f124dbeefa70127f1ff57ff8808f440"
+        }
+      ],
+      "master_seed": 202,
+      "seed_rule": "FINGERPRINT_MASTER_SEED_AND_F3_ROLE_V1",
+      "training_admitted": false
+    },
+    "identity_hash": "fe981e003711515ca39542176ae326219de112227293fb1312053bceb9f867cf",
+    "roles": {
+      "NATURAL": {
+        "protocol": "FG_S3_E_MULTICORPUS_STREAM_V1",
+        "identity": {
+          "protocol": "FG_S3_E_MULTICORPUS_STREAM_V1",
+          "stage": "ACTOR_STRICT",
+          "sources": [
+            {
+              "corpus_id": "alpha",
+              "source_identity": "6a1e75b2a0156248eb04857898badff65047800736365788f7f802a424a0d3ac",
+              "corpus_identity": "ed2e87beeb2da0728aae35cfbd0c345b9899aac319bb71634475209b23fefe18",
+              "course_identity": "ccb309b92eab7003b503560d66277b5cf91e2be82e6fa2a3c220747616221df8",
+              "teacher_identity": "e1b6fe4136ae9880a0df8571260df7318747b338f8cfa269c3ee867430704264",
+              "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+              "index_sha256": "fd4d147f91d9015739fc7d6e3e61fecee6b9b81bc776c92decb25c26c4bd6ae7",
+              "index_receipt_sha256": "d2d5a82eb50bf32e085293cbccd85ab34e91302e9771ff6383991a8f42f87ff6",
+              "sampling_spec": {
+                "mode": "NATURAL"
+              },
+              "weight": 1.0,
+              "reader_seed": 1657793326255948742046357759058471969701622265367469646722399282317781970220
+            },
+            {
+              "corpus_id": "beta",
+              "source_identity": "de35469bbab930452d0191e84bd5aa5cee7646365c735997f53b2142330fd950",
+              "corpus_identity": "6abd66dabec5e47d100302272e32097646df011113e409ebec795a66098d35f5",
+              "course_identity": "1319247130fef150a179838dd8e44ef660453038368455fcc6de2c36b827bd7b",
+              "teacher_identity": "8615dfec4df2637d0f5d3bf3cc097f7230335dac2841ee94dbef42704d7e1642",
+              "source_lock": "cb4cf0e360cbeac393116f7a0d2e0209a6f5a79d8b69a2c83ef1fd19e8aee16e",
+              "index_sha256": "f6bec219c7645683da71a9403751f9cbea1080560c59e6b2ab966977e9915e14",
+              "index_receipt_sha256": "c7edf1cbba078487f352b4b1828fd28347effcfce9ad16c9ee0590efe30dbd44",
+              "sampling_spec": {
+                "mode": "NATURAL"
+              },
+              "weight": 1.0,
+              "reader_seed": 40791986035274384261668436432395620322145509961262227576176945075809739778517
+            }
+          ],
+          "seed": 77861532599962383972208467326421918226194962319367001822700569339545454750343,
+          "seed_rule": "FINGERPRINT_SEED_AND_STABLE_SOURCE_ID_V1",
+          "scheduler": "IID_PER_BATCH_ROW_SOURCE_ORDER_V1",
+          "compatibility": {
+            "observation": {
+              "observation_schema": "FG_S3_E_OBSERVATION_V2",
+              "replay_schema": "FG_S3_E_REPLAY_MARKET_MINUTE_V2",
+              "decoder_schema": "FG_S3_E_DECODER_V1",
+              "fields": {
+                "market_seq": {
+                  "shape": [
+                    60,
+                    18
+                  ],
+                  "dtype": "float32"
+                },
+                "position_state": {
+                  "shape": [
+                    9
+                  ],
+                  "dtype": "float32"
+                },
+                "action_mask": {
+                  "shape": [
+                    2
+                  ],
+                  "dtype": "float32"
+                },
+                "action": {
+                  "shape": [],
+                  "dtype": "int32"
+                },
+                "reward": {
+                  "shape": [],
+                  "dtype": "float32"
+                },
+                "is_first": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "is_last": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "is_terminal": {
+                  "shape": [],
+                  "dtype": "bool"
+                },
+                "market_seq_e_shared": {
+                  "shape": [
+                    60,
+                    18
+                  ],
+                  "dtype": "float32"
+                },
+                "market_context_15m": {
+                  "shape": [
+                    24,
+                    7
+                  ],
+                  "dtype": "float32"
+                },
+                "market_macd_5m": {
+                  "shape": [
+                    4
+                  ],
+                  "dtype": "float32"
+                }
+              },
+              "encoder_keys": [
+                "market_seq_e_shared",
+                "position_state",
+                "action_mask",
+                "market_context_15m",
+                "market_macd_5m"
+              ],
+              "decoder_keys": [
+                "market_seq_e_shared",
+                "position_state"
+              ],
+              "audit_only": [
+                "market_seq"
+              ],
+              "context_fields": [
+                "rel_open",
+                "rel_high",
+                "rel_low",
+                "rel_close",
+                "vol_relative",
+                "oi_change",
+                "valid"
+              ],
+              "macd_5m": {
+                "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+                "periods": [
+                  12,
+                  26,
+                  9
+                ],
+                "histogram": "DIF-Signal",
+                "initialization": "first_complete_close; first_DIF_and_signal_zero",
+                "warmup": "35_complete_buckets_strictly_before_current_bucket",
+                "scale": "1000*raw/current_visible_1m_Close",
+                "invalid": "all_zero",
+                "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+                "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+                "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+                "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+                "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+                "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+              },
+              "contract_hash": "1a8d1f11aeeaf9dc45c84ea39c72c93244660c44e2de3479caefac9e65b13aa6"
+            },
+            "model_contract": "e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c",
+            "reward": {
+              "schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+              "candidate": "C1",
+              "beta": 0.5,
+              "rho": 0.4,
+              "L": 3.0,
+              "clock_protocol": "S3_MARKET_MINUTE"
+            },
+            "teacher": {
+              "kind": "quality_v2",
+              "fold": "TRAIN",
+              "score_policy": "FG_S3_QUALITY_TP_MARKET_DAY_V1",
+              "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+              "label_schema": "FG_S3_E_QUALITY_TEACHER_V2",
+              "label_location": "SIDECAR",
+              "layers": {
+                "strict_action": {
+                  "valid_fields": [
+                    "teacher_valid"
+                  ],
+                  "source": "quality_tp_strict_suffix"
+                },
+                "score": {
+                  "valid_fields": [
+                    "quality_score_valid"
+                  ],
+                  "source": "native_trade_outcome"
+                },
+                "outcome": {
+                  "valid_fields": [
+                    "quality_outcome_valid",
+                    "quality_event_valid",
+                    "quality_touch_valid",
+                    "quality_adverse_valid"
+                  ],
+                  "source": "native_trade_outcome"
+                },
+                "soft": {
+                  "valid_fields": [
+                    "quality_soft_valid"
+                  ],
+                  "source": "quality_soft_source",
+                  "sources": [
+                    "INVALID",
+                    "HEURISTIC_V2",
+                    "Q_V2_VERIFIED"
+                  ]
+                },
+                "q": {
+                  "valid_fields": [
+                    "quality_q_c1_valid",
+                    "quality_q_v2_valid"
+                  ],
+                  "source": "native_certified_q"
+                }
+              },
+              "strict_objective": {
+                "reward_schema": "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1",
+                "gamma_rational": [
+                  332,
+                  333
+                ],
+                "tie_break": "WAIT",
+                "scope": "TRAIN_NATIVE_COMPLETE_SUFFIX_ONLY"
+              }
+            }
+          },
+          "fold": "TRAIN",
+          "training_admitted": false
+        },
+        "identity_hash": "ed2067a967744bf39e23813a51b4fad2740b6b82275f725f61797298cf6ab10b",
+        "delivered_counts": {
+          "batches": 5,
+          "windows": 20,
+          "effective_positions": 240
+        },
+        "per_source_counts": {
+          "alpha": {
+            "windows": 6,
+            "effective_positions": 72,
+            "calls": 5
+          },
+          "beta": {
+            "windows": 14,
+            "effective_positions": 168,
+            "calls": 5
+          }
+        },
+        "sources": {
+          "alpha": {
+            "protocol": "FG_S3_E_QUALITY_READER_STATE_V1",
+            "stage": "ACTOR_STRICT",
+            "sampling_spec": {
+              "mode": "NATURAL"
+            },
+            "source_identity": "6a1e75b2a0156248eb04857898badff65047800736365788f7f802a424a0d3ac",
+            "index_sha256": "fd4d147f91d9015739fc7d6e3e61fecee6b9b81bc776c92decb25c26c4bd6ae7",
+            "policies": {
+              "P0": {
+                "EARLY10_15": 25,
+                "EARLY10_5": 21,
+                "L1_raw_outcomes": 39,
+                "L2_raw_valid": 39,
+                "OTHER": 2,
+                "POLICY:P0": 40,
+                "SAME_DAY": 38,
+                "SL30": 15,
+                "STRICT_ADD": 3,
+                "STRICT_WAIT": 35,
+                "TP_FAST": 10,
+                "TP_SLOW": 11,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 0,
+                "quality_adverse_valid": 152,
+                "quality_event_valid": 266,
+                "quality_outcome_valid": 38,
+                "quality_score_valid": 36,
+                "quality_touch_valid": 304,
+                "raw_strict_ADD": 3,
+                "raw_strict_WAIT": 36,
+                "rows": 40,
+                "teacher_valid": 38
+              },
+              "P1": {
+                "EARLY10_15": 5,
+                "EARLY10_5": 4,
+                "L1_raw_outcomes": 7,
+                "L2_raw_valid": 1,
+                "OTHER": 1,
+                "POLICY:P1": 40,
+                "SAME_DAY": 6,
+                "SL30": 2,
+                "TP_FAST": 1,
+                "TP_SLOW": 2,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 6,
+                "quality_adverse_valid": 24,
+                "quality_event_valid": 42,
+                "quality_outcome_valid": 6,
+                "quality_score_valid": 5,
+                "quality_touch_valid": 48,
+                "raw_strict_WAIT": 1,
+                "rows": 40,
+                "teacher_valid": 0
+              },
+              "P2_low": {
+                "EARLY10_15": 9,
+                "EARLY10_5": 7,
+                "L1_raw_outcomes": 20,
+                "L2_raw_valid": 3,
+                "OTHER": 2,
+                "POLICY:P2_low": 40,
+                "SAME_DAY": 19,
+                "SL30": 6,
+                "STRICT_WAIT": 2,
+                "TP_FAST": 6,
+                "TP_SLOW": 5,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 17,
+                "quality_adverse_valid": 76,
+                "quality_event_valid": 133,
+                "quality_outcome_valid": 19,
+                "quality_score_valid": 17,
+                "quality_touch_valid": 152,
+                "raw_strict_WAIT": 3,
+                "rows": 40,
+                "teacher_valid": 2
+              },
+              "P2_mid": {
+                "EARLY10_15": 7,
+                "EARLY10_5": 5,
+                "L1_raw_outcomes": 11,
+                "L2_raw_valid": 2,
+                "OTHER": 2,
+                "POLICY:P2_mid": 40,
+                "SAME_DAY": 10,
+                "SL30": 3,
+                "STRICT_WAIT": 1,
+                "TP_FAST": 2,
+                "TP_SLOW": 3,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 9,
+                "quality_adverse_valid": 40,
+                "quality_event_valid": 70,
+                "quality_outcome_valid": 10,
+                "quality_score_valid": 8,
+                "quality_touch_valid": 80,
+                "raw_strict_WAIT": 2,
+                "rows": 40,
+                "teacher_valid": 1
+              },
+              "P3": {
+                "EARLY10_15": 20,
+                "EARLY10_5": 16,
+                "L1_raw_outcomes": 34,
+                "L2_raw_valid": 16,
+                "OTHER": 2,
+                "POLICY:P3": 40,
+                "SAME_DAY": 33,
+                "SL30": 10,
+                "STRICT_ADD": 1,
+                "STRICT_WAIT": 14,
+                "TP_FAST": 10,
+                "TP_SLOW": 11,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 18,
+                "quality_adverse_valid": 132,
+                "quality_event_valid": 231,
+                "quality_outcome_valid": 33,
+                "quality_score_valid": 31,
+                "quality_touch_valid": 264,
+                "raw_strict_ADD": 1,
+                "raw_strict_WAIT": 15,
+                "rows": 40,
+                "teacher_valid": 15
+              },
+              "P4": {
+                "EARLY10_15": 22,
+                "EARLY10_5": 20,
+                "L1_raw_outcomes": 36,
+                "L2_raw_valid": 36,
+                "OTHER": 2,
+                "POLICY:P4": 40,
+                "SAME_DAY": 35,
+                "SL30": 13,
+                "STRICT_ADD": 3,
+                "STRICT_WAIT": 32,
+                "TP_FAST": 10,
+                "TP_SLOW": 10,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 0,
+                "quality_adverse_valid": 140,
+                "quality_event_valid": 245,
+                "quality_outcome_valid": 35,
+                "quality_score_valid": 33,
+                "quality_touch_valid": 280,
+                "raw_strict_ADD": 3,
+                "raw_strict_WAIT": 33,
+                "rows": 40,
+                "teacher_valid": 35
+              }
+            },
+            "unique_market_cursors": 40,
+            "distinct_account_decisions": 234,
+            "actual_optimizer_exposures": 0,
+            "delivered_unique_market_cursors": 30,
+            "delivered_unique_account_decisions": 59,
+            "delivered_counts": {
+              "batches": 5,
+              "delivered_candidate_exposures": 72,
+              "quality_pair": 131,
+              "strict_pair": 66,
+              "policy:P4": 24,
+              "stratum:NATURAL": 6,
+              "policy:P3": 24,
+              "policy:P0": 24
+            },
+            "all_episode_strict_pairs": 215,
+            "all_episode_quality_pairs": 872,
+            "support": {
+              "12:ACTOR_STRICT": 74
+            },
+            "peak_cached_bytes": 1128840,
+            "cache_budget_bytes": 33554432
+          },
+          "beta": {
+            "protocol": "FG_S3_E_QUALITY_READER_STATE_V1",
+            "stage": "ACTOR_STRICT",
+            "sampling_spec": {
+              "mode": "NATURAL"
+            },
+            "source_identity": "de35469bbab930452d0191e84bd5aa5cee7646365c735997f53b2142330fd950",
+            "index_sha256": "f6bec219c7645683da71a9403751f9cbea1080560c59e6b2ab966977e9915e14",
+            "policies": {
+              "P0": {
+                "EARLY10_15": 25,
+                "EARLY10_5": 21,
+                "L1_raw_outcomes": 39,
+                "L2_raw_valid": 39,
+                "OTHER": 2,
+                "POLICY:P0": 40,
+                "SAME_DAY": 38,
+                "SL30": 15,
+                "STRICT_ADD": 3,
+                "STRICT_WAIT": 35,
+                "TP_FAST": 10,
+                "TP_SLOW": 11,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 0,
+                "quality_adverse_valid": 152,
+                "quality_event_valid": 266,
+                "quality_outcome_valid": 38,
+                "quality_score_valid": 36,
+                "quality_touch_valid": 304,
+                "raw_strict_ADD": 3,
+                "raw_strict_WAIT": 36,
+                "rows": 40,
+                "teacher_valid": 38
+              },
+              "P1": {
+                "EARLY10_15": 5,
+                "EARLY10_5": 4,
+                "L1_raw_outcomes": 7,
+                "L2_raw_valid": 1,
+                "OTHER": 1,
+                "POLICY:P1": 40,
+                "SAME_DAY": 6,
+                "SL30": 2,
+                "TP_FAST": 1,
+                "TP_SLOW": 2,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 6,
+                "quality_adverse_valid": 24,
+                "quality_event_valid": 42,
+                "quality_outcome_valid": 6,
+                "quality_score_valid": 5,
+                "quality_touch_valid": 48,
+                "raw_strict_WAIT": 1,
+                "rows": 40,
+                "teacher_valid": 0
+              },
+              "P2_low": {
+                "EARLY10_15": 9,
+                "EARLY10_5": 7,
+                "L1_raw_outcomes": 20,
+                "L2_raw_valid": 3,
+                "OTHER": 2,
+                "POLICY:P2_low": 40,
+                "SAME_DAY": 19,
+                "SL30": 6,
+                "STRICT_WAIT": 2,
+                "TP_FAST": 6,
+                "TP_SLOW": 5,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 17,
+                "quality_adverse_valid": 76,
+                "quality_event_valid": 133,
+                "quality_outcome_valid": 19,
+                "quality_score_valid": 17,
+                "quality_touch_valid": 152,
+                "raw_strict_WAIT": 3,
+                "rows": 40,
+                "teacher_valid": 2
+              },
+              "P2_mid": {
+                "EARLY10_15": 7,
+                "EARLY10_5": 5,
+                "L1_raw_outcomes": 11,
+                "L2_raw_valid": 2,
+                "OTHER": 2,
+                "POLICY:P2_mid": 40,
+                "SAME_DAY": 10,
+                "SL30": 3,
+                "STRICT_WAIT": 1,
+                "TP_FAST": 2,
+                "TP_SLOW": 3,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 9,
+                "quality_adverse_valid": 40,
+                "quality_event_valid": 70,
+                "quality_outcome_valid": 10,
+                "quality_score_valid": 8,
+                "quality_touch_valid": 80,
+                "raw_strict_WAIT": 2,
+                "rows": 40,
+                "teacher_valid": 1
+              },
+              "P3": {
+                "EARLY10_15": 20,
+                "EARLY10_5": 16,
+                "L1_raw_outcomes": 34,
+                "L2_raw_valid": 16,
+                "OTHER": 2,
+                "POLICY:P3": 40,
+                "SAME_DAY": 33,
+                "SL30": 10,
+                "STRICT_ADD": 1,
+                "STRICT_WAIT": 14,
+                "TP_FAST": 10,
+                "TP_SLOW": 11,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 18,
+                "quality_adverse_valid": 132,
+                "quality_event_valid": 231,
+                "quality_outcome_valid": 33,
+                "quality_score_valid": 31,
+                "quality_touch_valid": 264,
+                "raw_strict_ADD": 1,
+                "raw_strict_WAIT": 15,
+                "rows": 40,
+                "teacher_valid": 15
+              },
+              "P4": {
+                "EARLY10_15": 22,
+                "EARLY10_5": 20,
+                "L1_raw_outcomes": 36,
+                "L2_raw_valid": 36,
+                "OTHER": 2,
+                "POLICY:P4": 40,
+                "SAME_DAY": 35,
+                "SL30": 13,
+                "STRICT_ADD": 3,
+                "STRICT_WAIT": 32,
+                "TP_FAST": 10,
+                "TP_SLOW": 10,
+                "advanced": 39,
+                "decision_executed": 39,
+                "funds_outside_certificate": 0,
+                "quality_adverse_valid": 140,
+                "quality_event_valid": 245,
+                "quality_outcome_valid": 35,
+                "quality_score_valid": 33,
+                "quality_touch_valid": 280,
+                "raw_strict_ADD": 3,
+                "raw_strict_WAIT": 33,
+                "rows": 40,
+                "teacher_valid": 35
+              }
+            },
+            "unique_market_cursors": 40,
+            "distinct_account_decisions": 234,
+            "actual_optimizer_exposures": 0,
+            "delivered_unique_market_cursors": 37,
+            "delivered_unique_account_decisions": 79,
+            "delivered_counts": {
+              "batches": 5,
+              "delivered_candidate_exposures": 168,
+              "quality_pair": 342,
+              "strict_pair": 152,
+              "policy:P0": 72,
+              "stratum:NATURAL": 14,
+              "policy:P4": 72,
+              "policy:P3": 24
+            },
+            "all_episode_strict_pairs": 215,
+            "all_episode_quality_pairs": 872,
+            "support": {
+              "12:ACTOR_STRICT": 74
+            },
+            "peak_cached_bytes": 1128840,
+            "cache_budget_bytes": 33554432
+          }
+        },
+        "cache_budget_bytes": 67108864,
+        "peak_cached_bytes_upper_bound": 2257680,
+        "source_selection": {
+          "basis": "EXPLICIT_CONFIGURED_SOURCE_WEIGHTS",
+          "probabilities": {
+            "alpha": 0.5,
+            "beta": 0.5
+          },
+          "delivered_window_shares": {
+            "alpha": 0.3,
+            "beta": 0.7
+          },
+          "represents_true_market_natural_distribution": false
+        },
+        "denominators": "Per-source unique counts may overlap; totals here are delivered exposures.",
+        "actual_optimizer_exposures": 0,
+        "training_admitted": false
+      }
+    },
+    "cache_budget_bytes": 67108864,
+    "peak_cached_bytes_upper_bound": 2257680,
+    "sampling_statistics": {
+      "NATURAL": {
+        "alpha": {
+          "windows": 6,
+          "target_positions": 48,
+          "teacher_add": 4,
+          "teacher_wait": 36,
+          "teacher_invalid": 8
+        },
+        "beta": {
+          "windows": 14,
+          "target_positions": 112,
+          "teacher_add": 9,
+          "teacher_wait": 96,
+          "teacher_invalid": 7
+        }
+      }
+    },
+    "natural_distribution": {
+      "scope": "DELIVERED_POST_BURNIN_TEACHER_LABEL_EXPOSURES",
+      "per_source": {
+        "alpha": {
+          "windows": 6,
+          "target_positions": 48,
+          "teacher_add": 4,
+          "teacher_wait": 36,
+          "teacher_invalid": 8
+        },
+        "beta": {
+          "windows": 14,
+          "target_positions": 112,
+          "teacher_add": 9,
+          "teacher_wait": 96,
+          "teacher_invalid": 7
+        }
+      },
+      "global_counts": {
+        "windows": 20,
+        "target_positions": 160,
+        "teacher_add": 13,
+        "teacher_wait": 132,
+        "teacher_invalid": 15
+      },
+      "source_reference_account_labels": {
+        "alpha": {
+          "STRICT_ADD": 7,
+          "STRICT_WAIT": 84
+        },
+        "beta": {
+          "STRICT_ADD": 7,
+          "STRICT_WAIT": 84
+        }
+      },
+      "source_selection": {
+        "basis": "EXPLICIT_CONFIGURED_SOURCE_WEIGHTS",
+        "probabilities": {
+          "alpha": 0.5,
+          "beta": 0.5
+        },
+        "delivered_window_shares": {
+          "alpha": 0.3,
+          "beta": 0.7
+        },
+        "represents_true_market_natural_distribution": false
+      },
+      "represents_true_market_natural_distribution": false,
+      "loss_or_optimizer_exposure": "NOT_MEASURED_BY_DATA_LAYER"
+    },
+    "denominators": "Per-role, per-source counts; totals are delivered exposures, not unique market data.",
+    "actual_optimizer_exposures": 0,
+    "training_admitted": false
+  },
+  "online": {
+    "protocol": "FG_S3_E_QUALITY_ONLINE_READER_V1",
+    "batches": 5,
+    "eligible_windows": 37,
+    "pending": 1,
+    "training_admitted": false
+  },
+  "selected_batches": {
+    "history_batches": 5,
+    "online_batches": 3
+  },
+  "denominators": "Delivered source windows, not independent market N"
+}

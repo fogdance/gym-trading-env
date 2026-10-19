@@ -1,6 +1,6 @@
 # WP07 V2：45 个行为的证据矩阵
 
-PASS_CPU 只指实际合成工程行为；不是正式来源、研究效果或全项目 PASS。原始逐 case 清单见 `receipts/wp07/H_STAGE_TEST_INDEX.json`；最终隔离发布版本与复验见 `WP07_COMMIT_LOCK.json`。本矩阵不将旧 WP02/06 PASS 当作本次未运行的真实验收。
+PASS_CPU 只指实际合成工程行为；不是正式来源、研究效果或全项目 PASS。最终隔离复验 247 PASS、exit 0、无跳过，准确逐 case 清单见 `receipts/wp07/Release_test_index.json`，冻结成对 HEAD 见 `WP07_COMMIT_LOCK.json`。开发期记录另在 `H_STAGE_TEST_INDEX.json`。本矩阵不将旧 WP02/06 PASS 当作本次未运行的真实验收。
 
 | ID | 行为 | 实测证据 | 结果/边界 |
 | --- | --- | --- | --- |
@@ -38,7 +38,7 @@ PASS_CPU 只指实际合成工程行为；不是正式来源、研究效果或�
 | 32 | SHADOW 零更新 | B 模型/slots 字节、G/H SHADOW 计数 | PASS_CPU |
 | 33 | 技术不充分时 Gate 阻止 RL | F 数值/WM/policy/支持量/伪认证负例，独立 research review | PASS_CPU；正式启用 NO_GO |
 | 34 | Prediction/Q 融合关闭 | A model/合同检查、E owner、H CLI eval逐行 diagnostics | PASS_CPU；原单独 Admission 不变 |
-| 35 | Teacher-free 确定性 Actor-only eval | H CLI 原 evaluate_native 两次同初态/argmax 比较 | CPU 定向复验及最终发布结果见原始收据；真实考试 NOT_RUN |
+| 35 | Teacher-free 确定性 Actor-only eval | Release_H 原 evaluate_native 两次同初态/argmax，trace 相同 | PASS_CPU；真实考试 NOT_RUN |
 | 36 | SHADOW 新进程全状态恢复 | G/H 四冷恢复，64 vs 32+32 | PASS_CPU |
 | 37 | online BC 新进程恢复 | G/H 同上，权重/slots/下一 batch/日志 | PASS_CPU |
 | 38 | 发布 7 条中断精确恢复 | G/H publication phase，标签无重发或漏发 | PASS_CPU |

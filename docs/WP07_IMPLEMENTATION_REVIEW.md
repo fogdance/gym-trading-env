@@ -4,7 +4,11 @@
 
 ## 结论与版本
 
-SHADOW、ONLINE_SUPERVISED、ONLINE_RL_CONTROLLED 已接入同一个原生 Agent、Env/Driver、Replay、优化器和 FullCheckpoint。A–G 已逐阶段提交；H 的统一 CLI、回归和隔离发布审查进行中。最终发布结果、A–H 成对 SHA 和集成 HEAD 由 `WP07_COMMIT_LOCK.json` 补齐。此段在发布验收完成前不代表主线已更新。
+**WP07 ENGINEERING CODE_GO。** A–H 已完成，SHADOW、ONLINE_SUPERVISED、ONLINE_RL_CONTROLLED 接入同一个原生 Agent、Env/Driver、Replay、优化器和 FullCheckpoint。一次性隔离集成树已完成最终 **247 PASS，0 failure/error/skip，全部命令 exit 0**；其中 33 个 WP07 case、150 个共享/时钟/MACD/课程/Reader case、F1/F2/F3 分别 18/20/26 例。有 2 条 pytest JUnit 元数据警告。准确命令、cwd 和逐 case 结果见 [Release_test_index.json](receipts/wp07/Release_test_index.json) / [TSV](receipts/wp07/Release_test_index.tsv)。这是选定集合通过，不是全项目通过。
+
+实际复验冻结版本：Gym `1a28f0a20866ea2f6c2d38f31a963b42ca92155a` / Dreamer `232e57f70b2751adfc9733d7e695d834b73ce439`。合并前再次核对最新 s3-next，确认它仍为上述共同基线，双仓均 clean，无冲突。A–H SHA、运行源码摘要和变更文件清单见 [WP07_COMMIT_LOCK.json](WP07_COMMIT_LOCK.json)。后续只有 docs 归档，运行源码摘要相同，可继承行为证据；**不允许把 docs 后继 HEAD 冒充原 HEAD 做同 Run resume**。精确恢复证据绑定上述冻结版本，正式 Run 继续要求原代码身份。
+
+发布后的成对公共主线完整 HEAD 见本机 `WP07_PUBLICATION_RESULT.json`（commit 完成后生成的只读指针收据，不对自身递归做 Git SHA 认证），或运行两仓 `git rev-parse integration/s3-next`。归档提交与 A–H 功能提交分开，不冒称它是第九个开发阶段。
 
 **正式训练 / RL 研究：NO_GO。** 缺少本轮可验证的真实受训 F3、两份正式发布的 V3 TRAIN Corpus、WM/imagined mask 足够支持量和独立研究授权。CPU 数值更新及合成 TP/SL 不是策略有效性或盈利证明。
 
@@ -47,6 +51,8 @@ SHADOW、ONLINE_SUPERVISED、ONLINE_RL_CONTROLLED 已接入同一个原生 Agent
 | H_macd | 14 | 0 | partial EMA、未来修改前缀不变、重复查询、跨夜/休市与 native 恢复 |
 | H_f1 / H_f2 / H_f3 | 18 / 20 / 26 | 0 / 0 / 0 | 原 F1/F2/F3 实际优化器、冻结、负例、全新进程 CP 与下一 batch |
 
+最终冻结复验逐阶段结果：Release_A/B/C/D/E/F/G/H = **10/2/3/3/2/2/5/6 PASS**；Release_shared = **150 PASS**；Release_F1/F2/F3 = **18/20/26 PASS**。所有 wrapper 和实际 pytest 退出码均 0。四冷恢复详细结果、原始参数差异及账户结果复制在 `receipts/wp07/release/` 对应阶段中，历史 G/H 及旧 WP 收据保持原版本。实际复验总计 247，与上述开发期集合分别列示，不混合求和。
+
 实际入口示例（从对应 Gym cwd 执行，LABEL 必须唯一）：
 
 ```bash
@@ -64,7 +70,11 @@ env FG_WP_RECEIPTS=wp07 FG_WP07_G_ROOT=artifacts/fg_s3_v2/e_quality_wp07/NEW_COL
 - [B_shadow_0.json](receipts/wp07/B_shadow_0.json)、[B_shadow_330.json](receipts/wp07/B_shadow_330.json)：两段各 128 个真实合成市场分钟，共有 TP=16、SL=15，含持仓/合法 WAIT/ADD 和官方交易日切换；原 native `reconcile_trace` 均 PASS，模型/slots 不变；Teacher 构造、查询/state 路径注入 raise 后仍可完整交易。
 - H CLI 合成小样：64 市场分钟，消费 8 batch、有效更新 7 次、显式 disabled-loss skip 1 次。随后原无教师 argmax 评价 32 分钟：真实 entry fill=5、TP=2、SL=2，reward=-5.7，完整账户重播 PASS，参数不变。此处只证明闭环，不能视为优质策略。
 
-不同账户/来源/episode 绝不配 Pair 或拼接时间；Natural/Aux/online 按源实曝计数，历史预取/被替换的读者行与真正消费分开。多账户同价格不是多份独立市场样本。数据身份、模型状态和 checkpoint 文件摘要在最终发布 evidence inventory 中给出；原 CP/Replay 大文件保留在隔离树 artifacts，不上传或复制旧 Run。
+不同账户/来源/episode 绝不配 Pair 或拼接时间；Natural/Aux/online 按源实曝计数，历史预取/被替换的读者行与真正消费分开。多账户同价格不是多份独立市场样本。最终参数汇总：[Release_parameter_summary.json](receipts/wp07/Release_parameter_summary.json)；BC 实际改变 Actor 参数 5 leaf、Value 0，RL 改变 Actor 5、Value 5，旧 pol 和 WM 均不变，slots/normalizer 的准确变化见完整逐键报告。
+
+数据/模型合同、观察及三模式执行合同摘要在 [WP07_CONTRACT_LOCK.json](WP07_CONTRACT_LOCK.json)。本轮冻结合成 Corpus identity 为 `451be4479709ea7e52a59ae423f7b0ed464b20f9939d707dd9442f5a1d88b891`，model contract 为 `e33f29c2e08c19de1d562ab2623d8f471343ca75e2f0496fc101df4e823d827c`，effective model hash 为 `e20739443271c03fec30280d52728d86f46b1dd326fb036cbd4aaf88ad588d36`。这些是明确合成工程来源，不是正式模型认证。
+
+四类 CP/原始 evidence pickle 和账户文件摘要见 [Release_cold_evidence.json](receipts/wp07/Release_cold_evidence.json)、[Release_artifact_inventory.json](receipts/wp07/Release_artifact_inventory.json)。原 CP/Replay 大文件保留在 `/home/v/Documents/work/research/fg-s3-e-quality-wp07-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/`，不上传或复制旧 Run。原 native manifest 包含每个 CP 的完整成员哈希，不只是 Agent 文件。
 
 ## 精确恢复与失败修复
 
@@ -87,7 +97,7 @@ env FG_WP_RECEIPTS=wp07 FG_WP07_G_ROOT=artifacts/fg_s3_v2/e_quality_wp07/NEW_COL
 
 | 项目 | 结论 |
 | --- | --- |
-| CPU 合成 SHADOW / BC / 受控 RL 工程 | 按上述实际收据 PASS；最终隔离发布结果另行记录 |
+| CPU 合成 SHADOW / BC / 受控 RL 工程 | CODE_GO；最终冻结复验 247 PASS、全 exit 0 |
 | 真实受训 F1/F2/F3 权重用于 online | NOT_RUN / NO_GO；未提供可验证来源 |
 | 两份正式发布真实 TRAIN Corpus 融合终验 | NOT_RUN / NO_GO；不以 WP02/06 报告替代 |
 | 正式 online prepare/start/resume 正例、正式 RL 授权正例 | NOT_RUN；真实 native 证明、来源和独立审核缺失，默认关闭 |
@@ -96,6 +106,21 @@ env FG_WP_RECEIPTS=wp07 FG_WP07_G_ROOT=artifacts/fg_s3_v2/e_quality_wp07/NEW_COL
 | TEST/独立策略考试、真实 RL 改善、盈利结论 | NOT_RUN；留给 WP08/09/10，不能从 loss finite 推断 |
 | 全项目测试 | NOT_RUN；仅本文与最终发布清单所列集合 |
 
-本轮 metadata-only 检查见 [H_real_readiness.json](receipts/wp07/H_real_readiness.json)：已检查的正式 s3_v2 Run 目录没有提供 F3 来源，历史 B01 路径不存在，现存 FG809 DEV 小样仍不是两份发布教材。没有打开 TEST 价格或扫描未发布半成品的价格内容。
+本轮 metadata-only 检查见 [H_real_readiness.json](receipts/wp07/H_real_readiness.json) 和 [Release_real_readiness.json](receipts/wp07/Release_real_readiness.json)：已检查的正式 s3_v2 Run 目录没有提供 F3 来源，历史 B01 路径不存在。现存 FG809 的新鲜 source_lock 显示 `bounded_dev_observations_with_full_train_suffix`；course 的 spec_mode=formal 不等于受训 F3 或两份正式发布教材。只读取上述 JSON 身份，没有打开 TEST 价格或扫描未发布半成品的价格内容。
 
 WP08 可复用：原 deterministic evaluate_native、exact checkpoint、per-source exposure、post-step publication、frozen WM 和 actor-only 证据。正式研究启用必须补齐真实来源、充分校准和单独授权；不能把工程 permit、JSON PASS 或旧 Tutor 1M 当作这些条件。
+
+## A–H 成对功能提交
+
+每阶段各一项真实提交；隔离 merge 与最终 docs 归档另计。
+
+| 阶段 | Gym | Dreamer |
+| --- | --- | --- |
+| A | `49f88aac9341ccb94eceb947845217187a7852a9` | `c0c8bff5f736b0b2fb929efa59ecabbb50f96200` |
+| B | `e1544ee4eff52a6a29b2a17ae8dc4c0692f47a78` | `3d38a05b4c548049ec1e74743ee04fb2433bb32b` |
+| C | `d1755ad41f464fb4fcde9a7aebf92edb9ba692fb` | `f9c90f8b1e6ad4ffa20c8415be549565a743c60d` |
+| D | `e95985647d9f7c34db76a952c3563cf86171b5ea` | `c481c1f026d94b26510c07c64a7ce65536d3dc16` |
+| E | `febeb70e0fbe2c17d5bae7c68a0f1901064d78f3` | `ce40dbf56984e27d2e7cd166af8244c968ceaa8b` |
+| F | `ffec02e274c35f5273aa83bc1487865a2ef6e59b` | `b71ca2f1f6b8cdf6447cc99d51cc699b7b83db5c` |
+| G | `8cb35a6f67bac8b864d5918d0e7121a9e7dff709` | `f99eb48e133d762e9b9f085e1f59cd9484d7ad73` |
+| H | `677498a48ef70a44252c14451b5aa36a5d598c33` | `54c50ec9a12a9e5dd8a95b2ad142ee21504477a4` |

@@ -1,0 +1,41 @@
+{
+  "status": "PASS_EXACT_COLD_CPU",
+  "root": "/tmp/pytest-of-v/pytest-601/wp06_cold0",
+  "scenario": "ordinary",
+  "checkpoint": "/tmp/pytest-of-v/pytest-601/wp06_cold0/ordinary_split/ckpt/step_000000000004",
+  "counters": {
+    "optimizer_updates": 4,
+    "consumed_batches": 4,
+    "skip_no_valid": 0,
+    "skip_disabled_loss": 0,
+    "numerical_rejections": 0,
+    "target_positions": 512,
+    "target_market_minutes": 512,
+    "burnin_positions": 256,
+    "burnin_market_minutes": 256,
+    "exposures": {
+      "natural_count": 64,
+      "natural_add": 5,
+      "natural_wait": 59,
+      "auxiliary_count": 245,
+      "auxiliary_add": 20,
+      "auxiliary_wait": 225,
+      "balanced_count": 245,
+      "strict_pair_count": 1125,
+      "quality_pair_count": 550,
+      "quality_pair_candidates": 2921,
+      "quality_pair_conflicts": 2371,
+      "quality_pair_same_action_filtered": 2371,
+      "quality_pair_reversed_filtered": 0
+    }
+  },
+  "checkpoint_files": {
+    "agent.pkl": "6234ec1fe5cd31d86d6f156a9fcce42ab9f482bafe9ff1c4869a93cbbf00682f",
+    "counters.pkl": "88535543073b73a0354944cfbb4f3981004fb28ec76fbf1bccae648a439e94aa",
+    "course_reader.pkl": "6cad9d65707ddca93c19f4055c0d3b3845db1fbb09a47f84a2ab5a0e93947c7f",
+    "runtime.pkl": "62845658ed18ed48b01abf76d2128a5bb630a49911fabe73469243988a6299d1",
+    "step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22"
+  },
+  "all_state_and_next_batch_byte_equal": true,
+  "real_TRAIN_updates": 0
+}
