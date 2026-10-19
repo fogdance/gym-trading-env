@@ -11,7 +11,7 @@
 | WP05 | F2 四头与阶段参数接续工程完成 | 真实正式 F2 权重本轮未验收 | F3 |
 | WP06 | F3 quality_actor 工程完成，原短诊断定向回归 | 正式受训 F3/策略质量未证明 | F4/WP08 |
 | WP07 | SHADOW、监督、同 quality_actor 受控 RL、FullCheckpoint 已集成 | 原 A–H CPU 合成回归；真实 RL Gate 不开放 | WP08 |
-| WP08 | A–H 已实现，最终冻结复验/发布中；详见实施报告 | 独立 DEV 来源有限读取可用；正式受训 Actor DEV 考试 NOT_RUN；策略 INCONCLUSIVE | WP09/WP10 |
+| WP08 | A–H CODE_GO；冻结成对版本已通过独立集成树复验，239个选定去重CPU case；详见实施报告 | 独立 DEV 来源有限读取可用；正式受训 Actor DEV 考试 NOT_RUN；策略 INCONCLUSIVE | WP09/WP10 |
 | WP09 | 待扩展多合约考试、分层泛化与消融 | 不因 WP08 合成成绩宣称 DATA 或策略成功 | WP10 |
 | WP10 | 待封存模型、协议、阈值、seed、基线和一次最终 TEST | SEALED_TEST_FINAL 明确拒绝，未读 TEST | 最终研究审核 |
 
@@ -19,4 +19,6 @@ WP08 复用唯一原生 Env/ActorPolicy/Driver/Trace。独立 EvalSession 不训
 
 下一研究动作依赖真正经认证的 F3/F4 来源及预注册评价计划；默认不自动启动真实 TRAIN 长训练、GPU、18 合约生产或 TEST。DEV/DATA/FORMAL 分级规则保持，日常修改不强制整套 G3。
 
-最终成对集成 SHA、真实命令/退出码、45 项验收映射、不可变和恢复证据见 [WP08_IMPLEMENTATION_REVIEW.md](WP08_IMPLEMENTATION_REVIEW.md) 及其链接。此版本发布记录在最终复验后填写。
+源码冻结配对：Gym `09898736602c1a7d6c89899bb79fe232d7907923` / Dreamer `b7a693b3c7b0b45eeecdec954818be42d40e67b6`。实际隔离树CPU复验为40+3+1+51项，另有WP06/WP07回归与共享Reader/课程检查；不同集合有重复，清单和继承范围以报告为准。文档归档后的公共HEAD记在本机 `WP08_DELIVERY.json`。
+
+真实命令/退出码、八阶段提交、45 项验收映射、不可变和恢复证据见 [WP08_IMPLEMENTATION_REVIEW.md](WP08_IMPLEMENTATION_REVIEW.md) 及其链接。原Run、课程、金融规则和训练Gate保持其原有认证，WP08工程成功不升级任何研究权限。

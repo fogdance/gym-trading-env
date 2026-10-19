@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 350, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 84, in main
+    result=exam.create_plan(args.config) if args.command=='exam-plan' else exam.run(args.config,stop_at=args.stop_at)
+                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam.py", line 118, in run
+    p=read_plan(config) if config is not None else validate_plan(json.loads((_local_path(directory)/'PLAN.json').read_text()))
+      ^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam.py", line 30, in read_plan
+    return validate_plan(raw)
+           ^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_contract.py", line 39, in validate_plan
+    raise ValueError('EXAM_EXPLICIT_MODE_REQUIRED')
+ValueError: EXAM_EXPLICIT_MODE_REQUIRED

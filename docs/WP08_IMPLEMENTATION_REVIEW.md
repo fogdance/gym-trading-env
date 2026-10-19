@@ -1,6 +1,6 @@
 # WP08 实施与验收报告
 
-本报告由实际源码、命令输出、逐行原生回放和原始收据生成。当前处于最终发布复验阶段；最终成对提交和判定以文末发布记录及 `WP08_TEST_INDEX.md` 为准。任务原文为 [WP08 V2](FG_S3_E_Quality_WP08_Actor_Only_Exam_Final_Codex_gy23_d323_20261019.md)。
+本报告由实际源码、命令输出、逐行原生回放和原始收据生成。**WP08_CODE_GO；真实受训 Actor DEV 考试 NOT_RUN；策略质量 INCONCLUSIVE；SEALED_TEST_READY=false。** 成对提交和完整测试范围见文末及 [WP08_TEST_INDEX.md](WP08_TEST_INDEX.md)。任务原文为 [WP08 V2](FG_S3_E_Quality_WP08_Actor_Only_Exam_Final_Codex_gy23_d323_20261019.md)。
 
 ## 范围及真实基线
 
@@ -35,7 +35,7 @@ EvalSession 保存独立 `FG_S3_E_QUALITY_EVAL_STATE_V1`：Env/账户/可见 MAC
 | 正式受训模型 DEV 考试 | NOT_RUN | 未提供本轮经认证的正式 F3/F4 模型 |
 | 策略收益/泛化、TEST | INCONCLUSIVE / NOT_RUN | 不自动授予研究、训练或 TEST 权限 |
 
-真实来源收据：`receipts/wp08/H_source_reopen_ready.json`、`H_source_exact_reopen.json`、`H_finite_train_readonly.json`。完整产物留在本 worktree 的 `artifacts/fg_s3_v2/e_quality_wp08/`；docs 保存审阅所需索引/摘要/哈希，避免复制完整市场或 Checkpoint。
+最终真实来源命令收据为 `receipts/wp08/Release_real_dev_source.json`、`Release_real_dev_reopen.json`、`Release_real_train_readonly.json`；早期迭代保留 H_source_* 与 H_finite_train_readonly。原生来源验证会解析/核验所选 validation 或 TRAIN 文件，实际有限账户推进均为32分钟，不声称仅打开32行。完整产物留在两组 WP08 worktree 的 `artifacts/fg_s3_v2/e_quality_wp08/`；docs 保存索引/摘要/哈希，避免复制完整市场或 Checkpoint。
 
 ## 实施中观察到的问题及修正
 
@@ -46,11 +46,11 @@ EvalSession 保存独立 `FG_S3_E_QUALITY_EVAL_STATE_V1`：Env/账户/可见 MAC
 5. WP07 H 回归初次将输出放入新 WP08 路径，被原 `ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED` 拒绝。未修改公共基线复现同一拒绝后，仅修正测试隔离目录到原允许位置。原 Guard 未变。
 6. 最终审阅发现日分块 MAE15 平均值曾把不足 15 分钟的右删失观测混入完整风险均值。新增原生 3 分钟删失回归实际复现后修正有效分母；修复和重测收据单独保留。
 
-所有失败尝试的 log/json/xml 均保留。旧 PASS 不自动等于最终版本 PASS；实际命令、源码哈希、dirty 和逐 case 记录见测试索引。
+失败尝试的原始日志和命令/退出码均保留。新命名的验证另存各自 XML；复用 WP06/WP07 worker 的分组 XML 为最后一次运行结果，各次命令和日志另外归档。旧 PASS 不自动等于最终版本 PASS；实际命令、源码哈希、dirty 和逐 case 记录见测试索引。
 
 ## 反向源码 Review
 
-以任务书 12 项 NO-GO 路径单独审阅调用链，并用全新进程行为复验。源码边界审计见 `receipts/wp08/H_source_review.json`，它只证明改动归属，不替代功能测试。审阅由本执行者完成；第三方人工 Review 未执行，不冒充另一位审阅者。
+以任务书 12 项 NO-GO 路径单独审阅调用链，并用全新进程行为复验。源码边界审计见 `receipts/wp08/H_source_review.json`；冻结集成树另有 `Release_source_review.json`，逐文件核对实际集成源码与已审阅功能树一致。它们只证明改动归属，不替代功能测试。审阅由本执行者完成；第三方人工 Review 未执行，不冒充另一位审阅者。
 
 - 未调用 OnlineRun/OnlineCollector 执行 DEV，未重标 TRAIN fold；旧 online-evaluate 仍为原有限 TRAIN 诊断。
 - 来源阶段 F3/F4 分别校验，合成许可不能升级正式。模型 schema、课程、Observation、Reward、完整 slots 和 native 控制状态均保留。
@@ -63,4 +63,45 @@ EvalSession 保存独立 `FG_S3_E_QUALITY_EVAL_STATE_V1`：Env/账户/可见 MAC
 
 ## 发布判定
 
-最终检查尚在进行。本段将在冻结版本复验和成对集成后更新，不能将当前草拟报告当作发布准入收据。
+源码冻结版本为 Gym `09898736602c1a7d6c89899bb79fe232d7907923` / Dreamer `b7a693b3c7b0b45eeecdec954818be42d40e67b6`，独立集成 worktree 已在这对 HEAD 上全部通过最终复验。主线两仓在集成前核查仍为原始基线且 clean，发布只允许成对快进；实际发布结果与文档归档后的公共 HEAD 另记提交后生成的本机 `WP08_DELIVERY.json`，不伪造包含自身 Git SHA 的提交内容。
+
+| 最终验证 | 通过数 | Exit | 原始收据 |
+| --- | ---: | ---: | --- |
+| 冻结合同、F3/F4、风险窗口、完整CLI、原生roll | 40 | 0 | Release_cli_risk.json/log/xml |
+| 1024精确新进程恢复、Random恢复、严格拒绝 | 3 | 0 | Release_exact_cold.json/log/xml |
+| Teacher失败探针、1024持续账户 | 1 | 0 | Release_native_teacher_isolation.json/log/xml |
+| 强制共享Guard、FullCheckpoint、Driver、MACD | 51 | 0 | Release_shared.json/log/xml |
+| WP07 A–H + WP06短评价 | 33 + 2 | 0 | H_final_previous.json；各H_final_regression_*命令/日志 |
+| 原扩展共享Reader/课程/Clock/恢复集合 | 150 | 0 | H_shared.json；共享运行源码相同的继承证据 H_shared_source_inheritance.json |
+| 每合约区间 / 质量分级等受影响模块 | 43 | 0 | H_final_targeted.json（与上面部分重复） |
+| 日分块MAE有效位修复 / 跨日TP / 账务 | 9 | 0 | H_daily_risk_fixed.json |
+| 10账户同源对照 / 共同评价seed | 3 | 0 | H_final_fair.json；H_fair_risk_valid.json以最终指标重做全部原生对账 |
+
+明确选定集合去重后为 **239 个 case，0失败、0跳过**，清单见 `receipts/wp08/FINAL_SELECTED_CASES.json`。这不是全项目测试；包含已有模块的相同运行源码继承及受影响模块复验，不能把各行简单相加。H_shared 的2个 warning 来自 pytest `record_property` 与 xunit2 格式，未跳过测试。早期失败按上文保留。
+
+六类实际 CLI 拒绝：TEST=1、空模式=1、TRAIN冒DEV=1、缺正式Actor=1、授权训练flag=2、GPUflag=2。各自输出目录均不存在、无 agent.pkl/Prepared；精确 argv/原始日志和文件检查见 `Release_negative_summary.json`。另有来源阶段混淆、坏Checkpoint、旧pol变异、合法动作篡改、损坏latest/chunk/源身份的函数级负例，均由对应 pytest 实际验证。
+
+仅发布 WP08 工程代码。`WP08_DEV_EVIDENCE_GO=NOT_RUN`、`STRATEGY_QUALITY_GO=false/INCONCLUSIVE`、`SEALED_TEST_READY=false`，正式训练与RL Gate不开放。下一研究步骤是提供真正受训、来源可验证的F3/F4模型，并预注册独立DEV计划；本次不自动启动它。
+
+### 八阶段真实提交
+
+| 阶段 | Gym 完整 SHA | Dreamer 完整 SHA |
+| --- | --- | --- |
+| A | `32157b325df2cc5bf907b77d18e4e1439f0eb9b8` | 无改动 |
+| B | `f56a4fa3490613e647d9efc6ff13053636c39e2a` | `2666d847463c46f2948fc2d9cae4e61e550019e9` |
+| C | `7d7414aebc04c4ef0de383f3494d8452dd2888ab` | 无改动 |
+| D | `a63c028030b9316fa213b2a34f09460ba57504eb` | 无改动 |
+| E | `b08105d0eb1a6b196895d008f5244ae67d5d10bb` | `26be0506c344af139c11ea0160b65f2135a2e27b` |
+| F | `cc12783bf88d748882a5979ad22fa1bb3a570b78` | 无改动 |
+| G | `a84a9e595b66ff9d66e3ff18bc4fa5cc8a87dbcf` | 无改动 |
+| H | `09898736602c1a7d6c89899bb79fe232d7907923` | `b7a693b3c7b0b45eeecdec954818be42d40e67b6`（接口文档） |
+
+未制造空提交。最终文档归档提交仅增加报告/收据，运行源码与上述冻结版本相同。原 EvalSession 继续绑定冻结 HEAD；其恢复使用保留的 `integration/s3-e-quality-wp08-release-20261019` 双仓，不能把文档发布后 HEAD 的新 Run 冒充旧 Session resume。
+
+### 已核实的账户与恢复数字
+
+冻结版本的合成固定 ADD Actor 连续推进 1024 分钟，生成 1025 行：132 个实际 Entry、71 TP、60 SL、1 右删失。净 PnL −89,067，手续费 2,367，最大权益回撤 89,913；原生 Quality TP Reward −128.01406250000008，二者分别对账。总权益变化为闭合交易净 PnL −89,058 减仍持仓开仓费 9。该负收益压力样本证明工程账务，不是策略有效性。
+
+1024 与 333+新进程691 对完整 snapshot、Driver/Env、stepid、RSSM carry、policy RNG、模型摘要、日志和指标做递归精确比较，无容差；实际推理状态为 `FG_POLICY_INFERENCE_STATE_V2 / seed=202 / actions=1025`。随机基线另做 64=23+新进程41。严格 latest 损坏、chunk/来源变化拒绝，未提交尾块保留。
+
+完整证据见 [WP08_ACCOUNT_RECOVERY_EVIDENCE.json](WP08_ACCOUNT_RECOVERY_EVIDENCE.json)、[WP08_IDENTITIES.json](WP08_IDENTITIES.json)、[45项映射](WP08_ACCEPTANCE_MATRIX.md)、[命令及原始结果](WP08_TEST_INDEX.md)。实际合成比较为10账户、4个独立合约日、132条 paired block 对照；F3/F4四个工程来源在该样本交易结果相同，未证明策略提升。

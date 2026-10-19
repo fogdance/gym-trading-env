@@ -1,0 +1,70 @@
+{
+  "status": "PASS_NATIVE_ACTOR_ACTION_AND_FINANCIAL_REVERIFICATION",
+  "source": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Release_H_01/exam",
+  "source_code": {
+    "code": {
+      "gym": {
+        "head": "09898736602c1a7d6c89899bb79fe232d7907923",
+        "runtime_hash": "e5fa2b13ee78536fe79c70e05c553cd948cfa70cc60b9b13ef3500972058f712"
+      },
+      "dreamer": {
+        "head": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+        "runtime_hash": "e489aaa23e98d05541c6161c711bce3959b5c27a4272aaa19710d5cdf190238b"
+      }
+    },
+    "plan_hash": "f5cb5c7aeeb115822bbf910ddbe881ac8a9f7deff838ccd6a4a8e59aeb08856e",
+    "content_hash": "1606888d1ba748316b9d770c9ee8baccf2a0782147d60e6e79476a16e5043d30"
+  },
+  "policy_checks": {
+    "checks": [
+      {
+        "status": "PASS_ALL_POLICY_ACTIONS_REPRODUCED",
+        "contract": "CZCE.FG2701",
+        "policy": "ALWAYS_WAIT",
+        "records": 346,
+        "real_actor": false,
+        "model_frozen": {
+          "training_updates": 0
+        },
+        "teacher_used": false,
+        "training_updates": 0
+      },
+      {
+        "status": "PASS_ALL_POLICY_ACTIONS_REPRODUCED",
+        "contract": "CZCE.FG2701",
+        "policy": "ALWAYS_ADD",
+        "records": 346,
+        "real_actor": false,
+        "model_frozen": {
+          "training_updates": 0
+        },
+        "teacher_used": false,
+        "training_updates": 0
+      },
+      {
+        "status": "PASS_ALL_POLICY_ACTIONS_REPRODUCED",
+        "contract": "CZCE.FG2701",
+        "policy": "F3_FROZEN",
+        "records": 346,
+        "real_actor": true,
+        "model_frozen": {
+          "all_parameter_bytes_equal": true,
+          "policy_bytes_equal": true,
+          "training_counters_equal": true,
+          "source_files_unchanged": true,
+          "training_updates": 0
+        },
+        "teacher_used": false,
+        "training_updates": 0
+      }
+    ],
+    "training_updates": 0,
+    "content_hash": "ac0f1b214d3ce0ff0f980df43485ec98f91e4cd81c8ecd3aef1f20443518ca08"
+  },
+  "training_updates": 0,
+  "teacher_used": false,
+  "agent_pickles": [],
+  "prepared": [],
+  "independent_eval_state": "FG_S3_E_QUALITY_EVAL_STATE_V1",
+  "receipt_sha256": "7bd1a4c1e7454cd9654db30e6484233459594a15690adb265d7eebfce6bec458"
+}

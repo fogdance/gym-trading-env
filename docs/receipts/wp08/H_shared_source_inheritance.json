@@ -1,0 +1,15 @@
+{
+  "basis": "H_shared.json: 150 CPU cases exit0",
+  "current_gym_head": "09898736602c1a7d6c89899bb79fe232d7907923",
+  "changed_files": [
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py",
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_exam.py",
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_exam_session.py",
+    "gym/src/gym_trading_env/research/fg_s3_e_quality_exam_state.py",
+    "gym/tools/wp08_source_probe.py",
+    "gym/tools/wp08_regress.py",
+    "gym/tools/wp03_verify.py"
+  ],
+  "missing_files": [],
+  "rule": "Inherited only for unchanged shared runtime paths; final exam semantics re-tested separately"
+}

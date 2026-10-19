@@ -1,6 +1,8 @@
 # WP08 原始测试与命令索引
 
-以下是实际执行记录，不是全项目测试。后缀 json 记录双仓 HEAD/dirty、命令、CPU 环境及源码哈希；log 为原始输出；xml 列出实际 case。失败尝试保留，后续成功不会删掉失败。最终冻结/继承边界以实施报告为准。
+最终选定集合去重239个case，0失败/0跳过；范围和共享源码继承见实施报告及 FINAL_SELECTED_CASES.json。冻结隔离集成版本为 Gym 09898736602c1a7d6c89899bb79fe232d7907923 / Dreamer b7a693b3c7b0b45eeecdec954818be42d40e67b6。不是全项目或真实策略考试。
+
+每次 JSON 保留实际 argv/cwd/CPU环境、双仓HEAD/dirty和源码哈希；log是原始输出，XML为实际收集case。早期失败保留。负例子命令的非零退出是预期拒绝，不等于最终pytest失败。WP06/WP07分组XML为最终一次，初次失败另保留原始命令/日志。
 
 | 记录 | Exit | PASS / FAIL / ERROR / SKIP | 秒 |
 | --- | ---: | --- | ---: |
@@ -37,9 +39,21 @@
 | [H_contract_risk_boundaries](receipts/wp08/H_contract_risk_boundaries.json) | 0 | 18 / 0 / 0 / 0 | 3.66 |
 | [H_daily_risk_before](receipts/wp08/H_daily_risk_before.json) | 1 | 0 / 1 / 0 / 0 | 5.37 |
 | [H_daily_risk_fixed](receipts/wp08/H_daily_risk_fixed.json) | 0 | 9 / 0 / 0 / 0 | 31.26 |
+| [H_fair_risk_valid](receipts/wp08/H_fair_risk_valid.json) | 0 | 0 / 0 / 0 / 0 | 88.62 |
 | [H_final_fair](receipts/wp08/H_final_fair.json) | 0 | 3 / 0 / 0 / 0 | 298.89 |
+| [H_final_previous](receipts/wp08/H_final_previous.json) | 0 | 0 / 0 / 0 / 0 | 218.15 |
+| [H_final_regression_online_a.command](receipts/wp08/H_final_regression_online_a.command.json) | 0 | 10 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_b.command](receipts/wp08/H_final_regression_online_b.command.json) | 0 | 2 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_c.command](receipts/wp08/H_final_regression_online_c.command.json) | 0 | 3 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_d.command](receipts/wp08/H_final_regression_online_d.command.json) | 0 | 3 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_e.command](receipts/wp08/H_final_regression_online_e.command.json) | 0 | 2 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_f.command](receipts/wp08/H_final_regression_online_f.command.json) | 0 | 2 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_g.command](receipts/wp08/H_final_regression_online_g.command.json) | 0 | 5 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_online_h.command](receipts/wp08/H_final_regression_online_h.command.json) | 0 | 6 / 0 / 0 / 0 | 0.00 |
+| [H_final_regression_wp06_eval.command](receipts/wp08/H_final_regression_wp06_eval.command.json) | 0 | 2 / 0 / 0 / 0 | 0.00 |
 | [H_final_targeted](receipts/wp08/H_final_targeted.json) | 0 | 43 / 0 / 0 / 0 | 343.90 |
 | [H_finite_train_readonly](receipts/wp08/H_finite_train_readonly.json) | 0 | 0 / 0 / 0 / 0 | 32.62 |
+| [H_initial_regression_online_h.command](receipts/wp08/H_initial_regression_online_h.command.json) | 1 | 0 / 0 / 0 / 0 | 0.00 |
 | [H_native_boundaries](receipts/wp08/H_native_boundaries.json) | 0 | 3 / 0 / 0 / 0 | 203.38 |
 | [H_parse_01](receipts/wp08/H_parse_01.json) | 0 | 0 / 0 / 0 / 0 | 0.07 |
 | [H_previous_H_correct_path](receipts/wp08/H_previous_H_correct_path.json) | 0 | 0 / 0 / 0 / 0 | 104.83 |
@@ -50,12 +64,28 @@
 | [H_shared](receipts/wp08/H_shared.json) | 0 | 150 / 0 / 0 / 0 | 338.96 |
 | [H_source_exact_reopen](receipts/wp08/H_source_exact_reopen.json) | 0 | 0 / 0 / 0 / 0 | 35.78 |
 | [H_source_reopen_ready](receipts/wp08/H_source_reopen_ready.json) | 0 | 0 / 0 / 0 / 0 | 43.73 |
+| [Release_cli_risk](receipts/wp08/Release_cli_risk.json) | 0 | 40 / 0 / 0 / 0 | 424.49 |
+| [Release_exact_cold](receipts/wp08/Release_exact_cold.json) | 0 | 3 / 0 / 0 / 0 | 153.49 |
+| [Release_native_teacher_isolation](receipts/wp08/Release_native_teacher_isolation.json) | 0 | 1 / 0 / 0 / 0 | 104.17 |
+| [Release_negative_EMPTY.command](receipts/wp08/Release_negative_EMPTY.command.json) | 1 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_negative_GPU_FLAG.command](receipts/wp08/Release_negative_GPU_FLAG.command.json) | 2 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_negative_MISSING_FORMAL_ACTOR.command](receipts/wp08/Release_negative_MISSING_FORMAL_ACTOR.command.json) | 1 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_negative_TEST.command](receipts/wp08/Release_negative_TEST.command.json) | 1 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_negative_TRAINING_FLAG.command](receipts/wp08/Release_negative_TRAINING_FLAG.command.json) | 2 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_negative_TRAIN_AS_DEV.command](receipts/wp08/Release_negative_TRAIN_AS_DEV.command.json) | 1 | 0 / 0 / 0 / 0 | 0.00 |
+| [Release_real_dev_reopen](receipts/wp08/Release_real_dev_reopen.json) | 0 | 0 / 0 / 0 / 0 | 36.74 |
+| [Release_real_dev_source](receipts/wp08/Release_real_dev_source.json) | 0 | 0 / 0 / 0 / 0 | 36.96 |
+| [Release_real_train_readonly](receipts/wp08/Release_real_train_readonly.json) | 0 | 0 / 0 / 0 / 0 | 33.59 |
+| [Release_shared](receipts/wp08/Release_shared.json) | 0 | 51 / 0 / 0 / 0 | 154.01 |
+| [Release_source](receipts/wp08/Release_source.json) | 0 | 0 / 0 / 0 / 0 | 3.91 |
 
 ## 实际命令与收集清单
 
-执行 cwd 及全部控制环境写在对应 JSON；`FG_WP08_*` 指定独立输出，不可复用旧目录。以下命令来自收据的 argv。
+FG_WP08_* 环境指定独立产物目录，重跑需新目录和新标签。以下为收据中的真实命令；既有目录不可覆盖。H_final_regression_* 为父调度器记录的实际子 pytest 命令。
 
-### A_contract (exit 0)
+### A_contract (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/A_contract.xml tests/entry_v1/test_wp08_contract.py
@@ -79,7 +109,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_contract::test_role_refused_before_selected_price_open`
 - PASS: `tests.entry_v1.test_wp08_contract::test_symlink_and_forged_validation_receipt_refused`
 
-### A_contract_final (exit 0)
+### A_contract_final (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/A_contract_final.xml tests/entry_v1/test_wp08_contract.py
@@ -103,7 +135,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_contract::test_role_refused_before_selected_price_open`
 - PASS: `tests.entry_v1.test_wp08_contract::test_symlink_and_forged_validation_receipt_refused`
 
-### A_real_source_01 (exit 1)
+### A_real_source_01 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/source_probe_01
@@ -113,7 +147,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### A_real_source_02 (exit 0)
+### A_real_source_02 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/source_probe_02
@@ -123,7 +159,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### A_real_source_03 (exit 0)
+### A_real_source_03 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/source_probe_03
@@ -133,7 +171,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### B_actor_01 (exit 2)
+### B_actor_01 (exit 2, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_actor_01.xml tests/entry_v1/test_wp08_actor.py
@@ -145,7 +185,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - ERROR: `::tests.entry_v1.test_wp08_actor`
 
-### B_actor_02 (exit 1)
+### B_actor_02 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_actor_02.xml tests/entry_v1/test_wp08_actor.py
@@ -158,7 +200,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - FAIL: `tests.entry_v1.test_wp08_actor::test_actual_f3_readonly_loading_and_teacher_free_argmax`
 - PASS: `tests.entry_v1.test_wp08_actor::test_policy_rng_state_and_frozen_mutation_rejection`
 
-### B_actor_03 (exit 1)
+### B_actor_03 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_actor_03.xml tests/entry_v1/test_wp08_actor.py
@@ -174,7 +218,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
 
-### B_actor_04 (exit 0)
+### B_actor_04 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_actor_04.xml tests/entry_v1/test_wp08_actor.py
@@ -190,7 +236,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
 
-### B_actor_final (exit 1)
+### B_actor_final (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_actor_final.xml tests/entry_v1/test_wp08_actor.py
@@ -206,7 +254,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
 - FAIL: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
 
-### B_f4_native_control (exit 0)
+### B_f4_native_control (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_f4_native_control.xml tests/entry_v1/test_wp08_actor.py::test_actual_f4_complete_schema_and_value_preserved
@@ -220,7 +270,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
 
-### B_final (exit 0)
+### B_final (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/B_final.xml tests/entry_v1/test_wp08_actor.py
@@ -236,7 +288,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
 - PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
 
-### Baseline_shared (exit 0)
+### Baseline_shared (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/Baseline_shared.xml ../dreamerv3/embodied/tests/test_fg_s3_gate.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py ../dreamerv3/embodied/tests/test_action_mask_formal_guards.py
@@ -267,7 +321,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `embodied.tests.test_action_mask_formal_guards::test_eval_only_rejects_warmup_checkpoint`
 - PASS: `embodied.tests.test_action_mask_formal_guards::test_live_trading_rejects_warmup_checkpoint`
 
-### C_native_01 (exit 1)
+### C_native_01 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/C_native_01.xml tests/entry_v1/test_wp08_session.py
@@ -279,7 +335,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - FAIL: `tests.entry_v1.test_wp08_session::test_native_actor_1024_multiday_trace_and_account`
 
-### C_native_02 (exit 1)
+### C_native_02 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/C_native_02.xml tests/entry_v1/test_wp08_session.py
@@ -291,7 +349,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - FAIL: `tests.entry_v1.test_wp08_session::test_native_actor_1024_multiday_trace_and_account`
 
-### C_native_03 (exit 1)
+### C_native_03 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/C_native_03.xml tests/entry_v1/test_wp08_session.py
@@ -303,7 +363,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - FAIL: `tests.entry_v1.test_wp08_session::test_native_actor_1024_multiday_trace_and_account`
 
-### C_native_04 (exit 0)
+### C_native_04 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/C_native_04.xml tests/entry_v1/test_wp08_session.py
@@ -315,7 +377,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - PASS: `tests.entry_v1.test_wp08_session::test_native_actor_1024_multiday_trace_and_account`
 
-### D_daily_02 (exit 0)
+### D_daily_02 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/D_daily_02.xml tests/entry_v1/test_wp08_metrics.py
@@ -327,7 +391,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - PASS: `tests.entry_v1.test_wp08_metrics::test_native_trade_denominators_risk_fees_and_daily_accounts`
 
-### D_daily_final (exit 1)
+### D_daily_final (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/D_daily_final.xml tests/entry_v1/test_wp08_metrics.py --override-ini addopts=
@@ -339,7 +405,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - FAIL: `tests.entry_v1.test_wp08_metrics::test_native_trade_denominators_risk_fees_and_daily_accounts`
 
-### D_metrics_01 (exit 0)
+### D_metrics_01 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/D_metrics_01.xml tests/entry_v1/test_wp08_metrics.py
@@ -351,7 +419,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - PASS: `tests.entry_v1.test_wp08_metrics::test_native_trade_denominators_risk_fees_and_daily_accounts`
 
-### E_fair_01 (exit 0)
+### E_fair_01 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/E_fair_01.xml tests/entry_v1/test_wp08_compare.py
@@ -364,7 +434,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_compare::test_baseline_rng_delay_visible_history_and_no_oracle`
 - PASS: `tests.entry_v1.test_wp08_compare::test_same_source_full_interval_baselines_and_f3_f4`
 
-### E_fair_shared_seed (exit 0)
+### E_fair_shared_seed (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/E_fair_shared_seed.xml tests/entry_v1/test_wp08_compare.py
@@ -377,7 +449,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_compare::test_baseline_rng_delay_visible_history_and_no_oracle`
 - PASS: `tests.entry_v1.test_wp08_compare::test_same_source_full_interval_baselines_and_f3_f4`
 
-### E_seed_identity (exit 0)
+### E_seed_identity (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/E_seed_identity.xml tests/entry_v1/test_wp08_compare.py::test_shared_eval_seed_preserves_original_model_seed_and_parameters
@@ -389,7 +463,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - PASS: `tests.entry_v1.test_wp08_compare::test_shared_eval_seed_preserves_original_model_seed_and_parameters`
 
-### F_evidence_01 (exit 0)
+### F_evidence_01 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/F_evidence_01.xml tests/entry_v1/test_wp08_evidence.py
@@ -403,7 +479,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_evidence::test_unregistered_and_synthetic_outcomes_not_dev_or_generalization`
 - PASS: `tests.entry_v1.test_wp08_evidence::test_registered_joint_checks_and_market_support_are_both_required`
 
-### F_evidence_final (exit 0)
+### F_evidence_final (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/F_evidence_final.xml tests/entry_v1/test_wp08_evidence.py
@@ -418,7 +496,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_evidence::test_registered_joint_checks_and_market_support_are_both_required`
 - PASS: `tests.entry_v1.test_wp08_evidence::test_native_comparison_has_engineering_evidence_without_research_claim`
 
-### G_cold_01 (exit 0)
+### G_cold_01 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/G_cold_01.xml tests/entry_v1/test_wp08_checkpoint.py
@@ -431,7 +511,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_checkpoint::test_1024_equals_333_new_process_691_exactly`
 - PASS: `tests.entry_v1.test_wp08_checkpoint::test_strict_latest_corrupt_chunk_and_source_change_refuse`
 
-### G_strict_boundary (exit 0)
+### G_strict_boundary (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/G_strict_boundary.xml tests/entry_v1/test_wp08_checkpoint.py::test_strict_latest_corrupt_chunk_and_source_change_refuse tests/entry_v1/test_wp08_contract.py tests/entry_v1/test_wp08_actor.py::test_policy_rng_state_and_frozen_mutation_rejection
@@ -458,7 +540,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_contract::test_json_cannot_mint_native_validation_admission`
 - PASS: `tests.entry_v1.test_wp08_actor::test_policy_rng_state_and_frozen_mutation_rejection`
 
-### H_cli_01 (exit 1)
+### H_cli_01 (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_cli_01.xml tests/entry_v1/test_wp08_cli.py
@@ -475,7 +559,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[gpu_flag]`
 - FAIL: `tests.entry_v1.test_wp08_cli::test_synthetic_cli_plan_pause_resume_verify_compare_report`
 
-### H_cli_02 (exit 0)
+### H_cli_02 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_cli_02.xml tests/entry_v1/test_wp08_cli.py
@@ -493,7 +579,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[gpu_flag]`
 - PASS: `tests.entry_v1.test_wp08_cli::test_synthetic_cli_plan_pause_resume_verify_compare_report`
 
-### H_cli_03 (exit 0)
+### H_cli_03 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_cli_03.xml tests/entry_v1/test_wp08_cli.py
@@ -512,7 +600,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[gpu_flag]`
 - PASS: `tests.entry_v1.test_wp08_cli::test_synthetic_cli_plan_pause_resume_verify_compare_report`
 
-### H_contract_risk_boundaries (exit 0)
+### H_contract_risk_boundaries (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_contract_risk_boundaries.xml tests/entry_v1/test_wp08_contract.py tests/entry_v1/test_wp08_metrics.py tests/entry_v1/test_wp08_actor.py::test_corrupt_actual_source_checkpoint_rejected_before_model_construction
@@ -541,7 +631,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_metrics::test_native_trade_denominators_risk_fees_and_daily_accounts`
 - PASS: `tests.entry_v1.test_wp08_actor::test_corrupt_actual_source_checkpoint_rejected_before_model_construction`
 
-### H_daily_risk_before (exit 1)
+### H_daily_risk_before (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_daily_risk_before.xml tests/entry_v1/test_wp08_metric_windows.py::test_censored_risk_does_not_invent_negative_sl_or_tp_label
@@ -553,7 +645,9 @@ env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFOR
 
 - FAIL: `tests.entry_v1.test_wp08_metric_windows::test_censored_risk_does_not_invent_negative_sl_or_tp_label`
 
-### H_daily_risk_fixed (exit 0)
+### H_daily_risk_fixed (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_daily_risk_fixed.xml tests/entry_v1/test_wp08_metric_windows.py tests/entry_v1/test_wp08_metrics.py
@@ -573,7 +667,21 @@ env FG_WP_RECEIPTS=wp08 FG_WP08_D_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Final_D
 - PASS: `tests.entry_v1.test_wp08_metric_windows::test_tp_crosses_official_day_without_reset_or_forced_exit`
 - PASS: `tests.entry_v1.test_wp08_metrics::test_native_trade_denominators_risk_fees_and_daily_accounts`
 
-### H_final_fair (exit 0)
+### H_fair_risk_valid (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B /tmp/wp08_current_comparison.py
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### H_final_fair (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_final_fair.xml tests/entry_v1/test_wp08_compare.py
@@ -587,7 +695,137 @@ env FG_WP_RECEIPTS=wp08 FG_WP08_E_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Final_E
 - PASS: `tests.entry_v1.test_wp08_compare::test_same_source_full_interval_baselines_and_f3_f4`
 - PASS: `tests.entry_v1.test_wp08_compare::test_shared_eval_seed_preserves_original_model_seed_and_parameters`
 
-### H_final_targeted (exit 0)
+### H_final_previous (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_regress.py Final_previous_01
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### H_final_regression_online_a.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_a`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_a.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_contract.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_contract::test_modes_preserve_course_and_owner_policy`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[fold-TEST]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[source_stage-F1]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[execution_mode-ONLINE_ADAPT]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[source_run-]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[model_seed-True]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[exploration_rate-nan]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_explicit_spec_rejects_illegal_fields[updates_per_collect-1]`
+- PASS: `tests.entry_v1.test_wp07_contract::test_actual_f3_source_and_fresh_all_parameter_handoff`
+- PASS: `tests.entry_v1.test_wp07_contract::test_source_tamper_and_wrong_stage_refuse_before_run`
+
+### H_final_regression_online_b.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_b`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_b.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_shadow.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_shadow::test_native_shadow_teacher_raises_full_replay_and_frozen_model[0]`
+- PASS: `tests.entry_v1.test_wp07_shadow::test_native_shadow_teacher_raises_full_replay_and_frozen_model[330]`
+
+### H_final_regression_online_c.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_c`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_c.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_data.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_data::test_pending_is_invalid_not_wait_then_native_post_step_publication`
+- PASS: `tests.entry_v1.test_wp07_data::test_live_owner_label_attacks_and_rng_restore`
+- PASS: `tests.entry_v1.test_wp07_data::test_shared_multi_history_and_online_sampler_exact_all_states`
+
+### H_final_regression_online_d.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_d`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_d.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_supervised.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_supervised::test_real_online_l2_updates_only_original_actor_and_slots`
+- PASS: `tests.entry_v1.test_wp07_supervised::test_no_label_and_nonfinite_freeze_inherited_optimizer_state`
+- PASS: `tests.entry_v1.test_wp07_supervised::test_future_targets_never_change_actor_features_and_shadow_rejects_training`
+
+### H_final_regression_online_e.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_e`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_e.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_rl.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_rl::test_real_imaginary_same_actor_and_legacy_pol_independent`
+- PASS: `tests.entry_v1.test_wp07_rl::test_native_rl_updates_quality_actor_value_not_old_pol_or_wm`
+
+### H_final_regression_online_f.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_f`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_f.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_gates.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_gates::test_actual_multistep_calibration_gates_and_formal_no_go`
+- PASS: `tests.entry_v1.test_wp07_gates::test_exploration_inside_real_mask_and_restore_rng`
+
+### H_final_regression_online_g.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_g`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_g.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_checkpoint.py /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_checkpoint::test_native_shadow_run_smoke`
+- PASS: `tests.entry_v1.test_wp07_checkpoint::test_four_native_online_cold_restore_scenarios`
+- PASS: `tests.entry_v1.test_wp07_checkpoint_core::test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore`
+- PASS: `tests.entry_v1.test_wp07_checkpoint_core::test_corrupt_latest_and_external_identity_refuse_before_model_mutation`
+- PASS: `tests.entry_v1.test_wp07_checkpoint_core::test_native_uuid_lookup_survives_different_process_hash_seeds`
+
+### H_final_regression_online_h.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_h`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_h.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_cli.py /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_history.py
+```
+
+- PASS: `tests.entry_v1.test_wp07_cli::test_explicit_draft_exit_files_and_forbidden_side_effects`
+- PASS: `tests.entry_v1.test_wp07_cli::test_missing_empty_path_test_and_synthetic_formal_sources_rejected`
+- PASS: `tests.entry_v1.test_wp07_cli::test_independent_rl_authority_cannot_be_self_certified`
+- PASS: `tests.entry_v1.test_wp07_cli::test_unified_cli_native_probe_report_and_teacher_free_evaluation`
+- PASS: `tests.entry_v1.test_wp07_history::test_distinct_course_identities_use_original_native_compatibility`
+- PASS: `tests.entry_v1.test_wp07_history::test_review_verifier_binds_operator_digest_and_frozen_model_unit_only`
+
+### H_final_regression_wp06_eval.command (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_wp06_eval`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_wp06_eval.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp06_evaluation.py::test_E03_original_driver_native_quality_reward_and_complete_account_replay /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp06_evaluation.py::test_E04_evaluation_refuses_wrong_stage_and_invalid_budget
+```
+
+- PASS: `tests.entry_v1.test_wp06_evaluation::test_E03_original_driver_native_quality_reward_and_complete_account_replay`
+- PASS: `tests.entry_v1.test_wp06_evaluation::test_E04_evaluation_refuses_wrong_stage_and_invalid_budget`
+
+### H_final_targeted (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_final_targeted.xml tests/entry_v1/test_wp08_contract.py tests/entry_v1/test_wp08_actor.py tests/entry_v1/test_wp08_metric_windows.py tests/entry_v1/test_wp08_evidence.py tests/entry_v1/test_wp08_cli.py tests/entry_v1/test_wp08_boundaries.py::test_contracts_start_separate_accounts_carries_and_rng
@@ -641,7 +879,9 @@ env FG_WP_RECEIPTS=wp08 FG_WP08_H_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Final_H
 - PASS: `tests.entry_v1.test_wp08_cli::test_synthetic_cli_plan_pause_resume_verify_compare_report`
 - PASS: `tests.entry_v1.test_wp08_boundaries::test_contracts_start_separate_accounts_carries_and_rng`
 
-### H_finite_train_readonly (exit 0)
+### H_finite_train_readonly (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_train_probe.py artifacts/fg_s3_v2/e_quality_wp08/train_probe_01
@@ -651,7 +891,17 @@ env FG_WP_RECEIPTS=wp08 FG_WP08_H_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Final_H
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### H_native_boundaries (exit 0)
+### H_initial_regression_online_h.command (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/H_previous_01_online_h`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_h.xml /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_cli.py /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_history.py
+```
+
+### H_native_boundaries (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_native_boundaries.xml tests/entry_v1/test_wp08_boundaries.py
@@ -665,7 +915,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_boundaries::test_contracts_start_separate_accounts_carries_and_rng`
 - PASS: `tests.entry_v1.test_wp08_boundaries::test_declared_actor_actions_reproduce_and_legal_action_tamper_is_rejected`
 
-### H_parse_01 (exit 0)
+### H_parse_01 (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py --help
@@ -675,7 +927,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### H_previous_H_correct_path (exit 0)
+### H_previous_H_correct_path (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_regress.py H_previous_H_02 online_h
@@ -685,13 +939,17 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### H_previous_baseline_path_repro (exit 1)
+### H_previous_baseline_path_repro (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-probe --output-dir /home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/baseline_wrong_probe_path --execution-mode ONLINE_SUPERVISED
 ```
 
-### H_previous_regressions (exit 1)
+### H_previous_regressions (exit 1, HISTORICAL_ATTEMPT)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_regress.py H_previous_01
@@ -701,7 +959,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### H_random_newprocess (exit 0)
+### H_random_newprocess (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_random_newprocess.xml tests/entry_v1/test_wp08_checkpoint.py::test_random_baseline_rng_and_driver_restore_in_new_process
@@ -713,7 +973,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 - PASS: `tests.entry_v1.test_wp08_checkpoint::test_random_baseline_rng_and_driver_restore_in_new_process`
 
-### H_risk_window_math (exit 0)
+### H_risk_window_math (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_risk_window_math.xml tests/entry_v1/test_wp08_metric_windows.py
@@ -731,7 +993,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_wp08_metric_windows::test_adverse_tp_is_not_sl_and_exit_bar_not_underwater`
 - PASS: `tests.entry_v1.test_wp08_metric_windows::test_censored_risk_does_not_invent_negative_sl_or_tp_label`
 
-### H_shared (exit 0)
+### H_shared (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_shared.xml ../dreamerv3/embodied/tests/test_fg_s3_gate.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py ../dreamerv3/embodied/tests/test_action_mask_formal_guards.py ../dreamerv3/embodied/tests/test_fg_full_checkpoint.py ../dreamerv3/embodied/tests/test_driver_account_checkpoint.py tests/entry_v1/test_s3_market_minute.py tests/entry_v1/test_macd_dated_tail.py tests/entry_v1/test_wp02_macd.py tests/entry_v1/test_fg_s3_e_quality_course_preflight.py tests/entry_v1/test_wp03_reader.py tests/entry_v1/test_data_multi_f3.py tests/entry_v1/test_data_multi.py::test_incompatible_model_contract_and_changed_adapter_bytes_rejected
@@ -892,7 +1156,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 - PASS: `tests.entry_v1.test_data_multi_f3::test_f3_pair_owner_keeps_teacher_suffix_domain`
 - PASS: `tests.entry_v1.test_data_multi::test_incompatible_model_contract_and_changed_adapter_bytes_rejected`
 
-### H_source_exact_reopen (exit 0)
+### H_source_exact_reopen (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/source_probe_04 --reopen
@@ -902,7 +1168,9 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```
 
-### H_source_reopen_ready (exit 0)
+### H_source_reopen_ready (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env`
 
 ```bash
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/source_probe_04
@@ -910,4 +1178,247 @@ env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_
 
 ```bash
 env PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### Release_cli_risk (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/docs/receipts/wp08/Release_cli_risk.xml tests/entry_v1/test_wp08_contract.py tests/entry_v1/test_wp08_actor.py tests/entry_v1/test_wp08_metric_windows.py tests/entry_v1/test_wp08_cli.py tests/entry_v1/test_wp08_boundaries.py::test_native_main_roll_and_unfinished_trade_are_distinct
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 FG_WP08_H_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Release_H_01 FG_WP08_ROLL_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Release_roll_01 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+- PASS: `tests.entry_v1.test_wp08_contract::test_pure_contract_stable_hash_and_no_io`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[exam_mode-]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[exam_mode-SEALED_TEST_FINAL]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[contracts-value2]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[seed-True]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[random_seeds-value4]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[baselines-value5]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[chunk_steps-0]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[output_dir-/tmp/../run]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_invalid_contract_no_output[end_day-2026-01-01]`
+- PASS: `tests.entry_v1.test_wp08_contract::test_train_corpus_cannot_be_dev_and_empty_is_not_draft`
+- PASS: `tests.entry_v1.test_wp08_contract::test_role_refused_before_selected_price_open`
+- PASS: `tests.entry_v1.test_wp08_contract::test_symlink_and_forged_validation_receipt_refused`
+- PASS: `tests.entry_v1.test_wp08_contract::test_json_cannot_mint_native_validation_admission`
+- PASS: `tests.entry_v1.test_wp08_contract::test_actual_training_corpus_manifest_is_not_a_dev_market_source`
+- PASS: `tests.entry_v1.test_wp08_contract::test_disjoint_contract_windows_are_explicit_and_inside_study`
+- PASS: `tests.entry_v1.test_wp08_actor::test_actual_f3_readonly_loading_and_teacher_free_argmax`
+- PASS: `tests.entry_v1.test_wp08_actor::test_policy_rng_state_and_frozen_mutation_rejection`
+- PASS: `tests.entry_v1.test_wp08_actor::test_corrupt_actual_source_checkpoint_rejected_before_model_construction`
+- PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[SHADOW]`
+- PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_SUPERVISED]`
+- PASS: `tests.entry_v1.test_wp08_actor::test_actual_f4_complete_schema_and_value_preserved[ONLINE_RL_CONTROLLED]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_native_tp_market_minute_window_boundaries[5-expected0]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_native_tp_market_minute_window_boundaries[15-expected1]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_native_tp_market_minute_window_boundaries[30-expected2]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_native_tp_market_minute_window_boundaries[60-expected3]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_native_tp_market_minute_window_boundaries[61-expected4]`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_adverse_tp_is_not_sl_and_exit_bar_not_underwater`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_censored_risk_does_not_invent_negative_sl_or_tp_label`
+- PASS: `tests.entry_v1.test_wp08_metric_windows::test_tp_crosses_official_day_without_reset_or_forced_exit`
+- PASS: `tests.entry_v1.test_wp08_cli::test_worker_refuses_undeclared_job_before_source_io`
+- PASS: `tests.entry_v1.test_wp08_cli::test_existing_eval_path_keeps_default_data_overwrite_guard`
+- PASS: `tests.entry_v1.test_wp08_cli::test_formal_dev_without_trained_actor_nonzero_and_no_outputs`
+- PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[test]`
+- PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[empty]`
+- PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[dev_train]`
+- PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[training_flag]`
+- PASS: `tests.entry_v1.test_wp08_cli::test_cli_refusal_no_output_or_training_side_effect[gpu_flag]`
+- PASS: `tests.entry_v1.test_wp08_cli::test_synthetic_cli_plan_pause_resume_verify_compare_report`
+- PASS: `tests.entry_v1.test_wp08_boundaries::test_native_main_roll_and_unfinished_trade_are_distinct`
+
+### Release_exact_cold (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/docs/receipts/wp08/Release_exact_cold.xml tests/entry_v1/test_wp08_checkpoint.py
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 FG_WP08_G_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Release_G_01 FG_WP08_RANDOM_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Release_random_01 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+- PASS: `tests.entry_v1.test_wp08_checkpoint::test_1024_equals_333_new_process_691_exactly`
+- PASS: `tests.entry_v1.test_wp08_checkpoint::test_strict_latest_corrupt_chunk_and_source_change_refuse`
+- PASS: `tests.entry_v1.test_wp08_checkpoint::test_random_baseline_rng_and_driver_restore_in_new_process`
+
+### Release_native_teacher_isolation (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/docs/receipts/wp08/Release_native_teacher_isolation.xml tests/entry_v1/test_wp08_session.py
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 FG_WP08_C_ROOT=artifacts/fg_s3_v2/e_quality_wp08/Release_C_01 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+- PASS: `tests.entry_v1.test_wp08_session::test_native_actor_1024_multiday_trace_and_account`
+
+### Release_negative_EMPTY.command (exit 1, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config /tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_1/plan.yaml
+```
+
+### Release_negative_GPU_FLAG.command (exit 2, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config /tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_4/plan.yaml --eval-device gpu
+```
+
+### Release_negative_MISSING_FORMAL_ACTOR.command (exit 1, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-plan --config /tmp/pytest-of-v/pytest-640/test_formal_dev_without_traine0/dev.json
+```
+
+### Release_negative_TEST.command (exit 1, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config /tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_0/plan.yaml
+```
+
+### Release_negative_TRAINING_FLAG.command (exit 2, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config /tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_3/plan.yaml --authorize-training
+```
+
+### Release_negative_TRAIN_AS_DEV.command (exit 1, EXPECTED_NEGATIVE_CLI)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py exam-run --config /tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_2/plan.yaml
+```
+
+### Release_real_dev_reopen (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/Release_dev_source_01 --reopen
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### Release_real_dev_source (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_source_probe.py artifacts/fg_s3_v2/e_quality_wp08/Release_dev_source_01
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### Release_real_train_readonly (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/wp08_train_probe.py artifacts/fg_s3_v2/e_quality_wp08/Release_train_source_01
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+### Release_shared (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -m pytest -p no:cacheprovider -o addopts= -q --junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/docs/receipts/wp08/Release_shared.xml ../dreamerv3/embodied/tests/test_fg_s3_gate.py ../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py ../dreamerv3/embodied/tests/test_action_mask_formal_guards.py ../dreamerv3/embodied/tests/test_fg_full_checkpoint.py ../dreamerv3/embodied/tests/test_driver_account_checkpoint.py tests/entry_v1/test_macd_dated_tail.py tests/entry_v1/test_wp02_macd.py
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
+```
+
+- PASS: `::test_threshold_boundaries_float32_bfloat16_and_safe_wait`
+- PASS: `::test_audited_ast_accepts_only_the_reviewed_transition`
+- PASS: `::test_gate_only_audit_rejects_market_minute_semantic_change`
+- PASS: `::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop`
+- PASS: `::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]`
+- PASS: `::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]`
+- PASS: `::test_same_threshold_transfer_preserves_authenticated_window_and_streak`
+- PASS: `::test_real_availability_head_raw_mask_and_metrics_share_threshold`
+- PASS: `::test_full_source_dependency_inventory_includes_stream_and_serializer`
+- PASS: `::test_online_model_and_environment_counters_have_separate_domains`
+- PASS: `::test_actual_three_modes_inherit_complete_state_and_reject_foreign`
+- PASS: `::test_no_inference_source_and_frozen_snapshot`
+- PASS: `::test_missing_baseline_requires_authenticated_features`
+- PASS: `::test_train_warmup_preserves_loaded_formal_actor_gate`
+- PASS: `::test_train_warmup_keeps_warmup_checkpoint_disabled`
+- PASS: `::test_require_formal_actor_rejects_missing_gate_interface`
+- PASS: `::test_require_formal_actor_rejects_warmup_checkpoint`
+- PASS: `::test_require_formal_actor_accepts_formal_checkpoint`
+- PASS: `::test_eval_only_rejects_warmup_checkpoint`
+- PASS: `::test_live_trading_rejects_warmup_checkpoint`
+- PASS: `::test_replay_restores_partial_chunks_online_queue_rng_and_updates`
+- PASS: `::test_prefetch_snapshot_restores_pending_batches_and_consecutive_context`
+- PASS: `::test_runtime_restores_ratio_carry_aggregates_and_gate_samples`
+- PASS: `::test_exact_schedule_resume_and_overshoot_rejection`
+- PASS: `::test_atomic_full_bundle_retention_identity_and_corrupt_recovery`
+- PASS: `::test_failed_save_preserves_valid_points_and_final_is_protected`
+- PASS: `::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]`
+- PASS: `::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]`
+- PASS: `::test_deterministic_prefetch_propagates_worker_failure_without_waiting`
+- PASS: `::test_fg_guard_rejects_full_checkpoint_optout_before_model_init`
+- PASS: `::test_driver_explicitly_fetches_jax_carry_under_transfer_guard`
+- PASS: `::test_driver_resumes_pending_actions_and_account[False]`
+- PASS: `::test_driver_resumes_pending_actions_and_account[True]`
+- PASS: `tests.entry_v1.test_macd_dated_tail::test_certified_short_interval_does_not_commit_its_partial_close`
+- PASS: `tests.entry_v1.test_macd_dated_tail::test_missing_last_minute_cannot_be_disguised_as_a_session_break`
+- PASS: `tests.entry_v1.test_macd_dated_tail::test_previous_schema_snapshot_cannot_resume_with_new_tail_semantics`
+- PASS: `tests.entry_v1.test_macd_dated_tail::test_zero_duration_interval_end_is_a_marker_not_a_fifth_close`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A02_warmup_and_price_scale`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A03_stream_restore_and_prefix_invariance`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[order]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[late]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix`
+- PASS: `tests.entry_v1.test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch`
+
+### Release_source (exit 0, PASS)
+
+cwd: `/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env`
+
+```bash
+/home/v/miniconda3/envs/dreamerv3/bin/python -B -c 'from pathlib import Path; from gym_trading_env.research.fg_s3_e_quality_exam_synthetic import native_source; s=native_source(Path.cwd()/"artifacts/fg_s3_v2/e_quality_wp08/C_native_04/source"); s.verify(); print({"role":s.receipt["role"],"cursor":s.initial_state["current_step"],"end":s.end_cursor,"training_updates":0})'
+```
+
+```bash
+env FG_WP_RECEIPTS=wp08 PYTHONPATH=.:src:../dreamerv3:tests/entry_v1 JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES= PYTHONDONTWRITEBYTECODE=1 FG_REPLAY_DREAMER_ROOT=/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/dreamerv3 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 ```

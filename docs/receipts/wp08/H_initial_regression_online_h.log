@@ -1,0 +1,27 @@
+...F..                                                                   [100%]
+=================================== FAILURES ===================================
+_______ test_unified_cli_native_probe_report_and_teacher_free_evaluation _______
+
+    def test_unified_cli_native_probe_report_and_teacher_free_evaluation():
+        from gym_trading_env.research.fg_replay import read_manifest
+        root=Path(os.environ.get('FG_WP07_H_PROBE',ARTIFACTS/'H_cli_01')).resolve()
+        result,raw=cli('online-probe','--output-dir',root,'--execution-mode','ONLINE_SUPERVISED')
+        Path('docs/receipts/wp07/H_probe_cli.json').write_text(json.dumps(raw,indent=2)+'\n')
+>       assert result.returncode==0,raw['stderr'][-6000:]
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 350, in <module>
+E             main()
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 114, in main
+E             result=cpu_probe(args.output_dir,args.execution_mode)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py", line 114, in cpu_probe
+E             raise ValueError('ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED')
+E         ValueError: ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-e-...se ValueError(\'ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED\')\nValueError: ONLINE_PROBE_NEW_ISOLATED_OUTPUT_REQUIRED\n').returncode
+
+../../../../tests/entry_v1/test_wp07_cli.py:85: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../../tests/entry_v1/test_wp07_cli.py::test_unified_cli_native_probe_report_and_teacher_free_evaluation
+1 failed, 5 passed in 46.52s

@@ -1,0 +1,137 @@
+[
+  {
+    "label": "TEST",
+    "exit_code": 1,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-run",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_0/plan.yaml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_0",
+    "source_root_members": [
+      "negative.log",
+      "negative.log.command.json",
+      "plan.yaml"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "81456fe907a89c4436d12a14b2d45cc59ee73caadacbf340bbaeadc50cf73bd8"
+  },
+  {
+    "label": "EMPTY",
+    "exit_code": 1,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-run",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_1/plan.yaml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_1",
+    "source_root_members": [
+      "negative.log",
+      "negative.log.command.json",
+      "plan.yaml"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "d08885a447f7ed0ef7ffd4c864480f727b082b838c15c11bc2d50c4fdfffdd16"
+  },
+  {
+    "label": "TRAIN_AS_DEV",
+    "exit_code": 1,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-run",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_2/plan.yaml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_2",
+    "source_root_members": [
+      "negative.log",
+      "negative.log.command.json",
+      "plan.yaml"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "6832e4406d222f4a11fb7d4ee1eac3fa73134b84c759e4c9df4a40a7fd7d283a"
+  },
+  {
+    "label": "TRAINING_FLAG",
+    "exit_code": 2,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-run",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_3/plan.yaml",
+      "--authorize-training"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_3",
+    "source_root_members": [
+      "negative.log",
+      "negative.log.command.json",
+      "plan.yaml"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "a513bd5388931c71f1772cc29081ea5e7b0c4e0de488a19b3b5c4cc9da3cb6f0"
+  },
+  {
+    "label": "GPU_FLAG",
+    "exit_code": 2,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-run",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_4/plan.yaml",
+      "--eval-device",
+      "gpu"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_cli_refusal_no_output_or_4",
+    "source_root_members": [
+      "negative.log",
+      "negative.log.command.json",
+      "plan.yaml"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "a513bd5388931c71f1772cc29081ea5e7b0c4e0de488a19b3b5c4cc9da3cb6f0"
+  },
+  {
+    "label": "MISSING_FORMAL_ACTOR",
+    "exit_code": 1,
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_v2_experiment.py",
+      "exam-plan",
+      "--config",
+      "/tmp/pytest-of-v/pytest-640/test_formal_dev_without_traine0/dev.json"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+    "output_exists": false,
+    "original_test_dir": "/tmp/pytest-of-v/pytest-640/test_formal_dev_without_traine0",
+    "source_root_members": [
+      "dev.json",
+      "formal_missing.log",
+      "formal_missing.log.command.json"
+    ],
+    "agent_or_prepared_created": false,
+    "log_sha256": "768144aeb89e9df34491be3852a094131dffc7abe566ce475ea769498d5b9380"
+  }
+]

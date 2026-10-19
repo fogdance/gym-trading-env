@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/docs/receipts/wp08/H_regression_online_b.xml",
+    "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/tests/entry_v1/test_wp07_shadow.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/Final_previous_01_online_b",
+  "exit_code": 0
+}

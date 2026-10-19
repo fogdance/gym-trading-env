@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_v2_experiment.py",
+    "exam-plan",
+    "--config",
+    "/tmp/pytest-of-v/pytest-640/test_formal_dev_without_traine0/dev.json"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env",
+  "exit_code": 1
+}

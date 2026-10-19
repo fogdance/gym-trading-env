@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 350, in <module>
+    main()
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/tools/fg_s3_v2_experiment.py", line 84, in main
+    result=exam.create_plan(args.config) if args.command=='exam-plan' else exam.run(args.config,stop_at=args.stop_at)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-e-quality-wp08-release-20261019/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam.py", line 64, in create_plan
+    if receipt['blockers']:raise ValueError('EXAM_PRECHECK_BLOCKED: '+','.join(receipt['blockers']))
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: EXAM_PRECHECK_BLOCKED: FORMAL_TRAINED_ACTOR_NOT_PROVIDED

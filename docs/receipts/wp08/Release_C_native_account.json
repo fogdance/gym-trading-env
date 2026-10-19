@@ -1,0 +1,31 @@
+{
+  "protocol": "FG_S3_E_QUALITY_EXAM_SESSION_V1",
+  "exam_mode": "SYNTHETIC_DEV",
+  "contract": "CZCE.FG2701",
+  "policy_id": "F3_FIXED_SYNTHETIC",
+  "plan_hash": "257890d637f57c283b68b282ad58e3ebaac801f445d89b66266db84ea352974b",
+  "session_identity": "b85e8a9a1d13594983ccaa75d0f29635d56a0627f6ae1959d4ae1e597d9e0869",
+  "source_hash": "c61a348c5a0ea5466f16594591a30c681baf81a0d8c559d1b45364adf69227b7",
+  "actor_identity": "c1eff3dcc6240d08e0a6b87e83f9af37f7144b9d5e193ceabfd0269bc38a0716",
+  "valid_minutes": 1024,
+  "trace_hash": "c31ce93275c09503de693cedccec7cb15764dafc5572fe32e0d8fe19fbbb3bbe",
+  "reconciliation": {
+    "status": "PASS",
+    "records": 1025,
+    "account_restores": 0,
+    "replay_trace_hash": "c31ce93275c09503de693cedccec7cb15764dafc5572fe32e0d8fe19fbbb3bbe",
+    "teacher_labels_verified": 0
+  },
+  "frozen": {
+    "all_parameter_bytes_equal": true,
+    "policy_bytes_equal": true,
+    "training_counters_equal": true,
+    "source_files_unchanged": true,
+    "training_updates": 0
+  },
+  "teacher_used": false,
+  "training_updates": 0,
+  "test_prices_accessed": false,
+  "complete_interval": false,
+  "content_hash": "59cb997dbcabdf37d547cc690c3aaf0827263a3f4d90a9cf75b9e0b019dc9e04"
+}

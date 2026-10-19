@@ -586,5 +586,6 @@
   ],
   "all_model_bytes_equal": true,
   "real_dev_strategy_exam": "NOT_RUN",
-  "test_prices_accessed": false
+  "test_prices_accessed": false,
+  "identity_algorithm": "sha256(canonical_json(sort_keys=True,separators=comma_colon,ensure_ascii=False,allow_nan=False))"
 }
