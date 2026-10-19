@@ -290,13 +290,16 @@ def main(argv=None):
     multi=sub.add_parser('multi-read',help='Read-only multi-Corpus scheduling and cold Checkpoint probe')
     multi.add_argument('--config',required=True);multi.add_argument('--out',required=True)
     multi.add_argument('--batch-size',type=int,default=4);multi.add_argument('--length',type=int,default=8)
+    multi.add_argument('--adapter',choices=('native','f3'),default='native')
+    multi.add_argument('--burnin-steps',type=int)
     multi.add_argument('--require-published',action='store_true',help='Require 2+ actual published TRAIN batch receipts')
     args=parser.parse_args(argv)
     try:
         if args.command=='multi-read':
             from .fg_s3_e_quality_multi_checks import multi_evidence
             result=multi_evidence(args.config,args.out,batch_size=args.batch_size,
-                length=args.length,require_published=args.require_published)
+                length=args.length,require_published=args.require_published,
+                adapter=args.adapter,burnin_steps=args.burnin_steps)
             print(json.dumps(result,ensure_ascii=False),flush=True)
             return 0
         out=_output(args.out,args.corpus)

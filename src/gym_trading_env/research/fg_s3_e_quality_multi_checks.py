@@ -31,7 +31,7 @@ def read_config(path):
     config = json.loads(path.read_text())
     required = {'schema', 'sources', 'stage', 'per_source_sampling_spec', 'source_mix_weights', 'seed'}
     if (not isinstance(config, dict) or not required <= set(config)
-            or set(config) - required - {'cache_bytes'} or config['schema'] != CONFIG_SCHEMA
+            or set(config) - required - {'cache_bytes', 'f3_auxiliary_sampling_spec'} or config['schema'] != CONFIG_SCHEMA
             or config['stage'] not in STAGES or not isinstance(config['sources'], list)
             or not config['sources']):
         raise ValueError('MULTI_CONFIG_INVALID')
@@ -48,11 +48,17 @@ def read_config(path):
     return config
 
 
-def open_config(path):
-    config = read_config(path)
-    sources = [dict(corpus_id=s['corpus_id'], index_path=s['index_path'],
+def _sources(config):
+    return [dict(corpus_id=s['corpus_id'], index_path=s['index_path'],
         admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(
             s['corpus_root'], stage=STAGES[config['stage']]))) for s in config['sources']]
+
+
+def open_config(path):
+    config = read_config(path)
+    if config.get('f3_auxiliary_sampling_spec') is not None:
+        raise ValueError('MULTI_F3_ADAPTER_REQUIRED_FOR_AUXILIARY')
+    sources = _sources(config)
     return MultiCorpusCourseStream.open(sources, stage=config['stage'],
         per_source_sampling_spec=config['per_source_sampling_spec'],
         source_mix_weights=config['source_mix_weights'], seed=config['seed'],
@@ -128,6 +134,53 @@ class _ProbeWindowAdapter:
         return raw, self.reader.audit_windows(raw)
 
 
+def _diagnostic_stream(path, *, adapter, batch_size, length, burnin_steps):
+    if adapter == 'native':
+        if burnin_steps is not None:
+            raise ValueError('MULTI_F3_ADAPTER_REQUIRED_FOR_BURNIN')
+        core = open_config(path)
+        try:
+            return core.bind(dict(batch_size=batch_size, target_steps=length-1, burnin_steps=1), _ProbeWindowAdapter)
+        except BaseException:
+            core.close()
+            raise
+    if adapter != 'f3' or type(burnin_steps) is not int or not 0 < burnin_steps < length:
+        raise ValueError('MULTI_F3_EXPLICIT_BURNIN_REQUIRED')
+    from .fg_s3_e_quality_multi_actor import MultiCorpusF3Stream
+    config = read_config(path)
+    if config['stage'] != 'ACTOR_STRICT':
+        raise ValueError('MULTI_F3_ACTOR_STRICT_STAGE_REQUIRED')
+    return MultiCorpusF3Stream.open(_sources(config),
+        settings=dict(batch_size=batch_size, target_steps=length-burnin_steps, burnin_steps=burnin_steps),
+        per_source_sampling_spec=config['per_source_sampling_spec'],
+        aux_per_source_sampling_spec=config.get('f3_auxiliary_sampling_spec'),
+        source_mix_weights=config['source_mix_weights'], seed=config['seed'],
+        cache_bytes=config.get('cache_bytes', 64 << 20))
+
+
+def f3_loss_evidence(data, burnin_steps):
+    """Original WP06 objective over fixed logits, with no model or optimizer."""
+    import jax
+    import jax.numpy as jnp
+    import embodied
+    from dreamerv3.fg_s3_e_quality_actor import actor_objective, model_extensions, LABELS
+    with jax.default_device(jax.devices('cpu')[0]):
+        start = 1 + burnin_steps
+        labels = {key: jnp.asarray(data[key][:, start:]) for key in LABELS}
+        mask = jnp.asarray(data['action_mask'][:, start:])
+        logits = jnp.zeros(mask.shape, jnp.float32)
+        dist = embodied.jax.outs.MaskedCategorical(logits, mask > .5, unimix=.01, allow_fallback=False)
+        loss, metrics = actor_objective(dist, labels, mask,
+            *(jnp.asarray(data[k][:, start:]) for k in ('is_first', 'is_last', 'is_terminal')),
+            model_extensions(data['stepid'].shape[1]-start, burnin_steps,
+                             dict(balanced=.2, strict_pair=.3, quality_pair=.4)))
+        values = {key: np.asarray(value).tolist() for key, value in metrics.items()}
+        if not np.isfinite(float(loss)) or not all(np.isfinite(np.asarray(v)).all() for v in values.values()):
+            raise ValueError('MULTI_F3_READONLY_LOSS_NONFINITE')
+        return dict(status='PASS_ORIGINAL_F3_OBJECTIVE', fixed_logits=True, loss=float(loss),
+                    metrics=values, optimizer_updates=0, model_forward='NOT_RUN')
+
+
 class _NoModelState:
     """FullCheckpoint protocol fixture, explicitly no parameters or optimizer."""
     def save(self):
@@ -159,7 +212,8 @@ def batch_digest(batch, audit):
         sha256=hashlib.sha256(v.tobytes()).hexdigest()) for k, v in sorted(batch.items())}, audit=audit))
 
 
-def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8):
+def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8,
+                     adapter='native', burnin_steps=None):
     """Called in a fresh process; original Checkpoint/Runtime/Prefetch only."""
     import elements
     import embodied
@@ -168,8 +222,9 @@ def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8)
     if type(length) is not int or length < 2:
         raise ValueError('MULTI_CHECKPOINT_PROBE_LENGTH_AT_LEAST_TWO')
     random.seed(13); np.random.seed(17)
-    stream = open_config(config_path)
-    bound = stream.bind(dict(batch_size=batch_size, target_steps=length-1, burnin_steps=1), _ProbeWindowAdapter)
+    bound = _diagnostic_stream(config_path, adapter=adapter, batch_size=batch_size,
+                               length=length, burnin_steps=burnin_steps)
+    coverage = bound.coverage()
     prefetch = embodied.streams.Prefetch(bound, amount=2)
     step = elements.Counter()
     schedule = StepSchedule(1, 3)
@@ -177,10 +232,15 @@ def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8)
     def no_carry(value):
         if value is not None: raise ValueError('MULTI_PROBE_CARRY_MUST_BE_EMPTY')
     runtime = RuntimeState(schedule, SimpleNamespace(), [prefetch], lambda: None, no_carry, {}, samples)
-    identity = dict(protocol='FG_S3_DATA_MULTI_COLD_PROBE_V1', source=stream.identity_hash,
-        adapter=bound.identity, batch_size=batch_size, length=length, prefetch=2,
+    identity = dict(protocol='FG_S3_DATA_MULTI_COLD_PROBE_V1', source=coverage['identity_hash'],
+        adapter=bound.identity if adapter == 'native' else bound.identity_hash,
+        adapter_mode=adapter, burnin_steps=burnin_steps, batch_size=batch_size, length=length, prefetch=2,
         code_sha256=digest(Path(__file__).with_name('fg_s3_e_quality_multi.py')),
         probe_code_sha256=digest(Path(__file__)), packages=runtime_versions(), data_only=True)
+    if adapter == 'f3':
+        identity.update(f3_code_sha256=digest(Path(__file__).with_name('fg_s3_e_quality_multi_actor.py')),
+            f3_adapter_sha256=digest(Path(__file__).with_name('fg_s3_e_quality_actor.py')),
+            role_composer_sha256=digest(PROJECT.parent/'dreamerv3/embodied/run/fg_s3_e_quality_actor.py'))
     root = Path(root)
     cp = FullCheckpoint(root/'ckpt', step, identity, [prefetch], reserve_gib=0,
                         keep_all=True, backend='external_immutable_course_reader')
@@ -208,7 +268,7 @@ def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8)
     with prefetch.pause():
         evidence = dict(reader=bound.save(), runtime=runtime.save(), history=history,
             consumed_batches=int(step), optimizer_updates=0,
-            checkpoint=str(cp.latest()), aggregate_identity=stream.identity)
+            checkpoint=str(cp.latest()), aggregate_identity=coverage['identity'])
     history_path.write_text(json.dumps(history)+'\n')
     with (root/('evidence_'+str(stop)+'.pkl')).open('xb') as output:
         pickle.dump(evidence, output, protocol=5)
@@ -216,10 +276,12 @@ def checkpoint_probe(config_path, root, *, resume, stop, batch_size=4, length=8)
                 optimizer_updates=0, pending_batches=len(evidence['runtime']['streams'][0]['pending']))
 
 
-def cold_evidence(config_path, out, *, batch_size, length):
+def cold_evidence(config_path, out, *, batch_size, length, adapter='native', burnin_steps=None):
     out = Path(out)
     argv_base = [sys.executable, '-B', '-m', __name__, '--probe-config', str(config_path),
-                 '--batch-size', str(batch_size), '--length', str(length)]
+                 '--batch-size', str(batch_size), '--length', str(length), '--adapter', adapter]
+    if burnin_steps is not None:
+        argv_base.extend(['--burnin-steps', str(burnin_steps)])
     env = {**os.environ, 'PYTHONPATH': os.pathsep.join(map(str, [PROJECT, PROJECT/'src', PROJECT.parent/'dreamerv3'])),
            'CUDA_VISIBLE_DEVICES': '', 'JAX_PLATFORMS': 'cpu', 'PYTHONDONTWRITEBYTECODE': '1',
            'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1'}
@@ -260,7 +322,8 @@ def cold_evidence(config_path, out, *, batch_size, length):
         neural_training_checkpoint='NOT_RUN', copied_corpus_chunks=0)
 
 
-def multi_evidence(config_path, output, *, batch_size=4, length=8, require_published=False):
+def multi_evidence(config_path, output, *, batch_size=4, length=8, require_published=False,
+                   adapter='native', burnin_steps=None):
     from .fg_s3_e_quality_checks import _output
     config_path = _local_path(config_path)
     config = read_config(config_path)
@@ -270,21 +333,27 @@ def multi_evidence(config_path, output, *, batch_size=4, length=8, require_publi
     for source in config['sources']:
         _output(output, source['corpus_root'])
     out = _local_path(output)
-    stream = open_config(config_path)
+    stream = _diagnostic_stream(config_path, adapter=adapter, batch_size=batch_size,
+                                length=length, burnin_steps=burnin_steps)
     try:
-        raw, audit = stream.sample(batch_size, length)
+        raw, audit = stream.sample()
         coverage = stream.coverage()
+        loss = f3_loss_evidence(raw, burnin_steps) if adapter == 'f3' else None
         out.mkdir(parents=True, exist_ok=False)
         write_json(out/'coverage.json', signed(coverage))
         write_json(out/'sample_audit.json', signed(dict(batch_digest=batch_digest(raw, audit), rows=audit)))
+        if loss is not None:
+            write_json(out/'F3_READONLY_LOSS.json', signed(loss))
     finally:
         stream.close()
-    cold = cold_evidence(config_path, out, batch_size=batch_size, length=length)
+    cold = cold_evidence(config_path, out, batch_size=batch_size, length=length,
+                         adapter=adapter, burnin_steps=burnin_steps)
     write_json(out/'CHECKPOINT_COLD_EVIDENCE.json', signed(cold))
     report = signed(dict(protocol='FG_S3_E_MULTICORPUS_READONLY_EVIDENCE_V1',
         status='REAL_READONLY_PASS' if require_published else 'DEV_PASS',
         real_source_acceptance='PASS' if require_published else 'NOT_RUN',
         sources_published=published, identity=coverage['identity'], identity_hash=coverage['identity_hash'],
+        adapter_mode=adapter,
         cold_restore=cold['status'], optimizer_updates=0, training_admitted=False,
         new_native_g3='NOT_RUN', model_or_optimizer_checkpoint='NOT_RUN'))
     write_json(out/'DATA_MULTI_REPORT.json', report)
@@ -298,7 +367,10 @@ if __name__ == '__main__':
     parser.add_argument('--stop', type=int, required=True)
     parser.add_argument('--batch-size', type=int, default=4)
     parser.add_argument('--length', type=int, default=8)
+    parser.add_argument('--adapter', choices=('native', 'f3'), default='native')
+    parser.add_argument('--burnin-steps', type=int)
     parser.add_argument('--resume', action='store_true')
     args = parser.parse_args()
     print(json.dumps(checkpoint_probe(args.probe_config, args.probe_out, resume=args.resume,
-        stop=args.stop, batch_size=args.batch_size, length=args.length)), flush=True)
+        stop=args.stop, batch_size=args.batch_size, length=args.length,
+        adapter=args.adapter, burnin_steps=args.burnin_steps)), flush=True)

@@ -304,6 +304,11 @@ class MultiCorpusCourseStream:
             sources={name: reader.coverage() for name, reader in self.readers.items()},
             cache_budget_bytes=self.cache_bytes,
             peak_cached_bytes_upper_bound=sum(r.peak_cached_bytes for r in self.readers.values()),
+            source_selection=dict(basis='EXPLICIT_CONFIGURED_SOURCE_WEIGHTS',
+                probabilities={name: float(p) for name, p in zip(self.ids, self._probabilities)},
+                delivered_window_shares={name: self.source_counts[name]['windows']/self.counts['windows']
+                                         if self.counts['windows'] else None for name in self.ids},
+                represents_true_market_natural_distribution=False),
             denominators='Per-source unique counts may overlap; totals here are delivered exposures.',
             actual_optimizer_exposures=0, training_admitted=False)
 
@@ -342,6 +347,17 @@ class MultiCorpusWindowAdapter:
             self._adapters[key] = self.adapter_cls(self.stream.readers[name],
                                                  {**self.settings, 'batch_size': size})
         return self._adapters[key]
+
+    @property
+    def readers(self):
+        return tuple(self.stream.readers.values())
+
+    @property
+    def last_batch_audit(self):
+        return _clone(self.stream.last_batch_audit)
+
+    def coverage(self):
+        return self.stream.coverage()
 
     def sample(self):
         before = self.stream.state_dict()
