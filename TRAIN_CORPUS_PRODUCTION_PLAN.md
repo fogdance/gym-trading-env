@@ -1,14 +1,16 @@
 # TRAIN_CORPUS_PRODUCTION_PLAN
 
+> 正式V1的TRAIN01生成失败：Python精确分数证据超过默认4300位转换限制，707.32秒、exit=2；无完整Corpus，G3/Reader未执行。当前使用V2发布包，生产进程树设置PYTHONINTMAXSTRDIGITS=0，冻结源码及金融数学不变。V1现场保留；V2仍待用户执行。
+
 **正式教材范围：原合法TRAIN池全部18合约、每个合约完整主力资格期间；不是此前四个三日窗口。** 每合约一批，六种原生行为连续生成。全部18份来源锁已只读校验成功，共1455个合约官方日、488160行原始行情；实际正式生成0/18，生成/G3/Reader/质量分布均NOT_RUN。
 
-旧教材按用户要求删除并排除，当前正式教材从零统计。旧B01成功结果不再作为当前教材；旧B02–B04三日计划封存，不是当前正式生产命令。现行范围、18批定义和所有逐批命令见 [正式生产包](docs/formal_train_corpus_20261018/README.md)。
+旧教材按用户要求删除并排除，当前正式教材从零统计。旧B01成功结果不再作为当前教材；旧B02–B04三日计划封存，不是当前正式生产命令。现行范围、18批定义和所有逐批命令见 [正式生产包](docs/formal_train_corpus_20261018_v2/README.md)。
 
 ## 用户执行首批
 
 ```bash
 cd /home/v/Documents/work/research/fg-s3-formal-corpus-plan-20261018/gym-trading-env
-bash docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh produce TRAIN01_FG809_FULL_MAIN
+bash docs/formal_train_corpus_20261018_v2/RUN_TRAIN_CORPUS.sh produce TRAIN01_FG809_FULL_MAIN
 ```
 
 首批范围为CZCE.FG809，2018-04-11至2018-08-08全部83个官方交易日，cursor 0..28263；用户运行上面命令才开始真实生成。每次只能指定一个批次，固定20逻辑CPU预算；不自动运行全部18合约。完成后逐批检查质量覆盖，由用户选择下一批。
@@ -36,13 +38,13 @@ bash docs/formal_train_corpus_20261018/RUN_TRAIN_CORPUS.sh produce TRAIN01_FG809
 | TRAIN17_FG401_FULL_MAIN | CZCE.FG401 | 2023-08-14—2023-12-07 | 78 | 26790 | NOT_RUN |
 | TRAIN18_FG405_FULL_MAIN | CZCE.FG405 | 2023-12-08—2024-04-08 | 78 | 26430 | NOT_RUN |
 
-[逐批不可变计划manifest](docs/formal_train_corpus_20261018/batches)、[逐批来源锁及完整身份锁](docs/formal_train_corpus_20261018/locks) 含全部官方日、TRAIN信任根、来源文件哈希与真实主力末端。所有Corpus/Teacher/index新结果身份仍为null；不能继承旧教材的认证身份。
+[逐批不可变计划manifest](docs/formal_train_corpus_20261018_v2/batches)、[逐批来源锁及完整身份锁](docs/formal_train_corpus_20261018_v2/locks) 含全部官方日、TRAIN信任根、来源文件哈希与真实主力末端。所有Corpus/Teacher/index新结果身份仍为null；不能继承旧教材的认证身份。
 
 ## 生产和验收
 
 复用原WP02 Producer及WP03 Admission/Reader：validate → 六行为原生generate及复核 → 独立Native G3 → 独立Reader → 覆盖报告 → 不可变BATCH_MANIFEST。每批必须有自己的G3和Reader，缺题型或采样不支持必须如实报告。P0 DATA-QUALITY仍在推进，不能用18份来源校验声称18批教材生产完成。
 
-生产输出 `/data/s3_corpus/train_full_main_20261018_cpu20_v1`。复用保留的冻结源码 `/data/s3_corpus/early_train_20261018_cpu20_v2/code/`，Gym=`b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46`，Dreamer=`fd144113ce706e2d8f1ce8e7828ece0799c8bf7a`；[Producer pin](docs/formal_train_corpus_20261018/locks/PRODUCER_PIN.json) 文件SHA256=`7310b2a2cdcfba7fdc8697bc46fff0d6ca39e4f7932b90710eff7de1a7179515`。不需要prepare，不重新冻结到当前集成HEAD。
+生产输出 `/data/s3_corpus/train_full_main_20261018_cpu20_v2`。复用保留的冻结源码 `/data/s3_corpus/early_train_20261018_cpu20_v2/code/`，Gym=`b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46`，Dreamer=`fd144113ce706e2d8f1ce8e7828ece0799c8bf7a`；[Producer pin](docs/formal_train_corpus_20261018_v2/locks/PRODUCER_PIN.json) 文件SHA256=`7310b2a2cdcfba7fdc8697bc46fff0d6ca39e4f7932b90710eff7de1a7179515`。不需要prepare，不重新冻结到当前集成HEAD。
 
 资源为taskset 0–19、workers=20、每worker原生线程1、按可用物理内存约束并行；一次一批。不再做20核占用验证。全主力期真实生成耗时、磁盘增长、G3成本和全进程树内存峰值均NOT_RUN。运行时由脚本记录实际内存/磁盘；仅使用工作盘及/data指定存储。
 

@@ -1,8 +1,10 @@
 # CORPUS_COVERAGE_REPORT
 
+> 正式V1的TRAIN01生成失败：Python精确分数证据超过默认4300位转换限制，707.32秒、exit=2；无完整Corpus，G3/Reader未执行。当前使用V2发布包，生产进程树设置PYTHONINTMAXSTRDIGITS=0，冻结源码及金融数学不变。V1现场保留；V2仍待用户执行。
+
 **当前正式教材已完成0/18批。** 用户要求覆盖原TRAIN池全部18合约的完整主力资格期。来源只读校验已完成18/18，来源合计1455个合约官方日、488160行；这些数字不是已生产Replay、已验收课程或有效市场分钟数。
 
-旧教材按用户要求忽略并删除：cpu20_v1失败尝试及cpu20_v2旧B01的教材和对应收据四目录均已删除、核对不存在。无完整备份，冻结Producer源码/pin及原始TRAIN行情保留。[删除记录](docs/formal_train_corpus_20261018/evidence/OLD_CORPUS_DELETION.json)。历史B01审计不再计入当前教材覆盖。
+旧教材按用户要求忽略并删除：cpu20_v1失败尝试及cpu20_v2旧B01的教材和对应收据四目录均已删除、核对不存在。无完整备份，冻结Producer源码/pin及原始TRAIN行情保留。[删除记录](docs/formal_train_corpus_20261018_v2/evidence/OLD_CORPUS_DELETION.json)。历史B01审计不再计入当前教材覆盖。
 
 ## 当前18批状态
 
@@ -27,7 +29,7 @@
 | TRAIN17_FG401_FULL_MAIN | 78 / 26790 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
 | TRAIN18_FG405_FULL_MAIN | 78 / 26430 | SOURCE_VALIDATED_ONLY | NOT_RUN | NOT_RUN | NOT_RUN | NOT_RUN |
 
-精确日期、官方日列表、源文件SHA与每批身份锁见 [生产计划](TRAIN_CORPUS_PRODUCTION_PLAN.md) 和 [完整锁](docs/formal_train_corpus_20261018/locks/IDENTITY_LOCK.json)。18份实际validate输出只证明TRAIN范围/来源/日历与主力边界，不代替生成、G3或Reader。
+精确日期、官方日列表、源文件SHA与每批身份锁见 [生产计划](TRAIN_CORPUS_PRODUCTION_PLAN.md) 和 [完整锁](docs/formal_train_corpus_20261018_v2/locks/IDENTITY_LOCK.json)。18份实际validate输出只证明TRAIN范围/来源/日历与主力边界，不代替生成、G3或Reader。
 
 ## 每批生成后填写的质量分母与缺口
 

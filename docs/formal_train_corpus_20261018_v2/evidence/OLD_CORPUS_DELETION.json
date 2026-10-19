@@ -1,0 +1,24 @@
+{
+  "status": "DELETED_AND_ABSENCE_VERIFIED",
+  "user_instruction": "旧的生成的教材忽略。删掉",
+  "paths": [
+    "/data/s3_corpus/early_train_20261018_cpu20_v1/batches/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v1/receipts/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v2/batches/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v2/receipts/B01_FG809"
+  ],
+  "command": [
+    "rm",
+    "-rf",
+    "--",
+    "/data/s3_corpus/early_train_20261018_cpu20_v1/batches/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v1/receipts/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v2/batches/B01_FG809",
+    "/data/s3_corpus/early_train_20261018_cpu20_v2/receipts/B01_FG809"
+  ],
+  "exit_code": 0,
+  "full_backup_created": false,
+  "original_train_sources_deleted": false,
+  "frozen_producer_deleted": false,
+  "formal_curriculum_count_including_old": 0
+}
