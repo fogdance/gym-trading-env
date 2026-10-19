@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="2.100" timestamp="2026-10-19T12:02:09.649042+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp08_session" name="test_native_actor_1024_multiday_trace_and_account" time="1.439"><failure message="ValueError: No effective contract terms at 2026-01-12 09:00:00+08:00">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-609/test_native_actor_1024_multida0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x75553fc0d9d0&gt;
+
+    def test_native_actor_1024_multiday_trace_and_account(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_session import ExamSession
+        from gym_trading_env.research.fg_replay import iter_sidecar
+        root=ARTIFACTS/'C_native_01'
+&gt;       source=native_source(root/'source');actor=controlled_actor(tmp_path/'model')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_session.py:14: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/wp08_fixture.py:62: in native_source
+    old=single_env(folder,prices,side='SHORT',candidate='C1',fees=3,chunk=0,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:138: in __init__
+    self._load_market(df)
+src/gym_trading_env/envs/entry_env.py:217: in _load_market
+    self.terms.at(time - pd.Timedelta(minutes=1))
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.envs.entry_contract.ContractTerms object at 0x75553a097810&gt;
+time = Timestamp('2026-01-12 09:00:00+0800', tz='Asia/Shanghai')
+
+    def at(self, time):
+        time = timestamp(time)
+        for start, end, terms in self.periods:
+            if start &lt;= time &lt; end:
+                return terms
+&gt;       raise ValueError(f"No effective contract terms at {time}")
+E       ValueError: No effective contract terms at 2026-01-12 09:00:00+08:00
+
+src/gym_trading_env/envs/entry_contract.py:135: ValueError</failure></testcase></testsuite></testsuites>

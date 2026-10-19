@@ -1,0 +1,139 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_native_actor_1024_multiday_trace_and_account _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-611/test_native_actor_1024_multida0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7603ef2f1890>
+
+    def test_native_actor_1024_multiday_trace_and_account(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_session import ExamSession
+        from gym_trading_env.research.fg_replay import iter_sidecar
+        root=Path(os.environ.get('FG_WP08_C_ROOT',ARTIFACTS/'C_native_02'))
+>       source=native_source(root/'source');actor=controlled_actor(tmp_path/'model')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_session.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/wp08_fixture.py:62: in native_source
+    old=single_env(folder,prices[:690],side='SHORT',candidate='C1',fees=3,chunk=0,
+tests/entry_v1/test_fg_single3_env.py:15: in single_env
+    old = make_env(tmp_path, prices, side=side, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_entry_contract.py:45: in make_env
+    return FixedDirectionEntryEnv(df=df, config_path=str(path))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7603e8dab410>
+df =                            Open  High  ...  OpenInterest                       bob
+2026-01-05 21:01:00+08:00  1000  10...:58:00+08:00
+2026-01-07 15:00:00+08:00  1000  1001  ...          1000 2026-01-07 14:59:00+08:00
+
+[690 rows x 7 columns]
+config_path = '/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_02/source/env.yaml'
+render_mode = None, market_cache = None, e_profile = None
+
+    def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
+        gym.Env.__init__(self)
+        if config_path is None:
+            raise ValueError("Entry config_path is required")
+        raw = read_yaml(config_path)
+        if raw.get("strategy_mode") != "entry_only":
+            raise ValueError("Explicit strategy_mode=entry_only is required")
+        self.entry_config = raw["entry"]
+        self.protocol = self.entry_config.get("protocol", "fg_entry_v1")
+        if self.protocol not in ("fg_entry_v1", SINGLE3_PROTOCOL):
+            raise ValueError("Unknown FG entry protocol")
+        self.single3 = self.protocol == SINGLE3_PROTOCOL
+        if e_profile is not None and not self.single3:
+            raise ValueError('S3 E observation is Single3-only')
+        if e_profile is not None and self.entry_config['contract'] not in e_profile.contracts:
+            raise ValueError('E observation profile refuses an unadmitted contract')
+        self._e_profile = e_profile
+        self._e_market = None
+        self.e_market_source = None
+        self.e_snapshot = None
+        self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
+        self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
+        self.contract = self.entry_config["contract"]
+        self.strategy_path=None
+        if self.entry_config.get('strategy_config'):
+            self.strategy_path=resolve_path(config_path,self.entry_config['strategy_config'])
+            master=read_yaml(self.strategy_path)
+            expected_reward = master.get('protocol') == SINGLE3_PROTOCOL if self.single3 else master['reward']=={
+                    'formula':'60/(60+T_minutes)', 'complete_quantity':3,'take_profit_points':5}
+            if (master['product']!='FG' or not expected_reward or master['expiry']['mode']!='main_qualification'):
+                raise ValueError('Unified FG configuration changes the frozen business contract')
+            for key,value in master['environment']['trading'].items():
+                if raw['trading'].get(key)!=value:
+                    raise ValueError(f'Stale derived FG snapshot: trading.{key}; rebuild from fg.yaml')
+            if raw['entry'].get('chunk_steps')!=master['environment']['entry']['chunk_steps']:
+                raise ValueError('Stale derived FG chunk configuration')
+            self.directions=DirectionSchedule(master['directions'])
+        else:
+            master=None
+            self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
+        self.market_clock = master.get('market_clock') if master is not None else self.entry_config.get('market_clock')
+        terms_raw=read_yaml(resolve_path(config_path, self.entry_config["contract_config"]))
+        if master is not None:
+            terms_raw['lot_size']=master['costs']['lot_size']
+            for period in terms_raw['terms']:
+                period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
+                    'close_today_fee','spread','slippage')})
+        self.terms = ContractTerms(terms_raw, self.contract)
+        if e_profile is not None:
+            self._e_schedule = dict(self.market_clock or {}, dated_sessions=terms_raw['sessions'])
+        identity = {"env": raw, "strategy":master,"direction": self.directions.hash,
+                    "contract": self.terms.hash,
+                    "position_obs": SINGLE3_POSITION_OBS_FIELDS if self.single3 else POSITION_OBS_FIELDS,
+                    "market_clock_version": "planned_345_v1"}
+        if self.single3:
+            from gym_trading_env.rewards.single3_reward import Single3RewardConfig
+            self.reward_config = Single3RewardConfig(**(master['reward'] if master else raw['entry']['reward']))
+            identity.update(protocol=self.protocol, fill_model=self.fill_model,
+                            reward_hash=self.reward_config.hash, clock_protocol=TIME_PROTOCOL,
+                            market_window='last_60_valid_bars', age_normalization='log1p_market_bars/43200')
+        self.config_hash = fingerprint(identity)
+        self.observation_identity = fingerprint(dict(protocol=self.protocol,
+            fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1',
+            **({'clock_protocol': TIME_PROTOCOL, 'market_window': 'last_60_valid_bars'} if self.single3 else {})))
+        # Original financial/teacher identities remain exact. E's additional
+        # observation/source contract is authenticated separately in runs and
+        # checkpoints, and has its own market-cache identity.
+        self.e_observation_identity = None
+        if self._e_profile is not None:
+            from gym_trading_env.research.fg_s3_e_observation import observation_contract
+            self.e_observation_identity = fingerprint(dict(
+                observation=observation_contract(),data_identity=self._e_profile.identity))
+        self._config(config_path)
+        tr = self.config.trading
+        if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
+            raise ValueError("Entry v1 requires an offline matching FG futures config")
+        if (tr.initial_balance, tr.trade_lot, tr.max_long_position, tr.max_short_position) != (300000, 3, self.max_lots, self.max_lots):
+            raise ValueError(f"Entry contract requires 300000 CNY, 3 lots per ADD and max {self.max_lots}")
+        if self.single3 and raw['trading'].get('stop_loss_enabled') is not True:
+            raise ValueError("Single3 snapshot must explicitly enable SL30")
+        # These are strategy properties; do not inherit daily caps or strategy exits.
+        tr.intraday_single_position = False
+        tr.max_entries_per_day = 2 ** 63 - 1
+        tr.stop_loss_enabled = self.single3
+        tr.take_profit_enabled = True
+        tr.lot_size = self.terms.multiplier
+        self.main_exit_at = timestamp(self.entry_config["main_exit_at"]) if self.entry_config.get("main_exit_at") else None
+        self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
+        if self.chunk_steps < 0:
+            raise ValueError("chunk_steps must be nonnegative")
+        if market_cache is None or df is not None:
+            self._load_market(df)
+        else:
+            market_cache.load(self)
+        if self.window_size != 60 or self._features.shape[1] != 18:
+            raise ValueError("FG entry market observation requires exactly (60, 18)")
+        if self.main_exit_at is not None and self.main_exit_at not in self._raw.index:
+>           raise ValueError("Main roll exit must be an actual old-contract minute")
+E           ValueError: Main roll exit must be an actual old-contract minute
+
+src/gym_trading_env/envs/entry_env.py:144: ValueError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp08_session.py::test_native_actor_1024_multiday_trace_and_account
+1 failed in 1.55s

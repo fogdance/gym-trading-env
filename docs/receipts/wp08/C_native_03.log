@@ -1,0 +1,49 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+______________ test_native_actor_1024_multiday_trace_and_account _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-612/test_native_actor_1024_multida0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x78f021818750>
+
+    def test_native_actor_1024_multiday_trace_and_account(tmp_path,monkeypatch):
+        from gym_trading_env.research.fg_s3_e_quality_exam_session import ExamSession
+        from gym_trading_env.research.fg_replay import iter_sidecar
+        root=Path(os.environ.get('FG_WP08_C_ROOT',ARTIFACTS/'C_native_02'))
+>       source=native_source(root/'source');actor=controlled_actor(tmp_path/'model')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_wp08_session.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/entry_v1/wp08_fixture.py:87: in native_source
+    env=factory()
+        ^^^^^^^^^
+tests/entry_v1/wp08_fixture.py:86: in factory
+    def factory():return FixedDirectionEntryEnv(config_path=path,e_profile=profile)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_env.py:86: in __init__
+    self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/gym_trading_env/envs/entry_contract.py:24: in read_yaml
+    with Path(path).open(encoding="utf-8") as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_03/source/artifacts/fg_s3_v2/e_quality_wp08/C_native_03/source/directions.yaml')
+mode = 'r', buffering = -1, encoding = 'utf-8', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-e-quality-wp08-20261019/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp08/C_native_03/source/artifacts/fg_s3_v2/e_quality_wp08/C_native_03/source/directions.yaml'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_wp08_session.py::test_native_actor_1024_multiday_trace_and_account
+1 failed in 1.81s
