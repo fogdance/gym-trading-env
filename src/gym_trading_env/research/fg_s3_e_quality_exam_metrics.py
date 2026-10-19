@@ -121,6 +121,7 @@ def analyze_trace(directory,source,output):
         max_drawdown=float((np.maximum.accumulate(values)-values).max()),
         tp_rate=None if not n else sum(t['exit_reason']=='TAKE_PROFIT' for t in result)/n,
         sl_rate=None if not n else sum(t['exit_reason']=='STOP_LOSS' for t in result)/n,
+        mae_15_valid_count=sum(t['mae_15_valid'] for t in result),
         mae_15_mean=None if not n else float(np.mean([t['mae_15'] for t in result if t['mae_15_valid']])) if any(t['mae_15_valid'] for t in result) else None,
         p_add_quantiles=None if not probabilities else {str(q):quantile(probabilities,q) for q in (0.,.1,.5,.9,1.)},
         market_blocks=len({(r['trading_date']) for r in rows if r['valid_bar']}),
