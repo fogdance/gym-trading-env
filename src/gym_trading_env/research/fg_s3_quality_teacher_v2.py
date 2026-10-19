@@ -222,8 +222,9 @@ def verify_native_e_fork(env, clone):
     state = env.export_state()
     expected = env._get_obs()
     clone.import_state(state)
+    restored = clone._get_obs()
     for k,v in expected.items():
-        if not np.array_equal(v, clone._get_obs()[k]):
+        if not np.array_equal(v, restored[k]):
             raise ValueError('E-profile native Quality fork observation differs')
     if clone.status == 'ACTIVE' and not clone.terminated:
         clone.step(0)
@@ -400,9 +401,17 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         original_reward=0.
         def advance(action):
             nonlocal original_reward
+            # E labels consume only native feedback here. The original Env
+            # still performs its complete step, observation and mask checks;
+            # constructing a second unused Replay row duplicates its OHLC,
+            # fill, position and event copies for every counterfactual bar.
+            if shadow is None:
+                _,reward,*_=clone.step(int(action))
+                rewards.append([clone.current_step,float(np.float32(reward))])
+                return
             _,row=execute_observed(clone,action)
             rewards.append([clone.current_step,float(np.float32(row['official_reward']))])
-            if row['advanced'] and shadow is not None:
+            if row['advanced']:
                 original_reward+=float(np.float32(shadow.step(row['bar'],clone.terms.multiplier)['total']))
         advance(1)
         opened = next((copy.deepcopy(f) for f in clone.fills[fills:] if f['reason'] == 'ENTRY'), None)
