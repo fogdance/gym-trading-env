@@ -73,51 +73,74 @@ class NoModel:
     load=load_exact
 
 
+def make_checkpoint(source,bound,prefetch,runtime,step,output,mode,seen,versioned):
+    cp=FullCheckpoint(output/'ckpt',step,dict(protocol='BATCH2_READER_PERF_ONLY',mode=mode,seen=seen),[prefetch],reserve_gib=0,
+        keep_all=True,backend='external_immutable_course_reader',strict_latest=True)
+    if versioned:
+        from gym_trading_env.research.fg_s3_reader_versions import CheckpointSource,VersionedRuntimeState
+        cp.course_reader=CheckpointSource(bound);runtime=VersionedRuntimeState.from_runtime(runtime,bound)
+    else:cp.course_reader=source
+    cp.agent=NoModel();cp.step=step;cp.runtime=runtime
+    return cp
+
+
 def main():
     p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('--out',required=True)
     p.add_argument('--mode',choices=['f1','f2','f3','f3_aux','multi','multi_f3'],default='f1')
     p.add_argument('--seen',type=int,default=0);p.add_argument('--batches',type=int,default=8)
-    p.add_argument('--amount',type=int,default=2);p.add_argument('--versioned',action='store_true');a=p.parse_args()
+    p.add_argument('--amount',type=int,default=2);p.add_argument('--versioned',action='store_true')
+    p.add_argument('--load-only',action='store_true');a=p.parse_args()
     config_path=Path(a.config)
     if not config_path.exists():
         built=build_sources(config_path.parent/'sources');config_path.write_bytes(built.read_bytes())
     config=json.loads(config_path.read_text());source=open_case(config,a.mode)
-    for r in readers(source):
-        r.seen_market={(r.contract,10_000_000+i) for i in range(a.seen)}
-        r.seen_account={('DEV_ONLY_PRESSURE',i) for i in range(a.seen)}
+    if not a.load_only:
+        for r in readers(source):
+            r.seen_market={(r.contract,10_000_000+i) for i in range(a.seen)}
+            r.seen_account={('DEV_ONLY_PRESSURE',i) for i in range(a.seen)}
     bound=source
     if a.versioned:
         from gym_trading_env.research.fg_s3_reader_versions import VersionedStream
         bound=VersionedStream(source)
     prefetch=embodied.streams.Prefetch(bound,amount=a.amount)
     runtime=RuntimeState(StepSchedule(1,3),SimpleNamespace(),[prefetch],lambda:None,lambda x:None,{},[0])
+    output=Path(a.out)
+    if a.load_only:
+        cp=make_checkpoint(source,bound,prefetch,runtime,elements.Counter(),output,a.mode,a.seen,a.versioned)
+        t=time.perf_counter();cp.load();seconds=time.perf_counter()-t
+        result=dict(scope='NEW_PYTHON_PROCESS_CHECKPOINT_LOAD',seconds=seconds,
+            state_digest=tree_digest(source.save()),peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+            versioned=a.versioned,mode=a.mode,seen=a.seen,optimizer_updates=0,argv=sys.argv)
+        (output/'result_load.json').write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result));return
     runtime.start()
     for _ in range(2):next(prefetch)
     wait_pending(prefetch);batches=[];start=time.perf_counter()
     for _ in range(a.batches):batches.append(host(next(prefetch)))
     wait_pending(prefetch);elapsed=time.perf_counter()-start
-    output=Path(a.out);output.mkdir(parents=True,exist_ok=False)
+    output.mkdir(parents=True,exist_ok=False)
     with prefetch.pause():
         final_state=source.save();golden=tree_digest(dict(batches=batches,state=final_state))
         t=time.perf_counter();snapshot=prefetch.save_full();snapshot_seconds=time.perf_counter()-t
         snapshot_bytes=len(pickle.dumps(snapshot,protocol=5))
         step=elements.Counter();step.increment(a.batches)
-        cp=FullCheckpoint(output/'ckpt',step,dict(protocol='BATCH2_READER_PERF_ONLY',mode=a.mode,seen=a.seen),[prefetch],reserve_gib=0,
-            keep_all=True,backend='external_immutable_course_reader',strict_latest=True)
-        if a.versioned:
-            from gym_trading_env.research.fg_s3_reader_versions import CheckpointSource,VersionedRuntimeState
-            cp.course_reader=CheckpointSource(bound)
-            runtime=VersionedRuntimeState.from_runtime(runtime,bound)
-        else:cp.course_reader=source
-        cp.agent=NoModel();cp.step=step;cp.runtime=runtime
+        cp=make_checkpoint(source,bound,prefetch,runtime,step,output,a.mode,a.seen,a.versioned)
         t=time.perf_counter();cp.save(final=True);cp_seconds=time.perf_counter()-t
         cp_bytes=sum(p.stat().st_size for p in cp.latest().rglob('*') if p.is_file())
+    peak_rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024
+    with prefetch.pause():
+        reader=readers(source)[0];initial=tree_digest(reader.state_dict())
+        t=time.perf_counter();undo=reader.begin_batch() if a.versioned else reader.state_dict()
+        begin_seconds=time.perf_counter()-t;reader.sample(4,12)
+        t=time.perf_counter()
+        reader.rollback_batch(undo) if a.versioned else reader.load_state_dict(undo)
+        rollback_seconds=time.perf_counter()-t
+        assert initial==tree_digest(reader.state_dict()),'PERF_UNDO_NOT_EXACT'
     result=dict(scope='DEV_ONLY_COVERAGE_PRESSURE' if a.seen else 'LEGAL_SYNTHETIC_CORPUS',
         mode=a.mode,seen_keys_per_reader=a.seen,reader_count=len(readers(source)),versioned=a.versioned,
         batches=a.batches,batch_seconds=elapsed,batches_per_second=a.batches/elapsed,
         seconds_per_100k_target_positions=elapsed/(sum(len(b['stepid'])*8 for b in batches)/100000),
         golden=golden,batch_digests=[tree_digest(b) for b in batches],state_digest=tree_digest(final_state),
-        peak_rss_bytes=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
+        peak_rss_bytes=peak_rss,local_snapshot_seconds=begin_seconds,local_rollback_seconds=rollback_seconds,
         prefetch_amount=a.amount,pending_batches=len(snapshot['pending']),snapshot_seconds=snapshot_seconds,
         snapshot_bytes=snapshot_bytes,checkpoint_seconds=cp_seconds,checkpoint_bytes=cp_bytes,
         optimizer_updates=0,training_admitted=False,real_market_coverage='NOT_MEASURED_BY_PRESSURE_FIXTURE',argv=sys.argv,
