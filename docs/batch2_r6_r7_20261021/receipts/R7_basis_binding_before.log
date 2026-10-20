@@ -1,0 +1,54 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_strict_payload_faults_reject_before_agent_load[coverage_basis] ______
+
+config_path = PosixPath('/tmp/pytest-of-v/pytest-746/batch2_cold_sources0/sources.json')
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-746/test_strict_payload_faults_rej0')
+attack = 'coverage_basis'
+
+    @pytest.mark.parametrize('attack',['graph_member','cross_member','missing_delta','missing_done','rollback_latest','journal','coverage_basis'])
+    def test_strict_payload_faults_reject_before_agent_load(config_path,tmp_path,attack):
+        root=tmp_path/'run';worker(config_path,root,'multi_f3',4,3)
+        node=root/'ckpt/step_000000000003'
+        if attack in ('graph_member','cross_member','missing_delta','coverage_basis'):
+            name='course_reader' if attack=='cross_member' else 'runtime'
+            p=node/(name+'.pkl');state=pickle.loads(p.read_bytes())
+            if attack=='cross_member':state['digest']='f'*64
+            elif attack=='graph_member':state['streams'][0]['source']['graph_sha256']='f'*64
+            elif attack=='missing_delta':state['streams'][0]['source']['nodes'][-1]['delta'].pop()
+            else:
+                from gym_trading_env.research.fg_s3_reader_versions import _hash
+                graph=state['streams'][0]['source']
+                graph['base']['seen'][0]['market'].append(['CZCE.FG2701',99999991])
+                graph['graph_sha256']=_hash({k:v for k,v in graph.items() if k!='graph_sha256'})
+            p.write_bytes(pickle.dumps(state))
+            manifest=json.loads((node/'manifest.json').read_text());manifest['files'][p.name]=digest(p)
+            (node/'manifest.json').write_text(json.dumps(manifest))
+        elif attack=='missing_done':(node/'done').unlink()
+        elif attack=='rollback_latest':(root/'ckpt/latest').write_text('step_000000000000')
+        else:
+            with (root/'updates.jsonl').open('r+b') as f:f.write(b'CHANGED')
+        _,source,prefetch,_,_,_,cp=make(json.loads(config_path.read_text()),'multi_f3',root,4)
+        called=[]
+        cp.agent.load_exact=lambda state:called.append(state)
+        before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+>       with pytest.raises(ValueError):cp.load()
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_cold_checkpoint.py:63: Failed
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_batch2_cold_checkpoint.py::test_strict_payload_faults_reject_before_agent_load[coverage_basis]
+1 failed in 32.87s

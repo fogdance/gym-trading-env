@@ -1,0 +1,20 @@
+{
+  "scope": "DOCUMENT_EVIDENCE_COORDINATOR_ONLY",
+  "observed_error": "SyntaxError",
+  "message": "unterminated string literal (detected at line 41)",
+  "line": 41,
+  "production_source_changed": false,
+  "fix": "Match closing f-string quote in postmerge report generator",
+  "verified_scripts": [
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/final_perf_v5.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/finalize_reports_v5.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/merge_code_v5.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/postmerge_reports_v5.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/final_delivery_lock_v5.py"
+  ],
+  "final_status": "PASS",
+  "exit_code": 0,
+  "source_and_test_diff_check_exit_code": 0,
+  "raw_receipts_unmodified": true,
+  "unrestricted_diff_check_note": "Exit 2 only on original pytest E-lines with trailing whitespace in R6_before.log/xml; raw receipts preserved byte-for-byte."
+}

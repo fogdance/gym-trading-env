@@ -1,0 +1,350 @@
+{
+  "utc": "2026-10-20T23:22:54.317479+00:00",
+  "repositories": {
+    "dreamerv3": {
+      "before": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5",
+      "source": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "after": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5",
+      "tree": "002d36432779c2574159f1ae80020de81f52bae7",
+      "exact_full_tree_equals_frozen_tested_source": true,
+      "branch": "integration/s3-next",
+      "clean": true
+    },
+    "gym-trading-env": {
+      "before": "0daa67ea8139b11c9797cf534fe55bc3df2e3d83",
+      "source": "e5ff6e1873819a962f4ec3d6639b62b711c977e6",
+      "after": "72f55922f5be63cd405fbf5996e8fd04d7d46af1",
+      "tree": "101c5cc638e5291e0fff9caca5aa52bbbd565ab8",
+      "exact_full_tree_equals_frozen_tested_source": true,
+      "branch": "integration/s3-next",
+      "clean": true
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "integration/s3-next\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "a6aa3e649ca36022b767e2d89d0392868953f5e9\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "feat/batch2-r6-r7-20261021"
+      ],
+      "exit_code": 0,
+      "stdout": "a6aa3e649ca36022b767e2d89d0392868953f5e9\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "merge",
+        "--no-ff",
+        "-m",
+        "Merge Batch 2 R7 exact Reader transactions and self-contained Prefetch recovery",
+        "feat/batch2-r6-r7-20261021"
+      ],
+      "exit_code": 0,
+      "stdout": "Already up to date.\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "merge-base",
+        "--is-ancestor",
+        "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+        "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "002d36432779c2574159f1ae80020de81f52bae7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/dreamerv3",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "002d36432779c2574159f1ae80020de81f52bae7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "002d36432779c2574159f1ae80020de81f52bae7\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "integration/s3-next\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "0daa67ea8139b11c9797cf534fe55bc3df2e3d83\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "e5ff6e1873819a962f4ec3d6639b62b711c977e6\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "feat/batch2-r6-r7-20261021"
+      ],
+      "exit_code": 0,
+      "stdout": "e5ff6e1873819a962f4ec3d6639b62b711c977e6\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "merge",
+        "--no-ff",
+        "-m",
+        "Merge Batch 2 R7 exact Reader transactions and self-contained Prefetch recovery",
+        "feat/batch2-r6-r7-20261021"
+      ],
+      "exit_code": 0,
+      "stdout": "Merge made by the 'ort' strategy.\n .../R7_STATE_VERSION_CONTRACT.md                   | 32 ++++++++++++++++++++++\n .../research/fg_s3_reader_versions.py              |  8 ++++--\n tests/entry_v1/test_batch2_reader_versions.py      | 18 ++++++++++--\n 3 files changed, 53 insertions(+), 5 deletions(-)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "72f55922f5be63cd405fbf5996e8fd04d7d46af1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "merge-base",
+        "--is-ancestor",
+        "e5ff6e1873819a962f4ec3d6639b62b711c977e6",
+        "72f55922f5be63cd405fbf5996e8fd04d7d46af1"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "101c5cc638e5291e0fff9caca5aa52bbbd565ab8\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "101c5cc638e5291e0fff9caca5aa52bbbd565ab8\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "stdout": "101c5cc638e5291e0fff9caca5aa52bbbd565ab8\n",
+      "stderr": ""
+    }
+  ],
+  "ordinary_merge": true,
+  "reset_or_force": false,
+  "scope": "CODE_MERGE_BEFORE_REPORT_DELIVERY"
+}

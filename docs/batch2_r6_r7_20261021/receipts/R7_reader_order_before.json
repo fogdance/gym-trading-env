@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "0-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_reader_versions.py::test_reader_dictionary_reordering_cannot_reassign_coverage_to_another_source",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_reader_order_before.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/order_before",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "e5ff6e1873819a962f4ec3d6639b62b711c977e6",
+      "status": "M docs/batch2_r6_r7_20261021/R6_IMPLEMENTATION_REVIEW.md\n M tests/entry_v1/test_batch2_reader_versions.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 21.008103052037768,
+  "exit_code": 1,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_reader_dictionary_reordering_cannot_reassign_coverage_to_another_source",
+      "result": "failed"
+    }
+  ],
+  "counts": {
+    "passed": 0,
+    "failed": 1,
+    "error": 0,
+    "skipped": 0
+  }
+}

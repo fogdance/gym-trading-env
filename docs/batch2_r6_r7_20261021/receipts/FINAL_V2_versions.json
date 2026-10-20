@@ -1,0 +1,241 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "20-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_batch2_reader_versions.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_batch2_cold_checkpoint.py",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_versions_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_V2_versions.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_versions",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env",
+      "sha": "03e17103ab40a03a2e0795359c01bded581c3031",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 585.2727184529649,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f3_aux]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[multi]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[multi_f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_unstarted_prefetch_zero_pending_is_self_contained",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_one_reader_cannot_belong_to_two_active_version_graphs",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[missing_delta]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[digest]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[duplicate_version]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_source]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_role]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[missing_parent]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[pending_order]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_capacity]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[foreign_ref]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[batch_bytes]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f3_aux-2-0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[multi-4-0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[multi_f3-4-100001]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[graph_member]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[cross_member]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[missing_delta]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[missing_done]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[rollback_latest]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[journal]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[coverage_basis]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 38,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

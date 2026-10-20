@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="27.423" timestamp="2026-10-21T05:58:26.380337+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_batch2_cold_checkpoint" name="test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]" time="25.529"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/batch2_cold_worker.py&quot;, line 65, in &lt;module&gt;&#10;      if __name__=='__main__':main()&#10;                              ^^^^^^&#10;    File &quot;/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/batch2_cold_worker.py&quot;, line 55, in main&#10;      state=runtime.save();state['streams']=[materialize_prefetch(source,state['streams'][0])]&#10;                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_versions.py&quot;, line 266, in materialize_prefetch&#10;      stream.validate_prefetch(state)&#10;    File &quot;/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_versions.py&quot;, line 238, in validate_prefetch&#10;      raise ValueError('READER_CHECKPOINT_CROSS_MEMBER_REFERENCE')&#10;  ValueError: READER_CHECKPOINT_CROSS_MEMBER_REFERENCE&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-ba...aise ValueError(\'READER_CHECKPOINT_CROSS_MEMBER_REFERENCE\')\nValueError: READER_CHECKPOINT_CROSS_MEMBER_REFERENCE\n').returncode">config_path = PosixPath('/tmp/pytest-of-v/pytest-731/batch2_cold_sources0/sources.json')
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-731/test_new_process_strict_checkp0')
+mode = 'f1', amount = 1, seen = 0
+
+    @pytest.mark.parametrize('mode,amount,seen',[('f1',1,0),('f3_aux',2,0),('multi',4,0),('multi_f3',4,100001)])
+    def test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states(config_path,tmp_path,mode,amount,seen):
+        continuous=worker(config_path,tmp_path/'continuous',mode,amount,8,seen=seen)
+        worker(config_path,tmp_path/'split',mode,amount,4,seen=seen)
+&gt;       restored=worker(config_path,tmp_path/'split',mode,amount,8,resume=True,seen=seen)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_batch2_cold_checkpoint.py:31: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config_path = PosixPath('/tmp/pytest-of-v/pytest-731/batch2_cold_sources0/sources.json')
+root = PosixPath('/tmp/pytest-of-v/pytest-731/test_new_process_strict_checkp0/split')
+mode = 'f1', amount = 1, stop = 8, resume = True, seen = 0
+
+    def worker(config_path,root,mode,amount,stop,resume=False,seen=0):
+        argv=[sys.executable,'-B',str(Path(__file__).with_name('batch2_cold_worker.py')),'--config',str(config_path),
+              '--root',str(root),'--mode',mode,'--amount',str(amount),'--stop',str(stop),'--seen',str(seen)]
+        if resume:argv.append('--resume')
+        result=subprocess.run(argv,capture_output=True,text=True,timeout=180)
+        root.mkdir(parents=True,exist_ok=True)
+        tag='resume' if resume else 'start'
+        (root/(tag+'.log')).write_text(result.stdout+result.stderr)
+        (root/(tag+'_command.json')).write_text(json.dumps(dict(argv=argv,exit_code=result.returncode),indent=2)+'\n')
+&gt;       assert result.returncode==0,result.stdout+result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/batch2_cold_worker.py", line 65, in &lt;module&gt;
+E             if __name__=='__main__':main()
+E                                     ^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/batch2_cold_worker.py", line 55, in main
+E             state=runtime.save();state['streams']=[materialize_prefetch(source,state['streams'][0])]
+E                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_versions.py", line 266, in materialize_prefetch
+E             stream.validate_prefetch(state)
+E           File "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_versions.py", line 238, in validate_prefetch
+E             raise ValueError('READER_CHECKPOINT_CROSS_MEMBER_REFERENCE')
+E         ValueError: READER_CHECKPOINT_CROSS_MEMBER_REFERENCE
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-ba...aise ValueError(\'READER_CHECKPOINT_CROSS_MEMBER_REFERENCE\')\nValueError: READER_CHECKPOINT_CROSS_MEMBER_REFERENCE\n').returncode
+
+../../../tests/entry_v1/test_batch2_cold_checkpoint.py:23: AssertionError</failure></testcase></testsuite></testsuites>

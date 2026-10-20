@@ -1,0 +1,181 @@
+{
+  "utc": "2026-10-20T23:32:45.363443+00:00",
+  "repositories": {
+    "gym": {
+      "initial_baseline": "def3e0e2bf99898c0443ae7047e2a1b9f18ebebc",
+      "first_batch_feature": "20cdedf4b1d01ab7c2f9dffd979a01d80c9f5067",
+      "first_batch_already_in_initial_baseline": true,
+      "r6_integration_merge": "710a1332d5f9ebc1993cd7c3a5002b0d732d3533",
+      "final_code": "4c881d39d9a482542534ee678e53787547afae89",
+      "branch": "feat/batch2-r6-r7-20261021"
+    },
+    "dreamer": {
+      "initial_baseline": "b2287a9d892e932339857ebb36f75499163a3046",
+      "first_batch_feature": "4c4a36636bfa1a3f6a02c6df7f7d164ca8ec7036",
+      "first_batch_already_in_initial_baseline": true,
+      "r6_integration_merge": "a5631ffadd4815efcd6caf4c9026a274ea3d6ab7",
+      "final_code": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "branch": "feat/batch2-r6-r7-20261021"
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "rev-parse",
+        "20cdedf"
+      ],
+      "exit_code": 0,
+      "stdout": "20cdedf4b1d01ab7c2f9dffd979a01d80c9f5067\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "merge-base",
+        "--is-ancestor",
+        "20cdedf4b1d01ab7c2f9dffd979a01d80c9f5067",
+        "def3e0e2bf99898c0443ae7047e2a1b9f18ebebc"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "merge-base",
+        "--is-ancestor",
+        "def3e0e2bf99898c0443ae7047e2a1b9f18ebebc",
+        "710a1332d5f9ebc1993cd7c3a5002b0d732d3533"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "merge-base",
+        "--is-ancestor",
+        "def3e0e2bf99898c0443ae7047e2a1b9f18ebebc",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "4c881d39d9a482542534ee678e53787547afae89\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "feat/batch2-r6-r7-20261021\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "rev-parse",
+        "4c4a366"
+      ],
+      "exit_code": 0,
+      "stdout": "4c4a36636bfa1a3f6a02c6df7f7d164ca8ec7036\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "merge-base",
+        "--is-ancestor",
+        "4c4a36636bfa1a3f6a02c6df7f7d164ca8ec7036",
+        "b2287a9d892e932339857ebb36f75499163a3046"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "merge-base",
+        "--is-ancestor",
+        "b2287a9d892e932339857ebb36f75499163a3046",
+        "a5631ffadd4815efcd6caf4c9026a274ea3d6ab7"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "merge-base",
+        "--is-ancestor",
+        "b2287a9d892e932339857ebb36f75499163a3046",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "stdout": "a6aa3e649ca36022b767e2d89d0392868953f5e9\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+        "branch",
+        "--show-current"
+      ],
+      "exit_code": 0,
+      "stdout": "feat/batch2-r6-r7-20261021\n",
+      "stderr": ""
+    }
+  ],
+  "no_duplicate_first_batch_merge": true,
+  "unrelated_branches_inspected": false
+}

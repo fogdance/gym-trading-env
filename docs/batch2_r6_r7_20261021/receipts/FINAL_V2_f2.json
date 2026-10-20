@@ -1,0 +1,90 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "12-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f2_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_V2_f2.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f2",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env",
+      "sha": "03e17103ab40a03a2e0795359c01bded581c3031",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 156.1673898990266,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E01_four_vs_two_cold_two_full_exact",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E02_resume_failures_before_model_or_run_writes[settings]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E02_resume_failures_before_model_or_run_writes[code]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E02_resume_failures_before_model_or_run_writes[index]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E02_resume_failures_before_model_or_run_writes[source_f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E02_resume_failures_before_model_or_run_writes[corrupt_latest]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E04_no_authorization_no_run_side_effects",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 8,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

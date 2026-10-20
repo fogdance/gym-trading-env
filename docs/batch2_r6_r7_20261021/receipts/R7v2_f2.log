@@ -1,0 +1,200 @@
+F.....F.                                                                 [100%]
+=================================== FAILURES ===================================
+___________________ test_E01_four_vs_two_cold_two_full_exact ___________________
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...tmp/pytest-of-v/pytest-734/wp05_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0/join.sqlite'))
+
+    def test_E01_four_vs_two_cold_two_full_exact(case):
+     with ThreadPoolExecutor(2) as pool:
+      continuous=pool.submit(worker,case,'continuous','start',4)
+      split=pool.submit(worker,case,'split','start',2)
+      a=continuous.result();split.result()
+>    b=worker(case,'split','resume',4);exact(a,b)
+                                       ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:35: in exact
+    for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = '0e63f68652a94582813bd0982df22f7c', b = 'd87fb719b79c4b919cd60e9031cdb75e'
+path = '/runtime/streams/0/source/session'
+
+    def exact(a,b,path=''):
+     if isinstance(a,dict):
+      assert a.keys()==b.keys(),path
+      for k in a:exact(a[k],b[k],path+'/'+str(k))
+     elif isinstance(a,(list,tuple)):
+      assert len(a)==len(b),path
+      for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+     elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+>    else:assert a==b,path
+          ^^^^^^^^^^^^^^^^
+E    AssertionError: /runtime/streams/0/source/session
+E    assert '0e63f68652a9...bd0982df22f7c' == 'd87fb719b79c...60e9031cdb75e'
+E      
+E      - d87fb719b79c4b919cd60e9031cdb75e
+E      + 0e63f68652a94582813bd0982df22f7c
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:37: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 100 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 100 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-x5mypy56 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+_ test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again _
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...tmp/pytest-of-v/pytest-734/wp05_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0/join.sqlite'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-734/test_E03_skip_checkpoint_prese0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e9ba16cc490>
+
+    def test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again(case,tmp_path,monkeypatch):
+     import jax.numpy as jnp
+     root,s,_,index=case;p=preflight(s);run=HeadsRun(p,index,tmp_path/'skip',_probe=engineering_permit(p))
+     initial=parameter_digests(run.agent.params);original=run.agent.train
+     def invalid(carry,data):
+      data={k:jnp.zeros_like(v) if k.startswith('quality_') and k.endswith('_valid') else v for k,v in data.items()}
+      return original(carry,data)
+     monkeypatch.setattr(run.agent,'train',invalid)
+     m=run.update();assert m['f2/skip_no_valid'] and int(run.agent.n_updates)==0 and int(run.step)==1
+     assert parameter_digests(run.agent.params)==initial
+     saved=run.counters.save();reader=pickle.loads((run.cp.latest()/'course_reader.pkl').read_bytes())
+     # Stop only this object's prefetch using its normal lifecycle; no host process termination.
+     with run.stream.pause():
+      def forbidden(*a,**k):raise AssertionError('resume called handoff')
+      monkeypatch.setattr('embodied.run.fg_s3_e_quality_heads.transfer_parameters',forbidden)
+      other=HeadsRun(p,index,tmp_path/'skip',resume=True,_probe=engineering_permit(p))
+      assert other.counters.save()==saved and int(other.step)==1 and int(other.agent.n_updates)==0
+>     assert other.reader.state_dict()==reader
+E     AssertionError: assert {'counts': {'...7293487}, ...} == {'protocol': ...sion': 2, ...}
+E       
+E       Differing items:
+E       {'protocol': 'FG_S3_E_QUALITY_READER_STATE_V1'} != {'protocol': 'S3_READER_VERSION_REF_V2'}
+E       Left contains 8 more items:
+E       {'counts': {'batches': 2,
+E                   'delivered_candidate_exposures': 192,
+E                   'policy:P1': 96,...
+E       
+E       ...Full output truncated (307 lines hidden), use '-vv' to show
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:95: AssertionError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_actor
+           706 pol
+           706 quality_q_v2
+           706 quality_q_c1
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_event    Space(int32, shape=(7,), low=-2147483648, high=2147483647)
+  quality_event_valid Space(bool, shape=(7,), low=False, high=True)
+  quality_touch    Space(float32, shape=(4, 2), low=-inf, high=inf)
+  quality_touch_valid Space(bool, shape=(4, 2), low=False, high=True)
+  quality_adverse  Space(float32, shape=(4,), low=-inf, high=inf)
+  quality_adverse_valid Space(bool, shape=(4,), low=False, high=True)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_actor
+           706 pol
+           706 quality_q_v2
+           706 quality_q_c1
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_wp05_checkpoint.py::test_E01_four_vs_two_cold_two_full_exact
+FAILED ../../../tests/entry_v1/test_wp05_checkpoint.py::test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again
+2 failed, 6 passed in 148.93s (0:02:28)

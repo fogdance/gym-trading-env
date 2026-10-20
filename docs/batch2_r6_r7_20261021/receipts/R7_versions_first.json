@@ -1,0 +1,174 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_reader_versions.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_versions_first.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/r7",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "6cf302db106b26eb3a583aaff28851dfad70717d",
+      "status": "M src/gym_trading_env/research/fg_s3_e_quality_multi.py\n M src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py\n M src/gym_trading_env/research/fg_s3_e_quality_reader.py\n?? src/gym_trading_env/research/fg_s3_reader_versions.py\n?? tests/entry_v1/batch2_reader_benchmark.py\n?? tests/entry_v1/test_batch2_reader_versions.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "e0d5563021000cf8682424e4e43f3c591117b554",
+      "status": "M embodied/core/streams.py\n M embodied/run/fg_s3_e_quality_actor.py\n M embodied/run/fg_s3_e_quality_foundation.py"
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 133.45533897099085,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[f3_aux]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[multi]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_all_source_topologies_deliver_identical_batches_and_exact_coverage[multi_f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f1-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[f3_aux-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_prefetch_full_snapshot_restores_each_pending_and_rng[multi_f3-4]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_unstarted_prefetch_zero_pending_is_self_contained",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[missing_delta]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[digest]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[duplicate_version]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_source]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_role]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[missing_parent]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[pending_order]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[wrong_capacity]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_graph_and_pending_corruption_reject_before_source_mutation[foreign_ref]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 25,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

@@ -1,0 +1,108 @@
+FF.........                                                              [100%]
+=================================== FAILURES ===================================
+___ test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary] ____
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0'), {'schema': 'FG_S3_E_QUALITY_F3_CONFIG_V1', 'stage': 'ACTOR_SUPER...tmp/pytest-of-v/pytest-736/wp06_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0/join.sqlite'))
+scenario = 'ordinary'
+
+    @pytest.mark.parametrize('scenario',['ordinary','skip_first'])
+    def test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip(case,scenario):
+        a_name=scenario+'_continuous';b_name=scenario+'_split';first=2 if scenario=='ordinary' else -1
+        with ThreadPoolExecutor(2) as pool:
+            one=pool.submit(worker,case,a_name,'start',4,scenario)
+            two=pool.submit(worker,case,b_name,'start',first,scenario)
+            a=one.result();split=two.result()
+        if scenario=='skip_first':assert split['counters']['optimizer_updates']==0 and split['counters']['consumed_batches']==1
+>       b=worker(case,b_name,'resume',4,scenario);exact(a,b)
+                                                  ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = 'fe1145afff5f47b882f37959a79a6f6b', b = 'e18b67c2ee0949b4810cb2a6a63ee96f'
+path = '/reader/session'
+
+    def exact(a,b,path=''):
+        if isinstance(a,dict):
+            assert a.keys()==b.keys(),path
+            for k in a:exact(a[k],b[k],path+'/'+str(k))
+        elif isinstance(a,(list,tuple)):
+            assert len(a)==len(b),path
+            for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+        elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+>       else:assert a==b,path
+             ^^^^^^^^^^^^^^^^
+E       AssertionError: /reader/session
+E       assert 'fe1145afff5f...37959a79a6f6b' == 'e18b67c2ee09...cb2a6a63ee96f'
+E         
+E         - e18b67c2ee0949b4810cb2a6a63ee96f
+E         + fe1145afff5f47b882f37959a79a6f6b
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:41: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 420 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 420 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 420 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-hnebwonc because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+__ test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first] ___
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0'), {'schema': 'FG_S3_E_QUALITY_F3_CONFIG_V1', 'stage': 'ACTOR_SUPER...tmp/pytest-of-v/pytest-736/wp06_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0/join.sqlite'))
+scenario = 'skip_first'
+
+    @pytest.mark.parametrize('scenario',['ordinary','skip_first'])
+    def test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip(case,scenario):
+        a_name=scenario+'_continuous';b_name=scenario+'_split';first=2 if scenario=='ordinary' else -1
+        with ThreadPoolExecutor(2) as pool:
+            one=pool.submit(worker,case,a_name,'start',4,scenario)
+            two=pool.submit(worker,case,b_name,'start',first,scenario)
+            a=one.result();split=two.result()
+        if scenario=='skip_first':assert split['counters']['optimizer_updates']==0 and split['counters']['consumed_batches']==1
+>       b=worker(case,b_name,'resume',4,scenario);exact(a,b)
+                                                  ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = '196176113ccb4cb7a6609ed6bb62b81e', b = '113493b04e6d4372a0ac004c4da3e41d'
+path = '/reader/session'
+
+    def exact(a,b,path=''):
+        if isinstance(a,dict):
+            assert a.keys()==b.keys(),path
+            for k in a:exact(a[k],b[k],path+'/'+str(k))
+        elif isinstance(a,(list,tuple)):
+            assert len(a)==len(b),path
+            for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+        elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+>       else:assert a==b,path
+             ^^^^^^^^^^^^^^^^
+E       AssertionError: /reader/session
+E       assert '196176113ccb...09ed6bb62b81e' == '113493b04e6d...c004c4da3e41d'
+E         
+E         - 113493b04e6d4372a0ac004c4da3e41d
+E         + 196176113ccb4cb7a6609ed6bb62b81e
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:41: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_wp06_checkpoint.py::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary]
+FAILED ../../../tests/entry_v1/test_wp06_checkpoint.py::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first]
+2 failed, 9 passed in 193.01s (0:03:13)

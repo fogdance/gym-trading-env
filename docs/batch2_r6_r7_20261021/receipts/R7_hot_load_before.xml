@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="22.595" timestamp="2026-10-21T06:48:37.871935+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_batch2_reader_versions" name="test_hot_restore_cannot_rewind_a_prefetch_with_restored_pending_batches" time="20.334"><failure message="Failed: DID NOT RAISE ValueError">config = {'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytest...], 'stage': 'WM_NATURAL', 'per_source_sampling_spec': {'alpha': {'mode': 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}
+
+    def test_hot_restore_cannot_rewind_a_prefetch_with_restored_pending_batches(config):
+        a=VersionedStream(open_case(config,'f1'));b=VersionedStream(open_case(config,'f1'))
+        pa=embodied.streams.Prefetch(a,amount=2);pb=embodied.streams.Prefetch(b,amount=2)
+        try:
+            iter(pa);wait_pending(pa);pb.load_full(pa.save_full())
+            before=pb.save_full()
+&gt;           with pytest.raises(ValueError,match='pending'):
+E           Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_reader_versions.py:70: Failed</failure></testcase></testsuite></testsuites>

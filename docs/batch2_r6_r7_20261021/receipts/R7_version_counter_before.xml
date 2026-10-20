@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="20.620" timestamp="2026-10-21T07:09:47.395688+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_batch2_reader_versions" name="test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection" time="18.796"><failure message="AssertionError: COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID&#10;assert 1 == 3&#10; +  where 1 = &lt;gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f868fb9490&gt;.next_id&#10; +  and   3 = &lt;gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f86984ba10&gt;.next_id">config = {'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytest...], 'stage': 'WM_NATURAL', 'per_source_sampling_spec': {'alpha': {'mode': 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}
+
+    def test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection(config):
+        a=VersionedStream(open_case(config,'f1'));b=VersionedStream(open_case(config,'f1'))
+        try:
+            root=a.save();next(a);abandoned=a.save()
+            a.load(root);next(a);a.load(root);a.release_snapshot(abandoned)
+            assert not a.nodes and a.next_id==3
+            state=pickle.loads(pickle.dumps(a.save_full()))
+            b.load_full(state);b.retain_snapshot(state['current'])
+&gt;           assert b.next_id==a.next_id,'COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID'
+E           AssertionError: COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID
+E           assert 1 == 3
+E            +  where 1 = &lt;gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f868fb9490&gt;.next_id
+E            +  and   3 = &lt;gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f86984ba10&gt;.next_id
+
+../../../tests/entry_v1/test_batch2_reader_versions.py:86: AssertionError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,105 @@
+{
+  "before": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+      "sha": "5119f1deb8fc17676b85454c20ce7793e190876d",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3",
+      "sha": "cbc1343971786caec979cead3025431690f1591b",
+      "status": ""
+    }
+  },
+  "after": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v3/gym-trading-env",
+      "sha": "08b5bbeb253b663da92a3c42bcccf3ab912bbf48",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v3/dreamerv3",
+      "sha": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "status": ""
+    }
+  },
+  "reused_before_results_sha256": "255761cbd569e05599bb2bd2c8783757f55cd8f0ae5ff4030d06aefca4e66555",
+  "benchmark_script_sha256": "2e26820a5aac07f083aab08d365acd5e1bbe6e92ba00d2bfed21c88205474f57",
+  "groups": [
+    [
+      "0-1",
+      [
+        [
+          "f1",
+          1000,
+          16
+        ],
+        [
+          "f1",
+          10000,
+          8
+        ],
+        [
+          "f1",
+          100000,
+          2
+        ],
+        [
+          "f1",
+          300000,
+          2
+        ],
+        [
+          "multi_f3",
+          100000,
+          2
+        ]
+      ]
+    ],
+    [
+      "2-3",
+      [
+        [
+          "f2",
+          100000,
+          2
+        ],
+        [
+          "f3",
+          100000,
+          2
+        ],
+        [
+          "multi",
+          100000,
+          2
+        ]
+      ]
+    ],
+    [
+      "4-7",
+      [
+        [
+          "f3_aux",
+          1000,
+          16
+        ],
+        [
+          "f3_aux",
+          10000,
+          8
+        ],
+        [
+          "f3_aux",
+          100000,
+          2
+        ],
+        [
+          "f3_aux",
+          300000,
+          2
+        ]
+      ]
+    ]
+  ]
+}

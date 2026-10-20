@@ -1,0 +1,55 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py::test_E01_four_vs_two_cold_two_full_exact",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/final_f2_retained_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_f2_retained.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/artifacts/batch2/f2_retained",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env",
+      "sha": "897f476880dea1c4cbd4654f85a41930bb5ea061",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 113.1141483320389,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp05_checkpoint",
+      "name": "test_E01_four_vs_two_cold_two_full_exact",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 1,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}
