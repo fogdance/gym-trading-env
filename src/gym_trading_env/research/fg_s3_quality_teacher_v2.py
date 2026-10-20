@@ -253,6 +253,8 @@ class NativeQualityTeacher:
             actual,stat=_file_identity(path)
             if actual!=expected: raise ValueError('Quality source file changed: '+name)
             self._source_stats[name]=(str(path.resolve(strict=True)),stat)
+        from gym_trading_env.utils.source_guard import FrozenSourceStats
+        self._source_guard=FrozenSourceStats(self._source_stats)
         self.source = copy.deepcopy(source)
         self.rules = rules_identity(env)
         self.market_hash = fingerprint(env._raw.to_dict(orient='split'))
@@ -282,6 +284,7 @@ class NativeQualityTeacher:
         if self.e_fork is not None:
             self.statistics['e_observation_cache'] = self.clone._e_observation_cache.statistics
             self.statistics['native_execution_cache'] = self.clone._native_execution_cache.statistics
+        self.statistics['source_guard']=self._source_guard.statistics
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
             market_hash=self.market_hash, code_sha256=digest(__file__),
             clock_protocol='S3_MARKET_MINUTE', score_policy=SCORE_POLICY,
@@ -310,12 +313,7 @@ class NativeQualityTeacher:
         prime_account_fingerprint(self.clone,initial_snapshot)
 
     def _check_source_stats(self):
-        from pathlib import Path
-        from gym_trading_env.envs.entry_market_cache import _stat_identity
-        for name,(resolved,stat) in self._source_stats.items():
-            path=Path(name)
-            if str(path.resolve(strict=True))!=resolved or _stat_identity(path)!=stat:
-                raise ValueError('Frozen quality source changed during collection: '+name)
+        self._source_guard.check()
 
     def query_state(self, env, mask, *, snapshot=None):
         if self.statistics['queries']%self.source_guard_interval==0:self._check_source_stats()

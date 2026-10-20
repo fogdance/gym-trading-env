@@ -78,3 +78,26 @@ a private native view, checks against the original complete public JSON SHA,
 and then advances real financial state and repeats exact equivalence.
 immutable_hash_01: targeted native/strict/ownership/guard tests pass; exact count
 and executed test list in terminal XML/command receipt. Measurements pending.
+
+## Guard traversal round (candidate)
+
+Immutable-hash query_immutable_hash_01: complete 107/51/39 golden labels PASS,
+19.345082460 query CPU seconds versus 47.169257388 (2.44x CPU reduction).
+Account-hash CPU 1.018993196s versus 10.076966720s, 209 calls; zero full snapshot
+copies during worker query. Worker wall remains 50.135444917s (spawn/source/Env
+initialization included), so this micro result is NOT an end-to-end wall speedup.
+shared_integration_01: 91 selected tests PASS; 8 actual optimizer-update cases
+explicitly deselected, NOT_RUN. Includes F1/F2/F3 MultiCorpus/Reader, native Replay,
+and mandatory Gate/SourceAdmission/action-mask shared files. Exact cases in XML.
+
+The restored per-query file guard still re-walked identical directory ancestors
+for every source file. FrozenSourceStats shares plain absolute ancestor checks
+before/after every query, stats EVERY source file every query, and falls back to
+the original strict resolve+stat for symlinks, relative paths or namespace changes.
+Open/batch SHA and close guards remain. Directed symlink/same-inode, parent change
+during pass, relative cwd, real file mutation and unrelated output cases pass.
+guard_traversal_02: 30 tests PASS. First receipt guard_traversal_01 is retained:
+an immediate same-size write had exactly equal stat timestamps; a direct runtime
+reproduction showed equal before/after original 5-field stat tuples. The test now
+forces a distinct mtime without sleep. Per-query metadata never claimed to replace
+batch full SHA verification. Candidate real-query measurement pending.

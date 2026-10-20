@@ -51,7 +51,10 @@ def initialize(*args):
             ('env_import',FixedDirectionEntryEnv,'import_state'),
             ('env_export',FixedDirectionEntryEnv,'export_state'),
             ('native_trace',teacher,'trace_native_trade'),('risk_facts',teacher,'trade_facts'),
+            ('source_guard',teacher.NativeQualityTeacher,'_check_source_stats'),
             ('financial_step',FixedDirectionEntryEnv,'step'),('market_equals',pd.DataFrame,'equals')]
+        if hasattr(FixedDirectionEntryEnv,'_restore_account_state'):
+            targets.append(('native_restore',FixedDirectionEntryEnv,'_restore_account_state'))
         if hasattr(AccountFingerprint, 'capture'):
             targets.append(('account_hash',AccountFingerprint,'capture'))
         try:
