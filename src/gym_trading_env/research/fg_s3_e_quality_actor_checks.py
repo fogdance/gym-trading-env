@@ -115,10 +115,10 @@ def probe(output,*,device='cpu'):
     write_json(out/'probe.json',signed(result));return result
 
 
-def read_check(config,output,*,purpose='development',producer_gym=None):
+def read_check(config,output,*,purpose='development',producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     """Fresh CPU inference; does not consume source F1/F2 parameters or train."""
     from .fg_s3_e_quality_actor import read_settings,create_agent,F3WindowAdapter,model_config
-    from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
+    from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission,require_stage_producer_pin
     from .fg_s3_e_quality_reader import build_join_index,EQualityCourseReader
     from .fg_replay import write_json,signed
     from dreamerv3.fg_s3_e_quality_actor import STAGE,read_only_forward
@@ -126,8 +126,9 @@ def read_check(config,output,*,purpose='development',producer_gym=None):
     from gym_trading_env.envs.entry_contract import fingerprint
     s=read_settings(config);out=_output(output)
     if s['device']!='cpu':raise ValueError('F3_REAL_READ_CHECK_CPU_ONLY')
+    require_stage_producer_pin(purpose,producer_lock,producer_lock_sha256)
     source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(s['corpus_root'],stage=STAGE),
-        purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+        purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=out/'native.log' if purpose=='native-verification' else None)
     index=out/'join.sqlite';joined=build_join_index(source,index)
     # This diagnostic has one Natural Reader at a time, even with an auxiliary train spec.
     diagnostic={**s,'aux_sampling_spec':None}

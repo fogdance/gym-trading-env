@@ -142,10 +142,10 @@ def probe(output,*,device='cpu'):
     result['execution_devices']=[str(x) for x in jax.devices()]
     write_json(out/'probe.json',signed(result));return result
 
-def read_check(config,output,*,purpose='development',producer_gym=None):
+def read_check(config,output,*,purpose='development',producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     """Actual TRAIN Reader/forward only. Fresh diagnostic weights, no handoff."""
     from .fg_s3_e_quality_heads import read_settings,create_agent,F2WindowAdapter
-    from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
+    from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission,require_stage_producer_pin
     from .fg_s3_e_quality_reader import build_join_index,EQualityCourseReader
     from .fg_replay import write_json,signed
     from dreamerv3.fg_s3a_actor import parameter_digests
@@ -153,8 +153,9 @@ def read_check(config,output,*,purpose='development',producer_gym=None):
     from gym_trading_env.envs.entry_contract import fingerprint
     s=read_settings(config);out=_output(output)
     if s['device']!='cpu':raise ValueError('F2_REAL_READ_CHECK_CPU_ONLY')
+    require_stage_producer_pin(purpose,producer_lock,producer_lock_sha256)
     source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(s['corpus_root'],stage='QUALITY_HEADS'),
-        purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+        purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=out/'native.log' if purpose=='native-verification' else None)
     index=out/'join.sqlite';joined=build_join_index(source,index)
     a=create_agent(s,out/'model',controlled_small=True);before=parameter_digests(a.params)
     reports={};market=set();accounts=set();coverage=None

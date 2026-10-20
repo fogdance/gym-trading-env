@@ -108,7 +108,7 @@ def cpu_probe(output):
     return result
 
 
-def read_check(config,output,*,purpose='development',producer_gym=None):
+def read_check(config,output,*,purpose='development',producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     """Finite TRAIN read-only F1 loss. G3 is optional and explicit."""
     import gzip,json,time
     from pathlib import Path
@@ -122,7 +122,7 @@ def read_check(config,output,*,purpose='development',producer_gym=None):
             (PROJECT/'docs/receipts/wp04',PROJECT/'artifacts/fg_s3_v2/e_quality_wp04')):
         raise ValueError('F1_READ_CHECK_CPU_NEW_ISOLATED_OUTPUT_REQUIRED')
     began=time.monotonic()
-    p=preflight(s,purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+    p=preflight(s,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=out/'native.log' if purpose=='native-verification' else None)
     index=out/'join.sqlite';joined=build_join_index(p.source,index)
     a=create_agent(s,out/'model',controlled_small=True)
     before=parameter_digests(a.params);policies={};candidates={}

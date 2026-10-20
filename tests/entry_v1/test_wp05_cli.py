@@ -37,10 +37,15 @@ def test_F04_read_only_route_does_not_consume_an_unrelated_F1(tmp_path):
  assert (output/'read_check.json').exists() and not (output/'run').exists() and not (output/'ckpt').exists()
 
 
-def test_F05_historical_read_smoke_rejects_old_macd_before_preparation():
+def test_F05_historical_read_smoke_rejects_v2_before_preparation():
  from gym_trading_env.research.fg_s3_e_quality_heads import read_settings
  s=read_settings(PROJECT/'configs/experiments/fg_s3_v2/e_quality_f2_read_smoke.yaml')
- with pytest.raises(ValueError,match=r'COURSE_INVALID observation\.macd_5m'):preflight(s)
+ # Fixed historical asset: V2 is rejected before inspecting its obsolete MACD.
+ from gym_trading_env.research.fg_replay import read_manifest
+ m=read_manifest(Path(s['corpus_root'])/'corpus_manifest.json')
+ assert m['protocol']=='FG_S3_E_QUALITY_CORPUS_V2'
+ assert m['content_hash']=='640865b4239fb483e5d98daf18d3104e670ff9b3c1486cb63ec9924cf6e089a9'
+ with pytest.raises(ValueError,match='SUPERVISION_CORPUS_CONTRACT'):preflight(s)
  assert not Path(s['run_dir']).exists() and not Path(s['prepared_dir']).exists()
 
 

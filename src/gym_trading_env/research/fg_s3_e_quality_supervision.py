@@ -138,6 +138,15 @@ def inspect_source(source):
     return m
 
 
+def require_stage_producer_pin(purpose, producer_lock, producer_lock_sha256):
+    """New F1/F2/F3 native routes never fall back to historical producer heads."""
+    supplied = producer_lock is not None or producer_lock_sha256 is not None
+    if supplied or purpose == 'native-verification':
+        if (producer_lock is None or not isinstance(producer_lock_sha256, str)
+                or re.fullmatch('[0-9a-f]{64}', producer_lock_sha256) is None):
+            raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
+
+
 def frozen_producer_audit(producer_gym, *, producer_lock=None, producer_lock_sha256=None):
     """Authenticate a frozen verifier, only for final native evidence.
 
