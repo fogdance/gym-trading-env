@@ -135,7 +135,7 @@ class NativeHistory(Sequence):
         return _readonly(_public_row(row))
 
     def __iter__(self):
-        return (_readonly(row) for row in self.to_public())
+        return (_readonly(row) for row in self._public_rows())
 
     def to_public(self):
         return list(self._public_rows())
@@ -166,6 +166,7 @@ class NativeAccountSnapshotView:
     cursor: int
     history: NativeHistoryVersion
     hot_json: bytes = field(repr=False)
+    _digest_cache: str | None = field(default=None, init=False, repr=False, compare=False)
 
     @classmethod
     def capture(cls, env, state, history):
@@ -190,6 +191,28 @@ class NativeAccountSnapshotView:
         state=json.loads(self.hot_json)
         state['equity_history']=NativeHistory.from_version(self.history).to_public()
         return state
+
+    def digest(self):
+        """Hash the original sorted JSON bytes; never substitute a Merkle ID.
+
+        The immutable block commitment proves ownership/version consistency.
+        This SHA still consumes every canonical history byte, in original JSON
+        order. No full row list, pickle comparison, or JSON history re-encoding.
+        """
+        if self._digest_cache is not None: return self._digest_cache
+        hot=json.loads(self.hot_json)
+        result=hashlib.sha256(b'{')
+        for number,key in enumerate(sorted((*hot, 'equity_history'))):
+            if number: result.update(b', ')
+            result.update(_encode(key)); result.update(b': ')
+            if key=='equity_history':
+                for part in self.history.json_parts(): result.update(part)
+            else: result.update(_encode(hot[key]))
+        result.update(b'}')
+        digest=result.hexdigest()
+        # This memo contains only a deterministic value of frozen bytes.
+        object.__setattr__(self,'_digest_cache',digest)
+        return digest
 
     def same_content(self, other):
         # Hot bytes preserve JSON distinctions that Python float/int/bool

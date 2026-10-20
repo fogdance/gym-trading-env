@@ -50,6 +50,10 @@ def _statistics():
         macd_sparse_checkpoints=len(getattr(market,'_macd_checkpoints',{})))
     if _strict_value_store is not None:
         result['strict_pair_cache']=_strict_value_store._pair_cached.cache_info()._asdict()
+    version=_history.version()
+    result['private_history']=dict(rows=version.count,sealed_blocks=len(version.blocks),
+        tail_rows=0 if version.tail is None else len(version.tail.rows),
+        commitment=version.commitment,public_hash='original_sorted_JSON_SHA256')
     return result
 
 

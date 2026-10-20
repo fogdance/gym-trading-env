@@ -71,7 +71,7 @@ def account_fingerprint(env,state=None):
     from .native_account import NativeAccountSnapshotView,NativeHistory
     if state is None:
         state=env._export_private_state() if isinstance(env.equity_history,NativeHistory) else env.export_state()
-    if isinstance(state,NativeAccountSnapshotView):state=state.public_state()
+    if isinstance(state,NativeAccountSnapshotView):return state.digest()
     prime_account_fingerprint(env,state)
     return _HASHERS[env].digest(state)
 

@@ -54,6 +54,12 @@ def initialize(*args):
             ('financial_step',FixedDirectionEntryEnv,'step'),('market_equals',pd.DataFrame,'equals')]
         if hasattr(AccountFingerprint, 'capture'):
             targets.append(('account_hash',AccountFingerprint,'capture'))
+        try:
+            from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+            if hasattr(NativeAccountSnapshotView, 'digest'):
+                targets.append(('account_hash',NativeAccountSnapshotView,'digest'))
+        except ImportError:
+            pass  # Profiling the fixed pre-private-history baseline is allowed.
         for name,owner,attribute in targets:
             original=getattr(owner,attribute)
             def measured(*a,_name=name,_original=original,**kw):

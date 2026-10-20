@@ -64,3 +64,17 @@ exact hot JSON bytes, not object identity/length. Account hashing still material
 and verifies every prefix in this round, before the separate immutable-hash round.
 worker_private_01: 25 targeted tests PASS; exact terminal receipts in ../artifacts.
 Real query and end-to-end measurements of this worker round: NOT_RUN yet.
+
+## Immutable exact-hash round (candidate)
+
+Private views now stream exactly the original sorted JSON history block bytes,
+including separators, signed zero, bool/int and nested JSON values. The public
+SHA is unchanged and consumes all canonical bytes; a private commitment is not
+used as a replacement identity. Memoization applies only to a frozen view. A new
+hot state or append creates a distinct view and complete hash. Public mutable
+histories retain the original full-prefix pickle comparison / fallback path.
+A regression forbids both pickle and full-history materialization while hashing
+a private native view, checks against the original complete public JSON SHA,
+and then advances real financial state and repeats exact equivalence.
+immutable_hash_01: targeted native/strict/ownership/guard tests pass; exact count
+and executed test list in terminal XML/command receipt. Measurements pending.

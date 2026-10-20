@@ -106,6 +106,33 @@ def test_sealed_history_has_exact_original_json_bytes_after_many_blocks_forks_an
     assert history.to_public()[-1]['extra'][-1]['nested'] == [2]
 
 
+def test_private_hash_is_full_public_json_sha_without_pickle_or_history_materialization(tmp_path,monkeypatch):
+    import pickle
+    factory, _, _ = native_factory(tmp_path/'market', minutes=20)
+    env, clone = factory(), factory()
+    try:
+        state=env.export_state()
+        state['equity_history']=[dict(time='中文',equity=i+.5,unrealized_pnl=-0.,
+            net_lots=0.,intrabar=False) for i in range(530)]
+        state['equity_history'].append(dict(extra=[True,1,-0.,{'nested':[2]}]))
+        env.import_state(state)
+        expected=fingerprint(state)
+        _,view=capture_account_fingerprint(env,env.export_state())
+        clone._restore_private_state(view,source_env=env)
+        def forbidden(*a,**kw):raise AssertionError('Immutable hash re-materialized full history')
+        with monkeypatch.context() as patch:
+            patch.setattr(pickle,'dumps',forbidden)
+            patch.setattr(NativeHistory,'to_public',forbidden)
+            assert view.digest()==expected
+            assert account_fingerprint(clone)==expected
+            assert view.digest()==expected
+        assert clone.export_state()==state
+        # A changed hot field or appended row must produce a new complete SHA.
+        clone.step(0)
+        assert account_fingerprint(clone)==fingerprint(clone.export_state())!=expected
+    finally:env.close();clone.close()
+
+
 def test_worker_private_replica_rejects_reorder_replays_stream_reset_and_full_sha(tmp_path):
     from gym_trading_env.research import fg_s3_quality_label_pool as pool
     from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
