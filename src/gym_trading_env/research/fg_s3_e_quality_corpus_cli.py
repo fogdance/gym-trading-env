@@ -319,7 +319,7 @@ def _verification_job(job):
         facts.close()
     try:
         receipt=reconcile_trace(job['path'],PROJECT.parent/'dreamerv3',env_factory=factory,
-            schema=E_QUALITY_SCHEMA,label_verifier=labels)
+            schema=E_QUALITY_SCHEMA,label_verifier=labels,private_history=True)
         if job.get('label_workers'):
             receipt['label_transport']=dict(labels.report_statistics())
     finally:

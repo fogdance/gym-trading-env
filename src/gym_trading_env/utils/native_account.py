@@ -128,11 +128,17 @@ class NativeHistory(Sequence):
 
     def __getitem__(self, key):
         if isinstance(key, slice): return [self[i] for i in range(*key.indices(len(self)))]
+        return _readonly(_public_row(self._row_at(key)))
+
+    def _row_at(self,key):
         if key < 0: key += len(self)
         if not 0 <= key < len(self): raise IndexError(key)
         block, offset = divmod(key, _BLOCK_ROWS)
-        row = self._blocks[block].rows[offset] if block < len(self._blocks) else self._tail[offset]
-        return _readonly(_public_row(row))
+        return self._blocks[block].rows[offset] if block < len(self._blocks) else self._tail[offset]
+
+    def public_slice(self,start):
+        if not 0<=start<=len(self):raise IndexError(start)
+        return [_public_row(self._row_at(i)) for i in range(start,len(self))]
 
     def __iter__(self):
         return (_readonly(row) for row in self._public_rows())
@@ -149,9 +155,10 @@ class NativeHistory(Sequence):
     def __delitem__(self, key): raise TypeError('Private native history is append-only')
 
 
-def native_owner(env):
+def native_owner(env,*,account_sequence=None):
     if not hasattr(env, '_native_history_owner'): env._native_history_owner = uuid.uuid4().hex
-    return env._native_history_owner
+    sequence=env.account_sequence if account_sequence is None else account_sequence
+    return env._native_history_owner+':'+str(sequence)
 
 
 def native_source(env):
@@ -171,7 +178,8 @@ class NativeAccountSnapshotView:
     @classmethod
     def capture(cls, env, state, history):
         owner, source = native_owner(env), native_source(env)
-        if history.owner != owner or history.source != source:
+        if (history.owner != owner or history.source != source
+                or state['account_sequence']!=env.account_sequence):
             raise ValueError('Private history source/owner mismatch')
         return cls(owner, source, state['current_step'], history,
                    _encode({k: v for k, v in state.items() if k != 'equity_history'}))
@@ -182,9 +190,12 @@ class NativeAccountSnapshotView:
                 or self.history.source != self.source):
             raise ValueError('Private account source/owner mismatch')
         state = json.loads(self.hot_json)
+        if state['account_sequence']!=source_env.account_sequence:
+            raise ValueError('Private account source/owner mismatch')
         if state['current_step'] != self.cursor:
             raise ValueError('Private account cursor mismatch')
-        state['equity_history'] = NativeHistory.from_version(self.history,owner=native_owner(env))
+        state['equity_history'] = NativeHistory.from_version(self.history,
+            owner=native_owner(env,account_sequence=state['account_sequence']))
         env._restore_account_state(state)
 
     def public_state(self):

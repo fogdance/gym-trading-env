@@ -60,6 +60,7 @@ def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_st
         if labeler_factory is not None:
             labels=labeler_factory(teacher.identity_hash)
             teacher.close()
+        env._enable_private_history()
         trace=collect_trace('',spec,output,dict(protocol=SCHEMA,source=source,
             teacher_identity=teacher.identity_hash,training_admitted=False),dreamer_root,
             env_factory=lambda:env,protocol=E_QUALITY_PROTOCOL,policy_factory=policy_factory,
@@ -69,7 +70,7 @@ def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_st
         # G3 process. Keep the complete local financial/observation replay,
         # without executing the same expensive L1/L2 queries a second time.
         receipt=reconcile_trace(output,dreamer_root,env_factory=factory,schema=E_QUALITY_SCHEMA,
-            label_verifier=labels if verify_labels else None)
+            label_verifier=labels if verify_labels else None,private_history=True)
         receipt['label_verification']=('ALL_ROWS_RECOMPUTED' if verify_labels else
             'DEFERRED_TO_INDEPENDENT_NATIVE_G3')
         if hasattr(labels,'report_statistics'):labels.report_statistics()

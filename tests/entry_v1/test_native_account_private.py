@@ -41,6 +41,10 @@ def test_private_restore_matches_public_ledger_reward_rng_observation_and_future
             private._restore_private_state(replace(view, source='f'*64), source_env=source)
         with pytest.raises(ValueError, match='cursor'):
             private._restore_private_state(replace(view, cursor=view.cursor+1), source_env=source)
+        import json
+        foreign_hot=json.loads(view.hot_json);foreign_hot['account_sequence']+=1
+        with pytest.raises(ValueError,match='source/owner'):
+            private._restore_private_state(replace(view,hot_json=json.dumps(foreign_hot).encode()),source_env=source)
         for _ in range(25):
             if public.truncated: public.reset(); private.reset()
             action = int(bool(public._published_mask[1]) and public.current_step % 7 == 0)
@@ -161,3 +165,33 @@ def test_worker_private_replica_rejects_reorder_replays_stream_reset_and_full_sh
             pool._query(copy.deepcopy(hot), delta, env._published_mask, 'f'*64, count)
     finally:
         pool._teacher.close(); pool._env.close(); teacher.close(); env.close()
+
+
+def test_private_driver_opt_in_survives_public_restore_chunk_and_new_account_epoch(tmp_path):
+    factory, _, _ = native_factory(tmp_path/'market', minutes=20, chunk=3)
+    public, private, clone = factory(), factory(), factory()
+    try:
+        public.reset(seed=0);private.reset(seed=0)
+        assert type(public.equity_history) is list
+        private._enable_private_history()
+        old=private._export_private_state();owner=old.owner
+        while not public.terminated:
+            if public.truncated:
+                saved=public.export_state()
+                public.reset(options={'resume':saved});private.reset(options={'resume':saved})
+                assert isinstance(private.equity_history,NativeHistory)
+                assert private.export_state()==public.export_state()==saved
+                public.reset();private.reset()  # continue the restored CHUNK_END
+            action=int(bool(public._published_mask[1]))
+            a,b=public.step(action),private.step(action)
+            assert a[1:4]==b[1:4] and public.export_state()==private.export_state()
+            assert account_fingerprint(private)==fingerprint(public.export_state())
+        public.reset();private.reset()
+        assert private._export_private_state().owner!=owner
+        assert private.export_state()==public.export_state()
+        with pytest.raises(ValueError,match='source/owner'):
+            clone._restore_private_state(old,source_env=private)
+        assert type(public.equity_history) is list
+        rows=private.equity_history.public_slice(0);rows[0]['equity']=0
+        assert private.export_state()['equity_history'][0]['equity']!=0
+    finally:public.close();private.close();clone.close()

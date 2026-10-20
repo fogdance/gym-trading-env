@@ -545,7 +545,8 @@ def collect_trace(config_path, spec, directory, identity, dreamer_root, *, env_f
         driver.close()
 
 
-def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None, label_verifier=None):
+def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA, runtime_factory=None, label_verifier=None,
+                    private_history=False):
     """Replay frozen actions through a second original Env, checking every row."""
     (runtime_factory or cpu_runtime)(dreamer_root)
     from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
@@ -561,6 +562,9 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
         if manifest['initial_state']:
             initial_state = json.loads((directory/'initial_state.json').read_text())
             raw.import_state(initial_state)
+        if private_history:raw._enable_private_history()
+    elif private_history:
+        raise ValueError('Private native history requires E Quality Replay')
     hasher, event_hash = hashlib.sha256(), hashlib.sha256()
     pending = None
     sidecar = iter(iter_sidecar(directory))

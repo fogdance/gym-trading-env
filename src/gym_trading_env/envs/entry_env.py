@@ -484,6 +484,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self._tp_info_cache = (0, 0, 0.)
         self._initialized = True
         self._sample_equity()
+        self._ensure_private_history()
         return self._get_obs(), self._get_info()
 
     def _open_entry(self, side, price, time):
@@ -803,6 +804,18 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise TypeError('Private export requires a controlled native history')
         return NativeAccountSnapshotView.capture(self,self._snapshot_fields(),self.equity_history.version())
 
+    def _enable_private_history(self):
+        """Opt in only for controlled CPU Corpus accounts, never public schema."""
+        self._private_history_enabled=True
+        self._ensure_private_history()
+
+    def _ensure_private_history(self):
+        if not getattr(self,'_private_history_enabled',False):return
+        from gym_trading_env.utils.native_account import NativeHistory,native_owner,native_source
+        if not isinstance(self.equity_history,NativeHistory):
+            self.equity_history=NativeHistory.from_public(self.equity_history,
+                owner=native_owner(self),source=native_source(self))
+
     def import_state(self, state):
         # Preserve the full independently owned JSON snapshot. Native history
         # rows already consist of JSON primitives; don't reformat every float
@@ -874,6 +887,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._get_obs()
         if self._e_profile is not None and self.e_snapshot != state['e_state']['snapshot']:
             raise ValueError('E V2 checkpoint causal snapshot differs')
+        self._ensure_private_history()
 
     def continue_data(self, df):
         """Append/backfill unprocessed data without changing already observed history."""

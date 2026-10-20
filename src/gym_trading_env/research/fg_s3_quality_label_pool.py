@@ -109,10 +109,10 @@ class NativeLabelPool:
         count = self._sent[worker]
         if len(history) < count:
             raise ValueError('Parallel account history cannot rewind within one stream')
-        delta = history[count:]
-        from gym_trading_env.envs.entry_contract import fingerprint
-        expected = row['account_snapshot_hash'] if row is not None else fingerprint(
-            dict(state,equity_history=history))
+        from gym_trading_env.utils.native_account import NativeHistory
+        delta = history.public_slice(count) if isinstance(history,NativeHistory) else history[count:]
+        from gym_trading_env.utils.account_fingerprint import account_fingerprint
+        expected = row['account_snapshot_hash'] if row is not None else account_fingerprint(env)
         future = self._pools[worker].submit(_query,state,delta,env._published_mask.copy(),expected,count)
         self._sent[worker] = len(history)
         self.statistics['queries'] += 1

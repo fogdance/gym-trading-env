@@ -101,3 +101,31 @@ an immediate same-size write had exactly equal stat timestamps; a direct runtime
 reproduction showed equal before/after original 5-field stat tuples. The test now
 forces a distinct mtime without sleep. Per-query metadata never claimed to replace
 batch full SHA verification. Candidate real-query measurement pending.
+
+## Driver/reconcile ownership round (candidate)
+
+query_guard_traversal_01: all 107/51/39 labels match, 12.960368380 CPU seconds
+(3.64x versus guard-restored baseline). Per-query source guard 0.631515876s over
+131 checks (includes explicit stream boundaries), real financial steps 4.609671972s,
+full account hash 1.006778973s and native restore 2.358753186s (inclusive metrics).
+Guard version is retained. Default six-account scheduler/process allocation is
+unchanged, per the user's earlier decision to defer scheduler redesign.
+
+short_immutable_hash_01: validate 13.857820837s, generate 188.990521860s, reader
+5.953979719s, coverage 2.104992495s; total 211.019887341s, DEV128/774 records,
+Native G3 NOT_RUN by design. Complete old pre-phase1 versus new 774-row
+financial/Teacher/array/final-account comparison PASS_FULL_NATIVE_AND_TEACHER_EQUIVALENCE
+in short_immutable_equivalence_01.json. Small E2E improvement confirms remaining
+Driver/local Reconcile complete JSON histories matter beyond worker micro CPU.
+
+Corpus accounts now explicitly opt into controlled history for Driver and native
+reconcile. General Env/default Replay still uses public mutable lists. Public
+export/import, cold chunk restore, every Replay row comparison and final account
+comparison stay intact. Append deltas are owned JSON rows; account epoch is part
+of private owner identity and cannot cross a new account. A restored public
+CHUNK_END still requires normal explicit continuation. First driver tests retained
+as driver_private_01/02: mismatched unseeded initial RNG, then a paused chunk test
+setup; corrected setup synchronizes seed and explicitly continues after exact
+cold restore. driver_private_03 passes all 6 private contract tests, with 38 other
+selected tests passing in the preceding driver_private_02 receipt. Final combined
+verification / real E2E still required on this candidate.
