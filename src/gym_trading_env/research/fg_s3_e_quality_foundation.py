@@ -205,12 +205,9 @@ class F1WindowAdapter:
         return data,metadata
 
     def sample(self):
-        state=self.reader.state_dict()
-        try:
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self.reader):
             return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))
-        except BaseException:
-            self.reader.load_state_dict(state)
-            raise
 
 
 def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, stop_at=None, producer_lock=None, producer_lock_sha256=None):
