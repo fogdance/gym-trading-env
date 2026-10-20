@@ -471,6 +471,9 @@ def verify_corpus(path,*,workers=None):
         raise ValueError('Unknown Corpus or forged training admission')
     if m.get('execution_mode','data')!='data':
         raise ValueError('DEV_CORPUS_NOT_CERTIFIED: generate a new DATA version for native admission')
+    guard_interval=m.get('source_binding',{}).get('source_guard_interval',1)
+    if type(guard_interval) is not int or guard_interval!=1:
+        raise ValueError('Native G3 requires per-query frozen source monitoring')
     _inventory(path,m)
     if _code_lock()['files']!=m['code']['files']:
         raise ValueError('Corpus runtime code inventory differs')

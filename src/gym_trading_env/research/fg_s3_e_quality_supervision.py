@@ -186,6 +186,10 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     opening the development reader. Old absolute identities remain historical
     evidence; the new reader binds relative corpus content instead.
     """
+    manifest=read_manifest(source.corpus_root/'corpus_manifest.json')
+    guard_interval=manifest.get('source_binding',{}).get('source_guard_interval',1)
+    if type(guard_interval) is not int or guard_interval!=1:
+        raise ValueError('SUPERVISION_PER_QUERY_SOURCE_GUARD_REQUIRED')
     producer_gym = _local_path(producer_gym)
     pin=dict(producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     producer_audit=frozen_producer_audit(producer_gym,**pin)

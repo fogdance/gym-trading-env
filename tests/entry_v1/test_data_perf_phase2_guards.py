@@ -12,6 +12,21 @@ from wp02_fixture import native_factory
 from wp03_fixture import ROOT, metadata_corpus, inventory
 
 
+def test_native_admission_rejects_block_source_monitoring_before_verifier_launch(tmp_path):
+    root=metadata_corpus(tmp_path/'corpus')
+    manifest=read_manifest(root/'corpus_manifest.json')
+    manifest['source_binding']=dict(source_guard_interval=1024)
+    inventory(root,manifest)
+    source=supervision.SupervisionSource.from_corpus(root)
+    # Content may be inspected for diagnosis; it cannot become DATA ready.
+    assert supervision.QualitySupervisionAdmission.preflight(source).receipt['training_admitted'] is False
+    log=tmp_path/'not_launched.log'
+    with pytest.raises(ValueError,match='PER_QUERY_SOURCE_GUARD_REQUIRED'):
+        supervision.QualitySupervisionAdmission.preflight(source,purpose='native-verification',
+            producer_gym=ROOT,log_path=log)
+    assert not log.exists()
+
+
 @pytest.mark.parametrize('attack', ['none', 'missing', 'partial', 'failed', 'foreign_trace'])
 def test_native_receipt_requires_every_label_of_every_authenticated_trace(tmp_path, monkeypatch, attack):
     root = metadata_corpus(tmp_path/'corpus')

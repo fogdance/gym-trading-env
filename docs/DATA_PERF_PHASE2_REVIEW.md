@@ -129,3 +129,16 @@ setup; corrected setup synchronizes seed and explicitly continues after exact
 cold restore. driver_private_03 passes all 6 private contract tests, with 38 other
 selected tests passing in the preceding driver_private_02 receipt. Final combined
 verification / real E2E still required on this candidate.
+
+## Audit closure
+
+final_contracts_01 passes the complete selected native ownership/transport/strict/
+source guard/admission/MACD suites after the Driver implementation. Exact counts
+and cases are in terminal XML, no skip or optimizer calls. DATA native verification
+also explicitly rejects block source monitoring (interval != 1) before launching
+a frozen verifier; generic development Teacher diagnostics retain their explicit
+block/close option. The current Producer always emits interval 1. This closes the
+review's formal-guard risk; historical Corpus may still be inspected read-only
+for development without promoting its certification.
+Phase 1 audit is closed. Continue phase-2 E2E measurement and final independent
+real native G3/Reader evidence, without expanding audit scope.
