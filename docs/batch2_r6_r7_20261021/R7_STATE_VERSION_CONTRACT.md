@@ -24,4 +24,4 @@ Validate graph schema and full digest, node/link digests, cross-member envelope,
 
 ## Release gates
 
-The full graph must pass new-process 0/1/2/4-pending restore and fault injection. Otherwise withdraw graph opt-in and retain the verified local transactions only. Legacy/non-S3 Prefetch remains on its original format. Large seeded historical coverage is DEV_ONLY pressure, separately reported from legal synthetic Corpus evidence.
+The full graph must pass 0/1/2/4-pending restore, new-process cold restore and fault injection. Otherwise withdraw graph opt-in and retain the verified local transactions only. A versioned Prefetch must be unstarted and have an empty queue before load or load_full; reloading over restored pending batches would mix distinct sampling frontiers and is rejected before mutation. Legacy/non-S3 Prefetch remains on its original format. Large seeded historical coverage is DEV_ONLY pressure, separately reported from legal synthetic Corpus evidence.

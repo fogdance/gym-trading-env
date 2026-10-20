@@ -61,6 +61,20 @@ def test_one_reader_cannot_belong_to_two_active_version_graphs(config):
     finally:owner.close()
 
 
+def test_hot_restore_cannot_rewind_a_prefetch_with_restored_pending_batches(config):
+    a=VersionedStream(open_case(config,'f1'));b=VersionedStream(open_case(config,'f1'))
+    pa=embodied.streams.Prefetch(a,amount=2);pb=embodied.streams.Prefetch(b,amount=2)
+    try:
+        iter(pa);wait_pending(pa);pb.load_full(pa.save_full())
+        before=pb.save_full()
+        with pytest.raises(ValueError,match='pending'):
+            pb.load(pb.state)
+        with pytest.raises(ValueError,match='pending'):
+            pb.load_full(before)
+        exact(before,pb.save_full())
+    finally:a.close();b.close()
+
+
 @pytest.mark.parametrize('attack',['missing_delta','digest','duplicate_version','wrong_source','wrong_role','missing_parent','pending_order','wrong_capacity','foreign_ref','batch_bytes'])
 def test_graph_and_pending_corruption_reject_before_source_mutation(config,attack):
     a=VersionedStream(open_case(config,'multi_f3'));b=VersionedStream(open_case(config,'multi_f3'))
