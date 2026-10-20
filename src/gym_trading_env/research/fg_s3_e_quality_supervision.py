@@ -115,7 +115,6 @@ def inspect_source(source):
     spec = course.validate_course_spec(json.loads((root / 'course_v2.json').read_text()))
     if spec['spec_mode'] != 'formal':
         raise ValueError('SUPERVISION_REQUIRES_FORMAL_CORPUS_CONTRACT')
-    native_contracts(spec)  # Structural/native contract and unchanged public Guard.
     if (lock.get('fold') != 'TRAIN' or lock['content_hash'] != source.source_lock_hash
             or lock['row'].get('role') != 'train'
             or lock['row'].get('eligible_for_training') is not True
@@ -133,6 +132,9 @@ def inspect_source(source):
             or teacher.get('gamma_rational') != [332, 333]
             or teacher.get('reward_schema') != spec['reward']['schema']):
         raise ValueError('SUPERVISION_CONTRACT_IDENTITY_MISMATCH')
+    from .fg_s3_corpus_compatibility import CorpusCompatibility
+    compatibility = CorpusCompatibility.resolve(m, spec, teacher, model)
+    native_contracts(spec, course_abi=compatibility)
     return m
 
 
@@ -247,6 +249,11 @@ class QualitySupervisionAdmission:
         if purpose not in ('development', 'native-verification'):
             raise ValueError('SUPERVISION_EXPLICIT_PURPOSE_REQUIRED')
         m = inspect_source(source)
+        from .fg_s3_corpus_compatibility import CorpusCompatibility
+        compatibility = CorpusCompatibility.resolve(m,
+            course.validate_course_spec(json.loads((source.corpus_root/'course_v2.json').read_text())),
+            read_manifest(source.corpus_root/'teacher_manifest.json'),
+            read_manifest(source.corpus_root/'model_contract.json'))
         native = None
         if purpose == 'native-verification':
             if m.get('execution_mode','data')=='dev':
@@ -272,7 +279,8 @@ class QualitySupervisionAdmission:
             blockers=['E_QUALITY_FORMAL_TRAIN_GUARD_CLOSED'] +
                 ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']) +
                 (['DEV_CORPUS_NOT_CERTIFIED'] if m.get('execution_mode')=='dev' else []),
-            historical_producer=m.get('code', {}).get('repositories', {})))
+            historical_producer=m.get('code', {}).get('repositories', {}),
+            compatibility=compatibility.as_dict()))
         return Admission(source, receipt, native)
 
 

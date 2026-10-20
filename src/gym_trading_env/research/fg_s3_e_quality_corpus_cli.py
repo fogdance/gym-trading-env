@@ -423,7 +423,8 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         decoder_keys=['market_seq_e_shared','position_state'],horizon=333,clock='S3_MARKET_MINUTE',
         initialization='FRESH_PARAMETERS_ONLY',legacy_migration=False)
     write_json(out/'model_contract.json',signed(model_contract))
-    manifest=signed(dict(protocol=SCHEMA,fold='TRAIN',execution_mode=mode,
+    from .fg_s3_corpus_compatibility import COURSE_ABI_VERSION
+    manifest=signed(dict(protocol=SCHEMA,course_abi_version=COURSE_ABI_VERSION,fold='TRAIN',execution_mode=mode,
         status='DEV_ONLY_NOT_CERTIFIED' if mode=='dev' else 'CORPUS_PRODUCED',
         certification='NOT_CERTIFIED' if mode=='dev' else 'INDEPENDENT_NATIVE_G3_REQUIRED',
         verification_state='COLLECTED_UNVERIFIED',
