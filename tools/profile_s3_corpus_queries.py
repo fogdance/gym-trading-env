@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import multiprocessing
+import os
 from pathlib import Path
 import pstats
 import subprocess
@@ -34,11 +35,24 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def initialize(*args):
+def initialize(row,profile,initial,source,strict,identity,timing_only,initialization_directory=None,market_seed=None):
     from gym_trading_env.research.fg_s3_quality_label_pool import _initialize
-    _initialize(*args[:-1])
+    initialization=cProfile.Profile() if initialization_directory is not None else None
+    cpu_started=time.thread_time();wall_started=time.perf_counter()
+    if initialization is not None:initialization.enable()
+    try:
+        if market_seed is None:_initialize(row,profile,initial,source,strict,identity)
+        else:_initialize(row,profile,initial,source,strict,identity,market_seed=market_seed)
+    finally:
+        if initialization is not None:
+            initialization.disable()
+            prefix=Path(initialization_directory)/f'INITIALIZATION_{os.getpid()}'
+            initialization.dump_stats(str(prefix)+'.pstats')
+            write(str(prefix)+'.json',dict(pid=os.getpid(),cpu_seconds=time.thread_time()-cpu_started,
+                wall_seconds=time.perf_counter()-wall_started,
+                evidence='cProfile initialization only; overhead is not production wall timing'))
     global _timing_only, _timings
-    _timing_only=args[-1]; _timings={}
+    _timing_only=timing_only; _timings={}
     if _timing_only:
         from gym_trading_env.utils import snapshot_json
         from gym_trading_env.utils.account_fingerprint import AccountFingerprint
@@ -99,12 +113,18 @@ def profile_job(job):
                    for layer in ('L1', 'L2'))
         if canonical(label) != canonical(query[-1]):
             raise ValueError('Profiled native query differs from original complete teacher label')
+        if (label['account_snapshot_hash']!=query[3]
+                or facts.get('final_state_hash')!=query[-1]['L1'].get('final_state_hash')):
+            raise ValueError('Native complete public root/clone SHA differs from fixed-profile golden account')
     from gym_trading_env.research import fg_s3_quality_label_pool as pool
     pool._teacher._check_source_stats()
     return dict(policy=job['policy'], queries=len(labels),
         native_trades=sum(x['L1']['immediate_outcome_verified'] for x in labels),
         strict_valid=sum(x['L2']['teacher_valid'] for x in labels),
         labels='EXACT_SEMANTIC_COMPARISON', seconds=time.perf_counter()-started,
+        root_and_clone_public_sha='EXACT_FIXED_PROFILE_GOLDEN',
+        clone_hashes=[dict(root=label['account_snapshot_hash'],final=label['L1']['final_state_hash'])
+            for label in labels if label['L1']['immediate_outcome_verified']],
         profile_path=None if _timing_only else job['profile_path'],query_cpu_seconds=query_cpu,
         function_cpu={k:dict(v) for k,v in _timings.items()})
 
@@ -124,7 +144,8 @@ def select_rows(rows, count):
     return sorted(selected)
 
 
-def run(corpus, output, workers, queries_per_policy, timing_only=False):
+def run(corpus, output, workers, queries_per_policy, timing_only=False,profile_initialization=False):
+    tool_sha=sha(__file__)
     from gym_trading_env.research import fg_s3_e_quality_corpus_cli as cli
     from gym_trading_env.research.fg_replay import (
         read_manifest, iter_sidecar, execute_observed, check_files)
@@ -156,6 +177,8 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False):
     from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
     prototype=NativeQualityTeacher(env, factory, fold='TRAIN', source=source)
     identity=prototype.identity_hash; prototype.close();env.close()
+    market_cache=getattr(factory,'_market_cache',None)
+    market_seed=None if market_cache is None else market_cache.export_seed()
     jobs=[]; restores=0
     for name in manifest['behaviors']:
         rows=list(iter_sidecar(corpus/'policies'/name))
@@ -196,7 +219,8 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False):
     try:
         with ProcessPoolExecutor(max_workers=process_count,
                 mp_context=multiprocessing.get_context('spawn'), initializer=initialize,
-                initargs=(row,profile,initial,source,strict,identity,timing_only)) as executor:
+                initargs=(row,profile,initial,source,strict,identity,timing_only,
+                    str(output) if profile_initialization else None,market_seed)) as executor:
             futures=[executor.submit(profile_job, job) for job in jobs]
             results=[future.result() for future in as_completed(futures)]
     finally:strict._value_store.close()
@@ -212,7 +236,16 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False):
         for key,value in job['function_cpu'].items():
             item=totals.setdefault(key,dict(calls=0,cpu_seconds=0.))
             item['calls']+=value['calls'];item['cpu_seconds']+=value['cpu_seconds']
+    initialization_records=[];initialization_entries=[]
+    if profile_initialization:
+        initialization_records=[json.loads(p.read_text()) for p in output.glob('INITIALIZATION_*.json')]
+        stats=pstats.Stats(*[str(p) for p in output.glob('INITIALIZATION_*.pstats')])
+        for (file,line,function),(primitive,calls,self_time,cumulative,_) in stats.stats.items():
+            initialization_entries.append(dict(file=file,line=line,function=function,calls=calls,
+                self_seconds=self_time,cumulative_seconds=cumulative))
     report=dict(protocol='FG_S3_DATA_PERF_NATIVE_QUERY_PROFILE_V1',status='PASS_PROFILE_ONLY',
+        diagnostic_tool=dict(path=str(Path(__file__).resolve()),sha256=tool_sha,
+                             unchanged=tool_sha==sha(__file__)),
         created_utc=datetime.now(timezone.utc).isoformat(),corpus=str(corpus),
         corpus_identity=manifest['content_hash'],runtime=code['repositories'] if 'repositories' in code else code.get('repos'),
         code_sha256=code['files'],source_unchanged=True,workers=process_count,
@@ -221,6 +254,10 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False):
         profiled_worker_wall_seconds=time.perf_counter()-began,
         profile_self_seconds=sum(x['self_seconds'] for x in entries),
         query_cpu_seconds=sum(x['query_cpu_seconds'] for x in results),
+        root_and_clone_public_sha='EXACT_FIXED_PROFILE_GOLDEN',
+        initialization_profile=dict(workers=initialization_records,
+            top_self=sorted(initialization_entries,key=lambda x:x['self_seconds'],reverse=True)[:50],
+            top_cumulative=sorted(initialization_entries,key=lambda x:x['cumulative_seconds'],reverse=True)[:50]),
         timing_only=timing_only,function_cpu=totals,
         timing_notes='Function CPU times are inclusive/nested; do not sum them as disjoint shares',
         top_self=sorted(entries,key=lambda x:x['self_seconds'],reverse=True)[:40],
@@ -230,6 +267,8 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False):
         profile_overhead=('Outer function thread CPU clocks only; no per-row tracing' if timing_only else
             'cProfile instrumentation; not an end-to-end speed measurement'))
     write(output/'QUERY_PROFILE.json',report)
+    if not report['diagnostic_tool']['unchanged']:
+        raise ValueError('Diagnostic tool changed while queries were running')
     print(json.dumps({k:report[k] for k in ('status','queries','native_trades','strict_valid','workers','actual_account_restores','profile_self_seconds')}))
 
 
@@ -239,6 +278,8 @@ if __name__=='__main__':
     parser.add_argument('--workers',type=int,default=20)
     parser.add_argument('--queries-per-policy',type=int,default=16)
     parser.add_argument('--timing-only',action='store_true')
+    parser.add_argument('--profile-initialization',action='store_true',
+                        help='Profile cold worker initialization separately from timed queries')
     args=parser.parse_args()
     if args.queries_per_policy<4:parser.error('At least four representative queries per policy required')
-    run(args.corpus,args.out,args.workers,args.queries_per_policy,args.timing_only)
+    run(args.corpus,args.out,args.workers,args.queries_per_policy,args.timing_only,args.profile_initialization)

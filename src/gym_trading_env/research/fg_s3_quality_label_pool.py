@@ -10,12 +10,13 @@ import multiprocessing
 import numpy as np
 
 
-def _initialize(row, profile, initial, source, strict, teacher_identity):
+def _initialize(row, profile, initial, source, strict, teacher_identity,market_seed=None):
     from .fg_s3_e_quality_corpus_cli import _factory
     from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
     from .fg_s3_e_quality_corpus import l1_labeler
-    global _env, _teacher, _label, _history, _initial_history, _strict_value_store
-    factory = _factory(row, profile)
+    global _env, _teacher, _label, _history, _initial_history, _strict_value_store, _market_cache
+    factory = _factory(row, profile,market_seed=market_seed)
+    _market_cache=factory._market_cache
     _env = factory()
     _env.import_state(initial)
     _teacher = NativeQualityTeacher(_env, factory, fold='TRAIN', source=source)
@@ -48,6 +49,7 @@ def _statistics():
         system_cpu_seconds=usage.ru_stime,peak_rss_bytes=usage.ru_maxrss*1024,
         macd_cached_rows=len(getattr(market,'_macd_cache',{})),
         macd_sparse_checkpoints=len(getattr(market,'_macd_checkpoints',{})))
+    result['market_cache']=dict(hits=_market_cache.hits,misses=_market_cache.misses)
     if _strict_value_store is not None:
         result['strict_pair_cache']=_strict_value_store._pair_cached.cache_info()._asdict()
     version=_history.version()
@@ -78,18 +80,19 @@ def _query(state, delta, mask, expected_snapshot_hash, base_count):
 
 
 class NativeLabelPool:
-    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers):
+    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers,*,market_seed=None):
         if type(workers) is not int or workers < 1:
             raise ValueError('Positive native label worker count required')
         self._history = initial['equity_history']
         self.queue_depth = 2*workers
         self._pools = [ProcessPoolExecutor(max_workers=1,
             mp_context=multiprocessing.get_context('spawn'), initializer=_initialize,
-            initargs=(row, profile, initial, source, strict, teacher_identity)) for _ in range(workers)]
+            initargs=(row, profile, initial, source, strict, teacher_identity,market_seed)) for _ in range(workers)]
         self._sent = [len(self._history)]*workers
         self._closed = False
         self.statistics = dict(queries=0,delta_history_items=0,full_history_items=0,
-                               history_replicas=workers)
+                               history_replicas=workers,
+                               market_seed_bytes=0 if market_seed is None else len(market_seed.payload))
 
     def report_statistics(self):
         # One aggregate per worker after all ordered queries; no per-minute

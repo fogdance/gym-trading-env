@@ -40,6 +40,13 @@ SINGLE3_PROTOCOL = "fg_single3_v1"
 SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
 
 
+def _e_market_features(frame, schedule):
+    """Keep the original visible-prefix calculator importable by spawn."""
+    from gym_trading_env.utils.market_features import build_market_features
+    return build_market_features(frame, is_future=True, real_futures_clock=True,
+                                 futures_schedule=schedule)
+
+
 class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
@@ -255,8 +262,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             # the same original feature builder on the visible prefix only.
             self._e_market = MarketData.from_env(raw,self._e_schedule,
                 feature_frame,self.market_clock_counter,bobs,
-                feature_function=lambda frame,schedule: build_market_features(
-                    frame,is_future=True,real_futures_clock=True,futures_schedule=schedule),
+                feature_function=_e_market_features,
                 market_clock_class=MarketClock,tz_normalizer=ensure_feature_tz_index,
                 ohlc_normalizer=normalize_ohlcvi)
         # Existing DB contains zero-duration metadata rows: mark-only, never fills.
