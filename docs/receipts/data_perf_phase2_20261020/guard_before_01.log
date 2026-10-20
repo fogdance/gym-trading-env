@@ -1,0 +1,167 @@
+.FFFF                                                                    [100%]
+=================================== FAILURES ===================================
+_ test_native_receipt_requires_every_label_of_every_authenticated_trace[missing] _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-671/test_native_receipt_requires_e1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b7590951d50>
+attack = 'missing'
+
+    @pytest.mark.parametrize('attack', ['none', 'missing', 'partial', 'failed', 'foreign_trace'])
+    def test_native_receipt_requires_every_label_of_every_authenticated_trace(tmp_path, monkeypatch, attack):
+        root = metadata_corpus(tmp_path/'corpus')
+        receipts = []
+        for number, policy in enumerate(supervision.POLICIES):
+            trace_path = root/'policies'/policy/'manifest.json'
+            trace = read_manifest(trace_path)
+            trace.pop('content_hash')
+            trace.update(records=number+1, replay_trace_hash=str(number+1)*64)
+            write_json(trace_path, signed(trace))
+            receipts.append(dict(status='PASS', records=number+1,
+                teacher_labels_verified=number+1, replay_trace_hash=trace['replay_trace_hash']))
+        inventory(root, read_manifest(root/'corpus_manifest.json'))
+        source = supervision.SupervisionSource.from_corpus(root)
+        result = dict(status='PASS', G3='GO', training_admitted=False,
+            verification_state='NATIVE_G3_VERIFIED', corpus_identity=source.corpus_content_hash,
+            native_replay=receipts)
+        if attack == 'missing': result.pop('native_replay')
+        if attack == 'partial': receipts[3]['teacher_labels_verified'] -= 1
+        if attack == 'failed': receipts[3]['status'] = 'FAIL'
+        if attack == 'foreign_trace': receipts[3]['replay_trace_hash'] = 'f'*64
+        monkeypatch.setattr(supervision, 'frozen_producer_audit', lambda *a, **kw: {'synthetic': True})
+        def run(argv, **kwargs):
+            kwargs['stdout'].write(json.dumps(result)+'\n')
+            return SimpleNamespace(returncode=0)
+        monkeypatch.setattr(supervision.subprocess, 'run', run)
+        if attack == 'none':
+            assert supervision.native_verification(source, producer_gym=ROOT,
+                log_path=tmp_path/'receipt.log')['result'] == result
+        else:
+>           with pytest.raises(ValueError, match='INCOMPLETE_LABEL_VERIFICATION'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_data_perf_phase2_guards.py:45: Failed
+_ test_native_receipt_requires_every_label_of_every_authenticated_trace[partial] _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-671/test_native_receipt_requires_e2')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b7590943410>
+attack = 'partial'
+
+    @pytest.mark.parametrize('attack', ['none', 'missing', 'partial', 'failed', 'foreign_trace'])
+    def test_native_receipt_requires_every_label_of_every_authenticated_trace(tmp_path, monkeypatch, attack):
+        root = metadata_corpus(tmp_path/'corpus')
+        receipts = []
+        for number, policy in enumerate(supervision.POLICIES):
+            trace_path = root/'policies'/policy/'manifest.json'
+            trace = read_manifest(trace_path)
+            trace.pop('content_hash')
+            trace.update(records=number+1, replay_trace_hash=str(number+1)*64)
+            write_json(trace_path, signed(trace))
+            receipts.append(dict(status='PASS', records=number+1,
+                teacher_labels_verified=number+1, replay_trace_hash=trace['replay_trace_hash']))
+        inventory(root, read_manifest(root/'corpus_manifest.json'))
+        source = supervision.SupervisionSource.from_corpus(root)
+        result = dict(status='PASS', G3='GO', training_admitted=False,
+            verification_state='NATIVE_G3_VERIFIED', corpus_identity=source.corpus_content_hash,
+            native_replay=receipts)
+        if attack == 'missing': result.pop('native_replay')
+        if attack == 'partial': receipts[3]['teacher_labels_verified'] -= 1
+        if attack == 'failed': receipts[3]['status'] = 'FAIL'
+        if attack == 'foreign_trace': receipts[3]['replay_trace_hash'] = 'f'*64
+        monkeypatch.setattr(supervision, 'frozen_producer_audit', lambda *a, **kw: {'synthetic': True})
+        def run(argv, **kwargs):
+            kwargs['stdout'].write(json.dumps(result)+'\n')
+            return SimpleNamespace(returncode=0)
+        monkeypatch.setattr(supervision.subprocess, 'run', run)
+        if attack == 'none':
+            assert supervision.native_verification(source, producer_gym=ROOT,
+                log_path=tmp_path/'receipt.log')['result'] == result
+        else:
+>           with pytest.raises(ValueError, match='INCOMPLETE_LABEL_VERIFICATION'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_data_perf_phase2_guards.py:45: Failed
+_ test_native_receipt_requires_every_label_of_every_authenticated_trace[failed] _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-671/test_native_receipt_requires_e3')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b7596e37550>
+attack = 'failed'
+
+    @pytest.mark.parametrize('attack', ['none', 'missing', 'partial', 'failed', 'foreign_trace'])
+    def test_native_receipt_requires_every_label_of_every_authenticated_trace(tmp_path, monkeypatch, attack):
+        root = metadata_corpus(tmp_path/'corpus')
+        receipts = []
+        for number, policy in enumerate(supervision.POLICIES):
+            trace_path = root/'policies'/policy/'manifest.json'
+            trace = read_manifest(trace_path)
+            trace.pop('content_hash')
+            trace.update(records=number+1, replay_trace_hash=str(number+1)*64)
+            write_json(trace_path, signed(trace))
+            receipts.append(dict(status='PASS', records=number+1,
+                teacher_labels_verified=number+1, replay_trace_hash=trace['replay_trace_hash']))
+        inventory(root, read_manifest(root/'corpus_manifest.json'))
+        source = supervision.SupervisionSource.from_corpus(root)
+        result = dict(status='PASS', G3='GO', training_admitted=False,
+            verification_state='NATIVE_G3_VERIFIED', corpus_identity=source.corpus_content_hash,
+            native_replay=receipts)
+        if attack == 'missing': result.pop('native_replay')
+        if attack == 'partial': receipts[3]['teacher_labels_verified'] -= 1
+        if attack == 'failed': receipts[3]['status'] = 'FAIL'
+        if attack == 'foreign_trace': receipts[3]['replay_trace_hash'] = 'f'*64
+        monkeypatch.setattr(supervision, 'frozen_producer_audit', lambda *a, **kw: {'synthetic': True})
+        def run(argv, **kwargs):
+            kwargs['stdout'].write(json.dumps(result)+'\n')
+            return SimpleNamespace(returncode=0)
+        monkeypatch.setattr(supervision.subprocess, 'run', run)
+        if attack == 'none':
+            assert supervision.native_verification(source, producer_gym=ROOT,
+                log_path=tmp_path/'receipt.log')['result'] == result
+        else:
+>           with pytest.raises(ValueError, match='INCOMPLETE_LABEL_VERIFICATION'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_data_perf_phase2_guards.py:45: Failed
+_ test_native_receipt_requires_every_label_of_every_authenticated_trace[foreign_trace] _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-671/test_native_receipt_requires_e4')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7b7596e216d0>
+attack = 'foreign_trace'
+
+    @pytest.mark.parametrize('attack', ['none', 'missing', 'partial', 'failed', 'foreign_trace'])
+    def test_native_receipt_requires_every_label_of_every_authenticated_trace(tmp_path, monkeypatch, attack):
+        root = metadata_corpus(tmp_path/'corpus')
+        receipts = []
+        for number, policy in enumerate(supervision.POLICIES):
+            trace_path = root/'policies'/policy/'manifest.json'
+            trace = read_manifest(trace_path)
+            trace.pop('content_hash')
+            trace.update(records=number+1, replay_trace_hash=str(number+1)*64)
+            write_json(trace_path, signed(trace))
+            receipts.append(dict(status='PASS', records=number+1,
+                teacher_labels_verified=number+1, replay_trace_hash=trace['replay_trace_hash']))
+        inventory(root, read_manifest(root/'corpus_manifest.json'))
+        source = supervision.SupervisionSource.from_corpus(root)
+        result = dict(status='PASS', G3='GO', training_admitted=False,
+            verification_state='NATIVE_G3_VERIFIED', corpus_identity=source.corpus_content_hash,
+            native_replay=receipts)
+        if attack == 'missing': result.pop('native_replay')
+        if attack == 'partial': receipts[3]['teacher_labels_verified'] -= 1
+        if attack == 'failed': receipts[3]['status'] = 'FAIL'
+        if attack == 'foreign_trace': receipts[3]['replay_trace_hash'] = 'f'*64
+        monkeypatch.setattr(supervision, 'frozen_producer_audit', lambda *a, **kw: {'synthetic': True})
+        def run(argv, **kwargs):
+            kwargs['stdout'].write(json.dumps(result)+'\n')
+            return SimpleNamespace(returncode=0)
+        monkeypatch.setattr(supervision.subprocess, 'run', run)
+        if attack == 'none':
+            assert supervision.native_verification(source, producer_gym=ROOT,
+                log_path=tmp_path/'receipt.log')['result'] == result
+        else:
+>           with pytest.raises(ValueError, match='INCOMPLETE_LABEL_VERIFICATION'):
+E           Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_data_perf_phase2_guards.py:45: Failed
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_data_perf_phase2_guards.py::test_native_receipt_requires_every_label_of_every_authenticated_trace[missing]
+FAILED tests/entry_v1/test_data_perf_phase2_guards.py::test_native_receipt_requires_every_label_of_every_authenticated_trace[partial]
+FAILED tests/entry_v1/test_data_perf_phase2_guards.py::test_native_receipt_requires_every_label_of_every_authenticated_trace[failed]
+FAILED tests/entry_v1/test_data_perf_phase2_guards.py::test_native_receipt_requires_every_label_of_every_authenticated_trace[foreign_trace]
