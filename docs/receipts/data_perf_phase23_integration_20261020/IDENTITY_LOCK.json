@@ -1,0 +1,9 @@
+{
+  "protocol": "FG_S3_DATA_PERF_PHASE23_INTEGRATION_LOCK_V1",
+  "files": {
+    "integration_merge_01.json": "3130599d08c6c5a7dbfe370e0d95b3ff62c3cd4146021683572940900746591f",
+    "integration_smoke_01.command.json": "ee2a39e0fdc6b38271c0f4c5b35fff6a0600a689e5a57a0ecedd7e2fa3bd32bb",
+    "integration_smoke_01.log": "cfc14fd2dc11c362cccf5421245ca5ab0e9d286b54a604a80bd2dd5522f6feb9",
+    "integration_smoke_01.xml": "54eeb357656eb1ef73e945b8c214d0c6f1f09fe6cbb25f6c0a75bb6772dd69e4"
+  }
+}
