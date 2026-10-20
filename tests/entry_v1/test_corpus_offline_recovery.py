@@ -1,6 +1,8 @@
 """Actual offline Run assembly with a non-neural Agent; no optimizer updates."""
 import importlib
 import json
+import hashlib
+import pickle
 import shutil
 from pathlib import Path
 
@@ -10,6 +12,7 @@ import pytest
 from gym_trading_env.research.fg_s3_e_quality_supervision import QualitySupervisionAdmission, SupervisionSource
 from gym_trading_env.research.fg_s3_e_quality_reader import build_join_index
 from embodied.run.fg_checkpoint import validate_bundle
+from gym_trading_env.research.fg_replay import read_manifest, signed, write_json
 
 
 class Agent:
@@ -61,14 +64,37 @@ def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeyp
     row=dict(local_update=1,agent_update=1)
     if stage!='f1':row['consumed_batches']=1
     (run.root/'updates.jsonl').write_text(json.dumps(row)+'\n');run.cp.save()
-    clone=tmp_path/'broken';shutil.copytree(run.root,clone)
-    (clone/'ckpt/step_000000000001/done').unlink()
-    before={str(p):p.read_bytes() for p in clone.rglob('*') if p.is_file()}
+    cold=tmp_path/'cold';shutil.copytree(run.root,cold)
+    with (cold/'updates.jsonl').open('ab') as f:f.write(b'uncommitted crash tail\n')
+    restored=cls(prep,index,cold,resume=True,_probe=permit)
+    assert int(restored.step)==restored.agent.n_updates==1
+    assert (cold/'updates.jsonl').read_bytes()==(run.root/'updates.jsonl').read_bytes()
+    assert any(p.read_bytes().endswith(b'uncommitted crash tail\n') for p in (cold/'recovery_logs').iterdir())
+    restored.source.close()
     def forbidden(*a,**k):raise AssertionError('invalid latest constructed an Agent')
     monkeypatch.setattr(owner,'create_agent',forbidden)
     if stage!='f3':monkeypatch.setattr(runtime,'create_agent',forbidden)
     try:
-        with pytest.raises(ValueError,match='Incomplete FG full checkpoint'):
-            cls(prep,index,clone,resume=True,_probe=permit)
-        assert before=={str(p):p.read_bytes() for p in clone.rglob('*') if p.is_file()}
+        for attack in ('missing_done','backend','strict_flag','log_prefix','log_position','legacy_identity'):
+            clone=tmp_path/attack;shutil.copytree(run.root,clone)
+            node=clone/'ckpt/step_000000000001';meta_path=node/'manifest.json'
+            if attack=='missing_done':(node/'done').unlink()
+            elif attack in ('backend','strict_flag'):
+                meta=json.loads(meta_path.read_text())
+                if attack=='backend':meta['backend']='native_replay'
+                else:meta['strict_latest']=False
+                meta_path.write_text(json.dumps(meta))
+            elif attack=='log_prefix':(clone/'updates.jsonl').write_bytes(b'CHANGED\n')
+            elif attack=='log_position':
+                state=pickle.loads((node/'logs.pkl').read_bytes())
+                state['updates.jsonl']=dict(bytes=0,lines=0,sha256=hashlib.sha256(b'').hexdigest())
+                raw=pickle.dumps(state);(node/'logs.pkl').write_bytes(raw)
+                meta=json.loads(meta_path.read_text());meta['files']['logs.pkl']=hashlib.sha256(raw).hexdigest()
+                meta_path.write_text(json.dumps(meta))
+            else:
+                path=clone/'run_identity.json';obj=read_manifest(path);obj.pop('content_hash')
+                obj['identity']['recovery_policy']='LEGACY_UNREVIEWED';write_json(path,signed(obj))
+            before={str(p):p.read_bytes() for p in clone.rglob('*') if p.is_file()}
+            with pytest.raises(ValueError):cls(prep,index,clone,resume=True,_probe=permit)
+            assert before=={str(p):p.read_bytes() for p in clone.rglob('*') if p.is_file()}
     finally:run.source.close()
