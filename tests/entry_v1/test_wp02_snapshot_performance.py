@@ -64,17 +64,20 @@ def test_parallel_teacher_transport_matches_serial_native_accounts_and_labels(tm
     from gym_trading_env.research.fg_s3_e_quality_corpus import generate_behavior, behavior_specs
     from gym_trading_env.research.fg_s3_quality_label_pool import NativeLabelPool
     from gym_trading_env.research.fg_replay import iter_sidecar
+    from gym_trading_env.research.fg_s3_e_quality_strict import QualityStrictTeacher
     factory, config, profile = native_factory(tmp_path/'market', minutes=20, chunk=7)
     env = factory();env.reset(seed=0)
     initial = env.export_state()
     source = dict(fold='TRAIN', state_cache_entries=0)
+    strict = QualityStrictTeacher(env,source=source)
+    strict.compile_value_store(tmp_path/'shared_exact')
     dreamer = Path(__file__).resolve().parents[3]/'dreamerv3'
     labeler_factory = lambda identity:NativeLabelPool(dict(env_config=str(config)), profile,
-        initial, source, None, identity, workers=2)
+        initial, source, strict, identity, workers=2)
     serial, a = generate_behavior(factory, behavior_specs()[0], tmp_path/'serial', dreamer,
-        source=source, initial_state=initial)
+        source=source, initial_state=initial,strict=strict)
     parallel, b = generate_behavior(factory, behavior_specs()[0], tmp_path/'parallel', dreamer,
-        source=source, initial_state=initial, labeler_factory=labeler_factory)
+        source=source, initial_state=initial, strict=strict,labeler_factory=labeler_factory)
     assert a['status'] == b['status'] == 'PASS'
     assert a['teacher_labels_verified'] == b['teacher_labels_verified'] == parallel['records']
     assert serial['event_hash'] == parallel['event_hash']
@@ -83,6 +86,8 @@ def test_parallel_teacher_transport_matches_serial_native_accounts_and_labels(tm
     workers=b['label_transport']['native_workers']
     assert sum(w['queries'] for w in workers)==b['label_transport']['queries']
     assert sum(w['e_observation_cache']['hits'] for w in workers)>0
+    assert sum(w['strict_pair_cache']['hits']+w['strict_pair_cache']['misses'] for w in workers)>0
+    strict._value_store.close()
     env.close()
 
 

@@ -38,3 +38,22 @@ def test_exact_suffix_cache_is_shared_readonly_and_detects_mutation(tmp_path):
     body=tmp_path/'store/values.bin';data=bytearray(body.read_bytes());data[0]^=1;body.write_bytes(data)
     with pytest.raises(ValueError,match='values changed'):
         pickle.loads(pickle.dumps(store))
+
+
+def test_shared_numeric_pairs_keep_witness_ownership_and_authenticate_their_bytes(tmp_path):
+    import pickle
+    from gym_trading_env.research.fg_s3_suffix_store import ExactSuffixStore
+    pair=dict(strict_action=0,tie=True,action_value_add=.5,action_value_wait=.5,margin=0.,
+              value_rational_witness=['h:1/2','h:1/2'])
+    store=ExactSuffixStore.write(tmp_path/'store',{9:Fraction(0)},pairs=[(2,pair)])
+    clone=pickle.loads(pickle.dumps(store))
+    try:
+        assert len(pickle.dumps(store))<512
+        assert store.get_pair(2)==clone.get_pair(2)==pair
+        store.get_pair(2)['value_rational_witness'][0]='mutated'
+        assert store.get_pair(2)==pair
+        with pytest.raises(TypeError):clone.pair_mapping[0]=1
+    finally:clone.close();store.close()
+    body=tmp_path/'store/pairs.bin';data=bytearray(body.read_bytes());data[0]^=1;body.write_bytes(data)
+    with pytest.raises(ValueError,match='paired values changed'):
+        pickle.loads(pickle.dumps(store))

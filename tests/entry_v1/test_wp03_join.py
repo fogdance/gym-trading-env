@@ -109,11 +109,20 @@ def test_B06_each_window_mask_is_independent_and_invalid_huge_target_zeroed(corp
 
 
 def test_B07_fake_strict_wait_and_rational_witness_rejected(corpus):
+    from gym_trading_env.research.fg_s3_quality_catalog_v2 import (
+        validate_corpus_label,_check_numeric_pair_cached)
     row=next(r for r in iter_sidecar(corpus/'policies/P0') if r['teacher']['L2']['teacher_valid'])
-    for attack in ('forced','witness'):
+    hits=_check_numeric_pair_cached.cache_info().hits
+    validate_corpus_label(row['teacher']);validate_corpus_label(row['teacher'])
+    assert _check_numeric_pair_cached.cache_info().hits>hits
+    for attack in ('forced','witness','margin','actual_mask'):
         label=copy.deepcopy(row['teacher']);l2=label['L2'];l2.pop('content_hash')
         if attack=='forced':l2.update(teacher_valid=False,strict_action=0)
-        else:l2['value_rational_witness']=['0','0']
+        elif attack=='witness':l2['value_rational_witness']=['0','0']
+        elif attack=='margin':l2['margin']+=1
+        else:
+            facts=label['L1'];facts.pop('content_hash');facts['actual_legal_add']=False
+            label['L1']=signed(facts)
         label['L2']=signed(l2);label.pop('content_hash');label=signed(label)
         with pytest.raises(ValueError):project_label(label,row,{'action_mask':np.ones(2,np.float32)},'1'*64)
 

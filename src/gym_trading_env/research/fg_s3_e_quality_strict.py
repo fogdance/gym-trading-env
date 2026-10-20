@@ -76,7 +76,21 @@ class QualityStrictTeacher:
             self._values[entry]=local+future
         return GAMMA**self.clock.advance(cursor,first)*self._values[first]
 
-    def compile_value_store(self,directory):
+    def _numeric_pair(self,t,row):
+        """The original exact ADD/WAIT arithmetic, without account decisions."""
+        wait=GAMMA**self.clock.advance(t,t+1)*self._value(t+1)
+        if not row.get('filled'):
+            add=wait
+        else:
+            release=row['release_cursor']
+            add=sum((GAMMA**self.clock.reward_exponent(t,s)*Fraction.from_float(v)
+                     for s,v in row['rewards']['C1']),Fraction(0))
+            add+=GAMMA**self.clock.advance(t,release)*self._value(release)
+        return dict(strict_action=int(add>wait),tie=add==wait,
+            action_value_add=float(add),action_value_wait=float(wait),margin=float(add-wait),
+            value_rational_witness=[encode(wait),encode(add)])
+
+    def compile_value_store(self,directory,*,pair_end_cursor=None):
         """Compile once; spawned accounts share immutable numeric bytes only."""
         from .fg_s3_suffix_store import ExactSuffixStore
         # Forced ADD roots can rejoin an optimum that is not on the initial
@@ -84,7 +98,20 @@ class QualityStrictTeacher:
         for entry in sorted({entry for entry in self.query.first[self.start:self.query.end]
                              if entry is not None},reverse=True):
             self._value(entry)
-        self._value_store=ExactSuffixStore.write(directory,self._values)
+        if pair_end_cursor is None:pair_end_cursor=self.query.end
+        if type(pair_end_cursor) is not int or not self.start<=pair_end_cursor<=self.query.end:
+            raise ValueError('Paired value cache must stay in the authenticated suffix')
+        def pairs():
+            for t in range(self.start,min(pair_end_cursor+1,self.query.end)):
+                row=self.query.candidates.get(t)
+                if row is None:continue
+                if not row.get('filled'):
+                    if not row.get('eligible'):continue
+                elif not row.get('exit') or row.get('right_censored'):continue
+                yield t,self._numeric_pair(t,row)
+        # Share only exact market arithmetic/witnesses. Account hashes, masks,
+        # root/after-ADD funds and all validity/rejection decisions remain live.
+        self._value_store=ExactSuffixStore.write(directory,self._values,pairs=pairs())
         self._values={self.query.end:Fraction(0)}
 
     def query_values(self,env,mask):
@@ -113,11 +140,9 @@ class QualityStrictTeacher:
             return signed({**result,'reason':answer['reason'] if not answer['valid'] else 'OUTSIDE_SUFFIX_ROOT'})
         t=env.current_step;row=self.query.candidates.get(t)
         if row is None:return signed({**result,'reason':'CANDIDATE_NOT_COVERED'})
-        wait=GAMMA**self.clock.advance(t,t+1)*self._value(t+1)
         funding=None
         if not row.get('filled'):
             if not row.get('eligible'):return signed({**result,'reason':'CANDIDATE_NOT_ELIGIBLE'})
-            add=wait
         else:
             if not row.get('exit') or row.get('right_censored'):
                 return signed({**result,'reason':'ADD_RIGHT_CENSORED'})
@@ -127,16 +152,11 @@ class QualityStrictTeacher:
                 return signed({**result,'reason':'POST_ADD_FUNDS_NOT_PROVEN'})
             funding=dict(post_add_cash_lower_bound=str(after),quote_equity_upper_bound=str(bound),
                 future_retained_TP_cash_positive=True,constant_terms=True)
-            release=row['release_cursor']
-            add=sum((GAMMA**self.clock.reward_exponent(t,s)*Fraction.from_float(v)
-                     for s,v in row['rewards']['C1']),Fraction(0))
-            add+=GAMMA**self.clock.advance(t,release)*self._value(release)
-        action=int(add>wait)
-        if action!=answer['action']:
+        numeric=(self._value_store.get_pair(t) if self._value_store is not None
+                 and str(t) in self._value_store.pair_offsets else self._numeric_pair(t,row))
+        if numeric['strict_action']!=answer['action']:
             raise ValueError('Strict paired values disagree with the certified native optimum')
-        return signed({**result,'teacher_valid':True,'strict_action':action,'tie':add==wait,
-            'action_value_add':float(add),'action_value_wait':float(wait),'margin':float(add-wait),
-            'value_rational_witness':[encode(wait),encode(add)],'forced_add_funding_proof':funding,
+        return signed({**result,**numeric,'teacher_valid':True,'forced_add_funding_proof':funding,
             'reason':'NATIVE_QUALITY_TP_COMPLETE_SUFFIX'})
 
     def plan(self):

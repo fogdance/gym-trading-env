@@ -379,7 +379,7 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
     source_binding=dict(fold='TRAIN',source_lock_hash=lock['content_hash'],files={**frozen,**code['files'],**anchors},
         state_cache_entries=0,calendar_complete=True,source_guard_interval=1024)
     strict=QualityStrictTeacher(env,source=source_binding,start_cursor=lock['start_cursor'])
-    strict.compile_value_store(out/'strict_value_cache')
+    strict.compile_value_store(out/'strict_value_cache',pair_end_cursor=lock['end_cursor'])
     write_json(out/'p4_plan.json',strict.plan())
     write_json(out/'teacher_manifest.json',signed(dict(protocol=TEACHER_SCHEMA,fold='TRAIN',
         value_witness_encoding=strict.identity['value_witness_encoding'],
@@ -499,7 +499,7 @@ def verify_corpus(path,*,workers=None):
     # the producer's value cache as the expected answer for G3.
     import tempfile
     with tempfile.TemporaryDirectory(prefix='fg_g3_exact_') as temporary:
-        strict.compile_value_store(Path(temporary)/'values')
+        strict.compile_value_store(Path(temporary)/'values',pair_end_cursor=saved['end_cursor'])
         try:
             with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
                 futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,

@@ -155,3 +155,32 @@ def test_shared_suffix_values_keep_same_cursor_account_funds_and_mask_independen
         assert funded.export_state()==before_funded and losing.export_state()==before_losing
     finally:
         teacher._value_store.close();funded.close();losing.close()
+
+
+def test_shared_numeric_pair_window_matches_uncached_labels_ties_and_native_accounts(tmp_path):
+    factory,_,_=native_factory(tmp_path/'market',minutes=20,chunk=7)
+    env=factory();initial=env.export_state()
+    teacher=QualityStrictTeacher(env,source=dict(fold='TRAIN'))
+    expected={}
+    for _ in range(19):
+        if env.truncated:env.reset()
+        expected[env.current_step]=teacher.query_values(env,env._published_mask)
+        env.step(0)
+    assert any(row['tie'] for row in expected.values() if row['teacher_valid'])
+    teacher.compile_value_store(tmp_path/'shared',pair_end_cursor=6)
+    try:
+        assert teacher._value_store.pair_offsets
+        assert max(map(int,teacher._value_store.pair_offsets))<=6
+        env.import_state(initial)
+        for _ in range(19):
+            if env.truncated:env.reset()
+            state=env.export_state()
+            actual=teacher.query_values(env,env._published_mask)
+            assert actual==expected[env.current_step]
+            if actual['teacher_valid'] and env.current_step<=6:
+                actual['value_rational_witness'][0]='mutated caller output'
+                assert teacher.query_values(env,env._published_mask)==expected[env.current_step]
+            assert env.export_state()==state
+            env.step(0)
+        assert teacher._value_store._pair_cached.cache_info().hits>0
+    finally:teacher._value_store.close();env.close()

@@ -349,6 +349,21 @@ def test_macd_bounded_outputs_and_sparse_checkpoints_reconstruct_old_cutoffs(mar
         assert len(data._macd_cache)<=16
 
 
+def test_minute_window_metadata_stays_exact_visible_and_independently_owned(prepared):
+    d=decision(prepared,374)
+    cutoff=pd.Timestamp(d.visible_cutoff)
+    through=int(prepared.frame.index.searchsorted(cutoff,side='right'))-1
+    rows=prepared.market_clock_counter.window(through,60)
+    expected=[t.isoformat() for t in prepared.frame.index.take(rows)]
+    first=prepared.snapshot(d)
+    assert first[-1]['minute_window_times']==expected
+    assert all(pd.Timestamp(t)<=cutoff for t in expected)
+    first[-1]['minute_window_times'][0]='mutated caller metadata'
+    assert prepared.snapshot(d)[-1]['minute_window_times']==expected
+    prepared.frame.index=prepared.frame.index.copy()
+    assert prepared.snapshot(d)[-1]['minute_window_times']==expected
+
+
 def test_macd_late_prefix_is_rejected_after_a_failed_future_query(market):
     frame,schedule=market
     frame=frame.copy()

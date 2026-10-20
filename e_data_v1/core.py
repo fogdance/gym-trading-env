@@ -457,8 +457,12 @@ class MarketData:
         # Only the index/length are needed below. Avoid materializing a mixed
         # dtype DataFrame for every decision; feature rows already live in the
         # unchanged prepared arrays.
-        window_index = f.index.take(raw_indices)
         window_size = len(raw_indices)
+        if getattr(self,'_minute_text_index',None) is not f.index:
+            # Index timestamps are immutable market metadata. Format each
+            # once; return only the exact original visible window below.
+            self._minute_text_index = f.index
+            self._minute_text = tuple(t.isoformat() for t in f.index)
         old = np.zeros((60, 18), np.float32)
         if window_size:
             old[-window_size:] = self.obs_array[feature_start:feature_end]
@@ -506,7 +510,7 @@ class MarketData:
         meta = dict(source_contract=self.contract, visible_cutoff=cutoff.isoformat(),
             decision_time=local_timestamp(decision.decision_time or cutoff).isoformat(),
             price_anchor=anchor, anchor_source=anchor_source, anchor_source_time=anchor_time,
-            anchor_available_at=anchor_arrival, minute_window_times=[t.isoformat() for t in window_index],
+            anchor_available_at=anchor_arrival, minute_window_times=[self._minute_text[i] for i in raw_indices],
             minute_window_sha256=hashlib.sha256(old.tobytes()).hexdigest(),
             context_bucket_ids=[x["bucket_id"] for x in buckets],
             context_bucket_ends=[x["bucket_end"] for x in buckets],

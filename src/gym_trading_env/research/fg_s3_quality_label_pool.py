@@ -14,7 +14,7 @@ def _initialize(row, profile, initial, source, strict, teacher_identity):
     from .fg_s3_e_quality_corpus_cli import _factory
     from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
     from .fg_s3_e_quality_corpus import l1_labeler
-    global _env, _teacher, _label, _history, _initial_history
+    global _env, _teacher, _label, _history, _initial_history, _strict_value_store
     factory = _factory(row, profile)
     _env = factory()
     _env.import_state(initial)
@@ -22,6 +22,7 @@ def _initialize(row, profile, initial, source, strict, teacher_identity):
     if _teacher.identity_hash != teacher_identity:
         raise ValueError('Parallel teacher differs from the native starting account identity')
     _label = l1_labeler(_teacher, strict)
+    _strict_value_store = getattr(strict,'_value_store',None)
     _history = initial['equity_history']
     _initial_history = tuple(_history)
 
@@ -40,10 +41,13 @@ def _statistics():
     import resource
     usage=resource.getrusage(resource.RUSAGE_SELF)
     market=getattr(_teacher.clone,'_e_market',None)
-    return dict(_teacher.statistics,user_cpu_seconds=usage.ru_utime,
+    result=dict(_teacher.statistics,user_cpu_seconds=usage.ru_utime,
         system_cpu_seconds=usage.ru_stime,peak_rss_bytes=usage.ru_maxrss*1024,
         macd_cached_rows=len(getattr(market,'_macd_cache',{})),
         macd_sparse_checkpoints=len(getattr(market,'_macd_checkpoints',{})))
+    if _strict_value_store is not None:
+        result['strict_pair_cache']=_strict_value_store._pair_cached.cache_info()._asdict()
+    return result
 
 
 def _query(state, delta, mask, expected_snapshot_hash, base_count):

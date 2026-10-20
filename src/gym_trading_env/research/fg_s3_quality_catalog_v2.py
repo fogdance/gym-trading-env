@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 
 import numpy as np
 
@@ -47,6 +48,24 @@ class QualityCatalogIdentity:
     teacher_identity: str
     fold: str = 'TRAIN'
     clock_protocol: str = 'S3_MARKET_MINUTE'
+
+
+_NUMERIC_PAIR_FIELDS=('strict_action','tie','action_value_add','action_value_wait','margin')
+
+
+def _check_numeric_pair(wait,add,strict):
+    if (strict['strict_action']!=int(add>wait) or strict['tie']!=(add==wait)
+            or strict['action_value_add']!=float(add) or strict['action_value_wait']!=float(wait)
+            or strict['margin']!=float(add-wait)
+            or not np.isfinite([float(wait),float(add),strict['margin']]).all()):
+        raise ValueError('Corpus strict values/action/witness differ')
+
+
+@lru_cache(maxsize=128)
+def _check_numeric_pair_cached(witness,fields):
+    from .fg_s3_exact_witness import decode
+    wait,add=map(decode,witness)
+    _check_numeric_pair(wait,add,dict(zip(_NUMERIC_PAIR_FIELDS,fields)))
 
 
 def validate_corpus_label(label):
@@ -101,12 +120,19 @@ def validate_corpus_label(label):
                 or facts.get('invalid_reason') and not rejected_tie
                 or not strict.get('suffix_boundary_identity')):
             raise ValueError('Corpus strict action is not an independently valid legal decision')
-        wait,add=map(decode,strict['value_rational_witness'])
-        if (strict['strict_action']!=int(add>wait) or strict['tie']!=(add==wait)
-                or strict['action_value_add']!=float(add) or strict['action_value_wait']!=float(wait)
-                or strict['margin']!=float(add-wait)
-                or not np.isfinite([float(wait),float(add),strict['margin']]).all()):
-            raise ValueError('Corpus strict values/action/witness differ')
+        witness=strict['value_rational_witness']
+        if (type(witness) in (list,tuple) and len(witness)==2 and
+                all(type(text) is str for text in witness) and
+                all(name in strict and type(strict[name]) in (int,float,bool) for name in _NUMERIC_PAIR_FIELDS)):
+            # Cache only this complete mathematical assertion. Owner, hashes,
+            # actual masks, admission and all rejection conditions above run
+            # on every label, including a hit with an identical numeric pair.
+            _check_numeric_pair_cached(tuple(witness),tuple(strict[name] for name in _NUMERIC_PAIR_FIELDS))
+        else:
+            # Preserve the original validation and error order for nonstandard
+            # or malformed payloads, which never enter the numeric cache.
+            wait,add=map(decode,witness)
+            _check_numeric_pair(wait,add,strict)
     elif any(strict.get(k) is not None for k in
             ('strict_action','tie','action_value_add','action_value_wait','margin')):
         raise ValueError('Invalid Corpus teacher cannot become an active WAIT label')
