@@ -6,8 +6,10 @@ random.seed(202);np.random.seed(202)
 from gym_trading_env.research.fg_s3_e_quality_actor import preflight
 from embodied.run.fg_s3_e_quality_actor import ActorRun,engineering_permit
 from embodied.run.fg_checkpoint import host
+from batch2_cold_evidence import runtime_evidence,prove_graph_restore
 s=json.loads(Path(sys.argv[1]).read_text());root=Path(sys.argv[2]);index=Path(sys.argv[3])
 p=preflight(s);run=ActorRun(p,index,root,resume=sys.argv[4]=='resume',_probe=engineering_permit(p))
+if sys.argv[4]=='resume':prove_graph_restore(run)
 if sys.argv[6]=='skip_first':
     import jax.numpy as jnp
     original=run.agent.train
@@ -20,7 +22,7 @@ if stop==-1:
     run.update();run.cp.save(final=True);result=run.result()
 else:result=run.run(stop)
 with run.stream.pause():
-    evidence=dict(agent=run.agent.save_exact(),reader=run.source.save(),runtime=run.runtime.save(),
+    evidence=dict(agent=run.agent.save_exact(),reader=run.source.source.save(),runtime=runtime_evidence(run),
         counters=run.counters.save(),schedule=run.schedule.save(),
         next_batch=run.stream.save_full()['pending'][0][0],last_batch=run.last_batch)
 (root/('evidence_'+str(stop)+'.pkl')).write_bytes(pickle.dumps(host(evidence),protocol=5))

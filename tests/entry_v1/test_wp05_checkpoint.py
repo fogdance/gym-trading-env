@@ -85,7 +85,13 @@ def test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_agai
  monkeypatch.setattr(run.agent,'train',invalid)
  m=run.update();assert m['f2/skip_no_valid'] and int(run.agent.n_updates)==0 and int(run.step)==1
  assert parameter_digests(run.agent.params)==initial
- saved=run.counters.save();reader=pickle.loads((run.cp.latest()/'course_reader.pkl').read_bytes())
+ saved=run.counters.save();ref=pickle.loads((run.cp.latest()/'course_reader.pkl').read_bytes())
+ from gym_trading_env.research.fg_s3_reader_versions import materialize_prefetch
+ snapshot=pickle.loads((run.cp.latest()/'runtime.pkl').read_bytes())['streams'][0]
+ assert ref['protocol']=='S3_READER_CHECKPOINT_REF_V2'
+ assert ref['reader_ref']==snapshot['source']['current'] and ref['graph_sha256']==snapshot['source']['graph_sha256']
+ assert snapshot['protocol']=='PREFETCH_PENDING_STATE_V2'
+ reader=materialize_prefetch(run.source,snapshot)['source']
  # Stop only this object's prefetch using its normal lifecycle; no host process termination.
  with run.stream.pause():
   def forbidden(*a,**k):raise AssertionError('resume called handoff')

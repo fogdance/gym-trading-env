@@ -134,6 +134,20 @@ class MultiCorpusCourseStream:
         self.counts = Counter(batches=0, windows=0, effective_positions=0)
         self.source_counts = {name: Counter(windows=0, effective_positions=0, calls=0) for name in ids}
         self.last_batch_audit = []
+        from .fg_s3_reader_transactions import TransactionGroup
+        self._transactions=TransactionGroup(self,list(self.readers.values()),self._batch_metadata,self._restore_batch_metadata)
+
+    def _batch_metadata(self):
+        return dict(rng=self.rng.bit_generator.state,counts=self.counts,
+                    source_counts=self.source_counts,audit=self.last_batch_audit)
+
+    def _restore_batch_metadata(self,state):
+        self.rng.bit_generator.state=state['rng'];self.counts=state['counts']
+        self.source_counts=state['source_counts'];self.last_batch_audit=state['audit']
+
+    def begin_batch(self):return self._transactions.begin()
+    def commit_batch(self,mark):self._transactions.commit(mark)
+    def rollback_batch(self,mark):self._transactions.rollback(mark)
 
     @property
     def identity(self):
@@ -177,8 +191,8 @@ class MultiCorpusCourseStream:
         for name, groups in support.items():
             if not all(groups.values()):
                 raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: ' + name + ' ' + str(groups))
-        before = self.state_dict()
-        try:
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self):
             choices = self.rng.choice(len(self.ids), size=batch_size, p=self._probabilities)
             parts, audit = [], [None] * batch_size
             for number, name in enumerate(self.ids):
@@ -200,10 +214,6 @@ class MultiCorpusCourseStream:
                                effective_positions=batch_size*effective_length)
             self.last_batch_audit = _clone(audit)
             return batch, audit
-        except BaseException:
-            self._rollback(before)
-            raise
-
     def audit_windows(self, batch, audit_rows):
         """Verify explicit provenance; stepids alone need not be unique across sources."""
         self._guard()
@@ -226,9 +236,12 @@ class MultiCorpusCourseStream:
         return result
 
     def state_dict(self):
+        return {**self.save_small(), 'readers':{name:reader.state_dict() for name,reader in self.readers.items()}}
+
+    def save_small(self):
         return _clone(dict(protocol=PROTOCOL, identity=self.identity_hash,
             scheduler_rng=self.rng.bit_generator.state,
-            readers={name: reader.state_dict() for name, reader in self.readers.items()},
+            readers={name: reader.save_small() for name, reader in self.readers.items()},
             counts=dict(self.counts), source_counts={k: dict(v) for k, v in self.source_counts.items()},
             last_batch_audit=self.last_batch_audit))
 
@@ -345,6 +358,10 @@ class MultiCorpusWindowAdapter:
         self.identity = fingerprint(dict(protocol=ADAPTER_PROTOCOL, stream=stream.identity_hash,
             settings=self.settings, adapter=adapter_cls.__module__+'.'+adapter_cls.__qualname__))
 
+    def begin_batch(self):return self.stream.begin_batch()
+    def commit_batch(self,mark):self.stream.commit_batch(mark)
+    def rollback_batch(self,mark):self.stream.rollback_batch(mark)
+
     def _adapter(self, name, size):
         key = (name, size)
         if key not in self._adapters:
@@ -364,8 +381,8 @@ class MultiCorpusWindowAdapter:
         return self.stream.coverage()
 
     def sample(self):
-        before = self.stream.state_dict()
-        try:
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self.stream):
             raw, audit = self.stream.sample(self.batch_size, self.length)
             parts = []
             for name in self.stream.ids:
@@ -381,9 +398,6 @@ class MultiCorpusWindowAdapter:
                             raise ValueError('MULTI_ADAPTER_NATIVE_BYTES_CHANGED: ' + key)
                     parts.append((positions, data))
             return _merge(parts, self.batch_size), audit
-        except BaseException:
-            self.stream._rollback(before)
-            raise
 
     def __iter__(self):
         return self
@@ -393,6 +407,10 @@ class MultiCorpusWindowAdapter:
 
     def save(self):
         return dict(protocol=ADAPTER_PROTOCOL, identity=self.identity, stream=self.stream.state_dict(),
+                    last_batch_audit=_clone(self.stream.last_batch_audit))
+
+    def save_small(self):
+        return dict(protocol=ADAPTER_PROTOCOL,identity=self.identity,stream=self.stream.save_small(),
                     last_batch_audit=_clone(self.stream.last_batch_audit))
 
     save_full = state_dict = save

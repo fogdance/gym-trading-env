@@ -54,6 +54,9 @@ class MultiCorpusF3Stream:
             self.group = ActorStreams.from_streams(list(self.role_streams.items()), identity=self._identity)
             self.statistics = {role: {name: dict.fromkeys(STAT_FIELDS, 0) for name in bound.stream.ids}
                                for role, bound in self.role_streams.items()}
+            from .fg_s3_reader_transactions import TransactionGroup
+            self._transactions=TransactionGroup(self,[self.group],lambda:self.statistics,
+                lambda state:setattr(self,'statistics',state))
         except BaseException:
             for stream in self.role_streams.values():
                 stream.close()
@@ -72,8 +75,8 @@ class MultiCorpusF3Stream:
         return self.group.readers
 
     def sample(self):
-        before = self.save()
-        try:
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self):
             data = next(self.group)
             audit = self.last_batch_audit
             start = 1 + self._identity['settings']['burnin_steps']
@@ -89,10 +92,10 @@ class MultiCorpusF3Stream:
                     for key, value in values.items():
                         counts[key] += value
             return data, audit
-        except BaseException:
-            self.group._rollback(before['group'])
-            self.statistics = copy.deepcopy(before['statistics'])
-            raise
+
+    def begin_batch(self):return self._transactions.begin()
+    def commit_batch(self,mark):self._transactions.commit(mark)
+    def rollback_batch(self,mark):self._transactions.rollback(mark)
 
     def __iter__(self):
         return self
@@ -103,6 +106,10 @@ class MultiCorpusF3Stream:
     def save(self):
         return dict(protocol=PROTOCOL, identity=self.identity_hash, group=self.group.save(),
                     statistics=copy.deepcopy(self.statistics), last_batch_audit=self.last_batch_audit)
+
+    def save_small(self):
+        return dict(protocol=PROTOCOL,identity=self.identity_hash,group=self.group.save_small(),
+                    statistics=copy.deepcopy(self.statistics),last_batch_audit=self.last_batch_audit)
 
     save_full = state_dict = save
 

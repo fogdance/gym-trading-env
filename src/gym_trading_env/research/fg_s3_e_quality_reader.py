@@ -326,6 +326,12 @@ class EQualityCourseReader:
         self.cache=OrderedDict();self.cache_bytes=cache_bytes;self.cached_bytes=0;self.peak_cached_bytes=0
         self.counts=Counter(batches=0,delivered_candidate_exposures=0,strict_pair=0,quality_pair=0)
         self.seen_market=set();self.seen_account=set();self._choices={}
+        from .fg_s3_reader_transactions import ReaderTransactions
+        self._transactions=ReaderTransactions(self)
+
+    def begin_batch(self):return self._transactions.begin()
+    def commit_batch(self,mark):self._transactions.commit(mark)
+    def rollback_batch(self,mark):self._transactions.rollback(mark)
 
     def _guard(self):
         if _stat(self.index_path)!=self.index_stat:raise ValueError('SUPERVISION_INDEX_CHANGED')
@@ -396,6 +402,10 @@ class EQualityCourseReader:
         return arrays
 
     def sample(self,batch_size,effective_length):
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self):return self._sample(batch_size,effective_length)
+
+    def _sample(self,batch_size,effective_length):
         if type(batch_size) is not int or type(effective_length) is not int or min(batch_size,effective_length)<1:
             raise ValueError('SUPERVISION_POSITIVE_BATCH_AND_LENGTH_REQUIRED')
         self._guard()
@@ -432,7 +442,7 @@ class EQualityCourseReader:
             delivered['policy:'+policy]+=effective_length
             delivered['stratum:'+(tag or 'NATURAL')]+=1
         delivered.update(batch_pair_counts(batch))
-        self.counts.update(delivered);self.seen_market.update(market);self.seen_account.update(accounts)
+        self.counts.update(delivered);self._transactions.add(market,accounts)
         self.counts['batches']+=1;self.counts['delivered_candidate_exposures']+=batch_size*effective_length
         return batch
 
@@ -509,12 +519,17 @@ class EQualityCourseReader:
                 reset_ordinal=reset[0],distance_from_reset_market_minutes=rows[0]['cursor']-reset[1],rows=rows))
         return metadata
 
-    def state_dict(self):
+    def save_small(self):
         return json.loads(_json(dict(protocol=READER_SCHEMA,source=self.report['source_identity'],index=self.index_hash,
             stage=self.stage,sampling_spec=self.spec,rng=self.rng.bit_generator.state,
-            counts=dict(self.counts),seen_market=sorted(self.seen_market),seen_account=sorted(self.seen_account))))
+            counts=dict(self.counts))))
+
+    def state_dict(self):
+        return dict(**self.save_small(),seen_market=[list(x) for x in sorted(self.seen_market)],
+                    seen_account=[list(x) for x in sorted(self.seen_account)])
 
     def load_state_dict(self,state):
+        if self._transactions.stack:raise ValueError('READER_RESTORE_DURING_BATCH_TRANSACTION')
         self._guard()
         if any(state.get(k)!=v for k,v in dict(protocol=READER_SCHEMA,source=self.report['source_identity'],
                 index=self.index_hash,stage=self.stage,sampling_spec=self.spec).items()):
