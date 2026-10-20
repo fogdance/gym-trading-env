@@ -11,7 +11,11 @@ def sha(path):
 accept=json.loads((docs/'receipts/FINAL_ACCEPTANCE.json').read_text());assert accept['status']=='B2_CODE_GO_INTEGRATED'
 lock=json.loads((docs/'EVIDENCE_SHA256.json').read_text())
 for name,v in lock['files'].items():assert (docs/name).stat().st_size==v['bytes'] and sha(docs/name)==v['sha256'],name
-assert set(lock['files'])=={str(p.relative_to(docs)) for p in docs.rglob('*') if p.is_file() and p.name!='EVIDENCE_SHA256.json'}
+tracked=git(integration/'gym-trading-env','ls-files','--','docs/batch2_r6_r7_20261021').splitlines()
+tracked={str(pathlib.Path(p).relative_to('docs/batch2_r6_r7_20261021')) for p in tracked if not p.endswith('/EVIDENCE_SHA256.json')}
+assert set(lock['files'])==tracked
+actual={str(p.relative_to(docs)) for p in docs.rglob('*') if p.is_file() and p.name!='EVIDENCE_SHA256.json'}
+local_receipts={name:sha(docs/name) for name in sorted(actual-set(lock['files']))}
 audit=json.loads((docs/'receipts/FINAL_PROTECTED_ASSET_AND_SOURCE_AUDIT.json').read_text())
 protected=0
 for root,v in audit['assets'].items():
@@ -49,7 +53,7 @@ state=dict(schema='S3_DUAL_REPO_BASELINE_V1',baseline='Batch 2 R6 source freeze 
         'exact_F1_F2_F3_cold_restore','strict_published_latest_and_journal','unchanged_V3_Corpus_ABI_3_1_0_and_verifier_pins'],
     tests=dict(scope='Selected CPU synthetic tests; not a full-project or formal-training admission',
         summary=str(docs/'receipts/FINAL_ACCEPTANCE.json'),summary_sha256=sha(docs/'receipts/FINAL_ACCEPTANCE.json'),
-        evidence_lock=str(docs/'EVIDENCE_SHA256.json'),evidence_lock_sha256=sha(docs/'EVIDENCE_SHA256.json')),
+        evidence_lock=str(docs/'EVIDENCE_SHA256.json'),evidence_lock_sha256=sha(docs/'EVIDENCE_SHA256.json'),retained_local_untracked_receipts=local_receipts),
     test_totals=dict(passed=accept['final_unique_passed'],unique_passed=accept['final_unique_passed'],frozen_code_executions=accept['selected_executions'],
         merge_reexecutions=accept['merge_reexecutions'],total_accepted_executions=accept['total_accepted_executions'],
         failed_final=0,skipped=0,development_failures_preserved=True),

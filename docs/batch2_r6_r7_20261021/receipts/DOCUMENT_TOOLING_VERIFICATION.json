@@ -16,5 +16,13 @@
   "exit_code": 0,
   "source_and_test_diff_check_exit_code": 0,
   "raw_receipts_unmodified": true,
-  "unrestricted_diff_check_note": "Exit 2 only on original pytest E-lines with trailing whitespace in R6_before.log/xml; raw receipts preserved byte-for-byte."
+  "unrestricted_diff_check_note": "Exit 2 only on original pytest E-lines with trailing whitespace in R6_before.log/xml; raw receipts preserved byte-for-byte.",
+  "final_delivery_scope_fix": "Compare the evidence lock to the Git-tracked package, preserve and separately hash three older ignored MERGE_VALIDATION receipt files",
+  "observed_missing_locked_files": 0,
+  "observed_extra_local_receipts": [
+    "MERGE_VALIDATION.json",
+    "MERGE_VALIDATION.log",
+    "MERGE_VALIDATION.xml"
+  ],
+  "tracked_manifest_exact_before_fix": true
 }
