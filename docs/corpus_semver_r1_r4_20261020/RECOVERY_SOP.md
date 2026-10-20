@@ -11,6 +11,12 @@ identity; the committed update-log byte prefix. Then restore the original
 Agent/optimizer/Reader RNG/Prefetch/counters/schedule. Never select an older node
 as a successful recovery from damage to the latest published node.
 
+For new external strict checkpoints, files and the staged directory are fsynced
+before node rename, followed by the node-parent directory; the new pointer and
+its parent are fsynced at publication. Final metadata is staged outside the node
+and fsynced before replacement. A failed durability barrier does not publish the
+new candidate. The native Replay/F4 defaults keep their existing policy.
+
 An uncommitted update-log tail may be archived under `recovery_logs/` only after
 all validation passes. The committed prefix must match byte-for-byte. Missing or
 changed committed log bytes cause a failure before Agent state restoration.
@@ -20,6 +26,10 @@ changed committed log bytes cause a failure before Agent state restoration.
 - `.pending_UUID`: not published, never a candidate. Leave it in place. If an
   older published node is intact and no higher `step_N` exists, it is still the
   latest committed transaction; validated crash log tails are archived on load.
+- `.pending_manifest_UUID`: an interrupted final/protected metadata update,
+  staged outside the published node. Leave it in place; the old published
+  Manifest remains valid until its atomic replacement completes. A normal
+  authorized resume can restore that transaction and finalize it again.
 - Complete `step_(N+1)` with `latest=N`: report
   `UNPUBLISHED_NODE_REQUIRES_REVIEW`. Preserve both nodes, pending directories,
   update logs and the pointer. Do not relabel, delete, republish or resume N.
@@ -37,3 +47,6 @@ operation, not an exact resume or a reason to regenerate the Corpus.
 
 Legacy Replay defaults, F4's existing strict policy and previously frozen Runs
 retain their historical behavior. New code does not migrate or re-sign them.
+Fault injection covers process interruption at the tested write/rename/publish
+boundaries. Physical power loss, storage-controller durability and real host
+restart were not tested.

@@ -69,6 +69,29 @@ def test_stage_preflight_reaches_original_admission_with_pin(monkeypatch, stage)
 
 
 @pytest.mark.parametrize('stage', STAGES)
+def test_read_check_forwards_pin_to_source_before_model_or_output(tmp_path,monkeypatch,stage):
+    owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+STAGES[stage])
+    checks=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+STAGES[stage]+'_checks')
+    monkeypatch.setattr(owner,'read_settings',lambda path:dict(device='cpu',corpus_root='corpus'))
+    monkeypatch.setattr(owner,'create_agent',lambda *a,**k:pytest.fail('created model before source check'))
+    output=ROOT/('artifacts/fg_s3_v2/e_quality_wp04/'+tmp_path.name) if stage=='f1' else tmp_path/'out'
+    if stage!='f1':monkeypatch.setattr(checks,'_output',lambda path:Path(path))
+    class Reached(Exception):pass
+    def stop(*args,**kwargs):
+        assert kwargs['producer_lock']=='reviewed.json' and kwargs['producer_lock_sha256']=='a'*64
+        assert kwargs['producer_gym']=='frozen/gym-trading-env'
+        raise Reached
+    if stage=='f1':monkeypatch.setattr(owner,'preflight',stop)
+    else:
+        monkeypatch.setattr(SupervisionSource,'from_corpus',lambda *a,**k:object())
+        monkeypatch.setattr(QualitySupervisionAdmission,'preflight',stop)
+    with pytest.raises(Reached):
+        checks.read_check('config',output,purpose='native-verification',producer_gym='frozen/gym-trading-env',
+            producer_lock='reviewed.json',producer_lock_sha256='a'*64)
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('stage', STAGES)
 @pytest.mark.parametrize('pin', [{},dict(producer_lock='pin.json'),dict(producer_lock_sha256='a'*64)])
 def test_formal_stage_rejects_missing_or_half_pin_before_source_io(stage,pin):
     owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+STAGES[stage])

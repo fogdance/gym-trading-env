@@ -697,6 +697,8 @@ their own prepared and Run directories under their corresponding worktree's
 
 ### E+Quality F1 foundation (WP04)
 
+F1/F2/F3 当前接口见 [Corpus 3.1.0 与 R1/R4 接入说明](../../../docs/corpus_semver_r1_r4_20261020/INTERFACE.md)。正式 native prepare/read-check/start/resume 均须显式冻结 Verifier Gym 路径、`--producer-lock` 和外部审批的 `--producer-lock-sha256`；start/resume 使用与 Prepared 相同的 pin 并再次实际执行 G3。原 V3 通过只读兼容映射复用，不修改旧教材。新 Run 使用 `STRICT_PUBLISHED_LATEST_V2`，旧 Run 不原地迁移。
+
 The F1 contract uses `FOUNDATION_WM` execution and `WM_NATURAL` sampling.
 The example `e_quality_f1_cpu.example.yaml` creates an engineering preparation
 only; it does not authorize real TRAIN parameter updates or GPU training.
@@ -706,7 +708,7 @@ All relative example paths are used from the Gym worktree directory.
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f1-prepare --config configs/experiments/fg_s3_v2/e_quality_f1_cpu.example.yaml
 ```
 
-`--source-purpose native-verification --producer-gym <frozen-WP02-Gym>`
+`--source-purpose native-verification --producer-gym <frozen-WP02-Gym> --producer-lock <reviewed-pin.json> --producer-lock-sha256 <external-pin-sha256>`
 explicitly replays the native G3 before an F1_DATA_READY data receipt.
 F1_ENGINEERING_READY and F1_DATA_READY never authorize training. Ordinary
 E+Quality prepare/start/resume/evaluate keep their existing public Guard.
@@ -715,10 +717,10 @@ E+Quality prepare/start/resume/evaluate keep their existing public Guard.
 
 仍使用 `tools/fg_s3_v2_experiment.py`。`FOUNDATION_WM` 是课程阶段，`WM_NATURAL` 是抽样阶段。示例 `e_quality_f1_cpu.example.yaml` 显式设置 B/T/K、fresh model seed、更新预算及三个独立路径。
 
-- `f1-prepare --config <yaml>`：工程完整性、三方 Join 和外部 index；不是训练许可。`--source-purpose native-verification --producer-gym <frozen WP02 Gym>` 重新运行 G3 后才输出 F1_DATA_READY，仍无训练许可。
+- `f1-prepare --config <yaml>`：工程完整性、三方 Join 和外部 index；不是训练许可。`--source-purpose native-verification --producer-gym <frozen WP02 Gym> --producer-lock <reviewed-pin.json> --producer-lock-sha256 <external-pin-sha256>` 重新运行 G3 后才输出 F1_DATA_READY，仍无训练许可。
 - `f1-probe --output-dir <本工作树 docs/receipts/wp04 或 artifacts/fg_s3_v2/e_quality_wp04 下的新路径>`：固定内置合成 Env/Corpus、CPU K32/T64 四次原生优化器更新，拒绝用户指定 Corpus/config。非正式 Prepared，不可作为真实参数来源认证。
 - `f1-read-check --config <CPU yaml> --output-dir <上述新目录>`：6 策略各 2 窗口，原生 WM 只读 Loss、事件与候选覆盖，参数/优化器零更新；development 结果不等于 native G3。
-- 正式 `f1-start/f1-resume --prepared <F1_DATA_READY preparation> --producer-gym <frozen producer> --authorize-training`：还需要外部用户授权。重验来源、冻结配置、代码、index 后才进入原 FullCheckpoint 的 external_immutable_course_reader 后端。**本轮不执行此命令。**
+- 正式 `f1-start/f1-resume --prepared <F1_DATA_READY preparation> --producer-gym <frozen producer> --producer-lock <same-reviewed-pin.json> --producer-lock-sha256 <same-external-pin-sha256> --authorize-training`：还需要外部用户授权。重验来源、冻结配置、代码、index 后才进入原 FullCheckpoint 的 external_immutable_course_reader 后端。**本轮不执行此命令。**
 
 随机窗口不传递 carry；原首帧 prefix 后 K 步 detached burn-in，仅 T 步产生 WM 目标。K 是有限历史近似。原优化器第一次学习率因 canonical warmup 为 0，参数变化以第二步及后续更新验证。Actor/Quality/原 Critic 及其 optimizer slots 精确冻结，旧公开 E+Quality、Prediction/Q/Decision Guard 保持关闭。
 
@@ -737,7 +739,7 @@ python tools/fg_s3_v2_experiment.py f2-read-check --config configs/experiments/f
 
 The read smoke explicitly uses fresh small diagnostic weights, performs zero updates, consumes no F1 weights and emits no training admission. Its synthetic F1 path is unrelated to real FG201; f2-prepare/start must reject that pairing. Missing trained F1 does not block read-only diagnostics.
 
-Future FORMAL preparation additionally uses `--source-purpose native-verification --producer-gym <frozen-producer>`. Only separately authorized `f2-start --prepared <prepared> --authorize-training` and `f2-resume --prepared <same-prepared> --authorize-training` can enter training, after current native proof and completed F1 checks. No such real training is authorized or launched by this WP. Same-Run resume restores F2 FullCheckpoint and never repeats F1 handoff.
+Future FORMAL preparation additionally uses `--source-purpose native-verification --producer-gym <frozen-producer> --producer-lock <reviewed-pin.json> --producer-lock-sha256 <external-pin-sha256>`. Only separately authorized `f2-start --prepared <prepared> --authorize-training` and `f2-resume --prepared <same-prepared> --authorize-training` can enter training, after current native proof and completed F1 checks. Both start/resume must also pass the same `--producer-gym --producer-lock --producer-lock-sha256` values used by native prepare. No such real training is authorized or launched by this WP. Same-Run resume restores F2 FullCheckpoint and never repeats F1 handoff.
 # WP06 F3：Actor 监督与只读诊断
 
 沿用统一入口 `tools/fg_s3_v2_experiment.py`，新增 `f3-prepare / f3-probe / f3-read-check / f3-start / f3-resume / f3-evaluate`。完整 F3 模型只更新 `quality_actor/`；Natural anchor 固定，可选同一 Corpus 的辅助 Reader。F1/F2 参数接续是新 Run，F3 resume 是原 FullCheckpoint 的完整同版本恢复。
@@ -749,7 +751,7 @@ Future FORMAL preparation additionally uses `--source-purpose native-verificatio
 /home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py f3-probe --output-dir artifacts/fg_s3_v2/e_quality_wp06/NEW_SYNTHETIC_PROBE
 ```
 
-正式 `f3-prepare --config ... --source-purpose native-verification --producer-gym ...` 需要真实完整 TRAIN Corpus、完整受训 F1/F2 和实际 native 证明；prepare 不授予训练权。`f3-start/f3-resume --prepared ... --authorize-training` 仍需用户授权并重新校验原生来源，工程 fixture 不可升级为正式训练。`f3-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受完整 F3 Checkpoint，在原 Env 做有限 TRAIN 只读参数诊断，不允许 Teacher/预测替换动作。真实研究考试仍属 WP08。
+正式 `f3-prepare --config ... --source-purpose native-verification --producer-gym ... --producer-lock <reviewed-pin.json> --producer-lock-sha256 <external-pin-sha256>` 需要真实完整 TRAIN Corpus、完整受训 F1/F2 和实际 native 证明；prepare 不授予训练权。`f3-start/f3-resume --prepared ... --authorize-training` 仍需用户授权，并提供与 prepare 相同的 `--producer-gym --producer-lock --producer-lock-sha256` 重新校验原生来源；工程 fixture 不可升级为正式训练。`f3-evaluate --run-dir ... --source-checkpoint ... --output-dir ... --eval-steps 32` 只接受完整 F3 Checkpoint，在原 Env 做有限 TRAIN 只读参数诊断，不允许 Teacher/预测替换动作。真实研究考试仍属 WP08。
 
 # WP07：SHADOW / 在线监督 / 受控 RL
 
