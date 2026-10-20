@@ -1,0 +1,649 @@
+[
+  {
+    "name": "shared",
+    "argv": [
+      "taskset",
+      "-c",
+      "0-15",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/receipts/corpus_semver_r1_r4_merge_20261021/shared.xml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+    "environment": {
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1"
+    },
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "sha": "12f2e567885733872ca348cf48876b407d60c3a7",
+        "status": "",
+        "tree": "a14c5b2d374e257c5fde94a9f81b0f412edc2f1a"
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+        "status": "",
+        "tree": "7677a47e304977d82c953ebe2c23a0127296a461"
+      }
+    },
+    "scope": "CPU_SYNTHETIC_MERGE_VALIDATION",
+    "formal_training": "NOT_RUN",
+    "TEST_market": "NOT_READ",
+    "seconds": 124.36408121103887,
+    "exit_code": 0,
+    "cases": [
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_gate",
+        "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_online_model_and_environment_counters_have_separate_domains",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_no_inference_source_and_frozen_snapshot",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_fg_s3_source_transfer",
+        "name": "test_missing_baseline_requires_authenticated_features",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_rejects_missing_gate_interface",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_require_formal_actor_accepts_formal_checkpoint",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_eval_only_rejects_warmup_checkpoint",
+        "result": "passed"
+      },
+      {
+        "classname": "embodied.tests.test_action_mask_formal_guards",
+        "name": "test_live_trading_rejects_warmup_checkpoint",
+        "result": "passed"
+      }
+    ],
+    "counts": {
+      "passed": 20,
+      "failed": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  },
+  {
+    "name": "contracts",
+    "argv": [
+      "taskset",
+      "-c",
+      "16-23",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_offline_recovery.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/receipts/corpus_semver_r1_r4_merge_20261021/contracts.xml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/semver_merge_validation_20261021/contracts",
+    "environment": {
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1"
+    },
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "sha": "12f2e567885733872ca348cf48876b407d60c3a7",
+        "status": "",
+        "tree": "a14c5b2d374e257c5fde94a9f81b0f412edc2f1a"
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+        "status": "",
+        "tree": "7677a47e304977d82c953ebe2c23a0127296a461"
+      }
+    },
+    "scope": "CPU_SYNTHETIC_MERGE_VALIDATION",
+    "formal_training": "NOT_RUN",
+    "TEST_market": "NOT_READ",
+    "seconds": 83.40822462597862,
+    "exit_code": 1,
+    "cases": [
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_existing_v3_mapping_is_read_only_and_consumer_head_independent",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_explicit_version_is_exact_not_major_based[3.1.0]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_explicit_version_is_exact_not_major_based[3.1.1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_explicit_version_is_exact_not_major_based[3.9.0]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_explicit_version_is_exact_not_major_based[None]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_reviewed_implementation_profiles_share_semantics_but_unknown_profile_rejects",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[v2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[behaviors]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[teacher]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[source]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[macd]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_compatibility",
+        "name": "test_abi_does_not_relax_existing_integrity_guards[bytes]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_stage_preflight_reaches_original_admission_with_pin[f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_stage_preflight_reaches_original_admission_with_pin[f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_stage_preflight_reaches_original_admission_with_pin[f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f3]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags0]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags1]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_producer_pin",
+        "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags2]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_frozen_pair_audit_rejects_wrong_or_changed_code[digest]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_frozen_pair_audit_rejects_wrong_or_changed_code[gym_head]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_frozen_pair_audit_rejects_wrong_or_changed_code[dreamer_head]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_frozen_pair_audit_rejects_wrong_or_changed_code[dirty]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_frozen_pair_audit_rejects_wrong_or_changed_code[untracked]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f1-foundation-fg_s3_e_quality_foundation-FoundationRun]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f2-heads-fg_s3_e_quality_heads-HeadsRun]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_verifier_binding",
+        "name": "test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f3-actor-fg_s3_e_quality_actor-ActorRun]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_offline_recovery",
+        "name": "test_all_offline_runtime_and_probe_use_strict_latest[f1-foundation-FoundationRun]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_offline_recovery",
+        "name": "test_all_offline_runtime_and_probe_use_strict_latest[f2-heads-HeadsRun]",
+        "result": "failed"
+      },
+      {
+        "classname": "tests.entry_v1.test_corpus_offline_recovery",
+        "name": "test_all_offline_runtime_and_probe_use_strict_latest[f3-actor-ActorRun]",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+        "name": "test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+        "name": "test_corrupt_latest_and_external_identity_refuse_before_model_mutation",
+        "result": "passed"
+      },
+      {
+        "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+        "name": "test_native_uuid_lookup_survives_different_process_hash_seeds",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_done]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_manifest]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[corrupt_member]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[bad_identity]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[backend]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[strict_flag]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[step_name]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[rollback_pointer]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_pointer]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[symlink_pointer]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[external_pointer]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[symlink_node]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_latest_fault_never_falls_back_or_mutates_state[orphan]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_explicit_old_load_and_old_save_cannot_bypass_published_latest",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_existing_incomplete_node_is_never_overwritten_or_repaired",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_rename_before_pointer_publish_requires_review",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_pending_write_is_retained_but_never_a_recovery_candidate",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_committed_journal_prefix_validates_before_any_mutable_restore",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_valid_cold_load_restores_latest_and_archives_only_uncommitted_tail",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_interrupted_final_protection_preserves_published_node",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_durability_barrier_failure_never_publishes_new_node",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_replay_restores_partial_chunks_online_queue_rng_and_updates",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_prefetch_snapshot_restores_pending_batches_and_consecutive_context",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_runtime_restores_ratio_carry_aggregates_and_gate_samples",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_exact_schedule_resume_and_overshoot_rejection",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_atomic_full_bundle_retention_identity_and_corrupt_recovery",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_failed_save_preserves_valid_points_and_final_is_protected",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_deterministic_prefetch_propagates_worker_failure_without_waiting",
+        "result": "passed"
+      },
+      {
+        "classname": "",
+        "name": "test_fg_guard_rejects_full_checkpoint_optout_before_model_init",
+        "result": "passed"
+      }
+    ],
+    "counts": {
+      "passed": 86,
+      "failed": 1,
+      "error": 0,
+      "skipped": 0
+    }
+  }
+]

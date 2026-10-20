@@ -1,0 +1,43 @@
+{
+  "generated_utc": "2026-10-20T21:23:50.241338+00:00",
+  "tested_pair": {
+    "gym": "5d752e471398d4ac65f60fa3636afc2e47cfe923",
+    "dreamer": "b2287a9d892e932339857ebb36f75499163a3046"
+  },
+  "passed": 107,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "suites": [
+    {
+      "name": "shared",
+      "exit_code": 0,
+      "seconds": 124.36408121103887,
+      "counts": {
+        "passed": 20,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "name": "contracts_recheck",
+      "exit_code": 0,
+      "seconds": 80.82768475299235,
+      "counts": {
+        "passed": 87,
+        "failed": 0,
+        "error": 0,
+        "skipped": 0
+      }
+    }
+  ],
+  "retained_initial_failure": "contracts.json",
+  "unmodified_baseline_reproduction": "ORDER_BASELINE.json",
+  "test_only_fix_commit": "5d752e471398d4ac65f60fa3636afc2e47cfe923",
+  "runtime_bytes_unchanged_since_merge": true,
+  "scope": "LOCAL_MERGE_AND_TARGETED_CPU_TESTS",
+  "formal_training": "NOT_RUN",
+  "production_native_G3": "NOT_RUN",
+  "TEST_market": "NOT_READ"
+}

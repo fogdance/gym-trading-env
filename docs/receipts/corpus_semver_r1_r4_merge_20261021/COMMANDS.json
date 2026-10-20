@@ -1,0 +1,94 @@
+[
+  {
+    "name": "shared",
+    "argv": [
+      "taskset",
+      "-c",
+      "0-15",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+      "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+      "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/receipts/corpus_semver_r1_r4_merge_20261021/shared.xml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+    "environment": {
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1"
+    },
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "sha": "12f2e567885733872ca348cf48876b407d60c3a7",
+        "status": "",
+        "tree": "a14c5b2d374e257c5fde94a9f81b0f412edc2f1a"
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+        "status": "",
+        "tree": "7677a47e304977d82c953ebe2c23a0127296a461"
+      }
+    },
+    "scope": "CPU_SYNTHETIC_MERGE_VALIDATION",
+    "formal_training": "NOT_RUN",
+    "TEST_market": "NOT_READ"
+  },
+  {
+    "name": "contracts",
+    "argv": [
+      "taskset",
+      "-c",
+      "16-23",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_offline_recovery.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/receipts/corpus_semver_r1_r4_merge_20261021/contracts.xml"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/semver_merge_validation_20261021/contracts",
+    "environment": {
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1"
+    },
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+        "sha": "12f2e567885733872ca348cf48876b407d60c3a7",
+        "status": "",
+        "tree": "a14c5b2d374e257c5fde94a9f81b0f412edc2f1a"
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+        "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+        "status": "",
+        "tree": "7677a47e304977d82c953ebe2c23a0127296a461"
+      }
+    },
+    "scope": "CPU_SYNTHETIC_MERGE_VALIDATION",
+    "formal_training": "NOT_RUN",
+    "TEST_market": "NOT_READ"
+  }
+]

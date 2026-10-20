@@ -1,0 +1,17 @@
+{
+  "generated_utc": "2026-10-20T21:22:10.780032+00:00",
+  "gym_head": "5d752e471398d4ac65f60fa3636afc2e47cfe923",
+  "dreamer_head": "b2287a9d892e932339857ebb36f75499163a3046",
+  "only_changes_after_merge": [
+    "tests/entry_v1/test_corpus_offline_recovery.py",
+    "tests/entry_v1/test_corpus_verifier_binding.py"
+  ],
+  "test_sha256": {
+    "tests/entry_v1/test_corpus_offline_recovery.py": "94abe1b2f435c49da9c6a8c4bf74d735c2490bce42176a7d8e0a8c2948cdd57a",
+    "tests/entry_v1/test_corpus_verifier_binding.py": "aa74e482607d4538890d5b8e5ac5cc7c62366be9658dadd53feeb82bb2ad014e"
+  },
+  "syntax": "PASS",
+  "production_runtime_unchanged": true,
+  "shared_test_sources_unchanged": true,
+  "original_evidence_package_unchanged": true
+}

@@ -1,0 +1,154 @@
+{
+  "name": "shared",
+  "argv": [
+    "taskset",
+    "-c",
+    "0-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/receipts/corpus_semver_r1_r4_merge_20261021/shared.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+  "environment": {
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1"
+  },
+  "source_pair": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "sha": "12f2e567885733872ca348cf48876b407d60c3a7",
+      "status": "",
+      "tree": "a14c5b2d374e257c5fde94a9f81b0f412edc2f1a"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+      "status": "",
+      "tree": "7677a47e304977d82c953ebe2c23a0127296a461"
+    }
+  },
+  "scope": "CPU_SYNTHETIC_MERGE_VALIDATION",
+  "formal_training": "NOT_RUN",
+  "TEST_market": "NOT_READ",
+  "seconds": 124.36408121103887,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_gate",
+      "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_online_model_and_environment_counters_have_separate_domains",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_no_inference_source_and_frozen_snapshot",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_fg_s3_source_transfer",
+      "name": "test_missing_baseline_requires_authenticated_features",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_rejects_missing_gate_interface",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_require_formal_actor_accepts_formal_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_eval_only_rejects_warmup_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "embodied.tests.test_action_mask_formal_guards",
+      "name": "test_live_trading_rejects_warmup_checkpoint",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 20,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}
