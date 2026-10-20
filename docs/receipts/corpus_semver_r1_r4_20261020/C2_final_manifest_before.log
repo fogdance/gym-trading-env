@@ -1,0 +1,58 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.11, pytest-9.1.0, pluggy-1.6.0
+rootdir: /home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/dreamerv3
+plugins: jaxtyping-0.2.36, typeguard-4.3.0, anyio-4.7.0
+collected 1 item
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py F        [100%]
+
+=================================== FAILURES ===================================
+__________ test_interrupted_final_protection_preserves_published_node __________
+
+committed = (<embodied.run.fg_checkpoint.FullCheckpoint object at 0x7f8e85d645d0>, Counter(2), PosixPath('/tmp/pytest-of-v/pytest-708/test_interrupted_final_protect0'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f8e854ce610>
+
+    def test_interrupted_final_protection_preserves_published_node(committed,monkeypatch):
+        """A final metadata update must not stage extra files inside a valid node."""
+        import embodied.run.fg_checkpoint as module
+        cp,_,root=committed;node=cp.latest();replace=module.os.replace
+        def crash(source,destination):
+            if Path(destination)==node/'manifest.json':raise OSError('injected final manifest interruption')
+            return replace(source,destination)
+        monkeypatch.setattr(module.os,'replace',crash)
+        with pytest.raises(OSError,match='final manifest interruption'):cp.save(final=True)
+>       assert cp.latest()==node
+               ^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_checkpoint.py:294: in latest
+    meta=validate_bundle(nodes[0],self._identity)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-708/test_interrupted_final_protect0/ckpt/step_000000000002')
+expected_identity = {'test': 'EXTERNAL_STRICT_TRANSACTION_V2'}
+
+    def validate_bundle(path, expected_identity=None):
+      path = Path(path)
+      if not (path / 'done').is_file():
+        raise ValueError(f'Incomplete FG full checkpoint: {path}')
+      meta = json.loads((path / 'manifest.json').read_text())
+      if meta.get('schema') != 1 or meta.get('protocol') != 'FG_FULL_V1':
+        raise ValueError('Unsupported FG full checkpoint protocol')
+      if expected_identity is not None and meta['identity'] != plain(expected_identity):
+        raise ValueError('FG full checkpoint identity mismatch')
+      for filename, expected in meta['files'].items():
+        if file_hash(path / filename) != expected:
+          raise ValueError(f'FG full checkpoint corrupt file: {filename}')
+      actual = {str(p.relative_to(path)) for p in path.rglob('*') if p.is_file()}
+      if actual != set(meta['files']) | {'done', 'manifest.json'}:
+>       raise ValueError('FG full checkpoint file set mismatch')
+E       ValueError: FG full checkpoint file set mismatch
+
+../dreamerv3/embodied/run/fg_checkpoint.py:251: ValueError
+- generated xml file: /home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env/docs/receipts/corpus_semver_r1_r4_20261020/C2_final_manifest_before.xml -
+=========================== short test summary info ============================
+FAILED ../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py::test_interrupted_final_protection_preserves_published_node
+============================== 1 failed in 1.09s ===============================

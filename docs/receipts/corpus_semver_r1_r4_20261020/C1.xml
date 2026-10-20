@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="3" skipped="0" tests="3" time="31.748" timestamp="2026-10-21T01:26:00.480163+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_corpus_offline_recovery" name="test_all_offline_runtime_and_probe_use_strict_latest[f1-foundation-FoundationRun]" time="28.511"><failure message="ValueError: Checkpointed object 'agent' must implement save() and load().">corpus = PosixPath('/tmp/pytest-of-v/pytest-697/strict_course0/corpus')
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-697/test_all_offline_runtime_and_p0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a2b162ab450&gt;
+stage = 'f1', name = 'foundation', class_name = 'FoundationRun'
+
+    @pytest.mark.parametrize('stage,name,class_name',[
+        ('f1','foundation','FoundationRun'),('f2','heads','HeadsRun'),('f3','actor','ActorRun')])
+    def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeypatch,stage,name,class_name):
+        from wp04_fixture import settings
+        s=settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+        source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus))
+        proof=dict(identity=dict(preparation=dict(course=source.source.course_identity_hash,
+            source=source.receipt['content_identity'])),engineering_only=True)
+        transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
+        if stage=='f2':
+            s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
+                source_f1_run=str(tmp_path/'f1'),source_f1_checkpoint=str(tmp_path/'f1/ckpt/step_000000000004'))
+            monkeypatch.setattr(transfer,'inspect_f1',lambda *a,**k:(proof,None))
+        elif stage=='f3':
+            from test_wp06_contract import settings as actor_settings
+            s=actor_settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+            monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
+        monkeypatch.setattr(transfer,'transfer_parameters',lambda *a,**k:dict(content_hash='STUB_TRANSFER_ONLY'))
+        owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+        runtime=importlib.import_module('embodied.run.fg_s3_e_quality_'+name)
+        monkeypatch.setattr(owner,'create_agent',lambda *a,**k:Agent())
+        if stage!='f3':monkeypatch.setattr(runtime,'create_agent',lambda *a,**k:Agent())
+        prep=owner.preflight(s);index=tmp_path/'join.sqlite';build_join_index(prep.source,index)
+        permit=(runtime.synthetic_probe_permit(prep) if stage=='f1' else runtime.engineering_permit(prep))
+&gt;       cls=getattr(runtime,class_name);run=cls(prep,index,tmp_path/'run',_probe=permit)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_corpus_offline_recovery.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_e_quality_foundation.py:131: in __init__
+    self.cp.course_reader=self.source;self.cp.agent=self.agent
+                                      ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7a2b0e6c4fd0&gt;
+name = 'agent'
+value = &lt;test_corpus_offline_recovery.Agent object at 0x7a2b0f187710&gt;
+
+    def __setattr__(self, name, value):
+      if name.startswith('_'):
+        return super().__setattr__(name, value)
+      has_load = hasattr(value, 'load') and callable(value.load)
+      has_save = hasattr(value, 'save') and callable(value.save)
+      if not (has_load and has_save):
+&gt;       raise ValueError(
+            f"Checkpointed object '{name}' must implement save() and load().")
+E       ValueError: Checkpointed object 'agent' must implement save() and load().
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/elements/checkpoint.py:67: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_corpus_offline_recovery" name="test_all_offline_runtime_and_probe_use_strict_latest[f2-heads-HeadsRun]" time="1.136"><failure message="ValueError: Checkpointed object 'agent' must implement save() and load().">corpus = PosixPath('/tmp/pytest-of-v/pytest-697/strict_course0/corpus')
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-697/test_all_offline_runtime_and_p1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a2b0f0f6dd0&gt;
+stage = 'f2', name = 'heads', class_name = 'HeadsRun'
+
+    @pytest.mark.parametrize('stage,name,class_name',[
+        ('f1','foundation','FoundationRun'),('f2','heads','HeadsRun'),('f3','actor','ActorRun')])
+    def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeypatch,stage,name,class_name):
+        from wp04_fixture import settings
+        s=settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+        source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus))
+        proof=dict(identity=dict(preparation=dict(course=source.source.course_identity_hash,
+            source=source.receipt['content_identity'])),engineering_only=True)
+        transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
+        if stage=='f2':
+            s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
+                source_f1_run=str(tmp_path/'f1'),source_f1_checkpoint=str(tmp_path/'f1/ckpt/step_000000000004'))
+            monkeypatch.setattr(transfer,'inspect_f1',lambda *a,**k:(proof,None))
+        elif stage=='f3':
+            from test_wp06_contract import settings as actor_settings
+            s=actor_settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+            monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
+        monkeypatch.setattr(transfer,'transfer_parameters',lambda *a,**k:dict(content_hash='STUB_TRANSFER_ONLY'))
+        owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+        runtime=importlib.import_module('embodied.run.fg_s3_e_quality_'+name)
+        monkeypatch.setattr(owner,'create_agent',lambda *a,**k:Agent())
+        if stage!='f3':monkeypatch.setattr(runtime,'create_agent',lambda *a,**k:Agent())
+        prep=owner.preflight(s);index=tmp_path/'join.sqlite';build_join_index(prep.source,index)
+        permit=(runtime.synthetic_probe_permit(prep) if stage=='f1' else runtime.engineering_permit(prep))
+&gt;       cls=getattr(runtime,class_name);run=cls(prep,index,tmp_path/'run',_probe=permit)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_corpus_offline_recovery.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_e_quality_heads.py:75: in __init__
+    self._initialize_runtime(resume,engineering)
+../dreamerv3/embodied/run/fg_s3_e_quality_heads.py:88: in _initialize_runtime
+    self.cp.course_reader=self.source;self.cp.agent=self.agent;self.cp.step=self.step
+                                      ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7a2b0f56b810&gt;
+name = 'agent'
+value = &lt;test_corpus_offline_recovery.Agent object at 0x7a2b0f632650&gt;
+
+    def __setattr__(self, name, value):
+      if name.startswith('_'):
+        return super().__setattr__(name, value)
+      has_load = hasattr(value, 'load') and callable(value.load)
+      has_save = hasattr(value, 'save') and callable(value.save)
+      if not (has_load and has_save):
+&gt;       raise ValueError(
+            f"Checkpointed object '{name}' must implement save() and load().")
+E       ValueError: Checkpointed object 'agent' must implement save() and load().
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/elements/checkpoint.py:67: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_corpus_offline_recovery" name="test_all_offline_runtime_and_probe_use_strict_latest[f3-actor-ActorRun]" time="1.204"><failure message="ValueError: Checkpointed object 'agent' must implement save() and load().">corpus = PosixPath('/tmp/pytest-of-v/pytest-697/strict_course0/corpus')
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-697/test_all_offline_runtime_and_p2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a2b0f70d7d0&gt;
+stage = 'f3', name = 'actor', class_name = 'ActorRun'
+
+    @pytest.mark.parametrize('stage,name,class_name',[
+        ('f1','foundation','FoundationRun'),('f2','heads','HeadsRun'),('f3','actor','ActorRun')])
+    def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeypatch,stage,name,class_name):
+        from wp04_fixture import settings
+        s=settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+        source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus))
+        proof=dict(identity=dict(preparation=dict(course=source.source.course_identity_hash,
+            source=source.receipt['content_identity'])),engineering_only=True)
+        transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
+        if stage=='f2':
+            s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
+                source_f1_run=str(tmp_path/'f1'),source_f1_checkpoint=str(tmp_path/'f1/ckpt/step_000000000004'))
+            monkeypatch.setattr(transfer,'inspect_f1',lambda *a,**k:(proof,None))
+        elif stage=='f3':
+            from test_wp06_contract import settings as actor_settings
+            s=actor_settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
+            monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
+        monkeypatch.setattr(transfer,'transfer_parameters',lambda *a,**k:dict(content_hash='STUB_TRANSFER_ONLY'))
+        owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+        runtime=importlib.import_module('embodied.run.fg_s3_e_quality_'+name)
+        monkeypatch.setattr(owner,'create_agent',lambda *a,**k:Agent())
+        if stage!='f3':monkeypatch.setattr(runtime,'create_agent',lambda *a,**k:Agent())
+        prep=owner.preflight(s);index=tmp_path/'join.sqlite';build_join_index(prep.source,index)
+        permit=(runtime.synthetic_probe_permit(prep) if stage=='f1' else runtime.engineering_permit(prep))
+&gt;       cls=getattr(runtime,class_name);run=cls(prep,index,tmp_path/'run',_probe=permit)
+                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_corpus_offline_recovery.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:182: in __init__
+    self._initialize_runtime(resume,engineering,counter_type=ActorCounters)
+../dreamerv3/embodied/run/fg_s3_e_quality_heads.py:88: in _initialize_runtime
+    self.cp.course_reader=self.source;self.cp.agent=self.agent;self.cp.step=self.step
+                                      ^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7a2b0f691c90&gt;
+name = 'agent'
+value = &lt;test_corpus_offline_recovery.Agent object at 0x7a2b0f55e1d0&gt;
+
+    def __setattr__(self, name, value):
+      if name.startswith('_'):
+        return super().__setattr__(name, value)
+      has_load = hasattr(value, 'load') and callable(value.load)
+      has_save = hasattr(value, 'save') and callable(value.save)
+      if not (has_load and has_save):
+&gt;       raise ValueError(
+            f"Checkpointed object '{name}' must implement save() and load().")
+E       ValueError: Checkpointed object 'agent' must implement save() and load().
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/elements/checkpoint.py:67: ValueError</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,192 @@
+[
+  {
+    "root": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/long_final_01/corpus",
+    "schema_sha256": "7d82865eb7981d9aeaab1cd4991c5c38521e027c62ff18a6ecc0efeb44636ee6",
+    "schema_digest_verified": true,
+    "semantic": {
+      "anchor": "proven legacy ref_close, otherwise already observed legal Close",
+      "availability": "max(bucket_end, all constituent arrival times) <= visible_cutoff",
+      "bucket": "15 exact minute slots in one planned continuous session, (start,end]",
+      "clock": "S3_MARKET_MINUTE",
+      "context_fields": [
+        "rel_open",
+        "rel_high",
+        "rel_low",
+        "rel_close",
+        "vol_relative",
+        "oi_change",
+        "valid"
+      ],
+      "context_shape": [
+        24,
+        7
+      ],
+      "dtype": "float32",
+      "feature_provenance": "per-decision volume/OI baseline bucket IDs, including delayed-arrival visibility",
+      "macd_5m": {
+        "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+        "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+        "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill",
+        "histogram": "DIF-Signal",
+        "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+        "initialization": "first_complete_close; first_DIF_and_signal_zero",
+        "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+        "invalid": "all_zero",
+        "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+        "periods": [
+          12,
+          26,
+          9
+        ],
+        "scale": "1000*raw/current_visible_1m_Close",
+        "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+        "warmup": "35_complete_buckets_strictly_before_current_bucket"
+      },
+      "minute_fields": [
+        "obs_V_t",
+        "obs_I_t",
+        "obs_cumVWAP_t",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_cmp_C_vs_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_open_drift_t",
+        "obs_bar_dir_t",
+        "obs_minute_index_t",
+        "obs_session_phase_t",
+        "obs_volatility_t",
+        "obs_dI_from_yclose_t",
+        "obs_pct_chg_from_ref_t",
+        "obs_mask_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t"
+      ],
+      "minute_shape": [
+        60,
+        18
+      ],
+      "oi": "log(last_OI/last_OI_of_previous_compliant_completed_bucket)",
+      "oi_clip": [
+        -1.0,
+        1.0
+      ],
+      "order": "oldest to newest",
+      "padding": "left zeros",
+      "price": "log(raw_price/P_anchor_at_decision); no price clip",
+      "price_unit": "unchanged real-contract quoted price; no lot multiplier or roll adjustment",
+      "roll": "reset all history on real-contract change",
+      "schema": "S3_E_DATA_V1",
+      "shared_fields": [
+        "obs_cumVWAP_t",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_pct_chg_from_ref_t"
+      ],
+      "volume": "log((V+1)/(mean(previous 20 compliant completed buckets)+1))",
+      "volume_clip": [
+        -6.0,
+        6.0
+      ],
+      "warmup": "keep last 24 complete visible buckets; unready rows all zero with valid=0"
+    },
+    "semantic_hash": "b0faae7470878f30a972797145a431350e55fd2650c2b998be1c94e0e802943a"
+  },
+  {
+    "root": "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/corpus",
+    "schema_sha256": "365c5dd68a561c242e2e8e58455ee143ed8d347c37b10413a6b2467d6f5a7dd7",
+    "schema_digest_verified": true,
+    "semantic": {
+      "anchor": "proven legacy ref_close, otherwise already observed legal Close",
+      "availability": "max(bucket_end, all constituent arrival times) <= visible_cutoff",
+      "bucket": "15 exact minute slots in one planned continuous session, (start,end]",
+      "clock": "S3_MARKET_MINUTE",
+      "context_fields": [
+        "rel_open",
+        "rel_high",
+        "rel_low",
+        "rel_close",
+        "vol_relative",
+        "oi_change",
+        "valid"
+      ],
+      "context_shape": [
+        24,
+        7
+      ],
+      "dtype": "float32",
+      "feature_provenance": "per-decision volume/OI baseline bucket IDs, including delayed-arrival visibility",
+      "macd_5m": {
+        "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+        "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+        "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill",
+        "histogram": "DIF-Signal",
+        "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+        "initialization": "first_complete_close; first_DIF_and_signal_zero",
+        "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+        "invalid": "all_zero",
+        "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+        "periods": [
+          12,
+          26,
+          9
+        ],
+        "scale": "1000*raw/current_visible_1m_Close",
+        "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+        "warmup": "35_complete_buckets_strictly_before_current_bucket"
+      },
+      "minute_fields": [
+        "obs_V_t",
+        "obs_I_t",
+        "obs_cumVWAP_t",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_cmp_C_vs_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_open_drift_t",
+        "obs_bar_dir_t",
+        "obs_minute_index_t",
+        "obs_session_phase_t",
+        "obs_volatility_t",
+        "obs_dI_from_yclose_t",
+        "obs_pct_chg_from_ref_t",
+        "obs_mask_t",
+        "obs_weekday_sin_t",
+        "obs_weekday_cos_t"
+      ],
+      "minute_shape": [
+        60,
+        18
+      ],
+      "oi": "log(last_OI/last_OI_of_previous_compliant_completed_bucket)",
+      "oi_clip": [
+        -1.0,
+        1.0
+      ],
+      "order": "oldest to newest",
+      "padding": "left zeros",
+      "price": "log(raw_price/P_anchor_at_decision); no price clip",
+      "price_unit": "unchanged real-contract quoted price; no lot multiplier or roll adjustment",
+      "roll": "reset all history on real-contract change",
+      "schema": "S3_E_DATA_V1",
+      "shared_fields": [
+        "obs_cumVWAP_t",
+        "obs_dC_minus_cumVWAP_t",
+        "obs_session_high_t",
+        "obs_session_low_t",
+        "obs_range_t",
+        "obs_pct_chg_from_ref_t"
+      ],
+      "volume": "log((V+1)/(mean(previous 20 compliant completed buckets)+1))",
+      "volume_clip": [
+        -6.0,
+        6.0
+      ],
+      "warmup": "keep last 24 complete visible buckets; unready rows all zero with valid=0"
+    },
+    "semantic_hash": "b0faae7470878f30a972797145a431350e55fd2650c2b998be1c94e0e802943a"
+  }
+]

@@ -88,7 +88,7 @@ def _metadata_reference(reference, base, *, native_signed):
     return path, value
 
 
-def native_contracts(validated):
+def native_contracts(validated, *, course_abi=None):
     """Call native validators and schema producers; no Env or Agent is built."""
     reward = Single3RewardConfig(**validated['reward'])
     if asdict(reward) != validated['reward']:
@@ -108,7 +108,11 @@ def native_contracts(validated):
             e_schema['context_fields'] != wanted['context_fields']):
         raise ValueError('COURSE_NATIVE_E_VISIBILITY_MISMATCH')
     claimed = validated['data_identity']['e_profile_schema_sha256']
-    if claimed is not None and claimed != e_schema['schema_sha256']:
+    if course_abi is not None:
+        if claimed != course_abi.e_profile_schema_sha256:
+            raise ValueError('COURSE_NATIVE_E_PROFILE_IDENTITY_MISMATCH')
+        course_abi.validate_e_profile(claimed, e_schema)
+    elif claimed is not None and claimed != e_schema['schema_sha256']:
         raise ValueError('COURSE_NATIVE_E_PROFILE_IDENTITY_MISMATCH')
     if validated['teacher']['score_policy'] != SCORE_POLICY:
         raise ValueError('COURSE_NATIVE_TEACHER_POLICY_MISMATCH')

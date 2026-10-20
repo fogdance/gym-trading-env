@@ -1,0 +1,2220 @@
+{
+  "avail/head/logit/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "avail/head/logit/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/linear1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/linear1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail/mlp/norm1/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "avail_actor_gate/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "con/head/logit/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "con/head/logit/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "con/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "con/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "con/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dec/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dec/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dec/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dec/vec/market_seq_e_shared/pred/bias": {
+    "shape": [
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "dec/vec/market_seq_e_shared/pred/kernel": {
+    "shape": [
+      16,
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "dec/vec/position_state/pred/bias": {
+    "shape": [
+      9
+    ],
+    "dtype": "float32"
+  },
+  "dec/vec/position_state/pred/kernel": {
+    "shape": [
+      16,
+      9
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dyngru/bias": {
+    "shape": [
+      96
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dyngru/kernel": {
+    "shape": [
+      4,
+      8,
+      24
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynhid0/bias": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynhid0/kernel": {
+    "shape": [
+      4,
+      56,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynhid0norm/scale": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin1/kernel": {
+    "shape": [
+      8,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin2/kernel": {
+    "shape": [
+      2,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/dynin2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/obs0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/obs0/kernel": {
+    "shape": [
+      48,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/obs0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/obslogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "dyn/obslogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/prior1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "dyn/priorlogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "dyn/priorlogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "enc/context15/bias": {
+    "shape": [
+      128
+    ],
+    "dtype": "float32"
+  },
+  "enc/context15/kernel": {
+    "shape": [
+      168,
+      128
+    ],
+    "dtype": "float32"
+  },
+  "enc/fusion/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/fusion/kernel": {
+    "shape": [
+      160,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/macd5/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/macd5/kernel": {
+    "shape": [
+      3,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp0/kernel": {
+    "shape": [
+      1091,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp2/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "enc/minute/mlp2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/0": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/state/1/1/avail/head/logit/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/head/logit/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/linear1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/avail/mlp/norm1/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/head/logit/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/head/logit/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/con/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/marketseqeshared/pred/bias": {
+    "shape": [
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/marketseqeshared/pred/kernel": {
+    "shape": [
+      16,
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/positionstate/pred/bias": {
+    "shape": [
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dec/vec/positionstate/pred/kernel": {
+    "shape": [
+      16,
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dyngru/bias": {
+    "shape": [
+      96
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dyngru/kernel": {
+    "shape": [
+      4,
+      8,
+      24
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0/bias": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0/kernel": {
+    "shape": [
+      4,
+      56,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynhid0norm/scale": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1/kernel": {
+    "shape": [
+      8,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2/kernel": {
+    "shape": [
+      2,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/dynin2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0/kernel": {
+    "shape": [
+      48,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obs0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obslogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/obslogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/prior1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/priorlogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/dyn/priorlogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/context15/bias": {
+    "shape": [
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/context15/kernel": {
+    "shape": [
+      168,
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/fusion/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/fusion/kernel": {
+    "shape": [
+      160,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/macd5/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/macd5/kernel": {
+    "shape": [
+      3,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0/kernel": {
+    "shape": [
+      1091,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/enc/minute/mlp2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/pol/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityactor/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/head/pred/bias": {
+    "shape": [
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/head/pred/kernel": {
+    "shape": [
+      16,
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityadverse/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/head/pred/bias": {
+    "shape": [
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/head/pred/kernel": {
+    "shape": [
+      16,
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityevent/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqc1/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityqv2/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/head/pred/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/head/pred/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualityscore/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/head/pred/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/head/pred/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/qualitytouch/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/rew/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/1/1/val/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/0": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/state/2/1/avail/head/logit/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/head/logit/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/linear1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/avail/mlp/norm1/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/head/logit/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/head/logit/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/con/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/marketseqeshared/pred/bias": {
+    "shape": [
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/marketseqeshared/pred/kernel": {
+    "shape": [
+      16,
+      1080
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/positionstate/pred/bias": {
+    "shape": [
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dec/vec/positionstate/pred/kernel": {
+    "shape": [
+      16,
+      9
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dyngru/bias": {
+    "shape": [
+      96
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dyngru/kernel": {
+    "shape": [
+      4,
+      8,
+      24
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0/bias": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0/kernel": {
+    "shape": [
+      4,
+      56,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynhid0norm/scale": {
+    "shape": [
+      32
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1/kernel": {
+    "shape": [
+      8,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2/kernel": {
+    "shape": [
+      2,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/dynin2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0/kernel": {
+    "shape": [
+      48,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obs0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obslogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/obslogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0/kernel": {
+    "shape": [
+      32,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/prior1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/priorlogit/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/dyn/priorlogit/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/context15/bias": {
+    "shape": [
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/context15/kernel": {
+    "shape": [
+      168,
+      128
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/fusion/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/fusion/kernel": {
+    "shape": [
+      160,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/macd5/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/macd5/kernel": {
+    "shape": [
+      3,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0/kernel": {
+    "shape": [
+      1091,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp0norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp1norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2/kernel": {
+    "shape": [
+      16,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/enc/minute/mlp2norm/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/pol/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityactor/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/head/pred/bias": {
+    "shape": [
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/head/pred/kernel": {
+    "shape": [
+      16,
+      4
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityadverse/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/head/pred/bias": {
+    "shape": [
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/head/pred/kernel": {
+    "shape": [
+      16,
+      28
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityevent/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqc1/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityqv2/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/head/pred/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/head/pred/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualityscore/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/head/pred/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/head/pred/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/qualitytouch/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/rew/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/2/1/val/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "opt/state/3/count": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "opt/step/value": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "pol/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "pol/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "pol/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "pol/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "pol/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_actor/head/action/logits/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_actor/head/action/logits/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_actor/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_actor/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_actor/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_adverse/head/pred/bias": {
+    "shape": [
+      4
+    ],
+    "dtype": "float32"
+  },
+  "quality_adverse/head/pred/kernel": {
+    "shape": [
+      16,
+      4
+    ],
+    "dtype": "float32"
+  },
+  "quality_adverse/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_adverse/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_adverse/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_event/head/pred/bias": {
+    "shape": [
+      28
+    ],
+    "dtype": "float32"
+  },
+  "quality_event/head/pred/kernel": {
+    "shape": [
+      16,
+      28
+    ],
+    "dtype": "float32"
+  },
+  "quality_event/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_event/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_event/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_c1/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_c1/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_c1/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_c1/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_c1/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_v2/head/pred/bias": {
+    "shape": [
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_v2/head/pred/kernel": {
+    "shape": [
+      16,
+      2
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_v2/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_v2/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_q_v2/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_score/head/pred/bias": {
+    "shape": [
+      1
+    ],
+    "dtype": "float32"
+  },
+  "quality_score/head/pred/kernel": {
+    "shape": [
+      16,
+      1
+    ],
+    "dtype": "float32"
+  },
+  "quality_score/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_score/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_score/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_touch/head/pred/bias": {
+    "shape": [
+      8
+    ],
+    "dtype": "float32"
+  },
+  "quality_touch/head/pred/kernel": {
+    "shape": [
+      16,
+      8
+    ],
+    "dtype": "float32"
+  },
+  "quality_touch/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_touch/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "quality_touch/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "retnorm/hi/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "retnorm/lo/value": {
+    "shape": [],
+    "dtype": "float32"
+  },
+  "rew/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "rew/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "rew/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "rew/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "rew/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "slowval/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "slowval/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "slowval/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "slowval/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "slowval/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "slowval_count/value": {
+    "shape": [],
+    "dtype": "int32"
+  },
+  "val/head/logits/bias": {
+    "shape": [
+      255
+    ],
+    "dtype": "float32"
+  },
+  "val/head/logits/kernel": {
+    "shape": [
+      16,
+      255
+    ],
+    "dtype": "float32"
+  },
+  "val/mlp/linear0/bias": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  },
+  "val/mlp/linear0/kernel": {
+    "shape": [
+      40,
+      16
+    ],
+    "dtype": "float32"
+  },
+  "val/mlp/norm0/scale": {
+    "shape": [
+      16
+    ],
+    "dtype": "float32"
+  }
+}

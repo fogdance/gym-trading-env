@@ -1,0 +1,487 @@
+diff --git a/embodied/run/fg_checkpoint.py b/embodied/run/fg_checkpoint.py
+index 082a8dc..7e8d320 100644
+--- a/embodied/run/fg_checkpoint.py
++++ b/embodied/run/fg_checkpoint.py
+@@ -52,6 +52,17 @@ def file_hash(path):
+   return h.hexdigest()
+ 
+ 
++def _fsync_file(path):
++  with Path(path).open('rb') as stream:
++    os.fsync(stream.fileno())
++
++
++def _fsync_directory(path):
++  descriptor=os.open(path,os.O_RDONLY | os.O_DIRECTORY)
++  try:os.fsync(descriptor)
++  finally:os.close(descriptor)
++
++
+ def learning_spec(config):
+   c = plain(config)
+   keys = ('agent', 'jax', 'replay', 'seed', 'experiment_seed', 'seed_protocol',
+@@ -268,21 +279,36 @@ class FullCheckpoint(elements.Checkpoint):
+       raise ValueError('Unknown FG full checkpoint backend')
+     self._backend = backend
+     self._strict_latest = bool(strict_latest)
++    self._strict_course = self._strict_latest and backend == 'external_immutable_course_reader'
+ 
+   def latest(self):
+     if not self._directory.exists():
+       return None
+     if self._strict_latest:
+       nodes=sorted(self._directory.glob('step_*'),reverse=True)
++      if self._strict_course:
++        for node in nodes:
++          suffix=node.name.removeprefix('step_')
++          if not suffix.isdecimal() or node.name!=f'step_{int(suffix):012d}':
++            raise ValueError('Strict FG checkpoint node name invalid')
++        nodes.sort(key=lambda node:int(node.name[5:]),reverse=True)
+       if not nodes:
+         if any(self._directory.iterdir()):raise ValueError('No published strict FG recovery point')
+         return None
+       pointer=self._directory/'latest'
+       if not pointer.is_file() or pointer.is_symlink():raise ValueError('Strict FG latest pointer missing')
+-      if pointer.read_text().strip()!=nodes[0].name:raise ValueError('Strict FG latest pointer changed')
++      if pointer.read_text().strip()!=nodes[0].name:
++        if self._strict_course and pointer.read_text().strip() in {node.name for node in nodes}:
++          raise ValueError('UNPUBLISHED_NODE_REQUIRES_REVIEW: Strict FG latest pointer changed')
++        raise ValueError('Strict FG latest pointer changed')
+       if nodes[0].is_symlink():raise ValueError('Strict FG checkpoint symlink refused')
+       meta=validate_bundle(nodes[0],self._identity)
+       if meta.get('strict_latest') is not True:raise ValueError('Strict FG recovery policy mismatch')
++      if self._strict_course:
++        if meta.get('backend') != self._backend:
++          raise ValueError('FG full checkpoint backend mismatch')
++        if type(meta['step']) is not int or meta['step']<0 or nodes[0].name!=f"step_{meta['step']:012d}":
++          raise ValueError('Strict FG checkpoint node step mismatch')
+       return nodes[0]
+     candidates = sorted((p for p in self._directory.glob('step_*') if (p / 'done').is_file()), reverse=True)
+     for path in candidates:
+@@ -319,17 +345,28 @@ class FullCheckpoint(elements.Checkpoint):
+     if self._strict_latest:
+       for obj in self._saveables.values():
+         if hasattr(obj,'validate_snapshot'):obj.validate_snapshot()
+-    self._directory.mkdir(parents=True, exist_ok=True)
+     step = int(self._step)
+     dest = self._directory / f'step_{step:012d}'
++    if self._strict_course and self._directory.exists():
++      published=self.latest()  # Validate the transaction before any writes.
++      if published is not None and step<int(published.name[5:]):
++        raise ValueError('Strict FG save cannot move published latest backward')
++      if dest.exists() and dest!=published:
++        raise ValueError('Strict FG save must reuse only the published latest')
++    self._directory.mkdir(parents=True, exist_ok=True)
+     if dest.exists():
+       meta = validate_bundle(dest, self._identity)
+       if final or step in self._key_steps:
+         if not meta['protected']:
+           meta['protected'] = True
+-          tmp = dest / '.manifest.tmp'
++          # A failed final/protected update must not add an unexpected member
++          # to an already published external Reader recovery point.
++          tmp = (self._directory / ('.pending_manifest_' + uuid.uuid4().hex)
++                 if self._strict_course else dest / '.manifest.tmp')
+           tmp.write_text(json.dumps(meta, sort_keys=True, indent=2))
++          if self._strict_course:_fsync_file(tmp)
+           os.replace(tmp, dest / 'manifest.json')
++          if self._strict_course:_fsync_directory(dest)
+       self._publish(dest)
+       return
+     if self._backend == 'native_replay':
+@@ -364,14 +401,21 @@ class FullCheckpoint(elements.Checkpoint):
+       (temp / 'manifest.json').write_text(json.dumps(meta, sort_keys=True, indent=2))
+       (temp / 'done').write_text('')
+       validate_bundle(temp, self._identity)
++      if self._strict_course:
++        for member in temp.rglob('*'):
++          if member.is_file():_fsync_file(member)
++        _fsync_directory(temp)
+       temp.rename(dest)
++      if self._strict_course:_fsync_directory(self._directory)
+     self._publish(dest)
+ 
+   def _publish(self, dest):
+     self._published = dest
+     pointer = self._directory / '.latest.tmp'
+     pointer.write_text(dest.name)
++    if self._strict_course:_fsync_file(pointer)
+     os.replace(pointer, self._directory / 'latest')
++    if self._strict_course:_fsync_directory(self._directory)
+     if self._keep_all:
+       return
+     regular = []
+@@ -392,7 +436,12 @@ class FullCheckpoint(elements.Checkpoint):
+   def load(self, path=None, keys=None):
+     if keys:
+       raise ValueError('FG full checkpoint does not allow partial restores')
+-    selected = path or self.latest()
++    if self._strict_course:
++      selected=self.latest()
++      if path is not None and (selected is None or Path(path).absolute()!=selected.absolute()):
++        raise ValueError('Strict FG restore requires the published latest')
++    else:
++      selected = path or self.latest()
+     if selected is None:
+       raise ValueError('No FG full checkpoint; refusing fresh restore')
+     path = Path(selected)
+diff --git a/embodied/run/fg_s3_e_quality_actor.py b/embodied/run/fg_s3_e_quality_actor.py
+index 6756d39..a3ecc7e 100644
+--- a/embodied/run/fg_s3_e_quality_actor.py
++++ b/embodied/run/fg_s3_e_quality_actor.py
+@@ -139,7 +139,7 @@ class ActorRun(HeadsRun):
+     def __init__(self,preparation,index_path,root,*,resume=False,authorize_training=False,_probe=None):
+         import elements
+         from .fg_checkpoint import FullCheckpoint,plain
+-        from .fg_s3_e_quality_foundation import BACKEND
++        from .fg_s3_e_quality_foundation import BACKEND,RECOVERY_POLICY,validate_offline_journal
+         from .fg_s3_e_quality_transfer import inspect_stage,transfer_parameters
+         from .fg_s3_source_admission import runtime_versions
+         from gym_trading_env.research.fg_replay import read_manifest,write_json,signed,digest
+@@ -153,20 +153,23 @@ class ActorRun(HeadsRun):
+         for key in ('corpus_root','source_run'):
+             source=Path(s[key]).resolve()
+             if self.root.is_relative_to(source) or source.is_relative_to(self.root):raise ValueError('F3_RUN_OVERLAPS_SOURCE')
+-        self.identity=plain(dict(protocol='FG_S3_E_QUALITY_F3_RUN_V1',backend=BACKEND,
+-            preparation=preparation.receipt['identity'],index_sha256=digest(self.index),
++        self.identity=plain(dict(protocol='FG_S3_E_QUALITY_F3_RUN_V1',backend=BACKEND,recovery_policy=RECOVERY_POLICY,
++            preparation=preparation.receipt['identity'],
++            compatibility=preparation.receipt['compatibility'],verifier_binding=preparation.receipt['verifier_binding'],
++            index_sha256=digest(self.index),
+             index_receipt_sha256=digest(self.index.with_suffix('.json')),code=execution_identity(),
+             packages=runtime_versions(),controlled_small=engineering,training_admitted=not engineering,
+             carry_rule='FRESH_PER_RANDOM_WINDOW',checkpoint_position='CONSUMED_BATCHES'))
+         selected=None
+         if resume:
+             if read_manifest(self.root/'run_identity.json')['identity']!=self.identity:raise ValueError('F3_RESUME_IDENTITY_MISMATCH')
+-            selected=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND).latest()
++            selected=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND,strict_latest=True).latest()
+             if selected is None:raise ValueError('F3_RESUME_CHECKPOINT_MISSING')
+         elif self.root.exists():raise ValueError('F3_RUN_OUTPUT_MUST_BE_NEW')
+         self.source=ActorStreams(preparation,self.index)
+         try:
+             self.source.validate_snapshot(None if selected is None else pickle.loads((selected/'course_reader.pkl').read_bytes()))
++            if selected is not None:validate_offline_journal(self.root,selected,position_key='consumed_batches')
+             self.agent=create_agent(s,self.root/'model',controlled_small=engineering)
+             if not resume:
+                 proof,state=inspect_stage(s,allow_engineering=engineering)
+diff --git a/embodied/run/fg_s3_e_quality_foundation.py b/embodied/run/fg_s3_e_quality_foundation.py
+index 0a86985..3824f8c 100644
+--- a/embodied/run/fg_s3_e_quality_foundation.py
++++ b/embodied/run/fg_s3_e_quality_foundation.py
+@@ -10,6 +10,7 @@ import elements
+ import numpy as np
+ from .fg_checkpoint import FullCheckpoint,RuntimeState,StepSchedule,host,plain
+ from .fg_s3_source_admission import runtime_versions
++from .fg_s3_e_quality_online_state import JournalState
+ from gym_trading_env.envs.entry_contract import fingerprint
+ from gym_trading_env.research.fg_replay import digest,read_manifest,signed,write_json
+ from gym_trading_env.research.fg_s3_e_quality_foundation import (
+@@ -18,6 +19,21 @@ from gym_trading_env.research.fg_s3_e_quality_supervision import inspect_source
+ from gym_trading_env.research.fg_s3_e_quality_reader import EQualityCourseReader
+ 
+ BACKEND='external_immutable_course_reader'
++RECOVERY_POLICY='STRICT_PUBLISHED_LATEST_V2'
++
++
++def validate_offline_journal(root, checkpoint, *, position_key='local_update'):
++    """Validate committed bytes and chronology before constructing/restoring Agent."""
++    import pickle
++    from .fg_checkpoint import validate_bundle
++    from .fg_s3c_train import validate_update_log
++    state=pickle.loads((checkpoint/'logs.pkl').read_bytes())
++    JournalState(root,('updates.jsonl',)).validate_snapshot(state)
++    step=validate_bundle(checkpoint)['step']
++    if state['updates.jsonl']['lines']!=step:
++        raise ValueError('OFFLINE_CHECKPOINT_JOURNAL_POSITION_MISMATCH')
++    validate_update_log(root,step,0,position_key=position_key)
++
+ 
+ class CourseStream:
+     """Lifecycle adapter, not another sampler or Replay."""
+@@ -86,8 +102,10 @@ class FoundationRun:
+         if self.root.is_relative_to(Path(s['corpus_root']).resolve()):
+             raise ValueError('F1_RUN_CANNOT_MODIFY_CORPUS')
+         # Fail before run mkdir/model creation when a resume identity differs.
+-        self.identity=dict(protocol='FG_S3_E_QUALITY_F1_RUN_V1',backend=BACKEND,
+-            preparation=preparation.receipt['identity'],index_sha256=digest(self.index),
++        self.identity=dict(protocol='FG_S3_E_QUALITY_F1_RUN_V1',backend=BACKEND,recovery_policy=RECOVERY_POLICY,
++            preparation=preparation.receipt['identity'],
++            compatibility=preparation.receipt['compatibility'],verifier_binding=preparation.receipt['verifier_binding'],
++            index_sha256=digest(self.index),
+             index_receipt_sha256=digest(self.index.with_suffix('.json')),
+             code=execution_identity(),packages=runtime_versions(),
+             controlled_small=engineering,carry_rule='FRESH_PER_RANDOM_WINDOW',
+@@ -106,11 +124,12 @@ class FoundationRun:
+             sampling_spec=s['sampling_spec'],seed=s['model_init']['seed'],index_path=self.index)
+         self.source=CourseStream(self.reader,s);self.source.validate_snapshot()
+         if resume:
+-            probe=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND)
++            probe=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND,strict_latest=True)
+             selected=probe.latest()
+             if selected is None:raise ValueError('F1_RESUME_CHECKPOINT_MISSING')
+             import pickle
+             self.source.validate_snapshot(pickle.loads((selected/'course_reader.pkl').read_bytes()))
++            validate_offline_journal(self.root,selected)
+         self.root.mkdir(parents=True,exist_ok=resume)
+         self.agent=create_agent(s,self.root/'model',controlled_small=engineering)
+         if not resume:write_json(self.root/'run_identity.json',signed(dict(identity=self.identity)))
+@@ -124,9 +143,10 @@ class FoundationRun:
+         self.runtime=RuntimeState(self.schedule,SimpleNamespace(),[self.stream],
+                                   lambda:None,set_carry,{},self.samples)
+         self.cp=FullCheckpoint(self.root/'ckpt',self.step,self.identity,[self.stream],
+-                              reserve_gib=1 if engineering else 10,keep_all=True,backend=BACKEND)
++                              reserve_gib=1 if engineering else 10,keep_all=True,backend=BACKEND,strict_latest=True)
+         self.cp.course_reader=self.source;self.cp.agent=self.agent
+         self.cp.step=self.step;self.cp.counters=self.counters;self.cp.runtime=self.runtime
++        self.cp.logs=JournalState(self.root,('updates.jsonl',))
+         self.metrics=[];self.last_batch=None
+         if resume:
+             self.cp.load()
+diff --git a/embodied/run/fg_s3_e_quality_heads.py b/embodied/run/fg_s3_e_quality_heads.py
+index 217f4bd..1c142a6 100644
+--- a/embodied/run/fg_s3_e_quality_heads.py
++++ b/embodied/run/fg_s3_e_quality_heads.py
+@@ -6,7 +6,7 @@ from types import SimpleNamespace
+ import elements
+ import numpy as np
+ from .fg_checkpoint import FullCheckpoint,RuntimeState,StepSchedule,host,plain
+-from .fg_s3_e_quality_foundation import CourseStream,BACKEND
++from .fg_s3_e_quality_foundation import CourseStream,BACKEND,RECOVERY_POLICY,JournalState,validate_offline_journal
+ from .fg_s3_e_quality_transfer import inspect_f1,transfer_parameters
+ from .fg_s3_source_admission import runtime_versions
+ from .fg_s3c_train import reconcile_update_log
+@@ -46,14 +46,16 @@ class HeadsRun:
+         for src in ('corpus_root','source_f1_run'):
+             source=Path(s[src]).resolve()
+             if self.root.is_relative_to(source) or source.is_relative_to(self.root):raise ValueError('F2_RUN_OVERLAPS_SOURCE')
+-        self.identity=plain(dict(protocol='FG_S3_E_QUALITY_F2_RUN_V1',backend=BACKEND,
+-            preparation=preparation.receipt['identity'],index_sha256=digest(self.index),
++        self.identity=plain(dict(protocol='FG_S3_E_QUALITY_F2_RUN_V1',backend=BACKEND,recovery_policy=RECOVERY_POLICY,
++            preparation=preparation.receipt['identity'],
++            compatibility=preparation.receipt['compatibility'],verifier_binding=preparation.receipt['verifier_binding'],
++            index_sha256=digest(self.index),
+             index_receipt_sha256=digest(self.index.with_suffix('.json')),code=execution_identity(),
+             packages=runtime_versions(),controlled_small=engineering,training_admitted=not engineering,
+             carry_rule='FRESH_PER_RANDOM_WINDOW',checkpoint_position='CONSUMED_BATCHES'))
+         if resume:
+             if read_manifest(self.root/'run_identity.json')['identity']!=self.identity:raise ValueError('F2_RESUME_IDENTITY_MISMATCH')
+-            probe=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND)
++            probe=FullCheckpoint(self.root/'ckpt',elements.Counter(),self.identity,(),backend=BACKEND,strict_latest=True)
+             selected=probe.latest()
+             if selected is None:raise ValueError('F2_RESUME_CHECKPOINT_MISSING')
+         elif self.root.exists():raise ValueError('F2_RUN_OUTPUT_MUST_BE_NEW')
+@@ -61,7 +63,9 @@ class HeadsRun:
+         self.source=CourseStream(self.reader,s,adapter_cls=F2WindowAdapter)
+         self.source.validate_snapshot()
+         self.source.adapter.validate_support()
+-        if resume:self.source.validate_snapshot(pickle.loads((selected/'course_reader.pkl').read_bytes()))
++        if resume:
++            self.source.validate_snapshot(pickle.loads((selected/'course_reader.pkl').read_bytes()))
++            validate_offline_journal(self.root,selected,position_key='consumed_batches')
+         self.agent=create_agent(s,self.root/'model',controlled_small=engineering)
+         if not resume:
+             proof,state=inspect_f1(s,allow_engineering=engineering)
+@@ -82,9 +86,10 @@ class HeadsRun:
+         def set_carry(value):
+             if value is not None:raise ValueError(self.metrics_stage.upper()+'_RANDOM_CARRY_MUST_BE_EMPTY')
+         self.runtime=RuntimeState(self.schedule,SimpleNamespace(),[self.stream],lambda:None,set_carry,{},self.samples)
+-        self.cp=FullCheckpoint(self.root/'ckpt',self.step,self.identity,[self.stream],reserve_gib=1 if engineering else 10,keep_all=True,backend=BACKEND)
++        self.cp=FullCheckpoint(self.root/'ckpt',self.step,self.identity,[self.stream],reserve_gib=1 if engineering else 10,keep_all=True,backend=BACKEND,strict_latest=True)
+         self.cp.course_reader=self.source;self.cp.agent=self.agent;self.cp.step=self.step
+         self.cp.counters=self.counters;self.cp.runtime=self.runtime
++        self.cp.logs=JournalState(self.root,('updates.jsonl',))
+         self.metrics=[];self.last_batch=None
+         if resume:
+             self.cp.load()
+diff --git a/embodied/run/fg_s3c_train.py b/embodied/run/fg_s3c_train.py
+index c889d81..a8e2946 100644
+--- a/embodied/run/fg_s3c_train.py
++++ b/embodied/run/fg_s3c_train.py
+@@ -116,8 +116,8 @@ class JointCounters:
+             recall=s['tp']/(s['tp']+s['fn']) if s['tp']+s['fn'] else None)
+ 
+ 
+-def reconcile_update_log(root, step, offset, *, position_key="local_update"):
+-    """Archive an uncommitted log tail before restoring the checkpoint boundary."""
++def validate_update_log(root, step, offset, *, position_key="local_update"):
++    """Read-only chronology check shared by recovery probes and reconciliation."""
+     path = root/'updates.jsonl'
+     raw = path.read_bytes() if path.exists() else b''
+     lines = raw.splitlines(keepends=True)
+@@ -132,6 +132,13 @@ def reconcile_update_log(root, step, offset, *, position_key="local_update"):
+             raise ValueError('Checkpointed update log chronology differs')
+         prefix.append(lines[i])
+     committed = b''.join(prefix)
++    return raw, committed
++
++
++def reconcile_update_log(root, step, offset, *, position_key="local_update"):
++    """Archive an uncommitted log tail before restoring the checkpoint boundary."""
++    path = root/'updates.jsonl'
++    raw, committed = validate_update_log(root, step, offset, position_key=position_key)
+     if committed == raw:
+         return
+     backups = root/'recovery_logs';backups.mkdir(exist_ok=True)
+diff --git a/embodied/tests/test_fg_course_strict_checkpoint.py b/embodied/tests/test_fg_course_strict_checkpoint.py
+new file mode 100644
+index 0000000..28513b6
+--- /dev/null
++++ b/embodied/tests/test_fg_course_strict_checkpoint.py
+@@ -0,0 +1,156 @@
++"""External Reader strict transaction faults; no model or market I/O."""
++import json
++import pickle
++from pathlib import Path
++
++import elements
++import pytest
++
++from embodied.run.fg_checkpoint import FullCheckpoint
++from embodied.run.fg_s3_e_quality_online_state import JournalState
++
++
++class State:
++    def __init__(self):self.value=0;self.loads=0
++    def save(self):return self.value
++    def validate_snapshot(self,state=None):
++        if state is not None and type(state) is not int:raise ValueError('TEST_STATE_INVALID')
++    def load(self,value):self.loads+=1;self.value=value
++    load_exact=load
++
++
++def checkpoint(root):
++    step=elements.Counter()
++    cp=FullCheckpoint(root/'ckpt',step,dict(test='EXTERNAL_STRICT_TRANSACTION_V2'),(),
++        reserve_gib=0,keep_all=True,backend='external_immutable_course_reader',strict_latest=True)
++    cp.step=step;cp.agent=State();cp.course_reader=State();cp.runtime=State()
++    cp.logs=JournalState(root,('updates.jsonl',))
++    return cp,step
++
++
++@pytest.fixture
++def committed(tmp_path):
++    cp,step=checkpoint(tmp_path)
++    for n in (1,2):
++        step.load(n);cp.agent.value=n
++        with (tmp_path/'updates.jsonl').open('a') as f:f.write(json.dumps(dict(position=n))+'\n')
++        cp.save()
++    return cp,step,tmp_path
++
++
++def snapshot(root):
++    return {str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
++
++
++@pytest.mark.parametrize('attack',['missing_done','missing_manifest','corrupt_member','bad_identity',
++    'backend','strict_flag','step_name','rollback_pointer','missing_pointer','symlink_pointer',
++    'external_pointer','symlink_node','orphan'])
++def test_latest_fault_never_falls_back_or_mutates_state(committed,attack,tmp_path):
++    cp,step,root=committed;directory=root/'ckpt';node=directory/'step_000000000002'
++    if attack=='missing_done':(node/'done').unlink()
++    elif attack=='missing_manifest':(node/'manifest.json').unlink()
++    elif attack=='corrupt_member':(node/'agent.pkl').write_bytes(b'corrupt')
++    elif attack in ('bad_identity','backend','strict_flag'):
++        path=node/'manifest.json';m=json.loads(path.read_text())
++        if attack=='bad_identity':m['identity']={'changed':True}
++        elif attack=='backend':m['backend']='native_replay'
++        else:m['strict_latest']=False
++        path.write_text(json.dumps(m))
++    elif attack=='step_name':
++        node.rename(directory/'step_000000000003');(directory/'latest').write_text('step_000000000003')
++    elif attack in ('rollback_pointer','orphan'):(directory/'latest').write_text('step_000000000001')
++    elif attack=='missing_pointer':(directory/'latest').unlink()
++    elif attack=='symlink_pointer':
++        p=directory/'latest';value=p.read_bytes();p.unlink();target=root/'external_pointer';target.write_bytes(value);p.symlink_to(target)
++    elif attack=='external_pointer':(directory/'latest').write_text(str(root/'outside'))
++    else:
++        external=root/'outside';node.rename(external);node.symlink_to(external,target_is_directory=True)
++    before=snapshot(root)
++    with pytest.raises((ValueError,OSError)):cp.latest()
++    with pytest.raises((ValueError,OSError)):cp.load()
++    assert cp.agent.loads==cp.course_reader.loads==cp.runtime.loads==0
++    assert snapshot(root)==before and int(step)==2
++
++
++def test_explicit_old_load_and_old_save_cannot_bypass_published_latest(committed):
++    cp,step,root=committed;before=snapshot(root)
++    with pytest.raises(ValueError,match='published latest'):
++        cp.load(root/'ckpt/step_000000000001')
++    step.load(1)
++    with pytest.raises(ValueError,match='backward|published latest'):cp.save()
++    assert snapshot(root)==before and cp.agent.loads==0
++
++
++def test_existing_incomplete_node_is_never_overwritten_or_repaired(committed):
++    cp,_,root=committed;(root/'ckpt/step_000000000002/done').unlink()
++    before=snapshot(root)
++    with pytest.raises(ValueError):cp.save(final=True)
++    assert snapshot(root)==before
++
++
++def test_rename_before_pointer_publish_requires_review(committed,monkeypatch):
++    cp,step,root=committed;step.load(3)
++    def crash(dest):raise OSError('injected rename-before-publish crash')
++    monkeypatch.setattr(cp,'_publish',crash)
++    with pytest.raises(OSError,match='rename-before-publish'):cp.save()
++    assert (root/'ckpt/step_000000000003/done').exists()
++    assert (root/'ckpt/latest').read_text()=='step_000000000002'
++    before=snapshot(root)
++    with pytest.raises(ValueError,match='UNPUBLISHED_NODE_REQUIRES_REVIEW'):cp.latest()
++    assert before==snapshot(root)
++
++
++def test_pending_write_is_retained_but_never_a_recovery_candidate(committed,monkeypatch):
++    cp,step,root=committed;step.load(3)
++    def crash():raise OSError('injected pending write crash')
++    monkeypatch.setattr(cp.agent,'save',crash)
++    with pytest.raises(OSError,match='pending write'):cp.save()
++    pending=list((root/'ckpt').glob('.pending_*'));assert pending
++    assert cp.latest().name=='step_000000000002'
++    cp.load()
++    assert int(step)==2 and all(p.exists() for p in pending)
++
++
++def test_committed_journal_prefix_validates_before_any_mutable_restore(committed):
++    cp,_,root=committed
++    with (root/'updates.jsonl').open('r+b') as f:f.write(b'CHANGED')
++    before=snapshot(root)
++    with pytest.raises(ValueError,match='COMMITTED_JOURNAL_MISSING_OR_CHANGED'):cp.load()
++    assert cp.agent.loads==cp.course_reader.loads==cp.runtime.loads==0
++    assert before==snapshot(root)
++
++
++def test_valid_cold_load_restores_latest_and_archives_only_uncommitted_tail(committed):
++    _,_,root=committed;committed_bytes=(root/'updates.jsonl').read_bytes()
++    with (root/'updates.jsonl').open('ab') as f:f.write(b'crash tail\n')
++    cold,step=checkpoint(root);cold.load()
++    assert int(step)==cold.agent.value==2
++    assert (root/'updates.jsonl').read_bytes()==committed_bytes
++    assert [p.read_bytes() for p in (root/'recovery_logs').iterdir()]==[b'crash tail\n']
++    assert cold.latest().name=='step_000000000002'
++
++
++def test_interrupted_final_protection_preserves_published_node(committed,monkeypatch):
++    """A final metadata update must not stage extra files inside a valid node."""
++    import embodied.run.fg_checkpoint as module
++    cp,_,root=committed;node=cp.latest();replace=module.os.replace
++    def crash(source,destination):
++        if Path(destination)==node/'manifest.json':raise OSError('injected final manifest interruption')
++        return replace(source,destination)
++    monkeypatch.setattr(module.os,'replace',crash)
++    with pytest.raises(OSError,match='final manifest interruption'):cp.save(final=True)
++    assert cp.latest()==node
++    cp.load()
++    assert cp.agent.value==2
++    assert list((root/'ckpt').glob('.pending_manifest_*'))
++
++
++def test_durability_barrier_failure_never_publishes_new_node(committed,monkeypatch):
++    import embodied.run.fg_checkpoint as module
++    cp,step,root=committed;published=cp.latest();step.load(3)
++    def crash(descriptor):raise OSError('injected durability barrier failure')
++    monkeypatch.setattr(module.os,'fsync',crash)
++    with pytest.raises(OSError,match='durability barrier failure'):cp.save()
++    assert cp.latest()==published and (root/'ckpt/latest').read_text()==published.name
++    assert not (root/'ckpt/step_000000000003').exists()
++    assert list((root/'ckpt').glob('.pending_*'))

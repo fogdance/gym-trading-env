@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "0-19",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "tests/entry_v1/test_corpus_producer_pin.py",
+    "tests/entry_v1/test_corpus_offline_recovery.py",
+    "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+    "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+    "tests/entry_v1/test_wp07_checkpoint_core.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env/docs/receipts/corpus_semver_r1_r4_20261020/Z1_final_contract.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+  "environment": {
+    "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "start_epoch": 1792518543.8468943,
+  "seconds": 36.89412808418274,
+  "exit_code": 0,
+  "source_pair": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+      "sha": "6f95b1401421d5200d9485cc5628dd1a47fae0c0",
+      "status": " M configs/experiments/fg_s3_v2/README.md\n M tests/entry_v1/test_corpus_producer_pin.py\n"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/dreamerv3",
+      "sha": "9f9b1bf20817edf9db430dfe334bdac873166b85",
+      "status": ""
+    }
+  },
+  "note": "Only tests/config README differ from the frozen C2 pair; runtime bytes identical.",
+  "scope": "CPU_FINAL_CONTRACT_CHECKS"
+}

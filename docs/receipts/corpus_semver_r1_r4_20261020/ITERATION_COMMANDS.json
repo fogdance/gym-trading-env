@@ -1,0 +1,390 @@
+[
+  {
+    "name": "A1",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_compatibility.py",
+      "tests/entry_v1/test_wp03_admission.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/A1.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "A1.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "B1",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_producer_pin.py",
+      "tests/entry_v1/test_wp04_admission.py",
+      "tests/entry_v1/test_wp05_cli.py",
+      "tests/entry_v1/test_wp06_cli.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/B1.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "B1.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "B1_recheck",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_producer_pin.py",
+      "tests/entry_v1/test_wp05_cli.py::test_F05_historical_read_smoke_rejects_v2_before_preparation",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/B1_recheck.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "B1_recheck.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "B2",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_verifier_binding.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/B2.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "B2.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "B2_recheck",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_verifier_binding.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/B2_recheck.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "B2_recheck.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C1",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_offline_recovery.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C1.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "C1.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C1_recheck",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_offline_recovery.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C1_recheck.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "C1_recheck.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_before",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_before.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "C2_before.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_before_v2",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_before_v2.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "C2_before_v2.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_core",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "tests/entry_v1/test_wp07_checkpoint_core.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_core.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "C2_core.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_runs",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_corpus_offline_recovery.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_runs.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "C2_runs.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_final_manifest_before",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py::test_interrupted_final_protection_preserves_published_node",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_final_manifest_before.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "C2_final_manifest_before.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_final_manifest_after",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "tests/entry_v1/test_wp07_checkpoint_core.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_final_manifest_after.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "C2_final_manifest_after.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "C2_durable",
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+      "../dreamerv3/embodied/tests/test_fg_full_checkpoint.py",
+      "tests/entry_v1/test_wp07_checkpoint_core.py",
+      "--junitxml=docs/receipts/corpus_semver_r1_r4_20261020/C2_durable.xml"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 0,
+    "log": "C2_durable.log",
+    "note": "DEV iteration with uncommitted changes; not final-version acceptance."
+  },
+  {
+    "name": "B1_unmodified_baseline",
+    "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "-m",
+      "pytest",
+      "-p",
+      "no:cacheprovider",
+      "tests/entry_v1/test_wp05_cli.py::test_F05_historical_read_smoke_rejects_old_macd_before_preparation"
+    ],
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "exit_code": 1,
+    "log": "B1_unmodified_baseline.log",
+    "source_pair": {
+      "gym": "8619f04b6f996f4c4d7f169486e4d10c25a3b2b9",
+      "dreamer": "b7a693b3c7b0b45eeecdec954818be42d40e67b6"
+    }
+  }
+]

@@ -1,0 +1,115 @@
+{
+  "exit_code": 0,
+  "files": [
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_corpus_compatibility.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_actor.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_actor_checks.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_foundation.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_foundation_checks.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_heads.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_heads_checks.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "src/gym_trading_env/research/fg_s3_e_quality_supervision.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tests/entry_v1/test_corpus_compatibility.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tests/entry_v1/test_corpus_offline_recovery.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tests/entry_v1/test_corpus_producer_pin.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tests/entry_v1/test_corpus_verifier_binding.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tests/entry_v1/test_wp05_cli.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "gym",
+      "path": "tools/fg_s3_v2_experiment.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/run/fg_checkpoint.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/run/fg_s3_e_quality_actor.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/run/fg_s3_e_quality_foundation.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/run/fg_s3_e_quality_heads.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/run/fg_s3c_train.py",
+      "status": "PARSE_PASS"
+    },
+    {
+      "role": "dreamer",
+      "path": "embodied/tests/test_fg_course_strict_checkpoint.py",
+      "status": "PARSE_PASS"
+    }
+  ]
+}

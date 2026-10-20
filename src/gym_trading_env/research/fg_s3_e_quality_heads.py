@@ -5,6 +5,7 @@ from pathlib import Path
 from dreamerv3.fg_s3_e_quality_heads import PROTOCOL,STAGE,SAMPLING_STAGE,LABELS,dimensions,model_extensions
 from .fg_s3_e_quality_foundation import model_config,execution_identity
 from .fg_s3_e_quality_course_preflight import _local_path
+from .fg_s3_e_quality_supervision import require_stage_producer_pin,verifier_binding,require_prepared_verifier
 
 CONFIG_SCHEMA='FG_S3_E_QUALITY_F2_CONFIG_V1'
 
@@ -17,7 +18,8 @@ class F2Preparation:
 
 _NATIVE_PROOFS={}
 
-def preflight(settings,*,purpose='development',producer_gym=None,log_path=None):
+def preflight(settings,*,purpose='development',producer_gym=None,log_path=None,producer_lock=None,producer_lock_sha256=None):
+    require_stage_producer_pin(purpose,producer_lock,producer_lock_sha256)
     from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
     from .fg_replay import signed
     from .fg_s3_e_observation import observation_contract
@@ -27,7 +29,7 @@ def preflight(settings,*,purpose='development',producer_gym=None,log_path=None):
     from dreamerv3.fg_s3_e_quality_heads import execution_contract
     settings=validate_settings(settings)
     admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(settings['corpus_root'],stage=STAGE),
-        purpose=purpose,producer_gym=producer_gym,log_path=log_path)
+        purpose=purpose,producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     proof,_=inspect_f1(settings,allow_engineering=True)
     p=proof['identity']['preparation']
     if p['course']!=admission.source.course_identity_hash or p['source']!=admission.receipt['content_identity']:
@@ -42,7 +44,8 @@ def preflight(settings,*,purpose='development',producer_gym=None,log_path=None):
     if admission.native_result is None:blockers.append('F2_NATIVE_G3_NOT_RUN')
     receipt=signed(dict(protocol=PROTOCOL,status='F2_ENGINEERING_READY' if proof['engineering_only'] or admission.native_result is None else 'F2_DATA_READY',
         identity=identity,identity_hash=fingerprint(identity),blockers=blockers,training_admitted=False,research_admitted=False,
-        source_receipt=admission.receipt))
+        source_receipt=admission.receipt,compatibility=admission.receipt['compatibility'],
+        verifier_binding=verifier_binding(admission.native_result)))
     prep=F2Preparation(settings,admission,receipt)
     if admission.native_result is not None:_NATIVE_PROOFS[id(prep)]=(prep,fingerprint(admission.native_result),fingerprint(receipt))
     return prep
@@ -95,12 +98,12 @@ def read_settings(path):
     from dreamerv3.configuration import read_config_yaml
     return validate_settings(read_config_yaml(_local_path(path)))
 
-def prepare(config,*,purpose='development',producer_gym=None):
+def prepare(config,*,purpose='development',producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     from .fg_replay import signed,write_json,digest
     from .fg_s3_e_quality_reader import build_join_index
     settings=read_settings(config);out=Path(settings['prepared_dir'])
     if out.exists():raise ValueError('F2_PREPARATION_OUTPUT_MUST_BE_NEW')
-    p=preflight(settings,purpose=purpose,producer_gym=producer_gym,log_path=out/'native.log' if purpose=='native-verification' else None)
+    p=preflight(settings,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=out/'native.log' if purpose=='native-verification' else None)
     joined=build_join_index(p.source,out/'join.sqlite')
     from .fg_s3_e_quality_reader import EQualityCourseReader
     reader=EQualityCourseReader.open(p.source,stage=SAMPLING_STAGE,sampling_spec=settings['sampling_spec'],seed=settings['model_init']['seed'],index_path=out/'join.sqlite')
@@ -112,7 +115,7 @@ def prepare(config,*,purpose='development',producer_gym=None):
     if p.source.native_result is not None:write_json(out/'native_verification.json',p.source.native_result)
     return p.receipt
 
-def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_at=None):
+def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_at=None,producer_lock=None,producer_lock_sha256=None):
     if authorized is not True:raise ValueError('F2_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
     import uuid
     from .fg_replay import read_manifest,digest
@@ -122,12 +125,16 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_a
     if saved['identity']['source_f1']['engineering_only']:raise ValueError('F2_FOUNDATION_NOT_TRAINED')
     if saved['status']!='F2_DATA_READY':raise ValueError('F2_NATIVE_PREPARATION_REQUIRED')
     if saved['identity']['code']!=execution_identity():raise ValueError('F2_PREPARED_CODE_CHANGED')
+    require_prepared_verifier(saved,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     index=path/'join.sqlite'
     if digest(index)!=binding['index_sha256']:raise ValueError('F2_PREPARED_INDEX_CHANGED')
     root=Path(settings['run_dir'])
     if not any(root.is_relative_to(p) for p in (PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))):raise ValueError('F2_RUN_DIRECTORY_INVALID')
     audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp05/preflights'/uuid.uuid4().hex
-    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,log_path=audit/'native.log')
+    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
+    if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
+            current.receipt['compatibility']!=saved['compatibility']):
+        raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
     if current.receipt['identity']!=saved['identity'] or current.source.receipt['content_identity']!=binding['source_identity']:raise ValueError('F2_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
     require_training_authority(current,authorized=True)
     from embodied.run.fg_s3_e_quality_heads import HeadsRun

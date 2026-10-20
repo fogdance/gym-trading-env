@@ -1,0 +1,23 @@
+{
+  "case_root": "/tmp/pytest-of-v/pytest-702/wp04_cold0",
+  "status": "PASS_EXACT_COLD_CPU",
+  "updates": 4,
+  "split": 2,
+  "batch_size": 1,
+  "target_steps": 64,
+  "burnin_steps": 32,
+  "all_agent_optimizer_runtime_reader_counter_queue_bytes_equal": true,
+  "update_metrics_equal": true,
+  "corpus_copy_files": 0,
+  "checkpoint_files": {
+    "agent.pkl": "fa19a93fe7fec6366f6b2e83a2a5cd7778a56649d0e48ca50d36599a7587981d",
+    "counters.pkl": "a63431d2a62137a284a1addf04e45d5d69784989dfd8068ac390caefa8065d29",
+    "course_reader.pkl": "5cd04e427a2537a7e16e3ad7e481b4382d6931ca455b61dab42fc899e75e3010",
+    "logs.pkl": "1afb1f5f6966cf1e1025833f5bf7ab9cc83b386512b6e139b0a3662632fbc851",
+    "runtime.pkl": "8f15d5dfa0ab0eede6abd89cad9993d87fd15cb18352094c32c2b2027de4a1b3",
+    "step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22"
+  },
+  "corpus_bytes": 1500343,
+  "checkpoint_bytes": 2331192,
+  "real_TRAIN_updates": 0
+}

@@ -1,0 +1,12 @@
+{
+  "gym": {
+    "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env",
+    "sha": "83bc3018de9598969d9f06df39f48da57f8dbb5c",
+    "status": ""
+  },
+  "dreamer": {
+    "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/dreamerv3",
+    "sha": "4c4a36636bfa1a3f6a02c6df7f7d164ca8ec7036",
+    "status": ""
+  }
+}

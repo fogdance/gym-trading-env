@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.895" timestamp="2026-10-21T01:50:28.697061+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_interrupted_final_protection_preserves_published_node" time="0.435"><failure message="ValueError: FG full checkpoint file set mismatch">committed = (&lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7f8e85d645d0&gt;, Counter(2), PosixPath('/tmp/pytest-of-v/pytest-708/test_interrupted_final_protect0'))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7f8e854ce610&gt;
+
+    def test_interrupted_final_protection_preserves_published_node(committed,monkeypatch):
+        """A final metadata update must not stage extra files inside a valid node."""
+        import embodied.run.fg_checkpoint as module
+        cp,_,root=committed;node=cp.latest();replace=module.os.replace
+        def crash(source,destination):
+            if Path(destination)==node/'manifest.json':raise OSError('injected final manifest interruption')
+            return replace(source,destination)
+        monkeypatch.setattr(module.os,'replace',crash)
+        with pytest.raises(OSError,match='final manifest interruption'):cp.save(final=True)
+&gt;       assert cp.latest()==node
+               ^^^^^^^^^^^
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:142: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../dreamerv3/embodied/run/fg_checkpoint.py:294: in latest
+    meta=validate_bundle(nodes[0],self._identity)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-708/test_interrupted_final_protect0/ckpt/step_000000000002')
+expected_identity = {'test': 'EXTERNAL_STRICT_TRANSACTION_V2'}
+
+    def validate_bundle(path, expected_identity=None):
+      path = Path(path)
+      if not (path / 'done').is_file():
+        raise ValueError(f'Incomplete FG full checkpoint: {path}')
+      meta = json.loads((path / 'manifest.json').read_text())
+      if meta.get('schema') != 1 or meta.get('protocol') != 'FG_FULL_V1':
+        raise ValueError('Unsupported FG full checkpoint protocol')
+      if expected_identity is not None and meta['identity'] != plain(expected_identity):
+        raise ValueError('FG full checkpoint identity mismatch')
+      for filename, expected in meta['files'].items():
+        if file_hash(path / filename) != expected:
+          raise ValueError(f'FG full checkpoint corrupt file: {filename}')
+      actual = {str(p.relative_to(path)) for p in path.rglob('*') if p.is_file()}
+      if actual != set(meta['files']) | {'done', 'manifest.json'}:
+&gt;       raise ValueError('FG full checkpoint file set mismatch')
+E       ValueError: FG full checkpoint file set mismatch
+
+../dreamerv3/embodied/run/fg_checkpoint.py:251: ValueError</failure></testcase></testsuite></testsuites>

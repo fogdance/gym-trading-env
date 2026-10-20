@@ -1,0 +1,39 @@
+{
+  "root": "/tmp/pytest-of-v/pytest-703/wp05_cold0",
+  "status": "PASS_EXACT_COLD_CPU",
+  "updates": 4,
+  "split": 2,
+  "all_state_and_next_batch_byte_equal": true,
+  "counters": {
+    "optimizer_updates": 4,
+    "consumed_batches": 4,
+    "skip_no_valid": 0,
+    "skip_disabled_loss": 0,
+    "target_positions": 256,
+    "target_market_minutes": 256,
+    "burnin_positions": 128,
+    "burnin_market_minutes": 128,
+    "head_valid_exposures": {
+      "event": 854,
+      "touch": 976,
+      "adverse": 488,
+      "score": 90
+    },
+    "head_optimizer_exposures": {
+      "event": 854,
+      "touch": 976,
+      "adverse": 488,
+      "score": 90
+    }
+  },
+  "checkpoint": "/tmp/pytest-of-v/pytest-703/wp05_cold0/split/ckpt/step_000000000004",
+  "checkpoint_files": {
+    "agent.pkl": "d4f09ce2dd23766ba26ae7b83df26b7d0a09ca6dfa2aa4bc2e417245169de160",
+    "counters.pkl": "417c399e1ac90649a29a27a2ec47347ae3bdb0784a6b4af96d69367076c19392",
+    "course_reader.pkl": "c578c94d6376a92a7e4306784d438a5597fe96e8201472f13cd030d3c8efd99f",
+    "logs.pkl": "227cbb7e38640cd98dd033825aaf2ed975616c7744d0e326b2c2bb47074457d6",
+    "runtime.pkl": "c34c86f8c99d45c482ad14ce2af842d5bcfaa681b4dd0ba082c54644b681d57d",
+    "step.pkl": "48cfe2b5ce55d9c4fc39c7bb51cd5e289fd577bc7d5a960bb5163364d1c31d22"
+  },
+  "real_TRAIN_updates": 0
+}

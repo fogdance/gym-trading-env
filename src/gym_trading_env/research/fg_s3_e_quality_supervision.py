@@ -115,7 +115,6 @@ def inspect_source(source):
     spec = course.validate_course_spec(json.loads((root / 'course_v2.json').read_text()))
     if spec['spec_mode'] != 'formal':
         raise ValueError('SUPERVISION_REQUIRES_FORMAL_CORPUS_CONTRACT')
-    native_contracts(spec)  # Structural/native contract and unchanged public Guard.
     if (lock.get('fold') != 'TRAIN' or lock['content_hash'] != source.source_lock_hash
             or lock['row'].get('role') != 'train'
             or lock['row'].get('eligible_for_training') is not True
@@ -133,7 +132,43 @@ def inspect_source(source):
             or teacher.get('gamma_rational') != [332, 333]
             or teacher.get('reward_schema') != spec['reward']['schema']):
         raise ValueError('SUPERVISION_CONTRACT_IDENTITY_MISMATCH')
+    from .fg_s3_corpus_compatibility import CorpusCompatibility
+    compatibility = CorpusCompatibility.resolve(m, spec, teacher, model)
+    native_contracts(spec, course_abi=compatibility)
     return m
+
+
+def require_stage_producer_pin(purpose, producer_lock, producer_lock_sha256):
+    """New F1/F2/F3 native routes never fall back to historical producer heads."""
+    supplied = producer_lock is not None or producer_lock_sha256 is not None
+    if supplied or purpose == 'native-verification':
+        if (producer_lock is None or not isinstance(producer_lock_sha256, str)
+                or re.fullmatch('[0-9a-f]{64}', producer_lock_sha256) is None):
+            raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
+
+
+def verifier_binding(native_result):
+    """Stable execution provenance; elapsed time/log names never affect resume."""
+    if native_result is None:
+        return None
+    audit = native_result['producer_audit']
+    pin_sha256 = audit.get('operator_producer_pin_sha256')
+    if not isinstance(pin_sha256, str) or re.fullmatch('[0-9a-f]{64}', pin_sha256) is None:
+        raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
+    return dict(protocol='FG_S3_E_QUALITY_VERIFIER_BINDING_V1',
+                operator_producer_pin_sha256=pin_sha256,
+                repositories={role: audit[role]['head'] for role in ('gym', 'dreamer')})
+
+
+def require_prepared_verifier(saved, *, producer_gym, producer_lock, producer_lock_sha256):
+    """Reject pin substitution before launching G3 or constructing Run/Agent."""
+    require_stage_producer_pin('native-verification', producer_lock, producer_lock_sha256)
+    if producer_gym is None:
+        raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
+    audit = frozen_producer_audit(producer_gym, producer_lock=producer_lock,
+                                  producer_lock_sha256=producer_lock_sha256)
+    if saved.get('verifier_binding') != verifier_binding(dict(producer_audit=audit)):
+        raise ValueError('SUPERVISION_PREPARED_VERIFIER_CHANGED')
 
 
 def frozen_producer_audit(producer_gym, *, producer_lock=None, producer_lock_sha256=None):
@@ -247,6 +282,11 @@ class QualitySupervisionAdmission:
         if purpose not in ('development', 'native-verification'):
             raise ValueError('SUPERVISION_EXPLICIT_PURPOSE_REQUIRED')
         m = inspect_source(source)
+        from .fg_s3_corpus_compatibility import CorpusCompatibility
+        compatibility = CorpusCompatibility.resolve(m,
+            course.validate_course_spec(json.loads((source.corpus_root/'course_v2.json').read_text())),
+            read_manifest(source.corpus_root/'teacher_manifest.json'),
+            read_manifest(source.corpus_root/'model_contract.json'))
         native = None
         if purpose == 'native-verification':
             if m.get('execution_mode','data')=='dev':
@@ -272,7 +312,8 @@ class QualitySupervisionAdmission:
             blockers=['E_QUALITY_FORMAL_TRAIN_GUARD_CLOSED'] +
                 ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']) +
                 (['DEV_CORPUS_NOT_CERTIFIED'] if m.get('execution_mode')=='dev' else []),
-            historical_producer=m.get('code', {}).get('repositories', {})))
+            historical_producer=m.get('code', {}).get('repositories', {}),
+            compatibility=compatibility.as_dict()))
         return Admission(source, receipt, native)
 
 

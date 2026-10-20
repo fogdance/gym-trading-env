@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="19" time="0.981" timestamp="2026-10-21T01:28:59.155544+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[missing_done]" time="0.429" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[missing_manifest]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[corrupt_member]" time="0.004" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[bad_identity]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[backend]" time="0.004"><failure message="Failed: DID NOT RAISE any of (ValueError, OSError)">committed = (&lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7db3c1bdb510&gt;, Counter(2), PosixPath('/tmp/pytest-of-v/pytest-699/test_latest_fault_never_falls_4'))
+attack = 'backend'
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-699/test_latest_fault_never_falls_4')
+
+    @pytest.mark.parametrize('attack',['missing_done','missing_manifest','corrupt_member','bad_identity',
+        'backend','strict_flag','step_name','rollback_pointer','missing_pointer','symlink_pointer',
+        'external_pointer','symlink_node','orphan'])
+    def test_latest_fault_never_falls_back_or_mutates_state(committed,attack,tmp_path):
+        cp,step,root=committed;directory=root/'ckpt';node=directory/'step_000000000002'
+        if attack=='missing_done':(node/'done').unlink()
+        elif attack=='missing_manifest':(node/'manifest.json').unlink()
+        elif attack=='corrupt_member':(node/'agent.pkl').write_bytes(b'corrupt')
+        elif attack in ('bad_identity','backend','strict_flag'):
+            path=node/'manifest.json';m=json.loads(path.read_text())
+            if attack=='bad_identity':m['identity']={'changed':True}
+            elif attack=='backend':m['backend']='native_replay'
+            else:m['strict_latest']=False
+            path.write_text(json.dumps(m))
+        elif attack=='step_name':
+            node.rename(directory/'step_000000000003');(directory/'latest').write_text('step_000000000003')
+        elif attack in ('rollback_pointer','orphan'):(directory/'latest').write_text('step_000000000001')
+        elif attack=='missing_pointer':(directory/'latest').unlink()
+        elif attack=='symlink_pointer':
+            p=directory/'latest';value=p.read_bytes();p.unlink();target=root/'external_pointer';target.write_bytes(value);p.symlink_to(target)
+        elif attack=='external_pointer':(directory/'latest').write_text(str(root/'outside'))
+        else:
+            external=root/'outside';node.rename(external);node.symlink_to(external,target_is_directory=True)
+        before=snapshot(root)
+&gt;       with pytest.raises((ValueError,OSError)):cp.latest()
+E       Failed: DID NOT RAISE any of (ValueError, OSError)
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:69: Failed</failure></testcase><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[strict_flag]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[step_name]" time="0.004"><failure message="Failed: DID NOT RAISE any of (ValueError, OSError)">committed = (&lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7db3c1bd8d50&gt;, Counter(2), PosixPath('/tmp/pytest-of-v/pytest-699/test_latest_fault_never_falls_6'))
+attack = 'step_name'
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-699/test_latest_fault_never_falls_6')
+
+    @pytest.mark.parametrize('attack',['missing_done','missing_manifest','corrupt_member','bad_identity',
+        'backend','strict_flag','step_name','rollback_pointer','missing_pointer','symlink_pointer',
+        'external_pointer','symlink_node','orphan'])
+    def test_latest_fault_never_falls_back_or_mutates_state(committed,attack,tmp_path):
+        cp,step,root=committed;directory=root/'ckpt';node=directory/'step_000000000002'
+        if attack=='missing_done':(node/'done').unlink()
+        elif attack=='missing_manifest':(node/'manifest.json').unlink()
+        elif attack=='corrupt_member':(node/'agent.pkl').write_bytes(b'corrupt')
+        elif attack in ('bad_identity','backend','strict_flag'):
+            path=node/'manifest.json';m=json.loads(path.read_text())
+            if attack=='bad_identity':m['identity']={'changed':True}
+            elif attack=='backend':m['backend']='native_replay'
+            else:m['strict_latest']=False
+            path.write_text(json.dumps(m))
+        elif attack=='step_name':
+            node.rename(directory/'step_000000000003');(directory/'latest').write_text('step_000000000003')
+        elif attack in ('rollback_pointer','orphan'):(directory/'latest').write_text('step_000000000001')
+        elif attack=='missing_pointer':(directory/'latest').unlink()
+        elif attack=='symlink_pointer':
+            p=directory/'latest';value=p.read_bytes();p.unlink();target=root/'external_pointer';target.write_bytes(value);p.symlink_to(target)
+        elif attack=='external_pointer':(directory/'latest').write_text(str(root/'outside'))
+        else:
+            external=root/'outside';node.rename(external);node.symlink_to(external,target_is_directory=True)
+        before=snapshot(root)
+&gt;       with pytest.raises((ValueError,OSError)):cp.latest()
+E       Failed: DID NOT RAISE any of (ValueError, OSError)
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:69: Failed</failure></testcase><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[rollback_pointer]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[missing_pointer]" time="0.004" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[symlink_pointer]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[external_pointer]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[symlink_node]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_latest_fault_never_falls_back_or_mutates_state[orphan]" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_explicit_old_load_and_old_save_cannot_bypass_published_latest" time="0.004"><failure message="Failed: DID NOT RAISE ValueError">committed = (&lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7db3c1acb410&gt;, Counter(1), PosixPath('/tmp/pytest-of-v/pytest-699/test_explicit_old_load_and_old0'))
+
+    def test_explicit_old_load_and_old_save_cannot_bypass_published_latest(committed):
+        cp,step,root=committed;before=snapshot(root)
+&gt;       with pytest.raises(ValueError,match='published latest'):
+E       Failed: DID NOT RAISE ValueError
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:77: Failed</failure></testcase><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_existing_incomplete_node_is_never_overwritten_or_repaired" time="0.004" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_rename_before_pointer_publish_requires_review" time="0.005"><failure message="AssertionError: Regex pattern did not match.&#10;  Expected regex: 'UNPUBLISHED_NODE_REQUIRES_REVIEW'&#10;  Actual message: 'Strict FG latest pointer changed'">committed = (&lt;embodied.run.fg_checkpoint.FullCheckpoint object at 0x7db3c1a63c90&gt;, Counter(3), PosixPath('/tmp/pytest-of-v/pytest-699/test_rename_before_pointer_pub0'))
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7db3c1a628d0&gt;
+
+    def test_rename_before_pointer_publish_requires_review(committed,monkeypatch):
+        cp,step,root=committed;step.load(3)
+        def crash(dest):raise OSError('injected rename-before-publish crash')
+        monkeypatch.setattr(cp,'_publish',crash)
+        with pytest.raises(OSError,match='rename-before-publish'):cp.save()
+        assert (root/'ckpt/step_000000000003/done').exists()
+        assert (root/'ckpt/latest').read_text()=='step_000000000002'
+        before=snapshot(root)
+&gt;       with pytest.raises(ValueError,match='UNPUBLISHED_NODE_REQUIRES_REVIEW'):cp.latest()
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'UNPUBLISHED_NODE_REQUIRES_REVIEW'
+E         Actual message: 'Strict FG latest pointer changed'
+
+../dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py:99: AssertionError</failure></testcase><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_pending_write_is_retained_but_never_a_recovery_candidate" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_committed_journal_prefix_validates_before_any_mutable_restore" time="0.005" /><testcase classname="embodied.tests.test_fg_course_strict_checkpoint" name="test_valid_cold_load_restores_latest_and_archives_only_uncommitted_tail" time="0.005" /></testsuite></testsuites>
