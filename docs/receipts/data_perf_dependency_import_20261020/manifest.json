@@ -1,0 +1,241 @@
+{
+  "protocol": "FG_S3_DATA_PERF_DEPENDENCY_IMPORT_FIX_V1",
+  "branch": "feat/data-perf-20261019",
+  "gym_parent_sha": "c2c5f7e80dbb334f4f9be9582f0e6ada5cf515a2",
+  "dreamer_sha": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+  "tested_gym_dirty": true,
+  "unmodified_failing_baseline_sha": "9ab7ff7d18a939e48bedb134979e664ec967a087",
+  "source_files": {
+    "e_data_v1/core.py": "aae5b6c9dee90066f97cc76cdc568c9d12ab5a023a8b29269d46da07ae3bca8c",
+    "e_data_v1/schema.py": "2dad266e11d5d58dcfa4dc0d1f2016bb04c12b5df44edd1f7f434b920236b127",
+    "e_data_v1/reference.py": "75b6c7da467879b6b2b652289680e7b666e63554bc857017fa596ec9b6a32a07",
+    "tests/e_data_v1/test_contract.py": "6e26525005301d0ada3a28deff6e4d1579c77498b4dd16eb89ca0fc2810254b9",
+    "src/gym_trading_env/utils/macd_5m_causal.py": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe"
+  },
+  "artifacts": {
+    "batch4_causal_market_tests.xml": {
+      "sha256": "17bce977a85b93b66eed11e2928e3ecf3f4595789755ac099d5b203d3be0b842",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/batch4_causal_market_tests.xml",
+      "results": {
+        "tests": 54,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 17.397,
+      "collected_tests": [
+        "tests.entry_v1.test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double",
+        "tests.entry_v1.test_wp02_macd::test_A02_warmup_and_price_scale",
+        "tests.entry_v1.test_wp02_macd::test_A03_stream_restore_and_prefix_invariance",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[order]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[late]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]",
+        "tests.entry_v1.test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+        "tests.entry_v1.test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+        "tests.entry_v1.test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+        "tests.entry_v1.test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+        "tests.entry_v1.test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+        "tests.entry_v1.test_macd_dated_tail::test_certified_short_interval_does_not_commit_its_partial_close",
+        "tests.entry_v1.test_macd_dated_tail::test_missing_last_minute_cannot_be_disguised_as_a_session_break",
+        "tests.entry_v1.test_macd_dated_tail::test_previous_schema_snapshot_cannot_resume_with_new_tail_semantics",
+        "tests.entry_v1.test_macd_dated_tail::test_zero_duration_interval_end_is_a_marker_not_a_fifth_close",
+        "tests.e_data_v1.test_contract::test_snapshot_optimization_preserves_pinned_math_bytes_and_metadata",
+        "tests.e_data_v1.test_contract::test_F01_common_price_coordinate_and_near_high_relationship",
+        "tests.e_data_v1.test_contract::test_F02_original_18_bytes_mask_order_provenance_and_readonly_input",
+        "tests.e_data_v1.test_contract::test_F03_full_prefix_and_all_future_tampering_are_identical",
+        "tests.e_data_v1.test_contract::test_F04_fourteenth_fifteenth_and_next_minute",
+        "tests.e_data_v1.test_contract::test_F04_delayed_arrival_and_prefix_metadata",
+        "tests.e_data_v1.test_contract::test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics",
+        "tests.e_data_v1.test_contract::test_F03_late_bucket_cannot_backfill_previous_volume_or_oi_baseline",
+        "tests.e_data_v1.test_contract::test_F05_sessions_trading_date_weekend_holiday_and_contract_reset",
+        "tests.e_data_v1.test_contract::test_F06_exact_ohlc_volume_sum_and_OI_last",
+        "tests.e_data_v1.test_contract::test_F06_missing_duplicate_conflicting_and_zero_volume_minutes",
+        "tests.e_data_v1.test_contract::test_F07_prior_20_volume_adjacent_OI_and_reordering",
+        "tests.e_data_v1.test_contract::test_reuses_original_clock_and_one_feature_calculation",
+        "tests.e_data_v1.test_contract::test_F07_invalid_OI_and_candle_fail_closed",
+        "tests.e_data_v1.test_contract::test_F08_shapes_order_padding_warmup_dtype_finite",
+        "tests.e_data_v1.test_contract::test_F09_cross_day_anchor_six_channel_differences",
+        "tests.e_data_v1.test_contract::test_F09_opening_mark_has_no_future_first_close_anchor",
+        "tests.e_data_v1.test_contract::test_F10_only_known_market_inputs_and_no_GPU_imports",
+        "tests.e_data_v1.test_contract::test_F10_observation_provenance_rejects_teacher_payload",
+        "tests.e_data_v1.test_contract::test_F11_bundle_hash_verification_tamper_and_output_isolation",
+        "tests.e_data_v1.test_contract::test_F11_CLI_help_and_existing_output_refusal",
+        "tests.e_data_v1.test_contract::test_F11_collection_index_seals_diagnostics_and_bundles",
+        "tests.e_data_v1.test_contract::test_F02_real_original_Env_bytes_and_identity",
+        "tests.e_data_v1.test_contract::test_F04_real_Env_cutoff_boundary",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[0]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[14]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[15]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[40]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[359]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[600]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_refuses_foreign_contract_and_drift",
+        "tests.e_data_v1.test_runtime_provider::test_prepared_train_source_has_exact_underlying_market_identity",
+        "tests.e_data_v1.test_runtime_provider::test_collection_process_cache_rejects_changed_payload",
+        "tests.e_data_v1.test_runtime_provider::test_native_admission_hashes_sources_without_parsing_train_csv",
+        "tests.e_data_v1.test_native_integration::test_e_market_from_existing_feature_clock_is_identical",
+        "tests.e_data_v1.test_native_integration::test_original_delay_causality_survives_feature_injection"
+      ]
+    },
+    "batch4_failure_unmodified_baseline.xml": {
+      "sha256": "cd6a8101f19fff5fcd7b1bdb613fa557a239bcd15b88f25233cc994270577fae",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/batch4_failure_unmodified_baseline.xml",
+      "results": {
+        "tests": 1,
+        "failures": 1,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 1.49,
+      "collected_tests": [
+        "tests.e_data_v1.test_contract::test_F10_only_known_market_inputs_and_no_GPU_imports"
+      ]
+    },
+    "dependency_import_before.json": {
+      "sha256": "50786c704e7910dace3a014916cde4ade269660727e21fce1c503be786a150d0",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_before.json"
+    },
+    "dependency_import_fixed_target.xml": {
+      "sha256": "e1ae06dc2229542c83271f93f84f866807c3fba87895a3369783c3efecff975f",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_fixed_target.xml",
+      "results": {
+        "tests": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 1.13,
+      "collected_tests": [
+        "tests.e_data_v1.test_contract::test_F10_only_known_market_inputs_and_no_GPU_imports"
+      ]
+    },
+    "dependency_import_fixed_related.xml": {
+      "sha256": "52c8909d94a942d3496c201ddd8af83d76c1a3338921e2dc8dc6dc343076a2fc",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_fixed_related.xml",
+      "results": {
+        "tests": 54,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "seconds": 14.999,
+      "collected_tests": [
+        "tests.entry_v1.test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double",
+        "tests.entry_v1.test_wp02_macd::test_A02_warmup_and_price_scale",
+        "tests.entry_v1.test_wp02_macd::test_A03_stream_restore_and_prefix_invariance",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[order]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[late]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]",
+        "tests.entry_v1.test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]",
+        "tests.entry_v1.test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+        "tests.entry_v1.test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+        "tests.entry_v1.test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+        "tests.entry_v1.test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+        "tests.entry_v1.test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+        "tests.entry_v1.test_macd_dated_tail::test_certified_short_interval_does_not_commit_its_partial_close",
+        "tests.entry_v1.test_macd_dated_tail::test_missing_last_minute_cannot_be_disguised_as_a_session_break",
+        "tests.entry_v1.test_macd_dated_tail::test_previous_schema_snapshot_cannot_resume_with_new_tail_semantics",
+        "tests.entry_v1.test_macd_dated_tail::test_zero_duration_interval_end_is_a_marker_not_a_fifth_close",
+        "tests.e_data_v1.test_contract::test_snapshot_optimization_preserves_pinned_math_bytes_and_metadata",
+        "tests.e_data_v1.test_contract::test_F01_common_price_coordinate_and_near_high_relationship",
+        "tests.e_data_v1.test_contract::test_F02_original_18_bytes_mask_order_provenance_and_readonly_input",
+        "tests.e_data_v1.test_contract::test_F03_full_prefix_and_all_future_tampering_are_identical",
+        "tests.e_data_v1.test_contract::test_F04_fourteenth_fifteenth_and_next_minute",
+        "tests.e_data_v1.test_contract::test_F04_delayed_arrival_and_prefix_metadata",
+        "tests.e_data_v1.test_contract::test_F03_late_historical_bucket_cannot_rewrite_earlier_statistics",
+        "tests.e_data_v1.test_contract::test_F03_late_bucket_cannot_backfill_previous_volume_or_oi_baseline",
+        "tests.e_data_v1.test_contract::test_F05_sessions_trading_date_weekend_holiday_and_contract_reset",
+        "tests.e_data_v1.test_contract::test_F06_exact_ohlc_volume_sum_and_OI_last",
+        "tests.e_data_v1.test_contract::test_F06_missing_duplicate_conflicting_and_zero_volume_minutes",
+        "tests.e_data_v1.test_contract::test_F07_prior_20_volume_adjacent_OI_and_reordering",
+        "tests.e_data_v1.test_contract::test_reuses_original_clock_and_one_feature_calculation",
+        "tests.e_data_v1.test_contract::test_F07_invalid_OI_and_candle_fail_closed",
+        "tests.e_data_v1.test_contract::test_F08_shapes_order_padding_warmup_dtype_finite",
+        "tests.e_data_v1.test_contract::test_F09_cross_day_anchor_six_channel_differences",
+        "tests.e_data_v1.test_contract::test_F09_opening_mark_has_no_future_first_close_anchor",
+        "tests.e_data_v1.test_contract::test_F10_only_known_market_inputs_and_no_GPU_imports",
+        "tests.e_data_v1.test_contract::test_F10_observation_provenance_rejects_teacher_payload",
+        "tests.e_data_v1.test_contract::test_F11_bundle_hash_verification_tamper_and_output_isolation",
+        "tests.e_data_v1.test_contract::test_F11_CLI_help_and_existing_output_refusal",
+        "tests.e_data_v1.test_contract::test_F11_collection_index_seals_diagnostics_and_bundles",
+        "tests.e_data_v1.test_contract::test_F02_real_original_Env_bytes_and_identity",
+        "tests.e_data_v1.test_contract::test_F04_real_Env_cutoff_boundary",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[0]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[14]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[15]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[40]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[359]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_consumes_current_cutoff_and_exact_market_seq[600]",
+        "tests.e_data_v1.test_runtime_provider::test_provider_refuses_foreign_contract_and_drift",
+        "tests.e_data_v1.test_runtime_provider::test_prepared_train_source_has_exact_underlying_market_identity",
+        "tests.e_data_v1.test_runtime_provider::test_collection_process_cache_rejects_changed_payload",
+        "tests.e_data_v1.test_runtime_provider::test_native_admission_hashes_sources_without_parsing_train_csv",
+        "tests.e_data_v1.test_native_integration::test_e_market_from_existing_feature_clock_is_identical",
+        "tests.e_data_v1.test_native_integration::test_original_delay_causality_survives_feature_injection"
+      ]
+    },
+    "dependency_import_after.json": {
+      "sha256": "9b0b88fa9db1314ef44f04b642e28c001d01aebbf2aa1a33d1fc60a364afa2d3",
+      "original_path": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_after.json"
+    }
+  },
+  "optimizer_updates": 0,
+  "gpu": "NOT_RUN",
+  "formal_training": "NOT_RUN",
+  "merged_to_s3_next": false,
+  "fixed_test_commands": [
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/gym-trading-env",
+      "env": {
+        "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/e_data_v1/test_contract.py::test_F10_only_known_market_inputs_and_no_GPU_imports",
+        "--junitxml=/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_fixed_target.xml"
+      ]
+    },
+    {
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/gym-trading-env",
+      "env": {
+        "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1"
+      },
+      "argv": [
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "tests/entry_v1/test_wp02_macd.py",
+        "tests/entry_v1/test_macd_dated_tail.py",
+        "tests/e_data_v1/test_contract.py",
+        "tests/e_data_v1/test_runtime_provider.py",
+        "tests/e_data_v1/test_native_integration.py",
+        "--junitxml=/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/dependency_import_fixed_related.xml"
+      ]
+    }
+  ]
+}

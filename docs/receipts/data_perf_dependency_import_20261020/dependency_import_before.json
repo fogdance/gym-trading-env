@@ -1,0 +1,39 @@
+{
+  "unexpected_modules": [
+    "gym_trading_env",
+    "pymysql"
+  ],
+  "imports": [
+    {
+      "module": "gym_trading_env",
+      "stack": [
+        "  File \"<stdin>\", line 9, in <module>\n",
+        "  File \"/home/v/Documents/work/research/fg-s3-data-perf-20261019/gym-trading-env/e_data_v1/schema.py\", line 59, in schema\n    from gym_trading_env.utils.macd_5m_causal import CONTRACT\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1126, in _find_and_load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1126, in _find_and_load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n",
+        "  File \"<stdin>\", line 7, in audit\n"
+      ]
+    },
+    {
+      "module": "pymysql",
+      "stack": [
+        "  File \"<frozen importlib._bootstrap>\", line 1147, in _find_and_load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap>\", line 690, in _load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap_external>\", line 940, in exec_module\n",
+        "  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n",
+        "  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/yfinance/cache.py\", line 1, in <module>\n    import peewee as _peewee\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1176, in _find_and_load\n",
+        "  File \"<frozen importlib._bootstrap>\", line 1147, in _find_and_load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap>\", line 690, in _load_unlocked\n",
+        "  File \"<frozen importlib._bootstrap_external>\", line 940, in exec_module\n",
+        "  File \"<frozen importlib._bootstrap>\", line 241, in _call_with_frames_removed\n",
+        "  File \"/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/peewee.py\", line 68, in <module>\n    import pymysql as mysql\n",
+        "  File \"<stdin>\", line 7, in audit\n"
+      ]
+    }
+  ]
+}

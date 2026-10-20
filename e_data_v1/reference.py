@@ -23,6 +23,7 @@ FILES = {
     "ohlcvi_contract": "utils/ohlcvi_contract.py", "s3_market_clock": "utils/s3_market_clock.py",
     "entry_market_cache": "envs/entry_market_cache.py", "session_fx": "utils/session_fx.py",
     "session_futures_strict": "utils/session_futures_strict.py", "market_features": "utils/market_features.py",
+    "macd_5m_causal": "utils/macd_5m_causal.py",
 }
 
 

@@ -313,10 +313,13 @@ def test_F10_only_known_market_inputs_and_no_GPU_imports(market,tmp_path):
     # the standalone research dependency contract in a fresh Python process.
     fixture=tmp_path/'market.pkl';fixture.write_bytes(pickle.dumps((f,schedule)))
     script="""import pickle,sys
-from e_data_v1 import build_e_data_v1,Decision
+from e_data_v1 import build_e_data_v1,Decision,MarketData
 f,s=pickle.loads(open(sys.argv[1],'rb').read())
-build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],s)
-assert not {'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
+bundle=build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],s)
+_,meta=MarketData(f,s).macd_snapshot(f.Date.iloc[374])
+assert meta['algorithm']==bundle.schema['macd_5m']
+unexpected={'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
+assert not unexpected,sorted(unexpected)
 """
     result=subprocess.run([sys.executable,'-c',script,str(fixture)],capture_output=True,text=True)
     assert result.returncode==0,result.stderr

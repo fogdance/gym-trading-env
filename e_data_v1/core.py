@@ -313,7 +313,8 @@ class MarketData:
         Cached per-cursor outputs make arbitrary queries and cold reconstruction
         deterministic. The cache is private to each MarketData instance.
         """
-        from gym_trading_env.utils.macd_5m_causal import CausalMACD5m, CONTRACT
+        macd = legacy_helper("macd_5m_causal", self.config.legacy_root)
+        CausalMACD5m, CONTRACT = macd.CausalMACD5m, macd.CONTRACT
         cutoff = local_timestamp(cutoff)
         through = int(self.frame.index.searchsorted(cutoff, side='right'))-1
         if not hasattr(self, '_macd_cache'):

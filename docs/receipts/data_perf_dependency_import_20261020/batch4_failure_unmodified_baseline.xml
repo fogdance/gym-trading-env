@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="1.490" timestamp="2026-10-19T18:02:38.167945+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.e_data_v1.test_contract" name="test_F10_only_known_market_inputs_and_no_GPU_imports" time="1.324"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;&lt;string&gt;&quot;, line 5, in &lt;module&gt;&#10;  AssertionError&#10;  &#10;assert 1 == 0&#10; +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-c', &quot;import pickle,sys\nfrom e_data_v1 import...de=1, stdout='', stderr='Traceback (most recent call last):\n  File &quot;&lt;string&gt;&quot;, line 5, in &lt;module&gt;\nAssertionError\n').returncode">market = (                         Date  ...                       bob
+0   2026-01-05 21:01:00+08:00  ... 2026-01-05 21:00:00+0...'end': '2026-01-06T23:00:00+08:00'}, {'start': '2026-01-07T09:00:00+08:00', 'end': '2026-01-07T10:15:00+08:00'}, ...]})
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-658/test_F10_only_known_market_inp0')
+
+    def test_F10_only_known_market_inputs_and_no_GPU_imports(market,tmp_path):
+        f,schedule=market; f=f.copy()
+        f['Oracle_future_target']=np.arange(len(f))*999
+        f['Teacher_score']=100
+        bundle=build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],schedule)
+        serialized=json.dumps([bundle.schema,bundle.bucket_manifest,bundle.decision_meta,bundle.provenance,bundle.events])
+        assert 'Oracle_future_target' not in serialized and 'Teacher_score' not in serialized
+        # Native Env tests intentionally import Gym in this pytest process. Verify
+        # the standalone research dependency contract in a fresh Python process.
+        fixture=tmp_path/'market.pkl';fixture.write_bytes(pickle.dumps((f,schedule)))
+        script="""import pickle,sys
+    from e_data_v1 import build_e_data_v1,Decision
+    f,s=pickle.loads(open(sys.argv[1],'rb').read())
+    build_e_data_v1(f,[Decision('CZCE.FG809',f.Date.iloc[374])],s)
+    assert not {'torch','jax','wandb','pymysql','gym_trading_env'}.intersection(sys.modules)
+    """
+        result=subprocess.run([sys.executable,'-c',script,str(fixture)],capture_output=True,text=True)
+&gt;       assert result.returncode==0,result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "&lt;string&gt;", line 5, in &lt;module&gt;
+E         AssertionError
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-c', "import pickle,sys\nfrom e_data_v1 import...de=1, stdout='', stderr='Traceback (most recent call last):\n  File "&lt;string&gt;", line 5, in &lt;module&gt;\nAssertionError\n').returncode
+
+tests/e_data_v1/test_contract.py:322: AssertionError</failure></testcase></testsuite></testsuites>

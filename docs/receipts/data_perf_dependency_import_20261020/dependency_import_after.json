@@ -1,0 +1,24 @@
+{
+  "unexpected_modules": [],
+  "macd_contract": {
+    "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+    "periods": [
+      12,
+      26,
+      9
+    ],
+    "histogram": "DIF-Signal",
+    "initialization": "first_complete_close; first_DIF_and_signal_zero",
+    "warmup": "35_complete_buckets_strictly_before_current_bucket",
+    "scale": "1000*raw/current_visible_1m_Close",
+    "invalid": "all_zero",
+    "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+    "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+    "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+    "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+    "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+    "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+  },
+  "macd_source_sha256": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe",
+  "audited_source_sha256": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe"
+}
