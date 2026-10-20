@@ -75,7 +75,20 @@ def test_hot_restore_cannot_rewind_a_prefetch_with_restored_pending_batches(conf
     finally:a.close();b.close()
 
 
-@pytest.mark.parametrize('attack',['missing_delta','digest','duplicate_version','wrong_source','wrong_role','missing_parent','pending_order','wrong_capacity','foreign_ref','batch_bytes'])
+def test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection(config):
+    a=VersionedStream(open_case(config,'f1'));b=VersionedStream(open_case(config,'f1'))
+    try:
+        root=a.save();next(a);abandoned=a.save()
+        a.load(root);next(a);a.load(root);a.release_snapshot(abandoned)
+        assert not a.nodes and a.next_id==3
+        state=pickle.loads(pickle.dumps(a.save_full()))
+        b.load_full(state);b.retain_snapshot(state['current'])
+        assert b.next_id==a.next_id,'COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID'
+        exact(next(a),next(b));exact(a.save_full(),b.save_full())
+    finally:a.close();b.close()
+
+
+@pytest.mark.parametrize('attack',['missing_delta','digest','duplicate_version','wrong_source','wrong_role','missing_parent','pending_order','wrong_capacity','foreign_ref','batch_bytes','counter_regression'])
 def test_graph_and_pending_corruption_reject_before_source_mutation(config,attack):
     a=VersionedStream(open_case(config,'multi_f3'));b=VersionedStream(open_case(config,'multi_f3'))
     pa=embodied.streams.Prefetch(a,amount=4);pb=embodied.streams.Prefetch(b,amount=4)
@@ -91,7 +104,8 @@ def test_graph_and_pending_corruption_reject_before_source_mutation(config,attac
         elif attack=='pending_order':bad['pending'].reverse()
         elif attack=='wrong_capacity':bad['amount']=1
         elif attack=='foreign_ref':bad['pending'][0][1]['session']='f'*32
-        else:bad['pending'][0][0]['teacher_action'][...]^=1
+        elif attack=='batch_bytes':bad['pending'][0][0]['teacher_action'][...]^=1
+        else:bad['source']['next_id']=bad['source']['current']['version']
         # Rehash the outer graph to reach structural/link validation.
         bad['source']['graph_sha256']=_hash({k:v for k,v in bad['source'].items() if k!='graph_sha256'})
         before=b.source.save()

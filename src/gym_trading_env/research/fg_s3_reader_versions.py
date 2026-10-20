@@ -188,7 +188,7 @@ class VersionedStream:
 
     def _export_full(self):
         if any(r._transactions.stack for r in self.readers):raise ValueError('READER_VERSION_TRANSACTION_OPEN')
-        state=dict(protocol=STATE_PROTOCOL,binding=self.binding,session=self.session,
+        state=dict(protocol=STATE_PROTOCOL,binding=self.binding,session=self.session,next_id=self.next_id,
             base=dict(version=self.base_id,digest=self.base_hash,small=copy.deepcopy(self.base_small),
                 seen=[{k:[list(x) for x in sorted(v)] for k,v in item.items()} for item in self.base_seen]),
             nodes=copy.deepcopy([self.nodes[v] for v in sorted(self.nodes)]),current=self.checkpoint_ref())
@@ -197,7 +197,7 @@ class VersionedStream:
     def _parse_full(self,state):
         try:
             if (not isinstance(state,dict) or state.get('protocol')!=STATE_PROTOCOL or state.get('binding')!=self.binding
-                    or set(state)!={'protocol','binding','session','base','nodes','current','graph_sha256'}
+                    or set(state)!={'protocol','binding','session','next_id','base','nodes','current','graph_sha256'}
                     or _hash({k:v for k,v in state.items() if k!='graph_sha256'})!=state['graph_sha256']
                     or not isinstance(state['session'],str) or len(state['session'])!=32):
                 raise ValueError('READER_VERSION_GRAPH_IDENTITY_OR_DIGEST')
@@ -227,7 +227,9 @@ class VersionedStream:
                         raise ValueError('READER_VERSION_COUNTER')
                 self.source.validate_snapshot(parsed._full_state(v))
             parsed._check_ref(state['current']);parsed.current=state['current']['version']
-            parsed.next_id=max([parsed.base_id,*parsed.nodes])+1
+            parsed.next_id=state['next_id']
+            if type(parsed.next_id) is not int or parsed.next_id<=max([parsed.base_id,*parsed.nodes]):
+                raise ValueError('READER_VERSION_COUNTER_REUSES_ALLOCATED_ID')
             return parsed
         except (KeyError,TypeError,IndexError,AttributeError) as error:
             raise ValueError('READER_VERSION_GRAPH_SCHEMA') from error
