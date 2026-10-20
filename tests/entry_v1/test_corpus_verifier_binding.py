@@ -57,6 +57,7 @@ def corpus(tmp_path_factory):
 def test_prepare_start_resume_bind_same_pin_and_reexecute_verifier(
         tmp_path,monkeypatch,frozen_pair,corpus,stage,name,run_module,run_class):
     owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+    runtime=importlib.import_module('embodied.run.'+run_module)
     s=f1_settings(corpus);s.update(target_steps=8,burnin_steps=4,prepared_dir=str(tmp_path/'prepared'),
         run_dir=str(ROOT/'artifacts/fg_s3_v2/semver_binding'/tmp_path.name))
     a=supervision.QualitySupervisionAdmission.preflight(supervision.SupervisionSource.from_corpus(corpus))
@@ -97,7 +98,7 @@ def test_prepare_start_resume_bind_same_pin_and_reexecute_verifier(
             assert not Path(root).exists()
             constructed.append(flags)
         def run(self,stop):return dict(status='STUB_ROUTING_ONLY_NOT_CERTIFIED')
-    monkeypatch.setattr(importlib.import_module('embodied.run.'+run_module),run_class,RoutingRun)
+    monkeypatch.setattr(runtime,run_class,RoutingRun)
     for resume in (False,True):
         assert owner.start_prepared(s['prepared_dir'],authorized=True,resume=resume,**kwargs)['status']=='STUB_ROUTING_ONLY_NOT_CERTIFIED'
     assert [c['resume'] for c in constructed]==[False,True]

@@ -40,6 +40,8 @@ def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeyp
     source=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus))
     proof=dict(identity=dict(preparation=dict(course=source.source.course_identity_hash,
         source=source.receipt['content_identity'])),engineering_only=True)
+    owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+    runtime=importlib.import_module('embodied.run.fg_s3_e_quality_'+name)
     transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
     if stage=='f2':
         s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
@@ -50,8 +52,10 @@ def test_all_offline_runtime_and_probe_use_strict_latest(corpus,tmp_path,monkeyp
         s=actor_settings(corpus);s.update(run_dir=str(tmp_path/'run'),prepared_dir=str(tmp_path/'prepared'))
         monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
     monkeypatch.setattr(transfer,'transfer_parameters',lambda *a,**k:dict(content_hash='STUB_TRANSFER_ONLY'))
-    owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
-    runtime=importlib.import_module('embodied.run.fg_s3_e_quality_'+name)
+    if stage=='f2':
+        # F2 binds these helpers at module import; patch its lookup sites too.
+        monkeypatch.setattr(runtime,'inspect_f1',transfer.inspect_f1)
+        monkeypatch.setattr(runtime,'transfer_parameters',transfer.transfer_parameters)
     monkeypatch.setattr(owner,'create_agent',lambda *a,**k:Agent())
     if stage!='f3':monkeypatch.setattr(runtime,'create_agent',lambda *a,**k:Agent())
     prep=owner.preflight(s);index=tmp_path/'join.sqlite';build_join_index(prep.source,index)
