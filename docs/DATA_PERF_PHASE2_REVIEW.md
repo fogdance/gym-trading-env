@@ -142,3 +142,22 @@ review's formal-guard risk; historical Corpus may still be inspected read-only
 for development without promoting its certification.
 Phase 1 audit is closed. Continue phase-2 E2E measurement and final independent
 real native G3/Reader evidence, without expanding audit scope.
+
+## Phase 2 final acceptance
+
+Frozen Gym 2dd45283567398e782cbcd0a958e9be873386921 / Dreamer b7a693b3c7b0b45eeecdec954818be42d40e67b6, both clean.
+Real TRAIN two-day six-behavior full pipeline 464.314780282s, 1.954x versus phase1.
+Generate 225.623787616s; independent native G3 205.975605370s, all 4146 labels,
+six complete public cold restores. Reader all 10 views exact restoration / 3840 rows.
+Original slow Producer whole-4146-row native/Teacher/array/final-state comparison PASS.
+query_final_exact_sha_01: 107 exact root SHA and 51 exact clone-final SHA pairs, all
+complete labels match; query CPU 11.996322203s. shared_final_01: 106 PASS, 8 actual
+optimizer cases deselected NOT_RUN. final_contracts_01: 113 PASS. Raw source stayed
+unchanged during all terminal runs. No whole-project pass claim.
+Self-review checked common restore path, hot-state ownership, readonly nested rows,
+source/account/epoch/cursor binding, JSON separators/types, ordered deltas and stream
+reset, per-query source stats/strict path fallback, six-trace G3 count/hash binding,
+unchanged formal training guard and source/observation isolation. No source outside
+the isolated task trees was edited. Ordinary public Env history remains mutable.
+Final small receipts are archived with BATCH_MANIFEST and IDENTITY_LOCK under docs.
+Phase2 accepted; user requests subsequent new hotspot optimization. No phase2 merge.

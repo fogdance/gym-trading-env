@@ -1,0 +1,1214 @@
+{
+  "protocol": "FG_S3_DATA_PERF_NATIVE_QUERY_PROFILE_V1",
+  "status": "PASS_PROFILE_ONLY",
+  "created_utc": "2026-10-20T05:34:27.680287+00:00",
+  "corpus": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/numeric_context_long_01/corpus",
+  "corpus_identity": "ec3eeb1b2381e479f237a11a0b651226c54bdfd67e50eca4c625477cbaee6a75",
+  "runtime": {
+    "gym": {
+      "sha": "1bc608da9b29bad73c6fcab8f85f87c848830712",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+      "dirty": false
+    }
+  },
+  "code_sha256": {
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/__init__.py": "9bd1c38796e37e4316de179b2b8c3a58dfb8c7333d541c867937c4ea1c5dc9ce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/monte_carlo/day_block_bootstrap.py": "6283a77f8183b1c02db1a780520e6f58770f3c3d9afabff0883caf5d300004a3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/monte_carlo/session_library.py": "c2f7ba1103b943eca388e315863e6f4463409d29f33ad833dd3eb1e314b9a4e2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/monte_carlo/__init__.py": "6934524affebf80d472934af418dce5ae1e600e882a65d916f1aa18c9ec4b9bb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/monte_carlo/io.py": "85ee0a6e6312257ce213e45cd8b7b932f9c2f6ef92d9edb453d1d8baf1b1e054",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/account_fingerprint.py": "3afb1f979f72e86647e91349d79fc637a7cc0f4cb87dd9bce24e92b834b1e47a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/rpc_client.py": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/juejin_db.py": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/data_processing.py": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/plot_intraday.py": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/daily_features.py": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/rpc_protocol.py": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/macd_5m_causal.py": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/agent_features.py": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/market_store.py": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/data_downloader.py": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/bar_source.py": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/snapshot_json.py": "614937d2ee86ccaf667b6bbd91ee8cf2e910cbf9d8e24ce7e62687b0bb7de4ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/__init__.py": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/decimal_util.py": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/trade_util.py": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/s3_market_clock.py": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/market_prefix.py": "0b3cb170fafd6c158a9486c751620f25e11ba44765a7c8f636ae3d24cecf16d4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/native_account.py": "af26fe3eb73e81f26285377aad5a2aa457ea65df558baffc18dcbd94ae7f07a1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/feature_engineering.py": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/utils/atr_util.py": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/config/settings.py": "b9ebb59f1533447d2865267702033a0f1ef734a9e8e7cdec2100473d3a8d9bac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_exact_witness.py": "5bb0a0f8f4035c9f219f2b1431b52fda2e0b75a3310b806af77c543abe41771a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_dataset.py": "4b5f495ab1d46790186803910d08cb78edc140685ea093e5657fd6381fa6cea5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_evidence.py": "d42c0a408234fe1b9fb31d4ff918d68d2cf5058c822ea31360a443219216b777",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_reward.py": "b68a60ef88ee97a93638c60ee8e48804e863155edae896d572340d5b49c954ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_study.py": "3dd2af2f2255d251009977a9587c521fa12d42dc94b405d4b4009775d2adfeac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_compat.py": "684b6aaa5b59650beb2e6581e6375aeb7b05fdad0cd9b00671c654d1360d1d8b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_q_v2.py": "4af621dd4aab0e586b7bb719bfae8ef16e071814ba331a35d30ff9d133ccde67",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi.py": "c3e81d1460e266389adcd5828cd293be416dde84ccd8dcc78be56144e3895a06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_observation.py": "79f8cdbc612704f79056e70a8d2723539d2652adb05161a172ff18586d606dd2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher_v2.py": "73c5574407f7c3cfbf27ccbf810c5685967260d854cf4fe7a877b1acd226cc2b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_horizon.py": "d6055b8c5f6a12c5b06f64468296f67492d5df8e08d844bd026ab727a4a39229",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_verify.py": "bd01b690c890cc4402d2328a9ad343b9c20e4177bf73c0260f20cead9686fbad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_contract.py": "166b840a6f1885a5b8ee59b10a15cfae86f63bce9b4e97462ce28c38dd976856",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_reader.py": "5ff6e22edd4fac153250519c75a41a0c69d34a021c122a5f52dae6952752c734",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_d0.py": "751ed3f85759e805526b44d630c4e7e01277e6f30c3d922e7ea478c251654e65",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3b_advantage.py": "233aa61a9ceb122f21e0e2fa2ed6fde55a04cd727cf70568e94a564a6993e6a5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_pilot.py": "68493877d6c1664fba711b4473ac65a2f06a7f3b80873731e709c6c42e7badef",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_suffix_store.py": "0cd780b6c4e02816986d91a4e9c47b994a81d9fb169d1e0b9a851700f73854f3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3.py": "e338840cc0e1b5d7fe1b0f6ecc92e0b1a07a59023ef05f00987f1c70411e9e5c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_dataset.py": "08ffa277c82b5e289424e8eb4793a2ab80385c2ca966a5cf6204c8695b9f92a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_profile.py": "1673393fd8bd7e305b9e2456d12baadf79a978bc45b6332fc96d5d7d3b768085",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_oracle.py": "914851a2cae766ece72ad824d65ee331919bbef96051a6287fea513a4c48e965",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_reward_study.py": "efe6a479662e660022f764f6f5e629558fa8f24a32a23752f1f461f2e626d064",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_abcd.py": "e45fba1cc12ae78e3d7f8b85c77d83e60435e6e52d7c0d740a85661c49b27caa",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_gpu_check.py": "ffe804a8c9e15b3e764fdd8fa3a9d2b730a7d9a7b72018829b847c6933338391",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_collector.py": "9e7124c764fc1fa089827a2c13fd7c2f67d7548737fc58e88eed85c11a5349d9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_foundation_checks.py": "6e992fbdef91cab1f2ccf5b6b9783e72540f6b1bc3c9c3444c87d5476a245ec2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_experiment.py": "f85cd852f17ac2d380c226f637975c72053c7d08f78644a5ee901b9457f8a490",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_worker.py": "4ca0c84f6c040deca80a8f53bce0db232bfa06462102d237c4fe9ad8898cbe05",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus.py": "ce0201a39702fe9663e203822185377334db02d977393dbeec0cae925acadda3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_experiment.py": "78dba228fce111236f0053ba27d023d68a9b1351ddeed168d2ee31bc2b7f5278",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_folds.py": "7ea3f66ba98980679176f1250173b7dbafe48ae7ad35105b2a0d61cced0d15ac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_pipeline.py": "498ef879a87382e5c5f71786c3696d532c933c410ec842d9394657bf06f9e692",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_source.py": "7236ecb1f4d35f5c35719b3031664ac94c018f574d84f78b9d406a7975546202",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_fold_statistics.py": "c0569a8a92b641d4f56747689936591492c5dd33e737f548d43a2be0ea5d64a8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_coverage.py": "aeb972e8246b47c5198acbd7c241cfbb7f52b98021db493b3718a55ef0fc4e0a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_online_monitor.py": "1ead5d2231ba9121bc6a4cffd6189a7ad4258ea3239cc2a0bbb5563b773e7cdf",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_foundation.py": "a2ede73f01e25a9f58c61e4a534424f650ca95dab7f5eb1ac5e4dddfd6562a91",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py": "0a518426759618e71fdf6cab828a3db4efba8a3fa268572e81461aa9825fe5ce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_prediction_evaluation.py": "55f9cb28f1e2c9387612c8eefb09a173c541168169017db1a0fac4ae82e520e0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py": "92d47685f5df0eb118928f7ae0110ffa4138d97868174261e197dba33761d717",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_compare.py": "385c6739c8b5752a2704b3ef8ed979e0deb78e0489d2789002e11ff64db4dc98",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py": "3d04149b20ad6fc0f8f5fb7302d417a1f7bad995d15324c53089b757b1157af4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py": "faacb20f9f1ddad49658c319a494db28571afa85675dfc5230ada430ed779497",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_prediction_evaluation.py": "60cd9bf04437619ffb96df741e3bcb4535c2ad2a43d8e9faa8ee3e7be6fe27b9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_replay_coverage.py": "abf68b1206b20a07dc88a7b122da4431907b72f24702a6d0636ab828c7e4c300",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_replay.py": "a6742d439899adc127165e943a6076db51c25fdf4a84fc786a1ee44ae302780e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_eval_metrics.py": "37f309d373b1d6efc21bf43fb2db34a52d92a2b047f54a098d96ad11bd777e9c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py": "9c3a7acf0a28004e7445bbf2a17dd443d94c3ef74a5691788e400adec2fb8e4c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_admission.py": "0f5e58611dc7bb2356473715ebd45dd574e28d6e831e34785e88f922a63be3be",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_replay.py": "31bcbe3350944ba4ef5ce3f451c0a15370ac69f832be6950c182a30e7f2585c5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_observation.py": "93ecbbf3659f0e1305e2e32ded2b7e97aa359a9b4dc9fc1364d9264618897951",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_gate_calibration.py": "d9378024e32aa98300165f5a0aabe88748b832632baf7337040a8930414e44ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher.py": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py": "9adb94247180738272d4eff9fa8dee74291c6f4bfcdb015f8cc87cf423402b87",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_experiment.py": "74908b8afb7717abdcd16c9df483ac024dd2e2adf4caf5dd2cdcaccf8090b54f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_outcome.py": "45edacab1efdd2ef164ee0e4ac129abd7a608ea016f68836b92e1153811a62b6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_windows.py": "1741171334069144ad05b13f9c8d11158ba98b472e553d6b7f4ffcdefea0380a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam.py": "fa1855def47daf5103602d66e8d9e71da8191ed28a8aa53f5e7b021d7c4a6eb9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_evaluation.py": "e8b4be05f1d18ac58abf83ce88a8e51ed907b3462b3dd0bc546dbeb4f044af90",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3b_normalization.py": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_train_pool.py": "84b9b9915e23273879c74cc9dcbf009890060bffc80e22f1bb4fd1c0de413212",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/__init__.py": "bf307855e6e572930b7a6358cc1986d7065425b82b4136fd80f5854344c62ae1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py": "4cb60f5e6efccf31db6d6b25d672ab0588d9606bf40acbd5a08ded4f1523af3e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_session.py": "8432164a74848df66563ca5acc76da9b0e7f8f52987533ef92d19848077eb568",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_supervision.py": "da4520916b7d324783cf5ebaf775b83f2857cbd9a9dbf4da9382561b23d9821d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_events.py": "c476f7d8bc7a3bcbcab1f9ec0f878d38841965acca3ebe30d12c8c0545c7724c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_actor_checks.py": "27e558d5882d2dc9a7ea18510b98c281250d94d16e020ff93ee2aaa1eed81e25",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_parallel.py": "570b5dba0810be4641a2084bbb96c18e4e508b5143ddaa7e849488bf261600c5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_evaluator.py": "3fc3269c9e548ce8ba4d8c441ec421c3e1879aa8a757d42ea3b2a971195ab7c2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_actor.py": "80b1fd83c284c031695566e731b45681931360e1046c5e743b823f6d2bd1dde9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_experiment_v2.py": "c64c93e1934e2352fb1f144cf6f1e17fa57359d56493957d4c209bf230af7fce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_provider.py": "6df9763871722404542ea58e3e861936a1f3efaff84bf50094f72a2edc69fbe4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_beta.py": "c529fada5e89614c954b32713a86408f3017e5a8191f3e24958b8414ad0672fd",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_admission.py": "2bb58bf800fb6180f0c64dd7529bb19f721a5e80f977e91e6e051b3d149ee503",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_data.py": "8708445f4b41450e2105df75d70fc68911627fe85b6b1dabcc231fa85b868b7b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_heads.py": "0f114e7b15ac3419ef48d5d09eb942f35f69d47b6c2fe2d850b6ab302cac68ec",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_learning_diagnostics.py": "724205d8f4d218ba1432e157ac80726900b00ace9fe7d69fba9bcee6272cd155",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_verify.py": "4b84825d700bcf72bffdeee763deb84664dc70185726bfb7c67b69cc52ba6cb4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_abcd_evaluation.py": "a56dcc674234f1eb79d596b2cecaaaaff7df99b9bd8e547a5750202cb5216e2a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3a_labels.py": "b57348eb22a4c61012df74fbfc29e848500eaf86783f45104c6525ee88b010e9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_score.py": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_reward_candidates.py": "cbcfb6d8f040c8db17fa8fb93200213769d19028d30218c61ef9b8bc6b1b8c8b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_online_simulation.py": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": "3de3b8cdb5e1f2a2501eb48c9a2bd08c02d5981938a47511f2d6bf77ce53bd8d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3b_verify.py": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_bridge.py": "21530f9b65fd2568e562903d80861fa9bd4af55ef5d3484f532c0b18ad5be99e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_single3_evaluation.py": "e3c8e32bdf1523c6c6ea0efcd88243b5836be845dd9bfe20dc26e46336eb1fea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_teacher_catalog.py": "409fd4337f4ec2bf6f7e2ef62275068cfaeccb7afd12b6bc59d6c50458306225",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_state.py": "efd4e9b7b46ca6ac63683a5916fb41292fe4cb73df8912e98a7337c4fe17f58d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_strategy_simulator.py": "e5bf758c75e2c5c5827bb9595cd1ed001fe4914a64b84d552fff7399a200a609",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/walk_forward_split_builder.py": "bd970d83e511bf8e75375e7ab568479a784f1674f73d23348baf6136201d91ed",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py": "9b6e71f7dd512290185cb63473575844efc025697b0c66b6540e30a0e2116755",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_synthetic.py": "a31e94f5a2435452cfb39416d66e6698a122a11ecabf99eb2babf03263b38519",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_entry_v1.py": "d690fe33ec8568e66904547eab45c0893efc1e4117d8fe75a1d5712611f83930",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/entry_analysis.py": "0383c6b020bbee80f9cd2eac8da59063cd9dd5419d1300e6aeaf4397a2ac7adb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_collector.py": "c2f69fbe0f0f7c929995fc8de0dd36e823432a9e7150c50543a2d080ab5e00a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py": "d1a2949b5b983786c695888997c2206839f9ce22ebb893f3cacd7080dec17bfb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_model_smoke.py": "a299573a3e7aa136a4e89810a3d170928f7f90f3d13c4584bba038d04556b95a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_history_statistics.py": "196e80ec1fe70beb80a849d85c3f28303ca87805a9344d958deaf0475b43ad29",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_label_pool.py": "e9d1730b5d6e161b63a558a3702651d2898c649f82bca5383d0e2634dc8aa97b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_b2_outcome_catalog.py": "2c90f968a0e5a9589592cc6a58d94808bc1366c243300eca296555477b6b3b5b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_heads_checks.py": "d6acc4d263d5c5fbc4a037139ef4c6307bedc14cbed65d8fdca7c720bf945a5f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3b_weights.py": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_strict.py": "22185995239d18ab035793ffa56cc20ec717a0ec9a52e8c99eeef1a3cb481f94",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py": "a6a420f5e76c89e2e41a48b29d76bf25d83bb4803a5d72dd14593ec2850ed8a3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/entry_env.py": "8cedd092aeb8ee5e6ebdeab1a11bf516f03ea060e6dc5c2c26e477673fa852a8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/position_manager.py": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/broker_accounts.py": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/metrics.py": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/entry_dataset_env.py": "d55faff6d97412392a712117e9908110a5126ef70824d7cfd6d3589bbf19f998",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/trade_record.py": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/account.py": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/entry_market_cache.py": "b54148c9689a2ceaf5823e02d035b8d21b00367e4224f71a0e79035e6862873f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/entry_execution.py": "6c31a5600a47b83a7898bc3d0e175568436063d7813e690e740d4751403aa6c7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/__init__.py": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/position.py": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/user_accounts.py": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/action.py": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/entry_contract.py": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/trade_record_manager.py": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/target_transition.py": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/callbacks.py": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/trading_env.py": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/config.py": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/accounting/ledger.py": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/envs/accounting/__init__.py": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/rewards/fast_take_profit_reward.py": "eb7b9bcf1c8a725e416151e041efb438f297bfcaca1c1466050602d02a9a3781",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/rewards/reward_audit.py": "8ba64fe5bee3df82132b69f743eb3b56b28a432c4cbe33ab703b38a9370c7244",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/rewards/__init__.py": "2eb123cb3314c14d6ebfb5b6eb6b52629aab849fc798f56c55fe2846aa4eaf69",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/src/gym_trading_env/rewards/reward_functions.py": "a63b893cb2b93c3072c236fc839b019df1431c6e7900e5011c80b7c4bc979ed7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/validate_real.py": "df75ee86da19db198b358c635d20ad7de5d04a0b9ea87d3ef660803bbe1f8fe5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/diagnostics.py": "b81979052cc76b7f9545b910a94b683912ed460ad8a735ea8e73eb0ea5e1ce9d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/schema.py": "2dad266e11d5d58dcfa4dc0d1f2016bb04c12b5df44edd1f7f434b920236b127",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/provider.py": "2d3ac487b3da568d69ef589d6b3633b2cd99e6db5a68939e5b4d02c4890eb515",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/reference.py": "75b6c7da467879b6b2b652289680e7b666e63554bc857017fa596ec9b6a32a07",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/isolation.py": "fb9dbfb56f13f799a118ad37ec8925538587431fbc4663cb41c30528536a3219",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/__init__.py": "ed54d12ed6686527754b6b691d727881b25ee8bd648fdbec3714337fc62e19f5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/env_probe.py": "c2a39af45b559fa5d57d31348807c1cb0de1f2e5bd7734640e866ae36dbfe15e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/io.py": "fafabcb224d12153db37c8a1789785014b1d495af1a5420b06dc42771a675b2d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/__main__.py": "bd045ddd5242d002f692dac452be9afba38deef5cde541a5fc074bfef5987b91",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/sources.py": "10dbe229bc4dfc0f4dd5ce59e8e69aab665747827c448c3361c0282282ca63ae",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/cli.py": "032eebe76125c8551947213f960270a77b3fd5c376811bc242f16fd3a3de5614",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/e_data_v1/core.py": "cdd5a20541ee390f7547fdea14890fe72d734ceed3fc0538a8a92349babcaeec",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3b_bc.py": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_composition.py": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_entry_guard.py": "1f046dc6d413640943c970cd18a23f66e687177f148f556917b5e29dafddacfe",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_quality_course_contract.py": "d49ae4d78b6c42390aef407c73ba21e6bb40a12601955dc807a6e50ebaee1b42",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/rssm.py": "031b9cb9c29023501d679ca971d6dd8f6428fd107eb3c9c4748cb21c83ebcb3b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_b2_outcome.py": "fb24a72d5556f578d1026337b89e2ddfa2162d3ae8411bb924377eaedf256f41",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3c_agent.py": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/agent.py": "0748d7231df98c34dd39638eda2247ca6b26f03a95fff262579cba003aba37e8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3a_agent.py": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_quality_foundation.py": "615489abbccbf3a7e9713e4bd7aa6f7e7f036cc956c87b5b8ca6471f5b296f1b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3a_actor.py": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_config.py": "53748286f37d6c8d3c946723d3e1c563681862031beeacfe5f32ca5efc2b7cf9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_encoder.py": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/configuration.py": "7577cf9749da1ea4c28cc9d1fa4a40db914432f3da2661e457a67ff5c5da8ddb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_stage_transfer.py": "700def17392ad869249aa9da2f6b73844bf30f43241b6c652772c9e285e43070",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_single3_offline.py": "af695e2c13c53136852441ceb3c15f518c76499b4d7d114267ddac2109198253",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_quality_v2.py": "2faff66cc44802770bb638f5cb64bac42335837fd6bd4c8aab8135392e9a2070",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_diagnostics.py": "e7dd6e880e80473d2af2dbe5a90e324b7e3daef66bcb3a5d254c0c54d157fb9b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_tutor_loss.py": "4ac7bcc73471a9318253f0cbd5b7e670aff1854e935fdbf0150c35b8287a77ab",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_quality_actor.py": "3cf6bdeebdb4f85c6d2deaea9f466f58d90f4ffe95f995067625d661e9fdd559",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_quality_heads.py": "825e126bfc6f448362550d3365ff9d43828d083618a71328fd6c2276069f26e9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/main.py": "eaff77b00a0425dc2d9c14218787a2b87dd58e2842f3720f45f914033c1a47bc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_v2_agent.py": "78d4ebc546849bf6c037b18ec3f813347d91fd91217b7e9a0b7ac218f93f9569",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/walk_forward_guard.py": "6cf1ac0b6df42a4c913d168ce68870f02acd71d7356da242948e6de0c6101017",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/dreamerv3/fg_s3_e_quality_online.py": "308c1377cd959fb696fe0aca68c327cf8cb9520fa176d21a2af65900d564d732",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/__init__.py": "de1322d37227254ce32ce2358f5c0d034fdc18fc8d6d0c7e9b62757ef22e7dfb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/perf/test_replay.py": "d492f1e266dd485b3d482d1678837158bcd6aabe3b07e8263eca4bf5440c8302",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/perf/test_bandwidth.py": "95f58718198d2279e29040d95ab09c0a9de35fd90419329becf5079f2967f7ac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/perf/test_distr.py": "6dc55dffb4ae68731ecea3e3bc961fac8812bba5dbe1bec089065e47f1e4a04e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/perf/test_driver.py": "a8a85eef4aa9fa6337929bf3cfebd0d74cd352b7429fa2162a95c03caa477f5d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/opt.py": "b0a2f68fd142a6e206d72d10a9fbb96d1208de3e00112c953ddbffb4d4634a80",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/nets.py": "9a1c0c71ad7d3596572a44416e78434f777d8f4dbcbe8ca0dd6b86bb8246392c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/agent.py": "ff987d074c3b08d30a958e1351538d65bbac0d99881420c5dc69b5b430578a84",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/outs.py": "fdce07aa00790f4693a71e73bdd3cc67d6737524cdcb0f165569b303727ac33a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/heads.py": "437641cde21e7f9e3f69b88ad8f6b7e7c22e54eec8c5b19eef6127afde1a9b3f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/transform.py": "39c1ea717eddee4215538f2fef71bf7c73b9def966702fe9e14b5a3ced8724ee",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/__init__.py": "7c55603a54144d3ea03799475056407c1596cf16d041caa24ba5a45a63444e06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/internal.py": "d9791c2c0d35ba5a58d78f87ed5b327483473f9f18f8a6945856a2e82d00f328",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/jax/utils.py": "76cd112313a19dc8524721dc7b1be86b89799b11c9865cce5e11de2a67bb1461",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/selectors.py": "b8cb69021e8f79888df88fb5c195e8ff19e3d54065bb08bd3586fd9cbe6655d3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/clock.py": "c3a4accb9f1be9f1d47f1ac8f2802ccb06c3abfdbc1f13db203674b3a0ab8933",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/driver.py": "ebfd71d6adf205ada2720a357ac42e89f2891f9f496b5de28f79aabe4f67371b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/streams.py": "7ec4be50dbd22f5d8b4c8278e3e7ba8a1bc1c1db2c33f775cf6a393343341d59",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/limiters.py": "370d2fa708c80fbf86ddf2bc2456fea8d4d018c8e21eec2b8e71af6dbe163921",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/wrappers.py": "59353c68a7b9efb81014927ba3df1dceb12cce6a0114264cbd62a9f8399c952e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/chunk.py": "427b537afa75079a9f0dfd933ec49e6f71173371388418176c16c038be005c65",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/replay.py": "5a9e15f0b8ece4c996e7ed597dc71eec87266d7c68f1a3ac19f04162ed7fb6d1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/random.py": "38b51d892deb965c7d0ccd1df1b2905f29613245e00737fa368fc43927ad6b8d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/__init__.py": "a088d8ef0017eb7c1e046bb1e3021d59382086607a94e42746d30e79c6dfc681",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/core/base.py": "64a51beda8e7e0b211cb857843ab434e3a47269eee7771674ed8630954a3ec98",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/from_gym.py": "4aca612cf791ee99788d49fac496a8f2ad6f541529c86c23a4b25fae89b9bab4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/minecraft_flat.py": "25d274e6322bbf4128a9f7338747eab688ef322aaab662775b8c4a50fee5747c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/dmc.py": "196dda5ad5148c2a5c1392234d1b6fc21060bf146a481bbc3ee8f3c7d5a35229",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/loconav_quadruped.py": "c2ae65449a55b32c420514ef883c73261900b83a56993cc9e23a459642d0d678",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/dmlab.py": "b391a0621d5b21756e25cfd0d5f3c232126989ba5ecd920bd943d1acab20d22f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/from_gymnasium.py": "1a4916a0336fc08fc569e0b1db4fe9e22afeee16d0c02bf71caf8c8182298149",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/atari.py": "41e8ffb412e83ec1f5c142ee757a6ea5728ba7674779be51f2921c191afe1ac3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/pinpad.py": "6413315778f1b75d5ac261b912721630283da16afb3a079fdf55c5d5ab5973ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/bsuite.py": "92f042177b64df4dbb65bcc5e7301bfe9d35401b789c0bc7bcab9a1741803184",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/from_gymnasium1.py": "6ca39b37bc2370fb402685a012d29bf1c60d28794408fae69bda7c6394078150",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/minecraft.py": "2f2612e6706971fd76a64bec3df5151e127df82208a12cba0f033c0587fa020c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/procgen.py": "fc357e969aa569d6d38b2607d4c64d0c67b635e6d046e78a0b43f1e923367531",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/dummy.py": "0b197f4fac46ef37a567d931c1bb496f8053e67a189400a98c05dd5d85bd3352",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/from_dm.py": "9eda0fd7046a033f07b10832319496a6996af6d5a1327689f5f4a6d49827a7e7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/crafter.py": "347a2347d54f5804277eb15c74e139f4e54461bc299558833357b12891d81067",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/envs/loconav.py": "5a68215d97359738713393a90412619be8ec22b9545614495cabf7ced526ab20",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/offline_pretrain.py": "6fd7f8fc5b71238c5565433082cdfa3f5d413e18963fd5820fd7188f2f0be599",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_online_gate.py": "f0f94f1f40ad87a7533428830a5d791bba3c3fc38d5745b3a9a44369f1fb24b6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3a_train.py": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/parallel.py": "61db714fd289700aecaff89e3e2a277b86af7668071f633a9a15bedc1b8f4de6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/train_eval.py": "faf98583047dfbfc0500d4c3437439404ad08f7faccfb9444604ef5fdfe32c6d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/monte_carlo.py": "821ce9ec0c3d08cfe8c2e4ff080713ef6f310ad0ef28e030f7eb372b7d52ca27",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py": "490a4d81f114184c3d524fd2c3a449c01ef7c50fa88f7c34ac8b7e5a57b3f8fa",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/eval_only.py": "13c02558758a328750f8d255e417fb878974985bff5c1add0ec0660d5a6aee0e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_teacher_adapter.py": "c0b604956e4983c6ce1fc1951501a80fff6237d94f4dddbc1ada2d0978fdb5a5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_source_admission.py": "f191a77555318c29eb77526de6fb6934940dde66659b266f7f3d4b275e15ec22",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_checkpoint.py": "3b000c725e5df582be47251c342853c02ea2e52a93d402f204c4f46c471ddbb5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_online_state.py": "1bff4a77a5d3683af31886a43b80f832ca65da6a4c10821685a68d9b782156ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3c_train.py": "dd1091fe8283596cf5107ce852f33299e8ab49a826b0bc3d70dc072e68ec64cb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/action_mask_warmup.py": "a280a4f67566d1d95d753b537d015e389df30bce0d0295da28b1e03f5ad78c2b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_foundation.py": "c138cf686c90d58cf128852a0d2128eef533cac8033c21a3b39428db46601fcf",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/action_mask_guard.py": "9fda5d9850ca95c92921e8908005f4bf85aa6dba6b31b75afad585ab19accdc1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_gate.py": "3c3c405111c18e210ac9810cd645e0cdc25dcedaad5897f6e21b038ae01a3beb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/live_trading.py": "c4356065285616fef811a059995a4cbad051856dcb11dd5f03ab92f6a094bb54",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3b_checkpoint.py": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3a_eval.py": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/checkpoint_retention.py": "ad704533202089c820ce42741d92cfd2881d4976fadeb3e4d494ea54e6301eb3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_dagger_policy.py": "1720a55223f1b6e5579de18ace85bfb1b31ffe2d5d2e21c672b0e4f7ec50f337",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_exam.py": "7ba6aebbb41d6b3372103c4c5178ccc8566973ee3ac7e35d11420ebd234c5926",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_learning_audit.py": "92ac5c24b72344472064770614be9f3c2ad841d4ac129d1bf5b2e565f5804891",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/__init__.py": "da52aa90ad78723600c043edf48e1616661ca8b2b47aef7d871e8a9faf1e10ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_online_stream.py": "31f6b39f06c56f1d926a042c059be0e386324d7ba1fe58e133b0cdb26d68bd26",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_actor.py": "d5d00c5b8f5f1364222748fc3961ddb654a1c68c9866d3d8ef6080431479e65f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_source_transfer.py": "2c821dd46b1b8e935f2ffac251234cde78bd64ca555b6d3b92c026b2f301725d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_transfer.py": "1a0581ff1e7dddadbf09ec6a26730e8df9a8296867b4538918d336bc854e6528",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_heads.py": "95b67bc0898d84b0a0695a04b3a6244bfe5cded8dc6a477a2db46e99d7282a26",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3b_train.py": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/train.py": "467c9ca73fe79a5d904c319f063988ea803cfea2d11a0fe47fc9f3f3b1e30bc6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3a_checkpoint.py": "c051594f43f09321010be865229acbf3d3caf451d8a5ec6865b8b40acf053a7a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_v2_train.py": "6730323c4e8aea1d007f8d531dcc0b4febd7ac1e1467d5cd4fd8f8263446930f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_single3_audit.py": "c94a3130dd945488c1da1db175d03cdd8e76e73ef7da402ba77aea3bb4231727",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3a_features.py": "54b3ec6b858c6b4c0b89f3172863e8d8b7a1fb5cc4f075e0ce65b84c12440bbb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_source.py": "42f479627f123e4b3f34013969c061a9269f7934e8fbfe689ab5d4400acb8183",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3c_stream.py": "692b5e976e2d88f14e618678b45a6a3868774f65770f4c3f64067bd4b1f34df7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/dreamerv3/embodied/run/fg_s3_e_quality_online.py": "ebba85cd492a22e0abc25a9f846c3006ca3bacac8ceb7b040e98334bf7241f47",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/tools/fg_s3_e_quality_corpus.py": "dbde26ec0aeba3ee29c16857f72c00003989cca35ddeaa8859a03fa755f8b57e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env/tools/fg_s3_v2_experiment.py": "d990a5efb80ef2b42f259d0b496e2a35151515984e7427b82a1d68814df3714e"
+  },
+  "source_unchanged": true,
+  "workers": 18,
+  "queries": 107,
+  "native_trades": 51,
+  "strict_valid": 39,
+  "actual_account_restores": 6,
+  "profiled_worker_wall_seconds": 50.135444917017594,
+  "profile_self_seconds": 0,
+  "query_cpu_seconds": 19.345082460000004,
+  "timing_only": true,
+  "function_cpu": {
+    "market_equals": {
+      "calls": 581,
+      "cpu_seconds": 2.7231536859999963
+    },
+    "market_prefix_hash": {
+      "calls": 367,
+      "cpu_seconds": 1.1026191020000446
+    },
+    "account_hash": {
+      "calls": 209,
+      "cpu_seconds": 1.0189931960000003
+    },
+    "financial_step": {
+      "calls": 2265,
+      "cpu_seconds": 4.700375778000044
+    },
+    "risk_facts": {
+      "calls": 51,
+      "cpu_seconds": 0.10878622700001372
+    },
+    "native_trace": {
+      "calls": 51,
+      "cpu_seconds": 7.328498879999998
+    }
+  },
+  "timing_notes": "Function CPU times are inclusive/nested; do not sum them as disjoint shares",
+  "top_self": [],
+  "top_cumulative": [],
+  "jobs": [
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.5458491010358557,
+      "profile_path": null,
+      "query_cpu_seconds": 0.4957956469999978,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 18,
+          "cpu_seconds": 0.06972904299998817
+        },
+        "market_prefix_hash": {
+          "calls": 12,
+          "cpu_seconds": 0.035247810000004876
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.025270223000003256
+        },
+        "financial_step": {
+          "calls": 67,
+          "cpu_seconds": 0.1356017840000021
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0029154260000012755
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.22035246200000103
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.849505212972872,
+      "profile_path": null,
+      "query_cpu_seconds": 0.7611700600000013,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 21,
+          "cpu_seconds": 0.100369182000005
+        },
+        "market_prefix_hash": {
+          "calls": 15,
+          "cpu_seconds": 0.044560289999999725
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.03177269600000088
+        },
+        "financial_step": {
+          "calls": 95,
+          "cpu_seconds": 0.2712091129999976
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.00578777200000502
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.4120924019999954
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6413833779515699,
+      "profile_path": null,
+      "query_cpu_seconds": 0.5566189639999983,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 18,
+          "cpu_seconds": 0.08541269999999201
+        },
+        "market_prefix_hash": {
+          "calls": 12,
+          "cpu_seconds": 0.03611243200000658
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.026656160999994682
+        },
+        "financial_step": {
+          "calls": 8,
+          "cpu_seconds": 0.02365824000000316
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0018982290000018054
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.15885133600000145
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.1112989799585193,
+      "profile_path": null,
+      "query_cpu_seconds": 1.0617215390000005,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 21,
+          "cpu_seconds": 0.08284207100000529
+        },
+        "market_prefix_hash": {
+          "calls": 15,
+          "cpu_seconds": 0.04417777399999778
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.03048426699999851
+        },
+        "financial_step": {
+          "calls": 290,
+          "cpu_seconds": 0.6351740710000158
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0074873280000034015
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.7619890499999968
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.9371464409632608,
+      "profile_path": null,
+      "query_cpu_seconds": 0.8706645779999995,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.10763295100000647
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.04108033600001093
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.032681237999995005
+        },
+        "financial_step": {
+          "calls": 109,
+          "cpu_seconds": 0.3215073510000046
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.005630497999998596
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.4137602109999996
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.687197590013966,
+      "profile_path": null,
+      "query_cpu_seconds": 0.6170501199999983,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.112382898000007
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03840652499999919
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03490485799999732
+        },
+        "financial_step": {
+          "calls": 6,
+          "cpu_seconds": 0.017362315000003292
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0010579929999998683
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.08409600000000239
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.9845834519946948,
+      "profile_path": null,
+      "query_cpu_seconds": 0.8907855750000024,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.14099368300000137
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.05720577600000354
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.05270891700000391
+        },
+        "financial_step": {
+          "calls": 63,
+          "cpu_seconds": 0.16992729899997272
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.004569368000002072
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.3114429270000052
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.8805374340154231,
+      "profile_path": null,
+      "query_cpu_seconds": 0.8164296160000006,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.11540025599999737
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.04831033200000334
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.05143758499999507
+        },
+        "financial_step": {
+          "calls": 142,
+          "cpu_seconds": 0.16887156800000724
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.005032324999998394
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.26793804399999743
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.7338343359297141,
+      "profile_path": null,
+      "query_cpu_seconds": 0.6663706759999997,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.11027419399999161
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.04181206699998796
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.03300078599999878
+        },
+        "financial_step": {
+          "calls": 109,
+          "cpu_seconds": 0.14548243999998078
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.005343830000001049
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.2300064730000031
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.5426638120552525,
+      "profile_path": null,
+      "query_cpu_seconds": 0.4913353330000021,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.09607762399999942
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03863008900000864
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03364164799999969
+        },
+        "financial_step": {
+          "calls": 2,
+          "cpu_seconds": 0.005367514999999656
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0007219439999985866
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.04678998099999987
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6520894489949569,
+      "profile_path": null,
+      "query_cpu_seconds": 0.5720049640000013,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.11036304200000657
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.04239673500000407
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.03379980500000812
+        },
+        "financial_step": {
+          "calls": 17,
+          "cpu_seconds": 0.048629960999992505
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0022530550000006144
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.1328880649999995
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.5735175189329311,
+      "profile_path": null,
+      "query_cpu_seconds": 0.5154657969999974,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.09182924899999279
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.039239562999995314
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.0339519290000041
+        },
+        "financial_step": {
+          "calls": 5,
+          "cpu_seconds": 0.01206700599999877
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0007220830000029821
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.053094902999998084
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 4,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.2486198500264436,
+      "profile_path": null,
+      "query_cpu_seconds": 1.1392319849999986,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 32,
+          "cpu_seconds": 0.15730670899998955
+        },
+        "market_prefix_hash": {
+          "calls": 22,
+          "cpu_seconds": 0.06691850300000013
+        },
+        "account_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.057421013999999104
+        },
+        "financial_step": {
+          "calls": 169,
+          "cpu_seconds": 0.37304465500004724
+        },
+        "risk_facts": {
+          "calls": 4,
+          "cpu_seconds": 0.00871701499999844
+        },
+        "native_trace": {
+          "calls": 4,
+          "cpu_seconds": 0.5609764560000023
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 4,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.1196119299856946,
+      "profile_path": null,
+      "query_cpu_seconds": 1.0407786520000002,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 32,
+          "cpu_seconds": 0.15478804399999646
+        },
+        "market_prefix_hash": {
+          "calls": 22,
+          "cpu_seconds": 0.06617951699999836
+        },
+        "account_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.06135389799999302
+        },
+        "financial_step": {
+          "calls": 71,
+          "cpu_seconds": 0.21872791999998853
+        },
+        "risk_facts": {
+          "calls": 4,
+          "cpu_seconds": 0.006108393000001655
+        },
+        "native_trace": {
+          "calls": 4,
+          "cpu_seconds": 0.43479108400000044
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 4,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6084784530103207,
+      "profile_path": null,
+      "query_cpu_seconds": 0.554787987000001,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 25,
+          "cpu_seconds": 0.09621481400000675
+        },
+        "market_prefix_hash": {
+          "calls": 17,
+          "cpu_seconds": 0.05025035700001368
+        },
+        "account_hash": {
+          "calls": 10,
+          "cpu_seconds": 0.03632114099999839
+        },
+        "financial_step": {
+          "calls": 111,
+          "cpu_seconds": 0.1160574129999965
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.005300658999999541
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.22361312399999633
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.4415867150528356,
+      "profile_path": null,
+      "query_cpu_seconds": 1.3573213919999993,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.11696984299999613
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03971880400000316
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.04044101799999922
+        },
+        "financial_step": {
+          "calls": 209,
+          "cpu_seconds": 0.5716249019999786
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.009123857000002289
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.6877214689999995
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.8319323440082371,
+      "profile_path": null,
+      "query_cpu_seconds": 0.7555620129999987,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.11579036700000245
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03956528400000536
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.045828359999998014
+        },
+        "financial_step": {
+          "calls": 62,
+          "cpu_seconds": 0.08609624499999313
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.00296869700000002
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.14141755599999684
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.8670135090360418,
+      "profile_path": null,
+      "query_cpu_seconds": 0.7771024349999998,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.11437953400000112
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.039495181000006596
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03542729600000172
+        },
+        "financial_step": {
+          "calls": 91,
+          "cpu_seconds": 0.16100175700001174
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.003766711999997341
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.20762690200000122
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6689733290113509,
+      "profile_path": null,
+      "query_cpu_seconds": 0.5945531460000026,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.11093696499999339
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.04257938899999658
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.03634319200000391
+        },
+        "financial_step": {
+          "calls": 13,
+          "cpu_seconds": 0.041121601999993374
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.002357500999998763
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.13312468000000166
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.9413658500416204,
+      "profile_path": null,
+      "query_cpu_seconds": 0.8656777740000017,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.13533247599999854
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.057266602999995087
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.048388065999997565
+        },
+        "financial_step": {
+          "calls": 91,
+          "cpu_seconds": 0.24202534600001613
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.005217452000003675
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.3742227749999998
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.8637425070628524,
+      "profile_path": null,
+      "query_cpu_seconds": 0.7978079379999983,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.13080042000000347
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.04808161300000435
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.050947395000008555
+        },
+        "financial_step": {
+          "calls": 67,
+          "cpu_seconds": 0.08434568700000966
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0039592840000004514
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.1885771620000014
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.1448759969789535,
+      "profile_path": null,
+      "query_cpu_seconds": 1.073528083000003,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.0942517430000045
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03923387199999695
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.037462500000000176
+        },
+        "financial_step": {
+          "calls": 205,
+          "cpu_seconds": 0.48322396300001813
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.004619450999999941
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.5601556889999983
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.90238019998651,
+      "profile_path": null,
+      "query_cpu_seconds": 0.8157649450000015,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.12769868000000173
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.048512640000001994
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.06217891300000389
+        },
+        "financial_step": {
+          "calls": 39,
+          "cpu_seconds": 0.04669461000000297
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0030374689999987936
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.16993896500000005
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 1.3313073960598558,
+      "profile_path": null,
+      "query_cpu_seconds": 1.257553241,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.14537719800000914
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.05763761000000045
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.08657028999999739
+        },
+        "financial_step": {
+          "calls": 224,
+          "cpu_seconds": 0.3215530150000099
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.010189885999999149
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.5530311640000001
+        }
+      }
+    }
+  ],
+  "optimizer_updates": 0,
+  "training_admitted": false,
+  "native_g3": "NOT_RUN_PROFILE_IS_NOT_CERTIFICATION",
+  "profile_overhead": "Outer function thread CPU clocks only; no per-row tracing"
+}

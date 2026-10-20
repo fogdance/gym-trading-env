@@ -1,0 +1,33 @@
+.....F.................................                                  [100%]
+=================================== FAILURES ===================================
+_ test_private_driver_opt_in_survives_public_restore_chunk_and_new_account_epoch _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-680/test_private_driver_opt_in_sur0')
+
+    def test_private_driver_opt_in_survives_public_restore_chunk_and_new_account_epoch(tmp_path):
+        factory, _, _ = native_factory(tmp_path/'market', minutes=20, chunk=3)
+        public, private, clone = factory(), factory(), factory()
+        try:
+            assert type(public.equity_history) is list
+            private._enable_private_history()
+            old=private._export_private_state();owner=old.owner
+            while not public.terminated:
+                if public.truncated:
+                    saved=public.export_state()
+                    public.reset(options={'resume':saved});private.reset(options={'resume':saved})
+                    assert isinstance(private.equity_history,NativeHistory)
+                action=int(bool(public._published_mask[1]))
+                a,b=public.step(action),private.step(action)
+>               assert a[1:4]==b[1:4] and public.export_state()==private.export_state()
+E               AssertionError: assert ((0.0, False, False) == (0.0, False, False)
+E                 
+E                 Use -v to get more diff and {'schema': 3,...0+08:00', ...} == {'schema': 3,...0+08:00', ...}
+E                 
+E                 Omitting 38 identical items, use -vv to show
+E                 Differing items:
+E                 {'rng': {'bit_generator': 'PCG64', 'state': {'state': 144478773568438180790017756584190657872, 'inc': 278003043277409019390937418816337246301}, 'has_uint32': 0, 'uinteger': 0}} != {'rng': {'bit_generator': 'PCG64', 'state': {'state': 126868099388141465155014879779202355267, 'inc': 216375683110791431587764152167852319331}, 'has_uint32': 0, 'uinteger': 0}}
+E                 Use -v to get more diff)
+
+tests/entry_v1/test_native_account_private.py:180: AssertionError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_native_account_private.py::test_private_driver_opt_in_survives_public_restore_chunk_and_new_account_epoch
