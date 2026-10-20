@@ -18,6 +18,11 @@ def copy_account_snapshot(state):
     No cache, shortened history, or mutable source reference enters a copy.
     """
     history = state.get('equity_history')
+    from .native_account import NativeHistory
+    if isinstance(history, NativeHistory):
+        result = json.loads(json.dumps({k: v for k, v in state.items() if k != 'equity_history'}, default=str))
+        result['equity_history'] = history.to_public()
+        return result
     if type(history) is not list:
         return json.loads(json.dumps(state, default=str))
     result = json.loads(json.dumps({k: v for k, v in state.items() if k != 'equity_history'}, default=str))

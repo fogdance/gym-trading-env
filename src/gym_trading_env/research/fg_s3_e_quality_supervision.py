@@ -186,6 +186,10 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     opening the development reader. Old absolute identities remain historical
     evidence; the new reader binds relative corpus content instead.
     """
+    manifest=read_manifest(source.corpus_root/'corpus_manifest.json')
+    guard_interval=manifest.get('source_binding',{}).get('source_guard_interval',1)
+    if type(guard_interval) is not int or guard_interval!=1:
+        raise ValueError('SUPERVISION_PER_QUERY_SOURCE_GUARD_REQUIRED')
     producer_gym = _local_path(producer_gym)
     pin=dict(producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     producer_audit=frozen_producer_audit(producer_gym,**pin)
@@ -209,8 +213,27 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     result = json.loads(lines[-1])
     if (result.get('status') != 'PASS' or result.get('G3') != 'GO'
             or result.get('corpus_identity') != source.corpus_content_hash
+            or result.get('verification_state') != 'NATIVE_G3_VERIFIED'
             or result.get('training_admitted') is not False):
         raise ValueError('SUPERVISION_NATIVE_RECEIPT_MISMATCH')
+    # A summary PASS cannot stand in for complete independent recomputation.
+    # Bind every receipt to the authenticated original trace, in policy order.
+    from .fg_replay import trace_manifest
+    from .fg_s3_e_observation import observation_contract
+    receipts = result.get('native_replay', [])
+    if not isinstance(receipts, list) or len(receipts) != len(POLICIES):
+        raise ValueError('SUPERVISION_NATIVE_INCOMPLETE_LABEL_VERIFICATION')
+    for policy, receipt in zip(POLICIES, receipts, strict=True):
+        trace = trace_manifest(member(source.corpus_root, f'policies/{policy}'),
+                               schema=observation_contract()['replay_schema'])
+        count = trace['records']
+        if (not isinstance(receipt, dict) or type(count) is not int or count <= 0
+                or receipt.get('status') != 'PASS'
+                or type(receipt.get('records')) is not int
+                or type(receipt.get('teacher_labels_verified')) is not int
+                or receipt['records'] != count or receipt['teacher_labels_verified'] != count
+                or receipt.get('replay_trace_hash') != trace['replay_trace_hash']):
+            raise ValueError('SUPERVISION_NATIVE_INCOMPLETE_LABEL_VERIFICATION')
     if frozen_producer_audit(producer_gym,**pin)!=producer_audit:
         raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
     return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,

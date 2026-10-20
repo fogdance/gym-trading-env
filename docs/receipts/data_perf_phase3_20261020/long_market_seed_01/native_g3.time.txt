@@ -1,0 +1,23 @@
+	Command being timed: "/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_e_quality_reader.py source --corpus /home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/corpus --out /home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/native --purpose native-verification --producer-gym /home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/rounds/market-seed/gym-trading-env --producer-lock /home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/PRODUCER_PIN.json --producer-lock-sha256 e968c371d41918f2f00b455c65e8c6324d898b836e881f2189fecf1dffb4acef --workers 20"
+	User time (seconds): 796.46
+	System time (seconds): 22.77
+	Percent of CPU this job got: 467%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:55.28
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 607668
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 107
+	Minor (reclaiming a frame) page faults: 3876794
+	Voluntary context switches: 107981
+	Involuntary context switches: 54380
+	Swaps: 0
+	File system inputs: 8792
+	File system outputs: 4632
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

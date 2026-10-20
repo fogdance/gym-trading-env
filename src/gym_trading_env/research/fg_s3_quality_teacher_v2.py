@@ -12,7 +12,7 @@ import time
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import check_files, digest, signed
 from .fg_s3_oracle_state_query import decision_state, rules_identity
-from gym_trading_env.utils.account_fingerprint import account_fingerprint,prime_account_fingerprint
+from gym_trading_env.utils.account_fingerprint import account_fingerprint,prime_account_fingerprint,capture_account_fingerprint
 from .fg_s3_quality_score import PROTOCOL as SCORE_POLICY, quality_for_exit
 
 PROTOCOL = 'FG_S3_QUALITY_TEACHER_V1'
@@ -253,6 +253,8 @@ class NativeQualityTeacher:
             actual,stat=_file_identity(path)
             if actual!=expected: raise ValueError('Quality source file changed: '+name)
             self._source_stats[name]=(str(path.resolve(strict=True)),stat)
+        from gym_trading_env.utils.source_guard import FrozenSourceStats
+        self._source_guard=FrozenSourceStats(self._source_stats)
         self.source = copy.deepcopy(source)
         self.rules = rules_identity(env)
         self.market_hash = fingerprint(env._raw.to_dict(orient='split'))
@@ -282,6 +284,7 @@ class NativeQualityTeacher:
         if self.e_fork is not None:
             self.statistics['e_observation_cache'] = self.clone._e_observation_cache.statistics
             self.statistics['native_execution_cache'] = self.clone._native_execution_cache.statistics
+        self.statistics['source_guard']=self._source_guard.statistics
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
             market_hash=self.market_hash, code_sha256=digest(__file__),
             clock_protocol='S3_MARKET_MINUTE', score_policy=SCORE_POLICY,
@@ -310,12 +313,7 @@ class NativeQualityTeacher:
         prime_account_fingerprint(self.clone,initial_snapshot)
 
     def _check_source_stats(self):
-        from pathlib import Path
-        from gym_trading_env.envs.entry_market_cache import _stat_identity
-        for name,(resolved,stat) in self._source_stats.items():
-            path=Path(name)
-            if str(path.resolve(strict=True))!=resolved or _stat_identity(path)!=stat:
-                raise ValueError('Frozen quality source changed during collection: '+name)
+        self._source_guard.check()
 
     def query_state(self, env, mask, *, snapshot=None):
         if self.statistics['queries']%self.source_guard_interval==0:self._check_source_stats()
@@ -332,8 +330,18 @@ class NativeQualityTeacher:
         if not np.array_equal(mask, env._published_mask):
             raise ValueError('Quality requires the real published action mask')
         self.statistics['queries']+=1
-        state=env.export_state()
-        snapshot_hash=account_fingerprint(env,state)
+        from gym_trading_env.utils.native_account import NativeHistory
+        private_snapshot=None
+        if isinstance(env.equity_history,NativeHistory):
+            state=private_snapshot=env._export_private_state()
+            snapshot_hash=account_fingerprint(env,state)
+        elif (self.e_fork is not None and not env.net_lots and not env.entries and all(mask)
+                and env.status=='ACTIVE' and not env.terminated and not env.truncated):
+            state=env.export_state()
+            snapshot_hash,private_snapshot=capture_account_fingerprint(env,state)
+        else:
+            state=env.export_state()
+            snapshot_hash=account_fingerprint(env,state)
         if snapshot_hash in self._cache:
             self.statistics['cache_hits']+=1
             self._cache.move_to_end(snapshot_hash)
@@ -358,7 +366,8 @@ class NativeQualityTeacher:
             started=time.perf_counter()
             result.update(trace_native_trade(env,self.clone,state=state,
                 calendar_index=self.calendar_index,max_market_steps=self.max_market_steps,
-                day_complete=bool(self.source.get('calendar_complete',False))))
+                day_complete=bool(self.source.get('calendar_complete',False)),
+                _private_snapshot=private_snapshot))
             self.statistics['native_traces']+=1
             self.statistics['trace_seconds']+=time.perf_counter()-started
             self.statistics['independently_observed_market_minutes']+=result.get('held_market_minutes',0)
@@ -386,20 +395,26 @@ class NativeQualityTeacher:
             self._cache.clear()
 
 
-def trace_native_trade(env,clone, *, day_complete=False,state=None,calendar_index=None,max_market_steps=None):
+def trace_native_trade(env,clone, *, day_complete=False,state=None,calendar_index=None,max_market_steps=None,
+                       _private_snapshot=None):
     """Read-only native trace, including rejected and exceptional paths."""
     state=env.export_state() if state is None else state
     if max_market_steps is not None and (type(max_market_steps) is not int or max_market_steps<1):
         raise ValueError('Quality native exposure budget must be a positive market-minute integer')
     try:
         return _trace_native_trade(env,clone,day_complete=day_complete,state=state,
-            calendar_index=calendar_index,max_market_steps=max_market_steps)
+            calendar_index=calendar_index,max_market_steps=max_market_steps,
+            private_snapshot=_private_snapshot)
     finally:
-        if env.export_state()!=state:
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+        unchanged=(state.same_content(env._export_private_state()) if isinstance(state,NativeAccountSnapshotView)
+                   else env.export_state()==state)
+        if not unchanged:
             raise RuntimeError('Counterfactual mutated the real account')
 
 
-def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,max_market_steps):
+def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,max_market_steps,
+                        private_snapshot=None):
         """Shared native trace primitive, also usable AFTER sealed DEV inference.
 
         This does not publish a TRAIN label or an Oracle decision. Callers
@@ -407,7 +422,8 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         """
         from .fg_replay import execute_observed
         from gym_trading_env.rewards.single3_reward import Single3Reward,Single3RewardConfig
-        clone.import_state(state)
+        if private_snapshot is None:clone.import_state(state)
+        else:clone._restore_private_state(private_snapshot,source_env=env)
         shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'))
                 if getattr(env,'_e_profile',None) is None else None)
         before = clone._calculate_equity()

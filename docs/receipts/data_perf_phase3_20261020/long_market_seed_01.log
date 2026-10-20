@@ -1,0 +1,6 @@
+{"phase": "validate", "seconds": 13.692536837887019, "exit_code": 0}
+{"phase": "generate", "seconds": 192.60979584499728, "exit_code": 0}
+{"phase": "native_g3", "seconds": 175.28750957304146, "exit_code": 0}
+{"phase": "reader", "seconds": 14.966892337077297, "exit_code": 0}
+{"phase": "coverage", "seconds": 3.137611510930583, "exit_code": 0}
+{"status": "PASS_BOUNDED_TRAIN_BENCHMARK", "seconds": 399.82275927998126, "native_g3": "PASS"}

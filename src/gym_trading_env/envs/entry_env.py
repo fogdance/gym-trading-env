@@ -40,6 +40,13 @@ SINGLE3_PROTOCOL = "fg_single3_v1"
 SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
 
 
+def _e_market_features(frame, schedule):
+    """Keep the original visible-prefix calculator importable by spawn."""
+    from gym_trading_env.utils.market_features import build_market_features
+    return build_market_features(frame, is_future=True, real_futures_clock=True,
+                                 futures_schedule=schedule)
+
+
 class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
@@ -255,8 +262,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             # the same original feature builder on the visible prefix only.
             self._e_market = MarketData.from_env(raw,self._e_schedule,
                 feature_frame,self.market_clock_counter,bobs,
-                feature_function=lambda frame,schedule: build_market_features(
-                    frame,is_future=True,real_futures_clock=True,futures_schedule=schedule),
+                feature_function=_e_market_features,
                 market_clock_class=MarketClock,tz_normalizer=ensure_feature_tz_index,
                 ohlc_normalizer=normalize_ohlcvi)
         # Existing DB contains zero-duration metadata rows: mark-only, never fills.
@@ -484,6 +490,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self._tp_info_cache = (0, 0, 0.)
         self._initialized = True
         self._sample_equity()
+        self._ensure_private_history()
         return self._get_obs(), self._get_info()
 
     def _open_entry(self, side, price, time):
@@ -768,7 +775,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             cached = self._market_prefix_json = MarketPrefix(self._raw)
         return cached.digest(len(self._raw.iloc[:through+1]))
 
-    def export_state(self):
+    def _snapshot_fields(self):
         state = dict(schema=3 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
                      cursor_time=str(self._raw.index[self.current_step]), prefix_hash=self._prefix_hash(self.current_step),
                      balances=self.ledger.snapshot(), ledger_entries=[dict(timestamp=e.timestamp, memo=e.memo,
@@ -791,8 +798,29 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self._get_obs()
             state['e_state'] = dict(observation_identity=self.e_observation_identity,
                 snapshot=copy.deepcopy(self.e_snapshot))
+        return state
+
+    def export_state(self):
         from gym_trading_env.utils.snapshot_json import copy_account_snapshot
-        return copy_account_snapshot(state)
+        return copy_account_snapshot(self._snapshot_fields())
+
+    def _export_private_state(self):
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView,NativeHistory
+        if not isinstance(self.equity_history,NativeHistory):
+            raise TypeError('Private export requires a controlled native history')
+        return NativeAccountSnapshotView.capture(self,self._snapshot_fields(),self.equity_history.version())
+
+    def _enable_private_history(self):
+        """Opt in only for controlled CPU Corpus accounts, never public schema."""
+        self._private_history_enabled=True
+        self._ensure_private_history()
+
+    def _ensure_private_history(self):
+        if not getattr(self,'_private_history_enabled',False):return
+        from gym_trading_env.utils.native_account import NativeHistory,native_owner,native_source
+        if not isinstance(self.equity_history,NativeHistory):
+            self.equity_history=NativeHistory.from_public(self.equity_history,
+                owner=native_owner(self),source=native_source(self))
 
     def import_state(self, state):
         # Preserve the full independently owned JSON snapshot. Native history
@@ -800,6 +828,17 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         # in the growing history on each counterfactual account restore.
         from gym_trading_env.utils.snapshot_json import copy_account_snapshot
         state = copy_account_snapshot(state)
+        self._restore_account_state(state)
+
+    def _restore_private_state(self, view, *, source_env):
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+        if type(view) is not NativeAccountSnapshotView:
+            raise TypeError('Native private snapshot required')
+        view.restore(self, source_env=source_env)
+
+    def _restore_account_state(self, state):
+        # Both restore paths use these exact financial/clock/observation guards.
+        # The private caller supplies owned hot fields and an immutable prefix.
         if self._e_profile is not None:
             if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
                 raise ValueError('E V2 checkpoint observation/source identity differs')
@@ -854,6 +893,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._get_obs()
         if self._e_profile is not None and self.e_snapshot != state['e_state']['snapshot']:
             raise ValueError('E V2 checkpoint causal snapshot differs')
+        self._ensure_private_history()
 
     def continue_data(self, df):
         """Append/backfill unprocessed data without changing already observed history."""

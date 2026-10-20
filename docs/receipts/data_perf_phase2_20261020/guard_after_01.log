@@ -1,0 +1,76 @@
+......F................................................................. [ 88%]
+.........                                                                [100%]
+=================================== FAILURES ===================================
+___ test_native_e_direct_trace_matches_fixed_old_observed_wrapper_every_step ___
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-672/test_native_e_direct_trace_mat0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ac94c9e7cd0>
+
+    def test_native_e_direct_trace_matches_fixed_old_observed_wrapper_every_step(tmp_path, monkeypatch):
+        import ast
+        import subprocess
+        from gym_trading_env.research import fg_replay
+        from gym_trading_env.research.fg_s3_quality_teacher_v2 import trace_native_trade
+        # Bind the independent reference to the actual pre-optimization Git object.
+        sha = 'b0d5ef9af07fbdd0c553dd943ac9eb40c9a84d46'
+        text = subprocess.check_output(['git', 'show', sha+':src/gym_trading_env/research/fg_replay.py'],
+                                       cwd=ROOT, text=True)
+        tree = ast.parse(text)
+        node = next(x for x in tree.body if isinstance(x, ast.FunctionDef) and x.name == 'execute_observed')
+        scope = dict(vars(fg_replay))
+        exec(compile(ast.Module(body=[node], type_ignores=[]), '<old_observed_'+sha+'>', 'exec'), scope)
+        old_observed = scope['execute_observed']
+        factory, _, _ = native_factory(tmp_path/'market', minutes=45, chunk=3)
+        source, direct, wrapped = factory(), factory(), factory()
+        original_step = type(direct).step
+        seen = []
+        def checked_step(self, action):
+            if self is not direct: return original_step(self, action)
+            if wrapped.truncated and wrapped.status == 'CHUNK_END': wrapped.reset()
+            obs, row = old_observed(wrapped, action)
+            result = original_step(self, action)
+            for key in obs: np.testing.assert_array_equal(result[0][key], obs[key])
+            assert float(np.float32(result[1])) == float(np.float32(row['official_reward']))
+            assert result[2:4] == (row['is_terminal'], row['is_last'] and not row['is_terminal'])
+            assert self.export_state() == wrapped.export_state()
+            seen.append(dict(cursor=self.current_step, fills=copy.deepcopy(row['fills']),
+                             rewards=copy.deepcopy(row['reward_events']), status=row['status']))
+            return result
+        monkeypatch.setattr(type(direct), 'step', checked_step)
+        try:
+            for cursor in (0, 8, 39):
+                while source.current_step < cursor:
+                    if source.truncated: source.reset()
+                    source.step(0)
+                state = source.export_state(); wrapped.import_state(state)
+                # Budget gives a genuine censored trace alongside complete TP/SL.
+>               result = trace_native_trade(source, direct, state=state,
+                    max_market_steps=2 if cursor == 39 else None)
+
+tests/entry_v1/test_data_perf_phase2_guards.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_quality_teacher_v2.py:395: in trace_native_trade
+    return _trace_native_trade(env,clone,day_complete=day_complete,state=state,
+src/gym_trading_env/research/fg_s3_quality_teacher_v2.py:431: in _trace_native_trade
+    advance(1)
+src/gym_trading_env/research/fg_s3_quality_teacher_v2.py:424: in advance
+    _,reward,*_=clone.step(action)
+                ^^^^^^^^^^^^^^^^^^
+tests/entry_v1/test_data_perf_phase2_guards.py:97: in checked_step
+    result = original_step(self, action)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7ac94c397850>
+action = 1
+
+    def step(self, action):
+        if not self.action_space.contains(action):
+            raise ValueError(f"Invalid Entry action: {action}")
+        if self.terminated or self.truncated:
+>           raise RuntimeError("Episode paused/ended; continuation or explicit reset required")
+E           RuntimeError: Episode paused/ended; continuation or explicit reset required
+
+src/gym_trading_env/envs/entry_env.py:613: RuntimeError
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_data_perf_phase2_guards.py::test_native_e_direct_trace_matches_fixed_old_observed_wrapper_every_step

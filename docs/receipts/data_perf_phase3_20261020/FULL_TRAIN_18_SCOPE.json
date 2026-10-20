@@ -1,0 +1,158 @@
+{
+  "status": "READ_ONLY_PLANNED_TRAIN_SCOPE",
+  "contracts": 18,
+  "official_days": 1455,
+  "market_cursors": 488160,
+  "planned_native_records": 2929068,
+  "source_pool": "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+  "source_pool_sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b",
+  "batches": [
+    {
+      "batch": "TRAIN01_FG809_FULL_MAIN",
+      "contract": "CZCE.FG809",
+      "days": 83,
+      "market_cursors": 28264,
+      "planned_native_records": 169590,
+      "source_lock_sha256": "33b0edf18513bfe49d0f48e10fc3e787ae0a15c6676d49a0816a04554e6e21b1"
+    },
+    {
+      "batch": "TRAIN02_FG901_FULL_MAIN",
+      "contract": "CZCE.FG901",
+      "days": 86,
+      "market_cursors": 29416,
+      "planned_native_records": 176502,
+      "source_lock_sha256": "7f7d26a23212e72f54f098d4321d9942f7846c82c855c80778021937116d144f"
+    },
+    {
+      "batch": "TRAIN03_FG905_FULL_MAIN",
+      "contract": "CZCE.FG905",
+      "days": 79,
+      "market_cursors": 26762,
+      "planned_native_records": 160578,
+      "source_lock_sha256": "d50557e2abf7e3939a1b4c35b59c39af423978ce7e5574056efb67042c046d6c"
+    },
+    {
+      "batch": "TRAIN04_FG909_FULL_MAIN",
+      "contract": "CZCE.FG909",
+      "days": 78,
+      "market_cursors": 26546,
+      "planned_native_records": 159282,
+      "source_lock_sha256": "a7d9e4bfdd86f89350a8e8e6344940b3dad4f4d197410ccd60a960090afe0f2f"
+    },
+    {
+      "batch": "TRAIN05_FG001_FULL_MAIN",
+      "contract": "CZCE.FG001",
+      "days": 81,
+      "market_cursors": 27464,
+      "planned_native_records": 164790,
+      "source_lock_sha256": "d9071684d9208a7f39a066c2fbcb81838f63609be39e082eea2981cb99895635"
+    },
+    {
+      "batch": "TRAIN06_FG005_FULL_MAIN",
+      "contract": "CZCE.FG005",
+      "days": 75,
+      "market_cursors": 20505,
+      "planned_native_records": 123036,
+      "source_lock_sha256": "69e323640b9356d6e04e65e5a9b7384e234d85da0a69229dd57f071cdedca470"
+    },
+    {
+      "batch": "TRAIN07_FG009_FULL_MAIN",
+      "contract": "CZCE.FG009",
+      "days": 88,
+      "market_cursors": 27600,
+      "planned_native_records": 165606,
+      "source_lock_sha256": "e79479a9157d77c7b35df3ef351ba800e8dcffa97f255b95776c9681f876ca01"
+    },
+    {
+      "batch": "TRAIN08_FG101_FULL_MAIN",
+      "contract": "CZCE.FG101",
+      "days": 82,
+      "market_cursors": 28050,
+      "planned_native_records": 168306,
+      "source_lock_sha256": "293004cfbc45d997429f2e37c9b11c7095dcc570eef9799295b5488121b54af4"
+    },
+    {
+      "batch": "TRAIN09_FG105_FULL_MAIN",
+      "contract": "CZCE.FG105",
+      "days": 76,
+      "market_cursors": 25620,
+      "planned_native_records": 153726,
+      "source_lock_sha256": "6a5354cc05ab9a9a35224852c897d599d877b54b68302d02bf8cbed0cf521a73"
+    },
+    {
+      "batch": "TRAIN10_FG109_FULL_MAIN",
+      "contract": "CZCE.FG109",
+      "days": 73,
+      "market_cursors": 24945,
+      "planned_native_records": 149676,
+      "source_lock_sha256": "f62822fe6124e39b3f2bd3a7082198b35d133989c61d750ce070f5ff5585fc59"
+    },
+    {
+      "batch": "TRAIN11_FG201_FULL_MAIN",
+      "contract": "CZCE.FG201",
+      "days": 92,
+      "market_cursors": 31260,
+      "planned_native_records": 187566,
+      "source_lock_sha256": "5f23a44a7f7725e21e2b99eb019aba089fba222cc8249ef81acee0b8e220171b"
+    },
+    {
+      "batch": "TRAIN12_FG205_FULL_MAIN",
+      "contract": "CZCE.FG205",
+      "days": 68,
+      "market_cursors": 23220,
+      "planned_native_records": 139326,
+      "source_lock_sha256": "0d2e9d90654da21fee907af9c38449f697d4b14857c45bce67fddfbd7695c424"
+    },
+    {
+      "batch": "TRAIN13_FG209_FULL_MAIN",
+      "contract": "CZCE.FG209",
+      "days": 94,
+      "market_cursors": 31950,
+      "planned_native_records": 191706,
+      "source_lock_sha256": "ad98879cf0f95043611be87511cb544652369680d031a7690628cff5b2b6bca3"
+    },
+    {
+      "batch": "TRAIN14_FG301_FULL_MAIN",
+      "contract": "CZCE.FG301",
+      "days": 81,
+      "market_cursors": 27703,
+      "planned_native_records": 166224,
+      "source_lock_sha256": "43d6367b0e5766f8bcd130295a4e7b3c77949571ba0905c6c4ad5f8751f0516e"
+    },
+    {
+      "batch": "TRAIN15_FG305_FULL_MAIN",
+      "contract": "CZCE.FG305",
+      "days": 79,
+      "market_cursors": 26895,
+      "planned_native_records": 161376,
+      "source_lock_sha256": "0bc553d43d0955c20e5a166b15139bc067c699db1a7ce818d979f43251aa3fe9"
+    },
+    {
+      "batch": "TRAIN16_FG309_FULL_MAIN",
+      "contract": "CZCE.FG309",
+      "days": 84,
+      "market_cursors": 28740,
+      "planned_native_records": 172446,
+      "source_lock_sha256": "6ca1845a0c78c9d74929aabaa3aefc10788732d4a49a6e2a7272ce8bf4bbb5e3"
+    },
+    {
+      "batch": "TRAIN17_FG401_FULL_MAIN",
+      "contract": "CZCE.FG401",
+      "days": 78,
+      "market_cursors": 26790,
+      "planned_native_records": 160746,
+      "source_lock_sha256": "d6b9530e12860a2946a9ae7a814a8cd88812a33001e9cb489f68888974e5a03b"
+    },
+    {
+      "batch": "TRAIN18_FG405_FULL_MAIN",
+      "contract": "CZCE.FG405",
+      "days": 78,
+      "market_cursors": 26430,
+      "planned_native_records": 158586,
+      "source_lock_sha256": "4586a050b942fe9ecff3df001d76de0f275b0c1d66094fd7ad50dbcf8bc005dd"
+    }
+  ],
+  "actual_production": "NOT_RUN",
+  "test_prices_opened": 0,
+  "optimizer_updates": 0
+}

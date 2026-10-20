@@ -1,0 +1,23 @@
+	Command being timed: "/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_e_quality_reader.py read --corpus /home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/long_final_01/corpus --out /home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/long_final_01/reader --length 64 --seed 202 --without-model"
+	User time (seconds): 13.56
+	System time (seconds): 1.22
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:14.90
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 327132
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 59158
+	Voluntary context switches: 1066
+	Involuntary context switches: 76
+	Swaps: 0
+	File system inputs: 16
+	File system outputs: 20272
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

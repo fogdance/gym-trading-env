@@ -1,0 +1,976 @@
+{
+  "protocol": "FG_S3_DATA_PERF_BENCHMARK_V1",
+  "sample": "short",
+  "repo": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+  "repositories": {
+    "gym": {
+      "sha": "1bc608da9b29bad73c6fcab8f85f87c848830712",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+      "dirty": false
+    }
+  },
+  "contract": "CZCE.FG201",
+  "start_day": "2021-12-09",
+  "end_day": "2021-12-09",
+  "max_market_steps": 128,
+  "seed": 202,
+  "requested_cpu_workers": 20,
+  "phases": [
+    {
+      "name": "validate",
+      "argv": [
+        "taskset",
+        "-c",
+        "0-19",
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/validate.time.txt",
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_e_quality_corpus.py",
+        "validate",
+        "--source-pool",
+        "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+        "--env-receipt",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+        "--contract",
+        "CZCE.FG201",
+        "--start-day",
+        "2021-12-09",
+        "--end-day",
+        "2021-12-09"
+      ],
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+      "env_overrides": {
+        "PYTHONPATH": ".:src:../dreamerv3",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONINTMAXSTRDIGITS": "0",
+        "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "start_utc": "2026-10-20T07:14:10.575160+00:00",
+      "wall_seconds": 13.857820836943574,
+      "exit_code": 0,
+      "end_utc": "2026-10-20T07:14:24.432996+00:00",
+      "log_sha256": "00b42006288997a0217dcef0e05e6793c4a544e50c6efeb2da7c8b9321305dc0"
+    },
+    {
+      "name": "generate",
+      "argv": [
+        "taskset",
+        "-c",
+        "0-19",
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/generate.time.txt",
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_e_quality_corpus.py",
+        "generate",
+        "--source-pool",
+        "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+        "--env-receipt",
+        "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+        "--contract",
+        "CZCE.FG201",
+        "--start-day",
+        "2021-12-09",
+        "--end-day",
+        "2021-12-09",
+        "--workers",
+        "20",
+        "--seed",
+        "202",
+        "--mode",
+        "dev",
+        "--debug",
+        "--out",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/corpus",
+        "--max-market-steps",
+        "128"
+      ],
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+      "env_overrides": {
+        "PYTHONPATH": ".:src:../dreamerv3",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONINTMAXSTRDIGITS": "0",
+        "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "start_utc": "2026-10-20T07:14:24.433361+00:00",
+      "wall_seconds": 188.9905218599597,
+      "exit_code": 0,
+      "end_utc": "2026-10-20T07:17:33.423892+00:00",
+      "log_sha256": "25592488f5e039044396048e37ad64262252763ed4462ae15ce8254fe4336326"
+    },
+    {
+      "name": "reader",
+      "argv": [
+        "taskset",
+        "-c",
+        "0-19",
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/reader.time.txt",
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_e_quality_reader.py",
+        "read",
+        "--corpus",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/corpus",
+        "--out",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/reader",
+        "--length",
+        "64",
+        "--seed",
+        "202",
+        "--without-model"
+      ],
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+      "env_overrides": {
+        "PYTHONPATH": ".:src:../dreamerv3",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONINTMAXSTRDIGITS": "0",
+        "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "start_utc": "2026-10-20T07:17:33.425673+00:00",
+      "wall_seconds": 5.953979719080962,
+      "exit_code": 0,
+      "end_utc": "2026-10-20T07:17:39.379664+00:00",
+      "log_sha256": "43d1a35f4c3582cba491bf65c43d3082bc5a3e2909f34186a30eac7fc5e5f156"
+    },
+    {
+      "name": "coverage",
+      "argv": [
+        "taskset",
+        "-c",
+        "0-19",
+        "/usr/bin/time",
+        "-v",
+        "-o",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/coverage.time.txt",
+        "/home/v/miniconda3/envs/dreamerv3/bin/python",
+        "-B",
+        "tools/fg_s3_e_quality_corpus.py",
+        "coverage",
+        "--corpus",
+        "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/corpus"
+      ],
+      "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+      "env_overrides": {
+        "PYTHONPATH": ".:src:../dreamerv3",
+        "JAX_PLATFORMS": "cpu",
+        "CUDA_VISIBLE_DEVICES": "",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONINTMAXSTRDIGITS": "0",
+        "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+        "OPENBLAS_NUM_THREADS": "1",
+        "OMP_NUM_THREADS": "1",
+        "MKL_NUM_THREADS": "1",
+        "NUMEXPR_NUM_THREADS": "1"
+      },
+      "start_utc": "2026-10-20T07:17:39.379991+00:00",
+      "wall_seconds": 2.1049924950348213,
+      "exit_code": 0,
+      "end_utc": "2026-10-20T07:17:41.484993+00:00",
+      "log_sha256": "67d0ac3c7253ac1afe4f4bc2d8cc9a60203a8905e41e355f18fe88ab24c640cf"
+    }
+  ],
+  "optimizer_updates": 0,
+  "production": "BENCHMARK_ONLY",
+  "native_g3": "NOT_RUN",
+  "status": "PASS_BOUNDED_TRAIN_BENCHMARK",
+  "generation": {
+    "seconds": 187.2806273199385,
+    "peak_rss_bytes": 477478912,
+    "source_bytes": 3640878,
+    "replay_bytes": 167984,
+    "candidate_cost": {
+      "candidates": 344,
+      "filled": 344,
+      "held_market_minutes_quantiles": [
+        1.0,
+        27.0,
+        182.7,
+        218.57,
+        316.0
+      ],
+      "sum_independent_held_market_minutes": 20839,
+      "elapsed_seconds": 20.562994568957947,
+      "peak_rss_bytes": 463585280
+    },
+    "workers": 6,
+    "resource_budget": {
+      "workers": 6,
+      "label_workers": [
+        3,
+        3,
+        2,
+        2,
+        2,
+        2
+      ],
+      "total_worker_processes": 20,
+      "available_memory_bytes": 14277783552,
+      "observed_parent_peak_rss_bytes": 463585280,
+      "worker_budget_bytes": 497912320,
+      "observed_process_pss_bytes": 398329856,
+      "coordinator_reserve_bytes": 536870912,
+      "available_logical_cpus": 20,
+      "native_threads_per_worker": 1,
+      "requested_worker_processes": 20,
+      "worker_limit_reason": "cpu_budget"
+    },
+    "behavior_jobs": [
+      {
+        "behavior": "P2_mid",
+        "trace_hash": "d4d266eccd0029f3333bd2b1b24723d2aa723fb12b7d02470e356f090e27b56f",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "d4d266eccd0029f3333bd2b1b24723d2aa723fb12b7d02470e356f090e27b56f",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 510,
+            "full_history_items": 7992711,
+            "history_replicas": 2,
+            "native_workers": [
+              {
+                "queries": 65,
+                "native_traces": 3,
+                "cache_hits": 0,
+                "trace_seconds": 0.49230782501399517,
+                "independently_observed_market_minutes": 180,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 4,
+                  "misses": 182,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 925,
+                  "row_misses": 182,
+                  "quote_hits": 1920,
+                  "quote_misses": 63,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 2189,
+                  "term_misses": 184,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 27.655112,
+                "system_cpu_seconds": 1.269546,
+                "peak_rss_bytes": 511049728,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 1,
+                  "maxsize": 32,
+                  "currsize": 1
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "486db25dd18552ef729ba321cdb90cab72e1f0d1b5d8b12283c9d6a6d67ed0a4",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 64,
+                "native_traces": 5,
+                "cache_hits": 0,
+                "trace_seconds": 0.8469360527815297,
+                "independently_observed_market_minutes": 342,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 8,
+                  "misses": 344,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 1751,
+                  "row_misses": 344,
+                  "quote_hits": 3678,
+                  "quote_misses": 87,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 4148,
+                  "term_misses": 347,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 26.66086,
+                "system_cpu_seconds": 1.258662,
+                "peak_rss_bytes": 509370368,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 2,
+                  "maxsize": 32,
+                  "currsize": 2
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "3ba1e691c7bd0e0d8f5152b45d50ed142ed08cb1469bf650efa2b52d290cb807",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 72.09412499098107,
+        "peak_rss_bytes": 579686400
+      },
+      {
+        "behavior": "P2_low",
+        "trace_hash": "5c575588677412bc4f672d152a10b3f0eb89de0582bf2ba27171225ee7cc2f58",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "5c575588677412bc4f672d152a10b3f0eb89de0582bf2ba27171225ee7cc2f58",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 510,
+            "full_history_items": 7992711,
+            "history_replicas": 2,
+            "native_workers": [
+              {
+                "queries": 65,
+                "native_traces": 6,
+                "cache_hits": 0,
+                "trace_seconds": 0.958707089186646,
+                "independently_observed_market_minutes": 446,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 219,
+                  "misses": 239,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 2491,
+                  "row_misses": 239,
+                  "quote_hits": 4832,
+                  "quote_misses": 80,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 5623,
+                  "term_misses": 241,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 35.754946,
+                "system_cpu_seconds": 1.267998,
+                "peak_rss_bytes": 510332928,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 6,
+                  "maxsize": 32,
+                  "currsize": 6
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "6e5220daff94451c3780199ac140a9669f3ec5365a83ff0afc3e512c83795a5e",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 64,
+                "native_traces": 6,
+                "cache_hits": 0,
+                "trace_seconds": 1.138529837015085,
+                "independently_observed_market_minutes": 663,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 437,
+                  "misses": 238,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 3794,
+                  "row_misses": 238,
+                  "quote_hits": 7218,
+                  "quote_misses": 81,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 8445,
+                  "term_misses": 240,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 28.891341,
+                "system_cpu_seconds": 1.223294,
+                "peak_rss_bytes": 512921600,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 6,
+                  "maxsize": 32,
+                  "currsize": 6
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "0c44194e6c19c3605df43e10cf176529b87b99717f49978d0603f914c31a7c91",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 80.19959496997762,
+        "peak_rss_bytes": 573263872
+      },
+      {
+        "behavior": "P0",
+        "trace_hash": "858049f7a098369601c5f06e63a8a9e6a11dcd7e08d7a7ccb3dde138ac8b8120",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "858049f7a098369601c5f06e63a8a9e6a11dcd7e08d7a7ccb3dde138ac8b8120",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 762,
+            "full_history_items": 7992711,
+            "history_replicas": 3,
+            "native_workers": [
+              {
+                "queries": 43,
+                "native_traces": 43,
+                "cache_hits": 0,
+                "trace_seconds": 4.15822623425629,
+                "independently_observed_market_minutes": 2362,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2103,
+                  "misses": 345,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 14212,
+                  "row_misses": 345,
+                  "quote_hits": 25937,
+                  "quote_misses": 86,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 30825,
+                  "term_misses": 348,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 29.263728,
+                "system_cpu_seconds": 1.04599,
+                "peak_rss_bytes": 509403136,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 43,
+                  "maxsize": 32,
+                  "currsize": 32
+                },
+                "private_history": {
+                  "rows": 62083,
+                  "sealed_blocks": 242,
+                  "tail_rows": 131,
+                  "commitment": "12e2677c3fc7f739b26b08429ab1e4c91a19daaa074aeed95aa849f9fb009331",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 43,
+                "native_traces": 43,
+                "cache_hits": 0,
+                "trace_seconds": 4.134983896277845,
+                "independently_observed_market_minutes": 2409,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2151,
+                  "misses": 344,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 14493,
+                  "row_misses": 344,
+                  "quote_hits": 26453,
+                  "quote_misses": 85,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 31431,
+                  "term_misses": 347,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 29.358887,
+                "system_cpu_seconds": 1.017857,
+                "peak_rss_bytes": 510148608,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 43,
+                  "maxsize": 32,
+                  "currsize": 32
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "9079892ff28c08e58cf8931f6dd3211a7bd21ad38632233296a3a7135a292a8a",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 43,
+                "native_traces": 43,
+                "cache_hits": 0,
+                "trace_seconds": 4.107009480590932,
+                "independently_observed_market_minutes": 2299,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2043,
+                  "misses": 342,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 13837,
+                  "row_misses": 342,
+                  "quote_hits": 25248,
+                  "quote_misses": 82,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 30009,
+                  "term_misses": 345,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 37.170933,
+                "system_cpu_seconds": 1.006727,
+                "peak_rss_bytes": 510136320,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 43,
+                  "maxsize": 32,
+                  "currsize": 32
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "454df17fb4f73a106cf708b56dbb79fa43f1ee9e8749234091874d1b58e8e567",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 82.96953187603503,
+        "peak_rss_bytes": 580104192
+      },
+      {
+        "behavior": "P3",
+        "trace_hash": "1469aba61ba290e2e2067c6161b8c296b47896585a4c630f5ef5d39e0810c789",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "1469aba61ba290e2e2067c6161b8c296b47896585a4c630f5ef5d39e0810c789",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 510,
+            "full_history_items": 7992711,
+            "history_replicas": 2,
+            "native_workers": [
+              {
+                "queries": 65,
+                "native_traces": 19,
+                "cache_hits": 0,
+                "trace_seconds": 1.3812047108076513,
+                "independently_observed_market_minutes": 523,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 350,
+                  "misses": 211,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 3098,
+                  "row_misses": 211,
+                  "quote_hits": 5698,
+                  "quote_misses": 74,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 6795,
+                  "term_misses": 213,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 27.286055,
+                "system_cpu_seconds": 1.182828,
+                "peak_rss_bytes": 511217664,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 8,
+                  "maxsize": 32,
+                  "currsize": 8
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "830de275597d71f78ee68ab618a62abf0a1d021ad996e43c3119093bebee3276",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 64,
+                "native_traces": 18,
+                "cache_hits": 0,
+                "trace_seconds": 1.6385881862370297,
+                "independently_observed_market_minutes": 624,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 316,
+                  "misses": 344,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 3560,
+                  "row_misses": 344,
+                  "quote_hits": 6793,
+                  "quote_misses": 87,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 7957,
+                  "term_misses": 347,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 37.41386,
+                "system_cpu_seconds": 1.2787899999999999,
+                "peak_rss_bytes": 512012288,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 8,
+                  "maxsize": 32,
+                  "currsize": 8
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "cf5a06234471db6f77892302066a3a7128a9b2203039e2ba5ed8ce79ed491c7b",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 83.32828445499763,
+        "peak_rss_bytes": 575049728
+      },
+      {
+        "behavior": "P1",
+        "trace_hash": "4180e664d12417510b8198a4f106ae969a64f0aeef5bab04d5224ba3bf667d45",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "4180e664d12417510b8198a4f106ae969a64f0aeef5bab04d5224ba3bf667d45",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 762,
+            "full_history_items": 7992711,
+            "history_replicas": 3,
+            "native_workers": [
+              {
+                "queries": 43,
+                "native_traces": 3,
+                "cache_hits": 0,
+                "trace_seconds": 0.4117135431151837,
+                "independently_observed_market_minutes": 142,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 3,
+                  "misses": 145,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 734,
+                  "row_misses": 145,
+                  "quote_hits": 1490,
+                  "quote_misses": 75,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 1733,
+                  "term_misses": 146,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 25.578060999999998,
+                "system_cpu_seconds": 1.006923,
+                "peak_rss_bytes": 510431232,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 2,
+                  "maxsize": 32,
+                  "currsize": 2
+                },
+                "private_history": {
+                  "rows": 62083,
+                  "sealed_blocks": 242,
+                  "tail_rows": 131,
+                  "commitment": "b2be81e9dcebd593db554c6698f338a9140c6e2467e4cf38877af9703cc56369",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 43,
+                "native_traces": 1,
+                "cache_hits": 0,
+                "trace_seconds": 0.09816672105807811,
+                "independently_observed_market_minutes": 16,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 1,
+                  "misses": 17,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 88,
+                  "row_misses": 17,
+                  "quote_hits": 154,
+                  "quote_misses": 23,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 202,
+                  "term_misses": 17,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 33.834802,
+                "system_cpu_seconds": 1.033505,
+                "peak_rss_bytes": 510431232,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 121,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 0,
+                  "maxsize": 32,
+                  "currsize": 0
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "3ba9845e3f28b46e8b76f9fd441f0a8b3947f95ebe533c2fed61d05034c0ab19",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 43,
+                "native_traces": 2,
+                "cache_hits": 0,
+                "trace_seconds": 0.27256264397874475,
+                "independently_observed_market_minutes": 80,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2,
+                  "misses": 82,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 416,
+                  "row_misses": 82,
+                  "quote_hits": 825,
+                  "quote_misses": 57,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 979,
+                  "term_misses": 83,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 32.210263,
+                "system_cpu_seconds": 3.249714,
+                "peak_rss_bytes": 510431232,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 122,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 1,
+                  "maxsize": 32,
+                  "currsize": 1
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "16f1c708ff6337c3066312310c713e81f7bd5eebc1dc5d2c8ab03fb69348ed12",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 84.71744610008318,
+        "peak_rss_bytes": 572948480
+      },
+      {
+        "behavior": "P4",
+        "trace_hash": "25cf9eeb740da9606e9a8e3407d10f7e61163937eaf9ad2d8651dad3a20b8be9",
+        "reconciliation": {
+          "status": "PASS",
+          "records": 129,
+          "account_restores": 0,
+          "replay_trace_hash": "25cf9eeb740da9606e9a8e3407d10f7e61163937eaf9ad2d8651dad3a20b8be9",
+          "teacher_labels_verified": 0,
+          "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+          "label_transport": {
+            "queries": 129,
+            "delta_history_items": 510,
+            "full_history_items": 7992711,
+            "history_replicas": 2,
+            "native_workers": [
+              {
+                "queries": 65,
+                "native_traces": 55,
+                "cache_hits": 0,
+                "trace_seconds": 5.341694638249464,
+                "independently_observed_market_minutes": 2965,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2730,
+                  "misses": 345,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 17936,
+                  "row_misses": 345,
+                  "quote_hits": 32580,
+                  "quote_misses": 86,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 38790,
+                  "term_misses": 348,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 39.628116,
+                "system_cpu_seconds": 1.224003,
+                "peak_rss_bytes": 509870080,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 55,
+                  "maxsize": 32,
+                  "currsize": 32
+                },
+                "private_history": {
+                  "rows": 62087,
+                  "sealed_blocks": 242,
+                  "tail_rows": 135,
+                  "commitment": "aa59555f95032b8c53311d5c7909ff058fc2b5fe14ee15b21867893bf4d7b714",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              },
+              {
+                "queries": 64,
+                "native_traces": 54,
+                "cache_hits": 0,
+                "trace_seconds": 5.591920889681205,
+                "independently_observed_market_minutes": 3233,
+                "cache_peak_entries": 0,
+                "e_observation_cache": {
+                  "hits": 2999,
+                  "misses": 342,
+                  "evictions": 0
+                },
+                "native_execution_cache": {
+                  "row_hits": 19538,
+                  "row_misses": 342,
+                  "quote_hits": 35528,
+                  "quote_misses": 85,
+                  "row_evictions": 0,
+                  "quote_evictions": 0,
+                  "term_hits": 42266,
+                  "term_misses": 345,
+                  "term_evictions": 0
+                },
+                "user_cpu_seconds": 32.670221,
+                "system_cpu_seconds": 1.318968,
+                "peak_rss_bytes": 509870080,
+                "macd_cached_rows": 1024,
+                "macd_sparse_checkpoints": 123,
+                "strict_pair_cache": {
+                  "hits": 0,
+                  "misses": 54,
+                  "maxsize": 32,
+                  "currsize": 32
+                },
+                "private_history": {
+                  "rows": 62085,
+                  "sealed_blocks": 242,
+                  "tail_rows": 133,
+                  "commitment": "4fd0337c63fe2c0259f8515ea34e5d003f8a71c69bdb0dc5cca4de72f00bb2ab",
+                  "public_hash": "original_sorted_JSON_SHA256"
+                }
+              }
+            ]
+          }
+        },
+        "seconds": 87.57602677401155,
+        "peak_rss_bytes": 580550656
+      }
+    ],
+    "source_rows": 31260,
+    "sample_rows": 129,
+    "scope": "bounded_dev_observations_with_full_train_suffix"
+  },
+  "corpus_identity": "cc278459844879e00d43287aa1eeeeaaa84207c7707ae2a6e3fd078e065021c9",
+  "unique_valid_market_minutes": 128,
+  "wall_seconds": 210.9577799269464,
+  "valid_market_minutes_per_second": 0.6067564801086064
+}

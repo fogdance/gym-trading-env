@@ -164,9 +164,10 @@ def _collection(lock,source,market,out):
     return profile,audit
 
 
-def _factory(row,profile):
-    cache=EntryMarketCache(1)
+def _factory(row,profile,*,market_seed=None):
+    cache=EntryMarketCache(1,seed=market_seed)
     def factory():return FixedDirectionEntryEnv(config_path=row['env_config'],e_profile=profile,market_cache=cache)
+    factory._market_cache=cache
     return factory
 
 
@@ -259,11 +260,12 @@ def _verify_publications(path,names):
 
 def _behavior_job(job):
     began=time.monotonic()
-    factory=_factory(job['row'],job['profile'])
+    factory=_factory(job['row'],job['profile'],market_seed=job.get('market_seed'))
     spec=job['spec']
     from .fg_s3_quality_label_pool import NativeLabelPool
     labels=(lambda identity:NativeLabelPool(job['row'],job['profile'],job['initial'],
-        job['source'],job['strict'],identity,job['label_workers'])) if job.get('label_workers') else None
+        job['source'],job['strict'],identity,job['label_workers'],
+        market_seed=factory._market_cache.export_seed())) if job.get('label_workers') else None
     trace,receipt=generate_behavior(factory,spec,job['out'],PROJECT.parent/'dreamerv3',
         source=job['source'],initial_state=job['initial'],end_cursor=job['end'],strict=job['strict'],
         labeler_factory=labels,verify_labels=False)
@@ -308,18 +310,19 @@ def _worker_limits(jobs, *, available=None, peak_rss=None, cpus=None, process_me
 def _verification_job(job):
     """One independent complete account replay, with original source checks."""
     began=time.monotonic()
-    factory=_factory(job['row'],job['profile'])
+    factory=_factory(job['row'],job['profile'],market_seed=job.get('market_seed'))
     env=factory();env.import_state(job['initial'])
     facts=NativeQualityTeacher(env,factory,fold='TRAIN',source=job['source'])
     labels=l1_labeler(facts,job['strict'])
     if job.get('label_workers'):
         from .fg_s3_quality_label_pool import NativeLabelPool
         labels=NativeLabelPool(job['row'],job['profile'],job['initial'],job['source'],
-            job['strict'],facts.identity_hash,job['label_workers'])
+            job['strict'],facts.identity_hash,job['label_workers'],
+            market_seed=factory._market_cache.export_seed())
         facts.close()
     try:
         receipt=reconcile_trace(job['path'],PROJECT.parent/'dreamerv3',env_factory=factory,
-            schema=E_QUALITY_SCHEMA,label_verifier=labels)
+            schema=E_QUALITY_SCHEMA,label_verifier=labels,private_history=True)
         if job.get('label_workers'):
             receipt['label_transport']=dict(labels.report_statistics())
     finally:
@@ -377,7 +380,7 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         str(Path(env_receipt)/'inputs/inputs.json'):lock['inputs_sha256'],
         lock['partition_manifest']['path']:lock['partition_manifest']['sha256']}
     source_binding=dict(fold='TRAIN',source_lock_hash=lock['content_hash'],files={**frozen,**code['files'],**anchors},
-        state_cache_entries=0,calendar_complete=True,source_guard_interval=1024)
+        state_cache_entries=0,calendar_complete=True,source_guard_interval=1)
     strict=QualityStrictTeacher(env,source=source_binding,start_cursor=lock['start_cursor'])
     strict.compile_value_store(out/'strict_value_cache',pair_end_cursor=lock['end_cursor'])
     write_json(out/'p4_plan.json',strict.plan())
@@ -391,10 +394,12 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
     specs=behavior_specs(seed)+[dict(id='P4',kind='quality_oracle_schedule',seed_components=[seed,0,5],teacher_identity=strict.identity_hash,hindsight_behavior=True)]
     limits=_worker_limits(len(specs),requested_workers=workers);workers=limits['workers']
     print(json.dumps(dict(phase='generate',resource_budget=limits)),flush=True)
+    market_seed=factory._market_cache.export_seed()
     with ProcessPoolExecutor(max_workers=workers,mp_context=multiprocessing.get_context('spawn')) as executor:
         futures=[executor.submit(_behavior_job,dict(row=row,profile=profile,spec=spec,
             out=out/'policies'/spec['id'],source=source_binding,initial=initial,
-            end=lock['end_cursor'],strict=strict,label_workers=limits['label_workers'][i%workers])) for i,spec in enumerate(specs)]
+            end=lock['end_cursor'],strict=strict,market_seed=market_seed,
+            label_workers=limits['label_workers'][i%workers])) for i,spec in enumerate(specs)]
         jobs=[]
         for future in as_completed(futures):
             result=future.result();jobs.append(result);print(json.dumps(result),flush=True)
@@ -471,6 +476,9 @@ def verify_corpus(path,*,workers=None):
         raise ValueError('Unknown Corpus or forged training admission')
     if m.get('execution_mode','data')!='data':
         raise ValueError('DEV_CORPUS_NOT_CERTIFIED: generate a new DATA version for native admission')
+    guard_interval=m.get('source_binding',{}).get('source_guard_interval',1)
+    if type(guard_interval) is not int or guard_interval!=1:
+        raise ValueError('Native G3 requires per-query frozen source monitoring')
     _inventory(path,m)
     if _code_lock()['files']!=m['code']['files']:
         raise ValueError('Corpus runtime code inventory differs')
@@ -500,10 +508,14 @@ def verify_corpus(path,*,workers=None):
     import tempfile
     with tempfile.TemporaryDirectory(prefix='fg_g3_exact_') as temporary:
         strict.compile_value_store(Path(temporary)/'values',pair_end_cursor=saved['end_cursor'])
+        # This seed comes only from this verifier's freshly authenticated raw
+        # market. It carries no producer labels, Oracle values or accounts.
+        market_seed=factory._market_cache.export_seed()
         try:
             with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
                 futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,
                     row=row,profile=profile,initial=initial,source=m['source_binding'],strict=strict,
+                    market_seed=market_seed,
                     label_workers=limits['label_workers'][i%limits['workers']])) for i,name in enumerate(m['behaviors'])]
                 jobs=[future.result() for future in as_completed(futures)]
         finally:strict._value_store.close()

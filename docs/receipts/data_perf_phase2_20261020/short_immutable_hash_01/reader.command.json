@@ -1,0 +1,43 @@
+{
+  "name": "reader",
+  "argv": [
+    "taskset",
+    "-c",
+    "0-19",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/reader.time.txt",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_reader.py",
+    "read",
+    "--corpus",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/corpus",
+    "--out",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/short_immutable_hash_01/reader",
+    "--length",
+    "64",
+    "--seed",
+    "202",
+    "--without-model"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/immutable-hash/gym-trading-env",
+  "env_overrides": {
+    "PYTHONPATH": ".:src:../dreamerv3",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONINTMAXSTRDIGITS": "0",
+    "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "start_utc": "2026-10-20T07:17:33.425673+00:00",
+  "wall_seconds": 5.953979719080962,
+  "exit_code": 0,
+  "end_utc": "2026-10-20T07:17:39.379664+00:00",
+  "log_sha256": "43d1a35f4c3582cba491bf65c43d3082bc5a3e2909f34186a30eac7fc5e5f156"
+}

@@ -1,0 +1,851 @@
+{
+  "seconds": 223.89734531892464,
+  "peak_rss_bytes": 486543360,
+  "source_bytes": 3640878,
+  "replay_bytes": 699227,
+  "candidate_cost": {
+    "candidates": 689,
+    "filled": 689,
+    "held_market_minutes_quantiles": [
+      1.0,
+      23.0,
+      128.20000000000005,
+      215.0,
+      316.0
+    ],
+    "sum_independent_held_market_minutes": 31859,
+    "elapsed_seconds": 22.610278908978216,
+    "peak_rss_bytes": 462786560
+  },
+  "workers": 6,
+  "resource_budget": {
+    "workers": 6,
+    "label_workers": [
+      3,
+      3,
+      2,
+      2,
+      2,
+      2
+    ],
+    "total_worker_processes": 20,
+    "available_memory_bytes": 13264265216,
+    "observed_parent_peak_rss_bytes": 462786560,
+    "worker_budget_bytes": 497076480,
+    "observed_process_pss_bytes": 397661184,
+    "coordinator_reserve_bytes": 536870912,
+    "available_logical_cpus": 20,
+    "native_threads_per_worker": 1,
+    "requested_worker_processes": 20,
+    "worker_limit_reason": "cpu_budget"
+  },
+  "behavior_jobs": [
+    {
+      "behavior": "P1",
+      "trace_hash": "583f82dc5dd2ea90ac0e3fb39a16ff13d73416b6bb339e6dcb8286bb538ece41",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "583f82dc5dd2ea90ac0e3fb39a16ff13d73416b6bb339e6dcb8286bb538ece41",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 4128,
+          "full_history_items": 42724141,
+          "history_replicas": 3,
+          "native_workers": [
+            {
+              "queries": 231,
+              "native_traces": 7,
+              "cache_hits": 0,
+              "trace_seconds": 0.9466715978924185,
+              "independently_observed_market_minutes": 227,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 9,
+                "misses": 232,
+                "evictions": 0
+              },
+              "native_execution_cache": {
+                "row_hits": 1191,
+                "row_misses": 232,
+                "quote_hits": 2402,
+                "quote_misses": 100,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 2789,
+                "term_misses": 233,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 231,
+                "files_checked": 68607,
+                "fast_queries": 231,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 37.857713,
+              "system_cpu_seconds": 0.946472,
+              "peak_rss_bytes": 511885312,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 4,
+                "maxsize": 32,
+                "currsize": 4
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "25b9ccc5abf83cda54248f76808ff39aeacbc8e912a0d279e8e6f591e595ddd7",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 230,
+              "native_traces": 11,
+              "cache_hits": 0,
+              "trace_seconds": 1.5163869557436556,
+              "independently_observed_market_minutes": 409,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 18,
+                "misses": 414,
+                "evictions": 0
+              },
+              "native_execution_cache": {
+                "row_hits": 2141,
+                "row_misses": 414,
+                "quote_hits": 4405,
+                "quote_misses": 105,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 5019,
+                "term_misses": 419,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 230,
+                "files_checked": 68310,
+                "fast_queries": 230,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 39.424002,
+              "system_cpu_seconds": 0.965559,
+              "peak_rss_bytes": 510226432,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 122,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 3,
+                "maxsize": 32,
+                "currsize": 3
+              },
+              "private_history": {
+                "rows": 62515,
+                "sealed_blocks": 244,
+                "tail_rows": 51,
+                "commitment": "b9d007e040907bc75ef8f7bf8d624debc5e8a30142fe01581cc7c95371a60d6d",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 230,
+              "native_traces": 3,
+              "cache_hits": 0,
+              "trace_seconds": 0.3383658940438181,
+              "independently_observed_market_minutes": 53,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 3,
+                "misses": 56,
+                "evictions": 0
+              },
+              "native_execution_cache": {
+                "row_hits": 289,
+                "row_misses": 56,
+                "quote_hits": 505,
+                "quote_misses": 81,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 665,
+                "term_misses": 57,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 230,
+                "files_checked": 68310,
+                "fast_queries": 230,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 37.879172,
+              "system_cpu_seconds": 0.995873,
+              "peak_rss_bytes": 510304256,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 122,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 1,
+                "maxsize": 32,
+                "currsize": 1
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "9121685004456959eccca4d7a7f2bdcbbf7cff1bb060f39b51b6a6e25982104f",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 99.81463963596616,
+      "peak_rss_bytes": 570892288
+    },
+    {
+      "behavior": "P2_mid",
+      "trace_hash": "d7e707b51894cf00d02d6c214e87fc3a2ecefe6863bd6c9ebacadf723fe66058",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "d7e707b51894cf00d02d6c214e87fc3a2ecefe6863bd6c9ebacadf723fe66058",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 2754,
+          "full_history_items": 42724141,
+          "history_replicas": 2,
+          "native_workers": [
+            {
+              "queries": 346,
+              "native_traces": 20,
+              "cache_hits": 0,
+              "trace_seconds": 2.1322185903554782,
+              "independently_observed_market_minutes": 525,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 54,
+                "misses": 512,
+                "evictions": 0
+              },
+              "native_execution_cache": {
+                "row_hits": 2818,
+                "row_misses": 512,
+                "quote_hits": 5647,
+                "quote_misses": 146,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 6523,
+                "term_misses": 516,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 346,
+                "files_checked": 102762,
+                "fast_queries": 346,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 50.083884,
+              "system_cpu_seconds": 1.162882,
+              "peak_rss_bytes": 511418368,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 12,
+                "maxsize": 32,
+                "currsize": 12
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "2c270660d9381ae04cb92b6145fe0f59ccdbb0f4c4438b1abc401122aa7cdb6c",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 345,
+              "native_traces": 19,
+              "cache_hits": 0,
+              "trace_seconds": 1.9237686522537842,
+              "independently_observed_market_minutes": 456,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 56,
+                "misses": 438,
+                "evictions": 0
+              },
+              "native_execution_cache": {
+                "row_hits": 2469,
+                "row_misses": 438,
+                "quote_hits": 4884,
+                "quote_misses": 151,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 5696,
+                "term_misses": 441,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 345,
+                "files_checked": 102465,
+                "fast_queries": 345,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 45.54583,
+              "system_cpu_seconds": 1.166073,
+              "peak_rss_bytes": 511418368,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 122,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 12,
+                "maxsize": 32,
+                "currsize": 12
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "72643366eadf763499f6c9e3a7c6332b511b3f5cc71dc57ab235adda1f87e070",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 100.4085263099987,
+      "peak_rss_bytes": 568979456
+    },
+    {
+      "behavior": "P3",
+      "trace_hash": "2b4190b257bac7edf8a6610426f07a3c677b154a6dabbcf8171e3da4a3a1c31b",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "2b4190b257bac7edf8a6610426f07a3c677b154a6dabbcf8171e3da4a3a1c31b",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 2754,
+          "full_history_items": 42724141,
+          "history_replicas": 2,
+          "native_workers": [
+            {
+              "queries": 346,
+              "native_traces": 80,
+              "cache_hits": 0,
+              "trace_seconds": 6.653294874355197,
+              "independently_observed_market_minutes": 2401,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 1988,
+                "misses": 579,
+                "evictions": 67
+              },
+              "native_execution_cache": {
+                "row_hits": 14557,
+                "row_misses": 579,
+                "quote_hits": 26336,
+                "quote_misses": 153,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 31502,
+                "term_misses": 585,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 346,
+                "files_checked": 102762,
+                "fast_queries": 346,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 50.845052,
+              "system_cpu_seconds": 1.2126190000000001,
+              "peak_rss_bytes": 511410176,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 122,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 56,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "e3cfd26ff2903f5f07e71ec55e8434e0a2f772845e68c1b48d3d96ab20245f19",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 345,
+              "native_traces": 80,
+              "cache_hits": 0,
+              "trace_seconds": 7.036333798314445,
+              "independently_observed_market_minutes": 2925,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 2402,
+                "misses": 689,
+                "evictions": 177
+              },
+              "native_execution_cache": {
+                "row_hits": 17585,
+                "row_misses": 689,
+                "quote_hits": 32094,
+                "quote_misses": 153,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 38185,
+                "term_misses": 696,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 345,
+                "files_checked": 102465,
+                "fast_queries": 345,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 51.570176000000004,
+              "system_cpu_seconds": 1.259198,
+              "peak_rss_bytes": 510730240,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 56,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "8e3f23ea5d1cc063a1e8453cb1ba58a94ea0350a33cb83d738cdb34aabe2bab0",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 100.79750040790532,
+      "peak_rss_bytes": 566722560
+    },
+    {
+      "behavior": "P2_low",
+      "trace_hash": "e93a76f287796b66e3a3ee01dc34d5321cef25a47fcba327e14e6259c1613a0f",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "e93a76f287796b66e3a3ee01dc34d5321cef25a47fcba327e14e6259c1613a0f",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 2754,
+          "full_history_items": 42724141,
+          "history_replicas": 2,
+          "native_workers": [
+            {
+              "queries": 346,
+              "native_traces": 45,
+              "cache_hits": 0,
+              "trace_seconds": 4.672910887748003,
+              "independently_observed_market_minutes": 1768,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 1342,
+                "misses": 520,
+                "evictions": 8
+              },
+              "native_execution_cache": {
+                "row_hits": 10501,
+                "row_misses": 520,
+                "quote_hits": 19340,
+                "quote_misses": 153,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 22954,
+                "term_misses": 525,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 346,
+                "files_checked": 102762,
+                "fast_queries": 346,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 47.330546,
+              "system_cpu_seconds": 1.228183,
+              "peak_rss_bytes": 511074304,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 122,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 37,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "81a68e4b0e5c7d01a1e7bdd317ab0250bafc5bf4577343c588c01c75ae1d02d1",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 345,
+              "native_traces": 44,
+              "cache_hits": 0,
+              "trace_seconds": 5.438593849889003,
+              "independently_observed_market_minutes": 2420,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 1830,
+                "misses": 682,
+                "evictions": 170
+              },
+              "native_execution_cache": {
+                "row_hits": 14236,
+                "row_misses": 682,
+                "quote_hits": 26507,
+                "quote_misses": 151,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 31237,
+                "term_misses": 689,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 345,
+                "files_checked": 102465,
+                "fast_queries": 345,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 52.553729,
+              "system_cpu_seconds": 1.245827,
+              "peak_rss_bytes": 512110592,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 35,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "26468130ccf2b25bbbfc6922fc6276f2318d3d23c9038bb0d4cd8b43a79df70d",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 102.05577719898429,
+      "peak_rss_bytes": 567259136
+    },
+    {
+      "behavior": "P0",
+      "trace_hash": "1cf75ea6a2957aaef486ed196883c2fae4a4109e7efc9d6efae016663182a47e",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "1cf75ea6a2957aaef486ed196883c2fae4a4109e7efc9d6efae016663182a47e",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 4128,
+          "full_history_items": 42724141,
+          "history_replicas": 3,
+          "native_workers": [
+            {
+              "queries": 231,
+              "native_traces": 229,
+              "cache_hits": 0,
+              "trace_seconds": 20.676776614622213,
+              "independently_observed_market_minutes": 10326,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 10104,
+                "misses": 688,
+                "evictions": 176
+              },
+              "native_execution_cache": {
+                "row_hits": 63309,
+                "row_misses": 688,
+                "quote_hits": 113625,
+                "quote_misses": 154,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 135955,
+                "term_misses": 694,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 231,
+                "files_checked": 68607,
+                "fast_queries": 231,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 57.844262,
+              "system_cpu_seconds": 1.063398,
+              "peak_rss_bytes": 509693952,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 229,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "fae2b21446d2724e9055346b392b83c313a1fb6a6cde8ba5d3d191cae6ab908c",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 230,
+              "native_traces": 230,
+              "cache_hits": 0,
+              "trace_seconds": 20.777041622670367,
+              "independently_observed_market_minutes": 11049,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 10832,
+                "misses": 688,
+                "evictions": 176
+              },
+              "native_execution_cache": {
+                "row_hits": 67664,
+                "row_misses": 688,
+                "quote_hits": 121585,
+                "quote_misses": 150,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 145370,
+                "term_misses": 695,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 230,
+                "files_checked": 68310,
+                "fast_queries": 230,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 64.426428,
+              "system_cpu_seconds": 1.060743,
+              "peak_rss_bytes": 509693952,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 230,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62515,
+                "sealed_blocks": 244,
+                "tail_rows": 51,
+                "commitment": "1eb2feff66c5e5b361d5c28c89af8a4086177be274892e61f65ff707159e4696",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 230,
+              "native_traces": 230,
+              "cache_hits": 0,
+              "trace_seconds": 20.004580126143992,
+              "independently_observed_market_minutes": 10484,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 10264,
+                "misses": 688,
+                "evictions": 176
+              },
+              "native_execution_cache": {
+                "row_hits": 64262,
+                "row_misses": 688,
+                "quote_hits": 115365,
+                "quote_misses": 149,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 138007,
+                "term_misses": 695,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 230,
+                "files_checked": 68310,
+                "fast_queries": 230,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 61.727821,
+              "system_cpu_seconds": 1.171598,
+              "peak_rss_bytes": 510390272,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 230,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "5a3e4263b1536d8f35cba7a1d8dc9bca6488f9f2c875577eeb8c504b08ff13ea",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 106.19820517406333,
+      "peak_rss_bytes": 565411840
+    },
+    {
+      "behavior": "P4",
+      "trace_hash": "ade31fa4d89585ed4e34104c2738bb8b8ee4fe3875fa5052c4fe6654b2edc929",
+      "reconciliation": {
+        "status": "PASS",
+        "records": 691,
+        "account_restores": 1,
+        "replay_trace_hash": "ade31fa4d89585ed4e34104c2738bb8b8ee4fe3875fa5052c4fe6654b2edc929",
+        "teacher_labels_verified": 0,
+        "label_verification": "DEFERRED_TO_INDEPENDENT_NATIVE_G3",
+        "label_transport": {
+          "queries": 691,
+          "delta_history_items": 2754,
+          "full_history_items": 42724141,
+          "history_replicas": 2,
+          "native_workers": [
+            {
+              "queries": 346,
+              "native_traces": 276,
+              "cache_hits": 0,
+              "trace_seconds": 28.35949811176397,
+              "independently_observed_market_minutes": 13450,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 13326,
+                "misses": 688,
+                "evictions": 176
+              },
+              "native_execution_cache": {
+                "row_hits": 82470,
+                "row_misses": 688,
+                "quote_hits": 148023,
+                "quote_misses": 153,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 177041,
+                "term_misses": 695,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 346,
+                "files_checked": 102762,
+                "fast_queries": 346,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 75.255166,
+              "system_cpu_seconds": 1.115602,
+              "peak_rss_bytes": 511631360,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 276,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62519,
+                "sealed_blocks": 244,
+                "tail_rows": 55,
+                "commitment": "f8e3bc5aac915eb9c1b24a1623e9f457331bb231ce4ac1f600062d54f5c34082",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            },
+            {
+              "queries": 345,
+              "native_traces": 277,
+              "cache_hits": 0,
+              "trace_seconds": 29.083638050127774,
+              "independently_observed_market_minutes": 13479,
+              "cache_peak_entries": 0,
+              "e_observation_cache": {
+                "hits": 13356,
+                "misses": 688,
+                "evictions": 176
+              },
+              "native_execution_cache": {
+                "row_hits": 82647,
+                "row_misses": 688,
+                "quote_hits": 148339,
+                "quote_misses": 153,
+                "row_evictions": 0,
+                "quote_evictions": 0,
+                "term_hits": 177417,
+                "term_misses": 695,
+                "term_evictions": 0
+              },
+              "source_guard": {
+                "queries": 345,
+                "files_checked": 102465,
+                "fast_queries": 345,
+                "full_resolutions": 0
+              },
+              "user_cpu_seconds": 72.559642,
+              "system_cpu_seconds": 1.127279,
+              "peak_rss_bytes": 511922176,
+              "macd_cached_rows": 1024,
+              "macd_sparse_checkpoints": 123,
+              "strict_pair_cache": {
+                "hits": 0,
+                "misses": 277,
+                "maxsize": 32,
+                "currsize": 32
+              },
+              "private_history": {
+                "rows": 62517,
+                "sealed_blocks": 244,
+                "tail_rows": 53,
+                "commitment": "5d8370922b50f9c107f73fb04d345bf7894d594f80fa09f8d7df06fa8987ec99",
+                "public_hash": "original_sorted_JSON_SHA256"
+              }
+            }
+          ]
+        }
+      },
+      "seconds": 120.52350056101568,
+      "peak_rss_bytes": 573247488
+    }
+  ],
+  "source_rows": 31260,
+  "sample_rows": 690,
+  "scope": "explicit_official_day_range_with_full_train_suffix"
+}

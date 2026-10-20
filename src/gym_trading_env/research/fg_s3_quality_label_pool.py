@@ -10,12 +10,13 @@ import multiprocessing
 import numpy as np
 
 
-def _initialize(row, profile, initial, source, strict, teacher_identity):
+def _initialize(row, profile, initial, source, strict, teacher_identity,market_seed=None):
     from .fg_s3_e_quality_corpus_cli import _factory
     from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
     from .fg_s3_e_quality_corpus import l1_labeler
-    global _env, _teacher, _label, _history, _initial_history, _strict_value_store
-    factory = _factory(row, profile)
+    global _env, _teacher, _label, _history, _initial_history, _strict_value_store, _market_cache
+    factory = _factory(row, profile,market_seed=market_seed)
+    _market_cache=factory._market_cache
     _env = factory()
     _env.import_state(initial)
     _teacher = NativeQualityTeacher(_env, factory, fold='TRAIN', source=source)
@@ -23,14 +24,17 @@ def _initialize(row, profile, initial, source, strict, teacher_identity):
         raise ValueError('Parallel teacher differs from the native starting account identity')
     _label = l1_labeler(_teacher, strict)
     _strict_value_store = getattr(strict,'_value_store',None)
-    _history = initial['equity_history']
-    _initial_history = tuple(_history)
+    from gym_trading_env.utils.native_account import NativeHistory,native_owner,native_source
+    _history=NativeHistory.from_public(initial['equity_history'],owner=native_owner(_env),source=native_source(_env))
+    _initial_history=_history.version()
+    _env.equity_history=_history
 
 
 def _begin_stream():
     global _history
     _teacher._check_source_stats()
-    _history = list(_initial_history)
+    from gym_trading_env.utils.native_account import NativeHistory
+    _history=NativeHistory.from_version(_initial_history)
 
 
 def _finish_stream():
@@ -45,8 +49,13 @@ def _statistics():
         system_cpu_seconds=usage.ru_stime,peak_rss_bytes=usage.ru_maxrss*1024,
         macd_cached_rows=len(getattr(market,'_macd_cache',{})),
         macd_sparse_checkpoints=len(getattr(market,'_macd_checkpoints',{})))
+    result['market_cache']=dict(hits=_market_cache.hits,misses=_market_cache.misses)
     if _strict_value_store is not None:
         result['strict_pair_cache']=_strict_value_store._pair_cached.cache_info()._asdict()
+    version=_history.version()
+    result['private_history']=dict(rows=version.count,sealed_blocks=len(version.blocks),
+        tail_rows=0 if version.tail is None else len(version.tail.rows),
+        commitment=version.commitment,public_hash='original_sorted_JSON_SHA256')
     return result
 
 
@@ -56,8 +65,9 @@ def _query(state, delta, mask, expected_snapshot_hash, base_count):
     if len(_history) != base_count:
         raise ValueError('Parallel account history delta is missing or out of order')
     _history.extend(delta)
-    state['equity_history'] = _history
-    _env.import_state(state)
+    from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+    view=NativeAccountSnapshotView.capture(_env,state,_history.version())
+    _env._restore_private_state(view,source_env=_env)
     if not np.array_equal(mask, _env._published_mask):
         raise ValueError('Parallel teacher mask differs from native snapshot')
     label = _label(_env, None, None)
@@ -70,18 +80,19 @@ def _query(state, delta, mask, expected_snapshot_hash, base_count):
 
 
 class NativeLabelPool:
-    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers):
+    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers,*,market_seed=None):
         if type(workers) is not int or workers < 1:
             raise ValueError('Positive native label worker count required')
         self._history = initial['equity_history']
         self.queue_depth = 2*workers
         self._pools = [ProcessPoolExecutor(max_workers=1,
             mp_context=multiprocessing.get_context('spawn'), initializer=_initialize,
-            initargs=(row, profile, initial, source, strict, teacher_identity)) for _ in range(workers)]
+            initargs=(row, profile, initial, source, strict, teacher_identity,market_seed)) for _ in range(workers)]
         self._sent = [len(self._history)]*workers
         self._closed = False
         self.statistics = dict(queries=0,delta_history_items=0,full_history_items=0,
-                               history_replicas=workers)
+                               history_replicas=workers,
+                               market_seed_bytes=0 if market_seed is None else len(market_seed.payload))
 
     def report_statistics(self):
         # One aggregate per worker after all ordered queries; no per-minute
@@ -91,16 +102,20 @@ class NativeLabelPool:
         return self.statistics
 
     def __call__(self, env, step, row):
-        state = env.export_state()
-        history = state.pop('equity_history')
+        # Copy only hot state and the delta; the Driver's independently emitted
+        # complete JSON SHA below still authenticates the entire old prefix.
+        import json
+        state=env._snapshot_fields()
+        history=state.pop('equity_history')
+        state=json.loads(json.dumps(state,default=str))
         worker = self.statistics['queries'] % len(self._pools)
         count = self._sent[worker]
         if len(history) < count:
             raise ValueError('Parallel account history cannot rewind within one stream')
-        delta = history[count:]
-        from gym_trading_env.envs.entry_contract import fingerprint
-        expected = row['account_snapshot_hash'] if row is not None else fingerprint(
-            dict(state,equity_history=history))
+        from gym_trading_env.utils.native_account import NativeHistory
+        delta = history.public_slice(count) if isinstance(history,NativeHistory) else history[count:]
+        from gym_trading_env.utils.account_fingerprint import account_fingerprint
+        expected = row['account_snapshot_hash'] if row is not None else account_fingerprint(env)
         future = self._pools[worker].submit(_query,state,delta,env._published_mask.copy(),expected,count)
         self._sent[worker] = len(history)
         self.statistics['queries'] += 1

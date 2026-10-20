@@ -3,6 +3,7 @@ from collections import OrderedDict
 import copy
 from dataclasses import dataclass
 import hashlib
+import pickle
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -67,6 +68,26 @@ class _MarketSnapshot:
                    + self.bobs.nbytes + self.valid.nbytes + extra)
 
 
+@dataclass(frozen=True)
+class _MarketCacheSeed:
+    """Sealed, account-free cache transport between trusted local workers.
+
+    This is never an archive/Corpus loader or an external pickle input API.
+    Only export_seed constructs it from the cache's owned pristine snapshots.
+    Bytes prevent later caller/source mutations from changing the payload.
+    """
+    payload: bytes
+    sha256: str
+
+    def entries(self):
+        if hashlib.sha256(self.payload).hexdigest()!=self.sha256:
+            raise ValueError('Native market seed content changed')
+        entries=pickle.loads(self.payload)
+        if not isinstance(entries,tuple) or any(type(s) is not _MarketSnapshot for _,s in entries):
+            raise ValueError('Unknown native market seed')
+        return entries
+
+
 class EntryMarketCache:
     """Cache market snapshots by config identity and the current CSV bytes.
 
@@ -76,12 +97,25 @@ class EntryMarketCache:
     No cache entries are serialized into the financial checkpoint.
     """
 
-    def __init__(self, capacity):
+    def __init__(self, capacity, *, seed=None):
         if type(capacity) is not int or capacity <= 0:
             raise ValueError('Market cache capacity must be a positive integer')
         self.capacity = capacity
         self._entries = OrderedDict()
         self.hits = self.misses = 0
+        if seed is not None:
+            if type(seed) is not _MarketCacheSeed:
+                raise TypeError('Sealed native market cache seed required')
+            for key,snapshot in seed.entries():
+                self._entries[key]=snapshot
+            while len(self._entries)>self.capacity:self._entries.popitem(last=False)
+
+    def export_seed(self):
+        # Cache payloads were captured by load() from validated source bytes,
+        # and restore() always copies them. Never seed from a mutable Env or
+        # include any financial state, RNG, teacher label or decision cache.
+        payload=pickle.dumps(tuple(self._entries.items()),protocol=5)
+        return _MarketCacheSeed(payload,hashlib.sha256(payload).hexdigest())
 
     def load(self, env):
         source = Path(env.config.trading.data_path).expanduser()

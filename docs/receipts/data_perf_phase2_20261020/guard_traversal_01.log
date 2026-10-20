@@ -1,0 +1,21 @@
+F.............................                                           [100%]
+=================================== FAILURES ===================================
+_ test_every_query_checks_file_and_shared_ancestors_unrelated_output_is_allowed _
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-678/test_every_query_checks_file_a0')
+
+    def test_every_query_checks_file_and_shared_ancestors_unrelated_output_is_allowed(tmp_path):
+        path=tmp_path/'source';path.write_text('original')
+        g=guard(path)
+        for _ in range(3):g.check()
+        assert g.statistics['files_checked']==3 and g.statistics['fast_queries']==3
+        (tmp_path/'unrelated-output').write_text('allowed')
+        g.check();g.check()
+        assert g.statistics['full_resolutions']>=1 and g.statistics['files_checked']==5
+        path.write_text('changed!')
+>       with pytest.raises(ValueError,match='Frozen quality source changed'):g.check()
+E       Failed: DID NOT RAISE ValueError
+
+tests/entry_v1/test_source_guard.py:24: Failed
+=========================== short test summary info ============================
+FAILED tests/entry_v1/test_source_guard.py::test_every_query_checks_file_and_shared_ancestors_unrelated_output_is_allowed
