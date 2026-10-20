@@ -107,6 +107,10 @@ class MultiCorpusF3Stream:
         return dict(protocol=PROTOCOL, identity=self.identity_hash, group=self.group.save(),
                     statistics=copy.deepcopy(self.statistics), last_batch_audit=self.last_batch_audit)
 
+    def save_small(self):
+        return dict(protocol=PROTOCOL,identity=self.identity_hash,group=self.group.save_small(),
+                    statistics=copy.deepcopy(self.statistics),last_batch_audit=self.last_batch_audit)
+
     save_full = state_dict = save
 
     def load(self, state):

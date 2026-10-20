@@ -215,7 +215,7 @@ class F3WindowAdapter:
         return data,metadata
 
     def sample(self):
-        self.validate_support();state=self.reader.state_dict()
-        try:return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))
-        except BaseException:
-            self.reader.load_state_dict(state);raise
+        self.validate_support()
+        from .fg_s3_reader_transactions import batch_transaction
+        with batch_transaction(self.reader):
+            return self.adapt(self.reader.sample(self.settings['batch_size'],self.length))

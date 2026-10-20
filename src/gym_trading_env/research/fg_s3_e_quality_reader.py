@@ -519,12 +519,17 @@ class EQualityCourseReader:
                 reset_ordinal=reset[0],distance_from_reset_market_minutes=rows[0]['cursor']-reset[1],rows=rows))
         return metadata
 
-    def state_dict(self):
+    def save_small(self):
         return json.loads(_json(dict(protocol=READER_SCHEMA,source=self.report['source_identity'],index=self.index_hash,
             stage=self.stage,sampling_spec=self.spec,rng=self.rng.bit_generator.state,
-            counts=dict(self.counts),seen_market=sorted(self.seen_market),seen_account=sorted(self.seen_account))))
+            counts=dict(self.counts))))
+
+    def state_dict(self):
+        return dict(**self.save_small(),seen_market=[list(x) for x in sorted(self.seen_market)],
+                    seen_account=[list(x) for x in sorted(self.seen_account)])
 
     def load_state_dict(self,state):
+        if self._transactions.stack:raise ValueError('READER_RESTORE_DURING_BATCH_TRANSACTION')
         self._guard()
         if any(state.get(k)!=v for k,v in dict(protocol=READER_SCHEMA,source=self.report['source_identity'],
                 index=self.index_hash,stage=self.stage,sampling_spec=self.spec).items()):

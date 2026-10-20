@@ -236,9 +236,12 @@ class MultiCorpusCourseStream:
         return result
 
     def state_dict(self):
+        return {**self.save_small(), 'readers':{name:reader.state_dict() for name,reader in self.readers.items()}}
+
+    def save_small(self):
         return _clone(dict(protocol=PROTOCOL, identity=self.identity_hash,
             scheduler_rng=self.rng.bit_generator.state,
-            readers={name: reader.state_dict() for name, reader in self.readers.items()},
+            readers={name: reader.save_small() for name, reader in self.readers.items()},
             counts=dict(self.counts), source_counts={k: dict(v) for k, v in self.source_counts.items()},
             last_batch_audit=self.last_batch_audit))
 
@@ -404,6 +407,10 @@ class MultiCorpusWindowAdapter:
 
     def save(self):
         return dict(protocol=ADAPTER_PROTOCOL, identity=self.identity, stream=self.stream.state_dict(),
+                    last_batch_audit=_clone(self.stream.last_batch_audit))
+
+    def save_small(self):
+        return dict(protocol=ADAPTER_PROTOCOL,identity=self.identity,stream=self.stream.save_small(),
                     last_batch_audit=_clone(self.stream.last_batch_audit))
 
     save_full = state_dict = save
