@@ -34,16 +34,21 @@ def test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states
     assert report['exact_graph_restored'] and report['node_count']<=amount
 
 
-@pytest.mark.parametrize('attack',['graph_member','cross_member','missing_delta','missing_done','rollback_latest','journal'])
+@pytest.mark.parametrize('attack',['graph_member','cross_member','missing_delta','missing_done','rollback_latest','journal','coverage_basis'])
 def test_strict_payload_faults_reject_before_agent_load(config_path,tmp_path,attack):
     root=tmp_path/'run';worker(config_path,root,'multi_f3',4,3)
     node=root/'ckpt/step_000000000003'
-    if attack in ('graph_member','cross_member','missing_delta'):
+    if attack in ('graph_member','cross_member','missing_delta','coverage_basis'):
         name='course_reader' if attack=='cross_member' else 'runtime'
         p=node/(name+'.pkl');state=pickle.loads(p.read_bytes())
-        if attack=='cross_member':state['digest']='f'*64
+        if attack=='cross_member':state['reader_ref']['digest']='f'*64
         elif attack=='graph_member':state['streams'][0]['source']['graph_sha256']='f'*64
-        else:state['streams'][0]['source']['nodes'][-1]['delta'].pop()
+        elif attack=='missing_delta':state['streams'][0]['source']['nodes'][-1]['delta'].pop()
+        else:
+            from gym_trading_env.research.fg_s3_reader_versions import _hash
+            graph=state['streams'][0]['source']
+            graph['base']['seen'][0]['market'].append(['CZCE.FG2701',99999991])
+            graph['graph_sha256']=_hash({k:v for k,v in graph.items() if k!='graph_sha256'})
         p.write_bytes(pickle.dumps(state))
         manifest=json.loads((node/'manifest.json').read_text());manifest['files'][p.name]=digest(p)
         (node/'manifest.json').write_text(json.dumps(manifest))

@@ -88,7 +88,9 @@ def test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_agai
  saved=run.counters.save();ref=pickle.loads((run.cp.latest()/'course_reader.pkl').read_bytes())
  from gym_trading_env.research.fg_s3_reader_versions import materialize_prefetch
  snapshot=pickle.loads((run.cp.latest()/'runtime.pkl').read_bytes())['streams'][0]
- assert ref==snapshot['source']['current'] and snapshot['protocol']=='PREFETCH_PENDING_STATE_V2'
+ assert ref['protocol']=='S3_READER_CHECKPOINT_REF_V2'
+ assert ref['reader_ref']==snapshot['source']['current'] and ref['graph_sha256']==snapshot['source']['graph_sha256']
+ assert snapshot['protocol']=='PREFETCH_PENDING_STATE_V2'
  reader=materialize_prefetch(run.source,snapshot)['source']
  # Stop only this object's prefetch using its normal lifecycle; no host process termination.
  with run.stream.pause():

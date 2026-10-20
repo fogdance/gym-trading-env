@@ -16,6 +16,7 @@ from .fg_s3_e_quality_reader import READER_SCHEMA
 STATE_PROTOCOL='READER_STREAM_STATE_V2'
 PREFETCH_PROTOCOL='PREFETCH_PENDING_STATE_V2'
 REF_PROTOCOL='S3_READER_VERSION_REF_V2'
+CHECKPOINT_REF_PROTOCOL='S3_READER_CHECKPOINT_REF_V2'
 
 
 def _hash(value):
@@ -79,11 +80,13 @@ class VersionedStream:
         self.base_seen=[dict(market=set(r.seen_market),account=set(r.seen_account)) for r in self.readers]
         self.base_hash=_hash(dict(binding=self.binding,session=self.session,initial=self.base_small))
         self._expected_checkpoint_ref=None
+        self._checkpoint_cache=None
         for reader in self.readers:reader._version_owner=weakref.ref(self)
 
     def __iter__(self):return self
 
     def __next__(self):
+        self._checkpoint_cache=None
         if any(r._transactions.stack for r in self.readers):
             raise ValueError('READER_VERSION_EXTERNAL_TRANSACTION_ACTIVE')
         mark=self.source.begin_batch()
@@ -141,6 +144,7 @@ class VersionedStream:
         return [self.base_id,*reversed(path)]
 
     def _compact(self):
+        self._checkpoint_cache=None
         paths=[self._path(v) for v in {self.current,*self.pins}]
         common=set(paths[0])
         for path in paths[1:]:common.intersection_update(path)
@@ -173,9 +177,16 @@ class VersionedStream:
 
     def load(self,ref):
         self._check_ref(ref)
+        self._checkpoint_cache=None
         self.source.load(self._full_state(ref['version']));self.current=ref['version']
 
     def save_full(self):
+        if self._checkpoint_cache is not None:
+            state=self._checkpoint_cache;self._checkpoint_cache=None
+            return state
+        return self._export_full()
+
+    def _export_full(self):
         if any(r._transactions.stack for r in self.readers):raise ValueError('READER_VERSION_TRANSACTION_OPEN')
         state=dict(protocol=STATE_PROTOCOL,binding=self.binding,session=self.session,
             base=dict(version=self.base_id,digest=self.base_hash,small=copy.deepcopy(self.base_small),
@@ -224,6 +235,7 @@ class VersionedStream:
     def load_full(self,state):
         parsed=self._parse_full(state)
         self.source.load(parsed._full_state(parsed.current))
+        self._checkpoint_cache=None
         for key in ('session','base_id','base_hash','base_small','base_seen','nodes','pins','current','next_id'):
             setattr(self,key,getattr(parsed,key))
 
@@ -260,11 +272,20 @@ class VersionedStream:
 class CheckpointSource:
     """The other CP member is a bound ref; the runtime owns the sole full graph."""
     def __init__(self,stream):self.stream=stream
-    def save(self):return self.stream.checkpoint_ref()
+    def save(self):
+        # FullCheckpoint holds Prefetch.pause across both member saves. Export
+        # once here; runtime consumes precisely this same immutable graph.
+        graph=self.stream._export_full();self.stream._checkpoint_cache=graph
+        return dict(protocol=CHECKPOINT_REF_PROTOCOL,reader_ref=copy.deepcopy(graph['current']),
+                    graph_sha256=graph['graph_sha256'])
     def validate_snapshot(self,state=None):
         self.stream.source.validate_snapshot()
         if state is not None:
-            if (not isinstance(state,dict) or state.get('protocol')!=REF_PROTOCOL or state.get('binding')!=self.stream.binding):
+            if (not isinstance(state,dict) or set(state)!={'protocol','reader_ref','graph_sha256'}
+                    or state.get('protocol')!=CHECKPOINT_REF_PROTOCOL or not isinstance(state.get('reader_ref'),dict)
+                    or state['reader_ref'].get('protocol')!=REF_PROTOCOL
+                    or state['reader_ref'].get('binding')!=self.stream.binding
+                    or not isinstance(state.get('graph_sha256'),str) or len(state['graph_sha256'])!=64):
                 raise ValueError('READER_CHECKPOINT_REFERENCE_IDENTITY')
             self.stream._expected_checkpoint_ref=copy.deepcopy(state)
     def load(self,state):
@@ -277,7 +298,8 @@ def validate_runtime_snapshot(stream,state,*,amount=None):
     stream.validate_prefetch(state['streams'][0],amount=amount)
     if stream._expected_checkpoint_ref is None:
         raise ValueError('READER_CHECKPOINT_REFERENCE_VALIDATION_REQUIRED')
-    if stream._expected_checkpoint_ref!=state['streams'][0]['source']['current']:
+    expected=stream._expected_checkpoint_ref;graph=state['streams'][0]['source']
+    if expected['reader_ref']!=graph['current'] or expected['graph_sha256']!=graph['graph_sha256']:
         raise ValueError('READER_CHECKPOINT_CROSS_MEMBER_REFERENCE')
 
 
