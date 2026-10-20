@@ -249,6 +249,8 @@ def run(corpus, output, workers, queries_per_policy, timing_only=False,profile_i
         created_utc=datetime.now(timezone.utc).isoformat(),corpus=str(corpus),
         corpus_identity=manifest['content_hash'],runtime=code['repositories'] if 'repositories' in code else code.get('repos'),
         code_sha256=code['files'],source_unchanged=True,workers=process_count,
+        worker_count_semantics='configured_pool_capacity',
+        observed_initialized_workers=len(initialization_records) if profile_initialization else None,
         queries=sum(x['queries'] for x in results),native_trades=sum(x['native_trades'] for x in results),
         strict_valid=sum(x['strict_valid'] for x in results),actual_account_restores=restores,
         profiled_worker_wall_seconds=time.perf_counter()-began,

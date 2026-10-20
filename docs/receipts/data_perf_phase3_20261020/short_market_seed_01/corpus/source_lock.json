@@ -1,0 +1,204 @@
+{
+  "protocol": "FG_S3_E_QUALITY_SOURCE_LOCK_V2",
+  "fold": "TRAIN",
+  "contract": "CZCE.FG201",
+  "source_pool": {
+    "path": "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+    "sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b"
+  },
+  "env_receipt": {
+    "path": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1",
+    "sha256": "cf8fbf93953142b743f718effe2f377a80eba8a0cddf196a901d5344cf3d19ad"
+  },
+  "inputs_sha256": "e3b005bdbe9f8b3c8bc62ac6ab2ac72107c052096e6abc506901181842bb776a",
+  "partition_manifest": {
+    "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/FG409/all/manifest.json",
+    "sha256": "ebe0477a4ff9bad5b0d720b3ddb9f37288591d8df63db73a280224b698068bac"
+  },
+  "row": {
+    "contract": "CZCE.FG201",
+    "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0011_CZCE_FG201_main_1m.csv",
+    "sha256": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c",
+    "env_config": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG201_env.yaml",
+    "env_sha256": "15a468456fecc658fb4df0094ba95260f71102e54302b0e1d973595fdc65893e",
+    "contract_config": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG201_contract.yaml",
+    "contract_sha256": "04169e0d4223088364dc420b77f4dd2fa6fdd02cdaac52676bd41c1fd19cbe75",
+    "rows": 31260,
+    "first_day": "2021-07-26",
+    "last_day": "2021-12-09",
+    "trading_days": 92,
+    "direction_rows": 31260,
+    "direction_counts": {
+      "LONG": 0,
+      "SHORT": 31260,
+      "NO_TRADE": 0
+    },
+    "complete_lifecycle": true,
+    "calendar_complete": true,
+    "calendar_basis": "user_confirmed_observed_clock",
+    "first_timestamp": "2021-07-23 21:01:00+08:00",
+    "last_timestamp": "2021-12-09 15:00:00+08:00",
+    "role": "train",
+    "eligible_for_training": true
+  },
+  "provenance": {
+    "role": "TRAIN",
+    "source_pool": {
+      "path": "/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json",
+      "bytes": 22182,
+      "sha256": "4d9aa8faa5c2ad22a5664280675067c5c18e9fb22e3fee7b9af3bf0f15e6281b"
+    },
+    "market": {
+      "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_entry_v1/main_export_345_audited/0011_CZCE_FG201_main_1m.csv",
+      "bytes": 3640878,
+      "sha256": "ebad6ed8b214e0a5801b0c16bb7e4784a6cd00ba943bf0c76cc3a571ed0a2e8c"
+    },
+    "env": {
+      "path": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/CZCE_FG201_env.yaml",
+      "bytes": 999,
+      "sha256": "15a468456fecc658fb4df0094ba95260f71102e54302b0e1d973595fdc65893e"
+    },
+    "contract": {
+      "path": "/home/v/Documents/work/gym-trading-env/artifacts/fg_abcd_v1/v3_shared_prefix/contracts/CZCE_FG201_contract.yaml",
+      "bytes": 26766,
+      "sha256": "04169e0d4223088364dc420b77f4dd2fa6fdd02cdaac52676bd41c1fd19cbe75"
+    },
+    "master": {
+      "path": "/data/logdir/fg_s3_market_minute/20261013_v2/env/v1/inputs/C1/single3.yaml",
+      "bytes": 5024,
+      "sha256": "93285d3aa51f9b7cfe230463138e4a855f0bad17922194e383f715a02ea7d738"
+    },
+    "source_contract": "CZCE.FG201",
+    "tick_size": 1,
+    "price_unit": "original quoted real-contract price",
+    "roll_adjustment": "none",
+    "calendar_basis": "user_confirmed_complete_market"
+  },
+  "official_days": [
+    "2021-12-09"
+  ],
+  "start_cursor": 30915,
+  "end_cursor": 31043,
+  "sample_scope": "bounded_dev_observations_with_full_train_suffix",
+  "suffix_end_cursor": 31259,
+  "suffix_boundary_time": "2021-12-09 15:00:00+08:00",
+  "first_time": "2021-12-08 21:01:00+08:00",
+  "last_time": "2021-12-09 09:09:00+08:00",
+  "mathematical_schema": {
+    "macd_5m": {
+      "schema": "FG_S3_E_MACD5M_CAUSAL_V3",
+      "periods": [
+        12,
+        26,
+        9
+      ],
+      "histogram": "DIF-Signal",
+      "initialization": "first_complete_close; first_DIF_and_signal_zero",
+      "warmup": "35_complete_buckets_strictly_before_current_bucket",
+      "scale": "1000*raw/current_visible_1m_Close",
+      "invalid": "all_zero",
+      "bucket": "five_exact_calendar_minutes_in_one_dated_session",
+      "partial": "derive_from_last_committed_EMAs; commit_on_fifth_visible_minute_once",
+      "incomplete_tail": "discard_uncommitted_tail_only_at_authenticated_dated_interval_end",
+      "interval_end_marker": "visible_zero_duration_end_row_closes_interval_without_price_or_EMA_update",
+      "continuity": "carry_EMAs_across_sessions_and_official_days; reset_on_contract",
+      "errors": "reject_missing_duplicate_out_of_order_or_late_minutes; never_backfill"
+    },
+    "macd_code_sha256": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe",
+    "schema": "S3_E_DATA_V1",
+    "context_shape": [
+      24,
+      7
+    ],
+    "minute_shape": [
+      60,
+      18
+    ],
+    "dtype": "float32",
+    "context_fields": [
+      "rel_open",
+      "rel_high",
+      "rel_low",
+      "rel_close",
+      "vol_relative",
+      "oi_change",
+      "valid"
+    ],
+    "minute_fields": [
+      "obs_V_t",
+      "obs_I_t",
+      "obs_cumVWAP_t",
+      "obs_dC_minus_cumVWAP_t",
+      "obs_cmp_C_vs_cumVWAP_t",
+      "obs_session_high_t",
+      "obs_session_low_t",
+      "obs_range_t",
+      "obs_open_drift_t",
+      "obs_bar_dir_t",
+      "obs_minute_index_t",
+      "obs_session_phase_t",
+      "obs_volatility_t",
+      "obs_dI_from_yclose_t",
+      "obs_pct_chg_from_ref_t",
+      "obs_mask_t",
+      "obs_weekday_sin_t",
+      "obs_weekday_cos_t"
+    ],
+    "shared_fields": [
+      "obs_cumVWAP_t",
+      "obs_dC_minus_cumVWAP_t",
+      "obs_session_high_t",
+      "obs_session_low_t",
+      "obs_range_t",
+      "obs_pct_chg_from_ref_t"
+    ],
+    "legacy_sources_sha256": {
+      "src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+      "src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+      "src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+      "src/gym_trading_env/utils/s3_market_clock.py": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+      "src/gym_trading_env/envs/entry_market_cache.py": "328692ba57db7933534fc28204d936614e301fe916aea50e97a37f9688a40255",
+      "src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+      "src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+      "src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+      "src/gym_trading_env/utils/macd_5m_causal.py": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe"
+    },
+    "implementation_sources_sha256": {
+      "e_data_v1/core.py": "cdd5a20541ee390f7547fdea14890fe72d734ceed3fc0538a8a92349babcaeec",
+      "e_data_v1/schema.py": "2dad266e11d5d58dcfa4dc0d1f2016bb04c12b5df44edd1f7f434b920236b127",
+      "e_data_v1/reference.py": "75b6c7da467879b6b2b652289680e7b666e63554bc857017fa596ec9b6a32a07"
+    },
+    "price": "log(raw_price/P_anchor_at_decision); no price clip",
+    "price_unit": "unchanged real-contract quoted price; no lot multiplier or roll adjustment",
+    "anchor": "proven legacy ref_close, otherwise already observed legal Close",
+    "volume": "log((V+1)/(mean(previous 20 compliant completed buckets)+1))",
+    "oi": "log(last_OI/last_OI_of_previous_compliant_completed_bucket)",
+    "volume_clip": [
+      -6.0,
+      6.0
+    ],
+    "oi_clip": [
+      -1.0,
+      1.0
+    ],
+    "warmup": "keep last 24 complete visible buckets; unready rows all zero with valid=0",
+    "padding": "left zeros",
+    "order": "oldest to newest",
+    "bucket": "15 exact minute slots in one planned continuous session, (start,end]",
+    "availability": "max(bucket_end, all constituent arrival times) <= visible_cutoff",
+    "feature_provenance": "per-decision volume/OI baseline bucket IDs, including delayed-arrival visibility",
+    "clock": "S3_MARKET_MINUTE",
+    "roll": "reset all history on real-contract change",
+    "schema_sha256": "365c5dd68a561c242e2e8e58455ee143ed8d347c37b10413a6b2467d6f5a7dd7"
+  },
+  "no_test_prices_opened": true,
+  "training_admitted": false,
+  "selection": {
+    "start_day": "2021-12-09",
+    "end_day": "2021-12-09"
+  },
+  "execution_mode": "dev",
+  "requested_max_market_steps": 128,
+  "source_window_end_cursor": 31259,
+  "content_hash": "e7e0175a7acc44f046c3869964ca1ababaa54f066edfae30aaead243fb8b71f1"
+}

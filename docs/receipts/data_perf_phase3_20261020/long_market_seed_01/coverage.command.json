@@ -1,0 +1,36 @@
+{
+  "name": "coverage",
+  "argv": [
+    "taskset",
+    "-c",
+    "0-19",
+    "/usr/bin/time",
+    "-v",
+    "-o",
+    "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/coverage.time.txt",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "tools/fg_s3_e_quality_corpus.py",
+    "coverage",
+    "--corpus",
+    "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/corpus"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/rounds/market-seed/gym-trading-env",
+  "env_overrides": {
+    "PYTHONPATH": ".:src:../dreamerv3",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONINTMAXSTRDIGITS": "0",
+    "MPLCONFIGDIR": "/tmp/fg_data_perf_mpl",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "start_utc": "2026-10-20T08:10:39.907715+00:00",
+  "wall_seconds": 3.137611510930583,
+  "exit_code": 0,
+  "end_utc": "2026-10-20T08:10:43.045338+00:00",
+  "log_sha256": "b7b44a1f6140f5249e10cc7216ecb52d279e79bdcec8af42eb2f87d36ef6f95a"
+}

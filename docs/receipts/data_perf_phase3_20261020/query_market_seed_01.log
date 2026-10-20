@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/rounds/market-seed/gym-trading-env/tools/profile_s3_corpus_queries.py", line 285, in <module>
+    run(args.corpus,args.out,args.workers,args.queries_per_policy,args.timing_only,args.profile_initialization)
+  File "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/rounds/market-seed/gym-trading-env/tools/profile_s3_corpus_queries.py", line 162, in run
+    profile=ETrainAdmission.from_train_pool(saved['source_pool']['path'],
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/rounds/market-seed/gym-trading-env/e_data_v1/provider.py", line 100, in from_train_pool
+    raise ValueError('E implementation identity changed; regenerate and verify a new TRAIN collection')
+ValueError: E implementation identity changed; regenerate and verify a new TRAIN collection

@@ -1,0 +1,2601 @@
+{
+  "protocol": "FG_S3_DATA_PERF_NATIVE_QUERY_PROFILE_V1",
+  "status": "PASS_PROFILE_ONLY",
+  "diagnostic_tool": {
+    "path": "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/gym-trading-env/tools/profile_s3_corpus_queries.py",
+    "sha256": "41e8cd817de8c06d8bce7fea36b77411bc5945b8061f6c792df741062c5a2d43",
+    "unchanged": true
+  },
+  "created_utc": "2026-10-20T07:46:43.703941+00:00",
+  "corpus": "/home/v/Documents/work/research/fg-s3-data-perf-20261019/artifacts/numeric_context_long_01/corpus",
+  "corpus_identity": "ec3eeb1b2381e479f237a11a0b651226c54bdfd67e50eca4c625477cbaee6a75",
+  "runtime": {
+    "gym": {
+      "sha": "2dd45283567398e782cbcd0a958e9be873386921",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+      "dirty": false
+    }
+  },
+  "code_sha256": {
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/__init__.py": "9bd1c38796e37e4316de179b2b8c3a58dfb8c7333d541c867937c4ea1c5dc9ce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/monte_carlo/day_block_bootstrap.py": "6283a77f8183b1c02db1a780520e6f58770f3c3d9afabff0883caf5d300004a3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/monte_carlo/session_library.py": "c2f7ba1103b943eca388e315863e6f4463409d29f33ad833dd3eb1e314b9a4e2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/monte_carlo/__init__.py": "6934524affebf80d472934af418dce5ae1e600e882a65d916f1aa18c9ec4b9bb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/monte_carlo/io.py": "85ee0a6e6312257ce213e45cd8b7b932f9c2f6ef92d9edb453d1d8baf1b1e054",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/account_fingerprint.py": "3afb1f979f72e86647e91349d79fc637a7cc0f4cb87dd9bce24e92b834b1e47a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/rpc_client.py": "86fa54acff9bebfe5d58dfb81fc40b8c0469df199291889dc8ceb680908139d1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/session_fx.py": "7e26fc0b8642d3aa9f7727d9dad0fe4a4a22579f118f599cb8b0f143871e675c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/juejin_db.py": "e0c52f57cbabaa1a0ae27c7bafb46a41fc47a932568b0dadaddf3b2745c04320",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/ohlcvi_contract.py": "cc80cbb4afc6a4e1a4d1e339da970c815f744d0a808c48252ae1b331241548c8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/data_processing.py": "dab15ac2c505693996b0f18c0e986cd35a65d857ee7d770d3628e939c57c8b09",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/plot_intraday.py": "3d549cb0687da8d22436d0d3ccc8dc53e130a0fe9f7e4795ec9c94ccadd79181",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/daily_features.py": "365df605f20708e6048b096ce60cd59845660c5e187831afb023280057309394",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/rpc_protocol.py": "ee24e6a3cc96c442e51708588a0ec759b9cf34a7633eb1b4f1483816648ce3f1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/macd_5m_causal.py": "94d8dff4fa8f54a91604cdd02db17ddf30c24402a9658c5d6826d23cbb0d2afe",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/agent_features.py": "855ddf7edfa2d39d402ecd2f35caae718862a13d2c3e49d95cffe1450ea3a889",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_store.py": "3ea6b5591150e9737049078a974895b41ea0b4825160a9caff9a7094c5c63c75",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py": "7a21880e1559b677081ae083ac0e3d4905c9d3a43d74e3e5fa98279e370b2e06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/time_contract.py": "331decfce665b2498824ff4409a0ffc44d7d9841275b86893518ce30ba9db02e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/timebase.py": "9a5237c276d0d64ff4bba313b00231a7f7099fd4c53edc97b6fd552777eb2a9a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/data_downloader.py": "0e75888df6f1aa39b4581c6158165d303b8cd017057c1da4200afeea5bdb7b0b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/session_futures_strict.py": "54839a73912f9a89c2715e042811193d3a6b6d7d6404aebf35a39686efa21dd5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/bar_source.py": "8520fe65904b4bd2e271283fc4cd03acce9b015f344b95b90213ff6444f87667",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/snapshot_json.py": "614937d2ee86ccaf667b6bbd91ee8cf2e910cbf9d8e24ce7e62687b0bb7de4ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/__init__.py": "34956797c651a074631b86d37b5e5cb7cc30208597ad5afecbb4b708d31b82b5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/decimal_util.py": "d3a7640eee8bf7d029b7cef4dbff4d6df3e363c154d42362a87cbc03316f46af",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/source_guard.py": "b44100fb684b8d5ebb8e2a8fe010e7046cb5d0c14a8e8e5f5dfaf14afa3c08b6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/trade_util.py": "6674deeb42494e2cb0c15f4bef88feaa128fc862b50a9d9bcf07f277709cc913",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/s3_market_clock.py": "1e2a342314989d21fc1f412e9df593c218dfaf9933cbf13eb6cc601b33bc5085",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_prefix.py": "0b3cb170fafd6c158a9486c751620f25e11ba44765a7c8f636ae3d24cecf16d4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/native_account.py": "f4c00ea442feb7a010938e7fab8a34c1dc511b2b98f392818a69159dc57ee53d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/feature_engineering.py": "ec61415a17f84b5523ef669ad19b131b4b24cd905bf25a7c7f6fe57d51766990",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/atr_util.py": "4e58a0f50f833095ed86fd94db21b16aac96bb4abd78fd189610ac42d823eae7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/config/settings.py": "b9ebb59f1533447d2865267702033a0f1ef734a9e8e7cdec2100473d3a8d9bac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_exact_witness.py": "5bb0a0f8f4035c9f219f2b1431b52fda2e0b75a3310b806af77c543abe41771a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_dataset.py": "4b5f495ab1d46790186803910d08cb78edc140685ea093e5657fd6381fa6cea5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_evidence.py": "d42c0a408234fe1b9fb31d4ff918d68d2cf5058c822ea31360a443219216b777",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_reward.py": "b68a60ef88ee97a93638c60ee8e48804e863155edae896d572340d5b49c954ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_study.py": "3dd2af2f2255d251009977a9587c521fa12d42dc94b405d4b4009775d2adfeac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_reader_compat.py": "684b6aaa5b59650beb2e6581e6375aeb7b05fdad0cd9b00671c654d1360d1d8b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_q_v2.py": "4af621dd4aab0e586b7bb719bfae8ef16e071814ba331a35d30ff9d133ccde67",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi.py": "c3e81d1460e266389adcd5828cd293be416dde84ccd8dcc78be56144e3895a06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_observation.py": "79f8cdbc612704f79056e70a8d2723539d2652adb05161a172ff18586d606dd2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher_v2.py": "ab298ee9bad185670aa38605c3c931f75a1b7ddc52b71d249d3e71083219dcc2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_horizon.py": "d6055b8c5f6a12c5b06f64468296f67492d5df8e08d844bd026ab727a4a39229",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_verify.py": "bd01b690c890cc4402d2328a9ad343b9c20e4177bf73c0260f20cead9686fbad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_contract.py": "166b840a6f1885a5b8ee59b10a15cfae86f63bce9b4e97462ce28c38dd976856",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_reader.py": "5ff6e22edd4fac153250519c75a41a0c69d34a021c122a5f52dae6952752c734",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_d0.py": "751ed3f85759e805526b44d630c4e7e01277e6f30c3d922e7ea478c251654e65",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3b_advantage.py": "233aa61a9ceb122f21e0e2fa2ed6fde55a04cd727cf70568e94a564a6993e6a5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_pilot.py": "68493877d6c1664fba711b4473ac65a2f06a7f3b80873731e709c6c42e7badef",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_suffix_store.py": "0cd780b6c4e02816986d91a4e9c47b994a81d9fb169d1e0b9a851700f73854f3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3.py": "e338840cc0e1b5d7fe1b0f6ecc92e0b1a07a59023ef05f00987f1c70411e9e5c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_dataset.py": "08ffa277c82b5e289424e8eb4793a2ab80385c2ca966a5cf6204c8695b9f92a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_profile.py": "1673393fd8bd7e305b9e2456d12baadf79a978bc45b6332fc96d5d7d3b768085",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_oracle.py": "914851a2cae766ece72ad824d65ee331919bbef96051a6287fea513a4c48e965",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_reward_study.py": "efe6a479662e660022f764f6f5e629558fa8f24a32a23752f1f461f2e626d064",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_abcd.py": "e45fba1cc12ae78e3d7f8b85c77d83e60435e6e52d7c0d740a85661c49b27caa",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_gpu_check.py": "ffe804a8c9e15b3e764fdd8fa3a9d2b730a7d9a7b72018829b847c6933338391",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_collector.py": "9e7124c764fc1fa089827a2c13fd7c2f67d7548737fc58e88eed85c11a5349d9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_foundation_checks.py": "6e992fbdef91cab1f2ccf5b6b9783e72540f6b1bc3c9c3444c87d5476a245ec2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_experiment.py": "f85cd852f17ac2d380c226f637975c72053c7d08f78644a5ee901b9457f8a490",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_worker.py": "4ca0c84f6c040deca80a8f53bce0db232bfa06462102d237c4fe9ad8898cbe05",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus.py": "9c3e60c649cffea5671ba4e235087c17faf4a7e707a4d11dce4bf7d069245ac7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_experiment.py": "78dba228fce111236f0053ba27d023d68a9b1351ddeed168d2ee31bc2b7f5278",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_folds.py": "7ea3f66ba98980679176f1250173b7dbafe48ae7ad35105b2a0d61cced0d15ac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_pipeline.py": "498ef879a87382e5c5f71786c3696d532c933c410ec842d9394657bf06f9e692",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_source.py": "7236ecb1f4d35f5c35719b3031664ac94c018f574d84f78b9d406a7975546202",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_fold_statistics.py": "c0569a8a92b641d4f56747689936591492c5dd33e737f548d43a2be0ea5d64a8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_coverage.py": "aeb972e8246b47c5198acbd7c241cfbb7f52b98021db493b3718a55ef0fc4e0a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_online_monitor.py": "1ead5d2231ba9121bc6a4cffd6189a7ad4258ea3239cc2a0bbb5563b773e7cdf",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_foundation.py": "a2ede73f01e25a9f58c61e4a534424f650ca95dab7f5eb1ac5e4dddfd6562a91",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_checks.py": "0a518426759618e71fdf6cab828a3db4efba8a3fa268572e81461aa9825fe5ce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_prediction_evaluation.py": "55f9cb28f1e2c9387612c8eefb09a173c541168169017db1a0fac4ae82e520e0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_checks.py": "92d47685f5df0eb118928f7ae0110ffa4138d97868174261e197dba33761d717",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_compare.py": "385c6739c8b5752a2704b3ef8ed979e0deb78e0489d2789002e11ff64db4dc98",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py": "3d04149b20ad6fc0f8f5fb7302d417a1f7bad995d15324c53089b757b1157af4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_actor.py": "faacb20f9f1ddad49658c319a494db28571afa85675dfc5230ada430ed779497",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_prediction_evaluation.py": "60cd9bf04437619ffb96df741e3bcb4535c2ad2a43d8e9faa8ee3e7be6fe27b9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_replay_coverage.py": "abf68b1206b20a07dc88a7b122da4431907b72f24702a6d0636ab828c7e4c300",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_replay.py": "a6742d439899adc127165e943a6076db51c25fdf4a84fc786a1ee44ae302780e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_eval_metrics.py": "37f309d373b1d6efc21bf43fb2db34a52d92a2b047f54a098d96ad11bd777e9c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_metrics.py": "9c3a7acf0a28004e7445bbf2a17dd443d94c3ef74a5691788e400adec2fb8e4c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_admission.py": "0f5e58611dc7bb2356473715ebd45dd574e28d6e831e34785e88f922a63be3be",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_replay.py": "f3eb5b961ea081d10cd6f81611b81693eb178ea5c8a3417e890e7e9f5386f723",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_observation.py": "93ecbbf3659f0e1305e2e32ded2b7e97aa359a9b4dc9fc1364d9264618897951",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_gate_calibration.py": "d9378024e32aa98300165f5a0aabe88748b832632baf7337040a8930414e44ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher.py": "ce68314828b8686ffe8c2bf879f34690ba83d22176261264246be3c80088d959",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_course_preflight.py": "9adb94247180738272d4eff9fa8dee74291c6f4bfcdb015f8cc87cf423402b87",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_experiment.py": "74908b8afb7717abdcd16c9df483ac024dd2e2adf4caf5dd2cdcaccf8090b54f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_outcome.py": "45edacab1efdd2ef164ee0e4ac129abd7a608ea016f68836b92e1153811a62b6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_windows.py": "1741171334069144ad05b13f9c8d11158ba98b472e553d6b7f4ffcdefea0380a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam.py": "fa1855def47daf5103602d66e8d9e71da8191ed28a8aa53f5e7b021d7c4a6eb9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_evaluation.py": "e8b4be05f1d18ac58abf83ce88a8e51ed907b3462b3dd0bc546dbeb4f044af90",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3b_normalization.py": "143d413520c0861ada7b368db895c2a09299a3017fbb8ef36978123618823e25",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_train_pool.py": "84b9b9915e23273879c74cc9dcbf009890060bffc80e22f1bb4fd1c0de413212",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/__init__.py": "bf307855e6e572930b7a6358cc1986d7065425b82b4136fd80f5854344c62ae1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_oracle_state_query.py": "4cb60f5e6efccf31db6d6b25d672ab0588d9606bf40acbd5a08ded4f1523af3e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_session.py": "8432164a74848df66563ca5acc76da9b0e7f8f52987533ef92d19848077eb568",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_supervision.py": "9719b20f202c4006d798c87f63c6b98316e43c6fe6a6198fa1c4f32d488737a7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_events.py": "c476f7d8bc7a3bcbcab1f9ec0f878d38841965acca3ebe30d12c8c0545c7724c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_actor_checks.py": "27e558d5882d2dc9a7ea18510b98c281250d94d16e020ff93ee2aaa1eed81e25",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_parallel.py": "570b5dba0810be4641a2084bbb96c18e4e508b5143ddaa7e849488bf261600c5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_evaluator.py": "3fc3269c9e548ce8ba4d8c441ec421c3e1879aa8a757d42ea3b2a971195ab7c2",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_actor.py": "80b1fd83c284c031695566e731b45681931360e1046c5e743b823f6d2bd1dde9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_experiment_v2.py": "c64c93e1934e2352fb1f144cf6f1e17fa57359d56493957d4c209bf230af7fce",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_provider.py": "6df9763871722404542ea58e3e861936a1f3efaff84bf50094f72a2edc69fbe4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_beta.py": "c529fada5e89614c954b32713a86408f3017e5a8191f3e24958b8414ad0672fd",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_admission.py": "2bb58bf800fb6180f0c64dd7529bb19f721a5e80f977e91e6e051b3d149ee503",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_data.py": "8708445f4b41450e2105df75d70fc68911627fe85b6b1dabcc231fa85b868b7b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_heads.py": "0f114e7b15ac3419ef48d5d09eb942f35f69d47b6c2fe2d850b6ab302cac68ec",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_learning_diagnostics.py": "724205d8f4d218ba1432e157ac80726900b00ace9fe7d69fba9bcee6272cd155",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_verify.py": "4b84825d700bcf72bffdeee763deb84664dc70185726bfb7c67b69cc52ba6cb4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_abcd_evaluation.py": "a56dcc674234f1eb79d596b2cecaaaaff7df99b9bd8e547a5750202cb5216e2a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3a_labels.py": "b57348eb22a4c61012df74fbfc29e848500eaf86783f45104c6525ee88b010e9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_score.py": "62d8c0ebffafb966dbdead99487e086bfd1054683b6654127d94f29b2cac71fc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_reward_candidates.py": "cbcfb6d8f040c8db17fa8fb93200213769d19028d30218c61ef9b8bc6b1b8c8b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_online_simulation.py": "abf6374a26100a50fd23df75fd870614bce2967ba7eb2880f35fe6a0ed98b39e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": "b04f8e38f3cb3b064bbb9816bfafc96399205cbfc54987d355fa378808be9b91",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3b_verify.py": "d437e4cfd442adc410772a5d60f08188cba07aa468cca9cf096ef9fad765e8bc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_bridge.py": "21530f9b65fd2568e562903d80861fa9bd4af55ef5d3484f532c0b18ad5be99e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_single3_evaluation.py": "e3c8e32bdf1523c6c6ea0efcd88243b5836be845dd9bfe20dc26e46336eb1fea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_teacher_catalog.py": "409fd4337f4ec2bf6f7e2ef62275068cfaeccb7afd12b6bc59d6c50458306225",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_state.py": "efd4e9b7b46ca6ac63683a5916fb41292fe4cb73df8912e98a7337c4fe17f58d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_strategy_simulator.py": "e5bf758c75e2c5c5827bb9595cd1ed001fe4914a64b84d552fff7399a200a609",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/walk_forward_split_builder.py": "bd970d83e511bf8e75375e7ab568479a784f1674f73d23348baf6136201d91ed",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_catalog_v2.py": "9b6e71f7dd512290185cb63473575844efc025697b0c66b6540e30a0e2116755",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_exam_synthetic.py": "a31e94f5a2435452cfb39416d66e6698a122a11ecabf99eb2babf03263b38519",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_entry_v1.py": "d690fe33ec8568e66904547eab45c0893efc1e4117d8fe75a1d5712611f83930",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/entry_analysis.py": "0383c6b020bbee80f9cd2eac8da59063cd9dd5419d1300e6aeaf4397a2ac7adb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_collector.py": "c2f69fbe0f0f7c929995fc8de0dd36e823432a9e7150c50543a2d080ab5e00a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py": "d1a2949b5b983786c695888997c2206839f9ce22ebb893f3cacd7080dec17bfb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_model_smoke.py": "a299573a3e7aa136a4e89810a3d170928f7f90f3d13c4584bba038d04556b95a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_history_statistics.py": "196e80ec1fe70beb80a849d85c3f28303ca87805a9344d958deaf0475b43ad29",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_label_pool.py": "3010f4bf597f4382a2207f9cd05a7532ba995700048fa264156d5e7f509302c7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_b2_outcome_catalog.py": "2c90f968a0e5a9589592cc6a58d94808bc1366c243300eca296555477b6b3b5b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_heads_checks.py": "d6acc4d263d5c5fbc4a037139ef4c6307bedc14cbed65d8fdca7c720bf945a5f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3b_weights.py": "037b5f558091b59075ef0c80ebb0f897793519827efc1b0358bb636634c3f70a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_strict.py": "22185995239d18ab035793ffa56cc20ec717a0ec9a52e8c99eeef1a3cb481f94",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py": "a6a420f5e76c89e2e41a48b29d76bf25d83bb4803a5d72dd14593ec2850ed8a3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py": "3c042169330aed80d0f69b93db6bde35e8d3613c5a4adc48974377b4870a8d40",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/position_manager.py": "e7e032d4ae29e7ad0852d8ee7f4e2c24ddf4f5a752502590bba5c0091bd96f9d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/broker_accounts.py": "b8825fa696c396ac1c08c4f47b5dfd99aa7e701aa1f42601d5154e7eacec2151",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/metrics.py": "b07eef4f665c74e954f074b58e96f37271a16bba4ef23503acdf507072a778db",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_dataset_env.py": "d55faff6d97412392a712117e9908110a5126ef70824d7cfd6d3589bbf19f998",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/trade_record.py": "1e700bc4bac678983ea497f6ef9c2a381eed34ca459359bedc8b8f7fed149750",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/account.py": "8a94ce9ea1b08067353f2b782417001f5107da2e7a67668642784e2884c76257",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_market_cache.py": "b54148c9689a2ceaf5823e02d035b8d21b00367e4224f71a0e79035e6862873f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_execution.py": "6c31a5600a47b83a7898bc3d0e175568436063d7813e690e740d4751403aa6c7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/__init__.py": "ed2eaff9c7c9b97da49aaefe4ed9179a6768ebd8f08c37ff50c80bd8dced3803",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/position.py": "1055ee41187a5ce6c69acb680b7a48cf7f06bd968623cf58abbdaab8bf06e12c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/user_accounts.py": "9b2ba6d972ebbb4ed7650e7d6c906596f2fe08274cda1844b3ab165c27f327d5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/action.py": "fc61ae49e1c89950b00042ce0bb74475709f9113c6d0ad70be593053b3c27b99",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_contract.py": "8d33c39b689eba7239307279339fc12512e731ac2a42d1a84d743a855fc53b17",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/trade_record_manager.py": "c04f94a0b3682a793e03e2baacd61a1c1905a7d167f582ec91c9998e82bc304d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/target_transition.py": "84b901ce11df0cc9ea5455d7ae276829e75540eafef57c0c559b81224b075e80",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/callbacks.py": "bdf3951990a3bddeff416fb1c0b9eed2bf22d3cf8a293333c1837e3e237d0c96",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/trading_env.py": "37695baa534f2e042e46f2d57064c906b916fc2ce063b88ff50451236676c127",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/config.py": "01f5ece7d3c492e89b34013460587003a72e2cc8e7dd47ae216d4b4314e92fa3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/accounting/ledger.py": "ebff3b3a3a65e279fda99a2631fd620da19c9df1f857e0bfc33f0538b3806fc5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/accounting/__init__.py": "5fe048fbe4e51b1a9dd75ff58229265bcc2a0a3f8e8fa1ab0752374c6a715e12",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/rewards/single3_reward.py": "60c790ad065920a4f30efecaed60dfcb49abc8358491d96fc9b7d5548d715cb8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/rewards/fast_take_profit_reward.py": "eb7b9bcf1c8a725e416151e041efb438f297bfcaca1c1466050602d02a9a3781",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/rewards/reward_audit.py": "8ba64fe5bee3df82132b69f743eb3b56b28a432c4cbe33ab703b38a9370c7244",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/rewards/__init__.py": "2eb123cb3314c14d6ebfb5b6eb6b52629aab849fc798f56c55fe2846aa4eaf69",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/rewards/reward_functions.py": "a63b893cb2b93c3072c236fc839b019df1431c6e7900e5011c80b7c4bc979ed7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/validate_real.py": "df75ee86da19db198b358c635d20ad7de5d04a0b9ea87d3ef660803bbe1f8fe5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/diagnostics.py": "b81979052cc76b7f9545b910a94b683912ed460ad8a735ea8e73eb0ea5e1ce9d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/schema.py": "2dad266e11d5d58dcfa4dc0d1f2016bb04c12b5df44edd1f7f434b920236b127",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/provider.py": "2d3ac487b3da568d69ef589d6b3633b2cd99e6db5a68939e5b4d02c4890eb515",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/reference.py": "75b6c7da467879b6b2b652289680e7b666e63554bc857017fa596ec9b6a32a07",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/isolation.py": "fb9dbfb56f13f799a118ad37ec8925538587431fbc4663cb41c30528536a3219",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/__init__.py": "ed54d12ed6686527754b6b691d727881b25ee8bd648fdbec3714337fc62e19f5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/env_probe.py": "c2a39af45b559fa5d57d31348807c1cb0de1f2e5bd7734640e866ae36dbfe15e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/io.py": "fafabcb224d12153db37c8a1789785014b1d495af1a5420b06dc42771a675b2d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/__main__.py": "bd045ddd5242d002f692dac452be9afba38deef5cde541a5fc074bfef5987b91",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/sources.py": "10dbe229bc4dfc0f4dd5ce59e8e69aab665747827c448c3361c0282282ca63ae",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/cli.py": "032eebe76125c8551947213f960270a77b3fd5c376811bc242f16fd3a3de5614",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py": "cdd5a20541ee390f7547fdea14890fe72d734ceed3fc0538a8a92349babcaeec",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3b_bc.py": "5220429ea5ddd2b9139e086d3b35a388b3cc2d4416d946a7cbfb70cdc890d3a0",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_composition.py": "6caaf34a88007bf2d1187fcf9dfe1cdafb7793d3882ff31cb08f6ce40d0a78b5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_entry_guard.py": "1f046dc6d413640943c970cd18a23f66e687177f148f556917b5e29dafddacfe",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_quality_course_contract.py": "d49ae4d78b6c42390aef407c73ba21e6bb40a12601955dc807a6e50ebaee1b42",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/rssm.py": "031b9cb9c29023501d679ca971d6dd8f6428fd107eb3c9c4748cb21c83ebcb3b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_b2_outcome.py": "fb24a72d5556f578d1026337b89e2ddfa2162d3ae8411bb924377eaedf256f41",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3c_agent.py": "35ce2958b7cbe832f1500ea159cd23d94fb1ba2f0270eb6e35290791fa349d5e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/agent.py": "0748d7231df98c34dd39638eda2247ca6b26f03a95fff262579cba003aba37e8",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3a_agent.py": "32528a4cb5d6803a2fd4f4df8e52fce268f426d661467b5a2841b292ffb9f816",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_quality_foundation.py": "615489abbccbf3a7e9713e4bd7aa6f7e7f036cc956c87b5b8ca6471f5b296f1b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3a_actor.py": "5cd8433465f82a66a0b113630c8f58abc236e27b920ea89372927bc7e7dd48ed",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_config.py": "53748286f37d6c8d3c946723d3e1c563681862031beeacfe5f32ca5efc2b7cf9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_encoder.py": "79f212741898c818eded58b75a54d5a9762f06099f1379de01c89f78bb9f6b22",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/configuration.py": "7577cf9749da1ea4c28cc9d1fa4a40db914432f3da2661e457a67ff5c5da8ddb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_stage_transfer.py": "700def17392ad869249aa9da2f6b73844bf30f43241b6c652772c9e285e43070",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_single3_offline.py": "af695e2c13c53136852441ceb3c15f518c76499b4d7d114267ddac2109198253",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_quality_v2.py": "2faff66cc44802770bb638f5cb64bac42335837fd6bd4c8aab8135392e9a2070",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_diagnostics.py": "e7dd6e880e80473d2af2dbe5a90e324b7e3daef66bcb3a5d254c0c54d157fb9b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_tutor_loss.py": "4ac7bcc73471a9318253f0cbd5b7e670aff1854e935fdbf0150c35b8287a77ab",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_quality_actor.py": "3cf6bdeebdb4f85c6d2deaea9f466f58d90f4ffe95f995067625d661e9fdd559",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_quality_heads.py": "825e126bfc6f448362550d3365ff9d43828d083618a71328fd6c2276069f26e9",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/main.py": "eaff77b00a0425dc2d9c14218787a2b87dd58e2842f3720f45f914033c1a47bc",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_v2_agent.py": "78d4ebc546849bf6c037b18ec3f813347d91fd91217b7e9a0b7ac218f93f9569",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/walk_forward_guard.py": "6cf1ac0b6df42a4c913d168ce68870f02acd71d7356da242948e6de0c6101017",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/dreamerv3/fg_s3_e_quality_online.py": "308c1377cd959fb696fe0aca68c327cf8cb9520fa176d21a2af65900d564d732",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/__init__.py": "de1322d37227254ce32ce2358f5c0d034fdc18fc8d6d0c7e9b62757ef22e7dfb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/perf/test_replay.py": "d492f1e266dd485b3d482d1678837158bcd6aabe3b07e8263eca4bf5440c8302",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/perf/test_bandwidth.py": "95f58718198d2279e29040d95ab09c0a9de35fd90419329becf5079f2967f7ac",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/perf/test_distr.py": "6dc55dffb4ae68731ecea3e3bc961fac8812bba5dbe1bec089065e47f1e4a04e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/perf/test_driver.py": "a8a85eef4aa9fa6337929bf3cfebd0d74cd352b7429fa2162a95c03caa477f5d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/opt.py": "b0a2f68fd142a6e206d72d10a9fbb96d1208de3e00112c953ddbffb4d4634a80",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/nets.py": "9a1c0c71ad7d3596572a44416e78434f777d8f4dbcbe8ca0dd6b86bb8246392c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/agent.py": "ff987d074c3b08d30a958e1351538d65bbac0d99881420c5dc69b5b430578a84",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/outs.py": "fdce07aa00790f4693a71e73bdd3cc67d6737524cdcb0f165569b303727ac33a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/heads.py": "437641cde21e7f9e3f69b88ad8f6b7e7c22e54eec8c5b19eef6127afde1a9b3f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/transform.py": "39c1ea717eddee4215538f2fef71bf7c73b9def966702fe9e14b5a3ced8724ee",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/__init__.py": "7c55603a54144d3ea03799475056407c1596cf16d041caa24ba5a45a63444e06",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/internal.py": "d9791c2c0d35ba5a58d78f87ed5b327483473f9f18f8a6945856a2e82d00f328",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/jax/utils.py": "76cd112313a19dc8524721dc7b1be86b89799b11c9865cce5e11de2a67bb1461",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/selectors.py": "b8cb69021e8f79888df88fb5c195e8ff19e3d54065bb08bd3586fd9cbe6655d3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/clock.py": "c3a4accb9f1be9f1d47f1ac8f2802ccb06c3abfdbc1f13db203674b3a0ab8933",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/driver.py": "ebfd71d6adf205ada2720a357ac42e89f2891f9f496b5de28f79aabe4f67371b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/streams.py": "7ec4be50dbd22f5d8b4c8278e3e7ba8a1bc1c1db2c33f775cf6a393343341d59",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/limiters.py": "370d2fa708c80fbf86ddf2bc2456fea8d4d018c8e21eec2b8e71af6dbe163921",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/wrappers.py": "59353c68a7b9efb81014927ba3df1dceb12cce6a0114264cbd62a9f8399c952e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/chunk.py": "427b537afa75079a9f0dfd933ec49e6f71173371388418176c16c038be005c65",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/replay.py": "5a9e15f0b8ece4c996e7ed597dc71eec87266d7c68f1a3ac19f04162ed7fb6d1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/random.py": "38b51d892deb965c7d0ccd1df1b2905f29613245e00737fa368fc43927ad6b8d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/__init__.py": "a088d8ef0017eb7c1e046bb1e3021d59382086607a94e42746d30e79c6dfc681",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/core/base.py": "64a51beda8e7e0b211cb857843ab434e3a47269eee7771674ed8630954a3ec98",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/from_gym.py": "4aca612cf791ee99788d49fac496a8f2ad6f541529c86c23a4b25fae89b9bab4",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/minecraft_flat.py": "25d274e6322bbf4128a9f7338747eab688ef322aaab662775b8c4a50fee5747c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/dmc.py": "196dda5ad5148c2a5c1392234d1b6fc21060bf146a481bbc3ee8f3c7d5a35229",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/loconav_quadruped.py": "c2ae65449a55b32c420514ef883c73261900b83a56993cc9e23a459642d0d678",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/dmlab.py": "b391a0621d5b21756e25cfd0d5f3c232126989ba5ecd920bd943d1acab20d22f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/from_gymnasium.py": "1a4916a0336fc08fc569e0b1db4fe9e22afeee16d0c02bf71caf8c8182298149",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/atari.py": "41e8ffb412e83ec1f5c142ee757a6ea5728ba7674779be51f2921c191afe1ac3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/pinpad.py": "6413315778f1b75d5ac261b912721630283da16afb3a079fdf55c5d5ab5973ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/bsuite.py": "92f042177b64df4dbb65bcc5e7301bfe9d35401b789c0bc7bcab9a1741803184",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/from_gymnasium1.py": "6ca39b37bc2370fb402685a012d29bf1c60d28794408fae69bda7c6394078150",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/minecraft.py": "2f2612e6706971fd76a64bec3df5151e127df82208a12cba0f033c0587fa020c",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/procgen.py": "fc357e969aa569d6d38b2607d4c64d0c67b635e6d046e78a0b43f1e923367531",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/dummy.py": "0b197f4fac46ef37a567d931c1bb496f8053e67a189400a98c05dd5d85bd3352",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/from_dm.py": "9eda0fd7046a033f07b10832319496a6996af6d5a1327689f5f4a6d49827a7e7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/crafter.py": "347a2347d54f5804277eb15c74e139f4e54461bc299558833357b12891d81067",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/envs/loconav.py": "5a68215d97359738713393a90412619be8ec22b9545614495cabf7ced526ab20",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/offline_pretrain.py": "6fd7f8fc5b71238c5565433082cdfa3f5d413e18963fd5820fd7188f2f0be599",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_online_gate.py": "f0f94f1f40ad87a7533428830a5d791bba3c3fc38d5745b3a9a44369f1fb24b6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3a_train.py": "8d5ea6b0b8a7e840e109487c9dde6a0d0a7c0857ba7831bc1eb13a1fbac5d4e3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/parallel.py": "61db714fd289700aecaff89e3e2a277b86af7668071f633a9a15bedc1b8f4de6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/train_eval.py": "faf98583047dfbfc0500d4c3437439404ad08f7faccfb9444604ef5fdfe32c6d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/monte_carlo.py": "821ce9ec0c3d08cfe8c2e4ff080713ef6f310ad0ef28e030f7eb372b7d52ca27",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py": "490a4d81f114184c3d524fd2c3a449c01ef7c50fa88f7c34ac8b7e5a57b3f8fa",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/eval_only.py": "13c02558758a328750f8d255e417fb878974985bff5c1add0ec0660d5a6aee0e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_teacher_adapter.py": "c0b604956e4983c6ce1fc1951501a80fff6237d94f4dddbc1ada2d0978fdb5a5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_source_admission.py": "f191a77555318c29eb77526de6fb6934940dde66659b266f7f3d4b275e15ec22",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_checkpoint.py": "3b000c725e5df582be47251c342853c02ea2e52a93d402f204c4f46c471ddbb5",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_online_state.py": "1bff4a77a5d3683af31886a43b80f832ca65da6a4c10821685a68d9b782156ea",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3c_train.py": "dd1091fe8283596cf5107ce852f33299e8ab49a826b0bc3d70dc072e68ec64cb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/action_mask_warmup.py": "a280a4f67566d1d95d753b537d015e389df30bce0d0295da28b1e03f5ad78c2b",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_foundation.py": "c138cf686c90d58cf128852a0d2128eef533cac8033c21a3b39428db46601fcf",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/action_mask_guard.py": "9fda5d9850ca95c92921e8908005f4bf85aa6dba6b31b75afad585ab19accdc1",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_gate.py": "3c3c405111c18e210ac9810cd645e0cdc25dcedaad5897f6e21b038ae01a3beb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/live_trading.py": "c4356065285616fef811a059995a4cbad051856dcb11dd5f03ab92f6a094bb54",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3b_checkpoint.py": "19ba8d78f79d9b698dc272766cf8fb00d891c680c2d7a698d153d8077935e970",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3a_eval.py": "336ff658bcf02045bf969fc75b9ec4fc8d925e0959f9ac4b120b9c90ee9ee1da",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/checkpoint_retention.py": "ad704533202089c820ce42741d92cfd2881d4976fadeb3e4d494ea54e6301eb3",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_dagger_policy.py": "1720a55223f1b6e5579de18ace85bfb1b31ffe2d5d2e21c672b0e4f7ec50f337",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_exam.py": "7ba6aebbb41d6b3372103c4c5178ccc8566973ee3ac7e35d11420ebd234c5926",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_learning_audit.py": "92ac5c24b72344472064770614be9f3c2ad841d4ac129d1bf5b2e565f5804891",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/__init__.py": "da52aa90ad78723600c043edf48e1616661ca8b2b47aef7d871e8a9faf1e10ad",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_online_stream.py": "31f6b39f06c56f1d926a042c059be0e386324d7ba1fe58e133b0cdb26d68bd26",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_actor.py": "d5d00c5b8f5f1364222748fc3961ddb654a1c68c9866d3d8ef6080431479e65f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_source_transfer.py": "2c821dd46b1b8e935f2ffac251234cde78bd64ca555b6d3b92c026b2f301725d",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_transfer.py": "1a0581ff1e7dddadbf09ec6a26730e8df9a8296867b4538918d336bc854e6528",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_heads.py": "95b67bc0898d84b0a0695a04b3a6244bfe5cded8dc6a477a2db46e99d7282a26",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3b_train.py": "e279d75577d80c375bc9aad8a7720ee26eb5675e5a543f5c3b1bf7ae7c597960",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/train.py": "467c9ca73fe79a5d904c319f063988ea803cfea2d11a0fe47fc9f3f3b1e30bc6",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3a_checkpoint.py": "c051594f43f09321010be865229acbf3d3caf451d8a5ec6865b8b40acf053a7a",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_v2_train.py": "6730323c4e8aea1d007f8d531dcc0b4febd7ac1e1467d5cd4fd8f8263446930f",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_single3_audit.py": "c94a3130dd945488c1da1db175d03cdd8e76e73ef7da402ba77aea3bb4231727",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3a_features.py": "54b3ec6b858c6b4c0b89f3172863e8d8b7a1fb5cc4f075e0ce65b84c12440bbb",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_source.py": "42f479627f123e4b3f34013969c061a9269f7934e8fbfe689ab5d4400acb8183",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3c_stream.py": "692b5e976e2d88f14e618678b45a6a3868774f65770f4c3f64067bd4b1f34df7",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/dreamerv3/embodied/run/fg_s3_e_quality_online.py": "ebba85cd492a22e0abc25a9f846c3006ca3bacac8ceb7b040e98334bf7241f47",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/tools/fg_s3_e_quality_corpus.py": "dbde26ec0aeba3ee29c16857f72c00003989cca35ddeaa8859a03fa755f8b57e",
+    "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/tools/fg_s3_v2_experiment.py": "d990a5efb80ef2b42f259d0b496e2a35151515984e7427b82a1d68814df3714e"
+  },
+  "source_unchanged": true,
+  "workers": 16,
+  "queries": 107,
+  "native_trades": 51,
+  "strict_valid": 39,
+  "actual_account_restores": 6,
+  "profiled_worker_wall_seconds": 62.32528208196163,
+  "profile_self_seconds": 0,
+  "query_cpu_seconds": 11.045971621999982,
+  "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+  "initialization_profile": {
+    "workers": [
+      {
+        "pid": 40,
+        "cpu_seconds": 37.358043674,
+        "wall_seconds": 37.36038277996704,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 47,
+        "cpu_seconds": 42.473470999999996,
+        "wall_seconds": 42.47970843303483,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 44,
+        "cpu_seconds": 46.601433662,
+        "wall_seconds": 46.612732388079166,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 41,
+        "cpu_seconds": 43.658462539999995,
+        "wall_seconds": 43.821366566000506,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 39,
+        "cpu_seconds": 34.388740979,
+        "wall_seconds": 34.39256915799342,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 38,
+        "cpu_seconds": 32.619856104,
+        "wall_seconds": 32.6230785229709,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 35,
+        "cpu_seconds": 41.980476931,
+        "wall_seconds": 41.985906227026135,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 48,
+        "cpu_seconds": 35.557808694,
+        "wall_seconds": 35.56172809295822,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 36,
+        "cpu_seconds": 43.55697952,
+        "wall_seconds": 43.57117915805429,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 46,
+        "cpu_seconds": 35.946699574,
+        "wall_seconds": 35.95016399607994,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 45,
+        "cpu_seconds": 42.945412858,
+        "wall_seconds": 43.047876858967356,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 37,
+        "cpu_seconds": 34.571968932000004,
+        "wall_seconds": 34.5762524260208,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 42,
+        "cpu_seconds": 47.638906153,
+        "wall_seconds": 47.6426233710954,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 32,
+        "cpu_seconds": 33.003971872,
+        "wall_seconds": 33.009770744945854,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 49,
+        "cpu_seconds": 41.859668382,
+        "wall_seconds": 41.90290261793416,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      },
+      {
+        "pid": 43,
+        "cpu_seconds": 35.279385780000005,
+        "wall_seconds": 35.291643443051726,
+        "evidence": "cProfile initialization only; overhead is not production wall timing"
+      }
+    ],
+    "top_self": [
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+        "calls": 23609856,
+        "self_seconds": 57.358610721000005,
+        "cumulative_seconds": 57.358610721000005
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 217,
+        "function": "_rolling_percentile_causal",
+        "calls": 176,
+        "self_seconds": 52.014707189,
+        "cumulative_seconds": 84.92488233600001
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/algorithms.py",
+        "line": 457,
+        "function": "isin",
+        "calls": 66768,
+        "self_seconds": 31.53993425900001,
+        "cumulative_seconds": 34.752615758000005
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 314,
+        "function": "macd_snapshot",
+        "calls": 176,
+        "self_seconds": 25.282673528000007,
+        "cumulative_seconds": 65.80314620300001
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 230,
+        "function": "_rolling_slope",
+        "calls": 160,
+        "self_seconds": 25.257812347000005,
+        "cumulative_seconds": 89.956764193
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 308,
+        "function": "_build_htf_context_frame",
+        "calls": 16,
+        "self_seconds": 24.623602772,
+        "cumulative_seconds": 101.049749698
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_contract.py",
+        "line": 12,
+        "function": "timestamp",
+        "calls": 1526624,
+        "self_seconds": 19.056955686000002,
+        "cumulative_seconds": 26.138677454000003
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py",
+        "line": 205,
+        "function": "iterencode",
+        "calls": 2005328,
+        "self_seconds": 18.834737274000002,
+        "cumulative_seconds": 19.175082186000004
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 299,
+        "function": "_range_position",
+        "calls": 1902512,
+        "self_seconds": 18.459181952,
+        "cumulative_seconds": 67.235296985
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 71,
+        "function": "_wrapreduction",
+        "calls": 11157376,
+        "self_seconds": 16.78647083,
+        "cumulative_seconds": 54.333177689
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/_methods.py",
+        "line": 101,
+        "function": "_mean",
+        "calls": 3053008,
+        "self_seconds": 10.81771257,
+        "cumulative_seconds": 28.777315806
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimes.py",
+        "line": 645,
+        "function": "__iter__",
+        "calls": 5099696,
+        "self_seconds": 10.571526028000001,
+        "cumulative_seconds": 10.879184764000001
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 2177,
+        "function": "sum",
+        "calls": 8021376,
+        "self_seconds": 10.124049259,
+        "cumulative_seconds": 52.960819300000004
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimes.py",
+        "line": 545,
+        "function": "_box_func",
+        "calls": 1958416,
+        "self_seconds": 8.269060786000002,
+        "cumulative_seconds": 13.731944390999999
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 72,
+        "function": "<dictcomp>",
+        "calls": 11157376,
+        "self_seconds": 8.17127166,
+        "cumulative_seconds": 8.17127166
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/snapshot_json.py",
+        "line": 11,
+        "function": "copy_account_snapshot",
+        "calls": 96,
+        "self_seconds": 7.872364649000001,
+        "cumulative_seconds": 9.942323642
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/_methods.py",
+        "line": 67,
+        "function": "_count_reduce_items",
+        "calls": 3053008,
+        "self_seconds": 7.498832132,
+        "cumulative_seconds": 8.134523867
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method builtins.isinstance>",
+        "calls": 38705280,
+        "self_seconds": 7.175421236,
+        "cumulative_seconds": 9.268913370000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/lib/nanfunctions.py",
+        "line": 236,
+        "function": "nanmin",
+        "calls": 1910848,
+        "self_seconds": 6.990656154,
+        "cumulative_seconds": 19.720229961000005
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/macd_5m_causal.py",
+        "line": 39,
+        "function": "push",
+        "calls": 978288,
+        "self_seconds": 6.463369982000001,
+        "cumulative_seconds": 8.478806907000001
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/lib/nanfunctions.py",
+        "line": 369,
+        "function": "nanmax",
+        "calls": 1910848,
+        "self_seconds": 6.154701949,
+        "cumulative_seconds": 16.741814826000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/_methods.py",
+        "line": 90,
+        "function": "_clip",
+        "calls": 2406928,
+        "self_seconds": 5.683943953000002,
+        "cumulative_seconds": 5.683943953000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/copy.py",
+        "line": 128,
+        "function": "deepcopy",
+        "calls": 5869200,
+        "self_seconds": 5.538012822,
+        "cumulative_seconds": 11.525836789
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 248,
+        "function": "_buckets",
+        "calls": 16,
+        "self_seconds": 5.282541386000001,
+        "cumulative_seconds": 106.89575872
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'any' of 'numpy.generic' objects>",
+        "calls": 3827344,
+        "self_seconds": 4.665542316,
+        "cumulative_seconds": 13.380830374000004
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 177,
+        "function": "_load_market",
+        "calls": 16,
+        "self_seconds": 4.594036174,
+        "cumulative_seconds": 444.489348795
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/frame.py",
+        "line": 2012,
+        "function": "<listcomp>",
+        "calls": 48,
+        "self_seconds": 4.166490906,
+        "cumulative_seconds": 4.170584091
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimes.py",
+        "line": 2354,
+        "function": "objects_to_datetime64",
+        "calls": 160,
+        "self_seconds": 4.151839452000001,
+        "cumulative_seconds": 4.152032262
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/schema.py",
+        "line": 38,
+        "function": "local_timestamp",
+        "calls": 180672,
+        "self_seconds": 4.066688801000001,
+        "cumulative_seconds": 5.0671356880000005
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/cast.py",
+        "line": 182,
+        "function": "maybe_box_native",
+        "calls": 7502400,
+        "self_seconds": 4.005234201,
+        "cumulative_seconds": 4.827539933
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 465,
+        "function": "<genexpr>",
+        "calls": 1000352,
+        "self_seconds": 3.3744553289999994,
+        "cumulative_seconds": 5.990495994000001
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/_strptime.py",
+        "line": 309,
+        "function": "_strptime",
+        "calls": 500512,
+        "self_seconds": 3.2247782949999997,
+        "cumulative_seconds": 5.605761132000001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'clip' of 'numpy.generic' objects>",
+        "calls": 2401728,
+        "self_seconds": 3.049765128,
+        "cumulative_seconds": 8.634144204
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'view' of 'numpy.generic' objects>",
+        "calls": 2042624,
+        "self_seconds": 3.049023022,
+        "cumulative_seconds": 3.049023022
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'get' of 'dict' objects>",
+        "calls": 16373232,
+        "self_seconds": 2.852154875,
+        "cumulative_seconds": 2.852154875
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexes/base.py",
+        "line": 5373,
+        "function": "__getitem__",
+        "calls": 2585040,
+        "self_seconds": 2.839965023,
+        "cumulative_seconds": 21.907214593
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimes.py",
+        "line": 397,
+        "function": "_generate_range",
+        "calls": 56640,
+        "self_seconds": 2.778084852,
+        "cumulative_seconds": 10.132391834000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 2421,
+        "function": "all",
+        "calls": 3133184,
+        "self_seconds": 2.769498072,
+        "cumulative_seconds": 16.040766054
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimelike.py",
+        "line": 373,
+        "function": "__getitem__",
+        "calls": 2012736,
+        "self_seconds": 2.5837567290000005,
+        "cumulative_seconds": 18.825792497000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pytz/__init__.py",
+        "line": 130,
+        "function": "timezone",
+        "calls": 1809472,
+        "self_seconds": 2.547717451,
+        "cumulative_seconds": 7.116413885
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/__init__.py",
+        "line": 183,
+        "function": "dumps",
+        "calls": 2005328,
+        "self_seconds": 2.4470552390000004,
+        "cumulative_seconds": 25.519675554000003
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method builtins.max>",
+        "calls": 7474880,
+        "self_seconds": 2.395058766,
+        "cumulative_seconds": 2.4119004179999997
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/native_account.py",
+        "line": 24,
+        "function": "_freeze_row",
+        "calls": 978256,
+        "self_seconds": 2.3929334730000003,
+        "cumulative_seconds": 4.761423777000001
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/dtypes/cast.py",
+        "line": 1579,
+        "function": "construct_1d_object_array_from_listlike",
+        "calls": 432,
+        "self_seconds": 2.376969382,
+        "cumulative_seconds": 2.380471179
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 2100,
+        "function": "clip",
+        "calls": 2406928,
+        "self_seconds": 2.3590163570000002,
+        "cumulative_seconds": 13.301255085
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method builtins.getattr>",
+        "calls": 9593600,
+        "self_seconds": 2.3582618030000004,
+        "cumulative_seconds": 3.052314248
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py",
+        "line": 183,
+        "function": "encode",
+        "calls": 2005328,
+        "self_seconds": 2.2633031740000003,
+        "cumulative_seconds": 22.292771213
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimes.py",
+        "line": 744,
+        "function": "_format_native_types",
+        "calls": 32,
+        "self_seconds": 2.145296026,
+        "cumulative_seconds": 2.145456295
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<built-in method builtins.compile>",
+        "calls": 4928,
+        "self_seconds": 2.10013658,
+        "cumulative_seconds": 2.102066604
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/_mixins.py",
+        "line": 278,
+        "function": "__getitem__",
+        "calls": 2012736,
+        "self_seconds": 2.0773540450000003,
+        "cumulative_seconds": 15.886762327
+      }
+    ],
+    "top_cumulative": [
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_label_pool.py",
+        "line": 13,
+        "function": "_initialize",
+        "calls": 16,
+        "self_seconds": 0.12009439400000002,
+        "cumulative_seconds": 629.3227912479999
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py",
+        "line": 169,
+        "function": "factory",
+        "calls": 32,
+        "self_seconds": 0.0014340620000000003,
+        "cumulative_seconds": 476.7508308410001
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 47,
+        "function": "__init__",
+        "calls": 32,
+        "self_seconds": 0.034332114000000004,
+        "cumulative_seconds": 476.749396779
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_market_cache.py",
+        "line": 86,
+        "function": "load",
+        "calls": 32,
+        "self_seconds": 0.05226818,
+        "cumulative_seconds": 453.511801667
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 177,
+        "function": "_load_market",
+        "calls": 16,
+        "self_seconds": 4.594036174,
+        "cumulative_seconds": 444.489348795
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 769,
+        "function": "build_market_features",
+        "calls": 16,
+        "self_seconds": 0.023256063000000004,
+        "cumulative_seconds": 288.21235822600005
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 956,
+        "function": "_build_market_future",
+        "calls": 16,
+        "self_seconds": 0.089437482,
+        "cumulative_seconds": 288.1878003350001
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 460,
+        "function": "_add_obs_features_inplace",
+        "calls": 16,
+        "self_seconds": 0.7939088850000001,
+        "cumulative_seconds": 282.545433049
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 203,
+        "function": "from_env",
+        "calls": 16,
+        "self_seconds": 0.0036914919999999998,
+        "cumulative_seconds": 118.673944173
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 161,
+        "function": "__init__",
+        "calls": 16,
+        "self_seconds": 0.068483868,
+        "cumulative_seconds": 118.00860942899999
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 248,
+        "function": "_buckets",
+        "calls": 16,
+        "self_seconds": 5.282541386000001,
+        "cumulative_seconds": 106.89575872
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 308,
+        "function": "_build_htf_context_frame",
+        "calls": 16,
+        "self_seconds": 24.623602772,
+        "cumulative_seconds": 101.049749698
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher_v2.py",
+        "line": 245,
+        "function": "__init__",
+        "calls": 16,
+        "self_seconds": 0.17309730399999998,
+        "cumulative_seconds": 98.15990057799999
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 819,
+        "function": "import_state",
+        "calls": 48,
+        "self_seconds": 0.0010687470000000003,
+        "cumulative_seconds": 97.93700892400003
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 833,
+        "function": "_restore_account_state",
+        "calls": 48,
+        "self_seconds": 0.005792781000000001,
+        "cumulative_seconds": 92.87065562600002
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 230,
+        "function": "_rolling_slope",
+        "calls": 160,
+        "self_seconds": 25.257812347000005,
+        "cumulative_seconds": 89.956764193
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 217,
+        "function": "_rolling_percentile_causal",
+        "calls": 176,
+        "self_seconds": 52.014707189,
+        "cumulative_seconds": 84.92488233600001
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 366,
+        "function": "_get_obs",
+        "calls": 176,
+        "self_seconds": 0.019645318,
+        "cumulative_seconds": 72.34409472
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_features.py",
+        "line": 299,
+        "function": "_range_position",
+        "calls": 1902512,
+        "self_seconds": 18.459181952,
+        "cumulative_seconds": 67.235296985
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/e_data_v1/core.py",
+        "line": 314,
+        "function": "macd_snapshot",
+        "calls": 176,
+        "self_seconds": 25.282673528000007,
+        "cumulative_seconds": 65.80314620300001
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'reduce' of 'numpy.ufunc' objects>",
+        "calls": 23609856,
+        "self_seconds": 57.358610721000005,
+        "cumulative_seconds": 57.358610721000005
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 71,
+        "function": "_wrapreduction",
+        "calls": 11157376,
+        "self_seconds": 16.78647083,
+        "cumulative_seconds": 54.333177689
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_teacher_v2.py",
+        "line": 210,
+        "function": "verify_native_e_fork",
+        "calls": 16,
+        "self_seconds": 0.12233364299999999,
+        "cumulative_seconds": 53.496734634999996
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 2177,
+        "function": "sum",
+        "calls": 8021376,
+        "self_seconds": 10.124049259,
+        "cumulative_seconds": 52.960819300000004
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexes/base.py",
+        "line": 6540,
+        "function": "isin",
+        "calls": 33376,
+        "self_seconds": 0.053022896,
+        "cumulative_seconds": 34.775088139000005
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/algorithms.py",
+        "line": 457,
+        "function": "isin",
+        "calls": 66768,
+        "self_seconds": 31.53993425900001,
+        "cumulative_seconds": 34.752615758000005
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimelike.py",
+        "line": 748,
+        "function": "isin",
+        "calls": 33376,
+        "self_seconds": 0.23925884,
+        "cumulative_seconds": 34.06711173
+      },
+      {
+        "file": "~",
+        "line": 0,
+        "function": "<method 'mean' of 'numpy.ndarray' objects>",
+        "calls": 3019984,
+        "self_seconds": 1.8320407229999998,
+        "cumulative_seconds": 30.145995293000006
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 765,
+        "function": "_prefix_hash",
+        "calls": 96,
+        "self_seconds": 0.14062571000000001,
+        "cumulative_seconds": 29.362175147000006
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/_methods.py",
+        "line": 101,
+        "function": "_mean",
+        "calls": 3053008,
+        "self_seconds": 10.81771257,
+        "cumulative_seconds": 28.777315806
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_prefix.py",
+        "line": 15,
+        "function": "__init__",
+        "calls": 32,
+        "self_seconds": 0.011372038,
+        "cumulative_seconds": 28.742994530999997
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_contract.py",
+        "line": 12,
+        "function": "timestamp",
+        "calls": 1526624,
+        "self_seconds": 19.056955686000002,
+        "cumulative_seconds": 26.138677454000003
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/__init__.py",
+        "line": 183,
+        "function": "dumps",
+        "calls": 2005328,
+        "self_seconds": 2.4470552390000004,
+        "cumulative_seconds": 25.519675554000003
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py",
+        "line": 183,
+        "function": "encode",
+        "calls": 2005328,
+        "self_seconds": 2.2633031740000003,
+        "cumulative_seconds": 22.292771213
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexes/base.py",
+        "line": 5373,
+        "function": "__getitem__",
+        "calls": 2585040,
+        "self_seconds": 2.839965023,
+        "cumulative_seconds": 21.907214593
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/lib/nanfunctions.py",
+        "line": 236,
+        "function": "nanmin",
+        "calls": 1910848,
+        "self_seconds": 6.990656154,
+        "cumulative_seconds": 19.720229961000005
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_prefix.py",
+        "line": 23,
+        "function": "_join",
+        "calls": 64,
+        "self_seconds": 1.7610165540000002,
+        "cumulative_seconds": 19.332033768
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexing.py",
+        "line": 1176,
+        "function": "__getitem__",
+        "calls": 168304,
+        "self_seconds": 0.46187162400000004,
+        "cumulative_seconds": 19.196676732000004
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/json/encoder.py",
+        "line": 205,
+        "function": "iterencode",
+        "calls": 2005328,
+        "self_seconds": 18.834737274000002,
+        "cumulative_seconds": 19.175082186000004
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/datetimelike.py",
+        "line": 373,
+        "function": "__getitem__",
+        "calls": 2012736,
+        "self_seconds": 2.5837567290000005,
+        "cumulative_seconds": 18.825792497000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/generic.py",
+        "line": 6284,
+        "function": "__getattr__",
+        "calls": 360816,
+        "self_seconds": 0.74792917,
+        "cumulative_seconds": 17.969386810000003
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/envs/entry_env.py",
+        "line": 219,
+        "function": "<listcomp>",
+        "calls": 16,
+        "self_seconds": 0.39436599299999997,
+        "cumulative_seconds": 17.307820292000002
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/lib/nanfunctions.py",
+        "line": 369,
+        "function": "nanmax",
+        "calls": 1910848,
+        "self_seconds": 6.154701949,
+        "cumulative_seconds": 16.741814826000002
+      },
+      {
+        "file": "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/rounds/final-candidate/gym-trading-env/src/gym_trading_env/utils/market_prefix.py",
+        "line": 18,
+        "function": "<lambda>",
+        "calls": 2000672,
+        "self_seconds": 1.4749466350000002,
+        "cumulative_seconds": 16.227583203
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/numpy/core/fromnumeric.py",
+        "line": 2421,
+        "function": "all",
+        "calls": 3133184,
+        "self_seconds": 2.769498072,
+        "cumulative_seconds": 16.040766054
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/arrays/_mixins.py",
+        "line": 278,
+        "function": "__getitem__",
+        "calls": 2012736,
+        "self_seconds": 2.0773540450000003,
+        "cumulative_seconds": 15.886762327
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexing.py",
+        "line": 1397,
+        "function": "_getitem_axis",
+        "calls": 33392,
+        "self_seconds": 0.12872637000000003,
+        "cumulative_seconds": 15.742316278
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/frame.py",
+        "line": 4062,
+        "function": "__getitem__",
+        "calls": 345904,
+        "self_seconds": 1.392220344,
+        "cumulative_seconds": 15.350562428999998
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/indexing.py",
+        "line": 1205,
+        "function": "_getbool_axis",
+        "calls": 33392,
+        "self_seconds": 0.10465238000000002,
+        "cumulative_seconds": 15.194700111
+      },
+      {
+        "file": "/home/v/miniconda3/envs/dreamerv3/lib/python3.11/site-packages/pandas/core/generic.py",
+        "line": 4142,
+        "function": "_take_with_is_copy",
+        "calls": 33616,
+        "self_seconds": 0.144873985,
+        "cumulative_seconds": 14.551953211000002
+      }
+    ]
+  },
+  "timing_only": true,
+  "function_cpu": {
+    "market_equals": {
+      "calls": 581,
+      "cpu_seconds": 2.152306619000022
+    },
+    "market_prefix_hash": {
+      "calls": 367,
+      "cpu_seconds": 1.052978820999975
+    },
+    "native_restore": {
+      "calls": 158,
+      "cpu_seconds": 1.9468638730000336
+    },
+    "source_guard": {
+      "calls": 131,
+      "cpu_seconds": 0.5442396479999729
+    },
+    "account_hash": {
+      "calls": 209,
+      "cpu_seconds": 1.0375329269999938
+    },
+    "financial_step": {
+      "calls": 2265,
+      "cpu_seconds": 3.828490235999922
+    },
+    "risk_facts": {
+      "calls": 51,
+      "cpu_seconds": 0.08812702600000222
+    },
+    "native_trace": {
+      "calls": 51,
+      "cpu_seconds": 6.055418121000002
+    }
+  },
+  "timing_notes": "Function CPU times are inclusive/nested; do not sum them as disjoint shares",
+  "top_self": [],
+  "top_cumulative": [],
+  "jobs": [
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4265006500063464,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "8b5d0a3dddd65a32fb7398c64100a53b069501afbb1a18cd80abb49626c8cd09",
+          "final": "f341b8913698b52f14e219351f3b152d2b93f9949010e69700b93c80b4611ef8"
+        },
+        {
+          "root": "30866f88a938c4e2b4bd7cfb2c0aa820c80cad12cc41247819476ffa72cbfe2d",
+          "final": "e3ca7ab247e1829539598d0892525638e9da02995f32f3a279a34246c50729b2"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.42114550800000217,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 21,
+          "cpu_seconds": 0.06556205999999065
+        },
+        "market_prefix_hash": {
+          "calls": 15,
+          "cpu_seconds": 0.04227005900001757
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.07417326400000235
+        },
+        "source_guard": {
+          "calls": 4,
+          "cpu_seconds": 0.014907963999995388
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.028845856000010883
+        },
+        "financial_step": {
+          "calls": 95,
+          "cpu_seconds": 0.18834338100005255
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0041098859999948445
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.2939347180000027
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.23928577604237944,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "6519a2f1c8dfa37d6f0017642473fe31b1a33348a78fb68e47062967312c3434",
+          "final": "c7481995c9ce2dc5c771c2f0497dff80c9d31875c1c3739bffee7644e715b493"
+        },
+        {
+          "root": "fffe626fd6baa6ebe9b59f08c2edf473cd1132894a1fc0022a52f15de4cad569",
+          "final": "ebfb30b30371b2771930363fdcdf2f2628eb8d5215df3807d838480b5fa6a655"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.23426556799999787,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 18,
+          "cpu_seconds": 0.056645191999997735
+        },
+        "market_prefix_hash": {
+          "calls": 12,
+          "cpu_seconds": 0.034193892000004666
+        },
+        "native_restore": {
+          "calls": 5,
+          "cpu_seconds": 0.0419705850000085
+        },
+        "source_guard": {
+          "calls": 4,
+          "cpu_seconds": 0.014953177000002427
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.024323387000002583
+        },
+        "financial_step": {
+          "calls": 67,
+          "cpu_seconds": 0.06297915499997231
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0025233319999955484
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.12358252800000002
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.867330293986015,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "5fe0d99cc19b2f2a58137947d84104d5c710d062b07d52231b317d57f6214ab1",
+          "final": "63a36af062e630ecd2c62cfcc1533e980b2a9fba417e082e16079666ccfc297a"
+        },
+        {
+          "root": "e73d3941a97a5754a6cbf0a89681391ad293983e59767ee8748c766cf83003fe",
+          "final": "138fb910863ae1966b52fe20d9325a0e9cf1afa33d225afde06d445a42d955b1"
+        },
+        {
+          "root": "e384993df92e20abaa22945b8e24d34c69f0002ba3f904de0b1a96125dc3b6d7",
+          "final": "a54201e68aeb2dcf608bce7705cb43b8178dc070bd342c92f955ff2b5bb50b9e"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.8620493929999995,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 21,
+          "cpu_seconds": 0.06322053700000652
+        },
+        "market_prefix_hash": {
+          "calls": 15,
+          "cpu_seconds": 0.04171157700000805
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.07838957899999599
+        },
+        "source_guard": {
+          "calls": 4,
+          "cpu_seconds": 0.014384269999993649
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.028577994999999135
+        },
+        "financial_step": {
+          "calls": 290,
+          "cpu_seconds": 0.6272202689999915
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0068180840000025
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.7355881180000026
+        }
+      }
+    },
+    {
+      "policy": "P0",
+      "queries": 3,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.19276767107658088,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "36c1727c97b360ce5bc77b2d497bba4f652b9772bb30a4b30cc420e06963e474",
+          "final": "9e106559d48869bc7633c8f23866e9f027e6d3f8febefe475b091db645bfb6ef"
+        },
+        {
+          "root": "a85d7faf7c98e3482ba5a412b1bc1df82549bba5a06f314839dad693327fec57",
+          "final": "3553cf202774c0fe0eb1606cc75b019f8d8c84eb6362c2ca7f8f28e5a844be31"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.18849153200000046,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 18,
+          "cpu_seconds": 0.05596964099998303
+        },
+        "market_prefix_hash": {
+          "calls": 12,
+          "cpu_seconds": 0.033852252999970744
+        },
+        "native_restore": {
+          "calls": 5,
+          "cpu_seconds": 0.052838831000009634
+        },
+        "source_guard": {
+          "calls": 4,
+          "cpu_seconds": 0.015068904999992583
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.023878952999986325
+        },
+        "financial_step": {
+          "calls": 8,
+          "cpu_seconds": 0.007759490000005087
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0013837639999962903
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.06551884699999988
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.38000334496609867,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "39970c8d92930f3b9cd173e30e21f3e81e55cfdfd40da32697eb4c0233594b05",
+          "final": "3150089a66a84f5438cc2f3171eba1401c750eb0f0a9a1b10495b14c865defb7"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.37467925400000013,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.07271939800001803
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.038756098999989774
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.051560365000000274
+        },
+        "source_guard": {
+          "calls": 5,
+          "cpu_seconds": 0.018601459000009868
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.028516238999991117
+        },
+        "financial_step": {
+          "calls": 109,
+          "cpu_seconds": 0.1632348090000022
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0032859820000012974
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.22625252299999943
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.2291442919522524,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "8951fdd1145da068a557544141c4387d4e0b88857f991f6717df3aaf9db820b5",
+          "final": "6df7eb2984108d55d22a7486090c008eeb3056d6f04af65e8ec0593ca44ed201"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.2244837369999999,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.07532785799999431
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03630195400001668
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.05420582400000029
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.022283520000002
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.030126346000002968
+        },
+        "financial_step": {
+          "calls": 6,
+          "cpu_seconds": 0.006018655999994849
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0007350380000019641
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.03785094000000555
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.42491621093358845,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "7ed9fee78498e614b554c66fb593791ef21e7b2ab00defd8a71520290e50c242",
+          "final": "219dc8d1437caca7543a09b87b057bbff59084a1505f9a79640c9e6a728a65b7"
+        },
+        {
+          "root": "dcc7e29c05b1495345ccca2bb218a569d4d00fe51b26bfd25f2ec215e01742d3",
+          "final": "848c3a52c6debbe72a7c074f163289ed22d5d453729bb82fd2a4d9093ca43489"
+        },
+        {
+          "root": "55dd13848c6f5892f666c0e57dddc592ef64f04214ffc49190f3cad0a91dbb5d",
+          "final": "b2ebb66301bd02f95490266ab6b1a0098cd117d51b1aaa9430e747fe0a21cac0"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.4198724210000009,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.09001925600001925
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.05333229799998662
+        },
+        "native_restore": {
+          "calls": 8,
+          "cpu_seconds": 0.0770903939999883
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.02159580299999675
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.044536712999999395
+        },
+        "financial_step": {
+          "calls": 63,
+          "cpu_seconds": 0.11377656999999886
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0029531870000099048
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.2203953719999987
+        }
+      }
+    },
+    {
+      "policy": "P1",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4562316829105839,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "ee374bd0ffa49de913b62fc9cabf55bd74d914ba9fb2311b5d53a5f89c95d950",
+          "final": "8b0864b308ac15aa8e92594b917384895ee24cde01db780dc4e77b20de2f278c"
+        },
+        {
+          "root": "11bf2c7303b9098472cff96dbf2ef0d53df8179010c968dc5671b61f636b4681",
+          "final": "05e74a830f0fac2b729006a2fde4f7bbcb6519da64ed4b001368cb42536a1fd5"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.4512814630000008,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.08706306100002337
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.04554487600001522
+        },
+        "native_restore": {
+          "calls": 7,
+          "cpu_seconds": 0.07409748300000274
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.022366526000006104
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.044327403999993464
+        },
+        "financial_step": {
+          "calls": 142,
+          "cpu_seconds": 0.1480711199999547
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.004053931000001398
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.23205386200000788
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4157304100226611,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "55aaff7f6ea839fcc1353b7b25759515d96f0b6d1785de8fcd54a26233aeed52",
+          "final": "16a3969e9513bb55e737721c8a7fc14bb95c4b3750239838601a2b898081631c"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.4087181260000037,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.10418557099998083
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.0404791589999931
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.06338943600000846
+        },
+        "source_guard": {
+          "calls": 5,
+          "cpu_seconds": 0.025020003000001623
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.03168843700001389
+        },
+        "financial_step": {
+          "calls": 109,
+          "cpu_seconds": 0.13703682700001707
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.005274769999999762
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.21659297200000083
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.2772841270780191,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "59373c08cf1b8a101d28a848953719a81bb372f9b94cc9e7ea68412862777d01",
+          "final": "48c90b34696ca13090e979e9e55e194cf5d8406ee4bf0c83cd2741f5dc7c6f77"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.27286930999999726,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.07372827199998966
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03740450999999467
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.0927268239999961
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.021985842999995953
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03151588100000424
+        },
+        "financial_step": {
+          "calls": 2,
+          "cpu_seconds": 0.004524744000001135
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0006870679999977369
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.05757334000000469
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 4,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.7866614089580253,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "15eb9e3d0d61d5bcc25c15d4cfe290452564bbd82b0c0190c4ad199a64bfd8c8",
+          "final": "0f1ff4d9c7ce62e2f2f7cc2c9e8e4d632a1f4583f08786bf734227850576fdf8"
+        },
+        {
+          "root": "e10eab2cb2ab1cc3a747f9c04fd94746f4e3f6cbce97f0b9c83eb0adfa2e23ea",
+          "final": "37c5e028d12d53f40b21d6e33ce31bb6fb4999e8de6c5ca35a2521bf92836744"
+        },
+        {
+          "root": "dd2f2b85c8e48f6d8ec87ee747c63fa60fecb449fa84d6d3d043e054d8a33af7",
+          "final": "9caaaf4bdd136f79c2338fc838a070672de06945160c0adbb453a1e5bc16a278"
+        },
+        {
+          "root": "f187e8434b28fcd122526520681d151c22a942ed74c5293c90c17f4679a6d9b3",
+          "final": "f67e6e2319d8d7f7a3a0f5e09c8457d2ecff2eea22529bf92652a1491ebbbb08"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.7790543870000022,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 32,
+          "cpu_seconds": 0.15106613700001503
+        },
+        "market_prefix_hash": {
+          "calls": 22,
+          "cpu_seconds": 0.06386272000001014
+        },
+        "native_restore": {
+          "calls": 9,
+          "cpu_seconds": 0.10991678600000654
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.030250148999996895
+        },
+        "account_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.05488626300000021
+        },
+        "financial_step": {
+          "calls": 169,
+          "cpu_seconds": 0.3352164839999645
+        },
+        "risk_facts": {
+          "calls": 4,
+          "cpu_seconds": 0.008317134000002113
+        },
+        "native_trace": {
+          "calls": 4,
+          "cpu_seconds": 0.514760645999992
+        }
+      }
+    },
+    {
+      "policy": "P2_low",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.7953426770400256,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "fc98add13dd28ec3bc9121e0d0865a1db775717ace9a874d212c6c9320919e0c",
+          "final": "47b06bf3c6c50e4a978a8f3e40442500f18cb1d4b32054f3fad8249cef78370f"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.7904251869999968,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.07517383300001512
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.038278342000012344
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.11101821700000869
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.02270211499998709
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.035497717999994904
+        },
+        "financial_step": {
+          "calls": 209,
+          "cpu_seconds": 0.4845901139999427
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0058613600000043675
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.5456021350000029
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.28388997993897647,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "e082a9a0a988dc9004ee7cc16d43229d9b4af068a25e349333f827c75ab4a214",
+          "final": "cc1bb0fb04e8085f923179305c8e53100106bc0264fbdd89b2eb17710ce2d704"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.27892465299999714,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.07213218799999765
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.040475380000017935
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.06677108399999554
+        },
+        "source_guard": {
+          "calls": 5,
+          "cpu_seconds": 0.01928047200000549
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.030965920999989294
+        },
+        "financial_step": {
+          "calls": 17,
+          "cpu_seconds": 0.03796152800001096
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0018373749999938127
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.10865992699999794
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.30654282798059285,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "7736cbcc439dc849b2a9171518231a7a11347ad991708a29462e07534b2b3f67",
+          "final": "8872054fcbfdbf94cf3c53659e92a449ececf93d59738de857af9530b96a5bc7"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.3012536199999971,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.10894569600002058
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03762618100001447
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.0713109770000031
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.028953087000004984
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03504161300000419
+        },
+        "financial_step": {
+          "calls": 5,
+          "cpu_seconds": 0.011104492000001187
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.000874179000000197
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.051879022999997915
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 4,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.5095150220440701,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "b3b04cfcf2baa1287b7f7bab7083dd51524ca22106eb84f8d5514ffd8c7b3767",
+          "final": "90d9d8c2916e8c19452ff90bc67fa7e94daa79b5095a828a408d03a4ef4f0126"
+        },
+        {
+          "root": "e30fa80d953388fa0d983a900c4445fb8495758038739bcc8bcf73a35828d50e",
+          "final": "dcb9457907fd4509b0fc9598496675c7de3479f06e0a98c9f8dc1910335686b3"
+        },
+        {
+          "root": "c23bb6331d781899ebf32e448285bd6385990237f88ae20c6855456477990a56",
+          "final": "6448ce5c729d0d10149801983aab5ca5ebdc4ed687c0c22ab4802b94ca65b07e"
+        },
+        {
+          "root": "a7ef66a4f232e3904da656f7786c2256b5aae205094e854f1fd7ba894288a460",
+          "final": "de34889ca30d4a8b6929c586bdf44b63e66c31c437f11d9966b6e3fc0c8180c6"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.5035267929999989,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 32,
+          "cpu_seconds": 0.10028981500003198
+        },
+        "market_prefix_hash": {
+          "calls": 22,
+          "cpu_seconds": 0.0638387080000129
+        },
+        "native_restore": {
+          "calls": 9,
+          "cpu_seconds": 0.09192156400000329
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.023306257999990976
+        },
+        "account_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.05389227700000987
+        },
+        "financial_step": {
+          "calls": 71,
+          "cpu_seconds": 0.13642898399996284
+        },
+        "risk_facts": {
+          "calls": 4,
+          "cpu_seconds": 0.004177642000001924
+        },
+        "native_trace": {
+          "calls": 4,
+          "cpu_seconds": 0.28905362699999415
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 4,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4451063129818067,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "2541e1f3bf550e25b68b60a562154ac931d5fbd7508180a9b82936d1ebbe6b1e",
+          "final": "f1de57f262cb83940273479c483b9cb31dab32e2ce56086569a2a6d4f94bac55"
+        },
+        {
+          "root": "85a41bd64b33d9dbd6d7c6f9f314594c76a4ca91c2f44f55800ab4ba505c10d0",
+          "final": "e54fb38de38cdc0b271747b8dca6f7f025eb70c5334fc65ba96135190de113b3"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.43735607299999657,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 25,
+          "cpu_seconds": 0.11833867799999354
+        },
+        "market_prefix_hash": {
+          "calls": 17,
+          "cpu_seconds": 0.04943538499997402
+        },
+        "native_restore": {
+          "calls": 7,
+          "cpu_seconds": 0.07153787299998982
+        },
+        "source_guard": {
+          "calls": 5,
+          "cpu_seconds": 0.025603106000005482
+        },
+        "account_hash": {
+          "calls": 10,
+          "cpu_seconds": 0.03715264899999937
+        },
+        "financial_step": {
+          "calls": 111,
+          "cpu_seconds": 0.13008851499998997
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0056247150000032775
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.24629543400000387
+        }
+      }
+    },
+    {
+      "policy": "P2_mid",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6282972960034385,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "22b342c44d16464982a203fed7ee7961fa3dc285c9fc41c07751a337eff070c7",
+          "final": "cfa5be31cb52e8bb08e67c5b0289c4f4c000083e7cdf48798ad0031515202300"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.6237626550000002,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.07878590900001115
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03835129999998799
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.16162172000001362
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.02308976300000154
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.15157589399999694
+        },
+        "financial_step": {
+          "calls": 62,
+          "cpu_seconds": 0.13574224100000976
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0023716469999968126
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.3387915439999958
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4226870449492708,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "eee5b80f2371161654aaeb1b48b0b4832a151661430f7758eea6a0caa102ec08",
+          "final": "f5c667129661087326babf38515d72d98408a5993d88b260fe1bb0ca4029c87e"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.4178767590000021,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.08000166500000461
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03726475199998447
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.05638149400000003
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.023069615000004262
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03145780400000575
+        },
+        "financial_step": {
+          "calls": 91,
+          "cpu_seconds": 0.18396472999997826
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.0024431300000031797
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.22133919100000554
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 4,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.23950813501141965,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "c8a70eff5fae08f7645f54b330036ae9a68f2dc395c70e271dd74088a1060ca9",
+          "final": "96c896af8faeadb3f7ff02343319b317c395553f94ba4cbcd6b26bd796a77026"
+        },
+        {
+          "root": "704cfc03682be4b64e146aa43ce400e3c14ed4d108a0ec6da934239d028ceee7",
+          "final": "646cb60da225346b3030dbe2e9e7c8a0b1e16e349e3fd178827c770c6a853d00"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.2346931089999984,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 22,
+          "cpu_seconds": 0.06495570099999526
+        },
+        "market_prefix_hash": {
+          "calls": 14,
+          "cpu_seconds": 0.03900956199998973
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.05230241800000357
+        },
+        "source_guard": {
+          "calls": 5,
+          "cpu_seconds": 0.018167783999999187
+        },
+        "account_hash": {
+          "calls": 8,
+          "cpu_seconds": 0.030921018000007905
+        },
+        "financial_step": {
+          "calls": 13,
+          "cpu_seconds": 0.02429278700000026
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0014331879999929242
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.08885677600000008
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 1,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6090181029867381,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "55cf7bbd485e210d31cd8a0ae62c607d0592e0f0758738329a89ec8adfd96fb6",
+          "final": "d642d4efce5aa3f56088889f997bf0ecf0b7a93b051d5ab45d8f1fe73c271ebe"
+        },
+        {
+          "root": "fda1d99ae7ab4882eba134c9d457f7baf8f5436d6e8ae2c6e9e3ff1d34d4eac2",
+          "final": "9789dd8306374b5de4efb557fb42d7fdd56a98d9c63d66a87b78f8dd178777ff"
+        },
+        {
+          "root": "56ce1219eeba60ac7908b3ed6401b5d8ada00fde42a0e561a34482086a0dbbfb",
+          "final": "be6b3f085edf6a68b14251b355d5325716394b525872cf6b249e3aa767c1aae8"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.6016126029999995,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.13669192599997615
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.05575500399999811
+        },
+        "native_restore": {
+          "calls": 8,
+          "cpu_seconds": 0.09605501400000094
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.032184176999990655
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.048695833999993
+        },
+        "financial_step": {
+          "calls": 91,
+          "cpu_seconds": 0.20231864699998425
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.0055533929999995735
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.3354701159999891
+        }
+      }
+    },
+    {
+      "policy": "P3",
+      "queries": 5,
+      "native_trades": 1,
+      "strict_valid": 0,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6118458979763091,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "43a4a874b8aa4ff4e3cf719faf207353c46f9866c01e8bfb6aa8ddd31e2e1532",
+          "final": "4e1fc91637b0473eb52e7ad9b685dd38d000f0ba97a071fd3cd35b02c467008a"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.6069863699999942,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 23,
+          "cpu_seconds": 0.08174573399999474
+        },
+        "market_prefix_hash": {
+          "calls": 13,
+          "cpu_seconds": 0.03793749399997637
+        },
+        "native_restore": {
+          "calls": 6,
+          "cpu_seconds": 0.06274827400000049
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.02365585500000833
+        },
+        "account_hash": {
+          "calls": 7,
+          "cpu_seconds": 0.03547874299999876
+        },
+        "financial_step": {
+          "calls": 205,
+          "cpu_seconds": 0.3429498900000141
+        },
+        "risk_facts": {
+          "calls": 1,
+          "cpu_seconds": 0.00477056400000464
+        },
+        "native_trace": {
+          "calls": 1,
+          "cpu_seconds": 0.38537522899999743
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.4829574170289561,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "fca8498e40c7c98c46f25c4b640c96b7b6063974234767a7be974a07d91bb6f4",
+          "final": "a63be4d76299351599f136fac30fde23510d4e27ed7c5203def1f34f831baeff"
+        },
+        {
+          "root": "3b1a400e59a9809fadf454ab53ff7dffee6810c829e6e700d929d708a4445444",
+          "final": "5c6cead7c7573806ca7ad684dc7bea626b56222137a4005ed4cbea033755c4c9"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.4711584559999977,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.12730844899997606
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.04641028300000016
+        },
+        "native_restore": {
+          "calls": 7,
+          "cpu_seconds": 0.09543866000000634
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.030336398999999403
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.048864190000003305
+        },
+        "financial_step": {
+          "calls": 67,
+          "cpu_seconds": 0.08226401600000344
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.004008247000001575
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.1829453030000039
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 2,
+      "strict_valid": 2,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.5167129329638556,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "92d6c978e3264d7597834c11b3c09af53a0d67c211093f0b3064a54c9e444189",
+          "final": "0e4286cb220392a586fc385fb2ffcc2265a9875972474c702ad549bd1672a68d"
+        },
+        {
+          "root": "162758d4bcce611ef326c6873d2991dcc49336f06797660f3761c3587a4d707e",
+          "final": "5ded8be03f93d3bfffcd7418bf1fe23f439f2680a3d1ae3c9d02fa00d0c8dddc"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.5098274070000031,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 26,
+          "cpu_seconds": 0.12196622900000875
+        },
+        "market_prefix_hash": {
+          "calls": 16,
+          "cpu_seconds": 0.04657111899998512
+        },
+        "native_restore": {
+          "calls": 7,
+          "cpu_seconds": 0.1270827780000019
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.03103408900000204
+        },
+        "account_hash": {
+          "calls": 9,
+          "cpu_seconds": 0.06172178799999273
+        },
+        "financial_step": {
+          "calls": 39,
+          "cpu_seconds": 0.0523781900000273
+        },
+        "risk_facts": {
+          "calls": 2,
+          "cpu_seconds": 0.0029464349999983597
+        },
+        "native_trace": {
+          "calls": 2,
+          "cpu_seconds": 0.17326633399999736
+        }
+      }
+    },
+    {
+      "policy": "P4",
+      "queries": 5,
+      "native_trades": 3,
+      "strict_valid": 3,
+      "labels": "EXACT_SEMANTIC_COMPARISON",
+      "seconds": 0.6362946450244635,
+      "root_and_clone_public_sha": "EXACT_FIXED_PROFILE_GOLDEN",
+      "clone_hashes": [
+        {
+          "root": "b664a88306fa14665fd6be0a32ab3b377efda8276e7e5e01035b3f3e8c58f323",
+          "final": "eb6b55c88b7eb78fe87c548768c135f7c9ba857509d757723abf3c0baf3d4ee4"
+        },
+        {
+          "root": "d51ced03e640ccc79849f75bccdb8bcf4a58b60063f8e219f77eb8966a5485c7",
+          "final": "cc4fe86ea4853082749653f07053f5d52be406cfb2c0d8a0c807a306272bbf12"
+        },
+        {
+          "root": "8cd115a3f38023b534917a9537aa1f70bb5cdf1b37ff10087e5d5ce95e6ffbb4",
+          "final": "9501dce68e0fc888e15e44dff6047213484ccf8e53f8b299e5a0213489e6a710"
+        }
+      ],
+      "profile_path": null,
+      "query_cpu_seconds": 0.6316572379999954,
+      "function_cpu": {
+        "market_equals": {
+          "calls": 29,
+          "cpu_seconds": 0.09046381299997819
+        },
+        "market_prefix_hash": {
+          "calls": 19,
+          "cpu_seconds": 0.05431591400001423
+        },
+        "native_restore": {
+          "calls": 8,
+          "cpu_seconds": 0.11231442899998711
+        },
+        "source_guard": {
+          "calls": 6,
+          "cpu_seconds": 0.021439308999980256
+        },
+        "account_hash": {
+          "calls": 11,
+          "cpu_seconds": 0.06504400399999355
+        },
+        "financial_step": {
+          "calls": 224,
+          "cpu_seconds": 0.21022459700004248
+        },
+        "risk_facts": {
+          "calls": 3,
+          "cpu_seconds": 0.006082974999998214
+        },
+        "native_trace": {
+          "calls": 3,
+          "cpu_seconds": 0.3637796160000022
+        }
+      }
+    }
+  ],
+  "optimizer_updates": 0,
+  "training_admitted": false,
+  "native_g3": "NOT_RUN_PROFILE_IS_NOT_CERTIFICATION",
+  "profile_overhead": "Outer function thread CPU clocks only; no per-row tracing"
+}
