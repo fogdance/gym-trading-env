@@ -126,3 +126,32 @@ def test_D05_low_funds_are_invalid_not_wait_and_old_reward_is_rejected(tmp_path)
     with pytest.raises(ValueError,match='Quality TP'):
         QualityStrictTeacher(factory(),source=dict(fold='TRAIN'))
     env.close()
+
+
+def test_shared_suffix_values_keep_same_cursor_account_funds_and_mask_independent(tmp_path):
+    factory,_,_=native_factory(tmp_path/'market',minutes=20)
+    funded,losing=factory(),factory()
+    teacher=QualityStrictTeacher(funded,source=dict(fold='TRAIN'))
+    teacher.compile_value_store(tmp_path/'shared_values')
+    try:
+        losing.step(1)
+        while losing.entries:losing.step(0)
+        while funded.current_step<losing.current_step:funded.step(0)
+        assert funded.current_step==losing.current_step
+        assert np.array_equal(funded._published_mask,losing._published_mask)
+        assert np.array_equal(funded._published_mask,[1,1])
+        assert funded._calculate_equity()>losing._calculate_equity()
+        before_funded,before_losing=funded.export_state(),losing.export_state()
+        good=teacher.query_values(funded,funded._published_mask)
+        bad=teacher.query_values(losing,losing._published_mask)
+        assert good['teacher_valid']
+        assert not bad['teacher_valid'] and bad['strict_action'] is None
+        assert 'FUNDS' in bad['reason']
+        assert good['account_snapshot_hash']!=bad['account_snapshot_hash']
+        assert teacher.query_values(funded,funded._published_mask)==good
+        wrong_mask=teacher.query_values(funded,np.array([1,0]))
+        assert not wrong_mask['teacher_valid'] and wrong_mask['strict_action'] is None
+        assert wrong_mask['reason']=='REAL_ACTION_MASK_MISMATCH'
+        assert funded.export_state()==before_funded and losing.export_state()==before_losing
+    finally:
+        teacher._value_store.close();funded.close();losing.close()

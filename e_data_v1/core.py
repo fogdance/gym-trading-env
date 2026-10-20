@@ -1,7 +1,8 @@
 """Causal, real-contract 1m/15m snapshots. No account or training dependencies."""
 from __future__ import annotations
 
-from bisect import insort
+from bisect import bisect_left, insort
+from collections import OrderedDict
 from heapq import heappop, heappush
 from copy import deepcopy
 import hashlib
@@ -154,6 +155,9 @@ class MarketData:
     Standard CSV arrivals equal eob: the unchanged legacy calculator is reused
     once. Explicit delayed arrivals use a visible-prefix calculation per query.
     """
+    _macd_cache_limit = 1024
+    _macd_checkpoint_stride = 256
+
     def __init__(self, minute_bars, schedule, config=None, *, compute_features=True,
                  feature_function=None, market_clock_class=None,
                  tz_normalizer=None, ohlc_normalizer=None, _env_inputs=None):
@@ -317,11 +321,15 @@ class MarketData:
         CausalMACD5m, CONTRACT = macd.CausalMACD5m, macd.CONTRACT
         cutoff = local_timestamp(cutoff)
         through = int(self.frame.index.searchsorted(cutoff, side='right'))-1
+        if through < 0:
+            raise EDataError('MACD no visible source')
         if not hasattr(self, '_macd_cache'):
-            self._macd_cache = {}
+            self._macd_cache = OrderedDict()
             self._macd_stream = CausalMACD5m()
             self._macd_through = -1
             self._macd_anchor_close = None
+            self._macd_checkpoints = {-1: (self._macd_stream.snapshot(), None)}
+            self._macd_checkpoint_cursors = [-1]
             # _calendar already rejected overlapping dated minute intervals.
             # Map each row once rather than scanning every historic session
             # and constructing a mixed Pandas Series on every prefix advance.
@@ -337,6 +345,16 @@ class MarketData:
             self._macd_legal = self.frame._legal.to_numpy(copy=True)
             self._macd_duration = self.frame._duration.to_numpy(copy=True)
             self._macd_available = pd.DatetimeIndex(self.frame.available_at)
+        if through in self._macd_cache:
+            self._macd_cache.move_to_end(through)
+            value, meta = self._macd_cache[through]
+            return value.copy(), deepcopy(meta)
+        cursor = self._macd_checkpoint_cursors[
+            bisect_left(self._macd_checkpoint_cursors, through)-1]
+        if through < self._macd_through or cursor > self._macd_through:
+            state, self._macd_anchor_close = self._macd_checkpoints[cursor]
+            self._macd_stream = CausalMACD5m.restore(state)
+            self._macd_through = cursor
         for i in range(self._macd_through+1, through+1):
             t = self.frame.index[i]; available = self._macd_available[i]
             if available > cutoff:
@@ -373,18 +391,27 @@ class MarketData:
                         source_valid=bool(self._macd_good[i]),valid_minute=bool(self._macd_legal[i]),
                         available_at=available.isoformat())
                     raise EDataError(str(exc)+'; context='+json.dumps(context,sort_keys=True),[context]) from exc
-            state = self._macd_stream.snapshot()
             value = np.asarray(self._macd_stream.output, np.float32)
             if not np.isfinite(value).all():
                 raise EDataError('MACD scale overflow; no silent clipping')
-            self._macd_cache[i] = (value, dict(algorithm=CONTRACT,
-                raw=self._macd_stream.raw.copy(), anchor_close=self._macd_anchor_close,
-                bucket_id=self._macd_stream.bucket, last_committed_bucket=self._macd_stream.last_committed,
-                completed_buckets=self._macd_stream.completed, state=state,
-                visible_cutoff=t.isoformat(), available_at=available.isoformat()))
+            keep = i > through-self._macd_cache_limit
+            checkpoint = (i+1) % self._macd_checkpoint_stride == 0
+            if keep or checkpoint:
+                state = self._macd_stream.snapshot()
+                if checkpoint:
+                    if i not in self._macd_checkpoints:
+                        insort(self._macd_checkpoint_cursors, i)
+                    self._macd_checkpoints[i] = (state, self._macd_anchor_close)
+                if keep:
+                    self._macd_cache[i] = (value, dict(algorithm=CONTRACT,
+                        raw=self._macd_stream.raw.copy(), anchor_close=self._macd_anchor_close,
+                        bucket_id=self._macd_stream.bucket, last_committed_bucket=self._macd_stream.last_committed,
+                        completed_buckets=self._macd_stream.completed, state=state,
+                        visible_cutoff=t.isoformat(), available_at=available.isoformat()))
+                    self._macd_cache.move_to_end(i)
+                    if len(self._macd_cache) > self._macd_cache_limit:
+                        self._macd_cache.popitem(last=False)
             self._macd_through = i
-        if through < 0:
-            raise EDataError('MACD no visible source')
         value, meta = self._macd_cache[through]
         return value.copy(), deepcopy(meta)
 

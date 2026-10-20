@@ -80,6 +80,9 @@ def test_parallel_teacher_transport_matches_serial_native_accounts_and_labels(tm
     assert serial['event_hash'] == parallel['event_hash']
     assert serial['array_hash'] == parallel['array_hash']
     assert [r['teacher'] for r in iter_sidecar(tmp_path/'serial')] == [r['teacher'] for r in iter_sidecar(tmp_path/'parallel')]
+    workers=b['label_transport']['native_workers']
+    assert sum(w['queries'] for w in workers)==b['label_transport']['queries']
+    assert sum(w['e_observation_cache']['hits'] for w in workers)>0
     env.close()
 
 
@@ -174,3 +177,134 @@ def test_json_restore_keeps_full_history_and_independent_snapshot_ownership(tmp_
     finally:
         env.close()
         restored.close()
+
+
+def test_private_e_cache_matches_uncached_native_steps_warmup_restore_and_ownership(tmp_path):
+    import numpy as np
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    factory,_,_=native_factory(tmp_path/'market',minutes=190,chunk=64)
+    env=factory()
+    teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source=dict(fold='TRAIN'))
+    clone=teacher.clone
+    cache=clone._e_observation_cache
+    cache.capacity=4
+    checkpoint=None
+    try:
+        for cursor in range(181):
+            if cursor in (0,90,174,175,180):
+                expected=env._get_obs();actual=clone._get_obs()
+                for key in expected:np.testing.assert_array_equal(actual[key],expected[key])
+                assert clone.export_state()==env.export_state()
+                if cursor==90:checkpoint=env.export_state()
+            if cursor<180:
+                if env.truncated:
+                    env.reset();clone.reset()
+                action=int(cursor%7==0 and bool(env._published_mask[1]))
+                a,b=env.step(action),clone.step(action)
+                assert a[1:4]==b[1:4]
+        assert env._get_obs()['market_macd_5m'][3]==1
+        actual=clone._get_obs()
+        actual['market_context_15m'][:]=99
+        clone.e_snapshot['source_contract']='mutated output'
+        for key,value in env._get_obs().items():
+            np.testing.assert_array_equal(clone._get_obs()[key],value)
+        assert clone.e_snapshot==env.e_snapshot
+        assert cache.statistics['hits']>0 and cache.statistics['evictions']>0
+        assert len(cache.entries)<=4
+        clone.import_state(checkpoint);env.import_state(checkpoint)
+        assert clone.export_state()==env.export_state()==checkpoint
+        clone._features[clone.current_step,0]+=1
+        with pytest.raises(ValueError,match='original 18 channels'):
+            clone._get_obs()
+    finally:
+        teacher.close();env.close()
+
+
+def test_native_source_guard_rejects_in_memory_market_before_next_label(tmp_path):
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    factory,_,_=native_factory(tmp_path/'market',minutes=20)
+    env=factory()
+    teacher=NativeQualityTeacher(env,factory,fold='TRAIN',source=dict(
+        fold='TRAIN',source_guard_interval=1024,state_cache_entries=0))
+    teacher.query_state(env,env._published_mask)
+    env._raw=env._raw.copy()
+    env._raw.iloc[0,env._raw.columns.get_loc('Volume')]+=1
+    try:
+        with pytest.raises(ValueError,match='Quality source/state identity mismatch'):
+            teacher.query_state(env,env._published_mask)
+    finally:teacher.close();env.close()
+
+
+def test_l1_market_reuse_keeps_funded_and_losing_native_accounts_exact(tmp_path):
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    factory,_,_=native_factory(tmp_path/'market',minutes=20,chunk=7)
+    funded,losing=factory(),factory()
+    losing.step(1)
+    while losing.entries:losing.step(0)
+    while funded.current_step<losing.current_step:funded.step(0)
+    assert funded._calculate_equity()>losing._calculate_equity()
+    source=dict(fold='TRAIN',state_cache_entries=0)
+    cached=NativeQualityTeacher(funded,factory,fold='TRAIN',source=source)
+    plain=NativeQualityTeacher(funded,factory,fold='TRAIN',source=source)
+    cache=cached.clone._native_execution_cache
+    cache.row_capacity=3
+    del plain.clone._native_execution_cache
+    before_funded,before_losing=funded.export_state(),losing.export_state()
+    try:
+        answers=[]
+        for env in (funded,losing,funded):
+            actual=cached.query_state(env,env._published_mask)
+            assert actual==plain.query_state(env,env._published_mask)
+            answers.append(actual)
+        assert all(x['immediate_outcome_verified'] for x in answers)
+        assert answers[0]==answers[2]
+        assert answers[0]['account_snapshot_hash']!=answers[1]['account_snapshot_hash']
+        assert answers[0]['funds_after']!=answers[1]['funds_after']
+        assert cache.statistics['row_hits']>0 and cache.statistics['quote_hits']>0
+        assert cache.statistics['row_evictions']>0
+        assert len(cache.rows)<=3 and len(cache.quotes)<=cache.quote_capacity
+        assert funded.export_state()==before_funded and losing.export_state()==before_losing
+        assert not hasattr(funded,'_native_execution_cache')
+    finally:cached.close();plain.close();funded.close();losing.close()
+
+
+def test_native_quote_reuse_keeps_effective_terms_side_tick_and_decimal_context(tmp_path):
+    from decimal import Decimal, localcontext
+    from gym_trading_env.envs.entry_execution import NativeMarketExecutionCache
+    factory,_,_=native_factory(tmp_path/'market',minutes=20)
+    cached,plain=factory(),factory()
+    cache=cached._native_execution_cache=NativeMarketExecutionCache(row_capacity=2,quote_capacity=2,term_capacity=2)
+    try:
+        for spread,slippage,tick in [('0','0','1'),('0.25','0.5','0.5'),('1','0','1.0')]:
+            for env in (cached,plain):
+                env.terms.tick=Decimal(tick)
+                for _,_,terms in env.terms.periods:
+                    terms.update(spread=Decimal(spread),slippage=Decimal(slippage))
+            for side,opening in [('LONG',False),('LONG',True),('SHORT',False),('SHORT',True)]:
+                for precision in (10,6):
+                    with localcontext() as context:
+                        context.prec=precision
+                        expected=plain._price(1000.125,side,plain._raw.index[1],opening=opening)
+                        for _ in range(2):
+                            actual=cached._price(1000.125,side,cached._raw.index[1],opening=opening)
+                            assert actual.as_tuple()==expected.as_tuple()
+        assert cache.statistics['quote_hits']>0 and cache.statistics['quote_evictions']>0
+        assert len(cache.quotes)<=2
+        assert cache.statistics['term_hits']>0
+        start,end,terms=cached.terms.periods[0]
+        split=cached._raw.index[10]
+        first=dict(terms,spread=Decimal('0'));second=dict(terms,spread=Decimal('2'))
+        cached.terms.periods=[(start,split,first),(split,end,second)]
+        for i in (1,10,19,1):
+            time=cached._raw.index[i]
+            assert cached._terms_at(time) is cached.terms.at(time)
+        assert cache.statistics['term_evictions']>0 and len(cache.effective_terms)<=2
+        first['spread']=Decimal('3')
+        assert cached._terms_at(cached._raw.index[1])['spread']==Decimal('3')
+        # A previously cached timestamp now belongs to the replaced period.
+        cached.terms.periods=[(start,end,second)]
+        assert cached._terms_at(cached._raw.index[1]) is second
+        assert cache.row(cached._raw,1).equals(cached._raw.iloc[1])
+        frame=cached._raw.copy();frame.iloc[1,frame.columns.get_loc('Close')]+=1
+        assert cache.row(frame,1).equals(frame.iloc[1]) and len(cache.rows)==1
+    finally:cached.close();plain.close()

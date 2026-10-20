@@ -36,6 +36,16 @@ def _finish_stream():
     _teacher.close()
 
 
+def _statistics():
+    import resource
+    usage=resource.getrusage(resource.RUSAGE_SELF)
+    market=getattr(_teacher.clone,'_e_market',None)
+    return dict(_teacher.statistics,user_cpu_seconds=usage.ru_utime,
+        system_cpu_seconds=usage.ru_stime,peak_rss_bytes=usage.ru_maxrss*1024,
+        macd_cached_rows=len(getattr(market,'_macd_cache',{})),
+        macd_sparse_checkpoints=len(getattr(market,'_macd_checkpoints',{})))
+
+
 def _query(state, delta, mask, expected_snapshot_hash, base_count):
     # Each executor owns one ordered account-history replica. Only newly
     # appended samples travel over IPC; restore still receives ALL samples.
@@ -68,6 +78,13 @@ class NativeLabelPool:
         self._closed = False
         self.statistics = dict(queries=0,delta_history_items=0,full_history_items=0,
                                history_replicas=workers)
+
+    def report_statistics(self):
+        # One aggregate per worker after all ordered queries; no per-minute
+        # diagnostics, extra financial replay, or enlarged query payloads.
+        futures = [pool.submit(_statistics) for pool in self._pools]
+        self.statistics['native_workers'] = [future.result() for future in futures]
+        return self.statistics
 
     def __call__(self, env, step, row):
         state = env.export_state()

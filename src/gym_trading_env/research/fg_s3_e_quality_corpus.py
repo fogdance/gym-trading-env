@@ -72,6 +72,7 @@ def generate_behavior(factory, spec, output, dreamer_root, *, source, initial_st
             label_verifier=labels if verify_labels else None)
         receipt['label_verification']=('ALL_ROWS_RECOMPUTED' if verify_labels else
             'DEFERRED_TO_INDEPENDENT_NATIVE_G3')
+        if hasattr(labels,'report_statistics'):labels.report_statistics()
         if hasattr(labels,'statistics'):receipt['label_transport']=dict(labels.statistics)
         write_json(Path(output)/'reconciliation.json',signed(receipt))
         return trace,receipt

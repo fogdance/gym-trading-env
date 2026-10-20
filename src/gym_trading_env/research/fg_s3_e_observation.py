@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+from collections import OrderedDict
 
 import numpy as np
 
@@ -19,6 +20,51 @@ E_FIELDS_V2 = {**FIELDS,
 E_S3_FIELDS_V2 = {**E_FIELDS_V2, 'market_advance': ((), np.dtype('int32'))}
 ENCODER_KEYS = ('market_seq_e_shared', 'position_state', 'action_mask', 'market_context_15m', 'market_macd_5m')
 DECODER_KEYS = ('market_seq_e_shared', 'position_state')
+
+
+class NativeEObservationCache:
+    """Bounded market-only results for a private native counterfactual Env.
+
+    Positions and action masks never enter this cache. Source objects remain
+    strongly owned so a rebuilt/continued market cannot reuse an old entry.
+    Every returned array and host snapshot has independent ownership.
+    """
+    def __init__(self, capacity=512):
+        self.capacity = capacity
+        self.sources = ()
+        self.identity = None
+        self.entries = OrderedDict()
+        self.statistics = dict(hits=0, misses=0, evictions=0)
+
+    def _bind(self, env):
+        sources = (env._e_market, env._raw, env._features)
+        identity = (env.contract, env.e_observation_identity, env._e_profile.identity)
+        if (len(self.sources) != len(sources) or self.identity != identity or
+                any(a is not b for a, b in zip(self.sources, sources))):
+            self.sources, self.identity = sources, identity
+            self.entries.clear()
+
+    def get(self, env, market_seq):
+        self._bind(env)
+        item = self.entries.get(env.current_step)
+        if item is None:
+            self.statistics['misses'] += 1
+            return None
+        original, arrays, snapshot = item
+        if market_seq.dtype != original.dtype or not np.array_equal(market_seq, original):
+            raise ValueError('E observation changed the original 18 channels')
+        self.entries.move_to_end(env.current_step)
+        self.statistics['hits'] += 1
+        return {k: v.copy() for k, v in arrays.items()}, copy.deepcopy(snapshot)
+
+    def put(self, env, market_seq, arrays, snapshot):
+        self._bind(env)
+        self.entries[env.current_step] = (market_seq.copy(),
+            {k: v.copy() for k, v in arrays.items()}, copy.deepcopy(snapshot))
+        self.entries.move_to_end(env.current_step)
+        if len(self.entries) > self.capacity:
+            self.entries.popitem(last=False)
+            self.statistics['evictions'] += 1
 
 
 def fields_for(schema=None):

@@ -271,7 +271,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return side, positions
 
     def _set_terms(self, time, *, closing=False, entry=None):
-        terms = self.terms.at(time)
+        terms = self._terms_at(time)
         tr = self.config.trading
         tr.leverage = Decimal(1) / terms["margin_rate"]
         same_day = entry is not None and self._trading_day(time) == entry["trading_day"]
@@ -285,14 +285,31 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         i = self._raw.index.searchsorted(timestamp(time), side="left")
         i = min(i, len(self._raw) - 1)
         column = "trading_date" if "trading_date" in self._raw else "trading_day"
-        return str(self._raw.iloc[i][column]) if column in self._raw else str(timestamp(time).date())
+        return str(self._market_row(i)[column]) if column in self._raw else str(timestamp(time).date())
+
+    def _market_row(self, cursor):
+        cache = getattr(self, '_native_execution_cache', None)
+        return self._raw.iloc[cursor] if cache is None else cache.row(self._raw, cursor)
+
+    def _terms_at(self, time):
+        cache = getattr(self, '_native_execution_cache', None)
+        return self.terms.at(time) if cache is None else cache.terms_at(self.terms, time)
 
     def _price(self, raw_price, side, time, *, opening=False):
-        terms = self.terms.at(time)
+        terms = self._terms_at(time)
+        cache = getattr(self, '_native_execution_cache', None)
+        if cache is not None:
+            key = cache.quote_key(raw_price, side, opening, terms, self.terms.tick)
+            cached = cache.quote(key)
+            if cached is not None:
+                return cached
         buy = (side == "LONG") == opening
         price = Decimal(str(raw_price)) + (1 if buy else -1) * (terms["spread"] + terms["slippage"])
         rounding = ROUND_CEILING if buy else ROUND_FLOOR
-        return (price / self.terms.tick).to_integral_value(rounding=rounding) * self.terms.tick
+        result = (price / self.terms.tick).to_integral_value(rounding=rounding) * self.terms.tick
+        if cache is not None:
+            cache.put_quote(key, result)
+        return result
 
     def _mark(self, price, time):
         side, _ = self._positions()
@@ -323,11 +340,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return super()._preflight_open(side, price)
 
     def _required_margin(self, price, time):
-        return self.net_lots * self.terms.multiplier * Decimal(str(price)) * self.terms.at(time)["margin_rate"]
+        return self.net_lots * self.terms.multiplier * Decimal(str(price)) * self._terms_at(time)["margin_rate"]
 
     def direction_at(self, time, row_index=None):
         if self.directions.date_basis == "trading_date":
-            row = self._raw.iloc[self.current_step if row_index is None else row_index]
+            row = self._market_row(self.current_step if row_index is None else row_index)
             if "trading_date" not in row:
                 raise ValueError("Manual direction dates require DB trading_date")
             day = str(row.trading_date)
@@ -343,7 +360,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
             return False
         self._set_terms(time)
-        price = self._price(self._raw.iloc[self.current_step].Close, direction, time, opening=True)
+        price = self._price(self._market_row(self.current_step).Close, direction, time, opening=True)
         return self._preflight_open(TargetPos[direction], price) == ForexCode.SUCCESS
 
     def _get_obs(self):
@@ -380,10 +397,20 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         mask = np.array([1, self._can_add()], np.float32)
         self._published_mask = mask.copy()
         obs = {
-            "market_seq": np.nan_to_num(market).astype(np.float32),
+            # np.pad above owns this window; normalize/cast in place when
+            # possible instead of allocating two more identical float32 windows.
+            "market_seq": np.nan_to_num(market, copy=False).astype(np.float32, copy=False),
             "position_state": position, "action_mask": mask,
         }
         if self._e_profile is not None:
+            # Only private native counterfactual executors opt in. Financial
+            # position/mask above are always rebuilt from this actual account.
+            cache = getattr(self, '_e_observation_cache', None)
+            cached = cache.get(self, obs['market_seq']) if cache is not None else None
+            if cached is not None:
+                arrays, self.e_snapshot = cached
+                obs.update(arrays)
+                return obs
             from e_data_v1.schema import Decision
             from gym_trading_env.research.fg_s3_e_observation import (
                 context_provenance, e_array_hash)
@@ -415,6 +442,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 anchor_source=meta['anchor_source'], macd_5m=macd_meta))
             self.e_snapshot = {**host, 'arrays_hash': e_array_hash(arrays)}
             obs.update(arrays)
+            if cache is not None:
+                cache.put(self, old, arrays, self.e_snapshot)
         return obs
 
     def reset(self, seed=None, options=None):
@@ -600,7 +629,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.current_step += 1
         self.episode_step_count += 1
         self.chunk_count += 1
-        row = self._raw.iloc[self.current_step]
+        row = self._market_row(self.current_step)
         bob = self.bobs[self.current_step]
         self._mark(row.Open, bob)
         # Recheck actual execution-time direction, deadlines, price and funding.

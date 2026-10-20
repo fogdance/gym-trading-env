@@ -164,7 +164,11 @@ def test_quality_first_source_guard_detects_input_mutation(tmp_path):
     source.write_text('changed')
     with pytest.raises(ValueError,match='Frozen quality source changed'):
         teacher.query_state(env,env._published_mask)
-    teacher.close();env.close()
+    # The frozen source guard also runs on close (including the unmodified
+    # f0c3bb3 baseline); changing a source never makes cleanup accept it.
+    with pytest.raises(ValueError,match='Frozen quality source changed'):
+        teacher.close()
+    env.close()
 
 
 def test_quality_first_explicitly_refuses_unadmitted_e_profile(tmp_path):

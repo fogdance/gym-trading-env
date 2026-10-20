@@ -332,6 +332,39 @@ def test_F10_observation_provenance_rejects_teacher_payload(prepared):
                                   original_provenance={'Teacher_score': 100})])
 
 
+def test_macd_bounded_outputs_and_sparse_checkpoints_reconstruct_old_cutoffs(market):
+    frame,schedule=market
+    reference=MarketData(frame,schedule,compute_features=False)
+    reference._macd_cache_limit=len(frame)
+    indices=[0,174,175,180,255,256,344,345,511,len(frame)-1]
+    expected={i:reference.macd_snapshot(frame.Date.iloc[i]) for i in indices}
+    data=MarketData(frame,schedule,compute_features=False)
+    data._macd_cache_limit=16
+    data.macd_snapshot(frame.Date.iloc[-1])
+    assert len(data._macd_cache)<=16 and len(data._macd_checkpoints)<10
+    for i in [180,0,344,255,256,len(frame)-1,175,511,345,174]:
+        value,meta=data.macd_snapshot(frame.Date.iloc[i])
+        np.testing.assert_array_equal(value,expected[i][0])
+        assert meta==expected[i][1]
+        assert len(data._macd_cache)<=16
+
+
+def test_macd_late_prefix_is_rejected_after_a_failed_future_query(market):
+    frame,schedule=market
+    frame=frame.copy()
+    frame['available_at']=frame.Date
+    frame.loc[180,'available_at']=frame.Date.iloc[210]
+    data=MarketData(frame,schedule,compute_features=False)
+    # The original causal state machine already rejects late historical
+    # updates even at a later cutoff. The partially built prefix cache must
+    # not allow a second, earlier query to consume the unavailable row.
+    with pytest.raises(EDataError,match='MACD late minute cannot revise committed EMA'):
+        data.macd_snapshot(frame.Date.iloc[250])
+    assert data._macd_cache
+    with pytest.raises(EDataError,match='MACD unavailable prefix minute'):
+        data.macd_snapshot(frame.Date.iloc[190])
+
+
 def test_F11_bundle_hash_verification_tamper_and_output_isolation(prepared,tmp_path):
     bundle=prepared.build([decision(prepared,374)])
     destination=write_bundle(bundle,tmp_path/'bundle')

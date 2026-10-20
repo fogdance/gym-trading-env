@@ -84,10 +84,10 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
     raw = env._raw.iloc[rows]
     # Risk uses native execution quotes, including spread/slippage and tick
     # rounding. The quality score itself is B(t,d), without an MAE deduction.
-    highs = np.asarray([float(env._price(row.High,entry['side'],time))
-                        for time,row in raw.iterrows()])
-    lows = np.asarray([float(env._price(row.Low,entry['side'],time))
-                       for time,row in raw.iterrows()])
+    highs = np.asarray([float(env._price(value,entry['side'],time))
+                        for time,value in zip(raw.index,raw.High)])
+    lows = np.asarray([float(env._price(value,entry['side'],time))
+                       for time,value in zip(raw.index,raw.Low)])
     favorable = highs - price if sign == 1 else price - lows
     adverse = price - lows if sign == 1 else highs - price
     favorable, adverse = np.maximum(0., favorable), np.maximum(0., adverse)
@@ -128,7 +128,8 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
                                    (first_f['1'], first_f['3'], first_a['10']))
         touch_y.append(y[:2]); touch_v.append(v[:2])
         adverse_y.append(y[2]); adverse_v.append(v[2])
-    close_quotes=np.asarray([float(env._price(row.Close,entry['side'],time)) for time,row in raw.iterrows()])
+    close_quotes=np.asarray([float(env._price(value,entry['side'],time))
+                            for time,value in zip(raw.index,raw.Close)])
     underwater=(sign*(close_quotes-price)<0)
     if event is not None: underwater=underwater[:-1]  # no post-exit close
     longest=run=0
@@ -222,8 +223,9 @@ def verify_native_e_fork(env, clone):
     state = env.export_state()
     expected = env._get_obs()
     clone.import_state(state)
+    restored = clone._get_obs()
     for k,v in expected.items():
-        if not np.array_equal(v, clone._get_obs()[k]):
+        if not np.array_equal(v, restored[k]):
             raise ValueError('E-profile native Quality fork observation differs')
     if clone.status == 'ACTIVE' and not clone.terminated:
         clone.step(0)
@@ -258,6 +260,10 @@ class NativeQualityTeacher:
         self.e_fork = None
         if getattr(env,'_e_profile',None) is not None or getattr(self.clone,'_e_profile',None) is not None:
             self.e_fork = verify_native_e_fork(env,self.clone)
+            from .fg_s3_e_observation import NativeEObservationCache
+            self.clone._e_observation_cache = NativeEObservationCache()
+            from gym_trading_env.envs.entry_execution import NativeMarketExecutionCache
+            self.clone._native_execution_cache = NativeMarketExecutionCache()
         if rules_identity(self.clone) != self.rules or not self.clone._raw.equals(env._raw):
             raise ValueError('Counterfactual clone differs from native rules or market')
         self.calendar_index=official_day_index(self.clone)
@@ -273,6 +279,9 @@ class NativeQualityTeacher:
             raise ValueError('Quality source guard interval must be 1..1024 queries')
         self.statistics=dict(queries=0,native_traces=0,cache_hits=0,trace_seconds=0.,
                              independently_observed_market_minutes=0,cache_peak_entries=0)
+        if self.e_fork is not None:
+            self.statistics['e_observation_cache'] = self.clone._e_observation_cache.statistics
+            self.statistics['native_execution_cache'] = self.clone._native_execution_cache.statistics
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
             market_hash=self.market_hash, code_sha256=digest(__file__),
             clock_protocol='S3_MARKET_MINUTE', score_policy=SCORE_POLICY,
@@ -287,6 +296,14 @@ class NativeQualityTeacher:
         self.identity['native_env_code_sha256']=digest(inspect.getfile(type(env)))
         if self.e_fork is not None:
             self.identity['e_fork'] = self.e_fork
+            self.identity['native_execution_reuse'] = dict(
+                protocol='TEACHER_PRIVATE_NATIVE_QUOTES_V1',
+                code_sha256=digest(inspect.getfile(NativeMarketExecutionCache)),
+                quote_key='exact_raw_price_side_opening_effective_costs_tick_decimal_context',
+                row_capacity=self.clone._native_execution_cache.row_capacity,
+                quote_capacity=self.clone._native_execution_cache.quote_capacity,
+                term_capacity=self.clone._native_execution_cache.term_capacity,
+                financial_transitions='original_Env_each_market_minute_each_actual_account')
         self.identity_hash = fingerprint(self.identity)
         initial_snapshot=env.export_state()
         prime_account_fingerprint(env,initial_snapshot)
@@ -400,6 +417,13 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         original_reward=0.
         def advance(action):
             nonlocal original_reward
+            if shadow is None:
+                # The native E Env already computes Quality TP feedback and
+                # the complete causal observation. No Replay row is consumed
+                # by this posterior trace; retain its float32 feedback exactly.
+                _,reward,*_=clone.step(action)
+                rewards.append([clone.current_step,float(np.float32(reward))])
+                return
             _,row=execute_observed(clone,action)
             rewards.append([clone.current_step,float(np.float32(row['official_reward']))])
             if row['advanced'] and shadow is not None:
