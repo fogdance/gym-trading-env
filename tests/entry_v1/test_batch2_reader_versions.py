@@ -88,6 +88,20 @@ def test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection
     finally:a.close();b.close()
 
 
+def test_reader_dictionary_reordering_cannot_reassign_coverage_to_another_source(config):
+    a=VersionedStream(open_case(config,'multi'));b=VersionedStream(open_case(config,'multi'))
+    try:
+        next(a);state=a.save_full();before=b.source.save()
+        values=state['base']['seen']
+        assert values[0]!=values[1],'fixture must expose distinct source coverage'
+        table=state['base']['small']['stream']['readers']
+        state['base']['small']['stream']['readers']=dict(reversed(list(table.items())))
+        assert state['graph_sha256']==_hash({k:v for k,v in state.items() if k!='graph_sha256'})
+        with pytest.raises(ValueError):b.load_full(state)
+        exact(before,b.source.save())
+    finally:a.close();b.close()
+
+
 @pytest.mark.parametrize('attack',['missing_delta','digest','duplicate_version','wrong_source','wrong_role','missing_parent','pending_order','wrong_capacity','foreign_ref','batch_bytes','counter_regression'])
 def test_graph_and_pending_corruption_reject_before_source_mutation(config,attack):
     a=VersionedStream(open_case(config,'multi_f3'));b=VersionedStream(open_case(config,'multi_f3'))

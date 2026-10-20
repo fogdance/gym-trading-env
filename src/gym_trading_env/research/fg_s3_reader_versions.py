@@ -220,7 +220,9 @@ class VersionedStream:
                 parsed.nodes[v]=copy.deepcopy(node);previous=v
             for v in [parsed.base_id,*parsed.nodes]:
                 small=parsed._small(v)
-                if _stable(small)!=self.signature:raise ValueError('READER_VERSION_ROLE_OR_SOURCE')
+                if (_stable(small)!=self.signature or
+                        [_stable(leaf) for leaf in _leaves(small)]!=list(_leaves(self.signature))):
+                    raise ValueError('READER_VERSION_ROLE_OR_SOURCE_OR_ORDER')
                 for leaf in _leaves(small):
                     rng=np.random.default_rng();rng.bit_generator.state=leaf['rng']
                     if any(type(n) is not int or n<0 for n in leaf['counts'].values()):
