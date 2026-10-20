@@ -377,7 +377,7 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         str(Path(env_receipt)/'inputs/inputs.json'):lock['inputs_sha256'],
         lock['partition_manifest']['path']:lock['partition_manifest']['sha256']}
     source_binding=dict(fold='TRAIN',source_lock_hash=lock['content_hash'],files={**frozen,**code['files'],**anchors},
-        state_cache_entries=0,calendar_complete=True,source_guard_interval=1024)
+        state_cache_entries=0,calendar_complete=True,source_guard_interval=1)
     strict=QualityStrictTeacher(env,source=source_binding,start_cursor=lock['start_cursor'])
     strict.compile_value_store(out/'strict_value_cache',pair_end_cursor=lock['end_cursor'])
     write_json(out/'p4_plan.json',strict.plan())
