@@ -1,0 +1,219 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "0-7",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_source_freeze.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R6_before.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/r6",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "def3e0e2bf99898c0443ae7047e2a1b9f18ebebc",
+      "status": "?? tests/entry_v1/test_batch2_source_freeze.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "b2287a9d892e932339857ebb36f75499163a3046",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 1.660733669064939,
+  "exit_code": 1,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_all_routes_include_the_same_complete_f1_proof[F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_all_routes_include_the_same_complete_f1_proof[F1_F3]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_all_routes_include_the_same_complete_f1_proof[F1_F2_F3]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[actor-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[actor-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[actor-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[head-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[head-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[head-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[normalizer-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[normalizer-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[normalizer-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[momentum-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[momentum-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[momentum-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[unknown_slot-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[unknown_slot-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[unknown_slot-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F3]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[keys-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[keys-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[keys-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[shape-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[shape-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[shape-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[dtype-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[dtype-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[dtype-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[finite-F1_F2]",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[finite-F1_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_every_f1_successor_rejects_frozen_or_schema_drift[finite-F1_F2_F3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_source_freeze",
+      "name": "test_f2_lineage_requires_the_saved_freeze_evidence",
+      "result": "failed"
+    }
+  ],
+  "counts": {
+    "passed": 19,
+    "failed": 15,
+    "error": 0,
+    "skipped": 0
+  }
+}

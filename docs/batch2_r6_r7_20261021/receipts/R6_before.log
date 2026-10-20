@@ -1,0 +1,363 @@
+FFFF..F..F..F..F..FF.F..F..F..F..F                                       [100%]
+=================================== FAILURES ===================================
+__________ test_all_routes_include_the_same_complete_f1_proof[F1_F2] ___________
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa0/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa0/f2'), ...)
+route = 'F1_F2'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    def test_all_routes_include_the_same_complete_f1_proof(sources,route):
+        proof,_=inspect_route(sources,route)
+        f1=proof.get('upstream_proof',proof)
+>       assert f1['protocol']=='FG_S3_F1_SOURCE_V2'
+E       AssertionError: assert 'FG_S3_F1_SOURCE_V1' == 'FG_S3_F1_SOURCE_V2'
+E         
+E         - FG_S3_F1_SOURCE_V2
+E         ?                  ^
+E         + FG_S3_F1_SOURCE_V1
+E         ?                  ^
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:75: AssertionError
+__________ test_all_routes_include_the_same_complete_f1_proof[F1_F3] ___________
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa1/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa1/f2'), ...)
+route = 'F1_F3'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    def test_all_routes_include_the_same_complete_f1_proof(sources,route):
+        proof,_=inspect_route(sources,route)
+        f1=proof.get('upstream_proof',proof)
+>       assert f1['protocol']=='FG_S3_F1_SOURCE_V2'
+E       AssertionError: assert 'FG_S3_F1_SOURCE_V1' == 'FG_S3_F1_SOURCE_V2'
+E         
+E         - FG_S3_F1_SOURCE_V2
+E         ?                  ^
+E         + FG_S3_F1_SOURCE_V1
+E         ?                  ^
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:75: AssertionError
+_________ test_all_routes_include_the_same_complete_f1_proof[F1_F2_F3] _________
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa2/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_all_routes_include_the_sa2/f2'), ...)
+route = 'F1_F2_F3'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    def test_all_routes_include_the_same_complete_f1_proof(sources,route):
+        proof,_=inspect_route(sources,route)
+        f1=proof.get('upstream_proof',proof)
+>       assert f1['protocol']=='FG_S3_F1_SOURCE_V2'
+E       AssertionError: assert 'FG_S3_F1_SOURCE_V1' == 'FG_S3_F1_SOURCE_V2'
+E         
+E         - FG_S3_F1_SOURCE_V2
+E         ?                  ^
+E         + FG_S3_F1_SOURCE_V1
+E         ?                  ^
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:75: AssertionError
+_____ test_every_f1_successor_rejects_frozen_or_schema_drift[actor-F1_F2] ______
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject0/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject0/f2'), ...)
+route = 'F1_F2', attack = 'actor'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+______ test_every_f1_successor_rejects_frozen_or_schema_drift[head-F1_F2] ______
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject3/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject3/f2'), ...)
+route = 'F1_F2', attack = 'head'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+___ test_every_f1_successor_rejects_frozen_or_schema_drift[normalizer-F1_F2] ___
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject6/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject6/f2'), ...)
+route = 'F1_F2', attack = 'normalizer'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+____ test_every_f1_successor_rejects_frozen_or_schema_drift[momentum-F1_F2] ____
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject9/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject9/f2'), ...)
+route = 'F1_F2', attack = 'momentum'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+__ test_every_f1_successor_rejects_frozen_or_schema_drift[unknown_slot-F1_F2] __
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject12/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject12/f2'), ...)
+route = 'F1_F2', attack = 'unknown_slot'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+___ test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F2] ___
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject15/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject15/f2'), ...)
+route = 'F1_F2', attack = 'fake_clock'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+___ test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F3] ___
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject16/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject16/f2'), ...)
+route = 'F1_F3', attack = 'fake_clock'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+______ test_every_f1_successor_rejects_frozen_or_schema_drift[keys-F1_F2] ______
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject18/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject18/f2'), ...)
+route = 'F1_F2', attack = 'keys'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+_____ test_every_f1_successor_rejects_frozen_or_schema_drift[shape-F1_F2] ______
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject21/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject21/f2'), ...)
+route = 'F1_F2', attack = 'shape'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+_____ test_every_f1_successor_rejects_frozen_or_schema_drift[dtype-F1_F2] ______
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject24/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject24/f2'), ...)
+route = 'F1_F2', attack = 'dtype'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+_____ test_every_f1_successor_rejects_frozen_or_schema_drift[finite-F1_F2] _____
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject27/f1', 'source_f1_checkpoint': '/tmp/py...': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_every_f1_successor_reject27/f2'), ...)
+route = 'F1_F2', attack = 'finite'
+
+    @pytest.mark.parametrize('route',['F1_F2','F1_F3','F1_F2_F3'])
+    @pytest.mark.parametrize('attack',['actor','head','normalizer','momentum','unknown_slot','fake_clock','keys','shape','dtype','finite'])
+    def test_every_f1_successor_rejects_frozen_or_schema_drift(sources,route,attack):
+        _,root,identity,initial,final,_,_=sources
+        a,b=copy.deepcopy(initial),copy.deepcopy(final)
+        key={'actor':'quality_actor/w','head':'quality_event/w','normalizer':'retnorm/w',
+             'momentum':'opt/state/1/1/qualityactor/w'}.get(attack,'enc/w')
+        if attack in ('actor','head','normalizer','momentum'):b[key]+=1
+        elif attack in ('unknown_slot','fake_clock'):
+            unknown='opt/unknown' if attack=='unknown_slot' else 'opt/state/3/alien/count'
+            a[unknown]=b[unknown]=np.zeros((),np.int32)
+        elif attack=='keys':b.pop('pol/w')
+        elif attack=='shape':b[key]=np.zeros(2,np.float32)
+        elif attack=='dtype':b[key]=b[key].astype(np.float64)
+        else:b[key][...]=np.nan
+        bundle(root,identity,0,a);bundle(root,identity,1,b)
+>       with pytest.raises(ValueError):inspect_route(sources,route)
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:98: Failed
+______________ test_f2_lineage_requires_the_saved_freeze_evidence ______________
+
+sources = ({'source_f1_run': '/tmp/pytest-of-v/pytest-721/test_f2_lineage_requires_the_s0/f1', 'source_f1_checkpoint': '/tmp/pyt...w': array([0.], dtype=float32), ...}, PosixPath('/tmp/pytest-of-v/pytest-721/test_f2_lineage_requires_the_s0/f2'), ...)
+
+    def test_f2_lineage_requires_the_saved_freeze_evidence(sources):
+        _,_,_,_,_,f2,identity=sources
+        identity['preparation']['source_f1'].pop('source_freeze',None)
+        write_json(f2/'run_identity.json',signed(dict(identity=identity)))
+        for n in (0,1):
+            node=f2/'ckpt'/f'step_{n:012d}';meta=json.loads((node/'manifest.json').read_text())
+            meta['identity']=identity;(node/'manifest.json').write_text(json.dumps(meta))
+>       with pytest.raises(ValueError,match='LINEAGE'):inspect_route(sources,'F1_F2_F3')
+E       Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_source_freeze.py:108: Failed
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_all_routes_include_the_same_complete_f1_proof[F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_all_routes_include_the_same_complete_f1_proof[F1_F3]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_all_routes_include_the_same_complete_f1_proof[F1_F2_F3]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[actor-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[head-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[normalizer-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[momentum-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[unknown_slot-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[fake_clock-F1_F3]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[keys-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[shape-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[dtype-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_every_f1_successor_rejects_frozen_or_schema_drift[finite-F1_F2]
+FAILED ../../../tests/entry_v1/test_batch2_source_freeze.py::test_f2_lineage_requires_the_saved_freeze_evidence
+15 failed, 19 passed in 1.15s

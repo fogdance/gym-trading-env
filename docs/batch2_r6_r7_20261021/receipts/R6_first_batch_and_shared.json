@@ -1,0 +1,469 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3/embodied/tests/test_fg_course_strict_checkpoint.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R6_first_batch_and_shared.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+      "sha": "5119f1deb8fc17676b85454c20ce7793e190876d",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/dreamerv3",
+      "sha": "cbc1343971786caec979cead3025431690f1591b",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 106.88155282603111,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_existing_v3_mapping_is_read_only_and_consumer_head_independent",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_explicit_version_is_exact_not_major_based[3.1.0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_explicit_version_is_exact_not_major_based[3.1.1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_explicit_version_is_exact_not_major_based[3.9.0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_explicit_version_is_exact_not_major_based[None]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_reviewed_implementation_profiles_share_semantics_but_unknown_profile_rejects",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[v2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[behaviors]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[teacher]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[source]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[macd]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_compatibility",
+      "name": "test_abi_does_not_relax_existing_integrity_guards[bytes]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f3]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags2]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_done]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_manifest]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[corrupt_member]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[bad_identity]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[backend]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[strict_flag]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[step_name]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[rollback_pointer]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[missing_pointer]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[symlink_pointer]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[external_pointer]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[symlink_node]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_latest_fault_never_falls_back_or_mutates_state[orphan]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_explicit_old_load_and_old_save_cannot_bypass_published_latest",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_existing_incomplete_node_is_never_overwritten_or_repaired",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_rename_before_pointer_publish_requires_review",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_pending_write_is_retained_but_never_a_recovery_candidate",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_committed_journal_prefix_validates_before_any_mutable_restore",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_valid_cold_load_restores_latest_and_archives_only_uncommitted_tail",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_interrupted_final_protection_preserves_published_node",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_durability_barrier_failure_never_publishes_new_node",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_audited_ast_accepts_only_the_reviewed_transition",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_gate_only_audit_rejects_market_minute_semantic_change",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_real_availability_head_raw_mask_and_metrics_share_threshold",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_full_source_dependency_inventory_includes_stream_and_serializer",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_online_model_and_environment_counters_have_separate_domains",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_no_inference_source_and_frozen_snapshot",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_missing_baseline_requires_authenticated_features",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_train_warmup_preserves_loaded_formal_actor_gate",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_train_warmup_keeps_warmup_checkpoint_disabled",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_rejects_missing_gate_interface",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_rejects_warmup_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_require_formal_actor_accepts_formal_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_eval_only_rejects_warmup_checkpoint",
+      "result": "passed"
+    },
+    {
+      "classname": "",
+      "name": "test_live_trading_rejects_warmup_checkpoint",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 83,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}
