@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.11, pytest-9.1.0, pluggy-1.6.0
+rootdir: /home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/dreamerv3
+plugins: jaxtyping-0.2.36, typeguard-4.3.0, anyio-4.7.0
+collected 20 items
+
+../dreamerv3/embodied/tests/test_fg_s3_gate.py ........                  [ 40%]
+../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py .....          [ 65%]
+../dreamerv3/embodied/tests/test_action_mask_formal_guards.py .......    [100%]
+
+- generated xml file: /home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/gym-trading-env/docs/receipts/corpus_semver_r1_r4_20261020/Z1_v2_shared.xml -
+======================== 20 passed in 130.00s (0:02:10) ========================

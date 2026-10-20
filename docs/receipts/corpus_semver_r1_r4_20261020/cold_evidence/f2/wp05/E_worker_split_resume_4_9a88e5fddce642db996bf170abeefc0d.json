@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env/tests/entry_v1/wp05_cold_worker.py",
+    "/tmp/pytest-of-v/pytest-703/wp05_cold0/settings.json",
+    "/tmp/pytest-of-v/pytest-703/wp05_cold0/split",
+    "/tmp/pytest-of-v/pytest-703/wp05_cold0/join.sqlite",
+    "resume",
+    "4"
+  ],
+  "exit_code": 0
+}

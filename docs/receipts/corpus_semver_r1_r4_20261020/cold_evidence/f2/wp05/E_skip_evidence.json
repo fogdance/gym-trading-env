@@ -1,0 +1,27 @@
+{
+  "counters": {
+    "optimizer_updates": 0,
+    "consumed_batches": 1,
+    "skip_no_valid": 1,
+    "skip_disabled_loss": 0,
+    "target_positions": 64,
+    "target_market_minutes": 64,
+    "burnin_positions": 32,
+    "burnin_market_minutes": 32,
+    "head_valid_exposures": {
+      "event": 0,
+      "touch": 0,
+      "adverse": 0,
+      "score": 0
+    },
+    "head_optimizer_exposures": {
+      "event": 0,
+      "touch": 0,
+      "adverse": 0,
+      "score": 0
+    }
+  },
+  "checkpoint": "/tmp/pytest-of-v/pytest-703/test_E03_skip_checkpoint_prese0/skip/ckpt/step_000000000001",
+  "exact_reader_restored": true,
+  "optimizer_updates": 0
+}

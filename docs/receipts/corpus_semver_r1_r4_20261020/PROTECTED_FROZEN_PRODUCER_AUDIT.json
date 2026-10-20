@@ -1,0 +1,20 @@
+{
+  "producer_gym": "/home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env",
+  "pin_path": "/home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/locks/PRODUCER_PIN.json",
+  "pin_sha256": "d87082946aaa9db7408d68b2c2d147bf6cf1d28f27c1afb36d07c32b59239425",
+  "audit": {
+    "gym": {
+      "head": "8619f04b6f996f4c4d7f169486e4d10c25a3b2b9",
+      "runtime_diff_exit_code": 0,
+      "untracked_runtime": []
+    },
+    "dreamer": {
+      "head": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+      "runtime_diff_exit_code": 0,
+      "untracked_runtime": []
+    },
+    "operator_producer_pin_sha256": "d87082946aaa9db7408d68b2c2d147bf6cf1d28f27c1afb36d07c32b59239425"
+  },
+  "native_g3": "NOT_RUN",
+  "scope": "READ_ONLY_CODE_AUDIT_NOT_DATA_OR_TRAINING_ADMISSION"
+}

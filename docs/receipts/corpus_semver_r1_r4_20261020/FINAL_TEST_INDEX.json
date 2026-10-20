@@ -1,0 +1,2684 @@
+[
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D01_actual_cold_process_full_state_and_next_batch",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "110.809",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.159",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.172",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.162",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.217",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.147",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.157",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.148",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.214",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.168",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.150",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D03_forged_native_dataclass_is_not_authority",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.073",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.505",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_checkpoint::test_D05_initial_unknown_state_and_parameter_slots_fail_closed",
+    "classname": "tests.entry_v1.test_wp04_checkpoint",
+    "time": "0.007",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "source_sha256": "ab762e4be15f1b95730c777ee2d69f590df4ffd2acb8e8a15f8fcf8a89b75cc9"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E01_current_contract_first_restores_positively",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "23.079",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[burnin]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.218",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[seed]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.223",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[model]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.214",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[sampling]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.211",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[optimizer]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.400",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[loss]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.213",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f1",
+    "nodeid": "test_wp04_resume_identity::test_E02_valid_changed_contract_refused_before_model_or_write[code]",
+    "classname": "tests.entry_v1.test_wp04_resume_identity",
+    "time": "0.181",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "source_sha256": "91bee744464ea3e028be621322622771c172b0333c3e79f1d3ac820125b6d81c"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E01_four_vs_two_cold_two_full_exact",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "104.581",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[settings]",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.382",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[code]",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.301",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[index]",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.389",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[source_f1]",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.288",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E02_resume_failures_before_model_or_run_writes[corrupt_latest]",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.387",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "34.156",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f2",
+    "nodeid": "test_wp05_checkpoint::test_E04_no_authorization_no_run_side_effects",
+    "classname": "tests.entry_v1.test_wp05_checkpoint",
+    "time": "0.130",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp05_checkpoint.py",
+    "source_sha256": "1e956f66535a6ce9a89e56903beea55574bec0b16a7480c8c6867074539d8268"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "110.486",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "48.706",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[settings]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.445",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[stage]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.426",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[source]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.365",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[code]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.407",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[index]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.454",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[corrupt_latest]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.388",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F02_resume_rejects_before_model_or_run_writes[architecture]",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.431",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forever",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "19.571",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "f3",
+    "nodeid": "test_wp06_checkpoint::test_F04_f1_checkpoint_is_not_f3_resume",
+    "classname": "tests.entry_v1.test_wp06_checkpoint",
+    "time": "0.378",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "source_sha256": "898f74115c0b9f940b5e5d71c61bbf89247eac16fd3883e68237de7a0ac4bf1a"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_threshold_boundaries_float32_bfloat16_and_safe_wait",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "0.417",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_audited_ast_accepts_only_the_reviewed_transition",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "0.363",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_gate_only_audit_rejects_market_minute_semantic_change",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "0.105",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_direct_init_real_runner_uses_twenty_reports_and_regression_stop",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "23.784",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-direct_full]",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "23.603",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_real_cross_threshold_ready_source_is_reset_without_other_changes[True-after_bc_s3a]",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "8.341",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_same_threshold_transfer_preserves_authenticated_window_and_streak",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "24.052",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_gate::test_real_availability_head_raw_mask_and_metrics_share_threshold",
+    "classname": "embodied.tests.test_fg_s3_gate",
+    "time": "8.183",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_gate.py",
+    "source_sha256": "79d01a6426f77b1c2d01c36523909e393f60b86a7ec826c8e6b9ee0b112196ad"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_source_transfer::test_full_source_dependency_inventory_includes_stream_and_serializer",
+    "classname": "embodied.tests.test_fg_s3_source_transfer",
+    "time": "0.019",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "source_sha256": "a4808f402fca1e4dfe1f7d398f63b18e685f59859d72de404a2008e863e10508"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_source_transfer::test_online_model_and_environment_counters_have_separate_domains",
+    "classname": "embodied.tests.test_fg_s3_source_transfer",
+    "time": "0.002",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "source_sha256": "a4808f402fca1e4dfe1f7d398f63b18e685f59859d72de404a2008e863e10508"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_source_transfer::test_actual_three_modes_inherit_complete_state_and_reject_foreign",
+    "classname": "embodied.tests.test_fg_s3_source_transfer",
+    "time": "22.230",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "source_sha256": "a4808f402fca1e4dfe1f7d398f63b18e685f59859d72de404a2008e863e10508"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_source_transfer::test_no_inference_source_and_frozen_snapshot",
+    "classname": "embodied.tests.test_fg_s3_source_transfer",
+    "time": "7.133",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "source_sha256": "a4808f402fca1e4dfe1f7d398f63b18e685f59859d72de404a2008e863e10508"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_fg_s3_source_transfer::test_missing_baseline_requires_authenticated_features",
+    "classname": "embodied.tests.test_fg_s3_source_transfer",
+    "time": "9.710",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_fg_s3_source_transfer.py",
+    "source_sha256": "a4808f402fca1e4dfe1f7d398f63b18e685f59859d72de404a2008e863e10508"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_train_warmup_preserves_loaded_formal_actor_gate",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_train_warmup_keeps_warmup_checkpoint_disabled",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_require_formal_actor_rejects_missing_gate_interface",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_require_formal_actor_rejects_warmup_checkpoint",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_require_formal_actor_accepts_formal_checkpoint",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_eval_only_rejects_warmup_checkpoint",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.003",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "shared",
+    "nodeid": "test_action_mask_formal_guards::test_live_trading_rejects_warmup_checkpoint",
+    "classname": "embodied.tests.test_action_mask_formal_guards",
+    "time": "0.002",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/../dreamerv3/embodied/tests/test_action_mask_formal_guards.py",
+    "source_sha256": "97fab54e0353ccaa8ad5a05d1dc7ca1151923849786d1bea02e25f977d4d785e"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.010",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.009",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.009",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.006",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.007",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.006",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.003",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.003",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags0]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_offline_recovery::test_all_offline_runtime_and_probe_use_strict_latest[f1-foundation-FoundationRun]",
+    "classname": "tests.entry_v1.test_corpus_offline_recovery",
+    "time": "30.852",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_offline_recovery.py",
+    "source_sha256": "31c4cd9f3e17ced0512d26f50163ae34654591db8e25d0369fc447503abc46d7"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_offline_recovery::test_all_offline_runtime_and_probe_use_strict_latest[f2-heads-HeadsRun]",
+    "classname": "tests.entry_v1.test_corpus_offline_recovery",
+    "time": "2.717",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_offline_recovery.py",
+    "source_sha256": "31c4cd9f3e17ced0512d26f50163ae34654591db8e25d0369fc447503abc46d7"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_corpus_offline_recovery::test_all_offline_runtime_and_probe_use_strict_latest[f3-actor-ActorRun]",
+    "classname": "tests.entry_v1.test_corpus_offline_recovery",
+    "time": "2.983",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_offline_recovery.py",
+    "source_sha256": "31c4cd9f3e17ced0512d26f50163ae34654591db8e25d0369fc447503abc46d7"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[missing_done]",
+    "classname": "",
+    "time": "0.091",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[missing_manifest]",
+    "classname": "",
+    "time": "0.062",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[corrupt_member]",
+    "classname": "",
+    "time": "0.100",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[bad_identity]",
+    "classname": "",
+    "time": "0.070",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[backend]",
+    "classname": "",
+    "time": "0.085",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[strict_flag]",
+    "classname": "",
+    "time": "0.097",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[step_name]",
+    "classname": "",
+    "time": "0.066",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[rollback_pointer]",
+    "classname": "",
+    "time": "0.087",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[missing_pointer]",
+    "classname": "",
+    "time": "0.085",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[symlink_pointer]",
+    "classname": "",
+    "time": "0.073",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[external_pointer]",
+    "classname": "",
+    "time": "0.110",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[symlink_node]",
+    "classname": "",
+    "time": "0.059",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_latest_fault_never_falls_back_or_mutates_state[orphan]",
+    "classname": "",
+    "time": "0.094",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_explicit_old_load_and_old_save_cannot_bypass_published_latest",
+    "classname": "",
+    "time": "0.084",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_existing_incomplete_node_is_never_overwritten_or_repaired",
+    "classname": "",
+    "time": "0.063",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_rename_before_pointer_publish_requires_review",
+    "classname": "",
+    "time": "0.139",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_pending_write_is_retained_but_never_a_recovery_candidate",
+    "classname": "",
+    "time": "0.060",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_committed_journal_prefix_validates_before_any_mutable_restore",
+    "classname": "",
+    "time": "0.082",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_valid_cold_load_restores_latest_and_archives_only_uncommitted_tail",
+    "classname": "",
+    "time": "0.085",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_interrupted_final_protection_preserves_published_node",
+    "classname": "",
+    "time": "0.078",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_durability_barrier_failure_never_publishes_new_node",
+    "classname": "",
+    "time": "0.095",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_replay_restores_partial_chunks_online_queue_rng_and_updates",
+    "classname": "",
+    "time": "0.011",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_prefetch_snapshot_restores_pending_batches_and_consecutive_context",
+    "classname": "",
+    "time": "0.010",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_runtime_restores_ratio_carry_aggregates_and_gate_samples",
+    "classname": "",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_exact_schedule_resume_and_overshoot_rejection",
+    "classname": "",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_atomic_full_bundle_retention_identity_and_corrupt_recovery",
+    "classname": "",
+    "time": "0.030",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_failed_save_preserves_valid_points_and_final_is_protected",
+    "classname": "",
+    "time": "0.012",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[False]",
+    "classname": "",
+    "time": "0.107",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_train_loop_full_resume_matches_uninterrupted_without_neural_training[True]",
+    "classname": "",
+    "time": "0.112",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_deterministic_prefetch_propagates_worker_failure_without_waiting",
+    "classname": "",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "::test_fg_guard_rejects_full_checkpoint_optout_before_model_init",
+    "classname": "",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": null,
+    "source_sha256": null
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_wp07_checkpoint_core::test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore",
+    "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+    "time": "0.008",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py",
+    "source_sha256": "7407637d60ab1e41944286e296f91410d8639bcd392c22ba570bc05c6516e4f6"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_wp07_checkpoint_core::test_corrupt_latest_and_external_identity_refuse_before_model_mutation",
+    "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py",
+    "source_sha256": "7407637d60ab1e41944286e296f91410d8639bcd392c22ba570bc05c6516e4f6"
+  },
+  {
+    "suite": "contracts",
+    "nodeid": "test_wp07_checkpoint_core::test_native_uuid_lookup_survives_different_process_hash_seeds",
+    "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+    "time": "1.866",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py",
+    "source_sha256": "7407637d60ab1e41944286e296f91410d8639bcd392c22ba570bc05c6516e4f6"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_existing_v3_mapping_is_read_only_and_consumer_head_independent",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.067",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_explicit_version_is_exact_not_major_based[3.1.0]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.019",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_explicit_version_is_exact_not_major_based[3.1.1]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.016",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_explicit_version_is_exact_not_major_based[3.9.0]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.016",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_explicit_version_is_exact_not_major_based[None]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.016",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_reviewed_implementation_profiles_share_semantics_but_unknown_profile_rejects",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.027",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[v2]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.009",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[behaviors]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.008",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[teacher]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.014",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[source]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.013",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[macd]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.014",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_compatibility::test_abi_does_not_relax_existing_integrity_guards[bytes]",
+    "classname": "tests.entry_v1.test_corpus_compatibility",
+    "time": "0.013",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_compatibility.py",
+    "source_sha256": "9fcf6366b74371a586ac1d7977b78e74414233f1a15af4060f01f324008e4472"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.006",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.012",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[prepare-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.010",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.006",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.007",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[read-check-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.007",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[start-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_cli_forwards_exact_pin_to_each_public_route[resume-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.386",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_stage_preflight_reaches_original_admission_with_pin[f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.003",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_read_check_forwards_pin_to_source_before_model_or_output[f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f3]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags0]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags1]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.005",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_producer_pin::test_unrelated_cli_or_half_pair_rejects_without_output[flags2]",
+    "classname": "tests.entry_v1.test_corpus_producer_pin",
+    "time": "0.004",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py",
+    "source_sha256": "6cbd5b52452df9f44a43d0d776552be4c7b654fd3f2e1b0f1cef5e342d2024ed"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_frozen_pair_audit_rejects_wrong_or_changed_code[digest]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "0.029",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_frozen_pair_audit_rejects_wrong_or_changed_code[gym_head]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "0.029",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_frozen_pair_audit_rejects_wrong_or_changed_code[dreamer_head]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "0.033",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_frozen_pair_audit_rejects_wrong_or_changed_code[dirty]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "0.031",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_frozen_pair_audit_rejects_wrong_or_changed_code[untracked]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "0.031",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f1-foundation-fg_s3_e_quality_foundation-FoundationRun]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "29.431",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f2-heads-fg_s3_e_quality_heads-HeadsRun]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "1.778",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_corpus_verifier_binding::test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f3-actor-fg_s3_e_quality_actor-ActorRun]",
+    "classname": "tests.entry_v1.test_corpus_verifier_binding",
+    "time": "2.083",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_corpus_verifier_binding.py",
+    "source_sha256": "6559839866016d31132cda9801207811606d97c4766bc5f75cd904c34e0201a9"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A01_development_checks_content_without_claiming_native_or_training",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.021",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A02_relocated_corpus_and_unrelated_dirty_code_keep_content_identity",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.030",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A03_changed_source_or_course_bytes_rejected",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.013",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[../TEST/prices.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[/tmp/TEST/prices.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[TEST/prices.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[DEV/data.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/NEVER_OPEN_TEST.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A04_unsafe_nontrain_paths_rejected_before_open[inputs/prices.csv]",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A05_symlink_rejected_before_hashing",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A06_nontrain_and_forged_training_permission_rejected",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.011",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A07_self_signed_pass_cannot_replace_native_execution",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.017",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A08_missing_or_empty_purpose_never_means_draft",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.009",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A09_changed_declared_identity_and_old_teacher_objective_rejected",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.019",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A10_missing_published_owner_or_inventory_rejected",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.014",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_admission::test_A11_draft_course_cannot_be_a_supervision_source",
+    "classname": "tests.entry_v1.test_wp03_admission",
+    "time": "0.017",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_admission.py",
+    "source_sha256": "5530740da63f2f4e704c88ed2e5e625496d1f46608c08c7ab63c833f9f95e393"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B01_six_native_accounts_stream_to_metadata_index",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "8.807",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[ordinal]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.136",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[stepid]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.142",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[missing]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.130",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[duplicate]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.131",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[shift]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.127",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[account]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.140",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[policy]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.111",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[executed]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.153",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B02_resigned_three_way_or_time_attacks_fail_closed[incoming_action]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.123",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B03_sidecar_or_student_chunk_exchange_is_rejected",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.135",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B04_l2_invalid_does_not_erase_l1_and_forced_wait_is_not_strict",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.357",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B05_current_observation_teacher_not_behavior_action",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.412",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B06_each_window_mask_is_independent_and_invalid_huge_target_zeroed",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.017",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B07_fake_strict_wait_and_rational_witness_rejected",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.012",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B08_pair_identity_requires_nonzero_same_owner_same_reset",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.429",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B09_new_protocol_rejects_old_q_soft_weights_and_preserves_legacy",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B10_json_claim_is_not_an_admission_object",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B11_resigned_student_chunk_exchange_or_macd_change_rejected",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.134",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B12_mae_does_not_change_score_and_nan_is_rejected_before_loss",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.015",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B13_invalid_strict_reasons_never_become_valid_wait[FORCED_WAIT_POSITION]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.015",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B13_invalid_strict_reasons_never_become_valid_wait[FUNDS_OUTSIDE_ORIGINAL_CERTIFICATE]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.015",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B13_invalid_strict_reasons_never_become_valid_wait[ADD_RIGHT_CENSORED]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.014",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B13_invalid_strict_reasons_never_become_valid_wait[NO_ACTIVE_DECISION]",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "0.014",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_join::test_B14_real_native_quality_suffix_tie_certifies_wait_only_with_two_actions",
+    "classname": "tests.entry_v1.test_wp03_join",
+    "time": "1.723",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_join.py",
+    "source_sha256": "e46cd479f11cf1d6d27d5ba436aca9f6e8f4b1f26fbd45ec0877cc7faeeec7a5"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C11_writer_and_reader_use_only_V3",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "8.739",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.021",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.021",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.039",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.150",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.043",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.044",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.042",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.213",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.098",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.093",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.033",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C04_restore_rejects_source_index_stage_or_sampling_change",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.042",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C05_same_price_different_account_and_reset_never_form_pair",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.121",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.073",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.103",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C08_open_reader_detects_changed_sidecar_or_chunk",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.054",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp03_reader::test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+    "classname": "tests.entry_v1.test_wp03_reader",
+    "time": "0.449",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "source_sha256": "0c7b91d138c284f2b644ed4ecf899e03fce8f9e4c9153acdf54d434a5488f823"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_native_mixed_batch_and_provenance_all_stages[WM_NATURAL]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "23.144",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_native_mixed_batch_and_provenance_all_stages[HEADS_VALID]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.212",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_native_mixed_batch_and_provenance_all_stages[ACTOR_STRICT]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.211",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_native_mixed_batch_and_provenance_all_stages[ACTOR_QUALITY_PAIR]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.257",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_exact_rng_restore_and_independent_source_rng[NATURAL]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "1.319",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_exact_rng_restore_and_independent_source_rng[STRATIFIED]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.750",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_exact_rng_restore_and_independent_source_rng[MIXED]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.743",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_missing_support_and_invalid_restore_preserve_all_states",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.301",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_aggregate_identity_changes_refuse_resume[order]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.170",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_aggregate_identity_changes_refuse_resume[weights]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.168",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_aggregate_identity_changes_refuse_resume[spec]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.170",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_aggregate_identity_changes_refuse_resume[source_list]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.146",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_aggregate_identity_changes_refuse_resume[stage]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.210",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_cross_source_splice_and_owner_collision_never_create_pair",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.163",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_source_mutation_rejected_even_when_source_not_selected",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.095",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_hot_path_does_not_rehash_sources_and_adapter_reuses_f1_f2",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "1.238",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_invalid_source_contracts_fail_before_sampling[duplicate_id]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.038",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_invalid_source_contracts_fail_before_sampling[duplicate_content]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.038",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_invalid_source_contracts_fail_before_sampling[zero_weight]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.038",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_invalid_source_contracts_fail_before_sampling[underflow_weight]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.038",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_adapter_failure_rolls_back_scheduler_and_every_reader",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.195",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_two_corpus_original_checkpoint_cold_processes_and_cli",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "8.605",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_real_receipts_required_and_reject_output_inside_either_corpus",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.008",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_bound_index_and_receipt_mutation_refuse_restore[index]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.089",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_bound_index_and_receipt_mutation_refuse_restore[receipt]",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.094",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi::test_incompatible_model_contract_and_changed_adapter_bytes_rejected",
+    "classname": "tests.entry_v1.test_data_multi",
+    "time": "0.842",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "source_sha256": "77887061824abf474a4f51cb3e92fa98e6b80394ddae0d1d40f9aeaccbfa7885"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[None]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "22.424",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[NATURAL]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "10.849",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[STRATIFIED]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "10.168",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_roles_native_bytes_provenance_and_exact_state[MIXED]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "9.559",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_auxiliary_rng_and_objective_preserve_natural_stream",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "5.799",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_auxiliary_failure_and_bad_restore_roll_back_whole_group",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "3.382",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[auxiliary]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.371",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[spec]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.472",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_role_identity_changes_refuse_restore[geometry]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.473",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_missing_support_and_canonical_label_attack",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.982",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_changed_external_source_invalidates_group",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.268",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_cli_and_original_checkpoint_cold_processes[None]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "9.975",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_cli_and_original_checkpoint_cold_processes[MIXED]",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "22.772",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_cli_requires_explicit_geometry_and_natural_specs",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "0.062",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_natural_statistics_preserve_source_and_global_denominators",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "3.231",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_data_multi_f3::test_f3_pair_owner_keeps_teacher_suffix_domain",
+    "classname": "tests.entry_v1.test_data_multi_f3",
+    "time": "1.418",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "source_sha256": "1a3a43c4ee188e4e4aa5a282881b4451cb0886908eec28ebdb7f5dd56811a632"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A01_partial_from_committed_ema_and_hist_without_double",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A02_warmup_and_price_scale",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A03_stream_restore_and_prefix_invariance",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[duplicate]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[missing]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[order]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[late]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[nonfinite]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A04_bad_minutes_fail_closed[negative]",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A05_session_break_carries_ema_but_cannot_join_incomplete_buckets",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.568",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.012",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "0.853",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_wp02_macd::test_A09_native_dated_calendar_midnight_weekend_holiday_and_lunch",
+    "classname": "tests.entry_v1.test_wp02_macd",
+    "time": "1.857",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_wp02_macd.py",
+    "source_sha256": "912934718d1a7b714210e5d121a15c738f796d91033fb1f4a870542619b161af"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_macd_dated_tail::test_certified_short_interval_does_not_commit_its_partial_close",
+    "classname": "tests.entry_v1.test_macd_dated_tail",
+    "time": "0.001",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_macd_dated_tail.py",
+    "source_sha256": "2ebc4f92a03fe6c606ba4a3ec732ac02a64f7bb7b326766aadc856d5e91fa5dc"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_macd_dated_tail::test_missing_last_minute_cannot_be_disguised_as_a_session_break",
+    "classname": "tests.entry_v1.test_macd_dated_tail",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_macd_dated_tail.py",
+    "source_sha256": "2ebc4f92a03fe6c606ba4a3ec732ac02a64f7bb7b326766aadc856d5e91fa5dc"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_macd_dated_tail::test_previous_schema_snapshot_cannot_resume_with_new_tail_semantics",
+    "classname": "tests.entry_v1.test_macd_dated_tail",
+    "time": "0.000",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_macd_dated_tail.py",
+    "source_sha256": "2ebc4f92a03fe6c606ba4a3ec732ac02a64f7bb7b326766aadc856d5e91fa5dc"
+  },
+  {
+    "suite": "reader_multi",
+    "nodeid": "test_macd_dated_tail::test_zero_duration_interval_end_is_a_marker_not_a_fifth_close",
+    "classname": "tests.entry_v1.test_macd_dated_tail",
+    "time": "0.122",
+    "status": "PASS",
+    "source_file": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env/tests/entry_v1/test_macd_dated_tail.py",
+    "source_sha256": "2ebc4f92a03fe6c606ba4a3ec732ac02a64f7bb7b326766aadc856d5e91fa5dc"
+  }
+]

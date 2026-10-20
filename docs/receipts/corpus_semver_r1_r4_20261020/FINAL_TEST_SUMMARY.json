@@ -1,0 +1,86 @@
+{
+  "generated_utc": "2026-10-20T18:01:30.082764+00:00",
+  "status": "PASS_TARGETED_SCOPE",
+  "source_pair": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/gym-trading-env",
+      "sha": "83bc3018de9598969d9f06df39f48da57f8dbb5c",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v2/dreamerv3",
+      "sha": "4c4a36636bfa1a3f6a02c6df7f7d164ca8ec7036",
+      "status": ""
+    }
+  },
+  "suites": [
+    {
+      "suite": "f1",
+      "collected": 22,
+      "passed": 22,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 139.9236159324646
+    },
+    {
+      "suite": "f2",
+      "collected": 8,
+      "passed": 8,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 143.1575059890747
+    },
+    {
+      "suite": "f3",
+      "collected": 11,
+      "passed": 11,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 184.51234674453735
+    },
+    {
+      "suite": "shared",
+      "collected": 20,
+      "passed": 20,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 133.0204803943634
+    },
+    {
+      "suite": "contracts",
+      "collected": 67,
+      "passed": 67,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 42.51215362548828
+    },
+    {
+      "suite": "reader_multi",
+      "collected": 170,
+      "passed": 170,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "exit_code": 0,
+      "seconds": 205.99814867973328
+    }
+  ],
+  "test_executions": 298,
+  "unique_test_cases": 268,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 0,
+  "real_TRAIN_optimizer_updates": 0,
+  "formal_training": "NOT_RUN",
+  "real_native_g3": "NOT_RUN"
+}

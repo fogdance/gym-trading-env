@@ -14,8 +14,10 @@ as a successful recovery from damage to the latest published node.
 For new external strict checkpoints, files and the staged directory are fsynced
 before node rename, followed by the node-parent directory; the new pointer and
 its parent are fsynced at publication. Final metadata is staged outside the node
-and fsynced before replacement. A failed durability barrier does not publish the
-new candidate. The native Replay/F4 defaults keep their existing policy.
+and fsynced before replacement. A failed pre-publication barrier preserves the
+old pointer. A failure after pointer replacement is reported; recovery must
+validate the actual pointer/node and may require orphan review. The native
+Replay/F4 defaults keep their existing policy.
 
 An uncommitted update-log tail may be archived under `recovery_logs/` only after
 all validation passes. The committed prefix must match byte-for-byte. Missing or

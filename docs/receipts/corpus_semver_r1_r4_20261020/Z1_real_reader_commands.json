@@ -1,0 +1,92 @@
+[
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-19",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_e_quality_reader.py",
+      "read",
+      "--corpus",
+      "/home/v/Documents/work/research/fg-s3-data-perf-phase2-20261020/artifacts/long_final_01/corpus",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp03/Z1_real_reader_phase2",
+      "--length",
+      "64",
+      "--without-model"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "seconds": 15.761812210083008,
+    "exit_code": 0,
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env",
+        "sha": "6f95b1401421d5200d9485cc5628dd1a47fae0c0",
+        "status": ""
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/dreamerv3",
+        "sha": "9f9b1bf20817edf9db430dfe334bdac873166b85",
+        "status": ""
+      }
+    },
+    "scope": "REAL_TRAIN_REPLAY_READER_ONLY",
+    "native_g3": "NOT_RUN",
+    "optimizer_updates": 0,
+    "original_corpus_identity": "dffe36e7b687e1d55ccf28e52caae02f19bb43075274b0b295f27eff94e90302"
+  },
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-19",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "tools/fg_s3_e_quality_reader.py",
+      "read",
+      "--corpus",
+      "/home/v/Documents/work/research/fg-s3-data-perf-hotspots-20261020/artifacts/long_market_seed_01/corpus",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp03/Z1_real_reader_phase3",
+      "--length",
+      "64",
+      "--without-model"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1"
+    },
+    "seconds": 15.854888916015625,
+    "exit_code": 0,
+    "source_pair": {
+      "gym": {
+        "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/gym-trading-env",
+        "sha": "6f95b1401421d5200d9485cc5628dd1a47fae0c0",
+        "status": ""
+      },
+      "dreamer": {
+        "path": "/home/v/Documents/work/research/fg-s3-corpus-semver-r1-r4-20261020/rounds/cold-v1/dreamerv3",
+        "sha": "9f9b1bf20817edf9db430dfe334bdac873166b85",
+        "status": ""
+      }
+    },
+    "scope": "REAL_TRAIN_REPLAY_READER_ONLY",
+    "native_g3": "NOT_RUN",
+    "optimizer_updates": 0,
+    "original_corpus_identity": "96828a02f69ed30e2d74ff0637c1138bfc709d89e7a2c71611839fb262c3c43c"
+  }
+]

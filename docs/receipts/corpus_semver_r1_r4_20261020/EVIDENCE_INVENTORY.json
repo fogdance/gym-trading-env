@@ -1,0 +1,59 @@
+{
+  "protocol": "FG_S3_CORPUS_SEMVER_R1_R4_EVIDENCE_V1",
+  "excluded_derived_indexes": [
+    {
+      "path": "docs/receipts/corpus_semver_r1_r4_20261020/real_reader_phase2/join.sqlite",
+      "sha256": "fa3971393a5c52b9d8ce0130b0fe76b0f1e684c11bdab88c737e8c0246aaef9f",
+      "bytes": 10022912,
+      "reason": "Derived Join index, retained locally and at the recorded frozen artifact path; not source/evidence commit payload."
+    },
+    {
+      "path": "docs/receipts/corpus_semver_r1_r4_20261020/real_reader_phase3/join.sqlite",
+      "sha256": "69231fcb36a13aca317ad45cd5d53fe36296bdab40cb0dd2e4430979c7ba18d5",
+      "bytes": 10018816,
+      "reason": "Derived Join index, retained locally and at the recorded frozen artifact path; not source/evidence commit payload."
+    },
+    {
+      "path": "docs/receipts/corpus_semver_r1_r4_20261020/real_reader_v2_phase2/join.sqlite",
+      "sha256": "fa3971393a5c52b9d8ce0130b0fe76b0f1e684c11bdab88c737e8c0246aaef9f",
+      "bytes": 10022912,
+      "reason": "Derived Join index, retained locally and at the recorded frozen artifact path; not source/evidence commit payload."
+    },
+    {
+      "path": "docs/receipts/corpus_semver_r1_r4_20261020/real_reader_v2_phase3/join.sqlite",
+      "sha256": "69231fcb36a13aca317ad45cd5d53fe36296bdab40cb0dd2e4430979c7ba18d5",
+      "bytes": 10018816,
+      "reason": "Derived Join index, retained locally and at the recorded frozen artifact path; not source/evidence commit payload."
+    }
+  ],
+  "document_links_checked": [
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "IMPLEMENTATION_REVIEW.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "SOURCE_BASELINE.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "CORPUS_COMPATIBILITY.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "INTERFACE.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "RECOVERY_SOP.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "TEST_REPORT.md"
+    },
+    {
+      "document": "docs/corpus_semver_r1_r4_20261020/README.md",
+      "target": "REQUIREMENTS_MATRIX.md"
+    }
+  ]
+}
