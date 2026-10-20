@@ -800,6 +800,17 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         # in the growing history on each counterfactual account restore.
         from gym_trading_env.utils.snapshot_json import copy_account_snapshot
         state = copy_account_snapshot(state)
+        self._restore_account_state(state)
+
+    def _restore_private_state(self, view, *, source_env):
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+        if type(view) is not NativeAccountSnapshotView:
+            raise TypeError('Native private snapshot required')
+        view.restore(self, source_env=source_env)
+
+    def _restore_account_state(self, state):
+        # Both restore paths use these exact financial/clock/observation guards.
+        # The private caller supplies owned hot fields and an immutable prefix.
         if self._e_profile is not None:
             if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
                 raise ValueError('E V2 checkpoint observation/source identity differs')

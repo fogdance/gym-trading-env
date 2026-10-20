@@ -28,4 +28,19 @@ the same selected test set. Test pass counts are recorded in the terminal receip
 not a claim about the whole project.
 
 GPU / optimizer updates / formal F1 / 18-contract production: NOT_RUN.
-Private history implementation and final real end-to-end certification: NOT_RUN yet.
+## Clone ownership round (candidate)
+
+Implemented private immutable 256-row blocks plus an owned append tail, with
+owner/source/cursor/content commitments. Public JSON export/import and original
+sorted-JSON SHA remain unchanged. Private restore calls the same complete
+financial, ledger, clock and E-observation restore checks. Source full-snapshot
+invariance and clone final full export/hash are retained in this first round.
+clone_private_01: 24 targeted tests pass (terminal receipt carries exact count).
+Covers readonly past rows, nested ownership, signed zero/bool differences,
+changed/deleted/replaced/rewound public histories, cross-owner/source rejection,
+Ledger/Reward/RNG/Observation and subsequent financial actions.
+Guard-restored baseline query_audit_baseline_01: 107 queries, 51 native traces,
+39 strict-valid, 47.169257388 CPU seconds, 367 snapshot copies / 17.772118127s;
+51.298321150s worker wall, 128.059366562s including real account reconstruction.
+Function times are inclusive; source/profile/clock guards remain on.
+Candidate real-query and final end-to-end certification: NOT_RUN yet.

@@ -52,6 +52,8 @@ def initialize(*args):
             ('env_export',FixedDirectionEntryEnv,'export_state'),
             ('native_trace',teacher,'trace_native_trade'),('risk_facts',teacher,'trade_facts'),
             ('financial_step',FixedDirectionEntryEnv,'step'),('market_equals',pd.DataFrame,'equals')]
+        if hasattr(AccountFingerprint, 'capture'):
+            targets.append(('account_hash',AccountFingerprint,'capture'))
         for name,owner,attribute in targets:
             original=getattr(owner,attribute)
             def measured(*a,_name=name,_original=original,**kw):
