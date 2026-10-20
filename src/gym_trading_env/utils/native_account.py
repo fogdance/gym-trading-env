@@ -101,8 +101,8 @@ class NativeHistory(Sequence):
         return result
 
     @classmethod
-    def from_version(cls, version):
-        return cls(version.owner, version.source, version.blocks,
+    def from_version(cls, version, *, owner=None):
+        return cls(version.owner if owner is None else owner, version.source, version.blocks,
                    () if version.tail is None else version.tail.rows)
 
     def append(self, row):
@@ -183,5 +183,18 @@ class NativeAccountSnapshotView:
         state = json.loads(self.hot_json)
         if state['current_step'] != self.cursor:
             raise ValueError('Private account cursor mismatch')
-        state['equity_history'] = NativeHistory.from_version(self.history)
+        state['equity_history'] = NativeHistory.from_version(self.history,owner=native_owner(env))
         env._restore_account_state(state)
+
+    def public_state(self):
+        state=json.loads(self.hot_json)
+        state['equity_history']=NativeHistory.from_version(self.history).to_public()
+        return state
+
+    def same_content(self, other):
+        # Hot bytes preserve JSON distinctions that Python float/int/bool
+        # equality would miss. Sealed primitive blocks cannot be mutated.
+        return (type(other) is NativeAccountSnapshotView and self.owner==other.owner
+            and self.source==other.source and self.cursor==other.cursor
+            and self.history.count==other.history.count
+            and self.history.commitment==other.history.commitment and self.hot_json==other.hot_json)

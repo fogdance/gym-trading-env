@@ -768,7 +768,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             cached = self._market_prefix_json = MarketPrefix(self._raw)
         return cached.digest(len(self._raw.iloc[:through+1]))
 
-    def export_state(self):
+    def _snapshot_fields(self):
         state = dict(schema=3 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
                      cursor_time=str(self._raw.index[self.current_step]), prefix_hash=self._prefix_hash(self.current_step),
                      balances=self.ledger.snapshot(), ledger_entries=[dict(timestamp=e.timestamp, memo=e.memo,
@@ -791,8 +791,17 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self._get_obs()
             state['e_state'] = dict(observation_identity=self.e_observation_identity,
                 snapshot=copy.deepcopy(self.e_snapshot))
+        return state
+
+    def export_state(self):
         from gym_trading_env.utils.snapshot_json import copy_account_snapshot
-        return copy_account_snapshot(state)
+        return copy_account_snapshot(self._snapshot_fields())
+
+    def _export_private_state(self):
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView,NativeHistory
+        if not isinstance(self.equity_history,NativeHistory):
+            raise TypeError('Private export requires a controlled native history')
+        return NativeAccountSnapshotView.capture(self,self._snapshot_fields(),self.equity_history.version())
 
     def import_state(self, state):
         # Preserve the full independently owned JSON snapshot. Native history

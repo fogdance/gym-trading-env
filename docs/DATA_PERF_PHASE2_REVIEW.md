@@ -44,3 +44,23 @@ Guard-restored baseline query_audit_baseline_01: 107 queries, 51 native traces,
 51.298321150s worker wall, 128.059366562s including real account reconstruction.
 Function times are inclusive; source/profile/clock guards remain on.
 Candidate real-query and final end-to-end certification: NOT_RUN yet.
+
+## Worker/root ownership round (candidate)
+
+Clone-only query_clone_private_01: all 107 labels / 51 real traces / 39 strict
+valid match. 316 copies; CPU 49.574775507s versus guard baseline 47.169257388s
+(5.1% slower); worker wall 50.223025988s versus 51.298321150s. This intermediate
+commit is NOT a claimed performance improvement: prefix freezing and remaining
+full root/hash materialization still dominate. Continue with shared ownership
+rather than recommend this candidate for production.
+
+Workers now freeze their initial prefix once, own ordered append tails, restore
+owned hot state through the same native checks, and authenticate full reconstructed
+SHA against the Driver/reconciler. A new stream resets to the original immutable
+version; incorrect delta base / full SHA reject. Teacher root/final clone export
+uses private views. Public JSON snapshots remain unchanged; private prefix writes
+explicitly reject. Source invariance compares immutable content commitments and
+exact hot JSON bytes, not object identity/length. Account hashing still materializes
+and verifies every prefix in this round, before the separate immutable-hash round.
+worker_private_01: 25 targeted tests PASS; exact terminal receipts in ../artifacts.
+Real query and end-to-end measurements of this worker round: NOT_RUN yet.

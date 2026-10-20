@@ -7,7 +7,7 @@ import pytest
 
 from gym_trading_env.envs.entry_contract import fingerprint
 from gym_trading_env.utils.account_fingerprint import capture_account_fingerprint, account_fingerprint
-from gym_trading_env.utils.native_account import NativeHistory, native_owner, native_source
+from gym_trading_env.utils.native_account import NativeHistory
 from wp02_fixture import native_factory
 
 
@@ -104,3 +104,33 @@ def test_sealed_history_has_exact_original_json_bytes_after_many_blocks_forks_an
     assert fork.version().commitment != old.commitment
     public = history.to_public(); public[-1]['extra'][-1]['nested'].clear()
     assert history.to_public()[-1]['extra'][-1]['nested'] == [2]
+
+
+def test_worker_private_replica_rejects_reorder_replays_stream_reset_and_full_sha(tmp_path):
+    from gym_trading_env.research import fg_s3_quality_label_pool as pool
+    from gym_trading_env.research.fg_s3_quality_teacher_v2 import NativeQualityTeacher
+    factory, config, profile = native_factory(tmp_path/'market', minutes=25, chunk=7)
+    env = factory()
+    source = dict(fold='TRAIN', state_cache_entries=0)
+    teacher = NativeQualityTeacher(env, factory, fold='TRAIN', source=source)
+    initial = env.export_state()
+    pool._initialize(dict(env_config=str(config)), profile, initial, source, None, teacher.identity_hash)
+    try:
+        state = copy.deepcopy(initial); count = len(state.pop('equity_history'))
+        pool._begin_stream()
+        with pytest.raises(ValueError, match='missing or out of order'):
+            pool._query(copy.deepcopy(state), [], env._published_mask, fingerprint(initial), count+1)
+        first = pool._query(copy.deepcopy(state), [], env._published_mask, fingerprint(initial), count)
+        assert pool._env.export_state() == initial
+        env.step(0); updated = env.export_state()
+        delta = updated['equity_history'][count:]
+        hot = {k:v for k,v in updated.items() if k!='equity_history'}
+        pool._query(copy.deepcopy(hot), delta, env._published_mask, fingerprint(updated), count)
+        assert pool._env.export_state() == updated
+        pool._begin_stream()
+        assert pool._query(copy.deepcopy(state), [], pool._env._published_mask,
+                           fingerprint(initial), count) == first
+        with pytest.raises(ValueError, match='complete native account snapshot'):
+            pool._query(copy.deepcopy(hot), delta, env._published_mask, 'f'*64, count)
+    finally:
+        pool._teacher.close(); pool._env.close(); teacher.close(); env.close()

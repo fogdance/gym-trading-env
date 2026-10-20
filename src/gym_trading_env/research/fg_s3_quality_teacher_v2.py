@@ -332,12 +332,17 @@ class NativeQualityTeacher:
         if not np.array_equal(mask, env._published_mask):
             raise ValueError('Quality requires the real published action mask')
         self.statistics['queries']+=1
-        state=env.export_state()
+        from gym_trading_env.utils.native_account import NativeHistory
         private_snapshot=None
-        if (self.e_fork is not None and not env.net_lots and not env.entries and all(mask)
+        if isinstance(env.equity_history,NativeHistory):
+            state=private_snapshot=env._export_private_state()
+            snapshot_hash=account_fingerprint(env,state)
+        elif (self.e_fork is not None and not env.net_lots and not env.entries and all(mask)
                 and env.status=='ACTIVE' and not env.terminated and not env.truncated):
+            state=env.export_state()
             snapshot_hash,private_snapshot=capture_account_fingerprint(env,state)
         else:
+            state=env.export_state()
             snapshot_hash=account_fingerprint(env,state)
         if snapshot_hash in self._cache:
             self.statistics['cache_hits']+=1
@@ -403,7 +408,10 @@ def trace_native_trade(env,clone, *, day_complete=False,state=None,calendar_inde
             calendar_index=calendar_index,max_market_steps=max_market_steps,
             private_snapshot=_private_snapshot)
     finally:
-        if env.export_state()!=state:
+        from gym_trading_env.utils.native_account import NativeAccountSnapshotView
+        unchanged=(state.same_content(env._export_private_state()) if isinstance(state,NativeAccountSnapshotView)
+                   else env.export_state()==state)
+        if not unchanged:
             raise RuntimeError('Counterfactual mutated the real account')
 
 
