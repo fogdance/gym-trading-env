@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="11.406" timestamp="2026-10-21T01:22:01.873058+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_frozen_pair_audit_rejects_wrong_or_changed_code[digest]" time="0.033" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_frozen_pair_audit_rejects_wrong_or_changed_code[gym_head]" time="0.030" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_frozen_pair_audit_rejects_wrong_or_changed_code[dreamer_head]" time="0.036" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_frozen_pair_audit_rejects_wrong_or_changed_code[dirty]" time="0.033" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_frozen_pair_audit_rejects_wrong_or_changed_code[untracked]" time="0.031" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f1-foundation-fg_s3_e_quality_foundation-FoundationRun]" time="9.693" /><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f2-heads-fg_s3_e_quality_heads-HeadsRun]" time="0.487"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F2_TARGET_LOSS HEADS_VALID">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-694/test_prepare_start_resume_bind1')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x780a8f16dcd0&gt;
+frozen_pair = (PosixPath('/tmp/pytest-of-v/pytest-694/test_prepare_start_resume_bind1/frozen/gym-trading-env'), PosixPath('/tmp/pyte...est-694/test_prepare_start_resume_bind1/pin.json'), '6838d92e13281add4e010cbc3603b873e874e82a0d66f5c86aac04d74d0613a6')
+corpus = PosixPath('/tmp/pytest-of-v/pytest-694/pin_corpus0/corpus')
+stage = 'f2', name = 'heads', run_module = 'fg_s3_e_quality_heads'
+run_class = 'HeadsRun'
+
+    @pytest.mark.parametrize('stage,name,run_module,run_class',[
+        ('f1','foundation','fg_s3_e_quality_foundation','FoundationRun'),
+        ('f2','heads','fg_s3_e_quality_heads','HeadsRun'),
+        ('f3','actor','fg_s3_e_quality_actor','ActorRun')])
+    def test_prepare_start_resume_bind_same_pin_and_reexecute_verifier(
+            tmp_path,monkeypatch,frozen_pair,corpus,stage,name,run_module,run_class):
+        owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+        s=f1_settings(corpus);s.update(target_steps=8,burnin_steps=4,prepared_dir=str(tmp_path/'prepared'),
+            run_dir=str(ROOT/'artifacts/fg_s3_v2/semver_binding'/tmp_path.name))
+        a=supervision.QualitySupervisionAdmission.preflight(supervision.SupervisionSource.from_corpus(corpus))
+        proof=dict(identity=dict(preparation=dict(course=a.source.course_identity_hash,source=a.receipt['content_identity'])),engineering_only=False)
+        transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
+        if stage=='f2':
+            s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
+                source_f1_run=str(tmp_path/'source'),source_f1_checkpoint=str(tmp_path/'source/ckpt/step_000000000004'))
+            monkeypatch.setattr(transfer,'inspect_f1',lambda *a,**k:(proof,None))
+        elif stage=='f3':
+            from test_wp06_contract import settings
+            s=settings(corpus);s.update(target_steps=8,burnin_steps=4,prepared_dir=str(tmp_path/'prepared'),
+                run_dir=str(ROOT/'artifacts/fg_s3_v2/semver_binding'/tmp_path.name))
+            monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
+        config=tmp_path/'config.json';config.write_text(json.dumps(s))
+        gym,pin,sha=frozen_pair;calls=[]
+        def native(source,*,producer_gym,log_path,producer_lock,producer_lock_sha256,**unused):
+            audit=supervision.frozen_producer_audit(producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
+            calls.append((str(producer_lock),producer_lock_sha256))
+            Path(log_path).parent.mkdir(parents=True,exist_ok=True)
+            Path(log_path).write_text('STUB_ROUTING_ONLY_NOT_CERTIFIED\n')
+            return dict(producer_audit=audit,log_sha256=digest(Path(log_path)),result=dict(G3='GO'),
+                        scope='SYNTHETIC_ROUTING_STUB_NOT_REAL_G3')
+        monkeypatch.setattr(supervision,'native_verification',native)
+        kwargs=dict(producer_gym=gym,producer_lock=pin,producer_lock_sha256=sha)
+&gt;       receipt=owner.prepare(config,purpose='native-verification',**kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_corpus_verifier_binding.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_heads.py:110: in prepare
+    try:support=F2WindowAdapter(reader,settings).validate_support()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_heads.F2WindowAdapter object at 0x780a79bd1110&gt;
+
+    def validate_support(self):
+        """Prove target support in the existing index, without changing sampling.
+    
+        HEADS_VALID alone covers K+T. A view whose only labels are in K would
+        otherwise consume/skip forever. Each requested sampling component must
+        have at least one enabled target loss; this check consumes no RNG/rows.
+        """
+        if self.target_support is not None:return self.target_support
+        self.reader._guard()
+        cfg=model_extensions(self.settings['target_steps'],self.settings['burnin_steps'],self.settings.get('prediction_weights'))
+        extract=lambda path:"COALESCE(json_extract(a.labels,'$."+path+"'),0)"
+        terms=[]
+        if cfg['quality_outcome_lambda']&gt;0:
+            paths=([f'quality_event_valid[{h}]' for h in range(7)]+
+                [f'quality_touch_valid[{h}][{side}]' for h in range(4) for side in range(2)]+
+                [f'quality_adverse_valid[{h}]' for h in range(4)])
+            terms.extend(extract(path)+'=1' for path in paths)
+        if cfg['quality_score_lambda']&gt;0:terms.append(extract('quality_score_valid')+'=1')
+        if cfg['quality_mono_lambda']&gt;0:
+            terms.append('('+'+'.join(extract(f'quality_event_valid[{h}]') for h in range(5))+')&gt;=2')
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        support={}
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM rows a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? AND ('+
+                ' OR '.join(terms)+')) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F2_TARGET_LOSS '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F2_TARGET_LOSS HEADS_VALID
+
+src/gym_trading_env/research/fg_s3_e_quality_heads.py:190: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_corpus_verifier_binding" name="test_prepare_start_resume_bind_same_pin_and_reexecute_verifier[f3-actor-fg_s3_e_quality_actor-ActorRun]" time="0.510"><failure message="ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT">tmp_path = PosixPath('/tmp/pytest-of-v/pytest-694/test_prepare_start_resume_bind2')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x780a79a41690&gt;
+frozen_pair = (PosixPath('/tmp/pytest-of-v/pytest-694/test_prepare_start_resume_bind2/frozen/gym-trading-env'), PosixPath('/tmp/pyte...est-694/test_prepare_start_resume_bind2/pin.json'), '6838d92e13281add4e010cbc3603b873e874e82a0d66f5c86aac04d74d0613a6')
+corpus = PosixPath('/tmp/pytest-of-v/pytest-694/pin_corpus0/corpus')
+stage = 'f3', name = 'actor', run_module = 'fg_s3_e_quality_actor'
+run_class = 'ActorRun'
+
+    @pytest.mark.parametrize('stage,name,run_module,run_class',[
+        ('f1','foundation','fg_s3_e_quality_foundation','FoundationRun'),
+        ('f2','heads','fg_s3_e_quality_heads','HeadsRun'),
+        ('f3','actor','fg_s3_e_quality_actor','ActorRun')])
+    def test_prepare_start_resume_bind_same_pin_and_reexecute_verifier(
+            tmp_path,monkeypatch,frozen_pair,corpus,stage,name,run_module,run_class):
+        owner=importlib.import_module('gym_trading_env.research.fg_s3_e_quality_'+name)
+        s=f1_settings(corpus);s.update(target_steps=8,burnin_steps=4,prepared_dir=str(tmp_path/'prepared'),
+            run_dir=str(ROOT/'artifacts/fg_s3_v2/semver_binding'/tmp_path.name))
+        a=supervision.QualitySupervisionAdmission.preflight(supervision.SupervisionSource.from_corpus(corpus))
+        proof=dict(identity=dict(preparation=dict(course=a.source.course_identity_hash,source=a.receipt['content_identity'])),engineering_only=False)
+        transfer=importlib.import_module('embodied.run.fg_s3_e_quality_transfer')
+        if stage=='f2':
+            s.update(schema='FG_S3_E_QUALITY_F2_CONFIG_V1',stage='QUALITY_HEADS',sampling_stage='HEADS_VALID',
+                source_f1_run=str(tmp_path/'source'),source_f1_checkpoint=str(tmp_path/'source/ckpt/step_000000000004'))
+            monkeypatch.setattr(transfer,'inspect_f1',lambda *a,**k:(proof,None))
+        elif stage=='f3':
+            from test_wp06_contract import settings
+            s=settings(corpus);s.update(target_steps=8,burnin_steps=4,prepared_dir=str(tmp_path/'prepared'),
+                run_dir=str(ROOT/'artifacts/fg_s3_v2/semver_binding'/tmp_path.name))
+            monkeypatch.setattr(transfer,'inspect_stage',lambda *a,**k:(proof,None))
+        config=tmp_path/'config.json';config.write_text(json.dumps(s))
+        gym,pin,sha=frozen_pair;calls=[]
+        def native(source,*,producer_gym,log_path,producer_lock,producer_lock_sha256,**unused):
+            audit=supervision.frozen_producer_audit(producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
+            calls.append((str(producer_lock),producer_lock_sha256))
+            Path(log_path).parent.mkdir(parents=True,exist_ok=True)
+            Path(log_path).write_text('STUB_ROUTING_ONLY_NOT_CERTIFIED\n')
+            return dict(producer_audit=audit,log_sha256=digest(Path(log_path)),result=dict(G3='GO'),
+                        scope='SYNTHETIC_ROUTING_STUB_NOT_REAL_G3')
+        monkeypatch.setattr(supervision,'native_verification',native)
+        kwargs=dict(producer_gym=gym,producer_lock=pin,producer_lock_sha256=sha)
+&gt;       receipt=owner.prepare(config,purpose='native-verification',**kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/entry_v1/test_corpus_verifier_binding.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:128: in prepare
+    joined=build_join_index(p.source,out/'join.sqlite');streams=ActorStreams(p,out/'join.sqlite')
+                                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../dreamerv3/embodied/run/fg_s3_e_quality_actor.py:26: in __init__
+    self.streams[-1].adapter.validate_support()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;gym_trading_env.research.fg_s3_e_quality_actor.F3WindowAdapter object at 0x780a79b0eed0&gt;
+
+    def validate_support(self):
+        if self.target_support is not None:return self.target_support
+        self.reader._guard();support={}
+        tags=([None] if self.reader.mode in ('NATURAL','MIXED') else [])+sorted(self.reader.weights)
+        for tag in tags:
+            condition,extra=self.reader._condition(self.length,tag)
+            query=('SELECT 1 FROM rows r WHERE '+condition+' AND EXISTS (SELECT 1 FROM eligibility a '
+                'WHERE a.policy=r.policy AND a.segment=r.segment AND a.ordinal BETWEEN r.ordinal+? AND r.ordinal+? '
+                'AND a.strict=1) LIMIT 1')
+            supported=any(self.reader.db.execute(query,[policy,segment,lo,hi,*extra,
+                1+self.settings['burnin_steps'],self.length]).fetchone() is not None
+                for policy,segment,lo,hi,_ in self.reader._groups(self.length,tag))
+&gt;           if not supported:raise ValueError('INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 '+str(tag or self.reader.stage))
+                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           ValueError: INSUFFICIENT_CURRICULUM_SUPPORT: F3_TARGET_L2 ACTOR_STRICT
+
+src/gym_trading_env/research/fg_s3_e_quality_actor.py:183: ValueError</failure></testcase></testsuite></testsuites>

@@ -15,7 +15,7 @@ from dreamerv3.fg_s3_e_quality_course_contract import expected_stage_contract, R
 from gym_trading_env.envs.entry_contract import fingerprint
 from .fg_replay import signed, write_json, read_manifest, digest
 from .fg_s3_e_quality_course_preflight import _local_path
-from .fg_s3_e_quality_supervision import require_stage_producer_pin
+from .fg_s3_e_quality_supervision import require_stage_producer_pin,verifier_binding,require_prepared_verifier
 from .fg_s3_e_quality_supervision import SupervisionSource, QualitySupervisionAdmission, Admission
 from .fg_s3_e_observation import observation_contract
 
@@ -138,7 +138,8 @@ def preflight(settings, *, purpose='development', producer_gym=None, log_path=No
         prepared_for_training=False,identity=identity,identity_hash=fingerprint(identity),
         native_receipt_hash=admission.receipt['native_receipt_hash'],
         blockers=['F1_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED']+
-            ([] if native else ['F1_NATIVE_G3_NOT_RUN']),source_receipt=admission.receipt))
+            ([] if native else ['F1_NATIVE_G3_NOT_RUN']),source_receipt=admission.receipt,compatibility=admission.receipt['compatibility'],
+        verifier_binding=verifier_binding(admission.native_result)))
     result=F1Preparation(settings,admission,receipt)
     if native:
         # In-process evidence of the actual verifier invocation. Reconstructing
@@ -222,6 +223,7 @@ def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, s
     binding=read_manifest(path/'reader_binding.json')
     if saved['status']!='F1_DATA_READY':raise ValueError('F1_NATIVE_PREPARATION_REQUIRED')
     if saved['identity']['code']!=execution_identity():raise ValueError('F1_PREPARED_CODE_CHANGED')
+    require_prepared_verifier(saved,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     index=path/'join.sqlite'
     if digest(index)!=binding['index_sha256']:raise ValueError('F1_PREPARED_INDEX_CHANGED')
     root=Path(settings['run_dir'])
@@ -230,6 +232,9 @@ def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, s
     # G3 log is outside immutable preparation and outside the run being resumed.
     audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp04/preflights'/uuid.uuid4().hex
     current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
+    if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
+            current.receipt['compatibility']!=saved['compatibility']):
+        raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
     if (current.receipt['identity']!=saved['identity'] or
             binding['source_identity']!=current.source.receipt['content_identity']):
         raise ValueError('F1_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')

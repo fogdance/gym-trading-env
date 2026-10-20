@@ -147,6 +147,30 @@ def require_stage_producer_pin(purpose, producer_lock, producer_lock_sha256):
             raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
 
 
+def verifier_binding(native_result):
+    """Stable execution provenance; elapsed time/log names never affect resume."""
+    if native_result is None:
+        return None
+    audit = native_result['producer_audit']
+    pin_sha256 = audit.get('operator_producer_pin_sha256')
+    if not isinstance(pin_sha256, str) or re.fullmatch('[0-9a-f]{64}', pin_sha256) is None:
+        raise ValueError('SUPERVISION_EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED')
+    return dict(protocol='FG_S3_E_QUALITY_VERIFIER_BINDING_V1',
+                operator_producer_pin_sha256=pin_sha256,
+                repositories={role: audit[role]['head'] for role in ('gym', 'dreamer')})
+
+
+def require_prepared_verifier(saved, *, producer_gym, producer_lock, producer_lock_sha256):
+    """Reject pin substitution before launching G3 or constructing Run/Agent."""
+    require_stage_producer_pin('native-verification', producer_lock, producer_lock_sha256)
+    if producer_gym is None:
+        raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
+    audit = frozen_producer_audit(producer_gym, producer_lock=producer_lock,
+                                  producer_lock_sha256=producer_lock_sha256)
+    if saved.get('verifier_binding') != verifier_binding(dict(producer_audit=audit)):
+        raise ValueError('SUPERVISION_PREPARED_VERIFIER_CHANGED')
+
+
 def frozen_producer_audit(producer_gym, *, producer_lock=None, producer_lock_sha256=None):
     """Authenticate a frozen verifier, only for final native evidence.
 
