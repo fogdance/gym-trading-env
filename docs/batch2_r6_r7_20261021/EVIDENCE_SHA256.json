@@ -94,8 +94,8 @@
       "sha256": "85ad662008ecb8d3b9782bc25408614b0c07bcf455a7645f9fc8c7718e3fb0b5"
     },
     "receipts/DOCUMENT_TOOLING_VERIFICATION.json": {
-      "bytes": 1196,
-      "sha256": "9db0f9f93f6c08767dff1577067f94e4d6709558cf44e87034670a821a7db32d"
+      "bytes": 1572,
+      "sha256": "934c27bb0f81939c5f92dd3ac642822c2761af536390fdb30f6e716966794754"
     },
     "receipts/DOCUMENT_VALIDATION.json": {
       "bytes": 169,
@@ -4778,8 +4778,8 @@
       "sha256": "74235727bbb9018b3976ad32e7fcb70f7cbabfe808ec9aae66736ac339188373"
     },
     "receipts/reproduction_scripts/final_delivery_lock_v5.py": {
-      "bytes": 5939,
-      "sha256": "ebc31cbb5b320453c709ac95c8b1e76d07f414a411c148557f3dc6c97751d03d"
+      "bytes": 6320,
+      "sha256": "4c25745e6c92b90a2e37d33e6cf8d5a998659be8d7edf9dcc28a888cd2bdc4f6"
     },
     "receipts/reproduction_scripts/final_perf.py": {
       "bytes": 4154,
