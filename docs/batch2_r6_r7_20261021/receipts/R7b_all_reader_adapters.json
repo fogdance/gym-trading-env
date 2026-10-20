@@ -1,0 +1,473 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1/test_batch2_reader_transactions.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1/test_wp03_reader.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1/test_wp05_diagnostics.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1/test_data_multi.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1/test_data_multi_f3.py",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7b_all_reader_adapters.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/artifacts/batch2/r7",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/gym-trading-env",
+      "sha": "6cf302db106b26eb3a583aaff28851dfad70717d",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r7b/dreamerv3",
+      "sha": "e0d5563021000cf8682424e4e43f3c591117b554",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 294.95718424301594,
+  "exit_code": 1,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_nested_reader_undo_preserves_preexisting_coverage_and_rng",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_reader_chunk_failure_restores_rng_before_any_delivery",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_cross_source_outer_merge_failure_undoes_committed_children",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_multi_f3_statistics_failure_undoes_both_roles_and_sources",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C11_writer_and_reader_use_only_V3",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C12_old_or_forged_index_versions_refused_without_writes[receipt_v2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C12_old_or_forged_index_versions_refused_without_writes[missing]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C12_old_or_forged_index_versions_refused_without_writes[database_v2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[WM_NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[HEADS_VALID]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_STRICT]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C01_native_contiguous_episode_safe_windows_all_stages[ACTOR_QUALITY_PAIR]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[STRATIFIED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C02_seed_and_complete_rng_state_exact_next_batch[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C03_missing_class_is_support_failure_without_exposure_or_rng_change",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C04_restore_rejects_source_index_stage_or_sampling_change",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C05_same_price_different_account_and_reset_never_form_pair",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C06_original_macd_bytes_and_bounded_cache_no_parallel_replay",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C07_relocation_preserves_reader_restore_without_old_absolute_root",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C08_open_reader_detects_changed_sidecar_or_chunk",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C09_mixed_requires_explicit_weights_and_never_interprets_empty_mode",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp03_reader",
+      "name": "test_C10_window_crosses_original_native_chunk_files_without_crossing_episode",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D01_unique_reader_modes_rng_and_native_owner[NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D01_unique_reader_modes_rng_and_native_owner[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D01_unique_reader_modes_rng_and_native_owner[STRATIFIED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D02_four_head_read_only_metrics_and_static_ablations",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[owner]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[shift]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[q]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[soft]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[valid_score]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D03_window_and_projection_negatives[missing_support]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D04_visible_native_macd_and_context_reach_F2",
+      "result": "failed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D05_L2_and_invalid_Q_values_never_enter_F2_inputs",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D06_burnin_only_labels_rejected_without_resampling_or_rng_change",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D07_target_support_guard_does_not_change_original_sampling",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D08_target_support_checks_each_explicit_sampling_component[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D08_target_support_checks_each_explicit_sampling_component[STRATIFIED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D09_target_support_matches_enabled_score_outcome_or_mono[weights0]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D09_target_support_matches_enabled_score_outcome_or_mono[weights1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_diagnostics",
+      "name": "test_D09_target_support_matches_enabled_score_outcome_or_mono[weights2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_native_mixed_batch_and_provenance_all_stages[WM_NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_native_mixed_batch_and_provenance_all_stages[HEADS_VALID]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_native_mixed_batch_and_provenance_all_stages[ACTOR_STRICT]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_native_mixed_batch_and_provenance_all_stages[ACTOR_QUALITY_PAIR]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_exact_rng_restore_and_independent_source_rng[NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_exact_rng_restore_and_independent_source_rng[STRATIFIED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_exact_rng_restore_and_independent_source_rng[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_missing_support_and_invalid_restore_preserve_all_states",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_aggregate_identity_changes_refuse_resume[order]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_aggregate_identity_changes_refuse_resume[weights]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_aggregate_identity_changes_refuse_resume[spec]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_aggregate_identity_changes_refuse_resume[source_list]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_aggregate_identity_changes_refuse_resume[stage]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_cross_source_splice_and_owner_collision_never_create_pair",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_source_mutation_rejected_even_when_source_not_selected",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_hot_path_does_not_rehash_sources_and_adapter_reuses_f1_f2",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_invalid_source_contracts_fail_before_sampling[duplicate_id]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_invalid_source_contracts_fail_before_sampling[duplicate_content]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_invalid_source_contracts_fail_before_sampling[zero_weight]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_invalid_source_contracts_fail_before_sampling[underflow_weight]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_adapter_failure_rolls_back_scheduler_and_every_reader",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_two_corpus_original_checkpoint_cold_processes_and_cli",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_real_receipts_required_and_reject_output_inside_either_corpus",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_bound_index_and_receipt_mutation_refuse_restore[index]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_bound_index_and_receipt_mutation_refuse_restore[receipt]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi",
+      "name": "test_incompatible_model_contract_and_changed_adapter_bytes_rejected",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_roles_native_bytes_provenance_and_exact_state[None]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_roles_native_bytes_provenance_and_exact_state[NATURAL]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_roles_native_bytes_provenance_and_exact_state[STRATIFIED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_roles_native_bytes_provenance_and_exact_state[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_auxiliary_rng_and_objective_preserve_natural_stream",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_auxiliary_failure_and_bad_restore_roll_back_whole_group",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_role_identity_changes_refuse_restore[auxiliary]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_role_identity_changes_refuse_restore[spec]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_role_identity_changes_refuse_restore[geometry]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_missing_support_and_canonical_label_attack",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_changed_external_source_invalidates_group",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_cli_and_original_checkpoint_cold_processes[None]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_cli_and_original_checkpoint_cold_processes[MIXED]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_cli_requires_explicit_geometry_and_natural_specs",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_natural_statistics_preserve_source_and_global_denominators",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_pair_owner_keeps_teacher_suffix_domain",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 82,
+    "failed": 2,
+    "error": 0,
+    "skipped": 0
+  }
+}

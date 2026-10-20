@@ -1,0 +1,246 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "16-19",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/tests/entry_v1/test_wp05_transfer.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/tests/entry_v1/test_wp06_transfer.py",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/artifacts/batch2/final_v4_handoff_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_V4_handoff.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/artifacts/batch2/final_v4_handoff",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/gym-trading-env",
+      "sha": "e5ff6e1873819a962f4ec3d6639b62b711c977e6",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v4/dreamerv3",
+      "sha": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 300.30877955898177,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B01_nonopt_complete_fresh_optimizer_and_mirror",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B02_parameter_failure_before_mutation[missing]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B02_parameter_failure_before_mutation[shape]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B02_parameter_failure_before_mutation[dtype]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B02_parameter_failure_before_mutation[nonfinite]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[formal]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[unfinished]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[stage]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[reward]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[observation]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[observation_v2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[clock]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[model]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B03_source_failures[corrupt]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp05_transfer",
+      "name": "test_B04_engineering_preflight_cannot_mint_training_authority",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B01_full_parameter_handoff_fresh_optimizer_and_mirror[F1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F1-missing]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F1-shape]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F1-dtype]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F1-nonfinite]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B03_engineering_is_not_formal_and_wrong_stage_rejected[F1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B04_source_freeze_and_ledger_attacks[F1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B05_editable_receipt_cannot_grant_authority[F1]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F1-observation]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F1-stage]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F1-unfinished]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F1-corrupt]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B01_full_parameter_handoff_fresh_optimizer_and_mirror[F2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F2-missing]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F2-shape]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F2-dtype]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B02_parameter_rejection_before_mutation[F2-nonfinite]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B03_engineering_is_not_formal_and_wrong_stage_rejected[F2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B04_source_freeze_and_ledger_attacks[F2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B05_editable_receipt_cannot_grant_authority[F2]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F2-observation]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F2-stage]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F2-unfinished]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_transfer",
+      "name": "test_B06_source_identity_negatives[F2-corrupt]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 39,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

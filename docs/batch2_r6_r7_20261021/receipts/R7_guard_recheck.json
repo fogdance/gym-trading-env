@@ -1,0 +1,75 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_reader_transactions.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_data_multi_f3.py::test_f3_changed_external_source_invalidates_group",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_guard_recheck.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/r7",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "7f8022100f2e84683e802679e2bc3738ab59b02c",
+      "status": "M src/gym_trading_env/research/fg_s3_e_quality_foundation.py\n M src/gym_trading_env/research/fg_s3_e_quality_multi.py\n M src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py\n M src/gym_trading_env/research/fg_s3_e_quality_reader.py\n?? src/gym_trading_env/research/fg_s3_reader_transactions.py\n?? tests/entry_v1/batch2_reader_benchmark.py\n?? tests/entry_v1/test_batch2_reader_transactions.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "cbc1343971786caec979cead3025431690f1591b",
+      "status": "M embodied/run/fg_s3_e_quality_actor.py\n M embodied/run/fg_s3_e_quality_foundation.py"
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 42.26029630796984,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_nested_reader_undo_preserves_preexisting_coverage_and_rng",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_reader_chunk_failure_restores_rng_before_any_delivery",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_cross_source_outer_merge_failure_undoes_committed_children",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_transactions",
+      "name": "test_multi_f3_statistics_failure_undoes_both_roles_and_sources",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_data_multi_f3",
+      "name": "test_f3_changed_external_source_invalidates_group",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 5,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

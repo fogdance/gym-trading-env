@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="11" time="192.916" timestamp="2026-10-21T06:04:06.535523+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary]" time="115.452"><failure message="AssertionError: /reader/session&#10;assert 'fe1145afff5f...37959a79a6f6b' == 'e18b67c2ee09...cb2a6a63ee96f'&#10;  &#10;  - e18b67c2ee0949b4810cb2a6a63ee96f&#10;  + fe1145afff5f47b882f37959a79a6f6b">case = (PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0'), {'schema': 'FG_S3_E_QUALITY_F3_CONFIG_V1', 'stage': 'ACTOR_SUPER...tmp/pytest-of-v/pytest-736/wp06_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0/join.sqlite'))
+scenario = 'ordinary'
+
+    @pytest.mark.parametrize('scenario',['ordinary','skip_first'])
+    def test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip(case,scenario):
+        a_name=scenario+'_continuous';b_name=scenario+'_split';first=2 if scenario=='ordinary' else -1
+        with ThreadPoolExecutor(2) as pool:
+            one=pool.submit(worker,case,a_name,'start',4,scenario)
+            two=pool.submit(worker,case,b_name,'start',first,scenario)
+            a=one.result();split=two.result()
+        if scenario=='skip_first':assert split['counters']['optimizer_updates']==0 and split['counters']['consumed_batches']==1
+&gt;       b=worker(case,b_name,'resume',4,scenario);exact(a,b)
+                                                  ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = 'fe1145afff5f47b882f37959a79a6f6b', b = 'e18b67c2ee0949b4810cb2a6a63ee96f'
+path = '/reader/session'
+
+    def exact(a,b,path=''):
+        if isinstance(a,dict):
+            assert a.keys()==b.keys(),path
+            for k in a:exact(a[k],b[k],path+'/'+str(k))
+        elif isinstance(a,(list,tuple)):
+            assert len(a)==len(b),path
+            for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+        elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+&gt;       else:assert a==b,path
+             ^^^^^^^^^^^^^^^^
+E       AssertionError: /reader/session
+E       assert 'fe1145afff5f...37959a79a6f6b' == 'e18b67c2ee09...cb2a6a63ee96f'
+E         
+E         - e18b67c2ee0949b4810cb2a6a63ee96f
+E         + fe1145afff5f47b882f37959a79a6f6b
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:41: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first]" time="52.034"><failure message="AssertionError: /reader/session&#10;assert '196176113ccb...09ed6bb62b81e' == '113493b04e6d...c004c4da3e41d'&#10;  &#10;  - 113493b04e6d4372a0ac004c4da3e41d&#10;  + 196176113ccb4cb7a6609ed6bb62b81e">case = (PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0'), {'schema': 'FG_S3_E_QUALITY_F3_CONFIG_V1', 'stage': 'ACTOR_SUPER...tmp/pytest-of-v/pytest-736/wp06_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-736/wp06_cold0/join.sqlite'))
+scenario = 'skip_first'
+
+    @pytest.mark.parametrize('scenario',['ordinary','skip_first'])
+    def test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip(case,scenario):
+        a_name=scenario+'_continuous';b_name=scenario+'_split';first=2 if scenario=='ordinary' else -1
+        with ThreadPoolExecutor(2) as pool:
+            one=pool.submit(worker,case,a_name,'start',4,scenario)
+            two=pool.submit(worker,case,b_name,'start',first,scenario)
+            a=one.result();split=two.result()
+        if scenario=='skip_first':assert split['counters']['optimizer_updates']==0 and split['counters']['consumed_batches']==1
+&gt;       b=worker(case,b_name,'resume',4,scenario);exact(a,b)
+                                                  ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp06_checkpoint.py:36: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = '196176113ccb4cb7a6609ed6bb62b81e', b = '113493b04e6d4372a0ac004c4da3e41d'
+path = '/reader/session'
+
+    def exact(a,b,path=''):
+        if isinstance(a,dict):
+            assert a.keys()==b.keys(),path
+            for k in a:exact(a[k],b[k],path+'/'+str(k))
+        elif isinstance(a,(list,tuple)):
+            assert len(a)==len(b),path
+            for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+        elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+&gt;       else:assert a==b,path
+             ^^^^^^^^^^^^^^^^
+E       AssertionError: /reader/session
+E       assert '196176113ccb...09ed6bb62b81e' == '113493b04e6d...c004c4da3e41d'
+E         
+E         - 113493b04e6d4372a0ac004c4da3e41d
+E         + 196176113ccb4cb7a6609ed6bb62b81e
+
+../../../tests/entry_v1/test_wp06_checkpoint.py:41: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[settings]" time="0.439" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[stage]" time="0.448" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[source]" time="0.403" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[code]" time="0.424" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[index]" time="0.467" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[corrupt_latest]" time="0.395" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F02_resume_rejects_before_model_or_run_writes[architecture]" time="0.438" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forever" time="20.810" /><testcase classname="tests.entry_v1.test_wp06_checkpoint" name="test_F04_f1_checkpoint_is_not_f3_resume" time="0.400" /></testsuite></testsuites>

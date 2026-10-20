@@ -1,0 +1,162 @@
+[
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-7",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "artifacts/batch2/benchmark.py",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/bench_v1/config.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/before_f1_100000",
+      "--mode",
+      "f1",
+      "--seen",
+      "100000",
+      "--batches",
+      "8"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/tmp/batch2_mpl"
+    },
+    "exit_code": 0,
+    "seconds": 15.648242103983648
+  },
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-7",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "artifacts/batch2/benchmark.py",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/bench_v1/config.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/before_f2_100000",
+      "--mode",
+      "f2",
+      "--seen",
+      "100000",
+      "--batches",
+      "8"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/tmp/batch2_mpl"
+    },
+    "exit_code": 0,
+    "seconds": 15.436170050059445
+  },
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-7",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "artifacts/batch2/benchmark.py",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/bench_v1/config.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/before_f3_aux_100000",
+      "--mode",
+      "f3_aux",
+      "--seen",
+      "100000",
+      "--batches",
+      "8"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/tmp/batch2_mpl"
+    },
+    "exit_code": 0,
+    "seconds": 37.101144392974675
+  },
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-7",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "artifacts/batch2/benchmark.py",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/bench_v1/config.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/before_multi_100000",
+      "--mode",
+      "multi",
+      "--seen",
+      "100000",
+      "--batches",
+      "8"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/tmp/batch2_mpl"
+    },
+    "exit_code": 0,
+    "seconds": 77.70621993904933
+  },
+  {
+    "argv": [
+      "taskset",
+      "-c",
+      "0-7",
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "artifacts/batch2/benchmark.py",
+      "--config",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/bench_v1/config.json",
+      "--out",
+      "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/before_multi_f3_100000",
+      "--mode",
+      "multi_f3",
+      "--seen",
+      "100000",
+      "--batches",
+      "8"
+    ],
+    "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/r6/gym-trading-env",
+    "environment": {
+      "PYTHONPATH": ".:src:../dreamerv3:tests/entry_v1",
+      "JAX_PLATFORMS": "cpu",
+      "CUDA_VISIBLE_DEVICES": "",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "MPLCONFIGDIR": "/tmp/batch2_mpl"
+    },
+    "exit_code": 0,
+    "seconds": 254.2935148110846
+  }
+]

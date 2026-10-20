@@ -1,0 +1,37 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_ test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection _
+
+config = {'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytest...], 'stage': 'WM_NATURAL', 'per_source_sampling_spec': {'alpha': {'mode': 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}
+
+    def test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection(config):
+        a=VersionedStream(open_case(config,'f1'));b=VersionedStream(open_case(config,'f1'))
+        try:
+            root=a.save();next(a);abandoned=a.save()
+            a.load(root);next(a);a.load(root);a.release_snapshot(abandoned)
+            assert not a.nodes and a.next_id==3
+            state=pickle.loads(pickle.dumps(a.save_full()))
+            b.load_full(state);b.retain_snapshot(state['current'])
+>           assert b.next_id==a.next_id,'COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID'
+E           AssertionError: COLD_RESTORE_REUSES_AN_ABANDONED_VERSION_ID
+E           assert 1 == 3
+E            +  where 1 = <gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f868fb9490>.next_id
+E            +  and   3 = <gym_trading_env.research.fg_s3_reader_versions.VersionedStream object at 0x74f86984ba10>.next_id
+
+../../../tests/entry_v1/test_batch2_reader_versions.py:86: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_batch2_reader_versions.py::test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection
+1 failed in 20.64s

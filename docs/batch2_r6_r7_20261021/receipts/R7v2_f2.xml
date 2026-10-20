@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="148.934" timestamp="2026-10-21T06:04:06.517842+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E01_four_vs_two_cold_two_full_exact" time="111.483"><failure message="AssertionError: /runtime/streams/0/source/session&#10;assert '0e63f68652a9...bd0982df22f7c' == 'd87fb719b79c...60e9031cdb75e'&#10;  &#10;  - d87fb719b79c4b919cd60e9031cdb75e&#10;  + 0e63f68652a94582813bd0982df22f7c">case = (PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...tmp/pytest-of-v/pytest-734/wp05_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0/join.sqlite'))
+
+    def test_E01_four_vs_two_cold_two_full_exact(case):
+     with ThreadPoolExecutor(2) as pool:
+      continuous=pool.submit(worker,case,'continuous','start',4)
+      split=pool.submit(worker,case,'split','start',2)
+      a=continuous.result();split.result()
+&gt;    b=worker(case,'split','resume',4);exact(a,b)
+                                       ^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:35: in exact
+    for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp05_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = '0e63f68652a94582813bd0982df22f7c', b = 'd87fb719b79c4b919cd60e9031cdb75e'
+path = '/runtime/streams/0/source/session'
+
+    def exact(a,b,path=''):
+     if isinstance(a,dict):
+      assert a.keys()==b.keys(),path
+      for k in a:exact(a[k],b[k],path+'/'+str(k))
+     elif isinstance(a,(list,tuple)):
+      assert len(a)==len(b),path
+      for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+     elif isinstance(a,np.ndarray):assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+&gt;    else:assert a==b,path
+          ^^^^^^^^^^^^^^^^
+E    AssertionError: /runtime/streams/0/source/session
+E    assert '0e63f68652a9...bd0982df22f7c' == 'd87fb719b79c...60e9031cdb75e'
+E      
+E      - d87fb719b79c4b919cd60e9031cdb75e
+E      + 0e63f68652a94582813bd0982df22f7c
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:37: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E02_resume_failures_before_model_or_run_writes[settings]" time="0.445" /><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E02_resume_failures_before_model_or_run_writes[code]" time="0.375" /><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E02_resume_failures_before_model_or_run_writes[index]" time="0.442" /><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E02_resume_failures_before_model_or_run_writes[source_f1]" time="0.331" /><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E02_resume_failures_before_model_or_run_writes[corrupt_latest]" time="0.445" /><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again" time="34.170"><failure message="AssertionError: assert {'counts': {'...7293487}, ...} == {'protocol': ...sion': 2, ...}&#10;  &#10;  Differing items:&#10;  {'protocol': 'FG_S3_E_QUALITY_READER_STATE_V1'} != {'protocol': 'S3_READER_VERSION_REF_V2'}&#10;  Left contains 8 more items:&#10;  {'counts': {'batches': 2,&#10;              'delivered_candidate_exposures': 192,&#10;              'policy:P1': 96,...&#10;  &#10;  ...Full output truncated (307 lines hidden), use '-vv' to show">case = (PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0'), {'schema': 'FG_S3_E_QUALITY_F2_CONFIG_V1', 'stage': 'QUALITY_HEA...tmp/pytest-of-v/pytest-734/wp05_cold0/settings.json'), PosixPath('/tmp/pytest-of-v/pytest-734/wp05_cold0/join.sqlite'))
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-734/test_E03_skip_checkpoint_prese0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7e9ba16cc490&gt;
+
+    def test_E03_skip_checkpoint_preserves_consumed_reader_and_does_not_handoff_again(case,tmp_path,monkeypatch):
+     import jax.numpy as jnp
+     root,s,_,index=case;p=preflight(s);run=HeadsRun(p,index,tmp_path/'skip',_probe=engineering_permit(p))
+     initial=parameter_digests(run.agent.params);original=run.agent.train
+     def invalid(carry,data):
+      data={k:jnp.zeros_like(v) if k.startswith('quality_') and k.endswith('_valid') else v for k,v in data.items()}
+      return original(carry,data)
+     monkeypatch.setattr(run.agent,'train',invalid)
+     m=run.update();assert m['f2/skip_no_valid'] and int(run.agent.n_updates)==0 and int(run.step)==1
+     assert parameter_digests(run.agent.params)==initial
+     saved=run.counters.save();reader=pickle.loads((run.cp.latest()/'course_reader.pkl').read_bytes())
+     # Stop only this object's prefetch using its normal lifecycle; no host process termination.
+     with run.stream.pause():
+      def forbidden(*a,**k):raise AssertionError('resume called handoff')
+      monkeypatch.setattr('embodied.run.fg_s3_e_quality_heads.transfer_parameters',forbidden)
+      other=HeadsRun(p,index,tmp_path/'skip',resume=True,_probe=engineering_permit(p))
+      assert other.counters.save()==saved and int(other.step)==1 and int(other.agent.n_updates)==0
+&gt;     assert other.reader.state_dict()==reader
+E     AssertionError: assert {'counts': {'...7293487}, ...} == {'protocol': ...sion': 2, ...}
+E       
+E       Differing items:
+E       {'protocol': 'FG_S3_E_QUALITY_READER_STATE_V1'} != {'protocol': 'S3_READER_VERSION_REF_V2'}
+E       Left contains 8 more items:
+E       {'counts': {'batches': 2,
+E                   'delivered_candidate_exposures': 192,
+E                   'policy:P1': 96,...
+E       
+E       ...Full output truncated (307 lines hidden), use '-vv' to show
+
+../../../tests/entry_v1/test_wp05_checkpoint.py:95: AssertionError</failure></testcase><testcase classname="tests.entry_v1.test_wp05_checkpoint" name="test_E04_no_authorization_no_run_side_effects" time="0.140" /></testsuite></testsuites>

@@ -1,0 +1,7 @@
+{
+  "protocol": "READER_STREAM_STATE_V2",
+  "graph_sha256": "d508ba6fe1087ac338e38dd0c60aad725c6295fec25f5f42e605f25ffd207a0d",
+  "session": "356945fc2721484a8ae3fe720854b08c",
+  "complete_graph_byte_structure_equal": true,
+  "optimizer_updates_before_continuation": 2
+}

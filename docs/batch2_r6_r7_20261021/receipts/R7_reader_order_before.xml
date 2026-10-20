@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="20.346" timestamp="2026-10-21T07:26:42.297652+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_batch2_reader_versions" name="test_reader_dictionary_reordering_cannot_reassign_coverage_to_another_source" time="18.521"><failure message="Failed: DID NOT RAISE ValueError">config = {'schema': 'FG_S3_E_MULTICORPUS_CONFIG_V1', 'sources': [{'corpus_id': 'alpha', 'corpus_root': '/tmp/pytest-of-v/pytest...], 'stage': 'WM_NATURAL', 'per_source_sampling_spec': {'alpha': {'mode': 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}
+
+    def test_reader_dictionary_reordering_cannot_reassign_coverage_to_another_source(config):
+        a=VersionedStream(open_case(config,'multi'));b=VersionedStream(open_case(config,'multi'))
+        try:
+            next(a);state=a.save_full();before=b.source.save()
+            values=state['base']['seen']
+            assert values[0]!=values[1],'fixture must expose distinct source coverage'
+            table=state['base']['small']['stream']['readers']
+            state['base']['small']['stream']['readers']=dict(reversed(list(table.items())))
+            assert state['graph_sha256']==_hash({k:v for k,v in state.items() if k!='graph_sha256'})
+&gt;           with pytest.raises(ValueError):b.load_full(state)
+E           Failed: DID NOT RAISE ValueError
+
+../../../tests/entry_v1/test_batch2_reader_versions.py:100: Failed</failure></testcase></testsuite></testsuites>

@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "16-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_cold_checkpoint.py::test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_cold_smoke_recheck.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/r7",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "6cf302db106b26eb3a583aaff28851dfad70717d",
+      "status": "M src/gym_trading_env/research/fg_s3_e_quality_multi.py\n M src/gym_trading_env/research/fg_s3_e_quality_multi_actor.py\n M src/gym_trading_env/research/fg_s3_e_quality_reader.py\n?? src/gym_trading_env/research/fg_s3_reader_versions.py\n?? tests/entry_v1/batch2_cold_worker.py\n?? tests/entry_v1/batch2_reader_benchmark.py\n?? tests/entry_v1/test_batch2_cold_checkpoint.py\n?? tests/entry_v1/test_batch2_reader_versions.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "e0d5563021000cf8682424e4e43f3c591117b554",
+      "status": "M embodied/core/streams.py\n M embodied/run/fg_s3_e_quality_actor.py\n M embodied/run/fg_s3_e_quality_foundation.py\n M embodied/run/fg_s3_e_quality_heads.py"
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 28.22243794100359,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 1,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

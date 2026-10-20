@@ -1,0 +1,60 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "8-15",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_cold_checkpoint.py::test_strict_payload_faults_reject_before_agent_load[coverage_basis]",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_cold_checkpoint.py::test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_basis_binding_after.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/r7",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "897f476880dea1c4cbd4654f85a41930bb5ea061",
+      "status": "M src/gym_trading_env/research/fg_s3_reader_versions.py\n M tests/entry_v1/batch2_reader_benchmark.py\n M tests/entry_v1/test_batch2_cold_checkpoint.py\n M tests/entry_v1/test_wp05_checkpoint.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 38.45269126491621,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_strict_payload_faults_reject_before_agent_load[coverage_basis]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch2_cold_checkpoint",
+      "name": "test_new_process_strict_checkpoint_matches_continuous_batches_and_all_states[f1-1-0]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 2,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

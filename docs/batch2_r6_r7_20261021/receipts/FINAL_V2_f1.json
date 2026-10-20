@@ -1,0 +1,161 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "8-11",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_wp04_checkpoint.py",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_wp04_resume_identity.py",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f1_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_V2_f1.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f1",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env",
+      "sha": "03e17103ab40a03a2e0795359c01bded581c3031",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 143.17385936609935,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D01_actual_cold_process_full_state_and_next_batch",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[code]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[reward]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[burnin]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[seed]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[model]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[optimizer]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[loss]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[sampling]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[source]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D02_resume_identity_changes_fail_before_model_or_writes[features]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D03_forged_native_dataclass_is_not_authority",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D04_external_source_index_and_corrupt_bundle_fail_closed",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_checkpoint",
+      "name": "test_D05_initial_unknown_state_and_parameter_slots_fail_closed",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E01_current_contract_first_restores_positively",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[burnin]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[seed]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[model]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[sampling]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[optimizer]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[loss]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp04_resume_identity",
+      "name": "test_E02_valid_changed_contract_refused_before_model_or_write[code]",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 22,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}

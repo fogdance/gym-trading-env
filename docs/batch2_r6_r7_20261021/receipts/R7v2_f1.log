@@ -1,0 +1,332 @@
+F.............EEEEEEEE                                                   [100%]
+==================================== ERRORS ====================================
+____ ERROR at setup of test_E01_current_contract_first_restores_positively _____
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[burnin] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[seed] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[model] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[sampling] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[optimizer] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[loss] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+_ ERROR at setup of test_E02_valid_changed_contract_refused_before_model_or_write[code] _
+
+tmp_path_factory = TempPathFactory(_given_basetemp=None, _trace=<pluggy._tracing.TagTracerSub object at 0x7fae96520f10>, _basetemp=PosixPath('/tmp/pytest-of-v/pytest-735'), _retention_count=3, _retention_policy='all')
+
+    @pytest.fixture(scope='module')
+    def restored(tmp_path_factory):
+>    evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp04_resume_identity.py:11: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1058: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('docs/receipts/wp04/D_cold_restore_evidence.json'), mode = 'r'
+buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: 'docs/receipts/wp04/D_cold_restore_evidence.json'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1044: FileNotFoundError
+=================================== FAILURES ===================================
+____________ test_D01_actual_cold_process_full_state_and_next_batch ____________
+
+case = (PosixPath('/tmp/pytest-of-v/pytest-735/wp04_cold0'), PosixPath('/tmp/pytest-of-v/pytest-735/wp04_cold0/settings.json'...TY_F1_CONFIG_V1', 'stage': 'FOUNDATION_WM', 'sampling_stage': 'WM_NATURAL', 'sampling_spec': {'mode': 'NATURAL'}, ...})
+
+    def test_D01_actual_cold_process_full_state_and_next_batch(case):
+     continuous=run_worker(case,'continuous','start',4)
+     run_worker(case,'split','start',2)
+     restored=run_worker(case,'split','resume',4)
+     # Python/NumPy ambient seeds are initialized explicitly by each worker below;
+     # compare the entire saved runtime, including pending original JAX seeds.
+>    exact(continuous,restored)
+
+../../../tests/entry_v1/test_wp04_checkpoint.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../tests/entry_v1/test_wp04_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp04_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp04_checkpoint.py:35: in exact
+    for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp04_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp04_checkpoint.py:32: in exact
+    for k in a:exact(a[k],b[k],path+'/'+str(k))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+a = 'd851bd085d8546559aafbe694294c3db', b = '649bab29abdb424abcd7cc2a72cc859a'
+path = '/runtime/streams/0/source/session'
+
+    def exact(a,b,path=''):
+     if isinstance(a,dict):
+      assert a.keys()==b.keys(),path
+      for k in a:exact(a[k],b[k],path+'/'+str(k))
+     elif isinstance(a,(tuple,list)):
+      assert len(a)==len(b),path
+      for i,(x,y) in enumerate(zip(a,b)):exact(x,y,path+'/'+str(i))
+     elif isinstance(a,np.ndarray):
+      assert a.shape==b.shape and a.dtype==b.dtype and a.tobytes()==b.tobytes(),path
+>    else:assert a==b,path
+          ^^^^^^^^^^^^^^^^
+E    AssertionError: /runtime/streams/0/source/session
+E    assert 'd851bd085d85...fbe694294c3db' == '649bab29abdb...7cc2a72cc859a'
+E      
+E      - 649bab29abdb424abcd7cc2a72cc859a
+E      + d851bd085d8546559aafbe694294c3db
+
+../../../tests/entry_v1/test_wp04_checkpoint.py:38: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 100 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 100 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 100 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 100 source rows, CPU Driver
+------------------------------ Captured log setup ------------------------------
+WARNING  matplotlib:__init__.py:538 /home/v/.config/matplotlib is not a writable directory
+WARNING  matplotlib:__init__.py:551 Matplotlib created a temporary cache directory at /tmp/matplotlib-i78pasm4 because there was an issue with the default path (/home/v/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_wp04_checkpoint.py::test_D01_actual_cold_process_full_state_and_next_batch
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E01_current_contract_first_restores_positively
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[burnin]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[seed]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[model]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[sampling]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[optimizer]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[loss]
+ERROR ../../../tests/entry_v1/test_wp04_resume_identity.py::test_E02_valid_changed_contract_refused_before_model_or_write[code]
+1 failed, 13 passed, 8 errors in 118.33s (0:01:58)

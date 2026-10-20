@@ -1,0 +1,54 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "0-23",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1/test_batch2_reader_versions.py::test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/R7_version_counter_before.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/artifacts/batch2/counter_before",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/gym-trading-env",
+      "sha": "08b5bbeb253b663da92a3c42bcccf3ab912bbf48",
+      "status": "M docs/batch2_r6_r7_20261021/R6_IMPLEMENTATION_REVIEW.md\n M docs/batch2_r6_r7_20261021/R7_STATE_VERSION_CONTRACT.md\n M tests/entry_v1/test_batch2_reader_versions.py"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/dreamerv3",
+      "sha": "a6aa3e649ca36022b767e2d89d0392868953f5e9",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 21.307177543989383,
+  "exit_code": 1,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch2_reader_versions",
+      "name": "test_full_restore_preserves_monotonic_ids_after_rewind_and_branch_collection",
+      "result": "failed"
+    }
+  ],
+  "counts": {
+    "passed": 0,
+    "failed": 1,
+    "error": 0,
+    "skipped": 0
+  }
+}

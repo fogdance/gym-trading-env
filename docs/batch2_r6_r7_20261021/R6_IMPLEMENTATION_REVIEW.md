@@ -27,4 +27,4 @@ Real TRAIN optimization, production Native G3, GPU and TEST reads: NOT_RUN. No c
 
 ## Next recommended step
 
-Merge this independent R6 change, then continue R7 local transactions and exact persistent Prefetch state.
+R6 was independently merged before R7: Gym integration `710a1332d5f9ebc1993cd7c3a5002b0d732d3533`, Dreamer integration `a5631ffadd4815efcd6caf4c9026a274ea3d6ab7`. Subsequent R7 acceptance is documented separately in BATCH2_IMPLEMENTATION_REVIEW.md and FINAL_V3_* receipts; this R6 report retains its original tested code identities.

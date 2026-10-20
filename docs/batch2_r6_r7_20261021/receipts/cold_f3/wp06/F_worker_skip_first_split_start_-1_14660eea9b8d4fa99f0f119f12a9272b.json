@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v1/gym-trading-env/tests/entry_v1/wp06_cold_worker.py",
+    "/tmp/pytest-of-v/pytest-740/wp06_cold0/settings.json",
+    "/tmp/pytest-of-v/pytest-740/wp06_cold0/skip_first_split",
+    "/tmp/pytest-of-v/pytest-740/wp06_cold0/join.sqlite",
+    "start",
+    "-1",
+    "skip_first"
+  ],
+  "exit_code": 0
+}

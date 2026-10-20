@@ -1,0 +1,758 @@
+[
+  {
+    "mode": "f1",
+    "seen": 1000,
+    "batches": 16,
+    "cpus": "0-1",
+    "values": {
+      "before": {
+        "batch_s": 37.333541311861374,
+        "range_batch_s": [
+          35.36624820235824,
+          38.92957185377548
+        ],
+        "rss_MiB": 338.85546875,
+        "snapshot_s": 0.021814995910972357,
+        "snapshot_MiB": 1.1401281356811523,
+        "local_mark_ms": 2.6754270074889064,
+        "local_rollback_ms": 10.494168032892048,
+        "pending_MiB": 1.0372533798217773,
+        "checkpoint_MiB": 1.1982736587524414,
+        "checkpoint_save_s": 0.12110122700687498,
+        "cold_load_s": 0.12694594298955053,
+        "cold_rss_MiB": 236.3359375,
+        "s_per_100k_effective": 83.70489083517896
+      },
+      "after": {
+        "batch_s": 43.71622120191999,
+        "range_batch_s": [
+          41.77120683378743,
+          45.017501234518726
+        ],
+        "rss_MiB": 337.40234375,
+        "snapshot_s": 0.0052576819434762,
+        "snapshot_MiB": 0.9618387222290039,
+        "local_mark_ms": 0.04271103534847498,
+        "local_rollback_ms": 8.574103005230427,
+        "pending_MiB": 0.9349479675292969,
+        "checkpoint_MiB": 0.9690122604370117,
+        "checkpoint_save_s": 0.11542386503424495,
+        "cold_load_s": 0.3719659469788894,
+        "cold_rss_MiB": 235.78125,
+        "s_per_100k_effective": 71.4837630994225
+      }
+    },
+    "speedup": 1.1709636874986395,
+    "exposure": {
+      "mode": "f1",
+      "seen": 1000,
+      "timed_batches": 16,
+      "counts": {
+        "target_positions": 512,
+        "effective_target_positions": 512,
+        "target_market_minutes": 512,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f1",
+    "seen": 10000,
+    "batches": 8,
+    "cpus": "0-1",
+    "values": {
+      "before": {
+        "batch_s": 11.531142406685696,
+        "range_batch_s": [
+          11.420735563678885,
+          11.59176095248734
+        ],
+        "rss_MiB": 379.93359375,
+        "snapshot_s": 0.19304496503900737,
+        "snapshot_MiB": 2.856276512145996,
+        "local_mark_ms": 14.211170957423747,
+        "local_rollback_ms": 11.390849947929382,
+        "pending_MiB": 1.8953304290771484,
+        "checkpoint_MiB": 3.343423843383789,
+        "checkpoint_save_s": 0.37674005201552063,
+        "cold_load_s": 0.4545824179658666,
+        "cold_rss_MiB": 268.2578125,
+        "s_per_100k_effective": 271.00523866465664
+      },
+      "after": {
+        "batch_s": 43.82053667078115,
+        "range_batch_s": [
+          43.316627932574114,
+          48.25316922989905
+        ],
+        "rss_MiB": 343.03125,
+        "snapshot_s": 0.10788264696020633,
+        "snapshot_MiB": 1.1591167449951172,
+        "local_mark_ms": 0.054432894103229046,
+        "local_rollback_ms": 7.814836921170354,
+        "pending_MiB": 0.9349479675292969,
+        "checkpoint_MiB": 1.166290283203125,
+        "checkpoint_save_s": 0.2489084639819339,
+        "cold_load_s": 0.692374472040683,
+        "cold_rss_MiB": 241.13671875,
+        "s_per_100k_effective": 71.31359488994349
+      }
+    },
+    "speedup": 3.8001903996410826,
+    "exposure": {
+      "mode": "f1",
+      "seen": 10000,
+      "timed_batches": 8,
+      "counts": {
+        "target_positions": 256,
+        "effective_target_positions": 256,
+        "target_market_minutes": 256,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f1",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "0-1",
+    "values": {
+      "before": {
+        "batch_s": 1.395556556735561,
+        "range_batch_s": [
+          1.3915678280466697,
+          1.3961362193403979
+        ],
+        "rss_MiB": 860.1640625,
+        "snapshot_s": 1.636744310031645,
+        "snapshot_MiB": 20.286097526550293,
+        "local_mark_ms": 167.65693004708737,
+        "local_rollback_ms": 49.121221993118525,
+        "pending_MiB": 10.610288619995117,
+        "checkpoint_MiB": 25.130839347839355,
+        "checkpoint_save_s": 3.233143246965483,
+        "cold_load_s": 3.246180461952463,
+        "cold_rss_MiB": 552.95703125,
+        "s_per_100k_effective": 2239.2499859051895
+      },
+      "after": {
+        "batch_s": 45.239726700042745,
+        "range_batch_s": [
+          43.96365397249569,
+          45.81543152340795
+        ],
+        "rss_MiB": 449.71875,
+        "snapshot_s": 0.8096716130385175,
+        "snapshot_MiB": 3.199021339416504,
+        "local_mark_ms": 0.09224493987858295,
+        "local_rollback_ms": 8.172732079401612,
+        "pending_MiB": 0.9349479675292969,
+        "checkpoint_MiB": 3.2061901092529297,
+        "checkpoint_save_s": 1.4738033780595288,
+        "cold_load_s": 4.997393087018281,
+        "cold_rss_MiB": 326.8984375,
+        "s_per_100k_effective": 69.07645620231051
+      }
+    },
+    "speedup": 32.41697836013611,
+    "exposure": {
+      "mode": "f1",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 64,
+        "effective_target_positions": 64,
+        "target_market_minutes": 64,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f1",
+    "seen": 300000,
+    "batches": 2,
+    "cpus": "0-1",
+    "values": {
+      "before": {
+        "batch_s": 0.4573875338583038,
+        "range_batch_s": [
+          0.3818781131412761,
+          0.4584598909523759
+        ],
+        "rss_MiB": 1795.5859375,
+        "snapshot_s": 5.31685958604794,
+        "snapshot_MiB": 59.9674596786499,
+        "local_mark_ms": 1477.0079710287973,
+        "local_rollback_ms": 175.19722692668438,
+        "pending_MiB": 30.450969696044922,
+        "checkpoint_MiB": 74.73251438140869,
+        "checkpoint_save_s": 10.646289952099323,
+        "cold_load_s": 10.250878958031535,
+        "cold_rss_MiB": 1186.19140625,
+        "s_per_100k_effective": 6832.280656271905
+      },
+      "after": {
+        "batch_s": 46.705235201131686,
+        "range_batch_s": [
+          43.42223672808943,
+          50.28123163755242
+        ],
+        "rss_MiB": 654.9296875,
+        "snapshot_s": 2.3242714969674125,
+        "snapshot_MiB": 7.968808174133301,
+        "local_mark_ms": 0.06720703095197678,
+        "local_rollback_ms": 7.949147024191916,
+        "pending_MiB": 0.9349479675292969,
+        "checkpoint_MiB": 7.976007461547852,
+        "checkpoint_save_s": 4.833545170957223,
+        "cold_load_s": 16.566211343975738,
+        "cold_rss_MiB": 505.70703125,
+        "s_per_100k_effective": 66.90898753731744
+      }
+    },
+    "speedup": 102.11304800362294,
+    "exposure": {
+      "mode": "f1",
+      "seen": 300000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 64,
+        "effective_target_positions": 64,
+        "target_market_minutes": 64,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "multi_f3",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "0-1",
+    "values": {
+      "before": {
+        "batch_s": 0.059360901434055875,
+        "range_batch_s": [
+          0.05913484075987774,
+          0.06172745394283671
+        ],
+        "rss_MiB": 2510.55078125,
+        "snapshot_s": 8.639563278062269,
+        "snapshot_MiB": 79.4413423538208,
+        "local_mark_ms": 158.2465999526903,
+        "local_rollback_ms": 42.78285300824791,
+        "pending_MiB": 40.6609411239624,
+        "checkpoint_MiB": 98.8400182723999,
+        "checkpoint_save_s": 15.533431147923693,
+        "cold_load_s": 20.07383833604399,
+        "cold_rss_MiB": 1646.2578125,
+        "s_per_100k_effective": 33692.21072597429
+      },
+      "after": {
+        "batch_s": 1.2505706799643859,
+        "range_batch_s": [
+          1.1653975103521368,
+          1.2728994320630684
+        ],
+        "rss_MiB": 800.68359375,
+        "snapshot_s": 2.659149246988818,
+        "snapshot_MiB": 11.910943984985352,
+        "local_mark_ms": 0.07614400237798691,
+        "local_rollback_ms": 7.77062401175499,
+        "pending_MiB": 1.9033184051513672,
+        "checkpoint_MiB": 11.930360794067383,
+        "checkpoint_save_s": 3.2577902080956846,
+        "cold_load_s": 17.563974160002545,
+        "cold_rss_MiB": 598.359375,
+        "s_per_100k_effective": 1599.2698629852384
+      }
+    },
+    "speedup": 21.06724543854252,
+    "exposure": {
+      "mode": "multi_f3",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 128,
+        "effective_target_positions": 100,
+        "target_market_minutes": 128,
+        "natural_valid": 42,
+        "auxiliary_valid": 58,
+        "strict_pair_eligible": 43,
+        "quality_pair_eligible": 25
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f2",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "2-3",
+    "values": {
+      "before": {
+        "batch_s": 1.3539143084545473,
+        "range_batch_s": [
+          1.3066914582312783,
+          1.424241964936343
+        ],
+        "rss_MiB": 860.29296875,
+        "snapshot_s": 1.6474855120759457,
+        "snapshot_MiB": 20.296807289123535,
+        "local_mark_ms": 171.88329296186566,
+        "local_rollback_ms": 47.65267192851752,
+        "pending_MiB": 10.62083625793457,
+        "checkpoint_MiB": 25.141499519348145,
+        "checkpoint_save_s": 3.1994243930093944,
+        "cold_load_s": 3.269842494977638,
+        "cold_rss_MiB": 553.1796875,
+        "s_per_100k_effective": 7034.277918726383
+      },
+      "after": {
+        "batch_s": 44.52896333438319,
+        "range_batch_s": [
+          40.633738411112795,
+          46.587029602529725
+        ],
+        "rss_MiB": 449.34765625,
+        "snapshot_s": 0.7755773999961093,
+        "snapshot_MiB": 3.2097129821777344,
+        "local_mark_ms": 0.07541198283433914,
+        "local_rollback_ms": 8.289874996989965,
+        "pending_MiB": 0.9454765319824219,
+        "checkpoint_MiB": 3.2169008255004883,
+        "checkpoint_save_s": 1.421813223976642,
+        "cold_load_s": 5.0305675939889625,
+        "cold_rss_MiB": 327.8046875,
+        "s_per_100k_effective": 213.87898596003652
+      }
+    },
+    "speedup": 32.88905587031699,
+    "exposure": {
+      "mode": "f2",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 64,
+        "effective_target_positions": 21,
+        "target_market_minutes": 64,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f3",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "2-3",
+    "values": {
+      "before": {
+        "batch_s": 1.0070275279991703,
+        "range_batch_s": [
+          0.8836190805319953,
+          1.0487172143431267
+        ],
+        "rss_MiB": 868.03125,
+        "snapshot_s": 1.796181394951418,
+        "snapshot_MiB": 20.28809642791748,
+        "local_mark_ms": 202.96722801867872,
+        "local_rollback_ms": 54.77453791536391,
+        "pending_MiB": 10.6136474609375,
+        "checkpoint_MiB": 25.131996154785156,
+        "checkpoint_save_s": 3.437285079038702,
+        "cold_load_s": 4.803960678051226,
+        "cold_rss_MiB": 592.67578125,
+        "s_per_100k_effective": 3546.5054053929634
+      },
+      "after": {
+        "batch_s": 43.95312567613943,
+        "range_batch_s": [
+          42.59234469712519,
+          45.18284869883753
+        ],
+        "rss_MiB": 448.140625,
+        "snapshot_s": 0.801105419988744,
+        "snapshot_MiB": 3.2033538818359375,
+        "local_mark_ms": 0.09545101784169674,
+        "local_rollback_ms": 8.057271945290267,
+        "pending_MiB": 0.9398403167724609,
+        "checkpoint_MiB": 3.2105350494384766,
+        "checkpoint_save_s": 1.5323897110065445,
+        "cold_load_s": 7.082641451037489,
+        "cold_rss_MiB": 327.41015625,
+        "s_per_100k_effective": 81.25539461616427
+      }
+    },
+    "speedup": 43.646399382416526,
+    "exposure": {
+      "mode": "f3",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 64,
+        "effective_target_positions": 56,
+        "target_market_minutes": 64,
+        "natural_valid": 56,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 41,
+        "quality_pair_eligible": 12
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "multi",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "2-3",
+    "values": {
+      "before": {
+        "batch_s": 0.1618029225123207,
+        "range_batch_s": [
+          0.13888233522415075,
+          0.17793731009163963
+        ],
+        "rss_MiB": 1437.18359375,
+        "snapshot_s": 5.425824332050979,
+        "snapshot_MiB": 39.683836936950684,
+        "local_mark_ms": 179.2941279709339,
+        "local_rollback_ms": 53.12331300228834,
+        "pending_MiB": 20.310863494873047,
+        "checkpoint_MiB": 49.37951850891113,
+        "checkpoint_save_s": 8.249442324973643,
+        "cold_load_s": 8.31684755103197,
+        "cold_rss_MiB": 936.70703125,
+        "s_per_100k_effective": 19313.619009335525
+      },
+      "after": {
+        "batch_s": 9.662460912235854,
+        "range_batch_s": [
+          9.659903908369417,
+          9.704434934155085
+        ],
+        "rss_MiB": 586.76171875,
+        "snapshot_s": 1.5936387149849907,
+        "snapshot_MiB": 5.7933454513549805,
+        "local_mark_ms": 0.10105106048285961,
+        "local_rollback_ms": 12.293761014007032,
+        "pending_MiB": 0.9492979049682617,
+        "checkpoint_MiB": 5.807908058166504,
+        "checkpoint_save_s": 1.6161808810429648,
+        "cold_load_s": 10.35041049704887,
+        "cold_rss_MiB": 418.140625,
+        "s_per_100k_effective": 323.4165735193528
+      }
+    },
+    "speedup": 59.71746840048636,
+    "exposure": {
+      "mode": "multi",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 64,
+        "effective_target_positions": 64,
+        "target_market_minutes": 64,
+        "natural_valid": 0,
+        "auxiliary_valid": 0,
+        "strict_pair_eligible": 0,
+        "quality_pair_eligible": 0
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 1000,
+    "batches": 16,
+    "cpus": "4-7",
+    "values": {
+      "before": {
+        "batch_s": 17.21546143392105,
+        "range_batch_s": [
+          16.283415682852834,
+          17.266592442426024
+        ],
+        "rss_MiB": 362.3046875,
+        "snapshot_s": 0.024550176109187305,
+        "snapshot_MiB": 2.278776168823242,
+        "local_mark_ms": 1.3296479592099786,
+        "local_rollback_ms": 8.122934959828854,
+        "pending_MiB": 2.077850341796875,
+        "checkpoint_MiB": 2.385896682739258,
+        "checkpoint_save_s": 0.20522511296439916,
+        "cold_load_s": 0.44664751808159053,
+        "cold_rss_MiB": 242.01953125,
+        "s_per_100k_effective": 107.94391451321292
+      },
+      "after": {
+        "batch_s": 19.994377907635247,
+        "range_batch_s": [
+          15.530660005622542,
+          20.11216180485917
+        ],
+        "rss_MiB": 352.2265625,
+        "snapshot_s": 0.010196129907853901,
+        "snapshot_MiB": 1.931910514831543,
+        "local_mark_ms": 0.04354200791567564,
+        "local_rollback_ms": 9.727013995870948,
+        "pending_MiB": 1.87762451171875,
+        "checkpoint_MiB": 1.939065933227539,
+        "checkpoint_save_s": 0.1809107030276209,
+        "cold_load_s": 1.0844605240272358,
+        "cold_rss_MiB": 237.703125,
+        "s_per_100k_effective": 92.94134110664466
+      }
+    },
+    "speedup": 1.1614198076758295,
+    "exposure": {
+      "mode": "f3_aux",
+      "seen": 1000,
+      "timed_batches": 16,
+      "counts": {
+        "target_positions": 1024,
+        "effective_target_positions": 861,
+        "target_market_minutes": 1024,
+        "natural_valid": 429,
+        "auxiliary_valid": 432,
+        "strict_pair_eligible": 299,
+        "quality_pair_eligible": 129
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 10000,
+    "batches": 8,
+    "cpus": "4-7",
+    "values": {
+      "before": {
+        "batch_s": 4.398499558247523,
+        "range_batch_s": [
+          4.114304348031936,
+          4.573016544768405
+        ],
+        "rss_MiB": 437.33984375,
+        "snapshot_s": 0.3000988520216197,
+        "snapshot_MiB": 5.711544990539551,
+        "local_mark_ms": 13.197308056987822,
+        "local_rollback_ms": 10.965718072839081,
+        "pending_MiB": 3.7942371368408203,
+        "checkpoint_MiB": 6.676874160766602,
+        "checkpoint_save_s": 0.8852055970346555,
+        "cold_load_s": 1.0980711770243943,
+        "cold_rss_MiB": 309.94140625,
+        "s_per_100k_effective": 418.11541308937916
+      },
+      "after": {
+        "batch_s": 20.988054151817906,
+        "range_batch_s": [
+          15.353400886321227,
+          21.08055315896987
+        ],
+        "rss_MiB": 367.5234375,
+        "snapshot_s": 0.16733554797247052,
+        "snapshot_MiB": 2.352320671081543,
+        "local_mark_ms": 0.060104066506028175,
+        "local_rollback_ms": 8.009746088646352,
+        "pending_MiB": 1.87762451171875,
+        "checkpoint_MiB": 2.359457015991211,
+        "checkpoint_save_s": 0.369306324981153,
+        "cold_load_s": 1.5259207009803504,
+        "cold_rss_MiB": 251.97265625,
+        "s_per_100k_effective": 87.62510552274428
+      }
+    },
+    "speedup": 4.7716394815735965,
+    "exposure": {
+      "mode": "f3_aux",
+      "seen": 10000,
+      "timed_batches": 8,
+      "counts": {
+        "target_positions": 512,
+        "effective_target_positions": 435,
+        "target_market_minutes": 512,
+        "natural_valid": 224,
+        "auxiliary_valid": 211,
+        "strict_pair_eligible": 148,
+        "quality_pair_eligible": 58
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 100000,
+    "batches": 2,
+    "cpus": "4-7",
+    "values": {
+      "before": {
+        "batch_s": 0.4612659346146293,
+        "range_batch_s": [
+          0.4591052866880848,
+          0.5130975123210317
+        ],
+        "rss_MiB": 1399.84765625,
+        "snapshot_s": 3.802925163996406,
+        "snapshot_MiB": 40.575318336486816,
+        "local_mark_ms": 174.24983903765678,
+        "local_rollback_ms": 61.69732799753547,
+        "pending_MiB": 21.226279258728027,
+        "checkpoint_MiB": 50.25677013397217,
+        "checkpoint_save_s": 6.9628393680322915,
+        "cold_load_s": 8.51454939506948,
+        "cold_rss_MiB": 904.625,
+        "s_per_100k_effective": 3705.8919402531897
+      },
+      "after": {
+        "batch_s": 21.30770998939096,
+        "range_batch_s": [
+          20.16920997625513,
+          21.594782458708213
+        ],
+        "rss_MiB": 578.24609375,
+        "snapshot_s": 1.5694636279949918,
+        "snapshot_MiB": 6.6904401779174805,
+        "local_mark_ms": 0.09356706868857145,
+        "local_rollback_ms": 8.313165977597237,
+        "pending_MiB": 1.87762451171875,
+        "checkpoint_MiB": 6.697615623474121,
+        "checkpoint_save_s": 2.5860747930128127,
+        "cold_load_s": 10.161160391988233,
+        "cold_rss_MiB": 417.80859375,
+        "s_per_100k_effective": 80.2245623885821
+      }
+    },
+    "speedup": 46.19398136823776,
+    "exposure": {
+      "mode": "f3_aux",
+      "seen": 100000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 128,
+        "effective_target_positions": 117,
+        "target_market_minutes": 128,
+        "natural_valid": 56,
+        "auxiliary_valid": 61,
+        "strict_pair_eligible": 46,
+        "quality_pair_eligible": 21
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 300000,
+    "batches": 2,
+    "cpus": "4-7",
+    "values": {
+      "before": {
+        "batch_s": 0.16085962542218787,
+        "range_batch_s": [
+          0.13979533468316288,
+          0.16558036441937554
+        ],
+        "rss_MiB": 3287.68359375,
+        "snapshot_s": 8.970934286015108,
+        "snapshot_MiB": 119.93803405761719,
+        "local_mark_ms": 615.7055309740826,
+        "local_rollback_ms": 167.2017560340464,
+        "pending_MiB": 60.90764141082764,
+        "checkpoint_MiB": 149.4601469039917,
+        "checkpoint_save_s": 19.91382186394185,
+        "cold_load_s": 23.895100452005863,
+        "cold_rss_MiB": 2230.43359375,
+        "s_per_100k_effective": 10626.667225633899
+      },
+      "after": {
+        "batch_s": 20.69557026316154,
+        "range_batch_s": [
+          20.310317466132837,
+          20.877372860154306
+        ],
+        "rss_MiB": 985.69921875,
+        "snapshot_s": 4.5887956590158865,
+        "snapshot_MiB": 16.8023042678833,
+        "local_mark_ms": 0.0795610249042511,
+        "local_rollback_ms": 7.712824968621135,
+        "pending_MiB": 1.87762451171875,
+        "checkpoint_MiB": 16.809470176696777,
+        "checkpoint_save_s": 8.692810017964803,
+        "cold_load_s": 30.43759801995475,
+        "cold_rss_MiB": 781.66796875,
+        "s_per_100k_effective": 82.59746833091491
+      }
+    },
+    "speedup": 128.65608886533522,
+    "exposure": {
+      "mode": "f3_aux",
+      "seen": 300000,
+      "timed_batches": 2,
+      "counts": {
+        "target_positions": 128,
+        "effective_target_positions": 117,
+        "target_market_minutes": 128,
+        "natural_valid": 56,
+        "auxiliary_valid": 61,
+        "strict_pair_eligible": 46,
+        "quality_pair_eligible": 21
+      },
+      "all_measured_batch_hashes_match": true,
+      "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+      "artificial_history_contributes_no_training_labels": true
+    },
+    "exact_batch_and_full_state_and_new_process_load": true
+  }
+]

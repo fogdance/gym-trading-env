@@ -59,3 +59,11 @@ checkpoint.runtime = runtime
 New Run identity must include `STATE_PROTOCOL` and `PREFETCH_PROTOCOL`, together with the existing implementation/config/source/verifier hashes. The formal Run constructors already do this and validate before Agent construction. Their `validate_checkpoint_stream` convenience helper uses their existing prefetch capacity of 1; a custom multi-source runtime uses `validate_runtime_snapshot(..., amount=its_capacity)` as above. FullCheckpoint still owns disk publication, member hashing and Journal validation. No training permission is implied by wrapping a source.
 
 For diagnostics across independently started Runs, use `materialize_prefetch(source, snapshot)` to compare exact logical source/consumed/pending states despite distinct random session scopes. For a same-Run cold restore, compare the complete saved graph before continuation; do not normalize away its session, nodes or graph hash. This diagnostic expansion is intentionally outside the batch hot path.
+
+## Minimum later training-entry changes
+
+The existing single-Corpus F1/F2/F3 Run constructors already use the new state layer. Their prepare/start/resume configuration and authorization contract remain the existing ones.
+
+A later formal multi-Corpus entry needs to admit and freeze each source/index/verifier descriptor, create the existing MultiCorpusCourseStream bound to F1/F2WindowAdapter or the existing MultiCorpusF3Stream, and pass that bound source to VersionedStream. Its Run identity must bind the aggregate source identity and sampling settings. Replace entry metadata that assumes one index/Reader or ActorStreams.streams with the public readers list and the existing multi-source identity/seed records. Preserve the pre-Agent Journal/graph validation and original Agent.stream/counters/Checkpoint registrations shown above.
+
+Those changes belong to configuration and Run construction. They do not require changing MultiCorpus scheduling, the version graph, the financial Env, Teacher, F1/F2/F3 Loss or Pair rules. Real certified TRAIN sources and explicit training authorization are still required for the later formal Run; the synthetic integration evidence does not grant that admission.

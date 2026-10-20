@@ -1,0 +1,206 @@
+[
+  {
+    "mode": "f1",
+    "seen": 1000,
+    "timed_batches": 16,
+    "counts": {
+      "target_positions": 512,
+      "effective_target_positions": 512,
+      "target_market_minutes": 512,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f1",
+    "seen": 10000,
+    "timed_batches": 8,
+    "counts": {
+      "target_positions": 256,
+      "effective_target_positions": 256,
+      "target_market_minutes": 256,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f1",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 64,
+      "effective_target_positions": 64,
+      "target_market_minutes": 64,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f1",
+    "seen": 300000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 64,
+      "effective_target_positions": 64,
+      "target_market_minutes": 64,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "multi_f3",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 128,
+      "effective_target_positions": 100,
+      "target_market_minutes": 128,
+      "natural_valid": 42,
+      "auxiliary_valid": 58,
+      "strict_pair_eligible": 43,
+      "quality_pair_eligible": 25
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f2",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 64,
+      "effective_target_positions": 21,
+      "target_market_minutes": 64,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f3",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 64,
+      "effective_target_positions": 56,
+      "target_market_minutes": 64,
+      "natural_valid": 56,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 41,
+      "quality_pair_eligible": 12
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "multi",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 64,
+      "effective_target_positions": 64,
+      "target_market_minutes": 64,
+      "natural_valid": 0,
+      "auxiliary_valid": 0,
+      "strict_pair_eligible": 0,
+      "quality_pair_eligible": 0
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 1000,
+    "timed_batches": 16,
+    "counts": {
+      "target_positions": 1024,
+      "effective_target_positions": 861,
+      "target_market_minutes": 1024,
+      "natural_valid": 429,
+      "auxiliary_valid": 432,
+      "strict_pair_eligible": 299,
+      "quality_pair_eligible": 129
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 10000,
+    "timed_batches": 8,
+    "counts": {
+      "target_positions": 512,
+      "effective_target_positions": 435,
+      "target_market_minutes": 512,
+      "natural_valid": 224,
+      "auxiliary_valid": 211,
+      "strict_pair_eligible": 148,
+      "quality_pair_eligible": 58
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 100000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 128,
+      "effective_target_positions": 117,
+      "target_market_minutes": 128,
+      "natural_valid": 56,
+      "auxiliary_valid": 61,
+      "strict_pair_eligible": 46,
+      "quality_pair_eligible": 21
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  },
+  {
+    "mode": "f3_aux",
+    "seen": 300000,
+    "timed_batches": 2,
+    "counts": {
+      "target_positions": 128,
+      "effective_target_positions": 117,
+      "target_market_minutes": 128,
+      "natural_valid": 56,
+      "auxiliary_valid": 61,
+      "strict_pair_eligible": 46,
+      "quality_pair_eligible": 21
+    },
+    "all_measured_batch_hashes_match": true,
+    "scope": "LEGAL_SYNTHETIC_BATCH_BYTES_ONLY",
+    "artificial_history_contributes_no_training_labels": true
+  }
+]

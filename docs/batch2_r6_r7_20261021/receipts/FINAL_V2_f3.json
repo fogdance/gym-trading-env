@@ -1,0 +1,105 @@
+{
+  "argv": [
+    "taskset",
+    "-c",
+    "16-19",
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1/test_wp06_checkpoint.py",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f3_tmp",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/docs/batch2_r6_r7_20261021/receipts/FINAL_V2_f3.xml"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/artifacts/batch2/final_v2_f3",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3:/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "sources": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/gym-trading-env",
+      "sha": "03e17103ab40a03a2e0795359c01bded581c3031",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch2-r6-r7-20261021/rounds/final-v2/dreamerv3",
+      "sha": "99167e9079a15e36343afa962e448085c722c622",
+      "status": ""
+    }
+  },
+  "scope": "DEV_SYNTHETIC_CPU",
+  "formal_training": "NOT_RUN",
+  "production_G3": "NOT_RUN",
+  "seconds": 202.03175586799625,
+  "exit_code": 0,
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[ordinary]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip[skip_first]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[settings]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[stage]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[source]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[code]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[index]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[corrupt_latest]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F02_resume_rejects_before_model_or_run_writes[architecture]",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forever",
+      "result": "passed"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp06_checkpoint",
+      "name": "test_F04_f1_checkpoint_is_not_f3_resume",
+      "result": "passed"
+    }
+  ],
+  "counts": {
+    "passed": 11,
+    "failed": 0,
+    "error": 0,
+    "skipped": 0
+  }
+}
