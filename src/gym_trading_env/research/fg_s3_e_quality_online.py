@@ -37,10 +37,13 @@ def validate_settings(raw):
     from pathlib import Path
     from .fg_s3_e_quality_course_preflight import _local_path
     required={'schema','spec_mode','execution','prepared_dir','history_config','wm_policy'}
-    if type(raw) is not dict or set(raw)!=required or raw['schema']!=CONFIG_SCHEMA:
+    if (type(raw) is not dict or not required<=set(raw) or set(raw)-required-{'source_verifiers'}
+            or raw['schema']!=CONFIG_SCHEMA):
         raise ValueError('ONLINE_CONFIG_EXPLICIT_FIELDS_REQUIRED')
     if raw['spec_mode'] not in ('draft','formal'):raise ValueError('ONLINE_EXPLICIT_DRAFT_OR_FORMAL_REQUIRED')
     result=copy.deepcopy(raw);spec=copy.deepcopy(raw['execution'])
+    if raw.get('source_verifiers') is not None and type(raw['source_verifiers']) is not dict:
+        raise ValueError('ONLINE_SOURCE_VERIFIER_MAP_REQUIRED')
     if not isinstance(spec,dict):raise ValueError('ONLINE_EXPLICIT_EXECUTION_FIELDS_REQUIRED')
     missing=[]
     for key in ('source_run','source_checkpoint'):
@@ -92,7 +95,7 @@ def _live_inputs(proof,budget):
     return _factory(row,profile),saved,initial
 
 
-def _history(settings,proof,*,native=False,producer_gym=None):
+def _history(settings,proof,*,native=False,audit=None):
     from .fg_s3_e_quality_multi_checks import read_config,_sources,published_sources
     from .fg_s3_e_quality_multi_actor import MultiCorpusF3Stream
     from .fg_s3_e_quality_supervision import QualitySupervisionAdmission,SupervisionSource
@@ -102,10 +105,13 @@ def _history(settings,proof,*,native=False,producer_gym=None):
     publications=published_sources(config)
     sources=_sources(config)
     if native:
+        if audit is None:raise ValueError('ONLINE_NATIVE_AUDIT_REQUIRED')
         for descriptor in sources:
             original=descriptor['admission']
             descriptor['admission']=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(
-                original.source.corpus_root,stage='ACTOR_SUPERVISED'),purpose='native-verification',producer_gym=producer_gym)
+                original.source.corpus_root,stage='ACTOR_SUPERVISED'),purpose='native-verification',
+                **audit.arguments(descriptor['corpus_id']))
+            audit.record(descriptor['corpus_id'],descriptor['admission'])
     geometry={k:proof['identity']['preparation']['settings'][k] for k in ('batch_size','burnin_steps','target_steps')}
     stream=MultiCorpusF3Stream.open(sources,settings=geometry,
         per_source_sampling_spec=config['per_source_sampling_spec'],source_mix_weights=config['source_mix_weights'],
@@ -128,7 +134,7 @@ def validate_history_contract(history,proof):
         raise ValueError('ONLINE_HISTORY_NATIVE_CONTRACT_MISMATCH')
 
 
-def prepare(config,*,diagnostic_output=None):
+def prepare(config,*,diagnostic_output=None,producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     from pathlib import Path
     from .fg_replay import signed,write_json,digest
     from .fg_s3_e_quality_foundation import execution_identity
@@ -153,6 +159,9 @@ def prepare(config,*,diagnostic_output=None):
             out.mkdir(parents=True);write_json(out/'contract_diagnostic.json',result)
         return result
     if diagnostic_output is not None:raise ValueError('ONLINE_FORMAL_OUTPUT_FROZEN_IN_CONFIG')
+    from .fg_s3_e_quality_online_admission import resolve_verifiers,source_bindings
+    verifiers=resolve_verifiers(s,producer_gym=producer_gym,producer_lock=producer_lock,
+        producer_lock_sha256=producer_lock_sha256)
     # All source validation precedes Prepared/Run creation and model construction.
     receipt=preflight(s['execution']);proof=receipt['source']
     factory,source,initial=_live_inputs(proof,s['execution']['env_steps'])
@@ -161,7 +170,9 @@ def prepare(config,*,diagnostic_output=None):
         identity=dict(settings=s,code=execution_identity(),source_manifest=proof['manifest_sha256'],
             live_source=source,initial_account=fingerprint(initial),
             history_identity=None if history is None else history.identity_hash,publications=publications,
-            history_config_sha256=None if s['history_config'] is None else digest(Path(s['history_config'])))
+            history_config_sha256=None if s['history_config'] is None else digest(Path(s['history_config'])),
+            verifiers={key:dict(verifier_binding=value['verifier_binding']) for key,value in verifiers.items()},
+            source_bindings=source_bindings(s,proof,verifiers))
     finally:
         if history is not None:history.close()
     out=Path(s['prepared_dir'])
@@ -173,7 +184,7 @@ def prepare(config,*,diagnostic_output=None):
     return result
 
 
-def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_at=None,
+def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,producer_lock=None,producer_lock_sha256=None,stop_at=None,
                    rl_review_path=None,rl_review_sha256=None,authorize_rl=False):
     from pathlib import Path
     from .fg_replay import read_manifest,write_json,signed,digest
@@ -187,24 +198,42 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_a
         raise ValueError('ONLINE_PREPARED_IDENTITY_MISMATCH')
     update=s['execution']['execution_mode']!='SHADOW'
     if update and authorized is not True:raise ValueError('ONLINE_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    from .fg_s3_e_quality_online_admission import resolve_verifiers,source_bindings,NativeAuditAttempt,ANCHOR
+    verifiers=resolve_verifiers(s,producer_gym=producer_gym,producer_lock=producer_lock,
+        producer_lock_sha256=producer_lock_sha256,saved=identity['verifiers'])
     receipt=preflight(s['execution']);proof=receipt['source']
     if proof['manifest_sha256']!=identity['source_manifest']:raise ValueError('ONLINE_F3_SOURCE_CHANGED')
     factory,source,initial=_live_inputs(proof,s['execution']['env_steps'])
     if source!=identity['live_source'] or fingerprint(initial)!=identity['initial_account']:
         raise ValueError('ONLINE_PREPARED_LIVE_SOURCE_CHANGED')
-    history,publications=_history(s,proof,native=update,producer_gym=producer_gym)
+    bindings=source_bindings(s,proof,verifiers)
+    if bindings!=identity['source_bindings']:raise ValueError('ONLINE_PREPARED_SOURCE_BINDINGS_CHANGED')
+    # All prepared identities are checked before any native audit or Run output.
+    history,publications=_history(s,proof)
     run=None
     try:
         if (publications!=identity['publications'] or (None if history is None else history.identity_hash)!=identity['history_identity']
                 or (None if s['history_config'] is None else digest(Path(s['history_config'])))!=identity['history_config_sha256']):
             raise ValueError('ONLINE_PREPARED_HISTORY_CHANGED')
         native=None
-        if update:
-            from .fg_s3_e_quality_actor import preflight as f3_preflight,require_training_authority
-            native=f3_preflight(proof['identity']['preparation']['settings'],purpose='native-verification',producer_gym=producer_gym)
-            require_training_authority(native,authorized=authorized)
+        from .fg_s3_e_quality_actor import preflight as f3_preflight,require_training_authority
+        attempt=NativeAuditAttempt(root,p['content_hash'],s['execution']['run_dir'],bindings,verifiers)
+        try:
+            native=f3_preflight(proof['identity']['preparation']['settings'],purpose='native-verification',
+                **attempt.arguments(ANCHOR))
+            attempt.record(ANCHOR,native.source)
+            if history is not None:history.close();history=None
+            history,_=_history(s,proof,native=True,audit=attempt)
+            if source_bindings(s,proof,verifiers)!=bindings:
+                raise ValueError('ONLINE_SOURCE_CHANGED_DURING_NATIVE_VERIFICATION')
+            native_audit=attempt.finish()
+        except Exception as error:
+            attempt.finish(error)
+            raise
+        if update:require_training_authority(native,authorized=authorized)
         run=OnlineRun(s['execution'],factory,source,history,resume=resume,authorized=authorized,
-            native_preparation=native,initial_state=initial,wm_policy=s['wm_policy'])
+            native_preparation=native,initial_state=initial,wm_policy=s['wm_policy'],
+            source_bindings=bindings,native_audit=native_audit)
         if rl_review_path is not None or rl_review_sha256 is not None or authorize_rl:
             run.rl_review=run.gates.review_rl(native,rl_review_path,rl_review_sha256,authorized=authorize_rl)
         result=run.run_to(stop_at);write_json(run.root/'online_result.json',signed(result));return result

@@ -76,9 +76,11 @@ def main():
     if args.producer_lock is not None:
         native_commands = {stage+'-'+action for stage in ('f1','f2','f3')
                            for action in ('prepare','read-check','start','resume')}
+        native_commands.update(('online-prepare','online-start','online-resume'))
         if args.command not in native_commands:
-            p.error('producer pin flags are only accepted by F1/F2/F3 native source routes')
-        if args.command.endswith(('prepare','read-check')) and args.source_purpose!='native-verification':
+            p.error('producer pin flags are only accepted by F1/F2/F3 and online native source routes')
+        if (not args.command.startswith('online-') and args.command.endswith(('prepare','read-check'))
+                and args.source_purpose!='native-verification'):
             p.error('producer pin flags require --source-purpose native-verification')
     if args.command.startswith('exam-'):
         forbidden=('--authorize-training','--authorize-rl','--rl-review','--rl-review-sha256','--prepared',
@@ -113,11 +115,13 @@ def main():
         from gym_trading_env.research import fg_s3_e_quality_online as online
         if args.command=='online-prepare':
             if not args.config or args.prepared or args.run_dir or args.authorize_training:p.error('online-prepare requires --config; draft accepts --output-dir for a non-authenticated diagnostic only')
-            result=online.prepare(args.config,diagnostic_output=args.output_dir)
+            result=online.prepare(args.config,diagnostic_output=args.output_dir,producer_gym=args.producer_gym,
+                producer_lock=args.producer_lock,producer_lock_sha256=args.producer_lock_sha256)
         elif args.command in ('online-start','online-resume'):
             if not args.prepared or args.config or args.run_dir or args.output_dir:p.error('online-start/resume requires --prepared; Run and source are frozen')
             result=online.start_prepared(args.prepared,resume=args.command=='online-resume',authorized=args.authorize_training,
-                producer_gym=args.producer_gym,stop_at=args.stop_at,rl_review_path=args.rl_review,
+                producer_gym=args.producer_gym,producer_lock=args.producer_lock,producer_lock_sha256=args.producer_lock_sha256,
+                stop_at=args.stop_at,rl_review_path=args.rl_review,
                 rl_review_sha256=args.rl_review_sha256,authorize_rl=args.authorize_rl)
         elif args.command=='online-probe':
             if not args.output_dir or args.config or args.prepared or args.run_dir or args.authorize_training or args.authorize_rl or args.eval_device!='cpu':p.error('online-probe accepts a new --output-dir and --execution-mode for fixed bounded CPU synthetic data only')
