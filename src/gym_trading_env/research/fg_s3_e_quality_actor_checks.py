@@ -172,7 +172,7 @@ def read_check(config,output,*,purpose='development',producer_gym=None,producer_
 def evaluate_checkpoint(run_dir,checkpoint,output,*,steps=32):
     import pickle,copy
     from .fg_replay import read_manifest,digest
-    from .fg_s3_e_quality_actor import validate_settings,preflight,create_agent,execution_identity
+    from .fg_s3_e_quality_actor import validate_settings,preflight,create_agent
     from .fg_s3_e_quality_course_preflight import _local_path
     from embodied.run.fg_checkpoint import validate_bundle
     from .fg_s3_e_quality_corpus_cli import source_inputs,_factory
@@ -180,17 +180,20 @@ def evaluate_checkpoint(run_dir,checkpoint,output,*,steps=32):
     root=_local_path(run_dir);node=_local_path(checkpoint);out=_output(output)
     if not node.is_relative_to(root/'ckpt'):raise ValueError('F3_EVALUATION_NODE_OUTSIDE_RUN')
     identity=read_manifest(root/'run_identity.json')['identity'];meta=validate_bundle(node,identity)
-    if identity.get('protocol')!='FG_S3_E_QUALITY_F3_RUN_V1' or identity.get('code')!=execution_identity():raise ValueError('F3_EVALUATION_CODE_OR_STAGE_MISMATCH')
+    if identity.get('protocol')!='FG_S3_E_QUALITY_F3_RUN_V1':raise ValueError('F3_EVALUATION_STAGE_MISMATCH')
     s=validate_settings(identity['preparation']['settings']);c=pickle.loads((node/'counters.pkl').read_bytes())
     if c['optimizer_updates']!=s['optimizer_updates'] or not meta['protected'] or c['numerical_rejections']:
         raise ValueError('F3_EVALUATION_COMPLETED_CHECKPOINT_REQUIRED')
-    if preflight(s).receipt['identity']!=identity['preparation']:raise ValueError('F3_EVALUATION_SOURCE_MISMATCH')
+    if preflight(s,_resuming=True).source.receipt['content_identity']!=identity['preparation']['source']:
+        raise ValueError('F3_EVALUATION_SOURCE_MISMATCH')
     corpus=Path(s['corpus_root']);saved=read_manifest(corpus/'source_lock.json')
     current,_,_=source_inputs(saved['source_pool']['path'],saved['env_receipt']['path'],saved['contract'],**saved.get('selection',{}))
     if current!=saved:raise ValueError('F3_EVALUATION_TRAIN_SOURCE_MISMATCH')
     profile=ETrainAdmission.from_train_pool(saved['source_pool']['path'],corpus/'e_source',corpus/'selected_train_pool.json',contracts=[saved['contract']])
     row=copy.deepcopy(saved['row']);row['env_config']=str(corpus/'inputs'/saved['contract']/'env.yaml')
     agent=create_agent({**s,'device':'cpu'},out/'model',controlled_small=identity['controlled_small'])
+    from embodied.run.fg_s3_e_quality_foundation import validate_restore_agent
+    validate_restore_agent(agent,node)
     agent.load_exact(pickle.loads((node/'agent.pkl').read_bytes()))
     from gym_trading_env.envs.entry_contract import fingerprint
     return evaluate_native(agent,_factory(row,profile),out/'trace',steps=steps,

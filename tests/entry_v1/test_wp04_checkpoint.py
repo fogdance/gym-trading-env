@@ -56,20 +56,17 @@ def test_D01_actual_cold_process_full_state_and_next_batch(case):
   checkpoint_bytes=sum(p.stat().st_size for p in bundle.rglob('*') if p.is_file()),real_TRAIN_updates=0)
  Path('docs/receipts/wp04/D_cold_restore_evidence.json').write_text(json.dumps(report,indent=2)+'\n')
 
-@pytest.mark.parametrize('key',['code','reward','burnin','seed','model','optimizer','loss','sampling','source','features'])
-def test_D02_resume_identity_changes_fail_before_model_or_writes(case,key,monkeypatch):
+def test_D02_resume_uses_original_identity_after_code_changes(case,monkeypatch):
  from embodied.run.fg_s3_e_quality_foundation import FoundationRun,synthetic_probe_permit
  root,_,s=case
  if not (root/'split/run_identity.json').exists():pytest.fail('D01 must create the actual checkpoint first')
- prep=preflight(s);identity=copy.deepcopy(prep.receipt)
- identity['identity'][key]='MUTATED'
- changed=F1Preparation(prep.settings,prep.source,identity)
- def forbidden(*a,**k):raise AssertionError('Rejected resume created model')
- monkeypatch.setattr('embodied.run.fg_s3_e_quality_foundation.create_agent',forbidden)
- before={str(p):p.stat().st_mtime_ns for p in (root/'split').rglob('*') if p.is_file()}
- with pytest.raises(ValueError,match='RESUME_IDENTITY_MISMATCH'):
-  FoundationRun(changed,root/'join.sqlite',root/'split',resume=True,_probe=synthetic_probe_permit(changed))
- assert before=={str(p):p.stat().st_mtime_ns for p in (root/'split').rglob('*') if p.is_file()}
+ monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_foundation.execution_identity',lambda:{'changed':True})
+ prep=preflight(s)
+ before=(root/'split/run_identity.json').read_bytes()
+ run=FoundationRun(prep,root/'join.sqlite',root/'split',resume=True,_probe=synthetic_probe_permit(prep))
+ assert int(run.step)==int(run.agent.n_updates)==4
+ assert (root/'split/run_identity.json').read_bytes()==before
+ run.source.close()
 
 def test_D03_forged_native_dataclass_is_not_authority(case):
  _,_,s=case;p=preflight(s)
@@ -98,7 +95,7 @@ def test_D04_external_source_index_and_corrupt_bundle_fail_closed(case,tmp_path)
  index=tmp_path/'changed.sqlite';shutil.copyfile(root/'join.sqlite',index)
  shutil.copyfile(root/'join.json',index.with_suffix('.json'))
  with index.open('ab') as f:f.write(b'changed')
- with pytest.raises(ValueError,match='RESUME_IDENTITY_MISMATCH'):
+ with pytest.raises(ValueError,match='INDEX_CHANGED'):
   FoundationRun(p,index,root/'split',resume=True,_probe=synthetic_probe_permit(p))
  source=tmp_path/'source';shutil.copytree(Path(s['corpus_root']),source)
  changed={**s,'corpus_root':str(source)}

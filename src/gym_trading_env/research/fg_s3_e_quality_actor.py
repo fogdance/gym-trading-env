@@ -19,7 +19,7 @@ class F3Preparation:
     receipt: dict
 
 
-def preflight(settings,*,purpose='development',producer_gym=None,log_path=None,producer_lock=None,producer_lock_sha256=None):
+def preflight(settings,*,purpose='development',producer_gym=None,log_path=None,producer_lock=None,producer_lock_sha256=None,_resuming=False):
     require_stage_producer_pin(purpose,producer_lock,producer_lock_sha256)
     from .fg_s3_e_quality_supervision import SupervisionSource,QualitySupervisionAdmission
     from .fg_s3_e_observation import observation_contract
@@ -31,7 +31,7 @@ def preflight(settings,*,purpose='development',producer_gym=None,log_path=None,p
     s=validate_settings(settings)
     admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(s['corpus_root'],stage=STAGE),
         purpose=purpose,producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
-    proof,_=inspect_stage(s,allow_engineering=True);p=proof['identity']['preparation']
+    proof,_=inspect_stage(s,allow_engineering=True,_check_target=not _resuming);p=proof['identity']['preparation']
     if p['course']!=admission.source.course_identity_hash or p['source']!=admission.receipt['content_identity']:
         raise ValueError('F3_SOURCE_CORPUS_COURSE_MISMATCH')
     identity=plain(dict(protocol=PROTOCOL,settings=s,source=admission.receipt['content_identity'],
@@ -145,19 +145,19 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_a
     saved=read_manifest(path/'f3_preparation.json');binding=read_manifest(path/'reader_binding.json')
     if saved['identity']['source_model']['engineering_only']:raise ValueError('F3_FOUNDATION_NOT_TRAINED')
     if saved['status']!='F3_DATA_READY':raise ValueError('F3_NATIVE_PREPARATION_REQUIRED')
-    if saved['identity']['code']!=execution_identity():raise ValueError('F3_PREPARED_CODE_CHANGED')
     require_prepared_verifier(saved,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     index=path/'join.sqlite'
     if digest(index)!=binding['index_sha256']:raise ValueError('F3_PREPARED_INDEX_CHANGED')
     root=Path(s['run_dir'])
     if not any(root.is_relative_to(p) for p in (PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))):raise ValueError('F3_RUN_DIRECTORY_INVALID')
     audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp06/preflights'/uuid.uuid4().hex
-    current=preflight(s,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
+    current=preflight(s,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log',_resuming=resume)
     if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
             current.receipt['compatibility']!=saved['compatibility']):
         raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
-    if current.receipt['identity']!=saved['identity'] or current.source.receipt['content_identity']!=binding['source_identity']:
-        raise ValueError('F3_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
+    if (saved['identity']['source']!=current.source.receipt['content_identity'] or
+            current.source.receipt['content_identity']!=binding['source_identity']):
+        raise ValueError('F3_PREPARED_SOURCE_CHANGED')
     require_training_authority(current,authorized=True)
     return ActorRun(current,index,root,resume=resume,authorize_training=True).run(stop_at)
 

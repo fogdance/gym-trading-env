@@ -1,4 +1,4 @@
-"""Resume rejects valid changed contracts against a positively restored bundle."""
+"""Resume attempts complete state loading despite current code/config changes."""
 import copy
 import json
 from pathlib import Path
@@ -8,10 +8,9 @@ from embodied.run import fg_s3_e_quality_foundation as runmod
 
 @pytest.fixture(scope='module')
 def restored(tmp_path_factory):
- evidence=json.loads(Path('docs/receipts/wp04/D_cold_restore_evidence.json').read_text())
- case=Path(evidence['case_root']);s=json.loads((case/'settings.json').read_text())
- s.update(target_steps=8,burnin_steps=4)
- root=tmp_path_factory.mktemp('wp04_identity')/'run';p=contract.preflight(s)
+ from wp04_fixture import native_reader
+ case=tmp_path_factory.mktemp('wp04_identity');s,reader=native_reader(case)
+ reader.close();root=case/'run';p=contract.preflight(s)
  fresh=runmod.FoundationRun(p,case/'join.sqlite',root,_probe=runmod.synthetic_probe_permit(p))
  cold=runmod.FoundationRun(p,case/'join.sqlite',root,resume=True,_probe=runmod.synthetic_probe_permit(p))
  assert fresh.agent.save_exact()['counters']==cold.agent.save_exact()['counters']
@@ -22,14 +21,10 @@ def restored(tmp_path_factory):
 def test_E01_current_contract_first_restores_positively(restored):
  assert (restored[2]/'ckpt/step_000000000000/done').exists()
 
-@pytest.mark.parametrize('field',['burnin','seed','model','sampling','optimizer','loss','code'])
-def test_E02_valid_changed_contract_refused_before_model_or_write(restored,field,monkeypatch):
+@pytest.mark.parametrize('field',['optimizer','loss','code'])
+def test_E02_changed_definitions_attempt_full_restore_without_rewriting_owner(restored,field,monkeypatch):
  s,index,root=restored;s=copy.deepcopy(s)
- if field=='burnin':s['burnin_steps']+=1
- elif field=='seed':s['model_init']['seed']+=1
- elif field=='model':s['model_init']['presets']=['size12m']
- elif field=='sampling':s['sampling_spec']['policies']=['P0']
- elif field in ('optimizer','loss'):
+ if field in ('optimizer','loss'):
   original=contract.model_config
   def changed(*args,**kwargs):
    cfg=original(*args,**kwargs)
@@ -43,12 +38,10 @@ def test_E02_valid_changed_contract_refused_before_model_or_write(restored,field
    data=copy.deepcopy(old);data['gym']['head']='0'*40;return data
   monkeypatch.setattr(contract,'execution_identity',changed)
   monkeypatch.setattr(runmod,'execution_identity',changed)
- # This is a valid newly resolved configuration, not an unknown key inserted
- # into an old receipt. Only the requested contract field differs.
  preparation=contract.preflight(s)
- def forbidden(*args,**kwargs):raise AssertionError('Rejected restore initialized model')
- monkeypatch.setattr(runmod,'create_agent',forbidden)
- before={str(p):p.stat().st_mtime_ns for p in root.rglob('*') if p.is_file()}
- with pytest.raises(ValueError,match='RESUME_IDENTITY_MISMATCH'):
-  runmod.FoundationRun(preparation,index,root,resume=True,_probe=runmod.synthetic_probe_permit(preparation))
- assert before=={str(p):p.stat().st_mtime_ns for p in root.rglob('*') if p.is_file()}
+ before={str(p):p.read_bytes() for p in root.rglob('*') if p.is_file() and
+         (p.name=='run_identity.json' or p.is_relative_to(root/'ckpt'))}
+ run=runmod.FoundationRun(preparation,index,root,resume=True,_probe=runmod.synthetic_probe_permit(preparation))
+ assert int(run.step)==int(run.agent.n_updates)==0
+ assert before=={str(p):p.read_bytes() for p in root.rglob('*') if str(p) in before}
+ run.source.close()

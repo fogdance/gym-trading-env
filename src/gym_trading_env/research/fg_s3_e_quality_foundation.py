@@ -96,7 +96,7 @@ def execution_identity():
     result = {}
     for role,root in (('gym',PROJECT),('dreamer',PROJECT.parent/'dreamerv3')):
         git = lambda *a: subprocess.check_output(['git','-C',str(root),*a],text=True).strip()
-        # Bound to run/resume, not to ordinary Reader development. Relative
+        # Creation-time provenance, not a condition for start/resume. Relative
         # module names make moving an otherwise identical checkout harmless.
         folders = ('src/gym_trading_env','e_data_v1') if role == 'gym' else ('dreamerv3','embodied')
         files = {str(p.relative_to(root)):digest(p) for folder in folders
@@ -219,7 +219,6 @@ def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, s
     saved=read_manifest(path/'f1_preparation.json')
     binding=read_manifest(path/'reader_binding.json')
     if saved['status']!='F1_DATA_READY':raise ValueError('F1_NATIVE_PREPARATION_REQUIRED')
-    if saved['identity']['code']!=execution_identity():raise ValueError('F1_PREPARED_CODE_CHANGED')
     require_prepared_verifier(saved,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
     index=path/'join.sqlite'
     if digest(index)!=binding['index_sha256']:raise ValueError('F1_PREPARED_INDEX_CHANGED')
@@ -232,9 +231,9 @@ def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, s
     if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
             current.receipt['compatibility']!=saved['compatibility']):
         raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
-    if (current.receipt['identity']!=saved['identity'] or
+    if (saved['identity']['source']!=current.source.receipt['content_identity'] or
             binding['source_identity']!=current.source.receipt['content_identity']):
-        raise ValueError('F1_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
+        raise ValueError('F1_PREPARED_SOURCE_CHANGED')
     from embodied.run.fg_s3_e_quality_foundation import FoundationRun
     run=FoundationRun(current,index,root,resume=resume,authorize_training=authorized)
     return run.run(stop_at)

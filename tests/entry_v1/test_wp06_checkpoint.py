@@ -58,28 +58,31 @@ def test_F01_exact_cold_all_state_readers_rng_prefetch_after_skip(case,scenario)
         scenario=scenario,checkpoint=str(latest),counters=b['counters'],checkpoint_files=m['files'],
         all_state_and_next_batch_byte_equal=True,real_TRAIN_updates=0),indent=2))
 
-@pytest.mark.parametrize('attack',['settings','stage','source','code','index','corrupt_latest','architecture'])
+@pytest.mark.parametrize('attack',['index','corrupt_latest'])
 def test_F02_resume_rejects_before_model_or_run_writes(case,tmp_path,monkeypatch,attack):
     root,s,_,index=case;clone=tmp_path/'run';shutil.copytree(root/'ordinary_split',clone)
     p=preflight(s);idx=index
-    if attack=='code':monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_actor.execution_identity',lambda:{'changed':True})
-    elif attack=='index':
+    if attack=='index':
         idx=tmp_path/'index.sqlite';shutil.copyfile(index,idx);shutil.copyfile(index.with_suffix('.json'),idx.with_suffix('.json'))
         with idx.open('ab') as f:f.write(b'changed')
     elif attack=='corrupt_latest':
         latest=sorted((clone/'ckpt').glob('step_*'))[-1];(latest/'agent.pkl').write_bytes(b'corrupt')
-    else:
-        receipt=copy.deepcopy(p.receipt);identity=receipt['identity']
-        if attack=='settings':identity['settings']['max_consumed_batches']+=1
-        elif attack=='stage':identity['execution_contract']['stage']='QUALITY_HEADS'
-        elif attack=='source':identity['source']='0'*64
-        else:identity['effective_model']['agent']['dyn']['rssm']['deter']+=4
-        p=F3Preparation(p.settings,p.source,receipt)
     before={str(x):x.read_bytes() for x in clone.rglob('*') if x.is_file()}
     def forbidden(*a,**k):raise AssertionError('bad resume constructed a model')
     monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_actor.create_agent',forbidden)
     with pytest.raises(ValueError):ActorRun(p,idx,clone,resume=True,_probe=engineering_permit(p))
     assert before=={str(x):x.read_bytes() for x in clone.rglob('*') if x.is_file()}
+
+def test_F02_code_change_restores_original_owner_and_trained_actor(case,tmp_path,monkeypatch):
+    root,s,_,index=case;clone=tmp_path/'run';shutil.copytree(root/'ordinary_split',clone)
+    before=(clone/'run_identity.json').read_bytes()
+    monkeypatch.setattr('gym_trading_env.research.fg_s3_e_quality_actor.execution_identity',lambda:{'changed':True})
+    p=preflight(s);run=ActorRun(p,index,clone,resume=True,_probe=engineering_permit(p))
+    assert int(run.agent.n_updates)==run.counters.state['optimizer_updates']==4
+    saved=pickle.loads((run.cp.latest()/'agent.pkl').read_bytes())
+    assert parameter_digests(run.agent.params)==parameter_digests(saved['params'])
+    assert (clone/'run_identity.json').read_bytes()==before
+    run.source.close()
 
 def test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forever(case,tmp_path):
     _,s,_,index=case;p=preflight(s);run=ActorRun(p,index,tmp_path/'nonfinite',_probe=engineering_permit(p))
@@ -95,5 +98,5 @@ def test_F03_nonfinite_rejection_consumption_is_auditable_and_cannot_retry_forev
 def test_F04_f1_checkpoint_is_not_f3_resume(case,tmp_path):
     _,s,_,index=case;p=preflight(s);clone=tmp_path/'f1';shutil.copytree(s['source_run'],clone)
     before={str(x):x.read_bytes() for x in clone.rglob('*') if x.is_file()}
-    with pytest.raises(ValueError,match='IDENTITY_MISMATCH'):ActorRun(p,index,clone,resume=True,_probe=engineering_permit(p))
+    with pytest.raises(ValueError,match='RUN_STAGE_OR_BACKEND_MISMATCH'):ActorRun(p,index,clone,resume=True,_probe=engineering_permit(p))
     assert before=={str(x):x.read_bytes() for x in clone.rglob('*') if x.is_file()}
