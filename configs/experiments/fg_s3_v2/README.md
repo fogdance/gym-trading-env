@@ -706,6 +706,10 @@ their own prepared and Run directories under their corresponding worktree's
 
 ### E+Quality F1 foundation (WP04)
 
+FG809 单合约 GPU F1 的 `size12m / B8 / T64 / K32 / 10,000 updates`
+独立 Run 配置及正式启动/恢复命令见
+[F1 FG809 20261021](../../../docs/f1_fg809_20261021/README.md)。
+
 F1/F2/F3 当前接口见 [Corpus 3.1.0 与 R1/R4 接入说明](../../../docs/corpus_semver_r1_r4_20261020/INTERFACE.md)。正式 native prepare/read-check/start/resume 均须显式冻结 Verifier Gym 路径、`--producer-lock` 和外部审批的 `--producer-lock-sha256`；start/resume 使用与 Prepared 相同的 pin 并再次实际执行 G3。原 V3 通过只读兼容映射复用，不修改旧教材。新 Run 使用 `STRICT_PUBLISHED_LATEST_V2`，旧 Run 不原地迁移。
 
 The F1 contract uses `FOUNDATION_WM` execution and `WM_NATURAL` sampling.

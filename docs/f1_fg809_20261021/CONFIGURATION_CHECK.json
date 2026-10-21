@@ -1,0 +1,105 @@
+{
+  "exit_code": 0,
+  "result": {
+    "status": "F1_LAUNCH_CONFIGURATION_READY",
+    "settings": {
+      "schema": "FG_S3_E_QUALITY_F1_CONFIG_V1",
+      "stage": "FOUNDATION_WM",
+      "sampling_stage": "WM_NATURAL",
+      "sampling_spec": {
+        "mode": "NATURAL",
+        "policies": [
+          "P0",
+          "P1",
+          "P2_low",
+          "P2_mid",
+          "P3",
+          "P4"
+        ]
+      },
+      "model_init": {
+        "seed": 202,
+        "presets": [
+          "size12m"
+        ]
+      },
+      "batch_size": 8,
+      "target_steps": 64,
+      "burnin_steps": 32,
+      "optimizer_updates": 10000,
+      "report_every_updates": 100,
+      "save_every_updates": 500,
+      "device": "gpu",
+      "corpus_root": "/data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN",
+      "prepared_dir": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/prepared/F1_FG809_12M_U10000_20261021",
+      "run_dir": "/data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021"
+    },
+    "compatibility": {
+      "course_abi_version": "3.1.0",
+      "semantic_contract_hash": "09348e7d20df16153ab1a05e3aced30b30100541dcda76ef033e2f47ec68d53f",
+      "resolution": "REVIEWED_V3_MAPPING",
+      "e_profile_schema_sha256": "365c5dd68a561c242e2e8e58455ee143ed8d347c37b10413a6b2467d6f5a7dd7"
+    },
+    "corpus_identity": "76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550",
+    "contract": "CZCE.FG809",
+    "selection": {
+      "start_day": "2018-04-11",
+      "end_day": "2018-08-08"
+    },
+    "verifier_audit": {
+      "gym": {
+        "head": "3a80e1f16139d01cb63ae66562cfaf7c294eb4ae",
+        "runtime_diff_exit_code": 0,
+        "untracked_runtime": []
+      },
+      "dreamer": {
+        "head": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497",
+        "runtime_diff_exit_code": 0,
+        "untracked_runtime": []
+      },
+      "operator_producer_pin_sha256": "5c27a8a8eecae6315dafe3f34890d0592afe79c819a4a231395d191ce290c220"
+    },
+    "model_rssm": {
+      "deter": 2048,
+      "hidden": 256,
+      "stoch": 32,
+      "classes": 16,
+      "act": "silu",
+      "norm": "rms",
+      "unimix": 0.01,
+      "outscale": 1.0,
+      "winit": "trunc_normal_in",
+      "imglayers": 2,
+      "obslayers": 1,
+      "dynlayers": 1,
+      "absolute": false,
+      "blocks": 8,
+      "free_nats": 1.0
+    },
+    "checked_launch_arguments": {
+      "producer_gym": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env",
+      "producer_lock": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/release/VERIFIER_PIN.json",
+      "producer_lock_sha256": "5c27a8a8eecae6315dafe3f34890d0592afe79c819a4a231395d191ce290c220"
+    },
+    "sequence_rows": 97,
+    "target_positions_budget": 5120000,
+    "f1_preparation": "NOT_RUN",
+    "agent_created": false,
+    "gpu_execution": false,
+    "optimizer_updates_by_this_check": 0,
+    "reader_readiness": "USER_INSTRUCTED_TO_TREAT_AS_READY; NOT_RECHECKED",
+    "actual_f1_data_admission": "REQUIRED_BY_EXISTING_NATIVE_F1_ENTRYPOINT"
+  },
+  "shell_syntax_check_exit_code": 0,
+  "original_invalid_path_reproduced": true,
+  "repositories": {
+    "gym": {
+      "sha": "3a80e1f16139d01cb63ae66562cfaf7c294eb4ae",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497",
+      "dirty": false
+    }
+  }
+}

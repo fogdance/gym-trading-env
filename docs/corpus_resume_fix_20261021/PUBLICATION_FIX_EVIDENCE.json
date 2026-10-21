@@ -1,0 +1,34 @@
+{
+  "status": "REAL_FG809_PUBLICATION_PATH_VERIFIED_IN_ISOLATED_DIRECTORY",
+  "exit_code": 0,
+  "seconds": 67.56314753193874,
+  "review_output": "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/gym-trading-env/artifacts/fg_s3_v2/corpus_publication_fix_20261021/FG809_publish_review",
+  "corpus_identity": "76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550",
+  "native_verifier_pin_sha256": "d87082946aaa9db7408d68b2c2d147bf6cf1d28f27c1afb36d07c32b59239425",
+  "official_control_state_unchanged": true,
+  "corpus_manifest_unchanged": true,
+  "official_production_resumed": false,
+  "fg901_g3_rerun": false,
+  "gpu_started": false,
+  "optimizer_updates": 0,
+  "repositories": {
+    "gym": "6f1403c2da2bd112d0222b22edb9bb44bd5c2971",
+    "dreamer": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5"
+  },
+  "completed_stages_retained": {
+    "TRAIN01_FG809_FULL_MAIN": [
+      "runtime_limits",
+      "validate",
+      "generate",
+      "native_g3",
+      "reader",
+      "coverage"
+    ],
+    "TRAIN02_FG901_FULL_MAIN": [
+      "runtime_limits",
+      "validate",
+      "generate"
+    ]
+  },
+  "command": "bash /home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/release/RUN_CORPUS.sh resume"
+}

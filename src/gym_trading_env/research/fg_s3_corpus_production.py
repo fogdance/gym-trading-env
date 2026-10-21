@@ -410,6 +410,8 @@ def execute_stage(request):
             workers=request['capacity'], policy_cpus=request['policy_cpus'])
         write_json(target/'native_verification.json', admission.native_result)
         write_json(target/'WP03_SOURCE_ADMISSION_RECEIPT.json', admission.receipt)
+        shutil.copyfile(producer['pin'],target/'VERIFIER_PIN.json')
+        check_files({str(target/'VERIFIER_PIN.json'):producer['pin_sha256']})
         result = dict(status='NATIVE_G3_VERIFIED', corpus_identity=admission.source.corpus_content_hash)
     elif stage == 'reader':
         from .fg_s3_e_quality_supervision import QualitySupervisionAdmission, SupervisionSource
@@ -442,6 +444,41 @@ def link_copy(source, target):
         shutil.copy2(source, target)
 
 
+def completed_native_pin(native, directory, config, batch, generated_attempt):
+    """Authenticate the verifier of a sealed G3 stage, not today's publisher."""
+    saved = read(Path(directory)/'request.json')
+    audit = native.get('producer_audit', {})
+    sha256 = audit.get('operator_producer_pin_sha256')
+    if re.fullmatch('[0-9a-f]{64}', str(sha256)) is None:
+        raise ValueError('Completed G3 requires its original external verifier Pin SHA256')
+    command_path = Path(directory)/'command.json'
+    command = read(command_path) if command_path.is_file() else {}
+    # New controllers seal an explicit executor binding. Older completed G3
+    # requests record both the configured executor and an adoption executor;
+    # the receipt must select one exact recorded path/Pin pair.
+    execution = command.get('execution_lock', {}).get('producer')
+    candidates = ([execution] if execution is not None else
+        [saved['config']['producer'], saved['batch'].get('adopt', {}).get('producer')])
+    selected = [item for item in candidates if item is not None
+        and item['gym'] == native.get('cwd') and item['pin_sha256'] == sha256]
+    if not selected:
+        raise ValueError('Completed G3 verifier differs from its sealed execution request')
+    refs = [dict(pin=str(Path(directory)/'native/VERIFIER_PIN.json'), pin_sha256=sha256),
+        origin_for(config, batch, generated_attempt), pin_reference(config['producer']),
+        pin_reference(selected[0])]
+    for ref in refs:
+        if ref['pin_sha256'] != sha256 or not Path(ref['pin']).is_file():
+            continue
+        repositories = origin_repositories(ref)
+        expected = {role:dict(head=item['sha'],runtime_diff_exit_code=0,untracked_runtime=[])
+                    for role,item in repositories.items()}
+        expected['operator_producer_pin_sha256'] = sha256
+        if audit != expected:
+            raise ValueError('Completed G3 audit differs from its authenticated verifier Pin')
+        return ref
+    raise ValueError('Original completed G3 verifier Pin metadata is unavailable')
+
+
 def publish_batch(request):
     """Same native/Reader publication contract as the original full-main release.
 
@@ -465,9 +502,9 @@ def publish_batch(request):
             or result['corpus_identity'] != manifest['content_hash']
             or reader['corpus_identity'] != manifest['content_hash']
             or reader['actual_optimizer_exposures'] != 0 or reader.get('training_admitted') is not False
-            or reader['status'] not in ('PASS_READER_ONLY', 'PASS_READER_CPU')
-            or native['producer_audit'] != authenticate(producer_for(config, batch))):
-        raise ValueError('Batch native/Reader/producer receipt mismatch')
+            or reader['status'] not in ('PASS_READER_ONLY', 'PASS_READER_CPU')):
+        raise ValueError('Batch native/Reader receipt mismatch')
+    verifier_pin = completed_native_pin(native,previous['native_g3'],config,batch,previous['generate'])
     from .fg_replay import trace_manifest, E_QUALITY_SCHEMA
     if len(result['native_replay']) != len(manifest['behaviors']):
         raise ValueError('Incomplete G3 receipts')
@@ -487,6 +524,12 @@ def publish_batch(request):
     # Preserve canonical receipt paths consumed by existing multi-Corpus admission.
     for name, directory in (('native', previous['native_g3']/'native'), ('reader', previous['reader']/'reader')):
         shutil.copytree(directory, out/name, copy_function=link_copy)
+    # Keep the original certificate bytes in the published asset. Relocation
+    # of a historical verifier must not create a checkout dependency later.
+    archived_pin = out/'native/VERIFIER_PIN.json'
+    if not archived_pin.exists():
+        shutil.copyfile(verifier_pin['pin'],archived_pin)
+    check_files({str(archived_pin):verifier_pin['pin_sha256']})
     shutil.copy2(previous['coverage']/'quality_coverage.json', out/'quality_coverage.json')
     for stage, directory in previous.items():
         target = out/'stages'/stage;target.mkdir(parents=True)

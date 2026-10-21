@@ -1,0 +1,101 @@
+{
+  "protocol": "FG_S3_F1_FG809_LAUNCH_LOCK_V1",
+  "status": "CONFIGURATION_READY_FORMAL_PREPARE_NOT_RUN",
+  "repositories": {
+    "gym": {
+      "sha": "3a80e1f16139d01cb63ae66562cfaf7c294eb4ae",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497",
+      "dirty": false
+    }
+  },
+  "runtime_identity": {
+    "gym": {
+      "head": "3a80e1f16139d01cb63ae66562cfaf7c294eb4ae",
+      "runtime_hash": "4f47f6857c99dbe74cac7256a411c444aecdfac1aeed15341218a0a0d01d0d0f"
+    },
+    "dreamer": {
+      "head": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497",
+      "runtime_hash": "4a954f117aa6f8771a4aff0c647ac2baf471df2cf45dc3f227b116085a979593"
+    }
+  },
+  "runtime_unchanged_from_integration": true,
+  "baseline": {
+    "gym": "99e9f81dc91440bd38a04e84adacbb7c2616baa7",
+    "dreamer": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497"
+  },
+  "config": {
+    "path": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/configs/experiments/fg_s3_v2/e_quality_f1_fg809_size12m_u10000_20261021.yaml",
+    "sha256": "13fe6626a49187c17e1905de5876483b11da152ab0367177422e2239c12ca6cc"
+  },
+  "settings": {
+    "schema": "FG_S3_E_QUALITY_F1_CONFIG_V1",
+    "stage": "FOUNDATION_WM",
+    "sampling_stage": "WM_NATURAL",
+    "sampling_spec": {
+      "mode": "NATURAL",
+      "policies": [
+        "P0",
+        "P1",
+        "P2_low",
+        "P2_mid",
+        "P3",
+        "P4"
+      ]
+    },
+    "model_init": {
+      "seed": 202,
+      "presets": [
+        "size12m"
+      ]
+    },
+    "batch_size": 8,
+    "target_steps": 64,
+    "burnin_steps": 32,
+    "optimizer_updates": 10000,
+    "report_every_updates": 100,
+    "save_every_updates": 500,
+    "device": "gpu",
+    "corpus_root": "/data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN",
+    "prepared_dir": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/prepared/F1_FG809_12M_U10000_20261021",
+    "run_dir": "/data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021"
+  },
+  "verifier_pin": {
+    "path": "/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/release/VERIFIER_PIN.json",
+    "sha256": "5c27a8a8eecae6315dafe3f34890d0592afe79c819a4a231395d191ce290c220"
+  },
+  "corpus": {
+    "root": "/data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN",
+    "identity": "76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550",
+    "manifest_sha256": "f447818f32fa43d72e8aa6eb0dcffcd1b63f64dac837dc14b6944cf7e49665a7",
+    "contract": "CZCE.FG809",
+    "selection": {
+      "start_day": "2018-04-11",
+      "end_day": "2018-08-08"
+    },
+    "source_lock": "1b8566ac99577d148f88d70462f17a8f01c159285a0bb8b3c4b4e35d62a8403f",
+    "teacher_identity": "4da0c34b6632bd50824fed757e2249516d1ca717b0ace1b5e0e79552bf9f96c3",
+    "course_identity": "29d21f24aa902d2b22da33ca7e675f92f7e43cde1a39bc4f8fe79445a8f90606"
+  },
+  "reader_readiness": "USER_INSTRUCTED_TO_TREAT_AS_READY_NOT_RECHECKED",
+  "formal_preparation": "NOT_RUN",
+  "formal_training": "NOT_RUN",
+  "gpu_execution": "NOT_RUN",
+  "optimizer_updates": 0,
+  "commands": {
+    "status": "bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh status",
+    "prepare": "bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh prepare",
+    "start": "bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh start",
+    "resume": "bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh resume"
+  },
+  "launch_path_repair": {
+    "commit": "3a80e1f16139d01cb63ae66562cfaf7c294eb4ae",
+    "previous_pin_sha256": "92a7220572106abf26acb9b1081bce555795268ce788fd6b4899e2ff725f3654",
+    "runtime_source_unchanged": true,
+    "prepared_or_run_existed": false,
+    "corpus_changed": false
+  },
+  "content_hash": "d6d2e0bb3d53263a5c742849265410b0650ec07bcb66739084ec3bc895e77285"
+}
