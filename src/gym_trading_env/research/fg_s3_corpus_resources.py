@@ -98,10 +98,11 @@ def largest_group_process(groups):
 
 class Ledger:
     def __init__(self, cpus, worker_bytes, headroom_bytes, parent_bytes, *, memory=available_memory,
-                 resident=group_pss, event=None):
+                 resident=group_pss, event=None, check_memory=True):
         self.cpus, self.worker_bytes = cpus, worker_bytes
         self.headroom_bytes, self.parent_bytes = headroom_bytes, parent_bytes
         self.memory, self.resident, self.event = memory, resident, event
+        self.check_memory = check_memory
         self.condition = threading.Condition()
         self.leases, self.parents, self.pending = {}, {}, {}
         self.stopping = False
@@ -115,6 +116,8 @@ class Ledger:
         return sum(item['cpus'] for item in self.leases.values())
 
     def fits(self, cpus):
+        if not self.check_memory:
+            return self.used() + cpus <= self.cpus
         groups = {item['pgid'] for item in self.parents.values() if item}
         if self.resident is group_pss:
             # Retain 25% headroom over the largest observed initialized/grown

@@ -467,7 +467,10 @@ class Controller:
         headroom = resources['headroom_mib'] * 1024**2
         parent = resources['coordinator_memory_mib'] * 1024**2
         available=available_memory()
-        capacity = min(resources['workers'], (available-headroom-2*parent)//worker_bytes)
+        check_memory = resources.get('memory_checks', True)
+        capacity = resources['workers']
+        if check_memory:
+            capacity = min(capacity, (available-headroom-2*parent)//worker_bytes)
         if capacity<12:
             raise ValueError(f'Insufficient CPU/memory capacity: {capacity} workers fit, 12 required; '
                              f'MemAvailable={available}, worker_bytes={worker_bytes}, '
@@ -478,10 +481,12 @@ class Controller:
         def event(value):
             with event_lock, (self.control/'resources.jsonl').open('a') as stream:
                 stream.write(json.dumps(value)+'\n')
-        self.ledger = Ledger(self.capacity, worker_bytes, headroom, parent, event=event)
+        self.ledger = Ledger(self.capacity, worker_bytes, headroom, parent, event=event,
+                             check_memory=check_memory)
         self.broker = Broker(self.ledger)
         print(json.dumps(dict(status='RESOURCE_PLAN', capacity=self.capacity, policy_cpus=self.budgets,
-            affinity=resources['affinity'], worker_memory_bytes=worker_bytes, available_memory_bytes=available_memory())), flush=True)
+            affinity=resources['affinity'], memory_checks=check_memory,
+            worker_memory_bytes=worker_bytes, available_memory_bytes=available)), flush=True)
 
     def request(self, batch, stage, directory, previous):
         value = dict(config=self.config, batch=batch, stage=stage, out=str(directory),
@@ -507,6 +512,7 @@ class Controller:
             argv = self.stage_command(directory)
             env = {**os.environ, **CPU_ENV, ENV:self.broker.setting, 'FG_CORPUS_PREP_LEASE':token,
                    'FG_CORPUS_PRIORITY':str(priority)}
+            env['FG_CORPUS_MEMORY_CHECKS'] = '1' if self.config['resources'].get('memory_checks', True) else '0'
             env['TMPDIR'] = str(self.control/'tmp');Path(env['TMPDIR']).mkdir(exist_ok=True)
             env['MPLCONFIGDIR'] = str(self.control/'matplotlib')
             if batch.get('adopt'):

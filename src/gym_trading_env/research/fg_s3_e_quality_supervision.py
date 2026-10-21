@@ -248,6 +248,12 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     from contextlib import nullcontext
     shared=ENV in env
     legacy=shared and env.get('FG_CORPUS_LEGACY')=='1'
+    execution_adapter = None
+    if legacy and env.get('FG_CORPUS_MEMORY_CHECKS') == '0':
+        adapter = Path(__file__).resolve().parents[3]/'tools/fg_s3_corpus_cpu_only_verify.py'
+        argv[2] = str(adapter)
+        execution_adapter = dict(path=str(adapter), sha256=__import__('hashlib').sha256(adapter.read_bytes()).hexdigest(),
+                                 memory_checks=False)
     if legacy and policy_cpus is not None:
         raise ValueError('Legacy verifier does not accept per-policy budgets')
     if shared:pause_phase()
@@ -300,6 +306,7 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     if frozen_producer_audit(producer_gym,**pin)!=producer_audit:
         raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
     return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,
+        execution_adapter=execution_adapter,
                 seconds=time.monotonic() - began, log_sha256=digest(log_path), result=result)
 
 

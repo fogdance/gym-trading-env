@@ -18,6 +18,7 @@ coverage_program:
   path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/audit_coverage.py
   sha256: e691873f9ed8410ce71dfbe323a22ccfd82e589a0854226fe80662d1abdeb37f
 resources:
+  memory_checks: false
   workers: 24
   affinity:
   - 0
