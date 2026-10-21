@@ -11,7 +11,13 @@ import yaml
 
 
 def digest(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    # Corpus sidecars can be several GiB. Incremental SHA256 hashes exactly
+    # the same bytes without allocating a whole file beside the live model.
+    checksum = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(4 * 1024 * 1024), b''):
+            checksum.update(block)
+    return checksum.hexdigest()
 
 
 def inspect_frame(frame, contract, schedule):
