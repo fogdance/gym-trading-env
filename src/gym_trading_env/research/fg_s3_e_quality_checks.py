@@ -273,7 +273,7 @@ def reader_evidence(admission,out,*,length=64,seed=202,with_model=True):
     return report
 
 
-def main(argv=None):
+def _main(argv=None):
     parser=argparse.ArgumentParser(description='WP03 CPU supervision checks, never formal training')
     sub=parser.add_subparsers(dest='command',required=True)
     source=sub.add_parser('source')
@@ -283,6 +283,7 @@ def main(argv=None):
     source.add_argument('--producer-lock',help='Operator-reviewed frozen producer pin; requires its separately supplied SHA256')
     source.add_argument('--producer-lock-sha256')
     source.add_argument('--workers',type=int,help='CPU process budget forwarded to native G3')
+    source.add_argument('--policy-cpus',help='Per-policy account + teacher process budgets for the selected producer')
     reader=sub.add_parser('read')
     reader.add_argument('--corpus',required=True);reader.add_argument('--out',required=True)
     reader.add_argument('--length',type=int,default=64);reader.add_argument('--seed',type=int,default=202)
@@ -307,7 +308,8 @@ def main(argv=None):
         admission=QualitySupervisionAdmission.preflight(source,purpose=getattr(args,'purpose','development'),
             producer_gym=getattr(args,'producer_gym',None),log_path=out/'native_verify.log',
             producer_lock=getattr(args,'producer_lock',None),producer_lock_sha256=getattr(args,'producer_lock_sha256',None),
-            workers=getattr(args,'workers',None))
+            workers=getattr(args,'workers',None),
+            **({'policy_cpus':args.policy_cpus} if getattr(args,'policy_cpus',None) is not None else {}))
         write_json(out/'WP03_SOURCE_ADMISSION_RECEIPT.json',admission.receipt)
         if admission.native_result is not None:
             write_json(out/'native_verification.json',admission.native_result)
@@ -319,3 +321,9 @@ def main(argv=None):
     except (ValueError,OSError,KeyError,TypeError,RuntimeError) as exc:
         print(json.dumps(dict(status='NO_GO',error=str(exc),training_admitted=False)),flush=True)
         return 2
+
+
+def main(argv=None):
+    from .fg_s3_corpus_resources import phase_lease
+    with phase_lease():
+        return _main(argv)

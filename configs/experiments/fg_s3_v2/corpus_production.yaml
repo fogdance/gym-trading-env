@@ -1,0 +1,190 @@
+# CPU DATA production; full production is user-triggered.
+# Freeze pin/ready config are generated outside the repository; see README.
+protocol: FG_S3_CORPUS_PRODUCTION_V1
+production_root: /data/s3_corpus/train_full_main_scheduler_20261021
+source_pool: /home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json
+env_receipt: /data/logdir/fg_s3_market_minute/20261013_v2/env/v1
+seed: 202
+reader_length: 64
+max_inflight_batches: 2
+producer:
+  gym: /home/v/Documents/work/research/fg-s3-corpus-scheduler-20261021/gym-trading-env
+  pin: /home/v/Documents/work/research/fg-s3-corpus-scheduler-20261021/release/PRODUCER_PIN.json
+  pin_sha256: REPLACE_AFTER_FINAL_CODE_FREEZE
+runtime_probe:
+  path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/rational_witness_probe.py
+  sha256: 2ad9f14a081884fd4277ec89359572e7c18e058f8ab283b77025199f82cc3981
+coverage_program:
+  path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/audit_coverage.py
+  sha256: e691873f9ed8410ce71dfbe323a22ccfd82e589a0854226fe80662d1abdeb37f
+resources:
+  workers: 24
+  affinity:
+  - 0
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  - 8
+  - 9
+  - 10
+  - 11
+  - 12
+  - 13
+  - 14
+  - 15
+  - 16
+  - 17
+  - 18
+  - 19
+  - 20
+  - 21
+  - 22
+  - 23
+  native_threads: 1
+  policy_cpus:
+    P0: 8
+    P1: 2
+    P2_low: 2
+    P2_mid: 2
+    P3: 2
+    P4: 8
+  worker_memory_mib: 768
+  coordinator_memory_mib: 512
+  headroom_mib: 768
+batches:
+- id: TRAIN01_FG809_FULL_MAIN
+  contract: CZCE.FG809
+  start_day: '2018-04-11'
+  end_day: '2018-08-08'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN01_FG809_FULL_MAIN.manifest.json
+    sha256: 19181c77dba7c6face10a8c32c5436aa3c22ed66b5aac53d570394eafbaae2b2
+  adopt:
+    corpus: /data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN
+    producer:
+      gym: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env
+      pin: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/locks/PRODUCER_PIN.json
+      pin_sha256: d87082946aaa9db7408d68b2c2d147bf6cf1d28f27c1afb36d07c32b59239425
+- id: TRAIN02_FG901_FULL_MAIN
+  contract: CZCE.FG901
+  start_day: '2018-08-09'
+  end_day: '2018-12-14'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN02_FG901_FULL_MAIN.manifest.json
+    sha256: d00fd8ad8c11b5074178efc60589e9ed3f41baa103564caacfb11ab83e1bb592
+- id: TRAIN03_FG905_FULL_MAIN
+  contract: CZCE.FG905
+  start_day: '2018-12-17'
+  end_day: '2019-04-16'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN03_FG905_FULL_MAIN.manifest.json
+    sha256: 53c017a82cb2d1f3f762d7610edf63da428836c50bb34a79f61dab458c7fd8f8
+- id: TRAIN04_FG909_FULL_MAIN
+  contract: CZCE.FG909
+  start_day: '2019-04-17'
+  end_day: '2019-08-08'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN04_FG909_FULL_MAIN.manifest.json
+    sha256: 39bdbfea95a85a081fd94ea4cdcd240960ba79a74becf5a3c2a81903d3da6f87
+- id: TRAIN05_FG001_FULL_MAIN
+  contract: CZCE.FG001
+  start_day: '2019-08-09'
+  end_day: '2019-12-09'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN05_FG001_FULL_MAIN.manifest.json
+    sha256: 9aea673abb3efdaf5494052aa4eb23bdb28755b75628eb5c6acb114a15c503bd
+- id: TRAIN06_FG005_FULL_MAIN
+  contract: CZCE.FG005
+  start_day: '2019-12-10'
+  end_day: '2020-04-01'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN06_FG005_FULL_MAIN.manifest.json
+    sha256: 4848360bb88103542ad1b1b2da9458a540bc649727546a18c2fef70a6bd92e1c
+- id: TRAIN07_FG009_FULL_MAIN
+  contract: CZCE.FG009
+  start_day: '2020-04-02'
+  end_day: '2020-08-11'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN07_FG009_FULL_MAIN.manifest.json
+    sha256: 597f57b08f267011287d4c134526a51d711dd619d934776fd0a4376c425f039c
+- id: TRAIN08_FG101_FULL_MAIN
+  contract: CZCE.FG101
+  start_day: '2020-08-12'
+  end_day: '2020-12-11'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN08_FG101_FULL_MAIN.manifest.json
+    sha256: 11c64fdce523eaba63f6c386f0a018119e68c69ebd5735ca4b38219fe0c5b57e
+- id: TRAIN09_FG105_FULL_MAIN
+  contract: CZCE.FG105
+  start_day: '2020-12-14'
+  end_day: '2021-04-07'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN09_FG105_FULL_MAIN.manifest.json
+    sha256: 197f4ffeb40fa4cc8ca16722d691c82af7e4fdf7ce04e5c470817775bb46bf0e
+- id: TRAIN10_FG109_FULL_MAIN
+  contract: CZCE.FG109
+  start_day: '2021-04-08'
+  end_day: '2021-07-23'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN10_FG109_FULL_MAIN.manifest.json
+    sha256: e5df86f67905656d562ba41f51e3b8e4b891a58010644e24ab3184a53347f372
+- id: TRAIN11_FG201_FULL_MAIN
+  contract: CZCE.FG201
+  start_day: '2021-07-26'
+  end_day: '2021-12-09'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN11_FG201_FULL_MAIN.manifest.json
+    sha256: fcc5fc2845115d6564de2aa2476db71f57697430501e460fb2fd053de83388d4
+- id: TRAIN12_FG205_FULL_MAIN
+  contract: CZCE.FG205
+  start_day: '2021-12-10'
+  end_day: '2022-03-23'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN12_FG205_FULL_MAIN.manifest.json
+    sha256: a81db812f4887831b02c0be34aff2a2aa7036f1f19a517d9516cdaeb8d14444d
+- id: TRAIN13_FG209_FULL_MAIN
+  contract: CZCE.FG209
+  start_day: '2022-03-24'
+  end_day: '2022-08-10'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN13_FG209_FULL_MAIN.manifest.json
+    sha256: 21d18a7a6b7133660ff0f7106a8f0dffb3e56dbf75edffeeecb5f3ad30274917
+- id: TRAIN14_FG301_FULL_MAIN
+  contract: CZCE.FG301
+  start_day: '2022-08-11'
+  end_day: '2022-12-09'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN14_FG301_FULL_MAIN.manifest.json
+    sha256: b4646b9319b0012070415901fe072bf62d9cdeadc4c3628e0be1a63829d6965f
+- id: TRAIN15_FG305_FULL_MAIN
+  contract: CZCE.FG305
+  start_day: '2022-12-12'
+  end_day: '2023-04-10'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN15_FG305_FULL_MAIN.manifest.json
+    sha256: 9a1b9600969b198b623972b4d5f3568ba9b2c25761e5aa0328d390c8b9c9cf62
+- id: TRAIN16_FG309_FULL_MAIN
+  contract: CZCE.FG309
+  start_day: '2023-04-11'
+  end_day: '2023-08-11'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN16_FG309_FULL_MAIN.manifest.json
+    sha256: af2fe5f805eb2c9a7db5d47656e26e9bcbded96e19875baaafa19faa2bd8dd99
+- id: TRAIN17_FG401_FULL_MAIN
+  contract: CZCE.FG401
+  start_day: '2023-08-14'
+  end_day: '2023-12-07'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN17_FG401_FULL_MAIN.manifest.json
+    sha256: c98a98ff4072f045c0bf8d79351481d4fa4f51a7dc8d1bc04c33af7f0bf0ec25
+- id: TRAIN18_FG405_FULL_MAIN
+  contract: CZCE.FG405
+  start_day: '2023-12-08'
+  end_day: '2024-04-08'
+  plan:
+    path: /home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/batches/TRAIN18_FG405_FULL_MAIN.manifest.json
+    sha256: 82bf1dbbe77e057386c47d0938c5c2494f9815e62951abf67c3e2f20ee2e266e
