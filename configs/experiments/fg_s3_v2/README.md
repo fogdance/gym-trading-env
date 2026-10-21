@@ -805,3 +805,5 @@ Future FORMAL preparation additionally uses `--source-purpose native-verificatio
 不同合约可在同一计划增加 `contract_windows: {CZCE.FGxxxx: {start_day: 'YYYY-MM-DD', end_day: 'YYYY-MM-DD'}, ...}`。使用此项时每个合约都需显式声明，且位于全局 `start_day/end_day` 研究区间内；各合约只运行自身合法连续区间，不要求不同主力合约具有重叠的交易日。所有策略在同一合约内严格共享该区间、成本与起始资金。
 
 基线为 WAIT、合法ADD、Random_P10（预注册全部seed）、仅用可见市场分钟的Delay15；禁止实时P4 Oracle。验证独立复现全部策略动作、原生金融对账并重算 TP速度、MAE、逆行10/SL30、费用、Reward、PnL和回撤。全WAIT的TP率为N/A，无入场技能证据；支持量不足和缺少预注册质量规则明确报告。合成工程成功不等于策略有效，不自动授予DEV研究、训练或TEST权限。详见 [WP08 实施报告](../../../docs/WP08_IMPLEMENTATION_REVIEW.md)。
+
+FG809 正式 F3：`e_quality_f3_fg809_size12m_u10000_20261022.yaml`，继承已完成的 F1 第 10,000 步，复用生产认证，单卡、size12m、10,000 次更新。启动/恢复命令和路径见 [F3 FG809](../../../docs/f3_fg809_20261022/README.md)。
