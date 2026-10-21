@@ -334,6 +334,24 @@ def _verification_job(job):
     return result
 
 
+def _execution_limits(jobs, workers, policy_cpus):
+    from .fg_s3_corpus_resources import ENV,allocate
+    if ENV in os.environ and policy_cpus is not None:
+        # The production broker owns the cross-phase memory reservations.
+        # Re-reading MemAvailable here would double-charge the older phase.
+        budgets=allocate(policy_cpus,workers)
+        return dict(workers=jobs,label_workers=[budgets[key]-1 for key in budgets],
+            total_worker_processes=sum(budgets.values()),policy_cpus=budgets,
+            requested_worker_processes=workers,native_threads_per_worker=1,
+            worker_limit_reason='shared_production_ledger')
+    limits=_worker_limits(jobs,requested_workers=workers)
+    if policy_cpus is not None:
+        budgets=allocate(policy_cpus,limits['total_worker_processes'])
+        limits.update(workers=jobs,label_workers=[budgets[key]-1 for key in budgets],
+                      total_worker_processes=sum(budgets.values()),policy_cpus=budgets)
+    return limits
+
+
 def _execution_scope(lock, market, mode, max_market_steps):
     if mode not in ('dev','data'):
         raise ValueError('Corpus mode must be dev or data')
@@ -355,7 +373,7 @@ def _execution_scope(lock, market, mode, max_market_steps):
 
 
 def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_day=None,workers=None,
-                   mode='data',max_market_steps=None):
+                   mode='data',max_market_steps=None,policy_cpus=None):
     began=time.monotonic()
     out=_local_path(out)
     independent_output(out,inputs=[pool])
@@ -392,17 +410,24 @@ def generate_small(pool,env_receipt,contract,out,*,seed=202,start_day=None,end_d
         gamma_rational=[332,333],native_validation=strict.plan()['native_validation'])))
     traces=[]
     specs=behavior_specs(seed)+[dict(id='P4',kind='quality_oracle_schedule',seed_components=[seed,0,5],teacher_identity=strict.identity_hash,hindsight_behavior=True)]
-    limits=_worker_limits(len(specs),requested_workers=workers);workers=limits['workers']
+    limits=_execution_limits(len(specs),workers,policy_cpus);workers=limits['workers']
     print(json.dumps(dict(phase='generate',resource_budget=limits)),flush=True)
     market_seed=factory._market_cache.export_seed()
-    with ProcessPoolExecutor(max_workers=workers,mp_context=multiprocessing.get_context('spawn')) as executor:
-        futures=[executor.submit(_behavior_job,dict(row=row,profile=profile,spec=spec,
+    arguments=[dict(row=row,profile=profile,spec=spec,
             out=out/'policies'/spec['id'],source=source_binding,initial=initial,
             end=lock['end_cursor'],strict=strict,market_seed=market_seed,
-            label_workers=limits['label_workers'][i%workers])) for i,spec in enumerate(specs)]
-        jobs=[]
-        for future in as_completed(futures):
-            result=future.result();jobs.append(result);print(json.dumps(result),flush=True)
+            label_workers=limits['label_workers'][i%workers]) for i,spec in enumerate(specs)]
+    if policy_cpus is not None:
+        from .fg_s3_corpus_resources import run_policy_jobs
+        budgets=limits['policy_cpus']
+        jobs=run_policy_jobs(_behavior_job,arguments,budgets)
+        for result in jobs:print(json.dumps(result),flush=True)
+    else:
+        with ProcessPoolExecutor(max_workers=workers,mp_context=multiprocessing.get_context('spawn')) as executor:
+            futures=[executor.submit(_behavior_job,job) for job in arguments]
+            jobs=[]
+            for future in as_completed(futures):
+                result=future.result();jobs.append(result);print(json.dumps(result),flush=True)
     traces=[out/'policies'/spec['id'] for spec in specs]
     _publish_streams(out,[s['id'] for s in specs])
     _verify_publications(out,[s['id'] for s in specs])
@@ -470,7 +495,7 @@ def _expected_binding_files(path,lock,code):
     return files
 
 
-def verify_corpus(path,*,workers=None):
+def verify_corpus(path,*,workers=None,policy_cpus=None):
     """Re-establish source, market math and every native account row read-only."""
     path=_local_path(path);m=read_manifest(path/'corpus_manifest.json')
     if m.get('protocol')!=SCHEMA or m.get('training_admitted') is not False or m.get('fold')!='TRAIN':
@@ -502,7 +527,7 @@ def verify_corpus(path,*,workers=None):
     strict=QualityStrictTeacher(env,source=m['source_binding'],start_cursor=saved['start_cursor'])
     if strict.identity_hash!=m['teacher_identity'] or strict.plan()!=read_manifest(path/'p4_plan.json'):
         raise ValueError('Strict suffix proof differs')
-    limits=_worker_limits(len(m['behaviors']),requested_workers=workers)
+    limits=_execution_limits(len(m['behaviors']),workers,policy_cpus)
     print(json.dumps(dict(phase='verify',resource_budget=limits)),flush=True)
     # Rebuild a separate cache from this verifier's native Oracle. Never load
     # the producer's value cache as the expected answer for G3.
@@ -513,12 +538,18 @@ def verify_corpus(path,*,workers=None):
         # market. It carries no producer labels, Oracle values or accounts.
         market_seed=factory._market_cache.export_seed()
         try:
-            with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
-                futures=[executor.submit(_verification_job,dict(name=name,path=path/'policies'/name,
+            arguments=[dict(name=name,path=path/'policies'/name,
                     row=row,profile=profile,initial=initial,source=m['source_binding'],strict=strict,
                     market_seed=market_seed,
-                    label_workers=limits['label_workers'][i%limits['workers']])) for i,name in enumerate(m['behaviors'])]
-                jobs=[future.result() for future in as_completed(futures)]
+                    label_workers=limits['label_workers'][i%limits['workers']]) for i,name in enumerate(m['behaviors'])]
+            if policy_cpus is not None:
+                from .fg_s3_corpus_resources import run_policy_jobs
+                budgets=limits['policy_cpus']
+                jobs=run_policy_jobs(_verification_job,arguments,budgets)
+            else:
+                with ProcessPoolExecutor(max_workers=limits['workers'],mp_context=multiprocessing.get_context('spawn')) as executor:
+                    futures=[executor.submit(_verification_job,job) for job in arguments]
+                    jobs=[future.result() for future in as_completed(futures)]
         finally:strict._value_store.close()
     by_name={job['behavior']:job['receipt'] for job in jobs}
     receipts=[by_name[name] for name in m['behaviors']]
@@ -539,9 +570,13 @@ def verify_corpus(path,*,workers=None):
         resource_budget=limits,behavior_jobs=jobs))
 
 
-def main(argv=None):
+def _main(argv=None):
     parser=argparse.ArgumentParser(description='WP02 E Quality CPU Corpus, never training')
     sub=parser.add_subparsers(dest='command',required=True)
+    for name in ('produce-all','resume','status'):
+        p=sub.add_parser(name);p.add_argument('--config',required=True)
+    p=sub.add_parser('_production-stage',help=argparse.SUPPRESS)
+    p.add_argument('--request',required=True)
     for name in ['validate','generate-small','generate']:
         p=sub.add_parser(name);p.add_argument('--source-pool');p.add_argument('--env-receipt');p.add_argument('--contract',default='CZCE.FG201')
         p.add_argument('--start-day',help='First official TRAIN trading day, inclusive (YYYY-MM-DD)')
@@ -551,14 +586,28 @@ def main(argv=None):
         else:
             p.add_argument('--out',required=True);p.add_argument('--seed',type=int,default=202)
             p.add_argument('--workers',type=int,help='Total CPU worker budget across account and teacher processes; default: all affinity CPUs, memory bounded')
+            p.add_argument('--policy-cpus',help='Six account + teacher budgets, e.g. P0=8,P1=2,P2_low=2,P2_mid=2,P3=2,P4=8')
             p.add_argument('--mode',choices=['dev','data'],default='data')
             p.add_argument('--max-market-steps',type=int,help='Required only for DEV; cap actual market advances, not teacher suffix or account history')
     for name in ['verify','coverage']:
         p=sub.add_parser(name);p.add_argument('--corpus',required=True)
         p.add_argument('--debug',action='store_true')
-        if name=='verify':p.add_argument('--workers',type=int)
+        if name=='verify':
+            p.add_argument('--workers',type=int)
+            p.add_argument('--policy-cpus')
     args=parser.parse_args(argv)
     try:
+        if args.command in ('produce-all','resume','status'):
+            from .fg_s3_corpus_production import production_main
+            return production_main(args.command,args.config)
+        if args.command=='_production-stage':
+            from .fg_s3_corpus_production import execute_stage
+            result=execute_stage(json.loads(Path(args.request).read_text()))
+            print(json.dumps(result,ensure_ascii=False),flush=True);return 0
+        weighted={}
+        if getattr(args,'policy_cpus',None) is not None:
+            from .fg_s3_corpus_resources import policy_cpus
+            weighted['policy_cpus']=policy_cpus(args.policy_cpus)
         if args.command=='validate' and args.course:
             result=preflight(args.course);print(json.dumps(result));return result['exit_code']
         if args.command in ['validate','generate-small','generate']:
@@ -570,13 +619,19 @@ def main(argv=None):
                 result=dict(status='SOURCE_VALIDATED_ONLY',source=lock,training_admitted=False)
             else:result=generate_small(args.source_pool,args.env_receipt,args.contract,args.out,seed=args.seed,
                 start_day=args.start_day,end_day=args.end_day,workers=args.workers,
-                mode=args.mode,max_market_steps=args.max_market_steps)
-        elif args.command=='verify':result=verify_corpus(args.corpus,workers=args.workers)
+                mode=args.mode,max_market_steps=args.max_market_steps,**weighted)
+        elif args.command=='verify':result=verify_corpus(args.corpus,workers=args.workers,**weighted)
         else:
             path=_local_path(args.corpus);m=read_manifest(path/'corpus_manifest.json')
             _inventory(path,m)
             result=coverage([path/'policies'/name for name in m['behaviors']])
         print(json.dumps(result,ensure_ascii=False));return 0
     except (ValueError,OSError,KeyError,TypeError,RuntimeError) as exc:
-        if args.debug:traceback.print_exc(file=sys.stderr)
+        if getattr(args,'debug',False):traceback.print_exc(file=sys.stderr)
         print(json.dumps(dict(status='NO_GO',error=str(exc),diagnostics=getattr(exc,'events',[]),training_admitted=False)),flush=True);return 2
+
+
+def main(argv=None):
+    from .fg_s3_corpus_resources import phase_lease
+    with phase_lease():
+        return _main(argv)

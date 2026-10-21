@@ -214,7 +214,7 @@ def frozen_producer_audit(producer_gym, *, producer_lock=None, producer_lock_sha
     return audit
 
 
-def native_verification(source, *, producer_gym, log_path, producer_lock=None, producer_lock_sha256=None, workers=None):
+def native_verification(source, *, producer_gym, log_path, producer_lock=None, producer_lock_sha256=None, workers=None, policy_cpus=None):
     """Execute an exact frozen producer; no re-signing/migration.
 
     This is required once for final REAL_DATA evidence, not for editing or
@@ -237,11 +237,39 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
         if type(workers) is not int or not 1<=workers<=len(os.sched_getaffinity(0)):
             raise ValueError('SUPERVISION_CPU_WORKER_BUDGET')
         argv.extend(['--workers',str(workers)])
+    if policy_cpus is not None:
+        from .fg_s3_corpus_resources import policy_cpus as parse_policy_cpus
+        budgets=parse_policy_cpus(policy_cpus)
+        argv.extend(['--policy-cpus',','.join(f'{key}={count}' for key,count in budgets.items())])
     began = time.monotonic()
     log_path = _local_path(log_path)
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open('x') as stream:
-        run = subprocess.run(argv, cwd=producer_gym, env=env, stdout=stream, stderr=subprocess.STDOUT)
+    from .fg_s3_corpus_resources import ENV,pause_phase,resume_phase,legacy_verification_lease
+    from contextlib import nullcontext
+    shared=ENV in env
+    legacy=shared and env.get('FG_CORPUS_LEGACY')=='1'
+    if legacy and policy_cpus is not None:
+        raise ValueError('Legacy verifier does not accept per-policy budgets')
+    if shared:pause_phase()
+    env.pop('FG_CORPUS_PREP_LEASE',None)
+    try:
+        with (legacy_verification_lease(workers) if legacy else nullcontext(None)) as progress:
+            with log_path.open('x') as stream:
+                if not legacy:
+                    run=subprocess.run(argv,cwd=producer_gym,env=env,stdout=stream,stderr=subprocess.STDOUT)
+                else:
+                    run=subprocess.Popen(argv,cwd=producer_gym,env=env,stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,text=True,bufsize=1)
+                    try:
+                        for line in run.stdout:
+                            stream.write(line);stream.flush();progress(line)
+                        run.wait()
+                    finally:
+                        run.stdout.close()
+                        if run.poll() is None:
+                            run.terminate();run.wait()
+    finally:
+        if shared:resume_phase()
     lines = log_path.read_text().splitlines()
     if run.returncode != 0:
         raise ValueError(f'SUPERVISION_NATIVE_VERIFY_FAILED: exit={run.returncode}; {log_path}')
@@ -278,7 +306,7 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
 class QualitySupervisionAdmission:
     @staticmethod
     def preflight(source, *, purpose='development', producer_gym=None, log_path=None,
-                  producer_lock=None, producer_lock_sha256=None, workers=None):
+                  producer_lock=None, producer_lock_sha256=None, workers=None, policy_cpus=None):
         if purpose not in ('development', 'native-verification'):
             raise ValueError('SUPERVISION_EXPLICIT_PURPOSE_REQUIRED')
         m = inspect_source(source)
@@ -294,7 +322,8 @@ class QualitySupervisionAdmission:
             if producer_gym is None or log_path is None:
                 raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
             native = native_verification(source, producer_gym=producer_gym, log_path=log_path,
-                producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,workers=workers)
+                producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,workers=workers,
+                **({'policy_cpus':policy_cpus} if policy_cpus is not None else {}))
             inspect_source(source)  # Reject changes while the native process ran.
         # Content identity is independent of the current filesystem location or
         # consumer Git SHA/dirty state. Legacy identities are preserved links.

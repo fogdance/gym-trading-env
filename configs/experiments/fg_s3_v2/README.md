@@ -1,5 +1,14 @@
 # S3-V2 shared entry and experiment configurations
 
+## CPU Corpus production (2026-10-21)
+
+`corpus_production.yaml` configures per-policy CPU budgets, a shared two-batch
+pipeline and coarse stage recovery through `tools/fg_s3_e_quality_corpus.py`
+`produce-all / resume / status --config`. See
+[the production and freeze procedure](../../../docs/CORPUS_PRODUCTION_SCHEDULER.md).
+Use the final externally pinned YAML for production. CPU DATA publication
+does not authorize GPU training.
+
 ## E + Tutor-CD Full formal 1M (2026-10-16)
 
 `E_TUTOR_CD_FULL_MARKET_MINUTE_FORMAL_1M_20261016` preserves the existing
