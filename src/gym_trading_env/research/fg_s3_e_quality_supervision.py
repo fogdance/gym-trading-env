@@ -66,8 +66,8 @@ class SupervisionSource:
 class Admission:
     source: SupervisionSource
     receipt: dict
-    # Only preflight's native execution populates this. A loaded JSON PASS is
-    # never promoted into evidence that a process was actually executed.
+    # Populated by actual G3 or by authentication of an externally pinned
+    # production certificate. Reused evidence never claims a fresh execution.
     native_result: dict | None = None
 
 
@@ -162,6 +162,10 @@ def verifier_binding(native_result):
 
 def require_prepared_verifier(saved, *, producer_gym, producer_lock, producer_lock_sha256):
     """Reject pin substitution before launching G3 or constructing Run/Agent."""
+    if saved.get('source_receipt', {}).get('purpose') == 'certified-corpus':
+        if any(value is not None for value in (producer_gym, producer_lock, producer_lock_sha256)):
+            raise ValueError('SUPERVISION_CERTIFIED_CORPUS_DOES_NOT_USE_A_LIVE_VERIFIER')
+        return  # The caller authenticates the pinned production certificate.
     require_stage_producer_pin('native-verification', producer_lock, producer_lock_sha256)
     if producer_gym is None:
         raise ValueError('SUPERVISION_NATIVE_EXECUTION_ARGUMENTS_REQUIRED')
@@ -280,6 +284,16 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
     if run.returncode != 0:
         raise ValueError(f'SUPERVISION_NATIVE_VERIFY_FAILED: exit={run.returncode}; {log_path}')
     result = json.loads(lines[-1])
+    verify_native_receipts(source, result)
+    if frozen_producer_audit(producer_gym,**pin)!=producer_audit:
+        raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
+    return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,
+        execution_adapter=execution_adapter,
+                seconds=time.monotonic() - began, log_sha256=digest(log_path), result=result)
+
+
+def verify_native_receipts(source, result):
+    """Same complete six-account G3 contract for new and published evidence."""
     if (result.get('status') != 'PASS' or result.get('G3') != 'GO'
             or result.get('corpus_identity') != source.corpus_content_hash
             or result.get('verification_state') != 'NATIVE_G3_VERIFIED'
@@ -303,18 +317,14 @@ def native_verification(source, *, producer_gym, log_path, producer_lock=None, p
                 or receipt['records'] != count or receipt['teacher_labels_verified'] != count
                 or receipt.get('replay_trace_hash') != trace['replay_trace_hash']):
             raise ValueError('SUPERVISION_NATIVE_INCOMPLETE_LABEL_VERIFICATION')
-    if frozen_producer_audit(producer_gym,**pin)!=producer_audit:
-        raise ValueError('SUPERVISION_FROZEN_PRODUCER_CODE_CHANGED')
-    return dict(argv=argv, cwd=str(producer_gym), exit_code=run.returncode,producer_audit=producer_audit,
-        execution_adapter=execution_adapter,
-                seconds=time.monotonic() - began, log_sha256=digest(log_path), result=result)
 
 
 class QualitySupervisionAdmission:
     @staticmethod
     def preflight(source, *, purpose='development', producer_gym=None, log_path=None,
-                  producer_lock=None, producer_lock_sha256=None, workers=None, policy_cpus=None):
-        if purpose not in ('development', 'native-verification'):
+                  producer_lock=None, producer_lock_sha256=None, workers=None, policy_cpus=None,
+                  certification=None):
+        if purpose not in ('development', 'native-verification', 'certified-corpus'):
             raise ValueError('SUPERVISION_EXPLICIT_PURPOSE_REQUIRED')
         m = inspect_source(source)
         from .fg_s3_corpus_compatibility import CorpusCompatibility
@@ -338,6 +348,13 @@ class QualitySupervisionAdmission:
             files=m['files'], course_identity=source.course_identity_hash,
             teacher_identity=source.teacher_identity_hash,
             observation_contract=source.observation_contract_hash, source_lock=source.source_lock_hash)
+        if purpose == 'certified-corpus':
+            if m.get('execution_mode', 'data') == 'dev':
+                raise ValueError('DEV_CORPUS_NOT_CERTIFIED')
+            if any(value is not None for value in (producer_gym, producer_lock, producer_lock_sha256)):
+                raise ValueError('SUPERVISION_CERTIFIED_CORPUS_DOES_NOT_USE_A_LIVE_VERIFIER')
+            from .fg_s3_corpus_certification import published_corpus
+            native = published_corpus(source, certification, content_identity=fingerprint(identity))
         receipt = signed(dict(protocol=PROTOCOL, purpose=purpose, stage=source.stage,
             status='SUPERVISION_DATA_READY' if native else 'DEVELOPMENT_VALIDATED',
             source_status='SOURCE_VERIFIED' if native else 'INTEGRITY_CHECKED_ONLY',
@@ -349,7 +366,9 @@ class QualitySupervisionAdmission:
                 ([] if native else ['NATIVE_G3_NOT_RUN_IN_THIS_ADMISSION']) +
                 (['DEV_CORPUS_NOT_CERTIFIED'] if m.get('execution_mode')=='dev' else []),
             historical_producer=m.get('code', {}).get('repositories', {}),
-            compatibility=compatibility.as_dict()))
+            compatibility=compatibility.as_dict(),
+            **(dict(certification=native['certification'], verification_mode=native['verification_mode'])
+               if purpose == 'certified-corpus' else {})))
         return Admission(source, receipt, native)
 
 

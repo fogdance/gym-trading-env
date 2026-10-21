@@ -15,5 +15,8 @@ report_every_updates: 100
 save_every_updates: 500
 device: gpu
 corpus_root: /data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN
-prepared_dir: /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp04/prepared/F1_FG809_12M_U10000_20261021
+corpus_certification:
+  batch_manifest: /data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN01_FG809_FULL_MAIN/publish/0002/BATCH_MANIFEST.json
+  sha256: 3440ab119346be715a0b203a1d8e3c2cb086cff1b18695b6e4b2ffbcd39bd349
+prepared_dir: /data/logdir/fg_single3/s3_v2/F1_FG809_12M_U10000_20261021/prepared
 run_dir: /data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021

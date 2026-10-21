@@ -12,28 +12,29 @@ GYM=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
 WORKSPACE=$(dirname -- "$GYM")
 PY=/home/v/miniconda3/envs/dreamerv3/bin/python
 CONFIG="$GYM/configs/experiments/fg_s3_v2/e_quality_f1_fg809_size12m_u10000_20261021.yaml"
-PREPARED="$GYM/artifacts/fg_s3_v2/e_quality_wp04/prepared/F1_FG809_12M_U10000_20261021"
-PIN="$WORKSPACE/release/VERIFIER_PIN.json"
-LOCK="$WORKSPACE/release/LAUNCH_LOCK.json"
+CONTROL=/data/logdir/fg_single3/s3_v2/F1_FG809_12M_U10000_20261021
+PREPARED="$CONTROL/prepared"
 cd "$GYM"
 export PYTHONPATH="$GYM:$GYM/src:$WORKSPACE/dreamerv3"
 export PYTHONDONTWRITEBYTECODE=1 PYTHONINTMAXSTRDIGITS=0
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
-export MPLCONFIGDIR=/tmp/fg_s3_f1_fg809_mpl
-
-# Use the independently recorded external digest; never regenerate a Pin or
-# infer trust from whatever HEAD happens to be checked out when launching.
-PIN_SHA=$("$PY" -B -c 'import json,sys;print(json.load(open(sys.argv[1]))["verifier_pin"]["sha256"])' "$LOCK")
-PIN_ARGS=(--producer-gym "$GYM" --producer-lock "$PIN" --producer-lock-sha256 "$PIN_SHA")
+export TMPDIR="$CONTROL/tmp" TMP="$CONTROL/tmp" TEMP="$CONTROL/tmp"
+export XDG_CACHE_HOME="$CONTROL/cache" MPLCONFIGDIR="$CONTROL/cache/matplotlib"
+export JAX_COMPILATION_CACHE_DIR="$CONTROL/cache/jax" CUDA_CACHE_PATH="$CONTROL/cache/cuda"
 
 if [[ "$ACTION" == status ]]; then
   export JAX_PLATFORMS=cpu CUDA_VISIBLE_DEVICES=
-  exec "$PY" -B docs/f1_fg809_20261021/check_launch.py "${PIN_ARGS[@]}"
+  exec "$PY" -B docs/f1_fg809_20261021/check_launch.py
 fi
+
+# Check the frozen training selection. Production certification has its own
+# external digest in the YAML; it never requires a live Producer or G3 rerun.
+"$PY" -B docs/f1_fg809_20261021/check_launch.py --config-only
+mkdir -p "$TMPDIR" "$MPLCONFIGDIR" "$JAX_COMPILATION_CACHE_DIR" "$CUDA_CACHE_PATH"
 
 prepare_f1() {
   "$PY" -B tools/fg_s3_v2_experiment.py f1-prepare --config "$CONFIG" \
-    --source-purpose native-verification "${PIN_ARGS[@]}"
+    --source-purpose certified-corpus
 }
 
 if [[ "$ACTION" == prepare ]]; then
@@ -50,4 +51,4 @@ if [[ ! -f "$PREPARED/settings.json" || ! -f "$PREPARED/f1_preparation.json" ||
   exit 2
 fi
 exec "$PY" -B tools/fg_s3_v2_experiment.py "f1-$ACTION" --prepared "$PREPARED" \
-  "${PIN_ARGS[@]}" --authorize-training
+  --authorize-training

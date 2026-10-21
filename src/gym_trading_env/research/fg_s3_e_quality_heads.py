@@ -29,7 +29,8 @@ def preflight(settings,*,purpose='development',producer_gym=None,log_path=None,p
     from dreamerv3.fg_s3_e_quality_heads import execution_contract
     settings=validate_settings(settings)
     admission=QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(settings['corpus_root'],stage=STAGE),
-        purpose=purpose,producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
+        purpose=purpose,producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,
+        **(dict(certification=settings.get('corpus_certification')) if purpose=='certified-corpus' else {}))
     proof,_=inspect_f1(settings,allow_engineering=True)
     p=proof['identity']['preparation']
     if p['course']!=admission.source.course_identity_hash or p['source']!=admission.receipt['content_identity']:
@@ -64,12 +65,13 @@ def validate_settings(raw):
     required={'schema','stage','sampling_stage','sampling_spec','model_init','batch_size',
         'target_steps','burnin_steps','optimizer_updates','report_every_updates','save_every_updates',
         'device','corpus_root','prepared_dir','run_dir','source_f1_run','source_f1_checkpoint'}
-    if type(raw) is not dict or not required<=raw.keys() or set(raw)-required-{'prediction_weights'}:
+    if type(raw) is not dict or not required<=raw.keys() or set(raw)-required-{'prediction_weights','corpus_certification'}:
         raise ValueError('F2_CONFIG_EXPLICIT_FIELDS_REQUIRED')
     if (raw['schema']!=CONFIG_SCHEMA or raw['stage']!=STAGE or raw['sampling_stage']!=SAMPLING_STAGE):
         raise ValueError('F2_STAGE_OR_SCHEMA_MISMATCH')
     # Reuse native geometry/model/path checks, with explicit F2 sampling checks.
     base={k:copy.deepcopy(v) for k,v in raw.items() if k in required-{'source_f1_run','source_f1_checkpoint'}}
+    if 'corpus_certification' in raw:base['corpus_certification']=copy.deepcopy(raw['corpus_certification'])
     base.update(schema='FG_S3_E_QUALITY_F1_CONFIG_V1',stage='FOUNDATION_WM',sampling_stage='WM_NATURAL',sampling_spec={'mode':'NATURAL'})
     result=f1_validate(base)
     spec=raw['sampling_spec'];mode=spec.get('mode') if type(spec) is dict else None
@@ -100,11 +102,11 @@ def read_settings(path):
 
 def prepare(config,*,purpose='development',producer_gym=None,producer_lock=None,producer_lock_sha256=None):
     from .fg_replay import signed,write_json,digest
-    from .fg_s3_e_quality_reader import build_join_index
+    from .fg_s3_e_quality_reader import prepare_join_index
     settings=read_settings(config);out=Path(settings['prepared_dir'])
     if out.exists():raise ValueError('F2_PREPARATION_OUTPUT_MUST_BE_NEW')
     p=preflight(settings,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=out/'native.log' if purpose=='native-verification' else None)
-    joined=build_join_index(p.source,out/'join.sqlite')
+    joined=prepare_join_index(p.source,out/'join.sqlite')
     from .fg_s3_e_quality_reader import EQualityCourseReader
     reader=EQualityCourseReader.open(p.source,stage=SAMPLING_STAGE,sampling_spec=settings['sampling_spec'],seed=settings['model_init']['seed'],index_path=out/'join.sqlite')
     try:support=F2WindowAdapter(reader,settings).validate_support()
@@ -130,10 +132,12 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,stop_a
     if digest(index)!=binding['index_sha256']:raise ValueError('F2_PREPARED_INDEX_CHANGED')
     root=Path(settings['run_dir'])
     if not any(root.is_relative_to(p) for p in (PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))):raise ValueError('F2_RUN_DIRECTORY_INVALID')
-    audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp05/preflights'/uuid.uuid4().hex
-    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
+    audit=path.parent/'preflights'/uuid.uuid4().hex
+    purpose='certified-corpus' if saved['source_receipt']['purpose']=='certified-corpus' else 'native-verification'
+    current=preflight(settings,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
     if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
-            current.receipt['compatibility']!=saved['compatibility']):
+            current.receipt['compatibility']!=saved['compatibility'] or
+            current.receipt['source_receipt'].get('certification')!=saved['source_receipt'].get('certification')):
         raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
     if current.receipt['identity']!=saved['identity'] or current.source.receipt['content_identity']!=binding['source_identity']:raise ValueError('F2_PREPARED_SOURCE_OR_CONFIGURATION_CHANGED')
     require_training_authority(current,authorized=True)
