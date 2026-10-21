@@ -1,0 +1,49 @@
+{
+  "scope": "CONTROLLED_BASELINE_NEGATIVES_NOT_FORMAL",
+  "cli": {
+    "argv": [
+      "/home/v/miniconda3/envs/dreamerv3/bin/python",
+      "-B",
+      "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tools/fg_s3_v2_experiment.py",
+      "online-start",
+      "--prepared",
+      "/tmp/BATCH3_NONEXISTENT_PREPARED",
+      "--producer-gym",
+      "/tmp/BATCH3_NONEXISTENT_VERIFIER",
+      "--producer-lock",
+      "/tmp/BATCH3_NONEXISTENT_PIN.json",
+      "--producer-lock-sha256",
+      "0000000000000000000000000000000000000000000000000000000000000000"
+    ],
+    "exit_code": 2,
+    "stdout": "",
+    "stderr": "usage: fg_s3_v2_experiment.py [-h] [--config CONFIG] [--prepared PREPARED]\n                              [--source-checkpoint SOURCE_CHECKPOINT]\n                              [--eval-device {cpu,gpu}] [--run-dir RUN_DIR]\n                              [--stop-at STOP_AT] [--verify-resume-only]\n                              [--eval-steps EVAL_STEPS]\n                              [--holdout-contract HOLDOUT_CONTRACT]\n                              [--diagnostic-components DIAGNOSTIC_COMPONENTS]\n                              [--diagnostic-q-admission DIAGNOSTIC_Q_ADMISSION]\n                              [--time-fold TIME_FOLD] [--eval-dir EVAL_DIR]\n                              [--reference-dir REFERENCE_DIR]\n                              [--output-dir OUTPUT_DIR]\n                              [--runner-pid RUNNER_PID] [--interval INTERVAL]\n                              [--once] [--json] [--until UNTIL] [--check-only]\n                              [--resume-online] [--authorize-training]\n                              [--source-purpose {development,native-verification}]\n                              [--producer-gym PRODUCER_GYM]\n                              [--producer-lock PRODUCER_LOCK]\n                              [--producer-lock-sha256 PRODUCER_LOCK_SHA256]\n                              [--execution-mode {SHADOW,ONLINE_SUPERVISED,ONLINE_RL_CONTROLLED}]\n                              [--authorize-rl] [--rl-review RL_REVIEW]\n                              [--rl-review-sha256 RL_REVIEW_SHA256]\n                              {prepare,start,resume,evaluate,report,gpu_check,admit-e-prepare,admit-e-start,admit-e-resume,f1-prepare,f1-start,f1-resume,f1-probe,f1-read-check,f2-prepare,f2-start,f2-resume,f2-probe,f2-read-check,f3-prepare,f3-start,f3-resume,f3-probe,f3-read-check,f3-evaluate,online-prepare,online-start,online-resume,online-probe,online-evaluate,online-report,exam-plan,exam-run,exam-resume,exam-verify,exam-compare,exam-report,score-predictions,simulate-online,monitor-online,describe-composition,evaluate-source,evaluate-reference,compare-predictions}\nfg_s3_v2_experiment.py: error: producer pin flags are only accepted by F1/F2/F3 native source routes\n"
+  },
+  "collection": {
+    "first_verified_step": 16,
+    "current_step": 48,
+    "illegal_tail": true,
+    "old_collection_ready": true
+  },
+  "rl_result": {
+    "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V1",
+    "status": "ONLINE_RUN_COMPLETE",
+    "execution_mode": "ONLINE_RL_CONTROLLED",
+    "env_steps": 48,
+    "counters": {
+      "rl_updates": 0
+    },
+    "gate": {
+      "formal_rl_admitted": false
+    },
+    "phase": {
+      "stage": "IDLE"
+    },
+    "source_exposures": {},
+    "checkpoint": "IN_MEMORY_ONLY",
+    "training_admitted": true,
+    "real_TRAIN_updates": 3,
+    "formal_rl_admitted": false,
+    "research_admitted": false
+  }
+}
