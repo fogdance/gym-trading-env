@@ -25,7 +25,7 @@ def require_calibration(record):
     return copy.deepcopy(record.report)
 
 
-def calibration(agent,data,*,source_identity,horizon=3,seed=202):
+def calibration(agent,data,*,source_identity,horizon=3,seed=202,source_step_owners=None):
     import jax
     import jax.numpy as jnp
     import ninjax as nj
@@ -35,6 +35,10 @@ def calibration(agent,data,*,source_identity,horizon=3,seed=202):
     k=agent.config.quality_f3_burnin_steps;t=agent.config.quality_f3_target_steps
     if type(horizon) is not int or not 0<horizon<t:
         raise ValueError('ONLINE_CALIBRATION_HORIZON_INVALID')
+    if source_step_owners is not None and (not isinstance(source_step_owners,list)
+            or len(source_step_owners)!=len(data['stepid'])
+            or any(not isinstance(owner,str) or len(owner)!=64 for owner in source_step_owners)):
+        raise ValueError('ONLINE_CALIBRATION_OWNER_BINDING_INVALID')
     def forward(raw):
         m=agent.model
         carry,obs,prev,ids=causal_context(m,raw,k,t)
@@ -83,6 +87,8 @@ def calibration(agent,data,*,source_identity,horizon=3,seed=202):
         actual_actions_sha256=hashlib.sha256(data['action'].tobytes()).hexdigest(),
         arrays={key:value.tolist() for key,value in out.items() if key!='stepid'},
         all_model_and_optimizer_bytes_equal=True,training_admitted=False,research_admitted=False)
+    if source_step_owners is not None:
+        report['native_owner_steps']=[[owner,x.tobytes().hex()] for owner,row in zip(source_step_owners,out['stepid']) for x in row]
     record=Calibration(report);_CALIBRATIONS[id(record)]=(record,fingerprint(report))
     return record
 
