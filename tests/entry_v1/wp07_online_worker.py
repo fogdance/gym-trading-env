@@ -27,8 +27,11 @@ if spec['execution_mode']!='SHADOW':
         aux_per_source_sampling_spec={name:dict(mode='MIXED',natural_weight=.5,strata_weights=dict(STRICT_ADD=1,STRICT_WAIT=1)) for name in names})
 permit=engineering_permit(spec,numeric_rl=config.get('numeric_probe',spec['execution_mode']=='ONLINE_RL_CONTROLLED'))
 run=OnlineRun(spec,factory,config['source'],history,resume=operation=='resume',_probe=permit,_test_location=root,
-    rl_policy=config.get('rl_policy'))
-if operation=='publication_continuous':
+    rl_policy=config.get('rl_policy'),wm_policy=config.get('wm_policy'))
+if operation=='pause_continuous':
+    run.run_to(16)
+    result=run.run_to(target)
+elif operation=='publication_continuous':
     run.run_to(16,_stop_after_publications=7)
     result=run.run_to(target)
 elif operation=='publication_stop':result=run.run_to(16,_stop_after_publications=7)

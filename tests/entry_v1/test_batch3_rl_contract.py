@@ -78,3 +78,71 @@ def test_early_review_rejected_and_packet_cli_is_read_only(tmp_path,monkeypatch)
         '--output-dir',str(tmp_path/'packet')])
     cli.main();assert calls==[(str(tmp_path/'run'),str(tmp_path/'packet'))]
     assert not (tmp_path/'run').exists() and not (tmp_path/'packet').exists()
+
+
+def test_live_rl_scope_rejects_wm_and_source_replacement_before_any_update():
+    from types import SimpleNamespace
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    from gym_trading_env.envs.entry_contract import fingerprint
+    run=OnlineRun.__new__(OnlineRun)
+    digests={key:'a'*64 for key in ('enc/x','dyn/x','dec/x','rew/x','con/x','avail/x')}
+    wm=fingerprint(digests);bindings=[dict(corpus_identity='FIXED_UNIT_SCOPE_ONLY')]
+    run.identity=dict(frozen_wm_identity=wm,source_bindings=copy.deepcopy(bindings),history='FIXED_HISTORY')
+    run.source_bindings=copy.deepcopy(bindings)
+    run.source=SimpleNamespace(history=SimpleNamespace(identity_hash='FIXED_HISTORY'))
+    run.rl_lifecycle=SimpleNamespace(state=dict(stage='RL_ACTIVE'))
+    run.spec=dict(env_steps=64,max_consumed_batches=32);run.settings=dict(optimizer_updates=16)
+    run.step=48;run.agent=SimpleNamespace(n_updates=4)
+    run.counters=SimpleNamespace(state=dict(consumed_batches=4))
+    run.native_preparation=object();run.authorized=True;run.rl_review=object()
+    calls=[]
+    run.gates=SimpleNamespace(wm_identity=wm,formal_admitted=False,
+        require_rl=lambda *a,**kw:calls.append('UNIT_PERMISSION_CALLBACK_ONLY'))
+    run._require_live_rl(digests);assert len(calls)==1
+    for change in ('wm','sources','history'):
+        bad=dict(digests)
+        if change=='wm':bad['enc/x']='b'*64
+        elif change=='sources':run.source_bindings=[dict(corpus_identity='REPLACED')]
+        else:run.source.history.identity_hash='REPLACED'
+        with pytest.raises(ValueError,match='IDENTITY_OR_REVIEW_SCOPE_CHANGED'):run._require_live_rl(bad)
+        run.source_bindings=copy.deepcopy(bindings);run.source.history.identity_hash='FIXED_HISTORY'
+    assert len(calls)==1  # No fake authority callback or optimizer on rejected paths.
+
+
+def test_initial_run_freeze_uses_exact_existing_optimizer_slot_owners():
+    from types import SimpleNamespace
+    import numpy as np
+    from dreamerv3.fg_s3_e_quality_course_contract import ALL_GROUPS
+    from embodied.run.fg_s3_e_quality_online_rl import validate_frozen_online_state
+    initial={prefix+'value':np.array(0.,np.float32) for prefix in ALL_GROUPS}
+    initial.update({k:np.array(0,np.int32) for k in (
+        'opt/step/value','opt/state/1/0','opt/state/2/0','opt/state/3/count')})
+    for prefix in ('enc','qualityactor','val'):
+        initial['opt/state/1/1/'+prefix+'/value']=np.array(0.,np.float32)
+    config=SimpleNamespace(opt=SimpleNamespace(wd=False))
+    final=copy.deepcopy(initial);final['quality_actor/value'][...]=1
+    final['opt/state/1/1/qualityactor/value'][...]=2
+    validate_frozen_online_state(initial,final,config,('quality_actor/',),updated=True)
+    for key in ('enc/value','opt/state/1/1/enc/value','val/value'):
+        bad=copy.deepcopy(final);bad[key][...]=3
+        with pytest.raises(ValueError,match='FROZEN_INITIAL_PARAMETER_OR_SLOT'):
+            validate_frozen_online_state(initial,bad,config,('quality_actor/',),updated=True)
+    bad=copy.deepcopy(final);bad['opt/state/alien/count']=np.array(1,np.int32)
+    with pytest.raises(ValueError,match='FULL_STATE_SCHEMA'):
+        validate_frozen_online_state(initial,bad,config,('quality_actor/',),updated=True)
+
+
+def test_finalization_requires_published_non_tail_sidecars():
+    from types import SimpleNamespace
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    run=OnlineRun.__new__(OnlineRun)
+    run.collector=SimpleNamespace(rows=[dict(stepid='first'),dict(stepid='second'),dict(stepid='pending_tail')])
+    run.publisher=SimpleNamespace(strict=object(),blockers=[],ledger={
+        'first':dict(status='CERTIFIED',publication_seq=1),
+        'second':dict(status='PENDING',publication_seq=None),
+        'pending_tail':dict(status='PENDING',publication_seq=None)},validate_snapshot=lambda:None)
+    with pytest.raises(ValueError,match='SIDECAR_NOT_PUBLISHED'):run._validate_final_publication()
+    run.publisher.ledger['second']=dict(status='INVALID',publication_seq=2)
+    run._validate_final_publication()
+    run.publisher.strict=None
+    with pytest.raises(ValueError,match='SUPERVISION_UNAVAILABLE'):run._validate_final_publication()

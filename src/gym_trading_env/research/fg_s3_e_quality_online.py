@@ -63,6 +63,8 @@ def validate_settings(raw):
     if raw['spec_mode']=='formal' and checked['execution_mode']!='SHADOW' and raw['history_config'] is None:
         raise ValueError('ONLINE_FORMAL_HISTORY_CONFIG_REQUIRED')
     wm=raw['wm_policy']
+    if raw['spec_mode']=='formal' and checked['execution_mode']=='ONLINE_RL_CONTROLLED' and wm is None:
+        raise ValueError('ONLINE_EXPLICIT_WM_CALIBRATION_POLICY_REQUIRED')
     if wm is not None and (type(wm) is not dict or set(wm)!={'max_reward_mae','max_continue_mae'}
             or any(type(v) not in (float,int) or not math.isfinite(v) or v<0 for v in wm.values())):
         raise ValueError('ONLINE_WM_CALIBRATION_POLICY_INVALID')
@@ -300,6 +302,7 @@ def rl_review_packet(run_dir,output):
     load=lambda name:pickle.loads((node/(name+'.pkl')).read_bytes())
     lifecycle=load('rl_lifecycle');gates=load('gates')
     if lifecycle['stage']!='AWAIT_OPERATOR_REVIEW':raise ValueError('ONLINE_TECHNICAL_PAUSE_REQUIRED_FOR_REVIEW_PACKET')
+    if not all(gates['ready'].values()):raise ValueError('ONLINE_REVIEW_PACKET_REQUIRES_ALL_TECHNICAL_GATES')
     gate=OnlineGates.__new__(OnlineGates)
     gate.identity=gates['identity'];gate.wm_identity=gates['wm_identity'];gate.evidence=gates['evidence']
     gate.policy=identity['mask_policy'];gate.wm_policy=identity['wm_policy']

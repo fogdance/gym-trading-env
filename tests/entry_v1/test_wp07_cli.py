@@ -74,6 +74,9 @@ def test_independent_rl_authority_cannot_be_self_certified(tmp_path):
         g.review_rl(None,forged,'0'*64)
     with pytest.raises(ValueError,match='GATE_CLOSED'):g.require_rl(None,authorized=True,review=object())
     g.ready=dict.fromkeys(g.ready,True)
+    # A readiness bool is no longer an account-prefix proof. Isolate the
+    # subsequent native-source guard with an explicitly fake unit-only prefix.
+    g.evidence['collection']=dict(receipt=dict(verified_through_market_step=16))
     fake=SimpleNamespace(receipt=dict(identity=dict(source_model=dict(engineering_only=True))))
     with pytest.raises(ValueError,match='FOUNDATION_NOT_TRAINED'):
         g.require_rl(fake,authorized=True,review=object())

@@ -23,7 +23,7 @@ def test_native_warmup_blocks_safely_and_new_process_restores_exactly(tmp_path):
         contracts=sorted(profile.contracts),source_receipt=profile.source_receipt),history=history,
         source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY'),geometry=dict(batch_size=1,burnin_steps=4,target_steps=8),
         numeric_probe=False,rl_policy=dict(warmup_env_steps=32,calibration_batches=1,
-            calibration_horizon=3,calibration_seed=202))
+            calibration_horizon=3,calibration_seed=202),wm_policy=dict(max_reward_mae=.01,max_continue_mae=.01))
     config_path=root/'config.json';config_path.write_text(json.dumps(config))
     records=[]
     def worker(name,operation,target):
@@ -33,7 +33,7 @@ def test_native_warmup_blocks_safely_and_new_process_restores_exactly(tmp_path):
         with log.open('x') as stream:r=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
         records.append(dict(argv=argv,exit_code=r.returncode,log=str(log)))
         assert r.returncode==0,log.read_text()[-6000:]
-    worker('continuous','start',16);worker('continuous','resume',64)
+    worker('continuous','pause_continuous',64)
     worker('split','start',16);worker('split','resume',64)
     result=json.loads((root/'split/result.json').read_text())
     assert result['status']=='RL_BLOCKED' and result['env_steps']==32

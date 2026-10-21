@@ -65,6 +65,15 @@ def test_review_verifier_binds_operator_digest_and_frozen_model_unit_only(tmp_pa
     g.require_rl(preparation,authorized=True,review=token)
     g.exposure['updates']+=1
     g.require_rl(preparation,authorized=True,review=token)
+    original=packet.read_bytes();packet.write_text('{}')
+    with pytest.raises(ValueError,match='EXTERNAL_RL_REVIEW_CHANGED'):
+        g.require_rl(preparation,authorized=True,review=token)
+    packet.write_bytes(original)
+    g.require_rl(preparation,authorized=True,review=token)
+    original_policy=copy.deepcopy(g.policy);g.policy['classification_threshold']=.1
+    with pytest.raises(ValueError,match='RESEARCH_REVIEW_REQUIRED'):
+        g.require_rl(preparation,authorized=True,review=token)
+    g.policy=original_policy
     g.wm_identity='CHANGED'
     with pytest.raises(ValueError,match='RESEARCH_REVIEW_REQUIRED'):g.require_rl(preparation,authorized=True,review=token)
     assert calls and not g.formal_admitted
