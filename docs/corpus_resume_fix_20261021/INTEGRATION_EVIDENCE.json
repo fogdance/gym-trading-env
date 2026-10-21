@@ -1,0 +1,26 @@
+{
+  "protocol": "FG_S3_CORPUS_RESUME_FIX_INTEGRATION_V1",
+  "repositories": {
+    "gym_before_merge": "61220dc515d0a6a75ddc5684dd80e16c29924264",
+    "source_fix": "bac20cd1652d00871378c34afa6e02c0fe469f64",
+    "dreamer": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497"
+  },
+  "test_exit_code": 0,
+  "test_suites": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "27",
+      "time": "157.799",
+      "timestamp": "2026-10-21T17:17:06.209850+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ],
+  "test_xml_sha256": "07726a06f060978355240f1e45a790e118e97bfe14bedd5291a166e150f77ef6",
+  "conflicts": 0,
+  "frozen_producer_unchanged": true,
+  "code_identical_to_source_fix": true,
+  "formal_production_started_by_merge": false
+}

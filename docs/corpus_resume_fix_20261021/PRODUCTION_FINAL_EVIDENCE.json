@@ -1,0 +1,106 @@
+{
+  "protocol": "FG_S3_CORPUS_RESUME_FIX_EVIDENCE_V1",
+  "repositories": {
+    "gym": "bac20cd1652d00871378c34afa6e02c0fe469f64",
+    "dreamer": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5"
+  },
+  "source_hashes": {
+    "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_corpus_production.py": "32418c87fe4b3b9d20b85b7b4bbdee78fbea4631b745290ea8eda11bcd80eef8",
+    "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_corpus_provenance.py": "38bc13bd31461bb9b112865d7396dedb92bd868380cc4afae6855c1ffa6bd127",
+    "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py": "81fb578741de3981124d05a5143b184c38cea36ce5db2f0c65468f229c28a324",
+    "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_quality_label_pool.py": "db51c8a24a8fce244dfafd7ddf405cb09ce0e9dde5e0de872324e03e8bb2c302"
+  },
+  "changed_files": [
+    "docs/corpus_resume_fix_20261021/IMPLEMENTATION_REVIEW.md",
+    "docs/corpus_resume_fix_20261021/targeted_checks.xml",
+    "src/gym_trading_env/research/fg_s3_corpus_production.py",
+    "src/gym_trading_env/research/fg_s3_corpus_provenance.py",
+    "src/gym_trading_env/research/fg_s3_e_quality_corpus_cli.py",
+    "src/gym_trading_env/research/fg_s3_quality_label_pool.py",
+    "tests/entry_v1/test_corpus_provenance.py",
+    "tests/entry_v1/test_corpus_resume_fix.py"
+  ],
+  "shared_targeted_xml": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "26",
+      "time": "129.291",
+      "timestamp": "2026-10-21T17:09:01.447426+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ],
+  "initial_targeted_results": [
+    {
+      "selection": "test_corpus_scheduler.py test_corpus_production_controls.py",
+      "exit_code": 0,
+      "passed": 27
+    },
+    {
+      "selection": "test_corpus_provenance.py",
+      "exit_code": 0,
+      "passed": 3
+    },
+    {
+      "selection": "test_corpus_resume_fix.py",
+      "exit_code": 0,
+      "passed": 4
+    }
+  ],
+  "untouched_financial_modules": [
+    "entry_env.py",
+    "fg_s3_quality_teacher_v2.py",
+    "fg_s3_e_quality_strict.py",
+    "fg_s3_quality_q_v2.py",
+    "fg_replay.py"
+  ],
+  "integration_merge": "NOT_RUN",
+  "formal_training": "NOT_RUN",
+  "formal_production_resume": "NOT_RUN",
+  "gpu": "NOT_RUN",
+  "test_market_read": "NOT_RUN",
+  "resume_preparation_status": "RESUME_PREPARED",
+  "migration_receipt": {
+    "path": "/data/s3_corpus/train_full_main_scheduler_20261021/control/migrations/794251966534ab8565243aebffd79dc004801c1c629208985943133308b813bc/MIGRATION.json",
+    "sha256": "b406c1bf2c6b25222134a3c5b6726d417da235a509f88c68ea84cd8e48b00eb1"
+  },
+  "attempts_and_receipts_preserved": true,
+  "verified_unchanged_corpora": {
+    "/data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN": {
+      "corpus_identity": "76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550",
+      "manifest_sha256": "f447818f32fa43d72e8aa6eb0dcffcd1b63f64dac837dc14b6944cf7e49665a7",
+      "inventory_files": 411
+    },
+    "/data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN02_FG901_FULL_MAIN/generate/0001/corpus": {
+      "corpus_identity": "c719db82e70befb4d77034ecc821051f2446e41e7b24de46d4768692355aa24e",
+      "manifest_sha256": "c36f749eadaafbbad2eed4e132a2c2948760152462b807a002b58a05546a069d",
+      "inventory_files": 423
+    }
+  },
+  "next_stages": [
+    {
+      "batch": "TRAIN01_FG809_FULL_MAIN",
+      "next_stage": "reader",
+      "recovered_generation": null
+    },
+    {
+      "batch": "TRAIN02_FG901_FULL_MAIN",
+      "next_stage": "generate",
+      "recovered_generation": {
+        "corpus": "/data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN02_FG901_FULL_MAIN/generate/0001/corpus",
+        "corpus_identity": "c719db82e70befb4d77034ecc821051f2446e41e7b24de46d4768692355aa24e",
+        "origin_pin": {
+          "pin": "/home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/release/PRODUCER_PIN.json",
+          "pin_sha256": "b11ad00be49c2503054d4dc289bf619709e50c0e9d17cff19a041684584d3e8f"
+        },
+        "origin_attempt": "/data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN02_FG901_FULL_MAIN/generate/0001",
+        "request_sha256": "3455630ede737b804a57fdf2cf3cae98474577596dc6370a2af0584ce5b1adde"
+      }
+    }
+  ],
+  "control_migration_exit_code": 0,
+  "post_migration_verification_exit_code": 0,
+  "launch_command": "bash /home/v/Documents/work/research/fg-s3-formal-corpus-scheduler-20261021/release/RUN_CORPUS.sh resume"
+}

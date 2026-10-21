@@ -10,7 +10,7 @@ import multiprocessing
 import numpy as np
 
 
-def _initialize(row, profile, initial, source, strict, teacher_identity,market_seed=None):
+def _initialize(row, profile, initial, source, strict, teacher_identity,market_seed=None,source_verification=None):
     from .fg_s3_e_quality_corpus_cli import _factory
     from .fg_s3_quality_teacher_v2 import NativeQualityTeacher
     from .fg_s3_e_quality_corpus import l1_labeler
@@ -19,7 +19,8 @@ def _initialize(row, profile, initial, source, strict, teacher_identity,market_s
     _market_cache=factory._market_cache
     _env = factory()
     _env.import_state(initial)
-    _teacher = NativeQualityTeacher(_env, factory, fold='TRAIN', source=source)
+    _teacher = (source_verification.teacher(_env,factory) if source_verification is not None else
+                NativeQualityTeacher(_env, factory, fold='TRAIN', source=source))
     if _teacher.identity_hash != teacher_identity:
         raise ValueError('Parallel teacher differs from the native starting account identity')
     _label = l1_labeler(_teacher, strict)
@@ -80,14 +81,14 @@ def _query(state, delta, mask, expected_snapshot_hash, base_count):
 
 
 class NativeLabelPool:
-    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers,*,market_seed=None):
+    def __init__(self, row, profile, initial, source, strict, teacher_identity, workers,*,market_seed=None,source_verification=None):
         if type(workers) is not int or workers < 1:
             raise ValueError('Positive native label worker count required')
         self._history = initial['equity_history']
         self.queue_depth = 2*workers
         self._pools = [ProcessPoolExecutor(max_workers=1,
             mp_context=multiprocessing.get_context('spawn'), initializer=_initialize,
-            initargs=(row, profile, initial, source, strict, teacher_identity,market_seed)) for _ in range(workers)]
+            initargs=(row, profile, initial, source, strict, teacher_identity,market_seed,source_verification)) for _ in range(workers)]
         self._sent = [len(self._history)]*workers
         self._closed = False
         self.statistics = dict(queries=0,delta_history_items=0,full_history_items=0,

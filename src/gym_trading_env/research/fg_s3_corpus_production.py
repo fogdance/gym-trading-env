@@ -22,6 +22,8 @@ from .fg_s3_corpus_resources import (Broker, Ledger, ENV, allocate, available_me
 PYTHON = '/home/v/miniconda3/envs/dreamerv3/bin/python'
 PROJECT = Path(__file__).resolve().parents[3]
 STAGES = ('runtime_limits', 'validate', 'generate', 'native_g3', 'reader', 'coverage', 'publish')
+PHASE_EXIT_GRACE = 5.0
+RECIPE_CONTRACT = 'FG_S3_CORPUS_DATA_RECIPE_V2'
 CPU_ENV = dict(PYTHONPATH='.:src:../dreamerv3', CUDA_VISIBLE_DEVICES='', JAX_PLATFORMS='cpu',
     PYTHONDONTWRITEBYTECODE='1', PYTHONINTMAXSTRDIGITS='0', OPENBLAS_NUM_THREADS='1',
     OMP_NUM_THREADS='1', MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1')
@@ -93,9 +95,26 @@ def load_config(path):
         raise ValueError('Unique safe batch IDs required')
     if type(value['seed']) is not int or type(value['reader_length']) is not int or value['reader_length']<1:
         raise ValueError('Explicit integer seed and positive Reader length required')
-    # Resource changes are allowed between attempts. Source recipe/pins are not.
-    identity = {k:v for k,v in value.items() if k not in ('resources', 'max_inflight_batches')}
-    return value, fingerprint(identity)
+    return value, data_recipe(value)
+
+
+def data_recipe(config):
+    # Source/semantic changes require a new recipe. Execution versions and
+    # adopting already generated content are independently authenticated.
+    identity = {k:v for k,v in config.items() if k not in (
+        'resources', 'max_inflight_batches', 'producer', 'runtime_probe', 'coverage_program')}
+    identity['batches'] = []
+    for batch in config['batches']:
+        item={k:v for k,v in batch.items() if k != 'adopt'}
+        if 'plan' in item:
+            item['plan']={'sha256':item['plan']['sha256']}
+        identity['batches'].append(item)
+    from .fg_s3_corpus_compatibility import COURSE_ABI_VERSION
+    return fingerprint(dict(contract=RECIPE_CONTRACT, course_abi_version=COURSE_ABI_VERSION, recipe=identity))
+
+
+def legacy_recipe(config):
+    return fingerprint({k:v for k,v in config.items() if k not in ('resources', 'max_inflight_batches')})
 
 
 class ProductionLock:
@@ -210,8 +229,61 @@ def group_members(pgid):
     return members
 
 
+def group_snapshot(pgid):
+    """Capture live owned members before cleanup erases their identities."""
+    result = []
+    for pid, _ in group_members(pgid):
+        try:
+            root = Path(f'/proc/{pid}')
+            fields = (root/'stat').read_text().rsplit(')', 1)[1].split()
+            if int(fields[2]) != pgid or fields[0] == 'Z':
+                continue
+            identity = dict(pid=pid, pgid=pgid, start_ticks=int(fields[19]))
+            command = (root/'cmdline').read_bytes().replace(b'\0', b' ').decode(errors='replace').strip()
+            if process_identity(pid) != identity:
+                continue
+            result.append(dict(**identity, ppid=int(fields[1]), sid=int(fields[3]),
+                               state=fields[0], command=command))
+        except (FileNotFoundError, ProcessLookupError):
+            pass
+    return result
+
+
+def drain_group(pgid, timeout=PHASE_EXIT_GRACE, interval=.05):
+    """Wait for asynchronous helper shutdown; persistent workers still fail."""
+    began = time.monotonic()
+    remaining = initial = group_snapshot(pgid)
+    observed = {(item['pid'], item['start_ticks']):item for item in initial}
+    while remaining and time.monotonic()-began < timeout:
+        time.sleep(min(interval, max(0, timeout-(time.monotonic()-began))))
+        remaining = group_snapshot(pgid)
+        observed.update(((item['pid'], item['start_ticks']),item) for item in remaining)
+    return dict(status='DRAINED' if not remaining else 'TIMED_OUT',
+        timeout_seconds=timeout, seconds=time.monotonic()-began,
+        initial_members=initial, observed_members=list(observed.values()), remaining_members=remaining)
+
+
 def producer_for(config, batch):
-    return batch.get('adopt', {}).get('producer', config['producer'])
+    # Adoption chooses data, never the executable verifier.
+    return config['producer']
+
+
+def pin_reference(producer):
+    return {key:producer[key] for key in ('pin', 'pin_sha256')}
+
+
+def origin_for(config, batch, generated_attempt=None):
+    adoption = batch.get('adopt', {})
+    if 'origin_pin' in adoption:
+        return adoption['origin_pin']
+    if 'producer' in adoption:
+        return pin_reference(adoption['producer'])
+    if generated_attempt is not None:
+        request = read(Path(generated_attempt)/'request.json')
+        if 'recovered_generation' in request:
+            return request['recovered_generation']['origin_pin']
+        return origin_for(request['config'], request['batch'])
+    return pin_reference(config['producer'])
 
 
 def authenticate(producer):
@@ -237,18 +309,44 @@ def validate_source(source, batch, config):
             raise ValueError('Full TRAIN suffix differs from locked batch plan')
 
 
-def validate_generated(corpus, source, producer, seed):
+def origin_repositories(origin_pin):
+    """Historical provenance is authenticated metadata, not a running checkout."""
+    from .fg_s3_e_quality_supervision import require_stage_producer_pin
+    if type(origin_pin) is not dict or set(origin_pin) != {'pin', 'pin_sha256'}:
+        raise ValueError('Explicit historical Producer pin and external SHA256 required')
+    require_stage_producer_pin('native-verification', origin_pin['pin'], origin_pin['pin_sha256'])
+    path = checked_path(origin_pin['pin'])
+    if digest(path) != origin_pin['pin_sha256']:
+        raise ValueError('Historical Producer pin SHA256 mismatch')
+    pin = read_manifest(path)
+    records = pin.get('repositories', {})
+    if (pin.get('protocol') != 'FG_S3_E_QUALITY_PRODUCER_PIN_V1' or set(records) != {'gym', 'dreamer'}
+            or any(type(item) is not dict or item.get('dirty') is not False
+                   or re.fullmatch('[0-9a-f]{40}', str(item.get('sha'))) is None for item in records.values())):
+        raise ValueError('Historical Producer pin invalid')
+    return records
+
+
+def validate_generated(corpus, source, producer, seed, *, origin_pin=None):
     from .fg_s3_e_quality_supervision import SupervisionSource, inspect_source
     manifest = inspect_source(SupervisionSource.from_corpus(corpus))
-    check_files(manifest['source_binding']['files'])
     if (manifest.get('execution_mode', 'data') != 'data'
             or read_manifest(Path(corpus)/'source_lock.json') != source
             or manifest['source_lock_hash'] != source['content_hash']):
         raise ValueError('Generated Corpus source differs from validated source')
     audit = authenticate(producer)
+    expected = (origin_repositories(origin_pin) if origin_pin is not None else
+                {role:dict(sha=audit[role]['head'], dirty=False) for role in ('gym', 'dreamer')})
+    if set(manifest['code']['repositories']) != set(expected):
+        raise ValueError('Corpus historical Producer roles differ')
     for role, record in manifest['code']['repositories'].items():
-        if record['sha'] != audit[role]['head'] or record['dirty']:
-            raise ValueError('Corpus producer differs from authenticated frozen producer')
+        if record['sha'] != expected[role]['sha'] or record['dirty']:
+            raise ValueError('Corpus producer differs from authenticated origin')
+    from .fg_s3_corpus_provenance import SourceVerification
+    from .fg_s3_e_quality_corpus_cli import _code_lock, _expected_binding_files
+    if manifest['source_binding']['files'] != _expected_binding_files(Path(corpus), source, manifest['code']['files']):
+        raise ValueError('Corpus source file allowlist differs')
+    SourceVerification.create(manifest, _code_lock())
     spec=read(Path(corpus)/'course_v2.json')
     if any(item['seed']!=seed for item in spec['curriculum']['behaviors']):
         raise ValueError('Corpus behavior seed differs from configured recipe')
@@ -284,9 +382,13 @@ def execute_stage(request):
         result = dict(status='SOURCE_VALIDATED_ONLY', source=source)
     elif stage == 'generate':
         source = read_manifest(Path(request['previous']['validate'])/'VALIDATED_SOURCE_LOCK.json')
-        if batch.get('adopt'):
-            corpus = Path(batch['adopt']['corpus'])
-            manifest = validate_generated(corpus, source, producer, config['seed'])
+        adoption = request.get('recovered_generation', batch.get('adopt'))
+        if adoption:
+            corpus = Path(adoption['corpus'])
+            manifest = validate_generated(corpus, source, producer, config['seed'],
+                origin_pin=adoption.get('origin_pin', origin_for(config, batch)))
+            if adoption.get('corpus_identity', manifest['content_hash']) != manifest['content_hash']:
+                raise ValueError('Recovered generation content identity differs')
             result = dict(status='ADOPTED_GENERATED_CORPUS', corpus=str(corpus), corpus_identity=manifest['content_hash'])
         else:
             from .fg_s3_e_quality_corpus_cli import generate_small
@@ -305,7 +407,7 @@ def execute_stage(request):
         admission = QualitySupervisionAdmission.preflight(SupervisionSource.from_corpus(corpus),
             purpose='native-verification', producer_gym=producer['gym'], log_path=target/'native_verify.log',
             producer_lock=producer['pin'], producer_lock_sha256=producer['pin_sha256'],
-            workers=request['capacity'], **({} if batch.get('adopt') else {'policy_cpus':request['policy_cpus']}))
+            workers=request['capacity'], policy_cpus=request['policy_cpus'])
         write_json(target/'native_verification.json', admission.native_result)
         write_json(target/'WP03_SOURCE_ADMISSION_RECEIPT.json', admission.receipt)
         result = dict(status='NATIVE_G3_VERIFIED', corpus_identity=admission.source.corpus_content_hash)
@@ -353,7 +455,8 @@ def publish_batch(request):
                                  completion_hash=request['previous_receipts'][stage]))
     config, batch = request['config'], request['batch']
     source = read_manifest(previous['validate']/'VALIDATED_SOURCE_LOCK.json')
-    manifest = validate_generated(corpus, source, producer_for(config, batch),config['seed'])
+    manifest = validate_generated(corpus, source, producer_for(config, batch),config['seed'],
+        origin_pin=origin_for(config, batch, previous['generate']))
     native = read(previous['native_g3']/'native/native_verification.json')
     reader = read_manifest(previous['reader']/'reader/WP03_COURSE_READER_COVERAGE.json')
     result = native['result']
@@ -398,14 +501,16 @@ def publish_batch(request):
         status='NATIVE_G3_AND_INDEPENDENT_READER_COMPLETED', corpus_identity=manifest['content_hash'],
         source_lock=manifest['source_lock_hash'], course_identity=manifest['course_identity_hash'],
         teacher_identity=manifest['teacher_identity'], producer_repositories=manifest['code']['repositories'],
-        producer_pin_sha256=producer_for(config, batch)['pin_sha256'], index_sha256=reader['index_sha256'],
+        producer_pin_sha256=origin_for(config, batch, previous['generate'])['pin_sha256'],
+        native_verifier_pin_sha256=native['producer_audit']['operator_producer_pin_sha256'], index_sha256=reader['index_sha256'],
         curriculum_support=reader['curriculum_support'], training_admitted=False, optimizer_updates=0,
         runtime_environment=dict(PYTHONINTMAXSTRDIGITS='0', python_int_max_str_digits=0), files=files))
     write_json(out/'BATCH_MANIFEST.json', value)
     write_json(out/'IDENTITY_LOCK.json', signed(dict(protocol='FG_S3_E_TRAIN_CORPUS_IDENTITY_LOCK_V1',
         batch_id=batch['id'], corpus_identity=manifest['content_hash'], source_lock=manifest['source_lock_hash'],
         course_identity=manifest['course_identity_hash'], teacher_identity=manifest['teacher_identity'],
-        producer_pin_sha256=value['producer_pin_sha256'], index_sha256=reader['index_sha256'],
+        producer_pin_sha256=value['producer_pin_sha256'],
+        native_verifier_pin_sha256=value['native_verifier_pin_sha256'], index_sha256=reader['index_sha256'],
         files={**files, 'receipts/BATCH_MANIFEST.json':digest(out/'BATCH_MANIFEST.json')})))
     return {key:value for key,value in value.items() if key != 'files'}
 
@@ -430,8 +535,10 @@ class Controller:
             if not resume:
                 raise ValueError('Production state exists; use resume --config')
             self.state = read(self.state_path)
+            if self.state.get('recipe_contract') != RECIPE_CONTRACT:
+                raise ValueError('Legacy production state requires prepare-resume with the original configuration')
             if self.state['recipe_hash'] != self.recipe:
-                raise ValueError('Production source/recipe/producer identity changed; create a new production root')
+                raise ValueError('Production data recipe changed; create a new production root')
             for batch in self.state['batches'].values():
                 for attempts in batch['stages'].values():
                     for record in attempts:
@@ -446,6 +553,7 @@ class Controller:
             if resume and any((self.root/'attempts').glob('*')):
                 raise ValueError('Attempts exist without controller state; manual audit required')
             self.state = dict(protocol='FG_S3_CORPUS_PRODUCTION_STATE_V1', recipe_hash=self.recipe,
+                recipe_contract=RECIPE_CONTRACT,
                 batches={batch['id']:dict(stages={stage:[] for stage in STAGES}) for batch in self.config['batches']})
             self.save()
 
@@ -495,6 +603,18 @@ class Controller:
                      capacity=self.capacity, policy_cpus=self.budgets)
         if 'generate' in previous:
             value['corpus'] = read(Path(previous['generate']['attempt'])/'generated.json')['corpus']
+        if stage == 'generate' and not batch.get('adopt'):
+            for record in reversed(self.state['batches'][batch['id']]['stages']['generate']):
+                attempt = Path(record['attempt'])
+                if record['status'] not in ('failed', 'interrupted'):
+                    continue
+                if not (attempt/'generated.json').exists() or not (attempt/'result.json').exists():
+                    continue
+                result = stage_result(attempt, 'generate')
+                value['recovered_generation'] = dict(corpus=result['corpus'],
+                    corpus_identity=result['corpus_identity'], origin_pin=origin_for(self.config,batch,attempt),
+                    origin_attempt=str(attempt), request_sha256=digest(attempt/'request.json'))
+                break
         return value
 
     def stage_command(self, directory):
@@ -515,11 +635,10 @@ class Controller:
             env['FG_CORPUS_MEMORY_CHECKS'] = '1' if self.config['resources'].get('memory_checks', True) else '0'
             env['TMPDIR'] = str(self.control/'tmp');Path(env['TMPDIR']).mkdir(exist_ok=True)
             env['MPLCONFIGDIR'] = str(self.control/'matplotlib')
-            if batch.get('adopt'):
-                env['FG_CORPUS_LEGACY'] = '1'
+            env.pop('FG_CORPUS_LEGACY', None)
             write_json(directory/'command.json', dict(argv=argv, cwd=str(PROJECT),
                 resources=self.config['resources'], capacity=self.capacity, policy_cpus=self.budgets,
-                env_overrides=CPU_ENV, recipe_hash=self.recipe))
+                env_overrides=CPU_ENV, recipe_hash=self.recipe, execution_lock=self.execution))
             # taskset avoids preexec_fn in this threaded controller.
             argv = ['taskset', '-c', ','.join(map(str, self.config['resources']['affinity'])), *argv]
             with (directory/'controller.log').open('x') as log:
@@ -539,15 +658,24 @@ class Controller:
                     if self.stopping.wait(.15):
                         terminate_owned(identity,known_members=record.get('members',()));break
                 exit_code = child.wait()
-            # Account processes must not outlive a successful phase.
-            remaining = [(pid,state) for pid,state in group_members(child.pid) if state != 'Z']
-            if remaining:
-                raise ValueError('Phase left live descendant processes; refusing completion')
+            with self.state_lock:
+                record['exit_code'] = exit_code;self.save()
+            drained = drain_group(child.pid, timeout=PHASE_EXIT_GRACE if exit_code == 0 else 0)
+            write_json(directory/'process_exit.json', dict(process=identity, exit_code=exit_code, **drained))
+            with self.state_lock:
+                known = {(item['pid'],item['start_ticks']):item for item in record.get('members', [])}
+                for item in drained['observed_members']:
+                    known[item['pid'],item['start_ticks']] = {key:item[key] for key in ('pid','pgid','start_ticks')}
+                record['members'] = list(known.values())
+                record['process_exit'] = drained;self.save()
             if exit_code != 0:
                 raise ValueError(f'{batch["id"]}/{stage} exited {exit_code}; {directory}/controller.log')
+            if drained['remaining_members']:
+                raise ValueError('Phase left live descendant processes after bounded wait; refusing completion; '
+                                 f'{directory}/process_exit.json')
             result = stage_result(directory,stage)
             files = {str(path):digest(path) for path in directory.rglob('*') if path.is_file()}
-            if stage == 'generate' and batch.get('adopt'):
+            if stage == 'generate' and (batch.get('adopt') or request.get('recovered_generation')):
                 corpus = Path(result['corpus'])
                 files.update({str(path):digest(path) for path in corpus.rglob('*') if path.is_file()})
             completion = signed(dict(status='succeeded', stage=stage, exit_code=exit_code, files=files,
@@ -562,6 +690,8 @@ class Controller:
             if child:
                 try:
                     terminate_owned(record['process'],known_members=record.get('members',()));child.wait()
+                    record.setdefault('exit_code', child.returncode)
+                    record['cleanup'] = dict(status='TERMINATED', remaining_members=group_snapshot(child.pid))
                 except (OSError,ValueError) as cleanup:
                     exc=RuntimeError(f'{exc}; cleanup requires audit: {cleanup}')
             with self.state_lock:
@@ -577,10 +707,10 @@ class Controller:
     def run(self, resume):
         check_environment(self.config)
         with ProductionLock(self.root/'control'):
+            self.execution = signed(dict(producer=self.config['producer'], audit=authenticate(self.config['producer'])))
             self.initialize(resume)
             if all('publish' in self.successful(batch) for batch in self.config['batches']):
                 print(json.dumps(dict(status='ALL_BATCHES_ALREADY_PUBLISHED')));return 0
-            authenticate(self.config['producer'])
             self.setup_resources()
             interrupted = False
             def stop(signum, frame):
@@ -641,7 +771,74 @@ class Controller:
             return 0
 
 
-def production_main(command, path):
+def prepare_resume(path, previous_config, *, apply=False):
+    """Explicit one-time, stopped-controller upgrade; never promotes a stage."""
+    config, recipe = load_config(path)
+    old_config, old_recipe = load_config(previous_config)
+    if recipe != old_recipe or config['production_root'] != old_config['production_root']:
+        raise ValueError('Resume migration cannot change the data recipe or output root')
+    execution = signed(dict(producer=config['producer'], audit=authenticate(config['producer'])))
+    controller = Controller(config, recipe)
+    with ProductionLock(controller.control):
+        original = controller.state_path.read_bytes()
+        state = json.loads(original)
+        if state.get('recipe_contract') == RECIPE_CONTRACT:
+            if state['recipe_hash'] != recipe:
+                raise ValueError('Production data recipe differs')
+            return dict(status='RESUME_ALREADY_PREPARED', recipe_hash=recipe, execution_lock=execution)
+        if state['recipe_hash'] != legacy_recipe(old_config):
+            raise ValueError('Original configuration does not authenticate the legacy state')
+        if set(state['batches']) != {batch['id'] for batch in config['batches']}:
+            raise ValueError('Legacy batch inventory differs')
+        completed, recovery, corpora = [], [], {}
+        for batch in config['batches']:
+            for stage, records in state['batches'][batch['id']]['stages'].items():
+                for record in records:
+                    if record.get('process') and any(s != 'Z' for _,s in group_members(record['process']['pgid'])):
+                        raise ValueError('Stop all owned production processes before preparing resume')
+                    if record['status'] == 'succeeded':
+                        validate_completion(record)
+                        completed.append(dict(batch=batch['id'], stage=stage, completion_hash=record['completion_hash']))
+                    elif stage == 'generate' and (Path(record['attempt'])/'result.json').exists():
+                        result = stage_result(Path(record['attempt']), stage)
+                        source = read_manifest(Path(result['corpus'])/'source_lock.json')
+                        validate_source(source,batch,config)
+                        validate_generated(result['corpus'],source,config['producer'],config['seed'],
+                            origin_pin=origin_for(old_config,batch,record['attempt']))
+                        recovery.append(dict(batch=batch['id'], origin_attempt=record['attempt'], **result))
+                    if stage == 'generate' and (record['status'] == 'succeeded' or
+                            any(item['origin_attempt'] == record['attempt'] for item in recovery)):
+                        result=stage_result(Path(record['attempt']),stage)
+                        corpus=Path(result['corpus']);manifest=read_manifest(corpus/'corpus_manifest.json')
+                        corpora[str(corpus)]=dict(corpus_identity=manifest['content_hash'],
+                            manifest_sha256=digest(corpus/'corpus_manifest.json'),
+                            inventory_files=len(manifest.get('files',{})))
+        receipt = signed(dict(protocol='FG_S3_CORPUS_RESUME_MIGRATION_V1',
+            status='RESUME_PREPARED' if apply else 'RESUME_PREPARATION_CHECKED_ONLY',
+            old_state_sha256=hashlib.sha256(original).hexdigest(), old_recipe_hash=state['recipe_hash'],
+            recipe_hash=recipe, recipe_contract=RECIPE_CONTRACT, execution_lock=execution,
+            previous_config=dict(path=str(Path(previous_config).absolute()),sha256=digest(previous_config)),
+            config=dict(path=str(Path(path).absolute()),sha256=digest(path)),
+            completed_stages_preserved=completed, recoverable_generations=recovery,
+            verified_unchanged_corpora=corpora,
+            corpus_bytes_changed=False, stages_promoted=False, formal_production_started=False))
+        if apply:
+            folder = controller.control/'migrations'/receipt['content_hash']
+            folder.mkdir(parents=True, exist_ok=False)
+            (folder/'state.before.json').write_bytes(original)
+            write_json(folder/'MIGRATION.json',receipt)
+            state.update(recipe_hash=recipe,recipe_contract=RECIPE_CONTRACT,
+                         migration=dict(path=str(folder/'MIGRATION.json'),sha256=digest(folder/'MIGRATION.json')))
+            write_json(controller.state_path,state)
+        return receipt
+
+
+def production_main(command, path, previous_config=None, apply=False):
+    if command == 'prepare-resume':
+        if previous_config is None:
+            raise ValueError('prepare-resume requires --previous-config')
+        result=prepare_resume(path,previous_config,apply=apply)
+        print(json.dumps(result,ensure_ascii=False));return 0
     config, recipe = load_config(path)
     if command == 'status':
         state_path = Path(config['production_root'])/'control/state.json'

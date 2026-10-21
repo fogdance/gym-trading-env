@@ -312,13 +312,15 @@ def _verification_job(job):
     began=time.monotonic()
     factory=_factory(job['row'],job['profile'],market_seed=job.get('market_seed'))
     env=factory();env.import_state(job['initial'])
-    facts=NativeQualityTeacher(env,factory,fold='TRAIN',source=job['source'])
+    source_verification=job.get('source_verification')
+    facts=(source_verification.teacher(env,factory) if source_verification is not None else
+           NativeQualityTeacher(env,factory,fold='TRAIN',source=job['source']))
     labels=l1_labeler(facts,job['strict'])
     if job.get('label_workers'):
         from .fg_s3_quality_label_pool import NativeLabelPool
         labels=NativeLabelPool(job['row'],job['profile'],job['initial'],job['source'],
             job['strict'],facts.identity_hash,job['label_workers'],
-            market_seed=factory._market_cache.export_seed())
+            market_seed=factory._market_cache.export_seed(),source_verification=source_verification)
         facts.close()
     try:
         receipt=reconcile_trace(job['path'],PROJECT.parent/'dreamerv3',env_factory=factory,
@@ -505,10 +507,8 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
     guard_interval=m.get('source_binding',{}).get('source_guard_interval',1)
     if type(guard_interval) is not int or guard_interval!=1:
         raise ValueError('Native G3 requires per-query frozen source monitoring')
-    _inventory(path,m)
-    if _code_lock()['files']!=m['code']['files']:
-        raise ValueError('Corpus runtime code inventory differs')
-    check_files(m['code']['files'])
+    from .fg_s3_e_quality_supervision import SupervisionSource,inspect_source
+    inspect_source(SupervisionSource.from_corpus(path))
     saved=read_manifest(path/'source_lock.json')
     current,_,_=source_inputs(saved['source_pool']['path'],saved['env_receipt']['path'],saved['contract'],
         **saved.get('selection',{}))
@@ -516,7 +516,8 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
     expected=_expected_binding_files(path,saved,m['code']['files'])
     if m['source_binding']['files']!=expected:
         raise ValueError('Corpus source file allowlist differs')
-    check_files(expected)
+    from .fg_s3_corpus_provenance import SourceVerification
+    source_verification=SourceVerification.create(m,_code_lock())
     if read_manifest(path/'model_contract.json')['content_hash']!=m['model_contract_hash']:
         raise ValueError('Model contract hash differs')
     profile=ETrainAdmission.from_train_pool(saved['source_pool']['path'],path/'e_source',path/'selected_train_pool.json',contracts=[saved['contract']])
@@ -524,7 +525,7 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
     factory=_factory(row,profile)
     env,initial=_prefix(factory,saved['start_cursor'])
     if initial!=json.loads((path/'initial_account.json').read_text()):raise ValueError('Initial native WAIT account proof differs')
-    strict=QualityStrictTeacher(env,source=m['source_binding'],start_cursor=saved['start_cursor'])
+    strict=source_verification.strict(QualityStrictTeacher(env,source=m['source_binding'],start_cursor=saved['start_cursor']))
     if strict.identity_hash!=m['teacher_identity'] or strict.plan()!=read_manifest(path/'p4_plan.json'):
         raise ValueError('Strict suffix proof differs')
     limits=_execution_limits(len(m['behaviors']),workers,policy_cpus)
@@ -540,6 +541,7 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
         try:
             arguments=[dict(name=name,path=path/'policies'/name,
                     row=row,profile=profile,initial=initial,source=m['source_binding'],strict=strict,
+                    source_verification=source_verification,
                     market_seed=market_seed,
                     label_workers=limits['label_workers'][i%limits['workers']]) for i,name in enumerate(m['behaviors'])]
             if policy_cpus is not None:
@@ -555,7 +557,7 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
     receipts=[by_name[name] for name in m['behaviors']]
     if any(r['teacher_labels_verified']!=r['records'] or not r['records'] for r in receipts):
         raise ValueError('Native G3 must independently recompute every teacher label')
-    check_files(expected)
+    check_files(source_verification.guard_files)
     _verify_publications(path,m['behaviors'])
     report=coverage([path/'policies'/name for name in m['behaviors']])
     from .fg_s3_e_quality_corpus import coverage_csv
@@ -567,6 +569,7 @@ def verify_corpus(path,*,workers=None,policy_cpus=None):
     return signed(dict(status='PASS',protocol=SCHEMA,training_admitted=False,
         verification_state='NATIVE_G3_VERIFIED',
         corpus_identity=m['content_hash'],native_replay=receipts,G3='GO',test_prices_opened=0,
+        source_verification=source_verification.report,
         resource_budget=limits,behavior_jobs=jobs))
 
 
@@ -575,6 +578,9 @@ def _main(argv=None):
     sub=parser.add_subparsers(dest='command',required=True)
     for name in ('produce-all','resume','status'):
         p=sub.add_parser(name);p.add_argument('--config',required=True)
+    p=sub.add_parser('prepare-resume')
+    p.add_argument('--config',required=True);p.add_argument('--previous-config',required=True)
+    p.add_argument('--apply',action='store_true')
     p=sub.add_parser('_production-stage',help=argparse.SUPPRESS)
     p.add_argument('--request',required=True)
     for name in ['validate','generate-small','generate']:
@@ -597,9 +603,10 @@ def _main(argv=None):
             p.add_argument('--policy-cpus')
     args=parser.parse_args(argv)
     try:
-        if args.command in ('produce-all','resume','status'):
+        if args.command in ('produce-all','resume','status','prepare-resume'):
             from .fg_s3_corpus_production import production_main
-            return production_main(args.command,args.config)
+            return production_main(args.command,args.config,
+                previous_config=getattr(args,'previous_config',None),apply=getattr(args,'apply',False))
         if args.command=='_production-stage':
             from .fg_s3_corpus_production import execute_stage
             result=execute_stage(json.loads(Path(args.request).read_text()))
