@@ -56,7 +56,10 @@ def test_missing_empty_path_test_and_synthetic_formal_sources_rejected(tmp_path)
     source=f3_source();s['execution'].update(source_run=source['run_dir'],
         source_checkpoint=str(Path(source['run_dir'])/'ckpt/step_000000000004'))
     config.write_text(json.dumps(s));result,synthetic=cli('online-prepare','--config',config)
-    assert result.returncode!=0 and 'SYNTHETIC_SOURCE_NOT_FORMAL' in result.stderr
+    # R2 authenticates the explicit verifier before opening the formal source.
+    assert result.returncode!=0 and 'EXPLICIT_PRODUCER_PIN_SHA256_REQUIRED' in result.stderr
+    from gym_trading_env.research.fg_s3_e_quality_online import preflight
+    with pytest.raises(ValueError,match='SYNTHETIC_SOURCE_NOT_FORMAL'):preflight(s['execution'])
     assert not Path(s['prepared_dir']).exists() and not Path(s['execution']['run_dir']).exists()
     Path('docs/receipts/wp07/H_formal_negative.json').write_text(json.dumps([missing,synthetic],indent=2)+'\n')
 
