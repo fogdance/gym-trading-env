@@ -236,7 +236,7 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,produc
             source_bindings=bindings,native_audit=native_audit)
         if rl_review_path is not None or rl_review_sha256 is not None or authorize_rl:
             run.rl_review=run.gates.review_rl(native,rl_review_path,rl_review_sha256,authorized=authorize_rl)
-        result=run.run_to(stop_at);write_json(run.root/'online_result.json',signed(result));return result
+        result=run.run_to(stop_at);run.publish_result(result);return result
     finally:
         if run is not None:run.close()
         elif history is not None:history.close()
@@ -250,7 +250,8 @@ def report(run_dir,output=None):
     from .fg_s3_e_quality_course_preflight import _local_path
     from embodied.run.fg_checkpoint import FullCheckpoint
     root=_local_path(run_dir);identity=read_manifest(root/'run_identity.json')['identity']
-    if identity.get('protocol')!='FG_S3_E_QUALITY_ONLINE_RUN_V1':raise ValueError('ONLINE_RUN_PROTOCOL_REQUIRED')
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    if identity.get('protocol')!=OnlineRun.protocol:raise ValueError('ONLINE_RUN_PROTOCOL_REQUIRED')
     node=FullCheckpoint(root/'ckpt',elements.Counter(),identity,(),strict_latest=True).latest()
     if node is None:raise ValueError('ONLINE_COMPLETED_NODE_REQUIRED')
     load=lambda name:pickle.loads((node/(name+'.pkl')).read_bytes())
@@ -258,6 +259,7 @@ def report(run_dir,output=None):
         checkpoint_sha256=digest(node/'manifest.json'),execution_mode=identity['spec']['execution_mode'],
         agent_state_sha256=digest(node/'agent.pkl'),
         counters=load('counters'),gates=load('gates'),source_exposures=load('source_exposures'),
+        account_verification=load('account_verification'),
         market_steps=int(load('market_step')),source_manifest=identity['source_manifest'],
         data_identity=identity['live_source'],model_identity=identity['source_nonopt'],
         controlled_small=identity['controlled_small'],formal_training_authority='NOT_EVALUATED_BY_REPORT',
@@ -280,7 +282,8 @@ def evaluate_checkpoint(run_dir,checkpoint,output,*,steps=32):
     from embodied.run.fg_checkpoint import validate_bundle
     root=_local_path(run_dir);node=_local_path(checkpoint);out=_local_path(output)
     identity=read_manifest(root/'run_identity.json')['identity']
-    if (identity.get('protocol')!='FG_S3_E_QUALITY_ONLINE_RUN_V1' or identity['code']!=execution_identity()
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    if (identity.get('protocol')!=OnlineRun.protocol or identity['code']!=execution_identity()
             or not node.is_relative_to(root/'ckpt')):raise ValueError('ONLINE_EVALUATION_CODE_OR_RUN_MISMATCH')
     validate_bundle(node,identity)
     from embodied.run.fg_s3_e_quality_online import inspect_f3
