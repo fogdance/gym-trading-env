@@ -1,6 +1,7 @@
 # F4 prepare, pause, review and resume
 
-Status: implementation under verification. Commands are instructions for the
+Status: selected CPU/synthetic verification passed; final integration receipts are
+indexed in BATCH3_IMPLEMENTATION_REVIEW.md. Commands are instructions for the
 operator; no formal training, GPU or TEST authorization is inferred.
 
 Use the same frozen sibling Gym/Dreamer code pair for prepare/start/resume. Old
@@ -20,6 +21,10 @@ rl_admission:
   calibration_seed: 202
 ```
 
+Controlled RL also requires explicit `wm_policy.max_reward_mae` and
+`wm_policy.max_continue_mae` in the existing online settings; there are no
+automatic permissive thresholds.
+
 These are example values for a new plan, not a claim that the sample count or
 model is sufficient. Warmup must align with collect_every and be strictly below
 env_steps. Horizon must be below the F3 target length. The existing 25,000 unique
@@ -37,20 +42,22 @@ Each pin's external digest must be reviewed independently.
 From the frozen Gym directory, with the existing Dreamer Python environment:
 
 ```bash
-python -B tools/fg_s3_v2_experiment.py online-prepare --config PLAN.yaml \
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-prepare --config PLAN.yaml \
   --producer-gym FROZEN_PRODUCER_GYM --producer-lock REVIEWED_PIN.json \
   --producer-lock-sha256 EXTERNALLY_REVIEWED_PIN_SHA256
 
-python -B tools/fg_s3_v2_experiment.py online-start --prepared PREPARED_DIR \
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-start --prepared PREPARED_DIR \
   --authorize-training --producer-gym FROZEN_PRODUCER_GYM \
   --producer-lock REVIEWED_PIN.json --producer-lock-sha256 EXTERNALLY_REVIEWED_PIN_SHA256
 
-python -B tools/fg_s3_v2_experiment.py online-rl-review-packet \
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-rl-review-packet \
   --run-dir RUN_DIR --output-dir NEW_EXTERNAL_PACKET_DIR
 ```
 
 The controlled RL start collects/BC-trains only through the explicit prefix,
-executes read-only WM calibration and one isolated candidate Actor/critic update,
+executes read-only WM calibration and at most two isolated candidate optimizer
+invocations, requiring actual Actor and critic changes without altering their
+existing update schedule,
 then pauses AWAIT_OPERATOR_REVIEW. Technical failure instead reports RL_BLOCKED.
 The packet exporter writes an AWAIT packet, never an APPROVED file.
 
@@ -62,7 +69,7 @@ must supply the approved review file's SHA256 independently. The trainer must no
 create, edit or approve this document.
 
 ```bash
-python -B tools/fg_s3_v2_experiment.py online-resume --prepared PREPARED_DIR \
+/home/v/miniconda3/envs/dreamerv3/bin/python -B tools/fg_s3_v2_experiment.py online-resume --prepared PREPARED_DIR \
   --authorize-training --authorize-rl --rl-review EXTERNAL_HUMAN_REVIEW.json \
   --rl-review-sha256 EXTERNALLY_APPROVED_REVIEW_SHA256 \
   --producer-gym FROZEN_PRODUCER_GYM --producer-lock REVIEWED_PIN.json \
@@ -81,3 +88,7 @@ permission, historical reviewed identity and full-account coverage. Zero actual
 RL updates never produce RL_COMPLETE_VERIFIED. Engineering/synthetic receipts
 and mathematical calibration fixtures never establish formal source admission or
 research performance.
+
+`bc_updates` and `rl_updates` count active loss components and can overlap when
+the existing RL objective includes BC. `optimizer_updates` counts actual live
+optimizer invocations; isolated candidate updates never increment these counts.

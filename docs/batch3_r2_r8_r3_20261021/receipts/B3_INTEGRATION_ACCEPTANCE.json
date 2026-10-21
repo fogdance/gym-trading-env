@@ -1,0 +1,80 @@
+{
+  "scope": "Four completed integration rounds before the separately tested terminal-receipt patch; not a rerun on later docs/final merge HEAD",
+  "passed": 168,
+  "failures": 0,
+  "skipped": 0,
+  "rounds": [
+    {
+      "label": "B3_INTEGRATION_COLD_20261021T050138336947Z",
+      "tests": 16,
+      "seconds": 714.1001997870626,
+      "exit_code": 0,
+      "repositories": {
+        "gym": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "sha": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+          "status": ""
+        },
+        "dreamer": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+          "sha": "77836dd1c94672f57fbc125e5537629118322abb",
+          "status": ""
+        }
+      }
+    },
+    {
+      "label": "B3_INTEGRATION_NATIVE_20261021T050138325837Z",
+      "tests": 6,
+      "seconds": 154.03520941303577,
+      "exit_code": 0,
+      "repositories": {
+        "gym": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "sha": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+          "status": ""
+        },
+        "dreamer": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+          "sha": "77836dd1c94672f57fbc125e5537629118322abb",
+          "status": ""
+        }
+      }
+    },
+    {
+      "label": "B3_INTEGRATION_PAUSE_20261021T050138326080Z",
+      "tests": 1,
+      "seconds": 303.09299500798807,
+      "exit_code": 0,
+      "repositories": {
+        "gym": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "sha": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+          "status": ""
+        },
+        "dreamer": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+          "sha": "77836dd1c94672f57fbc125e5537629118322abb",
+          "status": ""
+        }
+      }
+    },
+    {
+      "label": "B3_INTEGRATION_SHARED_20261021T050138336953Z",
+      "tests": 145,
+      "seconds": 586.3834960110253,
+      "exit_code": 0,
+      "repositories": {
+        "gym": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+          "sha": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+          "status": ""
+        },
+        "dreamer": {
+          "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+          "sha": "77836dd1c94672f57fbc125e5537629118322abb",
+          "status": ""
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="2" time="151.183" timestamp="2026-10-21T12:16:58.929846+08:00" hostname="v-X570-AORUS-PRO-WIFI"><testcase classname="tests.entry_v1.test_batch3_rl_numeric" name="test_actual_candidate_updates_actor_and_critic_live_agent_and_rng_unchanged" time="98.661"><failure message="ValueError: ONLINE_ISOLATED_RL_PROBE_FAILED: /home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T041658577680Z/live/isolated_candidate/candidate.log">rl = (PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_qualit...],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...})
+
+    def test_actual_candidate_updates_actor_and_critic_live_agent_and_rng_unchanged(rl):
+        from embodied.run.fg_s3_e_quality_online_probe import isolated_rl_probe,require_numeric_probe,state_digest,NumericProbe
+        from embodied.run.fg_s3_e_quality_online_gate import OnlineGates
+        from gym_trading_env.research.fg_s3_e_quality_online_checks import formal_mask_policy
+        root,agent,data=rl
+        settings=copy.deepcopy(f3_source());settings['batch_size']=len(data['is_first'])
+        before=agent.save_exact();py=random.getstate();nr=np.random.get_state()
+&gt;       probe=isolated_rl_probe(before,settings,data,directory=root/'isolated_candidate',seed=202,
+            controlled_small=True,context=dict(scope='NATIVE_SYNTHETIC_CANDIDATE_NOT_FORMAL'))
+
+../../../tests/entry_v1/test_batch3_rl_numeric.py:22: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+snapshot = {'params': {'avail/head/logit/bias': array([ 2.6058930e-07, -1.9017988e-07], dtype=float32), 'avail/head/logit/kernel'...6030e-07, ...,
+        2.3847667e-07,  2.4131100e-07, -2.3652343e-07], dtype=float32), ...}, 'pending_sync': None, ...}
+settings = {'schema': 'FG_S3_E_QUALITY_F3_CONFIG_V1', 'stage': 'ACTOR_SUPERVISED', 'sampling_stage': 'ACTOR_STRICT', 'sampling_spec': {'mode': 'NATURAL'}, ...}
+batch = {'market_seq': array([[[[0.        , 0.        , 0.        , ..., 0.        ,
+          0.        , 0.        ],
+     ...0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]], dtype=int32), ...}
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T041658577680Z/live/isolated_candidate')
+seed = 202, controlled_small = True
+context = {'scope': 'NATIVE_SYNTHETIC_CANDIDATE_NOT_FORMAL'}
+
+    def isolated_rl_probe(snapshot,settings,batch,*,directory,seed,controlled_small=False,context=None):
+        """Only this actual child execution registers a numeric result in the parent."""
+        from gym_trading_env.research.fg_s3_e_quality_course_preflight import _local_path
+        from gym_trading_env.research.fg_replay import digest
+        from gym_trading_env.research.fg_s3_e_quality_foundation import execution_identity
+        root=_local_path(directory);root.mkdir(parents=True,exist_ok=False)
+        payload=dict(protocol=PROTOCOL,agent=snapshot,settings=settings,batch=batch,seed=seed,
+            controlled_small=controlled_small,context=context,code=execution_identity())
+        input_path=root/'candidate_input.pkl'
+        with input_path.open('xb') as stream:pickle.dump(payload,stream,protocol=5)
+        source_root=Path(__file__).resolve().parents[2]
+        gym_root=source_root.parent/'gym-trading-env'
+        command=[sys.executable,'-B','-m','embodied.run.fg_s3_e_quality_online_probe',
+            '--input',str(input_path),'--output',str(root/'candidate_report.json')]
+        env={**os.environ,'PYTHONPATH':os.pathsep.join(map(str,(gym_root,gym_root/'src',source_root))),
+            'JAX_PLATFORMS':'cpu','CUDA_VISIBLE_DEVICES':'','OPENBLAS_NUM_THREADS':'1','OMP_NUM_THREADS':'1',
+            'PYTHONDONTWRITEBYTECODE':'1','MPLCONFIGDIR':str(root/'.matplotlib')}
+        env.pop('LD_LIBRARY_PATH',None)
+        with (root/'candidate.log').open('x') as stream:
+            process=subprocess.run(command,cwd=source_root,env=env,stdout=stream,stderr=subprocess.STDOUT,timeout=900)
+        if process.returncode:
+&gt;           raise ValueError('ONLINE_ISOLATED_RL_PROBE_FAILED: '+str(root/'candidate.log'))
+E           ValueError: ONLINE_ISOLATED_RL_PROBE_FAILED: /home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T041658577680Z/live/isolated_candidate/candidate.log
+
+../../../../dreamerv3/embodied/run/fg_s3_e_quality_online_probe.py:86: ValueError</failure></testcase><testcase classname="tests.entry_v1.test_batch3_rl_numeric" name="test_nan_child_rejected_without_live_model_or_rng_pollution" time="51.988" /></testsuite></testsuites>

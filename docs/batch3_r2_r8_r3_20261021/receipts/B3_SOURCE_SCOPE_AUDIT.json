@@ -1,0 +1,55 @@
+{
+  "protocol": "BATCH3_SOURCE_SCOPE_AUDIT_V1",
+  "repositories": {
+    "gym-trading-env": {
+      "baseline": "cadd6c87659665cc627e2275ab51ba9d14bb70cb",
+      "code_sha": "c0e8642b1cfcbc4d52d601663592b80bcd248c07",
+      "runtime_changes": {
+        "src/gym_trading_env/research/fg_s3_e_quality_online.py": "2ac0c31e9de1873377fa9e6f81995be0577c568a9ba69cfed73920f8bf9f5d49",
+        "src/gym_trading_env/research/fg_s3_e_quality_online_admission.py": "694778ff3d703504572220df1a7c53ce38b89bbf8c9e3a3ea77f1eaef13fe934",
+        "src/gym_trading_env/research/fg_s3_e_quality_online_checks.py": "b17e581da6c0df537a7ed1fa4d034c9fadf8ca1516418b72782c3c37cd06612e",
+        "src/gym_trading_env/research/fg_s3_e_quality_online_collector.py": "2638d78be5bf48a2548091d5ed2e429f1ee003ca668dc990228ebe6af731ba54",
+        "src/gym_trading_env/research/fg_s3_e_quality_online_evidence.py": "7d3ebce90e951c071662f3e1e32086fdb2c8bf76df9c7172d3ad926508fe6520",
+        "tools/fg_s3_v2_experiment.py": "77b3d00c884f012f0d841f7a7cb3c793ac72cc0aa4f4644cc8dceb9f62d25e4a"
+      },
+      "task_commits": [
+        "c0e8642b1cfcbc4d52d601663592b80bcd248c07 test(s3): enforce immutable completion across process authority changes",
+        "a64fba7f8f40bd51a3a88c7f7d53df4406720e47 fix(s3): seal source audit facts and export readable RL review diagnostics",
+        "392709a25da47e49e679107041c70700184d9d70 test(online): retain cold artifacts and verify authority scope and published sidecars",
+        "fa550c27626604c37de110f1b224cc1254aed3ce test(online): retain synthetic-source rejection after explicit verifier prevalidation",
+        "f81c29016f770a50d622bddd4b2c9b4731309bb4 feat(online): expose review packet export and strict controlled RL resume lifecycle",
+        "316d1b56c3496e2b0c2b5d85ddc79ed11aab7ed8 feat(online): bind native WM calibration to Corpus account-step ownership",
+        "4b97ce17b9038a3332280bccf728a700faa30656 test(online): lock explicit RL prefix and illegal transition contracts",
+        "5dfc69268693cca3c1b39b15aedb2b5164e1eabd docs(online): certify R8 native finalization and four exact cold restore scenarios",
+        "f1538637946841d685ec78344fed852fc0a0fc8a test(online): keep native cold fixtures inside existing allowed diagnostic roots",
+        "d61de21b3b7fd1c587f21624978c859ee9010a13 fix(online): seal verified account prefixes and commit final native reconciliation",
+        "b958933f12060510f7396b999467ffdaea082cc1 fix(online): bind native verifier pins and independent audits for every F4 source",
+        "57a92d0b818c5f57c64e2261d902ebef71335435 docs(s3): freeze Batch 3 baseline and reproduce online lifecycle gaps"
+      ]
+    },
+    "dreamerv3": {
+      "baseline": "a6a6ad9e18196f799c4517f370dd26a4ca68aaf5",
+      "code_sha": "2e7efda08c7b171f9a29ff104a03d9254b685762",
+      "runtime_changes": {
+        "embodied/run/fg_s3_e_quality_online_gate.py": "fab1a4c07661e0dffb52e76529f591ce4579e92807715d9712d538733c2bd692",
+        "embodied/run/fg_s3_e_quality_online_probe.py": "822fb49ce3824651fe038cea3ecd347f66550246068efb0c2bf5b54d3e06c105",
+        "embodied/run/fg_s3_e_quality_online_rl.py": "1a5bfccee405d89e7162c1b773a0754792c7619e160662c82fa1b2a783d448e3",
+        "embodied/run/fg_s3_e_quality_online_run.py": "90a7e4db0df72e126e94bbef9a0ad3c476be5ba55005520f410db37d44d6aefe"
+      },
+      "task_commits": [
+        "2e7efda08c7b171f9a29ff104a03d9254b685762 docs(s3): record Batch3 paired evidence and execution contract boundaries",
+        "ad7d51582ac554bf836ac0820d5dd31bf7e0cc12 fix(s3): seal completion to committed facts across cold process resumes",
+        "ecb7e88a9814f923a48bd0ae93b912c26561b158 fix(s3): roll back failed final RL commit and retain source audit evidence",
+        "675ecb40ca73c204171af6e8c72e80f09086d674 fix(online): audit frozen checkpoint owners and exact historical account bindings",
+        "e65b3752a16e816a7f53af5906400320cfdb6560 feat(online): pause controlled RL until externally reviewed cold resume authorization",
+        "e899cf709b18df3695c32e1690586c77f4469cc3 feat(online): bind technical evidence and external review to a sealed checkpoint anchor",
+        "f6434b54334984f58e646ed3f1eee2115feb0fca feat(online): isolate bounded native Quality Actor and critic numeric probes",
+        "43042ed7094f67089046536d0eeec1410e3b0987 feat(online): fork original historical Readers and snapshot complete live state read-only",
+        "d983ba1348616ad9c77227018a2de55227b56384 feat(online): define explicit recoverable RL admission states and bounded policy",
+        "f1cff4457671102d98004ac7de3601efc35c0bae fix(online): require final account evidence in a new checkpoint transaction",
+        "1ec02fa2f087f7c51591f13d3610cb2fa20f7af0 fix(online): require fresh per-source native evidence before Agent construction"
+      ]
+    }
+  },
+  "protected_scopes": "Financial Env/Reward/Teacher/L1/L2/model Loss/shared Reader-Prefetch/FullCheckpoint unchanged; see exact path list"
+}

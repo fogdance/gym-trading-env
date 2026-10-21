@@ -1,0 +1,15 @@
+{
+  "scope": "Narrow inheritance of the actual R3_V2_NUMERIC math/probe tests only; not a final Run/source-admission rerun",
+  "equal_files": {
+    "gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py": "b17e581da6c0df537a7ed1fa4d034c9fadf8ca1516418b72782c3c37cd06612e",
+    "gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_actor.py": "cc444811144e85f1f0381920672d5f56dace3a2325135613069d6b36c6e6c284",
+    "gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_foundation.py": "8e0701c074919c41b48041559b92eb212eff3abf530a661051924873e05b303e",
+    "gym-trading-env/tests/entry_v1/test_batch3_rl_numeric.py": "3f523196f089e5d42ac98575aa7ea12a19093520172bdb4de3ff21f0474c2703",
+    "gym-trading-env/tests/entry_v1/test_wp07_rl.py": "c81e1ab53eb5ea83567d18f3ce690f0a4fc0f3fd67067191776dd08bb62fa51b",
+    "dreamerv3/embodied/run/fg_s3_e_quality_online_probe.py": "822fb49ce3824651fe038cea3ecd347f66550246068efb0c2bf5b54d3e06c105",
+    "dreamerv3/embodied/run/fg_s3_e_quality_online_gate.py": "fab1a4c07661e0dffb52e76529f591ce4579e92807715d9712d538733c2bd692",
+    "dreamerv3/embodied/run/fg_s3_e_quality_online_rl.py": "1a5bfccee405d89e7162c1b773a0754792c7619e160662c82fa1b2a783d448e3",
+    "dreamerv3/dreamerv3/fg_s3_e_quality_actor.py": "3cf6bdeebdb4f85c6d2deaea9f466f58d90f4ffe95f995067625d661e9fdd559",
+    "dreamerv3/dreamerv3/fg_s3_e_quality_online.py": "308c1377cd959fb696fe0aca68c327cf8cb9520fa176d21a2af65900d564d732"
+  }
+}

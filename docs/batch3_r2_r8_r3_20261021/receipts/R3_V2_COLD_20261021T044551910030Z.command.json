@@ -1,0 +1,82 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_V2_COLD_20261021T044551910030Z.xml",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044551910030Z/pytest_tmp",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/tests/entry_v1/test_wp07_checkpoint.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/tests/entry_v1/test_wp07_checkpoint_core.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/artifacts/batch3/R3_V2_COLD_20261021T044551910030Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/dreamerv3:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env",
+      "sha": "392709a25da47e49e679107041c70700184d9d70",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/dreamerv3",
+      "sha": "675ecb40ca73c204171af6e8c72e80f09086d674",
+      "status": ""
+    }
+  },
+  "exit_code": 0,
+  "seconds": 220.57928667101078,
+  "log": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_V2_COLD_20261021T044551910030Z.log",
+  "log_sha256": "a14a461e52e7055ecdc5c179ebcb5e79ca84cbf99b080e2777d40b8570ac65b1",
+  "junit": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r3-v2/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_V2_COLD_20261021T044551910030Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_wp07_checkpoint",
+      "name": "test_native_shadow_run_smoke",
+      "time": "60.955"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_checkpoint",
+      "name": "test_four_native_online_cold_restore_scenarios",
+      "time": "155.259"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+      "name": "test_seeded_native_chunks_and_sampler_continue_exactly_across_cold_restore",
+      "time": "0.012"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+      "name": "test_corrupt_latest_and_external_identity_refuse_before_model_mutation",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_checkpoint_core",
+      "name": "test_native_uuid_lookup_survives_different_process_hash_seeds",
+      "time": "2.604"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "5",
+      "time": "219.581",
+      "timestamp": "2026-10-21T12:45:52.736929+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+....E..EE                                                                [100%]
+==================================== ERRORS ====================================
+___ ERROR at setup of test_early_review_rejected_and_packet_cli_is_read_only ___
+
+self = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError
+_ ERROR at setup of test_review_verifier_binds_operator_digest_and_frozen_model_unit_only _
+
+self = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError
+___ ERROR at setup of test_independent_rl_authority_cannot_be_self_certified ___
+
+self = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           FileNotFoundError: [Errno 2] No such file or directory: '/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp'
+
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/pathlib.py:1116: FileNotFoundError
+=========================== short test summary info ============================
+ERROR ../../../tests/entry_v1/test_batch3_rl_contract.py::test_early_review_rejected_and_packet_cli_is_read_only
+ERROR ../../../tests/entry_v1/test_wp07_history.py::test_review_verifier_binds_operator_digest_and_frozen_model_unit_only
+ERROR ../../../tests/entry_v1/test_wp07_cli.py::test_independent_rl_authority_cannot_be_self_certified
+6 passed, 3 errors in 2.49s
