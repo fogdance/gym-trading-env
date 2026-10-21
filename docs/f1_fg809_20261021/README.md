@@ -62,6 +62,8 @@ Verifier 使用本次独立冻结双仓。`../release/VERIFIER_PIN.json` 和
 ## 本轮证据与未执行项
 
 只执行 YAML/模型解析、Corpus ABI 元数据、Verifier 身份和 shell 语法检查。
+启动脚本的 `status` 使用与 `prepare/start/resume` 相同的 Verifier 参数，
+实际经过原路径和 Pin 校验；所有参数均使用规范绝对路径，不含 `..`。
 实际结果见 `CONFIGURATION_CHECK.json` 和 `../release/LAUNCH_LOCK.json`。
 没有运行 Agent、合成训练、正式 prepare、G3、Join 重建、GPU 或优化器更新。
 正式 `F1_DATA_READY`、训练与 Checkpoint 冷恢复均为 **NOT_RUN**，由上述命令执行。
