@@ -37,7 +37,7 @@ def validate_settings(raw):
     from pathlib import Path
     from .fg_s3_e_quality_course_preflight import _local_path
     required={'schema','spec_mode','execution','prepared_dir','history_config','wm_policy'}
-    if (type(raw) is not dict or not required<=set(raw) or set(raw)-required-{'source_verifiers'}
+    if (type(raw) is not dict or not required<=set(raw) or set(raw)-required-{'source_verifiers','rl_admission'}
             or raw['schema']!=CONFIG_SCHEMA):
         raise ValueError('ONLINE_CONFIG_EXPLICIT_FIELDS_REQUIRED')
     if raw['spec_mode'] not in ('draft','formal'):raise ValueError('ONLINE_EXPLICIT_DRAFT_OR_FORMAL_REQUIRED')
@@ -56,6 +56,9 @@ def validate_settings(raw):
     checked=validate_execution(spec)
     for key in missing:checked[key]=None
     result['execution']=checked;result['prepared_dir']=str(_local_path(raw['prepared_dir']))
+    from embodied.run.fg_s3_e_quality_online_rl import validate_rl_policy
+    if raw['spec_mode']=='formal' or raw.get('rl_admission') is not None:
+        result['rl_admission']=validate_rl_policy(raw.get('rl_admission'),checked)
     if raw['history_config'] is not None:result['history_config']=str(_local_path(raw['history_config']))
     if raw['spec_mode']=='formal' and checked['execution_mode']!='SHADOW' and raw['history_config'] is None:
         raise ValueError('ONLINE_FORMAL_HISTORY_CONFIG_REQUIRED')
@@ -198,6 +201,8 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,produc
         raise ValueError('ONLINE_PREPARED_IDENTITY_MISMATCH')
     update=s['execution']['execution_mode']!='SHADOW'
     if update and authorized is not True:raise ValueError('ONLINE_EXTERNAL_TRAINING_AUTHORIZATION_REQUIRED')
+    if (rl_review_path is not None or rl_review_sha256 is not None or authorize_rl) and not resume:
+        raise ValueError('ONLINE_RL_REVIEW_ONLY_AFTER_TECHNICAL_PAUSE_ON_RESUME')
     from .fg_s3_e_quality_online_admission import resolve_verifiers,source_bindings,NativeAuditAttempt,ANCHOR
     verifiers=resolve_verifiers(s,producer_gym=producer_gym,producer_lock=producer_lock,
         producer_lock_sha256=producer_lock_sha256,saved=identity['verifiers'])
@@ -233,9 +238,9 @@ def start_prepared(path,*,resume=False,authorized=False,producer_gym=None,produc
         if update:require_training_authority(native,authorized=authorized)
         run=OnlineRun(s['execution'],factory,source,history,resume=resume,authorized=authorized,
             native_preparation=native,initial_state=initial,wm_policy=s['wm_policy'],
-            source_bindings=bindings,native_audit=native_audit)
+            source_bindings=bindings,native_audit=native_audit,rl_policy=s.get('rl_admission'))
         if rl_review_path is not None or rl_review_sha256 is not None or authorize_rl:
-            run.rl_review=run.gates.review_rl(native,rl_review_path,rl_review_sha256,authorized=authorize_rl)
+            run.reauthorize_rl(rl_review_path,rl_review_sha256,authorize_rl=authorize_rl)
         result=run.run_to(stop_at);run.publish_result(result);return result
     finally:
         if run is not None:run.close()
@@ -260,6 +265,7 @@ def report(run_dir,output=None):
         agent_state_sha256=digest(node/'agent.pkl'),
         counters=load('counters'),gates=load('gates'),source_exposures=load('source_exposures'),
         account_verification=load('account_verification'),
+        rl_lifecycle=load('rl_lifecycle'),
         market_steps=int(load('market_step')),source_manifest=identity['source_manifest'],
         data_identity=identity['live_source'],model_identity=identity['source_nonopt'],
         controlled_small=identity['controlled_small'],formal_training_authority='NOT_EVALUATED_BY_REPORT',
@@ -269,6 +275,42 @@ def report(run_dir,output=None):
         if out.exists():raise ValueError('ONLINE_REPORT_NEW_OUTPUT_REQUIRED')
         out.mkdir(parents=True);write_json(out/'online_report.json',result)
     return result
+
+
+def rl_review_packet(run_dir,output):
+    """Read-only export. The program never writes an APPROVED review document."""
+    import pickle
+    import elements
+    from types import SimpleNamespace
+    from .fg_replay import read_manifest,signed,write_json,digest
+    from .fg_s3_e_quality_course_preflight import _local_path
+    from embodied.run.fg_checkpoint import FullCheckpoint
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    from embodied.run.fg_s3_e_quality_online_rl import review_contract
+    from embodied.run.fg_s3_e_quality_online_gate import OnlineGates
+    from gym_trading_env.envs.entry_contract import fingerprint
+    root=_local_path(run_dir);out=_local_path(output)
+    identity=read_manifest(root/'run_identity.json')['identity']
+    if identity.get('protocol')!=OnlineRun.protocol or identity['spec']['execution_mode']!='ONLINE_RL_CONTROLLED':
+        raise ValueError('ONLINE_CONTROLLED_RL_RUN_REQUIRED_FOR_REVIEW_PACKET')
+    if out.is_relative_to(root) or root.is_relative_to(out) or out.exists():
+        raise ValueError('ONLINE_REVIEW_PACKET_NEW_EXTERNAL_OUTPUT_REQUIRED')
+    node=FullCheckpoint(root/'ckpt',elements.Counter(),identity,(),strict_latest=True).latest()
+    if node is None:raise ValueError('ONLINE_REVIEW_REQUIRES_SAFE_CHECKPOINT')
+    load=lambda name:pickle.loads((node/(name+'.pkl')).read_bytes())
+    lifecycle=load('rl_lifecycle');gates=load('gates')
+    if lifecycle['stage']!='AWAIT_OPERATOR_REVIEW':raise ValueError('ONLINE_TECHNICAL_PAUSE_REQUIRED_FOR_REVIEW_PACKET')
+    gate=OnlineGates.__new__(OnlineGates)
+    gate.identity=gates['identity'];gate.wm_identity=gates['wm_identity'];gate.evidence=gates['evidence']
+    gate.policy=identity['mask_policy'];gate.wm_policy=identity['wm_policy']
+    stub=SimpleNamespace(root=root,identity=identity,spec=identity['spec'],settings=identity['online_settings'],
+        source_bindings=identity['source_bindings'],gates=gate,rl_lifecycle=SimpleNamespace(state=lifecycle,
+            policy=lifecycle['policy']),account_verification=SimpleNamespace(identity=fingerprint(identity)))
+    packet=signed(dict(protocol='FG_S3_E_QUALITY_RL_REVIEW_PACKET_V1',status='AWAIT_OPERATOR_REVIEW',
+        review_contract=review_contract(stub),training_admitted=False,operator_authorized=False))
+    out.mkdir(parents=True,exist_ok=False);write_json(out/'rl_review_packet.json',packet)
+    return dict(status='AWAIT_OPERATOR_REVIEW',packet=str(out/'rl_review_packet.json'),
+        packet_sha256=digest(out/'rl_review_packet.json'),operator_authorized=False)
 
 
 def evaluate_checkpoint(run_dir,checkpoint,output,*,steps=32):
