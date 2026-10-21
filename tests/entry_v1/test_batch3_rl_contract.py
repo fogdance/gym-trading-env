@@ -146,3 +146,62 @@ def test_finalization_requires_published_non_tail_sidecars():
     run._validate_final_publication()
     run.publisher.strict=None
     with pytest.raises(ValueError,match='SUPERVISION_UNAVAILABLE'):run._validate_final_publication()
+
+
+def test_failed_final_checkpoint_rolls_back_terminal_rl_stage_before_retry():
+    from types import SimpleNamespace
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    run=object.__new__(OnlineRun)
+    run.account_verification=SimpleNamespace(state=dict(status='PENDING'),validate_snapshot=lambda:None)
+    run.gates=SimpleNamespace(ready={'COLLECTION_VALID':False},evidence={})
+    lifecycle=RLAdmissionState('FINAL_COMMIT_UNIT',POLICY)
+    lifecycle.state['stage']='FINAL_VERIFY';run.rl_lifecycle=lifecycle
+    run._validate_final_publication=lambda:None
+    def verified(*,final):
+        assert final
+        run.gates.ready['COLLECTION_VALID']=True
+        run.gates.evidence['collection']={'scope':'FINAL_COMMIT_UNIT_ONLY'}
+    run.verify_collection=verified
+    saves=[];publications=[]
+    def save(*,final):
+        saves.append((final,lifecycle.state['stage']))
+        if final:raise RuntimeError('INJECTED_BEFORE_FINAL_CP_PUBLICATION')
+    run._save_checkpoint=save;run._publish_completion=lambda:publications.append(True)
+    with pytest.raises(RuntimeError,match='BEFORE_FINAL_CP_PUBLICATION'):run._final_account_commit()
+    assert run.account_verification.state['status']=='NO_GO'
+    assert lifecycle.state['stage']=='FINAL_VERIFY' and not run.gates.ready['COLLECTION_VALID']
+    assert saves==[(True,'COMPLETE_VERIFIED'),(False,'FINAL_VERIFY')] and not publications
+    run._save_checkpoint=lambda *,final:saves.append((final,lifecycle.state['stage']))
+    run._final_account_commit()
+    assert lifecycle.state['stage']=='COMPLETE_VERIFIED'
+    assert run.account_verification.state['status']=='VERIFIED' and publications==[True]
+
+
+def test_review_packet_exports_diagnostics_without_writing_permission(tmp_path,monkeypatch):
+    import pickle
+    from gym_trading_env.research import fg_s3_e_quality_online as online
+    from gym_trading_env.research.fg_replay import signed,write_json,read_manifest
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    # Isolate read-only packet serialization; source admission and strict latest
+    # have separate integration tests. This is not a formal approval fixture.
+    root=tmp_path/'run';node=root/'unit_node';node.mkdir(parents=True)
+    identity=dict(protocol=OnlineRun.protocol,spec=dict(execution_mode='ONLINE_RL_CONTROLLED'),
+        mask_policy={'scope':'PACKET_UNIT'},wm_policy={},online_settings={},source_bindings=[])
+    write_json(root/'run_identity.json',signed(dict(identity=identity)))
+    calibration=dict(wm_identity='UNIT_WM',horizon=3,seed=202,metrics={},reward_mae=0.,continue_mae=0.,finite=True)
+    numeric=dict(actual_candidate_updates=2,actor_changed=True,value_changed=True,frozen_equal=True,metrics={})
+    technical=dict(calibration_files=[],numeric_file={'scope':'PACKET_UNIT'},numeric_live_before='equal',numeric_live_after='equal')
+    gates=dict(identity='UNIT_GATE',wm_identity='UNIT_WM',ready={'UNIT_TECHNICAL':True},samples=[['owner','step']],
+        evidence=dict(calibration=calibration,numeric=numeric,source_native={'scope':'PACKET_UNIT'}))
+    for name,state in (('rl_lifecycle',dict(stage='AWAIT_OPERATOR_REVIEW',policy=POLICY,technical=technical)),('gates',gates)):
+        (node/(name+'.pkl')).write_bytes(pickle.dumps(state))
+    monkeypatch.setattr('embodied.run.fg_checkpoint.FullCheckpoint.latest',lambda self:node)
+    monkeypatch.setattr('embodied.run.fg_s3_e_quality_online_rl.review_contract',lambda run:{'scope':'PACKET_UNIT'})
+    before={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    result=online.rl_review_packet(root,tmp_path/'packet')
+    packet=read_manifest(result['packet']);summary=packet['technical_summary']
+    assert packet['status']=='AWAIT_OPERATOR_REVIEW' and not packet['operator_authorized']
+    assert not packet['training_admitted'] and summary['live_state_unchanged']
+    assert summary['numeric']['actual_candidate_updates']==2 and summary['unique_owner_steps']==1
+    assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+    assert len(list((tmp_path/'packet').iterdir()))==1

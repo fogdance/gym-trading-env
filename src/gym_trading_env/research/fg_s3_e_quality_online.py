@@ -309,8 +309,17 @@ def rl_review_packet(run_dir,output):
     stub=SimpleNamespace(root=root,identity=identity,spec=identity['spec'],settings=identity['online_settings'],
         source_bindings=identity['source_bindings'],gates=gate,rl_lifecycle=SimpleNamespace(state=lifecycle,
             policy=lifecycle['policy']),account_verification=SimpleNamespace(identity=fingerprint(identity)))
+    contract=review_contract(stub);technical=lifecycle['technical']
+    calibration=gates['evidence']['calibration'];numeric=gates['evidence']['numeric']
     packet=signed(dict(protocol='FG_S3_E_QUALITY_RL_REVIEW_PACKET_V1',status='AWAIT_OPERATOR_REVIEW',
-        review_contract=review_contract(stub),training_admitted=False,operator_authorized=False))
+        review_contract=contract,run_dir=str(root),mask_policy=identity['mask_policy'],
+        native_source_audit=gates['evidence'].get('source_native'),
+        technical_summary=dict(unique_owner_steps=len(gates['samples']),
+            calibration={k:calibration[k] for k in ('wm_identity','horizon','seed','metrics','reward_mae','continue_mae','finite')},
+            numeric={k:numeric[k] for k in ('actual_candidate_updates','actor_changed','value_changed','frozen_equal','metrics')},
+            calibration_files=technical['calibration_files'],numeric_file=technical['numeric_file'],
+            live_state_unchanged=technical['numeric_live_before']==technical['numeric_live_after']),
+        training_admitted=False,operator_authorized=False))
     out.mkdir(parents=True,exist_ok=False);write_json(out/'rl_review_packet.json',packet)
     return dict(status='AWAIT_OPERATOR_REVIEW',packet=str(out/'rl_review_packet.json'),
         packet_sha256=digest(out/'rl_review_packet.json'),operator_authorized=False)
