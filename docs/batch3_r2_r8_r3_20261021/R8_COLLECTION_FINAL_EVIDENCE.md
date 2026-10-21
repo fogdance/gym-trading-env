@@ -1,6 +1,7 @@
 # R8 collection prefix and final account evidence
 
-Status: code under targeted verification; this is not formal F4 or G3 admission.
+Status: R8_CODE_GO, selected native/CPU and cold-restore checks passed. This is
+not formal F4 or G3 admission.
 
 OnlineRun V2 / OnlineGates V2 retain the existing native Replay, financial Env,
 OnlineHistoryStream and RuntimeState. New `account_verification` checkpoint state
@@ -40,3 +41,20 @@ and exact SHAs will be recorded before claiming R8_CODE_GO.
 SHADOW remains zero updates. RL with zero actual RL updates cannot publish an RL
 completion or protected final node. R3 adds the earlier explicit pause boundary.
 Online account evidence is never six-behavior Native G3 evidence.
+
+## Frozen verification
+
+Gym `f1538637946841d685ec78344fed852fc0a0fc8a` and Dreamer
+`f1cff4457671102d98004ac7de3601efc35c0bae`, clean detached sibling worktrees:
+
+* R8_FROZEN_V2_NATIVE: 6 PASS, exit 0, 162.90 s.
+* R8_FROZEN_V2_COLD: 2 PASS, exit 0, 208.25 s. Includes SHADOW smoke and four
+  continuous/new-interpreter scenarios: SHADOW, BC, partial label publication,
+  and explicitly synthetic numeric RL. Full Agent, optimizer/RNG, native Replay,
+  Reader/Prefetch, publisher, account, counters, journal and evidence state match.
+* 179 cold artifacts have retained path/size/SHA256 inventory. Detailed child
+  commands, exact case records and native account receipts remain available.
+
+Earlier cold/Gate fixture failures used a path outside the existing Collector's
+diagnostic allowlist. Only test output paths were corrected; no production path
+guard was weakened. All earlier failures are retained alongside the final PASS.

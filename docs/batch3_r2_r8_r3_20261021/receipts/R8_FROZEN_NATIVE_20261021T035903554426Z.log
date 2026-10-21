@@ -1,0 +1,196 @@
+....EE                                                                   [100%]
+==================================== ERRORS ====================================
+__ ERROR at setup of test_actual_multistep_calibration_gates_and_formal_no_go __
+
+    @pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+>       c=OnlineCollector(factory(),source,root/'rollout',Path(__file__).resolve().parents[3]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+../../../tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:46: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+../../../src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.research.fg_s3_e_quality_online_collector.OnlineCollector object at 0x7074fc5ebfd0>
+env = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7074a0674d10>
+oracle = namespace(identity={'fold': 'TRAIN', 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}}, identity_hash='b...b9d337be074250892705d17cf5b93fb0c', 'reward_hash': '0e00322430aa8760d798ed6192076badd6d54cf316c3ee72ad5b29a31775175b'})
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_NATIVE_20261021T035903554426Z/live/rollout')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/dreamerv3')
+mode = 'mixed', seed = 202, beta = 0.0, actor_probability = 0.5
+actor = <embodied.run.fg_s3_e_quality_online.OnlinePolicy object at 0x707400493950>
+agent = <embodied.jax.agent.Agent object at 0x7074e41bfe50>
+source_checkpoint_identity = None, existing = False
+observation_schema = 'FG_S3_E_OBSERVATION_V2'
+e_provider = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...35903554426Z/live/market/market.csv', 'sha256': '1e8d9000201bf6ca7abf45c1d64bb69b88a0a057ba48c3baba37e6638380a84c'}}}})
+e_profile = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...35903554426Z/live/market/market.csv', 'sha256': '1e8d9000201bf6ca7abf45c1d64bb69b88a0a057ba48c3baba37e6638380a84c'}}}})
+teacher_enabled = False
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None, e_profile=None, teacher_enabled=True):
+        if type(teacher_enabled) is not bool or (not teacher_enabled and beta != 0):
+            raise ValueError('A disabled teacher requires beta=0')
+        self.teacher_enabled = teacher_enabled
+        if e_profile is not None:
+            if e_provider is not None:
+                raise ValueError('Choose native E profile or synthetic research provider')
+            e_provider = e_profile
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+>           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+../../../src/gym_trading_env/research/fg_s3_dagger_d0.py:116: ValueError
+---------------------------- Captured stdout setup -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_v2
+           706 quality_q_c1
+           706 quality_actor
+           706 pol
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+_____ ERROR at setup of test_exploration_inside_real_mask_and_restore_rng ______
+
+    @pytest.fixture(scope='module')
+    def live():
+        import jax.numpy as jnp
+        from wp02_fixture import native_factory
+        from gym_trading_env.research.fg_s3_e_quality_actor import create_agent
+        from gym_trading_env.research.fg_s3_e_quality_online_collector import OnlineCollector
+        from gym_trading_env.research.fg_s3_e_quality_online_data import LabelPublisher,OnlineWindowReader
+        root=Path(os.environ.get('FG_WP07_C_ROOT',ARTIFACTS/'C_data_01'))
+        factory,_,_=native_factory(root/'market',minutes=80,chunk=85)
+        a=create_agent(f3_source(),root/'model',controlled_small=True)
+        for k in a.params:
+            if k.startswith('quality_actor/') and k.endswith('/kernel') and a.params[k].shape[-1]==2:a.params[k]=jnp.zeros_like(a.params[k])
+            if k.startswith('quality_actor/') and k.endswith('/bias') and a.params[k].shape==(2,):a.params[k]=jnp.array([2.,0.])
+        a.sync_policy_from_train()
+        source=dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY')
+>       c=OnlineCollector(factory(),source,root/'rollout',Path(__file__).resolve().parents[3]/'dreamerv3',
+            agent=a,seed=202,budget=64,replay_length=13,capacity=256,chunksize=32)
+
+../../../tests/entry_v1/test_wp07_data.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../src/gym_trading_env/research/fg_s3_e_quality_online_collector.py:46: in __init__
+    super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+../../../src/gym_trading_env/research/fg_s3_v2_collector.py:47: in __init__
+    super().__init__(*args, **kwargs)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <gym_trading_env.research.fg_s3_e_quality_online_collector.OnlineCollector object at 0x7074fc5ebfd0>
+env = <gym_trading_env.envs.entry_env.FixedDirectionEntryEnv object at 0x7074a0674d10>
+oracle = namespace(identity={'fold': 'TRAIN', 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}}, identity_hash='b...b9d337be074250892705d17cf5b93fb0c', 'reward_hash': '0e00322430aa8760d798ed6192076badd6d54cf316c3ee72ad5b29a31775175b'})
+directory = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_NATIVE_20261021T035903554426Z/live/rollout')
+dreamer_root = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/dreamerv3')
+mode = 'mixed', seed = 202, beta = 0.0, actor_probability = 0.5
+actor = <embodied.run.fg_s3_e_quality_online.OnlinePolicy object at 0x707400493950>
+agent = <embodied.jax.agent.Agent object at 0x7074e41bfe50>
+source_checkpoint_identity = None, existing = False
+observation_schema = 'FG_S3_E_OBSERVATION_V2'
+e_provider = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...35903554426Z/live/market/market.csv', 'sha256': '1e8d9000201bf6ca7abf45c1d64bb69b88a0a057ba48c3baba37e6638380a84c'}}}})
+e_profile = namespace(identity='cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', contracts={'CZCE.FG2701'}, sour...35903554426Z/live/market/market.csv', 'sha256': '1e8d9000201bf6ca7abf45c1d64bb69b88a0a057ba48c3baba37e6638380a84c'}}}})
+teacher_enabled = False
+
+    def __init__(self, env, oracle, directory, dreamer_root, *, mode='mixed', seed=202,
+                 beta=.5, actor_probability=.5, actor=None, agent=None,
+                 source_checkpoint_identity=None, existing=False,
+                 observation_schema=None, e_provider=None, e_profile=None, teacher_enabled=True):
+        if type(teacher_enabled) is not bool or (not teacher_enabled and beta != 0):
+            raise ValueError('A disabled teacher requires beta=0')
+        self.teacher_enabled = teacher_enabled
+        if e_profile is not None:
+            if e_provider is not None:
+                raise ValueError('Choose native E profile or synthetic research provider')
+            e_provider = e_profile
+        embodied = self.runtime(dreamer_root)
+        from embodied.envs.from_gymnasium import FromGymnasium
+        from embodied.run.fg_s3_dagger_policy import MixedExecutionPolicy, ScriptedActor
+        if mode not in ('wait', 'scripted', 'mixed'):
+            raise ValueError('Unknown D0 collector mode')
+        if oracle.identity['fold'] != 'TRAIN':
+            raise ValueError('D0 collector is TRAIN-only')
+        from .fg_s3_e_observation import fields_for, OBS_SCHEMA, observation_contract
+        self.observation_schema = observation_schema
+        self.fields = fields_for(observation_schema)
+        if (observation_schema == OBS_SCHEMA) != (e_provider is not None):
+            raise ValueError('E Collector requires matching schema and provider')
+        self.root = Path(directory).resolve()
+        if not self.output_allowed(self.root):
+>           raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E           ValueError: D0 output must be isolated from existing experiments and worktrees
+
+../../../src/gym_trading_env/research/fg_s3_dagger_d0.py:116: ValueError
+=========================== short test summary info ============================
+ERROR ../../../tests/entry_v1/test_wp07_gates.py::test_actual_multistep_calibration_gates_and_formal_no_go
+ERROR ../../../tests/entry_v1/test_wp07_gates.py::test_exploration_inside_real_mask_and_restore_rng
+4 passed, 2 errors in 128.95s (0:02:08)

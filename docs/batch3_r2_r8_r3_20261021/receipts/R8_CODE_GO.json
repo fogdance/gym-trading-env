@@ -1,0 +1,22 @@
+{
+  "status": "R8_CODE_GO",
+  "frozen_code": {
+    "gym-trading-env": "f1538637946841d685ec78344fed852fc0a0fc8a",
+    "dreamerv3": "f1cff4457671102d98004ac7de3601efc35c0bae"
+  },
+  "native_and_gate_tests": 6,
+  "cold_pytest_tests": 2,
+  "cold_scenarios": [
+    "SHADOW",
+    "ONLINE_SUPERVISED",
+    "publication",
+    "ONLINE_RL_CONTROLLED_DEV_NUMERIC"
+  ],
+  "exit_codes": [
+    0,
+    0
+  ],
+  "real_native_g3": "NOT_RUN",
+  "real_F3_weights": "NOT_RUN",
+  "TEST": "NOT_READ"
+}

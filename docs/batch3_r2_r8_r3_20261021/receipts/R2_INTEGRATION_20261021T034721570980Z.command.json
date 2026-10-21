@@ -1,0 +1,256 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R2_INTEGRATION_20261021T034721570980Z.xml",
+    "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_batch3_native_admission.py",
+    "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_corpus_producer_pin.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/batch3/R2_INTEGRATION_20261021T034721570980Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "sha": "7677f8953866e6e38c666a610d51e3e8dc986558",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "sha": "17acbece69556cc79ae23d182d4be7a3ad676abc",
+      "status": ""
+    }
+  },
+  "exit_code": 0,
+  "seconds": 3.10991750494577,
+  "log": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R2_INTEGRATION_20261021T034721570980Z.log",
+  "log_sha256": "ae1a679916f7a2e4271ffadbfbf2f3bcc00db6c2791d4096cd6281419e0b7e2e",
+  "junit": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R2_INTEGRATION_20261021T034721570980Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[prepare]",
+      "time": "0.006"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[start]",
+      "time": "0.005"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[resume]",
+      "time": "0.005"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_all_source_bindings_allow_shared_pin_and_distinct_pins",
+      "time": "0.252"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_bad_verifier_fails_before_source_or_output",
+      "time": "0.184"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_second_source_wrong_pin_rejects_whole_registry",
+      "time": "0.071"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_unique_native_logs_all_sources_and_unforgeable_public_receipt",
+      "time": "0.195"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_native_history_requires_audit_and_forwards_four_inputs",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_audit_root_overlap_and_incomplete_source_set_reject",
+      "time": "0.099"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_anchor_and_ordered_corpus_contents_are_frozen_separately",
+      "time": "0.097"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f1]",
+      "time": "0.014"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f2]",
+      "time": "0.015"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[prepare-f3]",
+      "time": "0.014"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f1]",
+      "time": "0.011"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f2]",
+      "time": "0.013"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[read-check-f3]",
+      "time": "0.012"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f1]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f2]",
+      "time": "0.008"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[start-f3]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f1]",
+      "time": "0.010"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f2]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_cli_forwards_exact_pin_to_each_public_route[resume-f3]",
+      "time": "0.009"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f1]",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f2]",
+      "time": "0.602"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_stage_preflight_reaches_original_admission_with_pin[f3]",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f1]",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f2]",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_read_check_forwards_pin_to_source_before_model_or_output[f3]",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f1]",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f2]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin0-f3]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f1]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f2]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin1-f3]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f1]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f2]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_formal_stage_rejects_missing_or_half_pin_before_source_io[pin2-f3]",
+      "time": "0.000"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags0]",
+      "time": "0.006"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags1]",
+      "time": "0.005"
+    },
+    {
+      "classname": "tests.entry_v1.test_corpus_producer_pin",
+      "name": "test_unrelated_cli_or_half_pair_rejects_without_output[flags2]",
+      "time": "0.006"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "40",
+      "time": "2.327",
+      "timestamp": "2026-10-21T11:47:21.926627+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

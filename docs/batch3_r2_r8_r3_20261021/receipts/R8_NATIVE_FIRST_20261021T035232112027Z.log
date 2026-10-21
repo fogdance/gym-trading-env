@@ -1,0 +1,423 @@
+FFFF                                                                     [100%]
+=================================== FAILURES ===================================
+______ test_three_cycle_prefix_final_native_trace_and_idempotent_receipt _______
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-772/test_three_cycle_prefix_final_0')
+
+    def test_three_cycle_prefix_final_native_trace_and_idempotent_receipt(tmp_path):
+        run=shadow(tmp_path)
+        try:
+            first=run.run_to(16)
+            assert first['status']=='ONLINE_PARTIAL' and run.gates.ready['COLLECTION_VALID']
+            assert run.gates.collection_through()==16
+            run.run_to(32)
+            assert not run.gates.ready['COLLECTION_VALID'] and run.gates.collection_through()==16
+            result=run.run_to(48)
+            assert result['status']=='SHADOW_COMPLETE_VERIFIED'
+            assert result['counters']['optimizer_updates']==result['counters']['rl_updates']==0
+            assert run.gates.collection_through()==48 and run.gates.ready['COLLECTION_VALID']
+            evidence=result['account_verification']['final_evidence']
+            assert evidence['receipt']['reconciliation']['account_restores']>0
+            assert evidence['receipt']['collection_status']=='COLLECTION_FINAL_VERIFIED'
+>           node=run.cp.latest();manifest=read_manifest(node/'manifest.json')
+                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_batch3_collection.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-772/test_three_cycle_prefix_final_0/run/ckpt/step_000000000005/manifest.json')
+
+    def read_manifest(path):
+        data = json.loads(Path(path).read_text())
+        body = {k: v for k, v in data.items() if k != "content_hash"}
+        if data.get("content_hash") != fingerprint(body):
+>           raise ValueError(f"Manifest integrity mismatch: {path}")
+E           ValueError: Manifest integrity mismatch: /tmp/pytest-of-v/pytest-772/test_three_cycle_prefix_final_0/run/ckpt/step_000000000005/manifest.json
+
+../../../src/gym_trading_env/research/fg_replay.py:71: ValueError
+----------------------------- Captured stdout call -----------------------------
+Collect P0 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 420 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 420 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 420 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 420 source rows, CPU Driver
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+________ test_first_pass_cannot_certify_bad_third_cycle[final_account] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f38160f1490>
+attack = 'final_account'
+
+    @pytest.mark.parametrize('attack',['final_account','last_action_mask'])
+    def test_first_pass_cannot_certify_bad_third_cycle(tmp_path,monkeypatch,attack):
+        run=shadow(tmp_path)
+        try:
+            run.run_to(16);assert run.gates.ready['COLLECTION_VALID']
+            run.run_to(32)
+            original=run.collector.snapshot_trace
+            def changed(directory,identity):
+                trace=original(directory,identity)
+                if attack=='final_account':
+                    path=Path(directory)/'account_state.json'
+                    account=json.loads(path.read_text());account['BATCH3_BAD_FINAL_ACCOUNT']=True
+                    write_json(path,account)
+                else:
+                    import gzip
+                    path=Path(directory)/'steps.jsonl.gz'
+                    with gzip.open(path,'rt') as f:rows=[json.loads(line) for line in f]
+                    rows[-1]['action']=1;rows[-1]['legal_add']=False
+                    with gzip.open(path,'wt') as f:
+                        for row in rows:f.write(json.dumps(row)+'\n')
+                m={k:v for k,v in read_manifest(Path(directory)/'manifest.json').items() if k!='content_hash'}
+                m['files'][str(path.relative_to(directory))]=digest(path)
+                write_json(Path(directory)/'manifest.json',signed(m))
+                return trace
+            monkeypatch.setattr(run.collector,'snapshot_trace',changed)
+            with pytest.raises((ValueError,AssertionError)):run.run_to(48)
+            result=run.result()
+            assert result['status']=='COMPLETE_BUT_UNVERIFIED/NO_GO'
+            assert result['account_verification']['status']=='NO_GO'
+            assert not run.gates.ready['COLLECTION_VALID'] and run.gates.collection_through()==16
+            assert not (run.root/'completion').exists()
+>           assert not read_manifest(run.cp.latest()/'manifest.json')['protected']
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_batch3_collection.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify0/run/ckpt/step_000000000005/manifest.json')
+
+    def read_manifest(path):
+        data = json.loads(Path(path).read_text())
+        body = {k: v for k, v in data.items() if k != "content_hash"}
+        if data.get("content_hash") != fingerprint(body):
+>           raise ValueError(f"Manifest integrity mismatch: {path}")
+E           ValueError: Manifest integrity mismatch: /tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify0/run/ckpt/step_000000000005/manifest.json
+
+../../../src/gym_trading_env/research/fg_replay.py:71: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+_______ test_first_pass_cannot_certify_bad_third_cycle[last_action_mask] _______
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify1')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f37fc016810>
+attack = 'last_action_mask'
+
+    @pytest.mark.parametrize('attack',['final_account','last_action_mask'])
+    def test_first_pass_cannot_certify_bad_third_cycle(tmp_path,monkeypatch,attack):
+        run=shadow(tmp_path)
+        try:
+            run.run_to(16);assert run.gates.ready['COLLECTION_VALID']
+            run.run_to(32)
+            original=run.collector.snapshot_trace
+            def changed(directory,identity):
+                trace=original(directory,identity)
+                if attack=='final_account':
+                    path=Path(directory)/'account_state.json'
+                    account=json.loads(path.read_text());account['BATCH3_BAD_FINAL_ACCOUNT']=True
+                    write_json(path,account)
+                else:
+                    import gzip
+                    path=Path(directory)/'steps.jsonl.gz'
+                    with gzip.open(path,'rt') as f:rows=[json.loads(line) for line in f]
+                    rows[-1]['action']=1;rows[-1]['legal_add']=False
+                    with gzip.open(path,'wt') as f:
+                        for row in rows:f.write(json.dumps(row)+'\n')
+                m={k:v for k,v in read_manifest(Path(directory)/'manifest.json').items() if k!='content_hash'}
+                m['files'][str(path.relative_to(directory))]=digest(path)
+                write_json(Path(directory)/'manifest.json',signed(m))
+                return trace
+            monkeypatch.setattr(run.collector,'snapshot_trace',changed)
+            with pytest.raises((ValueError,AssertionError)):run.run_to(48)
+            result=run.result()
+            assert result['status']=='COMPLETE_BUT_UNVERIFIED/NO_GO'
+            assert result['account_verification']['status']=='NO_GO'
+            assert not run.gates.ready['COLLECTION_VALID'] and run.gates.collection_through()==16
+            assert not (run.root/'completion').exists()
+>           assert not read_manifest(run.cp.latest()/'manifest.json')['protected']
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_batch3_collection.py:80: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify1/run/ckpt/step_000000000005/manifest.json')
+
+    def read_manifest(path):
+        data = json.loads(Path(path).read_text())
+        body = {k: v for k, v in data.items() if k != "content_hash"}
+        if data.get("content_hash") != fingerprint(body):
+>           raise ValueError(f"Manifest integrity mismatch: {path}")
+E           ValueError: Manifest integrity mismatch: /tmp/pytest-of-v/pytest-772/test_first_pass_cannot_certify1/run/ckpt/step_000000000005/manifest.json
+
+../../../src/gym_trading_env/research/fg_replay.py:71: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+___________ test_final_commit_before_receipt_can_resume_publication ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-772/test_final_commit_before_recei0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7f37d858ff90>
+
+    def test_final_commit_before_receipt_can_resume_publication(tmp_path,monkeypatch):
+        run=shadow(tmp_path)
+        try:
+            publish=run._publish_completion
+            def crash():raise RuntimeError('INJECTED_AFTER_FINAL_CHECKPOINT')
+            monkeypatch.setattr(run,'_publish_completion',crash)
+            with pytest.raises(RuntimeError,match='AFTER_FINAL_CHECKPOINT'):run.run_to(48)
+            node=run.cp.latest()
+>           assert read_manifest(node/'manifest.json')['protected']
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_batch3_collection.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+path = PosixPath('/tmp/pytest-of-v/pytest-772/test_final_commit_before_recei0/run/ckpt/step_000000000004/manifest.json')
+
+    def read_manifest(path):
+        data = json.loads(Path(path).read_text())
+        body = {k: v for k, v in data.items() if k != "content_hash"}
+        if data.get("content_hash") != fingerprint(body):
+>           raise ValueError(f"Manifest integrity mismatch: {path}")
+E           ValueError: Manifest integrity mismatch: /tmp/pytest-of-v/pytest-772/test_final_commit_before_recei0/run/ckpt/step_000000000004/manifest.json
+
+../../../src/gym_trading_env/research/fg_replay.py:71: ValueError
+----------------------------- Captured stdout call -----------------------------
+Observations
+  market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+  position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+  action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+  reward           Space(float32, shape=(), low=-inf, high=inf)
+  is_first         Space(bool, shape=(), low=False, high=True)
+  is_last          Space(bool, shape=(), low=False, high=True)
+  is_terminal      Space(bool, shape=(), low=False, high=True)
+  market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+  market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+  market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+Actions
+  action           Space(int32, shape=(), low=0, high=2)
+Extras
+  consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+  stepid           Space(uint8, shape=(20,), low=0, high=255)
+  market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+  quality_score    Space(float32, shape=(), low=-inf, high=inf)
+  quality_score_valid Space(bool, shape=(), low=False, high=True)
+  quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+  teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+  teacher_valid    Space(bool, shape=(), low=False, high=True)
+  f3_natural       Space(bool, shape=(), low=False, high=True)
+JAX devices (1): [TFRT_CPU_0]
+Policy devices: TFRT_CPU_0
+Train devices:  TFRT_CPU_0
+Initializing parameters...
+Optimizer opt has 84,819 params:
+        42,336 enc
+        19,185 dec
+         5,392 dyn
+         5,007 val
+         5,007 rew
+         1,148 quality_event
+           994 avail
+           808 quality_touch
+           740 quality_adverse
+           706 quality_q_c1
+           706 quality_q_v2
+           706 pol
+           706 quality_actor
+           689 quality_score
+           689 con
+Done initializing!
+Compiling 1 checkpoint groups...
+Largest checkpoint group: 0 GB
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_batch3_collection.py::test_three_cycle_prefix_final_native_trace_and_idempotent_receipt
+FAILED ../../../tests/entry_v1/test_batch3_collection.py::test_first_pass_cannot_certify_bad_third_cycle[final_account]
+FAILED ../../../tests/entry_v1/test_batch3_collection.py::test_first_pass_cannot_certify_bad_third_cycle[last_action_mask]
+FAILED ../../../tests/entry_v1/test_batch3_collection.py::test_final_commit_before_receipt_can_resume_publication
+4 failed in 216.29s (0:03:36)
