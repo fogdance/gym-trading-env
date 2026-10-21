@@ -121,9 +121,13 @@ def test_unique_native_logs_all_sources_and_unforgeable_public_receipt(tmp_path,
             attempt.record(slot,SimpleNamespace(source=SimpleNamespace(corpus_content_hash=binding['corpus_identity']),native_result=native))
         evidence=attempt.finish()
         assert admission.require_native_audit(evidence,bindings)==evidence.report
+        admission.validate_native_audit_report(evidence.report,bindings)
         with pytest.raises(ValueError,match='ACTUAL_NATIVE_SOURCE_AUDIT'):
             admission.require_native_audit(admission.NativeSourceEvidence(copy.deepcopy(evidence.report)),bindings)
     assert len(set(paths))==6 and not (tmp_path/'run').exists()
+    paths[-1].write_text('ALTERED_NATIVE_LOG\n')
+    with pytest.raises(ValueError,match='SOURCE_OR_LOG_CHANGED'):
+        admission.validate_native_audit_report(evidence.report,bindings)
     with pytest.raises(FileExistsError):
         with paths[0].open('x'):pass
 

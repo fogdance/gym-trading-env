@@ -7,7 +7,7 @@ from pathlib import Path
 import uuid
 
 from gym_trading_env.envs.entry_contract import fingerprint
-from .fg_replay import digest, signed, write_json
+from .fg_replay import digest, signed, read_manifest
 from .fg_s3_e_quality_course_preflight import _local_path
 from .fg_s3_e_quality_supervision import (
     SupervisionSource, frozen_producer_audit, require_stage_producer_pin,
@@ -32,6 +32,29 @@ def require_native_audit(evidence, bindings):
     if digest(_local_path(evidence.report['path'])) != evidence.report['sha256']:
         raise ValueError('ONLINE_NATIVE_SOURCE_AUDIT_CHANGED')
     return copy.deepcopy(evidence.report)
+
+
+def validate_native_audit_report(report, bindings):
+    """Restored audit facts are hash checked; fresh execution remains mandatory."""
+    if report is None:
+        if bindings is not None:raise ValueError('ONLINE_CHECKPOINT_NATIVE_SOURCE_AUDIT_MISSING')
+        return
+    path=_local_path(report['path'])
+    if report['source_bindings']!=bindings or digest(path)!=report['sha256']:
+        raise ValueError('ONLINE_CHECKPOINT_NATIVE_SOURCE_AUDIT_CHANGED')
+    saved=read_manifest(path)
+    if (saved.get('protocol')!=PROTOCOL or saved.get('status')!='PASS'
+            or len(saved.get('sources',[]))!=len(bindings)):
+        raise ValueError('ONLINE_CHECKPOINT_NATIVE_SOURCE_AUDIT_INCOMPLETE')
+    records={record['source']['source_id']:record for record in saved['sources']}
+    if len(records)!=len(bindings):raise ValueError('ONLINE_CHECKPOINT_NATIVE_SOURCE_AUDIT_DUPLICATE')
+    for binding in bindings:
+        record=records.get(binding['source_id'])
+        if (record is None or record['source']!=binding
+                or digest(_local_path(record['log']))!=record['log_sha256']
+                or record['native']['exit_code']!=0 or record['native']['result'].get('G3')!='GO'
+                or verifier_binding(record['native'])!=binding['verifier_binding']):
+            raise ValueError('ONLINE_CHECKPOINT_NATIVE_SOURCE_OR_LOG_CHANGED')
 
 
 def source_slots(settings):

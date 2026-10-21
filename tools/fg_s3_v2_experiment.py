@@ -31,7 +31,7 @@ def main():
                                      'f1-prepare', 'f1-start', 'f1-resume', 'f1-probe', 'f1-read-check',
                                      'f2-prepare', 'f2-start', 'f2-resume', 'f2-probe', 'f2-read-check',
                                      'f3-prepare', 'f3-start', 'f3-resume', 'f3-probe', 'f3-read-check', 'f3-evaluate',
-                                     'online-prepare','online-start','online-resume','online-probe','online-evaluate','online-report',
+                                     'online-prepare','online-start','online-resume','online-probe','online-evaluate','online-report','online-rl-review-packet',
                                      'exam-plan','exam-run','exam-resume','exam-verify','exam-compare','exam-report',
                                      'score-predictions', 'simulate-online', 'monitor-online',
                                      'describe-composition','evaluate-source','evaluate-reference','compare-predictions'])
@@ -110,6 +110,8 @@ def main():
         os.environ['JAX_PLATFORMS']='cpu';os.environ['CUDA_VISIBLE_DEVICES']=''
         if ((args.authorize_rl or args.rl_review or args.rl_review_sha256) and args.command not in ('online-start','online-resume')):
             p.error('separate RL authorization is only accepted by online-start/resume')
+        if (args.authorize_rl or args.rl_review or args.rl_review_sha256) and args.command!='online-resume':
+            p.error('RL review and authorization require online-resume after a technical pause')
         if args.diagnostic_components or args.diagnostic_q_admission or args.resume_online:
             p.error('online execution forbids prediction/Q overrides and legacy resume flags')
         from gym_trading_env.research import fg_s3_e_quality_online as online
@@ -123,6 +125,11 @@ def main():
                 producer_gym=args.producer_gym,producer_lock=args.producer_lock,producer_lock_sha256=args.producer_lock_sha256,
                 stop_at=args.stop_at,rl_review_path=args.rl_review,
                 rl_review_sha256=args.rl_review_sha256,authorize_rl=args.authorize_rl)
+        elif args.command=='online-rl-review-packet':
+            if (not args.run_dir or not args.output_dir or args.config or args.prepared
+                    or args.authorize_training or args.authorize_rl):
+                p.error('online-rl-review-packet requires --run-dir and a new external --output-dir; it grants no authorization')
+            result=online.rl_review_packet(args.run_dir,args.output_dir)
         elif args.command=='online-probe':
             if not args.output_dir or args.config or args.prepared or args.run_dir or args.authorize_training or args.authorize_rl or args.eval_device!='cpu':p.error('online-probe accepts a new --output-dir and --execution-mode for fixed bounded CPU synthetic data only')
             from gym_trading_env.research.fg_s3_e_quality_online_checks import cpu_probe

@@ -20,6 +20,8 @@ def main():
     stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
     out = root/'artifacts/batch3'/f'{args.label}_{stamp}'
     out.mkdir(parents=True, exist_ok=False)
+    diagnostics=root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'
+    diagnostics.mkdir(parents=True,exist_ok=False)
     receipts = root/'docs/batch3_r2_r8_r3_20261021/receipts'
     receipts.mkdir(parents=True, exist_ok=True)
     for name in ('wp04', 'wp05', 'wp06', 'wp07', 'wp08'):
@@ -36,12 +38,13 @@ def main():
         'FG_WP07_C_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'live'),
         'FG_WP07_G_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'cold'),
         'FG_WP07_B_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'shadow'),
-        'FG_WP07_H_PROBE': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}')}
+        'FG_WP07_H_PROBE': str(diagnostics/'cli_probe')}
     env.pop('LD_LIBRARY_PATH', None)  # Avoid the CLI's deliberate process restart inside pytest.
     xml = receipts/f'{args.label}_{stamp}.xml'
     log = receipts/f'{args.label}_{stamp}.log'
     command = [sys.executable, '-B', '-m', 'pytest', '-p', 'no:cacheprovider',
         '-o', 'addopts=', '-q', '--junitxml='+str(xml),
+        '--basetemp='+str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'pytest_tmp'),
         *[str(root/t) if not Path(t.split('::')[0]).is_absolute() else t for t in args.tests]]
     repositories = {}
     for name, path in (('gym',root), ('dreamer',root.parent/'dreamerv3')):
