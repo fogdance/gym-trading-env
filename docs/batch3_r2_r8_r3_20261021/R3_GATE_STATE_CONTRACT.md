@@ -1,6 +1,6 @@
 # R3 Gate state contract
 
-Lifecycle/policy contract implemented; full verification is in progress. This document is not
+Lifecycle/policy contract implemented and selected CPU contracts verified. This document is not
 RL permission. Corpus ABI remains 3.1.0.
 
 ## Explicit boundary and finite work
@@ -46,6 +46,11 @@ actual Actor and critic update is required; candidate parameters/slots are
 discarded. The parent checks live Agent, RNG, normalizers, carry, Reader/Prefetch,
 Replay, Publisher, account, counters and Gate state before accepting evidence.
 External metrics dictionaries are not a probe API.
+
+The candidate invokes the original optimizer at least once and at most twice.
+The first invocation can update critic/slots before the existing optimizer
+schedule changes Actor weights. No schedule or loss is modified to manufacture
+an Actor change; failing to change both within the bounded probe closes the Gate.
 
 ## External review and completion
 

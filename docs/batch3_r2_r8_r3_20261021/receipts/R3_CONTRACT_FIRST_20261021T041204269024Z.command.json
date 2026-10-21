@@ -1,0 +1,137 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_CONTRACT_FIRST_20261021T041204269024Z.xml",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_contract.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_history.py::test_review_verifier_binds_operator_digest_and_frozen_model_unit_only",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_native_admission.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/batch3/R3_CONTRACT_FIRST_20261021T041204269024Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env",
+      "sha": "f1538637946841d685ec78344fed852fc0a0fc8a",
+      "status": " M src/gym_trading_env/research/fg_s3_e_quality_online.py\n M tests/entry_v1/test_wp07_history.py\n M tools/fg_s3_v2_experiment.py\n?? tests/entry_v1/test_batch3_rl_contract.py\n"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3",
+      "sha": "f1cff4457671102d98004ac7de3601efc35c0bae",
+      "status": " M embodied/run/fg_s3_e_quality_online_gate.py\n M embodied/run/fg_s3_e_quality_online_run.py\n?? embodied/run/fg_s3_e_quality_online_probe.py\n?? embodied/run/fg_s3_e_quality_online_rl.py\n"
+    }
+  },
+  "exit_code": 0,
+  "seconds": 3.2967261869926006,
+  "log": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_CONTRACT_FIRST_20261021T041204269024Z.log",
+  "log_sha256": "12befe8eff1b62a109555334b2b96167346d01e2185402749af6adc016c1073a",
+  "junit": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_CONTRACT_FIRST_20261021T041204269024Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_explicit_finite_prefix_and_no_policy_for_bc_or_shadow",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_state_machine_rejects_skipping_checks_and_keeps_precise_snapshot",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_fabricated_probe_dict_or_object_cannot_open_numeric_gate",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_cold_gate_restore_never_restores_live_operator_permission",
+      "time": "0.098"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_early_review_rejected_and_packet_cli_is_read_only",
+      "time": "0.008"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_history",
+      "name": "test_review_verifier_binds_operator_digest_and_frozen_model_unit_only",
+      "time": "0.027"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[prepare]",
+      "time": "0.006"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[start]",
+      "time": "0.006"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_online_cli_forwards_all_pin_arguments[resume]",
+      "time": "0.006"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_all_source_bindings_allow_shared_pin_and_distinct_pins",
+      "time": "0.264"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_bad_verifier_fails_before_source_or_output",
+      "time": "0.218"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_second_source_wrong_pin_rejects_whole_registry",
+      "time": "0.087"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_unique_native_logs_all_sources_and_unforgeable_public_receipt",
+      "time": "0.200"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_native_history_requires_audit_and_forwards_four_inputs",
+      "time": "0.008"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_audit_root_overlap_and_incomplete_source_set_reject",
+      "time": "0.104"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_native_admission",
+      "name": "test_anchor_and_ordered_corpus_contents_are_frozen_separately",
+      "time": "0.104"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "16",
+      "time": "2.472",
+      "timestamp": "2026-10-21T12:12:04.625344+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

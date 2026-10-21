@@ -1,0 +1,29 @@
+{
+  "scope": "Documentation local-link validation and syntax compile only",
+  "exit_code": 0,
+  "relative_links_checked": 45,
+  "python_files_compiled": 21,
+  "files": [
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_admission.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_checks.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_collector.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_evidence.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/batch3_baseline_evidence.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/batch3_test_runner.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_collection.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_native_admission.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_contract.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_numeric.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_pause.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_cli.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_gates.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_history.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/wp07_online_worker.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tools/fg_s3_v2_experiment.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3/embodied/run/fg_s3_e_quality_online_gate.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3/embodied/run/fg_s3_e_quality_online_probe.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3/embodied/run/fg_s3_e_quality_online_rl.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py"
+  ]
+}

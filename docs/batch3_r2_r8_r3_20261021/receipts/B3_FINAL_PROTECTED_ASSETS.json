@@ -1,0 +1,28 @@
+{
+  "protocol": "BATCH3_PROTECTED_ASSET_AUDIT_V1",
+  "status": "PASS",
+  "timestamp": "2026-10-21T05:02:10.688802+00:00",
+  "baseline_sha256": "f652c9033d6cd7384b2078a5554bf98157eaa4968c6eb6155bef62c4bac305af",
+  "files_checked": 176,
+  "corpus_bytes_and_file_sets_unchanged": true,
+  "frozen_producer": {
+    "gym-trading-env": {
+      "path": "/home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env",
+      "sha": "8619f04b6f996f4c4d7f169486e4d10c25a3b2b9",
+      "status": ""
+    },
+    "dreamerv3": {
+      "path": "/home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/dreamerv3",
+      "sha": "b7a693b3c7b0b45eeecdec954818be42d40e67b6",
+      "status": ""
+    }
+  },
+  "producer_pin": {
+    "path": "/home/v/Documents/work/research/fg-s3-formal-corpus-optimized-20261020/gym-trading-env/docs/formal_train_corpus_optimized_20261020/locks/PRODUCER_PIN.json",
+    "sha256": "d87082946aaa9db7408d68b2c2d147bf6cf1d28f27c1afb36d07c32b59239425"
+  },
+  "mismatches": [],
+  "running_production_outputs": "NOT_TOUCHED",
+  "TEST": "NOT_READ",
+  "GPU": "NOT_USED"
+}

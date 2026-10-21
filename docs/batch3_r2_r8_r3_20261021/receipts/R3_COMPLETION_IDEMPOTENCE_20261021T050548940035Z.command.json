@@ -1,0 +1,111 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_COMPLETION_IDEMPOTENCE_20261021T050548940035Z.xml",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050548940035Z/pytest_tmp",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_contract.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/batch3/R3_COMPLETION_IDEMPOTENCE_20261021T050548940035Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env",
+      "sha": "a64fba7f8f40bd51a3a88c7f7d53df4406720e47",
+      "status": " M docs/batch3_r2_r8_r3_20261021/F4_OPERATIONS.md\n M docs/batch3_r2_r8_r3_20261021/R3_GATE_STATE_CONTRACT.md\n M tests/entry_v1/test_batch3_rl_contract.py\n"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3",
+      "sha": "ecb7e88a9814f923a48bd0ae93b912c26561b158",
+      "status": " M embodied/run/fg_s3_e_quality_online_run.py\n"
+    }
+  },
+  "exit_code": 0,
+  "seconds": 5.387341282097623,
+  "log": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_COMPLETION_IDEMPOTENCE_20261021T050548940035Z.log",
+  "log_sha256": "dda6fd91d133665993f8d54f6ce4313a19f29c61dbbf79d9177048a5890dc409",
+  "junit": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_COMPLETION_IDEMPOTENCE_20261021T050548940035Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_explicit_finite_prefix_and_no_policy_for_bc_or_shadow",
+      "time": "0.003"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_state_machine_rejects_skipping_checks_and_keeps_precise_snapshot",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_fabricated_probe_dict_or_object_cannot_open_numeric_gate",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_cold_gate_restore_never_restores_live_operator_permission",
+      "time": "0.545"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_early_review_rejected_and_packet_cli_is_read_only",
+      "time": "0.019"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_live_rl_scope_rejects_wm_and_source_replacement_before_any_update",
+      "time": "2.551"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_initial_run_freeze_uses_exact_existing_optimizer_slot_owners",
+      "time": "0.005"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_finalization_requires_published_non_tail_sidecars",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_failed_final_checkpoint_rolls_back_terminal_rl_stage_before_retry",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_review_packet_exports_diagnostics_without_writing_permission",
+      "time": "0.007"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_completion_republication_uses_committed_audit_and_no_process_authority",
+      "time": "0.004"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "11",
+      "time": "4.209",
+      "timestamp": "2026-10-21T13:05:49.327103+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

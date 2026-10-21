@@ -1,0 +1,103 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_SCOPE_V2_20261021T044106852436Z.xml",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T044106852436Z/pytest_tmp",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_rl_contract.py",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_history.py::test_review_verifier_binds_operator_digest_and_frozen_model_unit_only",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_wp07_cli.py::test_independent_rl_authority_cannot_be_self_certified"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/batch3/R3_SCOPE_V2_20261021T044106852436Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env",
+      "sha": "fa550c27626604c37de110f1b224cc1254aed3ce",
+      "status": " M src/gym_trading_env/research/fg_s3_e_quality_online.py\n M tests/entry_v1/batch3_test_runner.py\n M tests/entry_v1/test_batch3_rl_contract.py\n M tests/entry_v1/test_batch3_rl_pause.py\n M tests/entry_v1/test_wp07_cli.py\n M tests/entry_v1/test_wp07_history.py\n M tests/entry_v1/wp07_online_worker.py\n"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3",
+      "sha": "e65b3752a16e816a7f53af5906400320cfdb6560",
+      "status": " M embodied/run/fg_s3_e_quality_online_gate.py\n M embodied/run/fg_s3_e_quality_online_probe.py\n M embodied/run/fg_s3_e_quality_online_rl.py\n M embodied/run/fg_s3_e_quality_online_run.py\n"
+    }
+  },
+  "exit_code": 1,
+  "seconds": 3.25556660303846,
+  "log": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_SCOPE_V2_20261021T044106852436Z.log",
+  "log_sha256": "3f8a455ddc1e61143ff112c69308ba087c84117f5836873393e8766ced5c99dd",
+  "junit": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R3_SCOPE_V2_20261021T044106852436Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_explicit_finite_prefix_and_no_policy_for_bc_or_shadow",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_state_machine_rejects_skipping_checks_and_keeps_precise_snapshot",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_fabricated_probe_dict_or_object_cannot_open_numeric_gate",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_cold_gate_restore_never_restores_live_operator_permission",
+      "time": "0.339"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_early_review_rejected_and_packet_cli_is_read_only",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_live_rl_scope_rejects_wm_and_source_replacement_before_any_update",
+      "time": "1.256"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_contract",
+      "name": "test_initial_run_freeze_uses_exact_existing_optimizer_slot_owners",
+      "time": "0.002"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_history",
+      "name": "test_review_verifier_binds_operator_digest_and_frozen_model_unit_only",
+      "time": "0.001"
+    },
+    {
+      "classname": "tests.entry_v1.test_wp07_cli",
+      "name": "test_independent_rl_authority_cannot_be_self_certified",
+      "time": "0.001"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "3",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "9",
+      "time": "2.494",
+      "timestamp": "2026-10-21T12:41:07.162686+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

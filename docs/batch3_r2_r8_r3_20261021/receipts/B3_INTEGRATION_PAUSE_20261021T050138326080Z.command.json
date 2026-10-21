@@ -1,0 +1,61 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/B3_INTEGRATION_PAUSE_20261021T050138326080Z.xml",
+    "--basetemp=/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138326080Z/pytest_tmp",
+    "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1/test_batch3_rl_pause.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/batch3/B3_INTEGRATION_PAUSE_20261021T050138326080Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3:/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env",
+      "sha": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+      "status": ""
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-next-integration/dreamerv3",
+      "sha": "77836dd1c94672f57fbc125e5537629118322abb",
+      "status": ""
+    }
+  },
+  "exit_code": 0,
+  "seconds": 303.09299500798807,
+  "log": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/B3_INTEGRATION_PAUSE_20261021T050138326080Z.log",
+  "log_sha256": "b9840a6c95be6f3998538551a1490956610ecc06bf1a3e5d39463aef3fdfccf9",
+  "junit": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/B3_INTEGRATION_PAUSE_20261021T050138326080Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_rl_pause",
+      "name": "test_native_warmup_blocks_safely_and_new_process_restores_exactly",
+      "time": "301.599"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "0",
+      "skipped": "0",
+      "tests": "1",
+      "time": "301.688",
+      "timestamp": "2026-10-21T13:01:38.788412+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

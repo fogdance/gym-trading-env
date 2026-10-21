@@ -1,0 +1,26 @@
+.......F...........................................                      [100%]
+=================================== FAILURES ===================================
+____________ test_independent_rl_authority_cannot_be_self_certified ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-v/pytest-779/test_independent_rl_authority_0')
+
+    def test_independent_rl_authority_cannot_be_self_certified(tmp_path):
+        from types import SimpleNamespace
+        from embodied.run.fg_s3_e_quality_online_gate import OnlineGates
+        from gym_trading_env.research.fg_s3_e_quality_online_checks import formal_mask_policy
+        g=OnlineGates('synthetic',formal_mask_policy(f3_source()))
+        forged=tmp_path/'forged.json';forged.write_text(json.dumps(dict(approved=True)))
+        with pytest.raises(ValueError,match='SEPARATE_RL_AUTHORIZATION_REQUIRED'):
+            g.review_rl(None,forged,'0'*64)
+        with pytest.raises(ValueError,match='GATE_CLOSED'):g.require_rl(None,authorized=True,review=object())
+        g.ready=dict.fromkeys(g.ready,True)
+        fake=SimpleNamespace(receipt=dict(identity=dict(source_model=dict(engineering_only=True))))
+>       with pytest.raises(ValueError,match='FOUNDATION_NOT_TRAINED'):
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'FOUNDATION_NOT_TRAINED'
+E         Actual message: 'ONLINE_RL_GATE_CLOSED: COLLECTION_PREFIX_VERIFIED'
+
+../../../tests/entry_v1/test_wp07_cli.py:78: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_wp07_cli.py::test_independent_rl_authority_cannot_be_self_certified
+1 failed, 50 passed in 165.64s (0:02:45)

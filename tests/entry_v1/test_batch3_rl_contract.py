@@ -205,3 +205,27 @@ def test_review_packet_exports_diagnostics_without_writing_permission(tmp_path,m
     assert summary['numeric']['actual_candidate_updates']==2 and summary['unique_owner_steps']==1
     assert before=={str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
     assert len(list((tmp_path/'packet').iterdir()))==1
+
+
+def test_completion_republication_uses_committed_audit_and_no_process_authority(tmp_path):
+    import pickle
+    from types import SimpleNamespace
+    from embodied.run.fg_s3_e_quality_online_run import OnlineRun
+    from gym_trading_env.research.fg_replay import read_manifest
+    run=object.__new__(OnlineRun);run.root=tmp_path
+    node=tmp_path/'node';node.mkdir();(node/'manifest.json').write_text('{}')
+    (node/'gates.pkl').write_bytes(pickle.dumps(dict(evidence=dict(source_native={'audit':'COMMITTED'}))))
+    run.cp=SimpleNamespace(latest=lambda:node);run.transaction=7
+    run.account_verification=SimpleNamespace(identity='COMPLETION_UNIT',state=dict(final_evidence={'scope':'UNIT'}))
+    current=dict(native_source_audit={'audit':'CURRENT_PROCESS'},formal_rl_admitted=True,
+        live_process_rl_authorized=True,gate=dict(formal_rl_admitted=True),counters={'rl_updates':3})
+    run.result=lambda:copy.deepcopy(current)
+    path=run._publish_completion();before=path.read_bytes();saved=read_manifest(path)
+    assert saved['result']['native_source_audit']=={'audit':'COMMITTED'}
+    assert not saved['result']['live_process_rl_authorized'] and not saved['result']['gate']['formal_rl_admitted']
+    current.update(native_source_audit={'audit':'NEXT_PROCESS'},formal_rl_admitted=False,live_process_rl_authorized=False)
+    current['gate']['formal_rl_admitted']=False
+    assert run._publish_completion()==path and path.read_bytes()==before
+    current['counters']['rl_updates']=4
+    with pytest.raises(ValueError,match='COMPLETION_RECEIPT_CHANGED'):run._publish_completion()
+    assert path.read_bytes()==before

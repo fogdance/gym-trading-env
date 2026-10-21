@@ -1,0 +1,788 @@
+[
+  {
+    "case": "SHADOW",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V3",
+      "status": "SHADOW_COMPLETE_VERIFIED",
+      "execution_mode": "SHADOW",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 0,
+        "consumed_batches": 0,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 0,
+        "target_market_minutes": 0,
+        "burnin_positions": 0,
+        "burnin_market_minutes": 0,
+        "exposures": {
+          "natural_count": 0,
+          "natural_add": 0,
+          "natural_wait": 0,
+          "auxiliary_count": 0,
+          "auxiliary_add": 0,
+          "auxiliary_wait": 0,
+          "balanced_count": 0,
+          "strict_pair_count": 0,
+          "quality_pair_count": 0,
+          "quality_pair_candidates": 0,
+          "quality_pair_conflicts": 0,
+          "quality_pair_same_action_filtered": 0,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0,
+        "bc_updates": 0
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V3",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": false,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "SUPERVISED_STABLE",
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "collection_verified_through_market_step": 64,
+        "collection_status": "COLLECTION_FINAL_VERIFIED",
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {},
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/SHADOW/split/ckpt/step_000000000004",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false,
+      "account_verification": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_FINAL_ACCOUNT_STATE_V1",
+        "run_identity": "d18188e73b00a42f98142947d7430141374f31899d89a0f255218433784f7cda",
+        "status": "VERIFIED",
+        "next_attempt": 2,
+        "final_evidence": {
+          "receipt": {
+            "protocol": "FG_S3_E_QUALITY_ONLINE_ACCOUNT_EVIDENCE_V1",
+            "run_identity": "d18188e73b00a42f98142947d7430141374f31899d89a0f255218433784f7cda",
+            "source_identity": "b68cdaf2ce73571e028c77b919d53b8bc04e7b93a4dbc58dc1c4189849c9ee94",
+            "verifier_identity": {
+              "gym": {
+                "head": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+                "runtime_hash": "3908fac8e01e2f19b53f6738b4ceed6887e330ee29723694d5f41db8b95e75e0"
+              },
+              "dreamer": {
+                "head": "77836dd1c94672f57fbc125e5537629118322abb",
+                "runtime_hash": "01967d98f8a34e0b1974ad06fde00984853ebf3cc3041fd9c6d7f4620a4a6fbb"
+              }
+            },
+            "verified_through_market_step": 64,
+            "collection_status": "COLLECTION_FINAL_VERIFIED",
+            "prefix": {
+              "rows": 66,
+              "market_steps": 64,
+              "rows_sha256": "d847255ff89ad4d3b4179ae1d110310a66c4035ebac955f413126a96861d12ea",
+              "account_sha256": "7a0cb30c976511f704add3afd3cd5b12c9e09714b8040dc335e15b15c3a531cd"
+            },
+            "trace_identity": "52f0cfdd9002671792a9855c7edba2e6fe7da36c6d22f572d932a1bd503c6b87",
+            "trace_array_sha256": "5dedfbe72b033bb8c80b31fe5ee06d2c8606d02fc44234abf1550760f370d4f6",
+            "trace_event_sha256": "06d38549d023d0b302498745cbe66c140499e6fd1be793ac9883adcf8c997ac5",
+            "legal": true,
+            "teacher_free": true,
+            "reconciliation": {
+              "status": "PASS",
+              "records": 66,
+              "account_restores": 1,
+              "replay_trace_hash": "52f0cfdd9002671792a9855c7edba2e6fe7da36c6d22f572d932a1bd503c6b87",
+              "teacher_labels_verified": 0
+            },
+            "trace_manifest_sha256": "6eb072438c5757fbf4e0b937991d4de73429a577bbb60329b3a0040c1c826102",
+            "content_hash": "ba0b8e2898354ebca26255a01a2b099964a9835cbf9ebb10b0064993dea0bd81"
+          },
+          "receipt_sha256": "1ab463666527696617c33f242cdcfd8882b3ef2cd6887edc4fa18fea84e47b9d",
+          "artifact": "collection_checks/step_000000000064/attempt_000000000001",
+          "formal_corpus_g3": false
+        },
+        "error": null
+      },
+      "rl_lifecycle": {
+        "protocol": "FG_S3_E_QUALITY_RL_ADMISSION_STATE_V1",
+        "run_identity": "d18188e73b00a42f98142947d7430141374f31899d89a0f255218433784f7cda",
+        "policy": null,
+        "stage": "DISABLED",
+        "attempt": 0,
+        "blocked_count": 0,
+        "reason": null,
+        "technical": null,
+        "last_review_sha256": null
+      },
+      "live_process_rl_authorized": false,
+      "native_source_audit": null,
+      "update_counter_semantics": "BC/RL count active loss components and may overlap; optimizer_updates counts invocations"
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/SHADOW/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/SHADOW/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "ONLINE_SUPERVISED",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V3",
+      "status": "ONLINE_BC_COMPLETE_VERIFIED",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 6,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 2,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 42,
+          "natural_add": 6,
+          "natural_wait": 36,
+          "auxiliary_count": 59,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 52,
+          "balanced_count": 59,
+          "strict_pair_count": 45,
+          "quality_pair_count": 16,
+          "quality_pair_candidates": 57,
+          "quality_pair_conflicts": 41,
+          "quality_pair_same_action_filtered": 41,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0,
+        "bc_updates": 6
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V3",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "collection_verified_through_market_step": 64,
+        "collection_status": "COLLECTION_FINAL_VERIFIED",
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 23
+        },
+        "[\"AUXILIARY\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 7,
+          "valid_wait": 45
+        },
+        "[\"NATURAL\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 13
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"ee06ac529f1cbf281e99951f59ad98bcbfe306e4821bd81218c8284e4352160c\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000006",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false,
+      "account_verification": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_FINAL_ACCOUNT_STATE_V1",
+        "run_identity": "c859ae9421d23f4fbcc84c5617bb4d61b50c7e9778e5e940a5c3eb9c0508f154",
+        "status": "VERIFIED",
+        "next_attempt": 2,
+        "final_evidence": {
+          "receipt": {
+            "protocol": "FG_S3_E_QUALITY_ONLINE_ACCOUNT_EVIDENCE_V1",
+            "run_identity": "c859ae9421d23f4fbcc84c5617bb4d61b50c7e9778e5e940a5c3eb9c0508f154",
+            "source_identity": "b68cdaf2ce73571e028c77b919d53b8bc04e7b93a4dbc58dc1c4189849c9ee94",
+            "verifier_identity": {
+              "gym": {
+                "head": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+                "runtime_hash": "3908fac8e01e2f19b53f6738b4ceed6887e330ee29723694d5f41db8b95e75e0"
+              },
+              "dreamer": {
+                "head": "77836dd1c94672f57fbc125e5537629118322abb",
+                "runtime_hash": "01967d98f8a34e0b1974ad06fde00984853ebf3cc3041fd9c6d7f4620a4a6fbb"
+              }
+            },
+            "verified_through_market_step": 64,
+            "collection_status": "COLLECTION_FINAL_VERIFIED",
+            "prefix": {
+              "rows": 66,
+              "market_steps": 64,
+              "rows_sha256": "d130f68b74a53769d04cb6ca5d3f53a89c475579fddac61ae072b74fbcf9289a",
+              "account_sha256": "c0b98402c8d2584a567303bb68b188b30de975e86f7aed15555bed11c88606cf"
+            },
+            "trace_identity": "c42df2ea8fa2e4d275a7e75a81b08ef2c34f4e1a748c5663995ab03c9402129e",
+            "trace_array_sha256": "564fc557fd92d6118c4d9ee267febc393309dd7cf9612671c4504d8802a132b9",
+            "trace_event_sha256": "a0114ece53e2b040bc341cf6ba37ff205eb5c85e02f7c470b95798f251473366",
+            "legal": true,
+            "teacher_free": true,
+            "reconciliation": {
+              "status": "PASS",
+              "records": 66,
+              "account_restores": 1,
+              "replay_trace_hash": "c42df2ea8fa2e4d275a7e75a81b08ef2c34f4e1a748c5663995ab03c9402129e",
+              "teacher_labels_verified": 0
+            },
+            "trace_manifest_sha256": "0a1b4cf3b3b5123211eb4aba39f05dd29295c9246c902cf894dc7c7d4df465a6",
+            "content_hash": "5b06c0d8108e54baae5856a885264d90db8371bc7265a6d853039c01cf811e89"
+          },
+          "receipt_sha256": "504748fde0f2e21959f8d7133447c06f1609eec9791cc5028c14e1f69b8e2e5a",
+          "artifact": "collection_checks/step_000000000064/attempt_000000000001",
+          "formal_corpus_g3": false
+        },
+        "error": null
+      },
+      "rl_lifecycle": {
+        "protocol": "FG_S3_E_QUALITY_RL_ADMISSION_STATE_V1",
+        "run_identity": "c859ae9421d23f4fbcc84c5617bb4d61b50c7e9778e5e940a5c3eb9c0508f154",
+        "policy": null,
+        "stage": "DISABLED",
+        "attempt": 0,
+        "blocked_count": 0,
+        "reason": null,
+        "technical": null,
+        "last_review_sha256": null
+      },
+      "live_process_rl_authorized": false,
+      "native_source_audit": null,
+      "update_counter_semantics": "BC/RL count active loss components and may overlap; optimizer_updates counts invocations"
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_SUPERVISED/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_SUPERVISED/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "publication",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V3",
+      "status": "ONLINE_BC_COMPLETE_VERIFIED",
+      "execution_mode": "ONLINE_SUPERVISED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 6,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 2,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 42,
+          "natural_add": 6,
+          "natural_wait": 36,
+          "auxiliary_count": 59,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 52,
+          "balanced_count": 59,
+          "strict_pair_count": 45,
+          "quality_pair_count": 16,
+          "quality_pair_candidates": 57,
+          "quality_pair_conflicts": 41,
+          "quality_pair_same_action_filtered": 41,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 0,
+        "bc_updates": 6
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V3",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "collection_verified_through_market_step": 64,
+        "collection_status": "COLLECTION_FINAL_VERIFIED",
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 23
+        },
+        "[\"AUXILIARY\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 7,
+          "valid_wait": 45
+        },
+        "[\"NATURAL\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 13
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"ccf55d6d2d6b830215ffbf04e1361255cea058a003ced14d7cecea4ebabc5496\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/publication/split/ckpt/step_000000000007",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false,
+      "account_verification": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_FINAL_ACCOUNT_STATE_V1",
+        "run_identity": "564021fbfd21dd738306fa5c32481d58766856166dcd7e780bba6b035710399d",
+        "status": "VERIFIED",
+        "next_attempt": 2,
+        "final_evidence": {
+          "receipt": {
+            "protocol": "FG_S3_E_QUALITY_ONLINE_ACCOUNT_EVIDENCE_V1",
+            "run_identity": "564021fbfd21dd738306fa5c32481d58766856166dcd7e780bba6b035710399d",
+            "source_identity": "b68cdaf2ce73571e028c77b919d53b8bc04e7b93a4dbc58dc1c4189849c9ee94",
+            "verifier_identity": {
+              "gym": {
+                "head": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+                "runtime_hash": "3908fac8e01e2f19b53f6738b4ceed6887e330ee29723694d5f41db8b95e75e0"
+              },
+              "dreamer": {
+                "head": "77836dd1c94672f57fbc125e5537629118322abb",
+                "runtime_hash": "01967d98f8a34e0b1974ad06fde00984853ebf3cc3041fd9c6d7f4620a4a6fbb"
+              }
+            },
+            "verified_through_market_step": 64,
+            "collection_status": "COLLECTION_FINAL_VERIFIED",
+            "prefix": {
+              "rows": 66,
+              "market_steps": 64,
+              "rows_sha256": "7cfffd8ce6f0b13922779de1658d908988c74b4518e733ce25042dc1845c7c6e",
+              "account_sha256": "c0b98402c8d2584a567303bb68b188b30de975e86f7aed15555bed11c88606cf"
+            },
+            "trace_identity": "d2531c3a1ce34fc0ac47b9500fa98427fb1fb961529259ef01869ae915fd7d10",
+            "trace_array_sha256": "564fc557fd92d6118c4d9ee267febc393309dd7cf9612671c4504d8802a132b9",
+            "trace_event_sha256": "f284930aa503f45ba2f91a5e20adbee9dea5f41dcd08f6f9b78e6f99dbaa08ed",
+            "legal": true,
+            "teacher_free": true,
+            "reconciliation": {
+              "status": "PASS",
+              "records": 66,
+              "account_restores": 1,
+              "replay_trace_hash": "d2531c3a1ce34fc0ac47b9500fa98427fb1fb961529259ef01869ae915fd7d10",
+              "teacher_labels_verified": 0
+            },
+            "trace_manifest_sha256": "8442be3211941b16dbf4dd463edc32b9e39b830704abf02af91bf6bcef703b1d",
+            "content_hash": "39fda70f6f639b34393ae9242c18f6660bbe8675b16ba4c076bb4c48c559b393"
+          },
+          "receipt_sha256": "024ff9776261bb155e6cd5dc16e435613e945e0da748fce499b001c2a495e0af",
+          "artifact": "collection_checks/step_000000000064/attempt_000000000001",
+          "formal_corpus_g3": false
+        },
+        "error": null
+      },
+      "rl_lifecycle": {
+        "protocol": "FG_S3_E_QUALITY_RL_ADMISSION_STATE_V1",
+        "run_identity": "564021fbfd21dd738306fa5c32481d58766856166dcd7e780bba6b035710399d",
+        "policy": null,
+        "stage": "DISABLED",
+        "attempt": 0,
+        "blocked_count": 0,
+        "reason": null,
+        "technical": null,
+        "last_review_sha256": null
+      },
+      "live_process_rl_authorized": false,
+      "native_source_audit": null,
+      "update_counter_semantics": "BC/RL count active loss components and may overlap; optimizer_updates counts invocations"
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/publication/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/publication/split/evidence.pkl"
+    ]
+  },
+  {
+    "case": "ONLINE_RL_CONTROLLED",
+    "status": "PASS_EXACT_NEW_PROCESS_STATE",
+    "result": {
+      "protocol": "FG_S3_E_QUALITY_ONLINE_RUN_V3",
+      "status": "RL_COMPLETE_VERIFIED",
+      "execution_mode": "ONLINE_RL_CONTROLLED",
+      "env_steps": 64,
+      "counters": {
+        "optimizer_updates": 8,
+        "consumed_batches": 8,
+        "skip_no_valid": 0,
+        "skip_disabled_loss": 0,
+        "numerical_rejections": 0,
+        "target_positions": 128,
+        "target_market_minutes": 128,
+        "burnin_positions": 64,
+        "burnin_market_minutes": 64,
+        "exposures": {
+          "natural_count": 42,
+          "natural_add": 6,
+          "natural_wait": 36,
+          "auxiliary_count": 59,
+          "auxiliary_add": 7,
+          "auxiliary_wait": 52,
+          "balanced_count": 59,
+          "strict_pair_count": 45,
+          "quality_pair_count": 16,
+          "quality_pair_candidates": 57,
+          "quality_pair_conflicts": 41,
+          "quality_pair_same_action_filtered": 41,
+          "quality_pair_reversed_filtered": 0
+        },
+        "cycles": 4,
+        "warmup_cycles": 0,
+        "rl_updates": 8,
+        "bc_updates": 6
+      },
+      "gate": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_GATES_V3",
+        "ready": {
+          "COLLECTION_VALID": true,
+          "SUPERVISED_STABLE": true,
+          "WM_VALID_FOR_RL": false,
+          "RL_NUMERIC_READY": false
+        },
+        "blockers": [
+          "WM_VALID_FOR_RL",
+          "RL_NUMERIC_READY"
+        ],
+        "mask_policy": {
+          "protocol": "FG_SINGLE3_MASK_GATE_V1",
+          "classification_threshold": 0.3,
+          "classification_rule": "float32_ge_half_legacy_boundary_v1",
+          "opening": {
+            "thresholds": {
+              "post_accuracy": 0.995,
+              "post_exact": 0.99,
+              "prior_accuracy": 0.9915,
+              "prior_exact": 0.98,
+              "prior_fpr": 0.004,
+              "img_fallback": 0.0001,
+              "post_add_recall": 0.8,
+              "prior_add_recall": 0.8
+            },
+            "consecutive_reports": 20
+          },
+          "source_opening": null,
+          "config": {
+            "enabled": true,
+            "min_train_samples": 25000,
+            "consecutive_reports": 5,
+            "regression_reports": 5,
+            "stop_on_regression": true,
+            "post_accuracy": 0.995,
+            "post_exact": 0.99,
+            "prior_accuracy": 0.99,
+            "prior_exact": 0.98,
+            "prior_fpr": 0.005,
+            "img_fallback": 0.0001,
+            "add_recall_enabled": true,
+            "min_add_positives": 16,
+            "post_add_recall": 0.8,
+            "prior_add_recall": 0.8
+          }
+        },
+        "wm_policy": null,
+        "formal_rl_admitted": false,
+        "unique_calibration_owner_steps": 0,
+        "collection_verified_through_market_step": 64,
+        "collection_status": "COLLECTION_FINAL_VERIFIED",
+        "prediction_q_decision_fusion": false
+      },
+      "phase": {
+        "stage": "IDLE",
+        "end": 64,
+        "updates_done": 0
+      },
+      "source_exposures": {
+        "[\"NATURAL\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 5,
+          "target_positions": 40,
+          "valid_add": 4,
+          "valid_wait": 23
+        },
+        "[\"AUXILIARY\",\"beta\",\"5f121b9c35716e307cc716d5df5faa552d1e5aeb0559aa41174e6bb1b938a0ea\"]": {
+          "windows": 7,
+          "target_positions": 56,
+          "valid_add": 7,
+          "valid_wait": 45
+        },
+        "[\"NATURAL\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 2,
+          "target_positions": 16,
+          "valid_add": 2,
+          "valid_wait": 13
+        },
+        "[\"NATURAL\",\"ONLINE_LIVE\",\"a2766564e35168a7dd17ecf053586e83d29cd1d21914e4e4e009e341ab832a69\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 0
+        },
+        "[\"AUXILIARY\",\"alpha\",\"45af873a6c2614f1a501e34fccab6de8c8544599bee688520cf5f169aef95440\"]": {
+          "windows": 1,
+          "target_positions": 8,
+          "valid_add": 0,
+          "valid_wait": 7
+        }
+      },
+      "checkpoint": "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000004",
+      "training_admitted": false,
+      "real_TRAIN_updates": 0,
+      "formal_rl_admitted": false,
+      "research_admitted": false,
+      "account_verification": {
+        "protocol": "FG_S3_E_QUALITY_ONLINE_FINAL_ACCOUNT_STATE_V1",
+        "run_identity": "ae63356f931185108be185b7d13cbc8983ba5f6aaba59bc624c67b912376c956",
+        "status": "VERIFIED",
+        "next_attempt": 2,
+        "final_evidence": {
+          "receipt": {
+            "protocol": "FG_S3_E_QUALITY_ONLINE_ACCOUNT_EVIDENCE_V1",
+            "run_identity": "ae63356f931185108be185b7d13cbc8983ba5f6aaba59bc624c67b912376c956",
+            "source_identity": "b68cdaf2ce73571e028c77b919d53b8bc04e7b93a4dbc58dc1c4189849c9ee94",
+            "verifier_identity": {
+              "gym": {
+                "head": "fea81ecdf8bca2f26aa39746ae4bea88ed59c685",
+                "runtime_hash": "3908fac8e01e2f19b53f6738b4ceed6887e330ee29723694d5f41db8b95e75e0"
+              },
+              "dreamer": {
+                "head": "77836dd1c94672f57fbc125e5537629118322abb",
+                "runtime_hash": "01967d98f8a34e0b1974ad06fde00984853ebf3cc3041fd9c6d7f4620a4a6fbb"
+              }
+            },
+            "verified_through_market_step": 64,
+            "collection_status": "COLLECTION_FINAL_VERIFIED",
+            "prefix": {
+              "rows": 66,
+              "market_steps": 64,
+              "rows_sha256": "b2c7acca442f284e46e200ceb617724a4273fbad67ab85868820b9cd0b6cf5e5",
+              "account_sha256": "c0b98402c8d2584a567303bb68b188b30de975e86f7aed15555bed11c88606cf"
+            },
+            "trace_identity": "6a8d0d9aa237a5cc71de60fc02a31b72a4871edb435a5beed0835b0bcf93ded2",
+            "trace_array_sha256": "564fc557fd92d6118c4d9ee267febc393309dd7cf9612671c4504d8802a132b9",
+            "trace_event_sha256": "9bfe766736496bc6f5337f5af02a4454faa4753158e797d8c5f497a2b8baa536",
+            "legal": true,
+            "teacher_free": true,
+            "reconciliation": {
+              "status": "PASS",
+              "records": 66,
+              "account_restores": 1,
+              "replay_trace_hash": "6a8d0d9aa237a5cc71de60fc02a31b72a4871edb435a5beed0835b0bcf93ded2",
+              "teacher_labels_verified": 0
+            },
+            "trace_manifest_sha256": "266d8f34f45c48f994a4b1d4e5d880791bb4be0334ba1ebfc96b233a734fec3e",
+            "content_hash": "63d12373d32562dd8495076042569a63defab6a8281d51d7ddcf66823c2a55a1"
+          },
+          "receipt_sha256": "d6aee17a753ab308732f56aefca96599bd4ebed99f7b75d0e08130f3a5d9817a",
+          "artifact": "collection_checks/step_000000000064/attempt_000000000001",
+          "formal_corpus_g3": false
+        },
+        "error": null
+      },
+      "rl_lifecycle": {
+        "protocol": "FG_S3_E_QUALITY_RL_ADMISSION_STATE_V1",
+        "run_identity": "ae63356f931185108be185b7d13cbc8983ba5f6aaba59bc624c67b912376c956",
+        "policy": null,
+        "stage": "DEV_NUMERIC_PROBE",
+        "attempt": 0,
+        "blocked_count": 0,
+        "reason": null,
+        "technical": null,
+        "last_review_sha256": null
+      },
+      "live_process_rl_authorized": false,
+      "native_source_audit": null,
+      "update_counter_semantics": "BC/RL count active loss components and may overlap; optimizer_updates counts invocations"
+    },
+    "evidence_paths": [
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_RL_CONTROLLED/continuous/evidence.pkl",
+      "/home/v/Documents/work/research/fg-s3-next-integration/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T050138336947Z/cold/ONLINE_RL_CONTROLLED/split/evidence.pkl"
+    ]
+  }
+]
