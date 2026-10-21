@@ -28,7 +28,7 @@ def validate_settings(raw):
     required = {'schema','stage','sampling_stage','sampling_spec','model_init','batch_size',
         'target_steps','burnin_steps','optimizer_updates','report_every_updates','save_every_updates',
         'device','corpus_root','prepared_dir','run_dir'}
-    if type(raw) is not dict or set(raw) != required:
+    if type(raw) is not dict or not required <= raw.keys() or set(raw)-required-{'corpus_certification'}:
         raise ValueError('F1_CONFIG_EXPLICIT_FIELDS_REQUIRED')
     if (raw['schema'] != CONFIG_SCHEMA or raw['stage'] != STAGE
             or raw['sampling_stage'] != SAMPLING_STAGE):
@@ -49,6 +49,9 @@ def validate_settings(raw):
     from dreamerv3.fg_s3_e_config import resolve_model_init
     resolve_model_init(raw['model_init'])
     result = copy.deepcopy(raw)
+    if 'corpus_certification' in raw:
+        from .fg_s3_corpus_certification import certification_reference
+        result['corpus_certification'] = certification_reference(raw['corpus_certification'])
     for key in ('corpus_root','prepared_dir','run_dir'):
         result[key] = str(_local_path(raw[key]))
     if (Path(result['prepared_dir']).is_relative_to(Path(result['corpus_root'])) or
@@ -118,7 +121,8 @@ def preflight(settings, *, purpose='development', producer_gym=None, log_path=No
     settings = validate_settings(settings)
     source = SupervisionSource.from_corpus(settings['corpus_root'],stage=STAGE)
     admission = QualitySupervisionAdmission.preflight(source,purpose=purpose,
-        producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256)
+        producer_gym=producer_gym,log_path=log_path,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,
+        **(dict(certification=settings.get('corpus_certification')) if purpose=='certified-corpus' else {}))
     cfg = model_config(settings)
     identity = dict(protocol=PROTOCOL,course_stage=STAGE,sampling_stage=SAMPLING_STAGE,
         sampling_spec=settings['sampling_spec'],source=admission.receipt['content_identity'],
@@ -142,8 +146,8 @@ def preflight(settings, *, purpose='development', producer_gym=None, log_path=No
         verifier_binding=verifier_binding(admission.native_result)))
     result=F1Preparation(settings,admission,receipt)
     if native:
-        # In-process evidence of the actual verifier invocation. Reconstructing
-        # a dataclass from an editable JSON receipt cannot mint this authority.
+        # In-process proof of fresh G3 or authenticated production evidence.
+        # Loading a preparation JSON alone still cannot mint authority.
         _NATIVE_PROOFS[id(result)]=(result,fingerprint(admission.native_result),fingerprint(receipt))
     return result
 
@@ -155,8 +159,8 @@ def prepare(config, *, purpose='development', producer_gym=None,producer_lock=No
         raise ValueError('F1_PREPARATION_OUTPUT_MUST_BE_NEW')
     result = preflight(settings,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,
         log_path=out/'native_verify.log' if purpose == 'native-verification' else None)
-    from .fg_s3_e_quality_reader import build_join_index
-    joined=build_join_index(result.source,out/'join.sqlite')
+    from .fg_s3_e_quality_reader import prepare_join_index
+    joined=prepare_join_index(result.source,out/'join.sqlite')
     write_json(out/'settings.json',signed(dict(protocol=PROTOCOL,settings=settings)))
     write_json(out/'f1_preparation.json',result.receipt)
     write_json(out/'reader_binding.json',signed(dict(index_sha256=digest(out/'join.sqlite'),
@@ -226,10 +230,12 @@ def start_prepared(path, *, resume=False, authorized=False, producer_gym=None, s
     allowed=(PROJECT/'artifacts/fg_s3_v2',Path('/data/logdir/fg_single3/s3_v2'))
     if not any(root.is_relative_to(p) for p in allowed):raise ValueError('F1_RUN_DIRECTORY_INVALID')
     # G3 log is outside immutable preparation and outside the run being resumed.
-    audit=PROJECT/'artifacts/fg_s3_v2/e_quality_wp04/preflights'/uuid.uuid4().hex
-    current=preflight(settings,purpose='native-verification',producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
+    audit=path.parent/'preflights'/uuid.uuid4().hex
+    purpose='certified-corpus' if saved['source_receipt']['purpose']=='certified-corpus' else 'native-verification'
+    current=preflight(settings,purpose=purpose,producer_gym=producer_gym,producer_lock=producer_lock,producer_lock_sha256=producer_lock_sha256,log_path=audit/'native.log')
     if (current.receipt['verifier_binding']!=saved['verifier_binding'] or
-            current.receipt['compatibility']!=saved['compatibility']):
+            current.receipt['compatibility']!=saved['compatibility'] or
+            current.receipt['source_receipt'].get('certification')!=saved['source_receipt'].get('certification')):
         raise ValueError('SUPERVISION_PREPARED_SOURCE_OR_ABI_CHANGED')
     if (saved['identity']['source']!=current.source.receipt['content_identity'] or
             binding['source_identity']!=current.source.receipt['content_identity']):

@@ -121,6 +121,28 @@ def _strata(label, projected):
     return tags
 
 
+def prepare_join_index(admission, path):
+    """Copy the independently certified index for formal training preparation."""
+    if admission.receipt.get('purpose') != 'certified-corpus':
+        return build_join_index(admission, path)
+    import shutil
+    from .fg_s3_e_quality_course_preflight import _local_path
+    source = _local_path(admission.native_result['published_index'])
+    target = _local_path(path)
+    if target.is_relative_to(admission.source.corpus_root) or target.exists() or target.with_suffix('.json').exists():
+        raise ValueError('SUPERVISION_INDEX_OUTPUT_MUST_BE_NEW_AND_OUTSIDE_CORPUS')
+    receipt = read_manifest(source.with_suffix('.json'))
+    if (receipt.get('protocol') != INDEX_SCHEMA or receipt['source_identity'] != admission.receipt['content_identity']
+            or digest(source) != receipt['index_sha256']):
+        raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, target)
+    shutil.copyfile(source.with_suffix('.json'), target.with_suffix('.json'))
+    if digest(target) != receipt['index_sha256']:
+        raise ValueError('SUPERVISION_INDEX_IDENTITY_MISMATCH')
+    return receipt
+
+
 def build_join_index(admission, path):
     if not isinstance(admission, Admission):
         raise ValueError('SUPERVISION_PREFLIGHT_OBJECT_REQUIRED; JSON claims are not admission')

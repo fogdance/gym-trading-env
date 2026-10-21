@@ -1,74 +1,50 @@
-# FG809 正式 F1：独立工作树与启动命令
+# FG809 正式 F1：复用生产认证
 
-基线为最新双仓 `integration/s3-next`：Gym
-`99e9f81dc91440bd38a04e84adacbb7c2616baa7`，Dreamer
-`990f61f8b7ac6bad25ff9e41b65624ae13ccf497`。
-双仓分支均为 `run/f1-fg809-20261021`，位于
-`/home/v/Documents/work/research/fg-s3-f1-fg809-20261021/`。
-本分支只添加本次 Run 配置、命令和核对材料；训练实现复用现有统一入口。
+新冻结双仓位于：
+/home/v/Documents/work/research/fg-s3-f1-certified-20261021/
 
-## 已选配置
+配置：size12m，10,000 次更新，batch=8、T=64、K=32、seed=202、单卡 GPU。
+仅使用 CZCE.FG809 TRAIN，六行为自然采样保持不变。
 
-| 项目 | 取值 |
-| --- | --- |
-| 阶段 | `FOUNDATION_WM` / `WM_NATURAL` |
-| 唯一合约 | `CZCE.FG809`，2018-04-11 至 2018-08-08 |
-| Corpus | `/data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN` |
-| Corpus 内容身份 | `76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550` |
-| 抽样 | 原 WP03 `NATURAL`，包含 P0/P1/P2_low/P2_mid/P3/P4 |
-| 初始化 | 原 Dreamer `size12m` preset，fresh seed 202 |
-| batch / 目标 / burn-in | 8 / T64 / K32；每窗口含 97 行及原始前缀 |
-| 预算 | 10,000 次优化器更新，5,120,000 个目标位置预算 |
-| 设备 | 单卡 GPU；本次没有运行 GPU |
-| 日志 / Checkpoint | 每 100 / 500 次更新 |
-| Run | `/data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021` |
-| 恢复 | 原 FullCheckpoint，`STRICT_PUBLISHED_LATEST_V2` |
+## 启动命令（用户执行）
 
-`size12m` 为原生预设名称，未据此声称实际扩展模型恰有 1,200 万参数。
-Reader 按用户指示视为已就绪，本次不等待或重跑其生产验收。原 Corpus
-及正在生产的所有其他合约均不修改。F1 来源仅为上述一个 Corpus。
+从任意目录执行：
 
-## 正式命令（用户执行）
+~~~bash
+bash /home/v/Documents/work/research/fg-s3-f1-certified-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh start
+~~~
 
-从任意目录启动：
+首次启动自动准备，然后进入训练。准备、启动和恢复均复用正式生产批次的 Native G3 和独立 Reader，不执行 Teacher、Oracle 或账户回放。
+仍核对批次外部 SHA256、身份锁、内容哈希、原始 Verifier Pin、六行为完整收据、TRAIN 来源和 ABI；文件检查仍需要读取教材。
+复用的 Reader SQLite/JSON 逐字节复制，不重建投影或标签。
 
-```bash
-bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh start
-```
+中断后的正式恢复：
 
-首次 `start` 自动调用原 `f1-prepare --source-purpose native-verification`，
-创建新 F1 Prepared 和独立 Join index；成功后调用原 `f1-start --authorize-training`。
-**现有入口在 prepare 和 start 时都会实际重验 G3，所以该命令先执行 CPU
-准入，再进入 GPU 训练。**没有将历史 JSON PASS 冒充本次原生执行证明。
+~~~bash
+bash /home/v/Documents/work/research/fg-s3-f1-certified-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh resume
+~~~
 
-如需将正式准备与训练启动分开，先执行同一脚本的 `prepare`，再执行 `start`。
-已有完整 Prepared 会复用，已有不完整产物会保留并报错，不删除后静默重做。
-首次启动使用 `start`；中断后执行：
+恢复保留原 FullCheckpoint 和 STRICT_PUBLISHED_LATEST_V2，损坏的最新检查点不静默回退。用户授权仍由正式命令显式传递。
 
-```bash
-bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh resume
-```
+## 数据与落盘位置
 
-只读查看配置和准备状态：
+- 原 Corpus：
+  /data/s3_corpus/train_full_main_optimized_20261020_cpu20/batches/TRAIN01_FG809_FULL_MAIN
+- Corpus 身份：
+  76a856fb85ea526800bf2cfd6ce51be1ae26c8f7ac70dea0904bba6b4b629550
+- 正式生产发布批次：
+  /data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN01_FG809_FULL_MAIN/publish/0002/BATCH_MANIFEST.json
+- 批次外部 SHA256：
+  3440ab119346be715a0b203a1d8e3c2cb086cff1b18695b6e4b2ffbcd39bd349
+- Prepared、启动锁、临时目录与缓存：
+  /data/logdir/fg_single3/s3_v2/F1_FG809_12M_U10000_20261021/
+- 模型、更新日志、全部 Checkpoint：
+  /data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021/
+- 更新日志：
+  /data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021/updates.jsonl
 
-```bash
-bash /home/v/Documents/work/research/fg-s3-f1-fg809-20261021/gym-trading-env/docs/f1_fg809_20261021/RUN_F1.sh status
-```
+生产教材不修改、不重签。此前中断的准入日志保留在控制目录的 interrupted_20261021/。
+无用的 3.2 GiB G3 临时值缓存已删除。
 
-Verifier 使用本次独立冻结双仓。`../release/VERIFIER_PIN.json` 和
-`../release/LAUNCH_LOCK.json`（相对 Gym）保存实际 SHA 与外部 Pin SHA256；
-启动脚本不会重新生成 Pin，也不会根据启动时的 HEAD 自动提升信任。
-
-## 本轮证据与未执行项
-
-只执行 YAML/模型解析、Corpus ABI 元数据、Verifier 身份和 shell 语法检查。
-启动脚本的 `status` 使用与 `prepare/start/resume` 相同的 Verifier 参数，
-实际经过原路径和 Pin 校验；所有参数均使用规范绝对路径，不含 `..`。
-实际结果见 `CONFIGURATION_CHECK.json` 和 `../release/LAUNCH_LOCK.json`。
-没有运行 Agent、合成训练、正式 prepare、G3、Join 重建、GPU 或优化器更新。
-正式 `F1_DATA_READY`、训练与 Checkpoint 冷恢复均为 **NOT_RUN**，由上述命令执行。
-
-当前共用 W&B `research_tracking.identity.SourceRun` 只接受
-`FG_S3_V2_LIVE_LEARNING_V1`，而本阶段使用 `FG_S3_E_QUALITY_F1_RUN_V1`。
-本次保留 F1 原生日志/Checkpoint，不给出无法认证此协议的 W&B 启动命令。
-后续若接 W&B，应扩展现有公共 Tracker，而不另建跟踪器。
+本目录中的历史 CONFIGURATION_CHECK.json/HISTORICAL_LAUNCH_LOCK.json 属于旧启动尝试；新启动只认 /data/logdir 下的 LAUNCH_LOCK.certified.json。
+实际验证范围与 NOT_RUN 见 ../f1_certified_20261021/IMPLEMENTATION_REVIEW.md。

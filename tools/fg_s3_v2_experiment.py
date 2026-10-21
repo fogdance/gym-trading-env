@@ -60,8 +60,8 @@ def main():
     p.add_argument('--resume-online', action='store_true', help='Restore the same online account and policy carry')
     p.add_argument('--authorize-training', action='store_true',
                    help='Explicit authorization for formal 1M and any new Quality GPU start/resume')
-    p.add_argument('--source-purpose', choices=['development','native-verification'],default='development',
-                   help='F1 preparation: engineering integrity or an actual native G3 invocation')
+    p.add_argument('--source-purpose', choices=['development','native-verification','certified-corpus'],default='development',
+                   help='Reuse certified production data, check engineering integrity, or explicitly rerun native G3')
     p.add_argument('--producer-gym',help='Frozen sibling WP02 Gym/Dreamer verifier for F1/F2/F3 native source verification')
     p.add_argument('--producer-lock',help='Reviewed frozen verifier pin JSON; requires its external SHA256')
     p.add_argument('--producer-lock-sha256',help='Externally approved SHA256 of the verifier pin JSON')
