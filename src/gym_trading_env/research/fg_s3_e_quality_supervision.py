@@ -104,8 +104,17 @@ def inspect_source(source):
     if not required <= paths.keys():
         raise ValueError('SUPERVISION_INCOMPLETE_INVENTORY')
     for name, path in paths.items():
-        if not path.is_file() or digest(path) != m['files'][name]:
-            raise ValueError('SUPERVISION_CONTENT_CHANGED: ' + name)
+        actual_digest = digest(path) if path.is_file() else None
+        if actual_digest != m['files'][name]:
+            try:
+                stat = path.stat()
+                state = dict(size_bytes=stat.st_size, inode=stat.st_ino,
+                    mtime_ns=stat.st_mtime_ns, ctime_ns=stat.st_ctime_ns)
+            except OSError as error:
+                state = dict(stat_error=str(error))
+            raise ValueError('SUPERVISION_CONTENT_CHANGED: ' + name + '; ' + json.dumps(dict(
+                expected_sha256=m['files'][name], actual_sha256=actual_digest,
+                path=str(path), file_state=state), sort_keys=True))
     lock = read_manifest(root / 'source_lock.json')
     mode=m.get('execution_mode','data')
     if mode not in ('dev','data') or mode!=lock.get('execution_mode','data'):

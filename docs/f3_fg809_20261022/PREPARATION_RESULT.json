@@ -1,0 +1,68 @@
+{
+  "status": "F3_DATA_READY",
+  "checked_at": "2026-10-22T07:13:16.328908+08:00",
+  "repositories": {
+    "gym": {
+      "sha": "2712be1b24903fd443405944dd935cf5f9662120",
+      "dirty": false
+    },
+    "dreamer": {
+      "sha": "990f61f8b7ac6bad25ff9e41b65624ae13ccf497",
+      "dirty": false
+    }
+  },
+  "source_stage": "F1",
+  "foundation_status": "FORMAL_F1_COMPLETED",
+  "verified_f1_updates": 10000,
+  "source_all_frozen_bytes_equal": true,
+  "source_checkpoint": "/data/logdir/fg_single3/s3_v2/E_QUALITY_F1_FG809_12M_U10000_20261021/ckpt/step_000000010000",
+  "corpus_certification": {
+    "batch_manifest": "/data/s3_corpus/train_full_main_scheduler_20261021/attempts/TRAIN01_FG809_FULL_MAIN/publish/0002/BATCH_MANIFEST.json",
+    "sha256": "3440ab119346be715a0b203a1d8e3c2cb086cff1b18695b6e4b2ffbcd39bd349"
+  },
+  "verification_mode": "PUBLISHED_NATIVE_G3_REUSED",
+  "fresh_native_execution": false,
+  "compatibility": {
+    "course_abi_version": "3.1.0",
+    "semantic_contract_hash": "09348e7d20df16153ab1a05e3aced30b30100541dcda76ef033e2f47ec68d53f",
+    "resolution": "REVIEWED_V3_MAPPING",
+    "e_profile_schema_sha256": "365c5dd68a561c242e2e8e58455ee143ed8d347c37b10413a6b2467d6f5a7dd7"
+  },
+  "target_support": {
+    "NATURAL": {
+      "burnin_steps": 32,
+      "target_steps": 64,
+      "components": {
+        "NATURAL": true
+      }
+    }
+  },
+  "join_hash_matches": true,
+  "optimizer_updates": 10000,
+  "max_consumed_batches": 40000,
+  "sampling_spec": {
+    "mode": "NATURAL",
+    "policies": [
+      "P0",
+      "P1",
+      "P2_low",
+      "P2_mid",
+      "P3",
+      "P4"
+    ]
+  },
+  "actor_loss": {
+    "natural": 1.0,
+    "balanced": 0.0,
+    "strict_pair": 0.0,
+    "quality_pair": 0.0,
+    "pair_tau": 1.0
+  },
+  "prepared_dir": "/data/logdir/fg_single3/s3_v2/F3_FG809_12M_U10000_20261022/prepared",
+  "run_dir": "/data/logdir/fg_single3/s3_v2/E_QUALITY_F3_FG809_12M_U10000_20261022",
+  "run_directory_exists": false,
+  "gpu_training": "NOT_RUN",
+  "tests": "NOT_RUN_PER_USER_REQUEST",
+  "prepare_exit_code": 0,
+  "command": "bash /home/v/Documents/work/research/fg-s3-f3-fg809-20261022/gym-trading-env/docs/f3_fg809_20261022/RUN_F3.sh start"
+}
