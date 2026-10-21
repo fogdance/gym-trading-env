@@ -33,7 +33,9 @@ def main():
         'PYTHONDONTWRITEBYTECODE': '1', 'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1',
         'MPLCONFIGDIR': str(out/'.matplotlib'),
         'FG_WP07_SOURCE_ROOT': os.environ.get('FG_BATCH3_SOURCE_ROOT',str(root/'artifacts/batch3/synthetic_f3_source')),
-        'FG_WP07_C_ROOT': str(out/'live'), 'FG_WP07_G_ROOT': str(out/'cold'),
+        'FG_WP07_C_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'live'),
+        'FG_WP07_G_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'cold'),
+        'FG_WP07_B_ROOT': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}'/'shadow'),
         'FG_WP07_H_PROBE': str(root/'artifacts/fg_s3_v2/e_quality_wp07'/f'batch3_{stamp}')}
     env.pop('LD_LIBRARY_PATH', None)  # Avoid the CLI's deliberate process restart inside pytest.
     xml = receipts/f'{args.label}_{stamp}.xml'
