@@ -131,7 +131,7 @@ def cpu_probe(output,mode='ONLINE_SUPERVISED'):
     run=OnlineRun(spec,factory,dict(fold='TRAIN',scope='BUILTIN_SYNTHETIC_ONLY'),history,_probe=permit)
     try:
         before=parameter_digests(run.agent.params);result=run.run_to();after=parameter_digests(run.agent.params)
-        proof=run.verify_collection()
+        proof=run.account_verification.state['final_evidence']['receipt']['reconciliation']
         evaluation=evaluate_native(run.agent,factory,out/'actor_only',steps=32,
             initial_state=run.collector.initial_state,
             source=dict(execution=run.identity['protocol']),scope='BUILTIN_SYNTHETIC_NOT_RESEARCH')

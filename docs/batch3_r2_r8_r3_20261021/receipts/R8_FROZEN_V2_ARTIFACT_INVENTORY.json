@@ -1,0 +1,721 @@
+{
+  "scope": "SYNTHETIC_NATIVE_COLD_RESTORE",
+  "files": {
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000001/manifest.json": {
+      "sha256": "9f36649f2b106c431de067ac4fec749e3a78fc63298fc0fb033bef2960ce6298",
+      "bytes": 5299
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000002/manifest.json": {
+      "sha256": "756168bddfbecb23517a6494b17cf1db7844e53c30ebfc82d14b10ee6595de40",
+      "bytes": 5517
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000003/manifest.json": {
+      "sha256": "3673d5375fb46797ccf7aaeb801085c5381403d13fdf932bd6f8caa8c5d2bf15",
+      "bytes": 5626
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/ckpt/step_000000000004/manifest.json": {
+      "sha256": "cca8525b217d8d46b9656ffa6d9e08bab51b2121274c2c634a963d4645bcc1a4",
+      "bytes": 5625
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "bb73a48f9d772235f30b369ca06c2a2f101678fc360311a86ccd8c3cdc8e2e88",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "c6b2b3097e73ed48e031c1df023b0a11dd5210cb1032e1855fdb6adc773d8c66",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "9cfb31c2f72ee9a4e4844e5ebad21ffcb036778b8f17260211a501df62398b57",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "b1959b526b6972ecc2e01aeb9c8d4b4507dcd1a7e087aa6bce0226c7baf799dc",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/evidence.pkl": {
+      "sha256": "58f9cc1acf99ef14a91ad1665c269fb7ab81cbda5854ce27fa16443633158997",
+      "bytes": 4368660
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/native_trace_64/manifest.json": {
+      "sha256": "5b136002589fa01f329447798a99fbfecad8f3cbc85b61d4db740ba8485e9e0d",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous/result.json": {
+      "sha256": "30a5bb469745760fe4a532e07db85df723724043cad5d027ae5424fd1b041ac0",
+      "bytes": 6363
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous_start_64.command.json": {
+      "sha256": "c6903bf391a0c98a65c73f91959a552e50431f38050a2d3033a962f99707d8b2",
+      "bytes": 659
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/continuous_start_64.log": {
+      "sha256": "48841bddb5f9a2afd8ab02942408409f4f5e0ee17804df268fe87e04bd86011d",
+      "bytes": 7252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000001/manifest.json": {
+      "sha256": "9f36649f2b106c431de067ac4fec749e3a78fc63298fc0fb033bef2960ce6298",
+      "bytes": 5299
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000002/manifest.json": {
+      "sha256": "bed9a736941993c012ba3606ec570a336a2191c1bf774bce564c868d86aefff6",
+      "bytes": 5517
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000003/manifest.json": {
+      "sha256": "4657581f2ae29e1bab79a03c472b281917a77d508725ce67767cf2bdf29182f9",
+      "bytes": 5626
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/ckpt/step_000000000004/manifest.json": {
+      "sha256": "196e0fb4e92ada210c10ebbf75ccf1dbea1647239deaed2226bb35ed6e9cd17e",
+      "bytes": 5625
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "bb73a48f9d772235f30b369ca06c2a2f101678fc360311a86ccd8c3cdc8e2e88",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "c6b2b3097e73ed48e031c1df023b0a11dd5210cb1032e1855fdb6adc773d8c66",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "9cfb31c2f72ee9a4e4844e5ebad21ffcb036778b8f17260211a501df62398b57",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "b1959b526b6972ecc2e01aeb9c8d4b4507dcd1a7e087aa6bce0226c7baf799dc",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/evidence.pkl": {
+      "sha256": "ea34a390f62284d20a7c27e10c32b872b091cf6da6ec5a772fd13af554116ea3",
+      "bytes": 4380343
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/native_trace_32/manifest.json": {
+      "sha256": "507cef7b8f7570baeaad6b7db2c7582eff0f03816b630739cc6e322d20fd3638",
+      "bytes": 2983
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/native_trace_64/manifest.json": {
+      "sha256": "5b136002589fa01f329447798a99fbfecad8f3cbc85b61d4db740ba8485e9e0d",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split/result.json": {
+      "sha256": "36982ad44ed0d01d7925ebd9aa67ee861af6854fe421e57b50e7d13a08be5b63",
+      "bytes": 6358
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split_resume_64.command.json": {
+      "sha256": "2a8a667f3afc17cbdc96b6158d576b4564fca85559d6f357739ab3183d881a33",
+      "bytes": 655
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split_resume_64.log": {
+      "sha256": "4fe44bcd2dc2b352ae0581a47975d0af40bd4f3b4c2feadba3ed5886c19d113c",
+      "bytes": 7247
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split_start_32.command.json": {
+      "sha256": "7d5e4f61cabb536f41565fbfb1c61289adfa2a0815a5de7d2659fc259f11cf3e",
+      "bytes": 654
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_RL_CONTROLLED/split_start_32.log": {
+      "sha256": "4dc6ff18a03409d796e62ccf422fad55f082a60f7962206ceea84be48bee4c73",
+      "bytes": 5544
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/ckpt/step_000000000001/manifest.json": {
+      "sha256": "f96df5e57e773c0c1316a9ded5e83d42b0fc73e4192f69b2a0ab6b3bea8289dc",
+      "bytes": 5244
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/ckpt/step_000000000002/manifest.json": {
+      "sha256": "5fbc1f184ccc5db201a279b99c93e47ff6c7f619ccba0f80586524f30fa59934",
+      "bytes": 5462
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/ckpt/step_000000000003/manifest.json": {
+      "sha256": "732a175e82b824f41081b8b0c86bd94310984e1414ca3bcf21ba9386be159d00",
+      "bytes": 5462
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/ckpt/step_000000000004/manifest.json": {
+      "sha256": "ab596305af9b9e27b8e4460ea6649476a27d54dc023f759f48aa7173fa2f6549",
+      "bytes": 5571
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/ckpt/step_000000000005/manifest.json": {
+      "sha256": "eb47c51c8d9c1e49aaf207433ed80eac590c60187e9bf883aa01ad39e540fedc",
+      "bytes": 5570
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "1b09dab08b957b1ffa436d63b70ac4e9016e94038bb4d42493430dd21fcbbd74",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "b086804680fbd3c84a0341fb12240402b0dbdcfa2adbf7fcb5f4a132fb3df04b",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "65b3cd611f67e13bcd605bfad6e9d6d37795e83fa064891f953b10efca1cc74c",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "1b3bdeb36841f1fe5d97440981db4c89350cb622ab48f21b876135dddf1dcf1a",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/evidence.pkl": {
+      "sha256": "50aec9c3dd39dec385f84fd3dc9180c716e169f5a7348972c128b57ab87abda2",
+      "bytes": 4366736
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/native_trace_64/manifest.json": {
+      "sha256": "1327835fa75c38a3952cd08eeeea5cb3a022547e123fbfc2d82bfa40740e30dc",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous/result.json": {
+      "sha256": "bc3c37d6d2f8fd5c727d67d44809a83b2b25ca9c2d92458be104e3cd3ea86934",
+      "bytes": 6391
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous_start_64.command.json": {
+      "sha256": "36c11be80f5e8ce2ecc6b84759eb012b30fc79c50cd19d6dea307f4b31436a2e",
+      "bytes": 653
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/continuous_start_64.log": {
+      "sha256": "45bfffcf2d04c5138365bd8be43bd038703ca13d4c1906a7e32021dccdf634aa",
+      "bytes": 7274
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000001/manifest.json": {
+      "sha256": "f96df5e57e773c0c1316a9ded5e83d42b0fc73e4192f69b2a0ab6b3bea8289dc",
+      "bytes": 5244
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000002/manifest.json": {
+      "sha256": "587b53c1c8a53fd29af4edd21fa01eec0ce04cdad3a40b0aec157e08793af08e",
+      "bytes": 5462
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000003/manifest.json": {
+      "sha256": "3f66f45963b112124296cff47dffc76c3815ed6b9fc8d23100416c41588f5330",
+      "bytes": 5462
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000004/manifest.json": {
+      "sha256": "13c43145db9b951b08efa8725cfd6fc0655602803c97ecdef2d9e40e429b00a3",
+      "bytes": 5571
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/ckpt/step_000000000005/manifest.json": {
+      "sha256": "2def30fa30586a23f9f53296d4fce376d2e7a381c0224a4385a4a2551cc18741",
+      "bytes": 5570
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "1b09dab08b957b1ffa436d63b70ac4e9016e94038bb4d42493430dd21fcbbd74",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "b086804680fbd3c84a0341fb12240402b0dbdcfa2adbf7fcb5f4a132fb3df04b",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "65b3cd611f67e13bcd605bfad6e9d6d37795e83fa064891f953b10efca1cc74c",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "1b3bdeb36841f1fe5d97440981db4c89350cb622ab48f21b876135dddf1dcf1a",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/evidence.pkl": {
+      "sha256": "aa240a8a38c62329147baa8a4f7dc520140e970f2efab33145e2e17a02aa8e32",
+      "bytes": 4378419
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/native_trace_32/manifest.json": {
+      "sha256": "7cb80a094663861a0a478e8ef191e148a5957c64d0ce6f2fe0f114100aa84860",
+      "bytes": 2983
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/native_trace_64/manifest.json": {
+      "sha256": "1327835fa75c38a3952cd08eeeea5cb3a022547e123fbfc2d82bfa40740e30dc",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split/result.json": {
+      "sha256": "f25262755868fb4da60ca5d1af9dd9f9b66d12741268df3757c6d62cbd70c431",
+      "bytes": 6386
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split_resume_64.command.json": {
+      "sha256": "24550b726bfe20c48f04371f67481f5e3f3c43edc9c007841c7ca8378177733a",
+      "bytes": 649
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split_resume_64.log": {
+      "sha256": "52123b52c08478997c88e5a8eae016eed604842bbe21f42c1ad9f5fee9dbb0cc",
+      "bytes": 7269
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split_start_32.command.json": {
+      "sha256": "aa3c8e5c339a6728a4d577dff47ddf6bc5873d87d07c372456d8f5a07ceab7f3",
+      "bytes": 648
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/ONLINE_SUPERVISED/split_start_32.log": {
+      "sha256": "2586052baac4429f5f91f1d69360699d70b07ee4f3f88958ae36dd9ce2e00888",
+      "bytes": 5559
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/ckpt/step_000000000001/manifest.json": {
+      "sha256": "e67c451c343aad03a02c9b5a42bdcfec8e40b840cff03923d2566b5e403a0880",
+      "bytes": 4929
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/ckpt/step_000000000002/manifest.json": {
+      "sha256": "8a430e1cfc7a166d54dc06e55db0a59b9f0c0ff17a957799c74f9e078effb3ba",
+      "bytes": 5147
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/ckpt/step_000000000003/manifest.json": {
+      "sha256": "c59de4a16fcc3c75380397aebf4a5f0f54630a347bbdea9978f7fd8667d7726b",
+      "bytes": 5256
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/ckpt/step_000000000004/manifest.json": {
+      "sha256": "00804b67013a60119c834c7b6aac7bba6a760aa717951769f6d3c67e1d6fb5ad",
+      "bytes": 5255
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "f62c27c5d6d493dd8fbcd9c90c7ab9befdf65881c4856c99c855182af437f1eb",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "02e21bf0b7399fbd96e98d3a3f5d6e91ff58ea8a202954304dfabc4a16bed937",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "c0bb6472b969c4985bd39c431b796157826052d2317af24abfce307b228de951",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "573687aa7f01645c05e1e49ce6cf5eb5d1642d7fe8efdcdb39af5e5d357bdaa7",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/evidence.pkl": {
+      "sha256": "a13da449cf6f5e526aa48e64f7f1a1bb684c675bd9c5059cdac5ac7bef000144",
+      "bytes": 3629192
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/native_trace_64/manifest.json": {
+      "sha256": "bf8e278ce3e35adb100159e97a1f5eb9475e03816ee564d517001c6349d86b71",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous/result.json": {
+      "sha256": "b66505ef80d95103165ad9c25b93bb261a83603e01f4181d37b497cadbc268eb",
+      "bytes": 5352
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous_start_64.command.json": {
+      "sha256": "5f7fc9c4bb1ddf7761fcda1306d9685bf15a9525b503843b16b4fd30a51627ae",
+      "bytes": 631
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/continuous_start_64.log": {
+      "sha256": "1452a249aee0822fa1401d8537038fc94789bb57f95fef8b8a2badcbd659d02e",
+      "bytes": 6403
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/ckpt/step_000000000001/manifest.json": {
+      "sha256": "e67c451c343aad03a02c9b5a42bdcfec8e40b840cff03923d2566b5e403a0880",
+      "bytes": 4929
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/ckpt/step_000000000002/manifest.json": {
+      "sha256": "b473b43d91e99d45bca293cbeec77cd003c9e0889c1f59034ca49b4f6b49245a",
+      "bytes": 5147
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/ckpt/step_000000000003/manifest.json": {
+      "sha256": "2e428d2e1bc126147ec910057f362f4b84273ce523db32305deb84c9bb7d9b61",
+      "bytes": 5256
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/ckpt/step_000000000004/manifest.json": {
+      "sha256": "d3eca5ef59faea6ff83f449361f6e81aafd27b8b44381b7e74c9d21335f83903",
+      "bytes": 5255
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "f62c27c5d6d493dd8fbcd9c90c7ab9befdf65881c4856c99c855182af437f1eb",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "02e21bf0b7399fbd96e98d3a3f5d6e91ff58ea8a202954304dfabc4a16bed937",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "c0bb6472b969c4985bd39c431b796157826052d2317af24abfce307b228de951",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "573687aa7f01645c05e1e49ce6cf5eb5d1642d7fe8efdcdb39af5e5d357bdaa7",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/evidence.pkl": {
+      "sha256": "67abba35a4e916a0f57461dfa78a8e76f93c4100437507126fbef5fe85b76fd2",
+      "bytes": 3635544
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/native_trace_32/manifest.json": {
+      "sha256": "57cfd6bc56f2a87d9903979cc84db44aebfad66d4bf1c975516b2ef1a79c1ace",
+      "bytes": 2983
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/native_trace_64/manifest.json": {
+      "sha256": "bf8e278ce3e35adb100159e97a1f5eb9475e03816ee564d517001c6349d86b71",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split/result.json": {
+      "sha256": "9d49fb82acfc3628b606acc2568b7ba12c710aead6ca33572e423aa832651134",
+      "bytes": 5347
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split_resume_64.command.json": {
+      "sha256": "4d764a8ec7f560dcb420102e13c77af2ef137dcf8af4b1d180a6ed7e094fac38",
+      "bytes": 627
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split_resume_64.log": {
+      "sha256": "725bee26ca20bff2e9abba0e0d81d09f70c6ccc2ebeb2dedc15f9530036c5716",
+      "bytes": 6398
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split_start_32.command.json": {
+      "sha256": "299c7ff59972f695b4237140715e0a0cff83c97c5017b301be2f91d16ae664c7",
+      "bytes": 626
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW/split_start_32.log": {
+      "sha256": "05190f211d608a2d5b2bdcf205bc257cb102d052445f3cd40cec20989d993e7a",
+      "bytes": 4695
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/ckpt/step_000000000001/manifest.json": {
+      "sha256": "5861e4f2ffdb13d73b0e49ea65ca0f4398dfeaec92faaf6648eb21fd1f241c2f",
+      "bytes": 4935
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/ckpt/step_000000000002/manifest.json": {
+      "sha256": "541b84314cead4c96425aff961401b9f87ac9adecd162efa8d6adbf968a724ab",
+      "bytes": 5044
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "f35736ad6e08147c6a45fdabea8ef9527550e84c1c81c918800ee16ec70ee534",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "d535317b6e24d5f807aa7213722d8004c0a5c29546b127f09e50fd92aadac238",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/evidence.pkl": {
+      "sha256": "d1250c3ac589202880007cc4466a50b1d4083d1ee6a1f2d9d5b80b05ac9d03d7",
+      "bytes": 1762657
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/native_trace_16/manifest.json": {
+      "sha256": "385d0b53c88efed5f9611eaaf1c082bd5fb210744bbd9f6fec77e79f04ebda88",
+      "bytes": 2614
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run/result.json": {
+      "sha256": "d3428ab63a4720b5d0d94f3ad401c00a15370d8a644c2f9a706efb8499262a4e",
+      "bytes": 3257
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run_start_16.command.json": {
+      "sha256": "380b1aacab84ec29533c8af998c752b9d814f124feebbefcb9b6939f4957fa81",
+      "bytes": 636
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/SHADOW_smoke/run_start_16.log": {
+      "sha256": "cd90e4d1c538296176e2581f26579e5dd1ab6723c0cc7a9cbb29db16d6d7311e",
+      "bytes": 4678
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P0/manifest.json": {
+      "sha256": "4273c623ab15678c238c56f602f1f58b4cb770feb74ef608f81ef853196c537b",
+      "bytes": 2752
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P1/manifest.json": {
+      "sha256": "e36889b3a49308fba3459f231e84b6a21af4432ff6b5fdbff47271f755c1044e",
+      "bytes": 2758
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P2_low/manifest.json": {
+      "sha256": "269a96007bc74e7e241d36119a8e8860e365f8c2b0ab81a1712a946831070b0d",
+      "bytes": 2788
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P2_mid/manifest.json": {
+      "sha256": "f5b2321a578e6dea0c91a130def6fa6b9aa556b4895d4b882c23b0a28cd9f848",
+      "bytes": 2797
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P3/manifest.json": {
+      "sha256": "04b12e7f17fc215edac194ea02631017e708dd6032e6066a438944e7f9ca5e76",
+      "bytes": 2778
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/policies/P4/manifest.json": {
+      "sha256": "562a646184b2ec75ee7b307f702ad99c855b951e416e2bce301ed35960f50d39",
+      "bytes": 2856
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P0/manifest.json": {
+      "sha256": "01b9ecd5f95cdb759d49bf0868d0a7aa06e076f1f160ea0bae6376215bd837cf",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P1/manifest.json": {
+      "sha256": "e0a4537efad5bf812c44a271608bfdaaf1cd1764b01eff4f43f832c6b9332f63",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P2_low/manifest.json": {
+      "sha256": "cbae9cbcecc24d4521565fe8789aed5d5f611efb47204d2d79c9811e1f6e7d79",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P2_mid/manifest.json": {
+      "sha256": "a5134c7aa535f43dde49544701125fda678651ea2d9a85d07e0ffd74e4dac395",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P3/manifest.json": {
+      "sha256": "7907d85348038846b5f1e76383b3b5d5441f15ee537d91643b665ce2fac38dd5",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha/student_replay/P4/manifest.json": {
+      "sha256": "051b1842e551aaadccc8e21f4a49aa24dae019a2ff9604a4d89b2c5c38c232dd",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P0/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P1/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P2_low/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P2_mid/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P3/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/policies/P4/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P0/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P1/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P2_low/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P2_mid/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P3/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/alpha_metadata/student_replay/P4/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P0/manifest.json": {
+      "sha256": "ab95f4e7cc8e09b74ca51c918973c1919f51ac13c208836be9e61a9f7e17986b",
+      "bytes": 2752
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P1/manifest.json": {
+      "sha256": "f630852d1744321ba1f0caabca435c4bf591448b4c13c0f7d74e957ac7b6527c",
+      "bytes": 2758
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P2_low/manifest.json": {
+      "sha256": "2a37515c77814655a6fa2f59baa58ef120eea839286d3b064f3b64a35a08b8e7",
+      "bytes": 2788
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P2_mid/manifest.json": {
+      "sha256": "f96ac2ee4cd3b0bc9f12d3be8c8824027e38e26ad4c3c8950ba1b8011a1f3375",
+      "bytes": 2797
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P3/manifest.json": {
+      "sha256": "cb760796d352ca7d2e9fbc3dc83fde24e8747ac7a5c645941432d285f7019314",
+      "bytes": 2778
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/policies/P4/manifest.json": {
+      "sha256": "2b951a4440b1465a6a7aa04bbb5db918a89302d00c5625009452fd84e4f26cbf",
+      "bytes": 2856
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P0/manifest.json": {
+      "sha256": "96d2603b5093d8a98212883d5f6242a3ac3b8f7957c38748c965fa31804abef5",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P1/manifest.json": {
+      "sha256": "00fee5cae85ceaa988b2b42a6328c70a12075cd9a03084f0aea483915cc5b361",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P2_low/manifest.json": {
+      "sha256": "a80f796186816134015745257416515edbaceaae0829d4fa33e1ec319ddb3f18",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P2_mid/manifest.json": {
+      "sha256": "4263572131c97167a1e899e2cabed791cfe82145e3cbc3009d9e48f7fed36c4a",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P3/manifest.json": {
+      "sha256": "9d5a8061e5c0bb4d59e43c5aa8c69358e9344b579871ff92f11fd34124a62b38",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta/student_replay/P4/manifest.json": {
+      "sha256": "eedc0bb5529d0fc3ce2d10604d18c3f7712c0e1f165b86fa6e258811b6e10afe",
+      "bytes": 937
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P0/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P1/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P2_low/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P2_mid/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P3/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/policies/P4/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P0/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P1/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P2_low/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P2_mid/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P3/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/common/history/beta_metadata/student_replay/P4/manifest.json": {
+      "sha256": "999b1e566d6209df4f4f9734ab00f9b00fb34f7e648ac3002897d6e4fb8417c3",
+      "bytes": 252
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000001/manifest.json": {
+      "sha256": "8150cdcb8f3077d11297d5c66b6429051dd73bef83ed0a6a1542349555ec4f8c",
+      "bytes": 5238
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000002/manifest.json": {
+      "sha256": "f7a97ed31cc47f275f01f152612926e7a7230a8424f5f4c85ecd660e42f7b292",
+      "bytes": 5347
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000003/manifest.json": {
+      "sha256": "3eb90910a1ac1660dcaa88c0470caf82df2b0412f37358e2c49b136973462ca9",
+      "bytes": 5456
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000004/manifest.json": {
+      "sha256": "381759943c9ef697e4562641082c19978ca7780466019c776468a784422eaa68",
+      "bytes": 5456
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000005/manifest.json": {
+      "sha256": "39cae56a27e7a907685be79373271e99201e188662a96aa90de7182564e254ea",
+      "bytes": 5565
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/ckpt/step_000000000006/manifest.json": {
+      "sha256": "652b1224b102687ea959bb47e205c47572cc678f73f425218770f1e40ea43fba",
+      "bytes": 5564
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "4e527c79f666c2b010c43d10fc67e6dacb355a3ce56995dd825bf3c497a2d863",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "dfc13969fdbd662faf04eddd79e337d51718cab522a9c5b330bc939077f06da0",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "41acf9fef32f6af8890aa75d2250068fbb528268ff42d176cfc54cc3fcd06d8c",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "1742996018bc115d31daf9eaf33ce5920e83f80ae9e3ff9ece86fd94bd7fa40b",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/evidence.pkl": {
+      "sha256": "6af0376ee32b688bf6c253e4c79e62f2f43e4d79f78645a1106989c5d46b4609",
+      "bytes": 4366736
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/native_trace_64/manifest.json": {
+      "sha256": "41dc4532647cdc3d4ec91afdda8c53912ec9dfffebb3991544c86c74913ee44c",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous/result.json": {
+      "sha256": "4e36e4a510a049fe87830a12c8722dcad8e86a1a2245c04f6163ce998ba08d4b",
+      "bytes": 6385
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous_publication_continuous_64.command.json": {
+      "sha256": "c065abc568329f24356a803d19a4befaa0774bb517a2c98f5879874ab09e4996",
+      "bytes": 658
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/continuous_publication_continuous_64.log": {
+      "sha256": "e49a6b4a986dc73e8ad1864d731d000cbbcd9a71be4d0582272f1b8b5da17967",
+      "bytes": 7268
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000001/manifest.json": {
+      "sha256": "8150cdcb8f3077d11297d5c66b6429051dd73bef83ed0a6a1542349555ec4f8c",
+      "bytes": 5238
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000002/manifest.json": {
+      "sha256": "4714f1adf3ff7ae2c5b0e772a2f50601fecb2ca6e121930f9997f0204e82f99d",
+      "bytes": 5347
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000003/manifest.json": {
+      "sha256": "48f7a2efd34cfc85f86420dc9fd7379d2ad0d389200bed3d8f7827113505c871",
+      "bytes": 5456
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000004/manifest.json": {
+      "sha256": "c471c4147b7787c271dd6b93bf5c258139b7f1a0baee1a493c6252f42281404d",
+      "bytes": 5456
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000005/manifest.json": {
+      "sha256": "906270500c7f49c2b31f0f9190713f5159b801129b403ed109a531af8629cf8b",
+      "bytes": 5565
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/ckpt/step_000000000006/manifest.json": {
+      "sha256": "ab7caaca8332599c4c24355c443c463ce9b0df9932998f50e96d9317b733323f",
+      "bytes": 5564
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/collection_checks/step_000000000016/attempt_000000000000/manifest.json": {
+      "sha256": "4e527c79f666c2b010c43d10fc67e6dacb355a3ce56995dd825bf3c497a2d863",
+      "bytes": 2845
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/collection_checks/step_000000000016/attempt_000000000000/native_account_receipt.json": {
+      "sha256": "dfc13969fdbd662faf04eddd79e337d51718cab522a9c5b330bc939077f06da0",
+      "bytes": 1646
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/collection_checks/step_000000000064/attempt_000000000001/manifest.json": {
+      "sha256": "41acf9fef32f6af8890aa75d2250068fbb528268ff42d176cfc54cc3fcd06d8c",
+      "bytes": 3592
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/collection_checks/step_000000000064/attempt_000000000001/native_account_receipt.json": {
+      "sha256": "1742996018bc115d31daf9eaf33ce5920e83f80ae9e3ff9ece86fd94bd7fa40b",
+      "bytes": 1645
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/evidence.pkl": {
+      "sha256": "5d81f82091878daaab933fd60fea0b630bbd96c078f0ae4ef1a478858caf6805",
+      "bytes": 4374420
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/native_trace_16/manifest.json": {
+      "sha256": "72e90bbfb3b19b0b13857eee0feb3063ed11e7ac33e8508ea2a7a5f42151ce45",
+      "bytes": 2614
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/native_trace_64/manifest.json": {
+      "sha256": "41dc4532647cdc3d4ec91afdda8c53912ec9dfffebb3991544c86c74913ee44c",
+      "bytes": 3362
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split/result.json": {
+      "sha256": "7c4c49f287caaf53ed288d4a9c812f0b130a49a2c52d9bb0b8fa4f5d32ce75fa",
+      "bytes": 6380
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split_publication_stop_16.command.json": {
+      "sha256": "32502b1989e51daecbed38e0840bd2069c601a2dcc10b45ce40240f5145026fe",
+      "bytes": 647
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split_publication_stop_16.log": {
+      "sha256": "b7cd5d0bb6d80a6f0ef3a6f790388969359b1eeb50616aabd864e43edd28461d",
+      "bytes": 4693
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split_resume_64.command.json": {
+      "sha256": "b8f2bab720ecf56e6a5687089ce688be5007b09acbbe8481dd1f04d6dd81af9e",
+      "bytes": 637
+    },
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v2/gym-trading-env/artifacts/fg_s3_v2/e_quality_wp07/batch3_20261021T040254609031Z/cold/publication/split_resume_64.log": {
+      "sha256": "98a89a7d771fb026a20b3a05d46ae7d87de5bc6169cb5fb3bd301132912147fb",
+      "bytes": 7263
+    }
+  }
+}

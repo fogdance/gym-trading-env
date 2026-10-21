@@ -1,0 +1,75 @@
+{
+  "argv": [
+    "/home/v/miniconda3/envs/dreamerv3/bin/python",
+    "-B",
+    "-m",
+    "pytest",
+    "-p",
+    "no:cacheprovider",
+    "-o",
+    "addopts=",
+    "-q",
+    "--junitxml=/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R8_NATIVE_FIRST_20261021T035232112027Z.xml",
+    "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1/test_batch3_collection.py"
+  ],
+  "cwd": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/artifacts/batch3/R8_NATIVE_FIRST_20261021T035232112027Z",
+  "environment": {
+    "PYTHONPATH": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/src:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3:/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/tests/entry_v1",
+    "JAX_PLATFORMS": "cpu",
+    "CUDA_VISIBLE_DEVICES": "",
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1"
+  },
+  "repositories": {
+    "gym": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env",
+      "sha": "b958933f12060510f7396b999467ffdaea082cc1",
+      "status": " M src/gym_trading_env/research/fg_s3_e_quality_online.py\n M src/gym_trading_env/research/fg_s3_e_quality_online_checks.py\n M src/gym_trading_env/research/fg_s3_e_quality_online_collector.py\n M tests/entry_v1/test_wp07_gates.py\n M tests/entry_v1/wp07_online_worker.py\n?? src/gym_trading_env/research/fg_s3_e_quality_online_evidence.py\n?? tests/entry_v1/test_batch3_collection.py\n"
+    },
+    "dreamer": {
+      "path": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/dreamerv3",
+      "sha": "1ec02fa2f087f7c51591f13d3610cb2fa20f7af0",
+      "status": " M embodied/run/fg_s3_e_quality_online_gate.py\n M embodied/run/fg_s3_e_quality_online_run.py\n"
+    }
+  },
+  "exit_code": 1,
+  "seconds": 219.1577931540087,
+  "log": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R8_NATIVE_FIRST_20261021T035232112027Z.log",
+  "log_sha256": "eb00d312e9ac59832905af8bfd0c22b8867d2a8250f9294d38ac4f7ff8d8b7fd",
+  "junit": "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/gym-trading-env/docs/batch3_r2_r8_r3_20261021/receipts/R8_NATIVE_FIRST_20261021T035232112027Z.xml",
+  "scope": "SELECTED_CPU_SYNTHETIC_NOT_FORMAL",
+  "cases": [
+    {
+      "classname": "tests.entry_v1.test_batch3_collection",
+      "name": "test_three_cycle_prefix_final_native_trace_and_idempotent_receipt",
+      "time": "145.407"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_collection",
+      "name": "test_first_pass_cannot_certify_bad_third_cycle[final_account]",
+      "time": "22.931"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_collection",
+      "name": "test_first_pass_cannot_certify_bad_third_cycle[last_action_mask]",
+      "time": "23.029"
+    },
+    {
+      "classname": "tests.entry_v1.test_batch3_collection",
+      "name": "test_final_commit_before_receipt_can_resume_publication",
+      "time": "24.031"
+    }
+  ],
+  "summary": [
+    {
+      "name": "pytest",
+      "errors": "0",
+      "failures": "4",
+      "skipped": "0",
+      "tests": "4",
+      "time": "216.217",
+      "timestamp": "2026-10-21T11:52:32.482286+08:00",
+      "hostname": "v-X570-AORUS-PRO-WIFI"
+    }
+  ]
+}

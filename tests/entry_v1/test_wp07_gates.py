@@ -20,17 +20,17 @@ def test_actual_multistep_calibration_gates_and_formal_no_go(live):
     assert report['horizon']==3 and report['all_model_and_optimizer_bytes_equal']
     assert report['finite'] and report['arrays']['true_reward']
     np.testing.assert_allclose(report['arrays']['true_continue'],332/333,rtol=1e-6)
-    policy=formal_mask_policy(f3_source());g=OnlineGates('synthetic',policy)
+    policy=formal_mask_policy(f3_source());g=OnlineGates('synthetic',policy,collection_root=root)
     assert not g.calibration(record)
     assert not g.ready['WM_VALID_FOR_RL'] and not g.mask.actor_enabled
-    c.snapshot_trace(root/'gate_trace',dict(scope='SYNTHETIC_READ_ONLY'))
     factory=lambda:type(c.env)(config_path=root/'market/env.yaml',e_profile=c.env._e_profile)
-    replay=reconcile_trace(root/'gate_trace',Path(__file__).resolve().parents[3]/'dreamerv3',
-        env_factory=factory,schema=E_QUALITY_SCHEMA,runtime_factory=embodied_runtime)
-    assert g.collection(c,replay)
+    from gym_trading_env.research.fg_s3_e_quality_online_evidence import verify_account
+    evidence=verify_account(c,factory,root/'gate_trace',run_identity='synthetic',
+        source_identity=r.identity,verifier_identity=dict(scope='SYNTHETIC_READ_ONLY'),market_step=48,final=False)
+    assert g.collection(c,evidence)
     with pytest.raises(ValueError,match='ACTUAL_CALIBRATION'):g.calibration(Calibration(copy.deepcopy(report)))
     with pytest.raises(ValueError,match='GATE_CLOSED'):g.require_rl(None,authorized=True)
-    state=g.save();restored=OnlineGates('synthetic',policy);restored.load(state);exact(state,restored.save())
+    state=g.save();restored=OnlineGates('synthetic',policy,collection_root=root);restored.load(state);exact(state,restored.save())
     forged=copy.deepcopy(state);forged['ready']['RL_NUMERIC_READY']=True
     with pytest.raises(ValueError,match='MISSING_EVIDENCE'):restored.load(forged)
     weak=copy.deepcopy(policy);weak['config']['prior_fpr']=.1

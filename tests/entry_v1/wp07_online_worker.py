@@ -46,6 +46,7 @@ with pause:
         publisher=None if run.publisher is None else run.publisher.save(),
         source=None if run.source is None else run.source.save(),runtime=run.runtime.save(),
         counters=run.counters.save(),phase=run.phase.save(),gates=run.gates.save(),source_exposures=run.source_exposures.save(),
+        account_verification=run.account_verification.save(),
         replay=replay_state,replay_arrays={str(chunk.uuid):{k:v[:chunk.length].copy() for k,v in chunk.data.items()}
             for chunk in run.collector.replay.chunks.values() if chunk.data is not None},native_replay_proof=replay_proof,
         transaction=int(run.transaction),market_step=int(run.step),

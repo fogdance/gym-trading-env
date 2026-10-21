@@ -5,6 +5,7 @@ import copy
 import gzip
 import hashlib
 import json
+import io
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -151,7 +152,10 @@ class OnlineCollector(V2Collector):
                 update_array_hash(hasher,{k:v[i] for k,v in arrays.items()})
                 count+=1
         if count!=len(rows):raise ValueError('ONLINE_FULL_TRACE_ARCHIVE_REQUIRED_AFTER_REPLAY_EVICTION')
-        with gzip.open(out/'steps.jsonl.gz','wt',encoding='utf8') as f:
+        # Audit gzip metadata must not change the same restored native prefix's
+        # file hash. This changes no row, financial value or Corpus artifact.
+        with (out/'steps.jsonl.gz').open('xb') as raw, gzip.GzipFile(
+                filename='',mode='wb',fileobj=raw,mtime=0) as compressed, io.TextIOWrapper(compressed,encoding='utf8') as f:
             for row in rows:
                 events.update(json.dumps({k:v for k,v in row.items() if k not in ('stepid','ordinal')},
                     sort_keys=True,separators=(',',':'),allow_nan=False).encode())

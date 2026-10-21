@@ -1,0 +1,219 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+_________________________ test_native_shadow_run_smoke _________________________
+
+common = (PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batc...: 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}, ...})
+
+    def test_native_shadow_run_smoke(common):
+        config,root=config_for(common,'SHADOW_smoke')
+        cfg=json.loads(config.read_text());cfg['spec']['execution_mode']='SHADOW'
+        config.write_text(json.dumps(cfg))
+>       worker(config,root/'run','start',16)
+
+../../../tests/entry_v1/test_wp07_checkpoint.py:68: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW_smoke/config.json')
+root = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW_smoke/run')
+operation = 'start', target = 16
+
+    def worker(config,root,operation,target):
+        root.parent.mkdir(parents=True,exist_ok=True)
+        argv=[sys.executable,'-B',str(Path(__file__).with_name('wp07_online_worker.py')),str(config),str(root),operation,str(target)]
+        log=root.parent/(root.name+'_'+operation+'_'+str(target)+'.log')
+        with log.open('w') as stream:result=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
+        (log.with_suffix('.command.json')).write_text(json.dumps(dict(argv=argv,exit_code=result.returncode),indent=2)+'\n')
+>       assert result.returncode==0,log.read_text()[-6000:]
+E       AssertionError: Observations
+E           market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+E           position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+E           action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+E           reward           Space(float32, shape=(), low=-inf, high=inf)
+E           is_first         Space(bool, shape=(), low=False, high=True)
+E           is_last          Space(bool, shape=(), low=False, high=True)
+E           is_terminal      Space(bool, shape=(), low=False, high=True)
+E           market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+E           market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+E           market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+E         Actions
+E           action           Space(int32, shape=(), low=0, high=2)
+E         Extras
+E           consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           stepid           Space(uint8, shape=(20,), low=0, high=255)
+E           market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+E           quality_score    Space(float32, shape=(), low=-inf, high=inf)
+E           quality_score_valid Space(bool, shape=(), low=False, high=True)
+E           quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+E           teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           teacher_valid    Space(bool, shape=(), low=False, high=True)
+E           f3_natural       Space(bool, shape=(), low=False, high=True)
+E         JAX devices (1): [TFRT_CPU_0]
+E         Policy devices: TFRT_CPU_0
+E         Train devices:  TFRT_CPU_0
+E         Initializing parameters...
+E         Optimizer opt has 84,819 params:
+E                 42,336 enc
+E                 19,185 dec
+E                  5,392 dyn
+E                  5,007 rew
+E                  5,007 val
+E                  1,148 quality_event
+E                    994 avail
+E                    808 quality_touch
+E                    740 quality_adverse
+E                    706 quality_actor
+E                    706 quality_q_v2
+E                    706 pol
+E                    706 quality_q_c1
+E                    689 quality_score
+E                    689 con
+E         Done initializing!
+E         Compiling 1 checkpoint groups...
+E         Largest checkpoint group: 0 GB
+E         Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/tests/entry_v1/wp07_online_worker.py", line 29, in <module>
+E             run=OnlineRun(spec,factory,config['source'],history,resume=operation=='resume',_probe=permit,_test_location=root)
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py", line 132, in __init__
+E             self.collector=OnlineCollector(env,source,self.root/'rollout',Path(__file__).resolve().parents[3]/'dreamerv3',
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_collector.py", line 46, in __init__
+E             super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_collector.py", line 47, in __init__
+E             super().__init__(*args, **kwargs)
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_d0.py", line 116, in __init__
+E             raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E         ValueError: D0 output must be isolated from existing experiments and worktrees
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-ba...rading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW_smoke/run', 'start', '16'], returncode=1).returncode
+
+../../../tests/entry_v1/test_wp07_checkpoint.py:60: AssertionError
+---------------------------- Captured stdout setup -----------------------------
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P0 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P1 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_low CZCE.FG2701: 40 source rows, CPU Driver
+Collect P2_mid CZCE.FG2701: 40 source rows, CPU Driver
+Collect P3 CZCE.FG2701: 40 source rows, CPU Driver
+Collect P4 CZCE.FG2701: 40 source rows, CPU Driver
+________________ test_four_native_online_cold_restore_scenarios ________________
+
+common = (PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batc...: 'NATURAL'}, 'beta': {'mode': 'NATURAL'}}, ...}, 'source': {'fold': 'TRAIN', 'scope': 'BUILTIN_SYNTHETIC_ONLY'}, ...})
+
+    def test_four_native_online_cold_restore_scenarios(common):
+        names=['SHADOW','ONLINE_SUPERVISED','publication','ONLINE_RL_CONTROLLED']
+        with concurrent.futures.ThreadPoolExecutor(4) as pool:
+>           results=list(pool.map(lambda name:run_case(common,name),names))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+../../../tests/entry_v1/test_wp07_checkpoint.py:102: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:619: in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:317: in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:456: in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/_base.py:401: in __get_result
+    raise self._exception
+/home/v/miniconda3/envs/dreamerv3/lib/python3.11/concurrent/futures/thread.py:58: in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp07_checkpoint.py:102: in <lambda>
+    results=list(pool.map(lambda name:run_case(common,name),names))
+                                      ^^^^^^^^^^^^^^^^^^^^^
+../../../tests/entry_v1/test_wp07_checkpoint.py:86: in run_case
+    worker(config,root/'split','start',32)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+config = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW/config.json')
+root = PosixPath('/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW/split')
+operation = 'start', target = 32
+
+    def worker(config,root,operation,target):
+        root.parent.mkdir(parents=True,exist_ok=True)
+        argv=[sys.executable,'-B',str(Path(__file__).with_name('wp07_online_worker.py')),str(config),str(root),operation,str(target)]
+        log=root.parent/(root.name+'_'+operation+'_'+str(target)+'.log')
+        with log.open('w') as stream:result=subprocess.run(argv,stdout=stream,stderr=subprocess.STDOUT)
+        (log.with_suffix('.command.json')).write_text(json.dumps(dict(argv=argv,exit_code=result.returncode),indent=2)+'\n')
+>       assert result.returncode==0,log.read_text()[-6000:]
+E       AssertionError: Observations
+E           market_seq       Space(float32, shape=(60, 18), low=-inf, high=inf)
+E           position_state   Space(float32, shape=(9,), low=-inf, high=inf)
+E           action_mask      Space(float32, shape=(2,), low=-inf, high=inf)
+E           reward           Space(float32, shape=(), low=-inf, high=inf)
+E           is_first         Space(bool, shape=(), low=False, high=True)
+E           is_last          Space(bool, shape=(), low=False, high=True)
+E           is_terminal      Space(bool, shape=(), low=False, high=True)
+E           market_seq_e_shared Space(float32, shape=(60, 18), low=-inf, high=inf)
+E           market_context_15m Space(float32, shape=(24, 7), low=-inf, high=inf)
+E           market_macd_5m   Space(float32, shape=(4,), low=-inf, high=inf)
+E         Actions
+E           action           Space(int32, shape=(), low=0, high=2)
+E         Extras
+E           consec           Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           stepid           Space(uint8, shape=(20,), low=0, high=255)
+E           market_advance   Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           quality_owner    Space(uint32, shape=(8,), low=0, high=4294967295)
+E           quality_score    Space(float32, shape=(), low=-inf, high=inf)
+E           quality_score_valid Space(bool, shape=(), low=False, high=True)
+E           quality_outcome_valid Space(bool, shape=(), low=False, high=True)
+E           teacher_action   Space(int32, shape=(), low=-2147483648, high=2147483647)
+E           teacher_valid    Space(bool, shape=(), low=False, high=True)
+E           f3_natural       Space(bool, shape=(), low=False, high=True)
+E         JAX devices (1): [TFRT_CPU_0]
+E         Policy devices: TFRT_CPU_0
+E         Train devices:  TFRT_CPU_0
+E         Initializing parameters...
+E         Optimizer opt has 84,819 params:
+E                 42,336 enc
+E                 19,185 dec
+E                  5,392 dyn
+E                  5,007 val
+E                  5,007 rew
+E                  1,148 quality_event
+E                    994 avail
+E                    808 quality_touch
+E                    740 quality_adverse
+E                    706 quality_actor
+E                    706 quality_q_c1
+E                    706 pol
+E                    706 quality_q_v2
+E                    689 con
+E                    689 quality_score
+E         Done initializing!
+E         Compiling 1 checkpoint groups...
+E         Largest checkpoint group: 0 GB
+E         Traceback (most recent call last):
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/tests/entry_v1/wp07_online_worker.py", line 29, in <module>
+E             run=OnlineRun(spec,factory,config['source'],history,resume=operation=='resume',_probe=permit,_test_location=root)
+E                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/dreamerv3/embodied/run/fg_s3_e_quality_online_run.py", line 132, in __init__
+E             self.collector=OnlineCollector(env,source,self.root/'rollout',Path(__file__).resolve().parents[3]/'dreamerv3',
+E                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_e_quality_online_collector.py", line 46, in __init__
+E             super().__init__(env,handle,directory,dreamer_root,seed=seed,beta=0.,
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_v2_collector.py", line 47, in __init__
+E             super().__init__(*args, **kwargs)
+E           File "/home/v/Documents/work/research/fg-s3-batch3-r2-r8-r3-20261021/rounds/r8-v1/gym-trading-env/src/gym_trading_env/research/fg_s3_dagger_d0.py", line 116, in __init__
+E             raise ValueError('D0 output must be isolated from existing experiments and worktrees')
+E         ValueError: D0 output must be isolated from existing experiments and worktrees
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['/home/v/miniconda3/envs/dreamerv3/bin/python', '-B', '/home/v/Documents/work/research/fg-s3-ba...ym-trading-env/artifacts/batch3/R8_FROZEN_COLD_20261021T035903545289Z/cold/SHADOW/split', 'start', '32'], returncode=1).returncode
+
+../../../tests/entry_v1/test_wp07_checkpoint.py:60: AssertionError
+=========================== short test summary info ============================
+FAILED ../../../tests/entry_v1/test_wp07_checkpoint.py::test_native_shadow_run_smoke
+FAILED ../../../tests/entry_v1/test_wp07_checkpoint.py::test_four_native_online_cold_restore_scenarios
+2 failed in 93.94s (0:01:33)
