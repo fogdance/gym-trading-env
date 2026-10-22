@@ -59,6 +59,42 @@ def account_native(env) -> np.ndarray:
     return out
 
 
+def replay_account_native(directory, env_factory):
+    """(stepids, account_native) for every row of a recorded Native policy trace.
+
+    Re-executes the recorded actions with the recorder's own step function
+    (`fg_replay.execute_observed`) from the trace's initial account, requires
+    every replayed observation to equal the recorded one, and reads the
+    account at each row's decision state. Observation equality is the check;
+    no file hash or identity gate is involved.
+    """
+    import json
+    from pathlib import Path
+    from .fg_replay import execute_observed, iter_replay_rows
+    directory = Path(directory)
+    manifest = json.loads((directory / 'manifest.json').read_text())
+    initial = (json.loads((directory / 'initial_state.json').read_text())
+               if manifest.get('initial_state') else None)
+    env = env_factory()
+    stepids, values, previous = [], [], None
+    try:
+        if initial is not None:
+            env.import_state(initial)
+        for ordinal, step in iter_replay_rows(directory, manifest):
+            action = None if previous is None or previous['is_last'] else int(previous['action'])
+            obs, _ = execute_observed(env, action, seed=0 if ordinal == 0 else None,
+                                      resume_state=initial if ordinal == 0 else None)
+            for key, value in obs.items():
+                if not np.array_equal(step[key], value):
+                    raise ValueError(f'{directory}: replayed {key} differs at row {ordinal}')
+            stepids.append(np.asarray(step['stepid']))
+            values.append(account_native(env))
+            previous = step
+    finally:
+        env.close()
+    return np.stack(stepids), np.stack(values)
+
+
 class StudentEnv:
     """Native env plus the account snapshot key; step/reset semantics unchanged."""
 
