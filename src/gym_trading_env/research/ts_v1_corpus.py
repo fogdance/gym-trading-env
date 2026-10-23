@@ -50,10 +50,8 @@ from .fg_reward_candidates import quality_tp_reward
 from .fg_s3_quality_teacher_v2 import official_day_index, trade_facts
 from .fg_single3_oracle import GAMMA, CandidateIndex, optimize, reference_candidate
 from .ts_v1_account import account_native
+from .ts_v1_config import TRAIN_POOL
 
-TRAIN_POOL = Path(
-    '/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/'
-    'prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json')
 KINDS = ('TP5', 'SL30', 'OTHER_EXIT', 'RIGHT_CENSORED')
 MARKET_KEYS = ('market_seq_e_shared', 'market_context_15m', 'market_macd_5m')
 BEHAVIORS = {
