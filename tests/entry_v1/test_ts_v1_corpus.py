@@ -1,15 +1,19 @@
 """Thinking Student V1 teaching material on the synthetic Native market."""
 import json
+import shutil
 from fractions import Fraction
+from pathlib import Path
 
 import numpy as np
 import pytest
-from wp02_fixture import ts_corpus
+from wp02_fixture import native_factory, ts_corpus
 
 from gym_trading_env.research import ts_v1_corpus as C
 from gym_trading_env.research.fg_single3_oracle import reference_candidate
 
 CONTRACT = 'CZCE.FG2701'
+# The Thinking Student market pool of the sibling dreamerv3 checkout.
+POOL = Path(__file__).resolve().parents[3] / 'dreamerv3/configs/thinking_student/markets/pool.json'
 
 
 @pytest.fixture(scope='module')
@@ -17,22 +21,47 @@ def corpus(tmp_path_factory):
     return ts_corpus(tmp_path_factory.mktemp('ts_corpus'))
 
 
-def test_train_pool_refuses_other_folds(tmp_path):
-    pool = tmp_path / 'pool.json'
+def test_pool_rows_keep_train_and_dev_apart(tmp_path):
+    roles = dict(TRAIN=('train', True), DEV=('validation', False), TEST=('test', False))
+    pool = tmp_path / 'markets' / 'pool.json'
+    pool.parent.mkdir()
     pool.write_text(json.dumps(dict(files=[
-        dict(contract=CONTRACT, role='dev', eligible_for_training=False)])))
-    with pytest.raises(ValueError, match='not a TRAIN member'):
-        C.train_row(CONTRACT, pool)
+        dict(contract=name, role=role, eligible_for_training=eligible, env_config=f'envs/{name}.yaml')
+        for name, (role, eligible) in roles.items()])))
+    row = C.train_row('TRAIN', pool)
+    assert row['env_config'] == str(tmp_path / 'markets' / 'envs' / 'TRAIN.yaml')
+    assert C.dev_row('DEV', pool)['role'] == 'validation'
+    for name in ('DEV', 'TEST'):
+        with pytest.raises(ValueError, match='not a TRAIN member'):
+            C.train_row(name, pool)
+    for name in ('TRAIN', 'TEST'):
+        with pytest.raises(ValueError, match='not a VALIDATION row'):
+            C.dev_row(name, pool)
 
 
-@pytest.mark.skipif(not C.TRAIN_POOL.exists(), reason='B2 TRAIN pool not present')
-def test_inputs_with_a_strategy_master_load_after_the_folder_moved(tmp_path):
-    row = C.train_row('CZCE.FG809')
+def test_inputs_are_self_contained_and_load_after_the_folder_moved(tmp_path):
+    _, config, _ = native_factory(tmp_path / 'market')
+    row = dict(contract=CONTRACT, path=str(config.parent / 'market.csv'), env_config=str(config))
     C.write_inputs(row, tmp_path / 'written')
     (tmp_path / 'written').rename(tmp_path / 'moved')
+    for name in ('env.yaml', 'contract.yaml', 'directions.yaml'):
+        (config.parent / name).unlink()  # only the market data stays outside
     env = C.native_env(tmp_path / 'moved' / 'env.yaml', market=False)
-    assert env.strategy_path == tmp_path / 'moved' / 'single3.yaml'
+    entry = C.read_yaml(tmp_path / 'moved' / 'env.yaml')['entry']
+    assert (entry['contract_config'], entry['direction_config']) == ('contract.yaml', 'directions.yaml')
     assert env.chunk_steps == 0 and env.reward_config.schema == C.QUALITY_TP_SCHEMA
+
+
+@pytest.mark.skipif(not POOL.exists(), reason='Thinking Student market pool not present')
+def test_pool_inputs_with_a_strategy_master_load_after_the_folder_moved(tmp_path):
+    for row in (C.train_row('CZCE.FG809', POOL), C.dev_row('CZCE.FG409', POOL)):
+        written = C.write_inputs(row, tmp_path / 'written').parent
+        written.rename(tmp_path / 'moved')
+        env = C.native_env(tmp_path / 'moved' / 'env.yaml', market=False)
+        assert env.strategy_path == tmp_path / 'moved' / 'single3.yaml'
+        assert env.chunk_steps == 0 and env.reward_config.schema == C.QUALITY_TP_SCHEMA
+        assert len(env._raw) == row['rows']
+        shutil.rmtree(tmp_path / 'moved')
 
 
 def test_facts_equal_a_native_minute_trace_at_every_cursor(corpus):

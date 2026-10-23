@@ -8,7 +8,7 @@ from test_fg_single3_env import single_env
 from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
 
 
-def native_factory(folder, minutes=210, chunk=64):
+def native_factory(folder, minutes=210, chunk=64, shift=0):
     folder=Path(folder);folder.mkdir(parents=True,exist_ok=True)
     times=[];sessions=[];days=[]
     segments=[['21:00','23:00'],['09:00','10:15'],['10:30','11:30'],['13:30','15:00']]
@@ -22,7 +22,9 @@ def native_factory(folder, minutes=210, chunk=64):
             new=list(pd.date_range(start+pd.Timedelta(minutes=1),end,freq='min'))
             times+=new;days += [day]*len(new)
     times=times[:minutes];days=days[:minutes]
-    prices=[(1000,1008 if i%11==1 else 1002,965 if i%17==3 else 985 if i%13==4 else 999,1000)
+    # `shift` moves the price pattern: another synthetic market of the same rules.
+    prices=[(1000,1008 if (i+shift)%11==1 else 1002,
+             965 if (i+shift)%17==3 else 985 if (i+shift)%13==4 else 999,1000)
             for i in range(minutes)]
     old=single_env(folder,prices,candidate='C1',fees=3,chunk=chunk,times=pd.DatetimeIndex(times),
         calendar=sessions,liquidation=str(times[-1]),main_exit=str(times[-1]))
@@ -38,10 +40,10 @@ def native_factory(folder, minutes=210, chunk=64):
     return factory,path,profile
 
 
-def ts_corpus(folder, minutes=210, workers=2):
+def ts_corpus(folder, minutes=210, workers=2, shift=0):
     """Thinking Student teaching material of the synthetic market: (folder, source)."""
     from gym_trading_env.research import ts_v1_corpus as C
-    folder=Path(folder);_,config,_=native_factory(folder/'market',minutes=minutes)
+    folder=Path(folder);_,config,_=native_factory(folder/'market',minutes=minutes,shift=shift)
     row=dict(contract='CZCE.FG2701',path=str(config.parent/'market.csv'),env_config=str(config),
              role='train',eligible_for_training=True)
     corpus=folder/'corpus'/row['contract']

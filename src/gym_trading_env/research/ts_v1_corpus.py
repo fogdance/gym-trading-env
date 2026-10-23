@@ -23,7 +23,12 @@ pool row, inputs, label sources, counts and timings. Production replays a
 few sampled cursors minute by minute through the Native env as the only
 cross-check of the indexed facts (C3 5.9).
 
+The market pool (TRAIN and VALIDATION rows, env files beside it) is the
+Thinking Student config set dreamerv3/configs/thinking_student/markets;
+it is always given, never assumed by the code:
+
   python -m gym_trading_env.research.ts_v1_corpus --contract CZCE.FG809 \
+      --pool ../dreamerv3/configs/thinking_student/markets/pool.json \
       --out /data/logdir/fg_single3/thinking_student/corpus --workers 24
 """
 from __future__ import annotations
@@ -51,9 +56,6 @@ from .fg_s3_quality_teacher_v2 import official_day_index, trade_facts
 from .fg_single3_oracle import GAMMA, CandidateIndex, optimize, reference_candidate
 from .ts_v1_account import account_native
 
-TRAIN_POOL = Path(
-    '/home/v/Documents/work/research/fg-s3-b2-full-train/gym-trading-env/artifacts/fg_s3_v2/'
-    'prepared/B2_FULL_MARKET_MINUTE_FORMAL_1M_v1_20261014/train_pool.json')
 KINDS = ('TP5', 'SL30', 'OTHER_EXIT', 'RIGHT_CENSORED')
 MARKET_KEYS = ('market_seq_e_shared', 'market_context_15m', 'market_macd_5m')
 BEHAVIORS = {
@@ -93,23 +95,41 @@ NATIVE_SAMPLE = 32  # cursors replayed minute by minute at production
 
 # ---- inputs and env ----
 
-def train_row(contract, pool=TRAIN_POOL):
-    """The contract's row of the TRAIN pool; any other fold is refused."""
+def pool_row(contract, pool):
+    """The contract's row of a market pool, its env file resolved against
+    the pool file."""
     rows = [r for r in json.loads(Path(pool).read_text())['files']
             if r['contract'] == contract]
     if len(rows) != 1:
-        raise ValueError(f'{contract}: {len(rows)} rows in TRAIN pool {pool}')
-    if rows[0].get('role') != 'train' or not rows[0].get('eligible_for_training'):
+        raise ValueError(f'{contract}: {len(rows)} rows in pool {pool}')
+    return dict(rows[0], env_config=str(resolve_path(pool, rows[0]['env_config'])))
+
+
+def train_row(contract, pool):
+    """The contract's TRAIN row of the pool; any other fold is refused."""
+    row = pool_row(contract, pool)
+    if row.get('role') != 'train' or not row.get('eligible_for_training'):
         raise ValueError(f'{contract} is not a TRAIN member of {pool}')
-    return rows[0]
+    return row
+
+
+def dev_row(contract, pool):
+    """The contract's VALIDATION row of the pool (not eligible for
+    training): the market of a Teacher-free DEV exam. A TRAIN row is no DEV
+    and TEST stays sealed, so any other role is refused."""
+    row = pool_row(contract, pool)
+    if row.get('role') != 'validation' or row.get('eligible_for_training'):
+        raise ValueError(f'{contract} is not a VALIDATION row of {pool} (role {row.get("role")})')
+    return row
 
 
 def write_inputs(row, folder):
     """TS env inputs: the pool env with the Quality TP reward and without
     CHUNK_END (chunk_steps 0), so an account runs from the first minute to
     the true terminal and market memory never restarts artificially. The
-    strategy file sits next to env.yaml and is referenced relatively, so the
-    folder can move (produce renames it into place)."""
+    strategy, contract and direction files are copied next to env.yaml and
+    referenced relatively: apart from the market data the folder is
+    self-contained and can move (produce renames it into place)."""
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     source = Path(row['env_config'])
@@ -120,6 +140,10 @@ def write_inputs(row, folder):
     if Path(env['trading']['data_path']) != Path(row['path']).resolve():
         raise ValueError(f'{row["contract"]}: env market differs from the pool row')
     env['entry']['chunk_steps'] = 0
+    for key, name in (('contract_config', 'contract.yaml'), ('direction_config', 'directions.yaml')):
+        if env['entry'].get(key):
+            shutil.copyfile(env['entry'][key], folder / name)
+            env['entry'][key] = name
     if env['entry'].get('strategy_config'):
         master = read_yaml(env['entry']['strategy_config'])
         master['reward']['schema'] = QUALITY_TP_SCHEMA
@@ -488,7 +512,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     parser.add_argument('--contract', required=True)
     parser.add_argument('--out', required=True, help='corpus root; writes <out>/<contract>')
-    parser.add_argument('--pool', default=str(TRAIN_POOL))
+    parser.add_argument('--pool', required=True,
+                        help='market pool (dreamerv3/configs/thinking_student/markets/pool.json)')
     parser.add_argument('--workers', type=int, default=os.cpu_count())
     args = parser.parse_args(argv)
     produce(train_row(args.contract, args.pool), Path(args.out) / args.contract, args.workers)
