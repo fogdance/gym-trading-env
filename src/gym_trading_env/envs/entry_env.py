@@ -5,8 +5,6 @@ All fills are conservative minute simulations, not broker execution confirmation
 from __future__ import annotations
 
 import copy
-import hashlib
-import io
 import json
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from pathlib import Path
@@ -69,8 +67,6 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError('E observation profile refuses an unadmitted contract')
         self._e_profile = e_profile
         self._e_market = None
-        self.e_market_source = None
-        self.e_snapshot = None
         self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
         self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
         self.contract = self.entry_config["contract"]
@@ -115,14 +111,6 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.observation_identity = fingerprint(dict(protocol=self.protocol,
             fields=identity['position_obs'], reward=self.reward_config.hash if self.single3 else 'V1',
             **({'clock_protocol': TIME_PROTOCOL, 'market_window': 'last_60_valid_bars'} if self.single3 else {})))
-        # Original financial/teacher identities remain exact. E's additional
-        # observation/source contract is authenticated separately in runs and
-        # checkpoints, and has its own market-cache identity.
-        self.e_observation_identity = None
-        if self._e_profile is not None:
-            from gym_trading_env.research.fg_s3_e_observation import observation_contract
-            self.e_observation_identity = fingerprint(dict(
-                observation=observation_contract(),data_identity=self._e_profile.identity))
         self._config(config_path)
         tr = self.config.trading
         if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
@@ -167,31 +155,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._initialized = False
         self.reset()
 
-    def _validate_e_market_source(self, path, digest):
-        receipt = getattr(self._e_profile, 'source_receipt', None)
-        try:
-            expected = receipt['sources'][self.contract]['market']
-        except (KeyError, TypeError):
-            raise ValueError('E admitted market source receipt missing') from None
-        if not isinstance(expected, dict) or not isinstance(expected.get('path'), str):
-            raise ValueError('E admitted market source receipt missing')
-        if Path(expected['path']).expanduser().resolve(strict=True) != path:
-            raise ValueError('E admitted market path mismatch: '+self.contract)
-        if expected.get('sha256') != digest:
-            raise ValueError('E admitted market SHA256 mismatch: '+self.contract)
-        self.e_market_source = dict(path=str(path), sha256=digest)
-
     def _load_market(self, df):
-        if self._e_profile is not None:
-            if df is not None:
-                raise ValueError('E admitted market requires CSV bytes; injected frames are unbound')
-            path = Path(self.config.trading.data_path).expanduser().resolve(strict=True)
-            # Authenticate the exact bytes passed to the single CSV parser.
-            # Reopening a pathname after hashing would leave a TOCTOU gap.
-            payload = path.read_bytes()
-            self._validate_e_market_source(path, hashlib.sha256(payload).hexdigest())
-            df = pd.read_csv(io.BytesIO(payload))
-        elif df is None:
+        if df is None:
             df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
         input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
         if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
@@ -409,17 +374,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             "position_state": position, "action_mask": mask,
         }
         if self._e_profile is not None:
-            # Only private native counterfactual executors opt in. Financial
-            # position/mask above are always rebuilt from this actual account.
-            cache = getattr(self, '_e_observation_cache', None)
-            cached = cache.get(self, obs['market_seq']) if cache is not None else None
-            if cached is not None:
-                arrays, self.e_snapshot = cached
-                obs.update(arrays)
-                return obs
             from e_data_v1.schema import Decision
-            from gym_trading_env.research.fg_s3_e_observation import (
-                context_provenance, e_array_hash)
             # A delayed raw candle cannot be used by the original Env either;
             # MarketData's exact-old-observation check fails closed here.
             cutoff = self._raw.index[self.current_step]
@@ -428,7 +383,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                          market_seq=obs['market_seq']))
             if not np.array_equal(old, obs['market_seq']):
                 raise ValueError('E observation changed the original 18 channels')
-            macd, macd_meta = self._e_market.macd_snapshot(cutoff)
+            macd, _ = self._e_market.macd_snapshot(cutoff)
             arrays = dict(market_seq_e_shared=shared.copy(), market_context_15m=context.copy(),
                           market_macd_5m=macd)
             if (arrays['market_seq_e_shared'].shape != (60, 18)
@@ -441,15 +396,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     or pd.Timestamp(meta['anchor_available_at']) > cutoff
                     or pd.Timestamp(meta['anchor_source_time']) > cutoff):
                 raise ValueError('Native E Env cannot publish a future-visible feature')
-            host = context_provenance(dict(source_contract=self.contract,
-                visible_cutoff=meta['visible_cutoff'], decision_time=meta['decision_time'],
-                data_identity=self._e_profile.identity,
-                context_available_at=meta['context_available_at'],
-                anchor_source=meta['anchor_source'], macd_5m=macd_meta))
-            self.e_snapshot = {**host, 'arrays_hash': e_array_hash(arrays)}
             obs.update(arrays)
-            if cache is not None:
-                cache.put(self, old, arrays, self.e_snapshot)
         return obs
 
     def reset(self, seed=None, options=None):
@@ -768,16 +715,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                        "log/env/unfinished_entries": len(self.entries),
                        "log/env/speed_reward": self.total_reward})
 
-    def _prefix_hash(self, through):
-        from gym_trading_env.utils.market_prefix import MarketPrefix
-        cached = getattr(self, '_market_prefix_json', None)
-        if cached is None or not cached.matches(self._raw):
-            cached = self._market_prefix_json = MarketPrefix(self._raw)
-        return cached.digest(len(self._raw.iloc[:through+1]))
-
     def _snapshot_fields(self):
         state = dict(schema=3 if self.single3 else 1, contract=self.contract, config_hash=self.config_hash,
-                     cursor_time=str(self._raw.index[self.current_step]), prefix_hash=self._prefix_hash(self.current_step),
+                     cursor_time=str(self._raw.index[self.current_step]),
                      balances=self.ledger.snapshot(), ledger_entries=[dict(timestamp=e.timestamp, memo=e.memo,
                      postings=[dict(account=p.account, amount=p.amount) for p in e.postings], meta=e.meta) for e in self.ledger.entries],
                      long_positions=[p.to_dict() if p else None for p in self.position_manager.long_positions],
@@ -794,10 +734,6 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             state[key] = getattr(self, key)
         if self.single3:
             state.update(reward_state=self.reward_function.snapshot(), last_reward_components=self.last_reward_components)
-        if self._e_profile is not None:
-            self._get_obs()
-            state['e_state'] = dict(observation_identity=self.e_observation_identity,
-                snapshot=copy.deepcopy(self.e_snapshot))
         return state
 
     def export_state(self):
@@ -837,18 +773,12 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         view.restore(self, source_env=source_env)
 
     def _restore_account_state(self, state):
-        # Both restore paths use these exact financial/clock/observation guards.
-        # The private caller supplies owned hot fields and an immutable prefix.
-        if self._e_profile is not None:
-            if state.get('e_state', {}).get('observation_identity') != self.e_observation_identity:
-                raise ValueError('E V2 checkpoint observation/source identity differs')
-        elif 'e_state' in state:
-            raise ValueError('E V2 checkpoint requires its native E source')
+        # Both restore paths use these financial/clock guards.
         if state["schema"] != (3 if self.single3 else 1) or state["contract"] != self.contract or state["config_hash"] != self.config_hash:
             raise ValueError("Incompatible Entry checkpoint")
         i = int(self._raw.index.get_indexer([timestamp(state["cursor_time"])])[0])
-        if i < 0 or self._prefix_hash(i) != state["prefix_hash"]:
-            raise ValueError("Processed market history changed")
+        if i < 0:
+            raise ValueError("Checkpoint cursor is not a minute of this market")
         self._initialize_accounts(allow_negative_cash=True)
         self.ledger.restore({k: Decimal(v) for k, v in state["balances"].items()})
         self.ledger.entries = [JournalEntry(timestamp(e["timestamp"]), e["memo"],
@@ -891,8 +821,6 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.single3:
             self._tp_info_cache=(0,0,0.)
         self._get_obs()
-        if self._e_profile is not None and self.e_snapshot != state['e_state']['snapshot']:
-            raise ValueError('E V2 checkpoint causal snapshot differs')
         self._ensure_private_history()
 
     def continue_data(self, df):

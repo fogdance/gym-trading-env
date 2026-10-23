@@ -1,6 +1,5 @@
 """Synthetic native CSV fixture: actual financial Env, never REAL_TRAIN."""
 from pathlib import Path
-import hashlib
 from types import SimpleNamespace
 import numpy as np
 import pandas as pd
@@ -34,7 +33,16 @@ def native_factory(folder, minutes=210, chunk=64):
     config['entry']['reward']['schema']='FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'
     config['trading'].update(data_path=str(market),data_tz='Asia/Shanghai')
     path.write_text(yaml.safe_dump(config));old.close()
-    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'},source_receipt={
-        'sources':{'CZCE.FG2701':{'market':{'path':str(market),'sha256':hashlib.sha256(market.read_bytes()).hexdigest()}}}})
+    profile=SimpleNamespace(identity='c'*64,contracts={'CZCE.FG2701'})
     def factory():return FixedDirectionEntryEnv(config_path=path,e_profile=profile)
     return factory,path,profile
+
+
+def ts_corpus(folder, minutes=210, workers=2):
+    """Thinking Student teaching material of the synthetic market: (folder, source)."""
+    from gym_trading_env.research import ts_v1_corpus as C
+    folder=Path(folder);_,config,_=native_factory(folder/'market',minutes=minutes)
+    row=dict(contract='CZCE.FG2701',path=str(config.parent/'market.csv'),env_config=str(config),
+             role='train',eligible_for_training=True)
+    corpus=folder/'corpus'/row['contract']
+    return corpus,C.produce(row,corpus,workers=workers,log=lambda *_:None)

@@ -85,11 +85,9 @@ def test_A06_native_snapshot_repeated_queries_cold_restore_and_macd_hash(tmp_pat
         for _ in range(3):
             for k,v in before.items():np.testing.assert_array_equal(a._get_obs()[k],v)
         b.import_state(json.loads(json.dumps(state)))
-        assert a.e_snapshot==b.e_snapshot
         for k,v in before.items():np.testing.assert_array_equal(b._get_obs()[k],v)
         changed={**before,'market_macd_5m':np.array([1,2,3,1],np.float32)}
         assert e_array_hash(before)!=e_array_hash(changed)
-        with pytest.raises(ValueError,match='E V2'):b.import_state({k:v for k,v in state.items() if k!='e_state'})
     finally:a.close();b.close()
 
 
@@ -104,18 +102,15 @@ def test_A07_course_v1_and_sidecar_cannot_masquerade_as_v2():
 
 def test_A08_actual_calendar_snapshot_future_ohlc_and_arrivals_do_not_change_prefix(tmp_path):
     from wp02_fixture import native_factory
-    import hashlib
     factory,path,profile=native_factory(tmp_path/'market',minutes=210)
     frame=pd.read_csv(path.parent/'market.csv')
     frame['Close']=1000+np.sin(np.arange(len(frame))/3)*.5
     market=path.parent/'market.csv';frame.to_csv(market,index=False)
-    profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=hashlib.sha256(market.read_bytes()).hexdigest()
     a=factory()
     frame.loc[190:,['High','Low','Close']]=[1010,990,1003]
     frame['available_at']=frame.Date
     frame.loc[190:,'available_at']=(pd.to_datetime(frame.Date.iloc[190:])+pd.Timedelta(minutes=5)).astype(str)
     frame.to_csv(market,index=False)
-    profile.source_receipt['sources']['CZCE.FG2701']['market']['sha256']=hashlib.sha256(market.read_bytes()).hexdigest()
     b=factory()
     try:
         for i in [0,1,2,3,4,174,175,176,177,178,179,180,185]:

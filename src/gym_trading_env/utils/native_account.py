@@ -163,7 +163,7 @@ def native_owner(env,*,account_sequence=None):
 
 def native_source(env):
     return fingerprint(dict(contract=env.contract, config=env.config_hash,
-        observation=getattr(env, 'e_observation_identity', None)))
+        e_profile=getattr(getattr(env, '_e_profile', None), 'identity', None)))
 
 
 @dataclass(frozen=True, slots=True)

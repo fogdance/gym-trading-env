@@ -212,9 +212,7 @@ def verify_native_e_fork(env, clone):
     from .fg_s3_e_observation import OBS_SCHEMA, observation_contract
     if (getattr(env, '_e_profile', None) is None or getattr(clone, '_e_profile', None) is None
             or env.reward_config.schema != 'FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1'
-            or env.e_observation_identity != clone.e_observation_identity
-            or not hasattr(env._e_profile, 'source_receipt')
-            or not hasattr(clone._e_profile, 'source_receipt')):
+            or env._e_profile.identity != clone._e_profile.identity):
         raise ValueError('E-profile native Quality fork identity is NOT_VERIFIED')
     if (env._e_market is clone._e_market or
             np.shares_memory(env._features, clone._features) or
@@ -235,7 +233,6 @@ def verify_native_e_fork(env, clone):
     return dict(protocol='FG_S3_E_NATIVE_FORK_V2',observation_schema=OBS_SCHEMA,
         observation_contract_hash=observation_contract()['contract_hash'],
         source_identity=env._e_profile.identity,
-        profile_receipt_hash=fingerprint(env._e_profile.source_receipt),
         independent_account_and_market=True, exact_restore=True,
         snapshot_hash=fingerprint(state))
 
@@ -262,8 +259,6 @@ class NativeQualityTeacher:
         self.e_fork = None
         if getattr(env,'_e_profile',None) is not None or getattr(self.clone,'_e_profile',None) is not None:
             self.e_fork = verify_native_e_fork(env,self.clone)
-            from .fg_s3_e_observation import NativeEObservationCache
-            self.clone._e_observation_cache = NativeEObservationCache()
             from gym_trading_env.envs.entry_execution import NativeMarketExecutionCache
             self.clone._native_execution_cache = NativeMarketExecutionCache()
         if rules_identity(self.clone) != self.rules or not self.clone._raw.equals(env._raw):
@@ -282,7 +277,6 @@ class NativeQualityTeacher:
         self.statistics=dict(queries=0,native_traces=0,cache_hits=0,trace_seconds=0.,
                              independently_observed_market_minutes=0,cache_peak_entries=0)
         if self.e_fork is not None:
-            self.statistics['e_observation_cache'] = self.clone._e_observation_cache.statistics
             self.statistics['native_execution_cache'] = self.clone._native_execution_cache.statistics
         self.statistics['source_guard']=self._source_guard.statistics
         self.identity = dict(protocol=PROTOCOL, fold=fold, source=source, rules=self.rules,
@@ -317,10 +311,7 @@ class NativeQualityTeacher:
 
     def query_state(self, env, mask, *, snapshot=None):
         if self.statistics['queries']%self.source_guard_interval==0:self._check_source_stats()
-        if self.e_fork is not None and (
-                env.e_observation_identity != self.clone.e_observation_identity or
-                env._e_profile.identity != self.e_fork['source_identity'] or
-                fingerprint(env._e_profile.source_receipt) != self.e_fork['profile_receipt_hash']):
+        if self.e_fork is not None and env._e_profile.identity != self.e_fork['source_identity']:
             raise ValueError('E-profile source identity changed during Quality collection')
         actual = decision_state(env)
         state_id = fingerprint(actual)

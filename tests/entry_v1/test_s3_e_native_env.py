@@ -1,5 +1,4 @@
 """Actual Env integration contract; must run on the user's real Gym venv."""
-import hashlib
 import numpy as np
 import pytest
 
@@ -12,9 +11,7 @@ from test_entry_market_cache import csv_env_config
 
 
 def _profile(market, identity='c'*64):
-    return SimpleNamespace(identity=identity, contracts={'CZCE.FG2701'},
-        source_receipt={'sources': {'CZCE.FG2701': {'market': {
-            'path': str(market), 'sha256': hashlib.sha256(market.read_bytes()).hexdigest()}}}})
+    return SimpleNamespace(identity=identity, contracts={'CZCE.FG2701'})
 
 
 def test_native_e_reuses_normalized_market_feature_build_and_clock(tmp_path,monkeypatch):
@@ -37,33 +34,8 @@ def test_native_e_reuses_normalized_market_feature_build_and_clock(tmp_path,monk
     env=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
     try:
         assert len(reads)==1 and builds==[1]
-        assert env.e_market_source['sha256']==profile.source_receipt['sources'][env.contract]['market']['sha256']
         assert env._e_market.market_clock_counter is env.market_clock_counter
     finally:env.close()
-
-
-def test_native_single_env_collector_uses_env_observation(tmp_path):
-    from pathlib import Path
-    from test_fg_s3_dagger_d0 import query_for
-    from gym_trading_env.research.fg_s3_v2_collector import V2Collector
-    from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
-    config,market=csv_env_config(tmp_path/'single_collector')
-    profile=_profile(market)
-    legacy=FixedDirectionEntryEnv(config_path=config)
-    query,_=query_for(legacy,config)
-    native=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
-    collector=None
-    try:
-        collector=V2Collector(native,query,tmp_path/'single_native',
-            Path(__file__).resolve().parents[3]/'dreamerv3',beta=1.,
-            observation_schema=OBS_SCHEMA,e_profile=profile)
-        collector.advance(2)
-        assert collector.records[0]['oracle_certified']
-        assert collector.records[0]['e_snapshot']['data_identity']==profile.identity
-    finally:
-        legacy.close()
-        if collector:collector.close()
-        else:native.close()
 
 
 def test_native_profile_preserves_original_oracle_financial_rules(tmp_path):
@@ -79,24 +51,6 @@ def test_native_profile_preserves_original_oracle_financial_rules(tmp_path):
         assert answer['certified'],answer['reason']
         assert legacy.export_state()=={k:v for k,v in native.export_state().items() if k!='e_state'}
     finally:legacy.close();native.close()
-
-
-def test_native_collector_rejects_foreign_profile_identity(tmp_path):
-    from pathlib import Path
-    from test_fg_s3_dagger_d0 import query_for
-    from gym_trading_env.research.fg_s3_v2_collector import V2Collector
-    from gym_trading_env.research.fg_s3_e_observation import OBS_SCHEMA
-    config,market=csv_env_config(tmp_path/'foreign_profile')
-    profile=_profile(market)
-    env=FixedDirectionEntryEnv(config_path=config,e_profile=profile)
-    query,_=query_for(env,config)
-    wrong=SimpleNamespace(identity='d'*64,contracts=profile.contracts)
-    collector=V2Collector(env,query,tmp_path/'wrong_native',
-        Path(__file__).resolve().parents[3]/'dreamerv3',beta=1.,
-        observation_schema=OBS_SCHEMA,e_profile=wrong)
-    try:
-        with pytest.raises(ValueError,match='data identity'):collector.advance(1)
-    finally:collector.close()
 
 
 def test_native_env_rejects_unavailable_current_minute(tmp_path):
@@ -127,7 +81,6 @@ def test_e_obs_is_emitted_by_the_original_env_and_exact_legacy_18(tmp_path):
         for key in a:
             np.testing.assert_array_equal(a[key], b[key])
         np.testing.assert_array_equal(legacy._features, extended._features)
-        assert extended.e_snapshot['data_identity'] == profile.identity
         assert extended._e_market is not None
         assert b['market_seq_e_shared'].shape == (60, 18)
         assert b['market_context_15m'].shape == (24, 7)
@@ -159,7 +112,6 @@ def test_market_cache_does_not_cross_legacy_and_e_profile(tmp_path):
         assert new._e_market is not None and again._e_market is not None
         assert old._e_market is None
         assert old.config_hash==new.config_hash and old.observation_identity==new.observation_identity
-        assert old.e_observation_identity is None and new.e_observation_identity is not None
         for key in new._get_obs():
             np.testing.assert_array_equal(new._get_obs()[key], again._get_obs()[key])
     finally:

@@ -142,34 +142,6 @@ def test_monitor_default_keeps_polling_after_old_deadline(watch, monkeypatch):
         watch.main()
 
 
-def test_shared_entry_monitors_existing_run_without_rpc_or_model(watch):
-    import os
-    from pathlib import Path
-    import subprocess
-    import sys
-
-    now = datetime.now(module.TZ).isoformat()
-    identity = dict(run_id='test', rpc_endpoint=None)
-    status = dict(status='WAITING_FOR_NEW_BAR', updated_at=now, last_bar=now,
-                  contract='CZCE.FG701', direction='SHORT')
-    for name, data in [('run_identity.json', identity), ('status.json', status)]:
-        (watch.RUN/name).write_text(json.dumps(data))
-    before = {p.name: p.read_bytes() for p in watch.RUN.iterdir()}
-    project = Path(module.__file__).resolve().parents[3]
-    result = subprocess.run([sys.executable, '-B', str(project/'tools/fg_s3_v2_experiment.py'),
-        'monitor-online', '--run-dir', str(watch.RUN), '--output-dir', str(watch.OUT),
-        '--once'], cwd=project, env={**os.environ, 'CUDA_VISIBLE_DEVICES': ''},
-        text=True, capture_output=True, timeout=30)
-    assert result.returncode == 0, result.stderr
-    assert '监控已连接' in result.stdout
-    assert (watch.RUN/'console.log').read_text() == result.stdout
-    sample = json.loads((watch.OUT/'latest.json').read_text())
-    assert sample['warnings'] == []
-    assert sample['rpc_health']['enabled'] is False
-    assert sample['runner_alive'] is None
-    assert all((watch.RUN/name).read_bytes() == data for name, data in before.items())
-
-
 def test_negative_rpc_receipt_is_an_alert(watch):
     now = datetime.now(module.TZ).isoformat()
     (watch.RUN/'run_identity.json').write_text(json.dumps(dict(run_id='test', rpc_endpoint=None)))

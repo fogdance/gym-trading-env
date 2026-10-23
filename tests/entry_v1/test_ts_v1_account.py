@@ -1,48 +1,63 @@
-"""Thinking Student V1 Native account snapshot replayed along a recorded trace."""
-from pathlib import Path
-
+"""Thinking Student V1 Native account snapshot along a real Native account."""
 import numpy as np
+import pytest
 from wp02_fixture import native_factory
 
-from gym_trading_env.research.fg_replay import (
-    collect_trace, iter_replay_rows, trace_manifest, E_QUALITY_PROTOCOL, E_QUALITY_SCHEMA)
-from gym_trading_env.research.fg_single3_replay import Single3BehaviorPolicy
-from gym_trading_env.research.ts_v1_account import replay_account_native
+from gym_trading_env.research import ts_v1_corpus as C
+from gym_trading_env.research.ts_v1_account import ACCOUNT_NATIVE_FIELDS, StudentEnv
+
+F = {name: i for i, name in enumerate(ACCOUNT_NATIVE_FIELDS)}
 
 
-def test_replayed_account_native_agrees_with_every_recorded_row(tmp_path):
-    factory, path, _ = native_factory(tmp_path / 'market')
-    root, dreamer = tmp_path / 'trace', Path(__file__).resolve().parents[3] / 'dreamerv3'
-    spec = dict(id='P2_mid', kind='probabilistic', probability=.5, seed_components=[7, 0, 3])
-    collect_trace(path, spec, root, dict(fold='CPU_SYNTHETIC'), dreamer, env_factory=factory,
-                  protocol=E_QUALITY_PROTOCOL, policy_factory=Single3BehaviorPolicy)
-    stepids, values = replay_account_native(root, factory)
-    steps = [step for _, step in iter_replay_rows(root, trace_manifest(root, schema=E_QUALITY_SCHEMA))]
-    assert values.shape == (len(steps), 10)
-    np.testing.assert_array_equal(stepids, np.stack([step['stepid'] for step in steps]))
-    ps = np.stack([step['position_state'] for step in steps])
+@pytest.fixture(scope='module')
+def account(tmp_path_factory):
+    root = tmp_path_factory.mktemp('ts_account')
+    _, config, _ = native_factory(root / 'market')
+    row = dict(contract='CZCE.FG2701', path=str(config.parent / 'market.csv'),
+               env_config=str(config))
+    config = C.write_inputs(row, root / 'inputs')
+    env = C.native_env(config, market=False)
+    arrays, _, _ = C.run_behavior(env, C.Behavior(C.BEHAVIORS['P2_mid']))
+    return config, arrays
+
+
+def test_account_native_agrees_with_the_position_facts(account):
+    _, arrays = account
+    values, ps = arrays['account_native'], arrays['position_state']
+    assert values.shape == (len(ps), len(ACCOUNT_NATIVE_FIELDS)) == (len(ps), 14)
     flat = ps[:, 1] == 0
-    assert flat.any() and (~flat).any(), 'the trace must hold positions at some rows'
-    # Facts that position_state also carries must agree row for row.
-    np.testing.assert_array_equal(values[:, 0], flat)
-    np.testing.assert_array_equal(values[:, 1], ps[:, 0])
-    np.testing.assert_allclose(values[:, 2], ps[:, 1])
-    np.testing.assert_allclose(values[~flat, 3], ps[~flat, 4], rtol=1e-6)  # TP distance / 5
-    np.testing.assert_allclose(values[~flat, 6], ps[~flat, 5], rtol=1e-6)  # held market minutes
-    assert not values[flat, 2:].any(), 'a flat account has no position facts'
+    assert flat.any() and (~flat).any(), 'the account must hold positions at some rows'
+    np.testing.assert_array_equal(values[:, F['flat']], flat)
+    np.testing.assert_array_equal(values[:, F['direction']], ps[:, 0])
+    np.testing.assert_allclose(values[:, F['held_ratio']], ps[:, 1])
+    np.testing.assert_allclose(values[~flat, F['tp_distance']], ps[~flat, 4], rtol=1e-6)
+    np.testing.assert_allclose(values[~flat, F['held_minutes']], ps[~flat, 5], rtol=1e-6)
+    position = [F[k] for k in ACCOUNT_NATIVE_FIELDS[2:10]]
+    assert not values[flat][:, position].any(), 'a flat account has no position facts'
 
 
-def test_replay_rejects_a_recording_the_native_env_does_not_reproduce(tmp_path):
-    import pytest
-    factory, path, _ = native_factory(tmp_path / 'market')
-    root, dreamer = tmp_path / 'trace', Path(__file__).resolve().parents[3] / 'dreamerv3'
-    spec = dict(id='P1', kind='always_add', seed_components=[7, 0, 1])
-    collect_trace(path, spec, root, dict(fold='CPU_SYNTHETIC'), dreamer, env_factory=factory,
-                  protocol=E_QUALITY_PROTOCOL, policy_factory=Single3BehaviorPolicy)
-    chunk = sorted((root / 'replay').glob('*.npz'))[0]
-    with np.load(chunk) as data:
-        arrays = {k: data[k].copy() for k in data.files}
-    arrays['action'][arrays['action'] == 1] = 0  # pretend the recorded ADDs were WAITs
-    np.savez(chunk, **arrays)
-    with pytest.raises(ValueError, match='differs at row'):
-        replay_account_native(root, factory)
+def test_deadlines_and_funds_are_causal_account_facts(account):
+    _, arrays = account
+    values = arrays['account_native']
+    for name in ('to_add_deadline', 'to_forced_exit'):
+        assert (np.diff(values[:, F[name]]) <= 0).all(), f'{name} only counts down'
+    assert values[-1, F['to_forced_exit']] == 0, 'the final minute is the forced exit'
+    # A well-funded account saturates both cover ratios; flat margin cover is 1.
+    np.testing.assert_array_equal(values[:, F['funds_cover']], 1.)
+    np.testing.assert_array_equal(values[:, F['margin_cover']], 1.)
+    # The deadline field is zero exactly when the deadline has closed ADD.
+    closed = values[:, F['to_add_deadline']] == 0
+    assert not (arrays['action_mask'][closed, 1] > 0.5).any()
+
+
+def test_student_env_adds_the_account_to_every_observation(account):
+    config, _ = account
+    env = StudentEnv(C.native_env(config, market=False))
+    obs, _ = env.reset(seed=0)
+    flats = []
+    for _ in range(20):
+        assert obs['account_native'].shape == (14,)
+        flats.append(obs['account_native'][F['flat']])
+        assert flats[-1] == (obs['position_state'][1] == 0)
+        obs, *_ = env.step(int(obs['action_mask'][1] > 0.5))
+    assert 0 in flats and 1 in flats, 'the account must open a position'

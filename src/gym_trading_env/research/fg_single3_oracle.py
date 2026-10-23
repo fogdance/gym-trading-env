@@ -245,6 +245,7 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,clock,max_states=2000000,ret
     first=[None]*(end+1)
     next_trade={}
     chosen={}
+    tied=[]
     exact_checks=ties=pruned=0
     by_cursor={r['cursor']:r for r in candidates if r.get('filled')}
 
@@ -287,6 +288,7 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,clock,max_states=2000000,ret
                     exact_checks+=1
                     diff=exact_difference(t,head,t)
                     take=diff>0;ties+=int(diff==0)
+                    if diff==0:tied.append(t)
                 if take:
                     best=option;head=t
                     next_trade[t]=first[u];chosen[t]=row
@@ -306,7 +308,8 @@ def optimize(candidates,end,candidate,gamma=GAMMA,*,clock,max_states=2000000,ret
     if return_suffix:
         # first[t] is the first retained trade of the optimum starting at t.
         # Only first[t] == t means ADD now; schedule membership is insufficient.
-        result['suffix'] = dict(first=first, value_intervals=bounds)
+        # tied: retained cursors whose ADD and WAIT values are exactly equal.
+        result['suffix'] = dict(first=first, value_intervals=bounds, tied=sorted(tied))
     return result
 
 

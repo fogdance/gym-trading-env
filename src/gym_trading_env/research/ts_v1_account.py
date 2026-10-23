@@ -3,6 +3,12 @@
 The Native Env stays the only financial authority. This module only reads the
 actual account and reward-process state after a step and exposes it as a
 fixed float vector; it never changes the ledger, mask or reward.
+
+Besides the held position it carries what decides future ADD legality and
+forced exits (Review R3): the exchange-calendar minutes left until ADD closes
+and until a held position is force-closed (known in advance, causal), and
+how far funds and equity cover one more ADD and the held margin. Both cover
+ratios saturate at 4, so every well-funded account reads the same values.
 """
 from __future__ import annotations
 
@@ -19,10 +25,26 @@ ACCOUNT_NATIVE_FIELDS = (
     'reward_bars_seen',     # log1p(reward scorer bars) / log1p(43200)
     'adverse10_fired',      # FIRST_ADVERSE10 penalty already triggered
     'crossed_days',         # Quality TP crossed official trading days, capped at 5, / 5
+    'to_add_deadline',      # log1p(calendar minutes until ADD closes) / log1p(43200)
+    'to_forced_exit',       # log1p(calendar minutes until main roll / expiry exit) / log1p(43200)
+    'funds_cover',          # min(available funds / one 3-lot ADD's margin and fees, 4) / 4
+    'margin_cover',         # min(equity / margin of the held lots, 4) / 4; 1 when flat
 )
 ACCOUNT_NATIVE_KEY = 'account_native'
 ACCOUNT_NATIVE_SHAPE = (len(ACCOUNT_NATIVE_FIELDS),)
 _AGE_SCALE = np.log1p(43200)
+_COVER_CAP = 4.
+
+
+def _minutes(env, start, stop, side):
+    """Exchange-calendar minutes between two times (0 when stop has passed)."""
+    calendar = env.terms.calendar
+    return max(0, int(calendar.searchsorted(stop, side=side))
+               - int(calendar.searchsorted(start, side=side)))
+
+
+def _cover(value, need):
+    return min(max(value / need, 0.), _COVER_CAP) / _COVER_CAP
 
 
 def account_native(env) -> np.ndarray:
@@ -31,9 +53,31 @@ def account_native(env) -> np.ndarray:
     time = env._raw.index[env.current_step]
     out[1] = {'SHORT': -1., 'NO_TRADE': 0., 'LONG': 1.}[env.direction_at(time)]
     out[2] = float(env.net_lots) / float(env.max_lots)
-    if not env.entries:
+    # ADD is legal while the bar end is before last_open and the main exit;
+    # a held position is closed at the first bar ending at the main exit or
+    # the contract liquidation time.
+    add_close = min(t for t in (env.terms.last_open, env.main_exit_at) if t is not None)
+    forced = min(t for t in (env.main_exit_at, env.terms.liquidate) if t is not None)
+    out[10] = np.log1p(_minutes(env, time, add_close, 'left')) / _AGE_SCALE
+    out[11] = np.log1p(_minutes(env, time, forced, 'right')) / _AGE_SCALE
+    terms = env._terms_at(time)
+    price = float(env._market_row(env.current_step).Close)
+    equity = float(env._calculate_equity())
+    multiplier, rate = float(env.terms.multiplier), float(terms['margin_rate'])
+    held_margin = float(env.net_lots) * multiplier * price * rate
+    available = equity - max(float(env.user_accounts.margin), held_margin)
+    out[12] = _cover(available, 3 * multiplier * price * rate + 3 * float(terms['open_fee']))
+    out[13] = _cover(equity, held_margin) if env.net_lots else 1.
+    if env.entries:
+        _position(env, out)
+    else:
         out[0] = 1.
-        return out
+    if not np.isfinite(out).all():
+        raise ValueError('Native account snapshot is not finite')
+    return out
+
+
+def _position(env, out):
     if len(env.entries) != 1:
         raise ValueError('Thinking Student V1 expects the single3 single-position protocol')
     item = next(iter(env.entries.values()))
@@ -54,45 +98,6 @@ def account_native(env) -> np.ndarray:
         out[8] = float(active.adverse10_fired)
     crossed = getattr(scorer, '_quality_crossed_days', {}).get(item['entry_id'], 0)
     out[9] = min(crossed, 5) / 5.
-    if not np.isfinite(out).all():
-        raise ValueError('Native account snapshot is not finite')
-    return out
-
-
-def replay_account_native(directory, env_factory):
-    """(stepids, account_native) for every row of a recorded Native policy trace.
-
-    Re-executes the recorded actions with the recorder's own step function
-    (`fg_replay.execute_observed`) from the trace's initial account, requires
-    every replayed observation to equal the recorded one, and reads the
-    account at each row's decision state. Observation equality is the check;
-    no file hash or identity gate is involved.
-    """
-    import json
-    from pathlib import Path
-    from .fg_replay import execute_observed, iter_replay_rows
-    directory = Path(directory)
-    manifest = json.loads((directory / 'manifest.json').read_text())
-    initial = (json.loads((directory / 'initial_state.json').read_text())
-               if manifest.get('initial_state') else None)
-    env = env_factory()
-    stepids, values, previous = [], [], None
-    try:
-        if initial is not None:
-            env.import_state(initial)
-        for ordinal, step in iter_replay_rows(directory, manifest):
-            action = None if previous is None or previous['is_last'] else int(previous['action'])
-            obs, _ = execute_observed(env, action, seed=0 if ordinal == 0 else None,
-                                      resume_state=initial if ordinal == 0 else None)
-            for key, value in obs.items():
-                if not np.array_equal(step[key], value):
-                    raise ValueError(f'{directory}: replayed {key} differs at row {ordinal}')
-            stepids.append(np.asarray(step['stepid']))
-            values.append(account_native(env))
-            previous = step
-    finally:
-        env.close()
-    return np.stack(stepids), np.stack(values)
 
 
 class StudentEnv:

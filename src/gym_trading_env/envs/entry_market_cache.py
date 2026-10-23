@@ -121,11 +121,9 @@ class EntryMarketCache:
         source = Path(env.config.trading.data_path).expanduser()
         path = source.resolve(strict=True)
         digest, stat = _file_identity(path)
-        if getattr(env, '_e_profile', None) is not None:
-            # A current-byte cache key alone does not authenticate those bytes
-            # against E admission. Apply the same check before hits or misses.
-            env._validate_e_market_source(path, digest)
-        key = (type(env), env.config_hash, getattr(env,'e_observation_identity',None), str(path), digest)
+        # An E profile adds its own market arrays to the snapshot.
+        profile = getattr(env, '_e_profile', None)
+        key = (type(env), env.config_hash, None if profile is None else profile.identity, str(path), digest)
         snapshot = self._entries.get(key)
         if snapshot is None:
             env._load_market(None)

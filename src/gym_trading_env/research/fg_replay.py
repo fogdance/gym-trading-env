@@ -381,7 +381,6 @@ def observed_trace_row(raw, step, last, scorer, policy, ordinal, *, single3, e_q
         if set(step)-host_logs != set(fields):
             raise ValueError('E Quality Replay refuses teacher/foreign fields')
         step = {k:step[k] for k in fields}
-        row['e_snapshot'] = copy.deepcopy(raw.e_snapshot)
         row['account_snapshot_hash'] = account_fingerprint(raw)
     return row, step
 
@@ -408,8 +407,7 @@ def observed_trace_manifest(raw, directory, state, chunks, identity, spec, confi
                    elapsed_seconds=elapsed_seconds,
                    files={str(p.relative_to(directory)): digest(p) for p in directory.rglob("*") if p.is_file()})
     if e_quality:
-        payload.update(e_observation_identity=raw.e_observation_identity,
-            data_identity=raw._e_profile.identity, initial_state=initial_state is not None,
+        payload.update(data_identity=raw._e_profile.identity, initial_state=initial_state is not None,
             bounded_observation_end=end_cursor, training_admitted=False)
     if single3:
         payload.update(protocol=protocol,reward_candidate=raw.reward_config.candidate,
@@ -557,8 +555,6 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
         raise ValueError('Replay/Env protocol mismatch')
     initial_state = None
     if schema == E_QUALITY_SCHEMA:
-        if raw.e_observation_identity != manifest['e_observation_identity']:
-            raise ValueError('Replay E source/observation identity differs')
         if manifest['initial_state']:
             initial_state = json.loads((directory/'initial_state.json').read_text())
             raw.import_state(initial_state)
@@ -589,8 +585,8 @@ def reconcile_trace(directory, dreamer_root, *, env_factory=None, schema=SCHEMA,
                 if expected[key] != row[key]:
                     raise ValueError(f"Env/Sidecar row {ordinal} differs: {key}")
             if schema == E_QUALITY_SCHEMA:
-                if row['e_snapshot'] != raw.e_snapshot or row['account_snapshot_hash'] != account_fingerprint(raw):
-                    raise ValueError('Replay E snapshot or full account identity differs')
+                if row['account_snapshot_hash'] != account_fingerprint(raw):
+                    raise ValueError('Replay full account identity differs')
             if label_verifier is not None:
                 expected_label=label_verifier(raw,step,row)
                 if getattr(label_verifier,'queue_depth',0):
