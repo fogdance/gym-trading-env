@@ -129,3 +129,41 @@ def test_coupling_needs_the_policy_witness_and_a_fork_state(world):
     run.step(1 - int(ref.action[ref.row(t)]))
     with pytest.raises(ValueError, match='legal flat decision'):
         CF.run_branch(run, ref, CF.ADD)
+
+
+def test_only_a_full_branch_decides_a_fork_that_cannot_couple_or_end_in_the_cap(world):
+    ref, never = reference(world), reference(world, floor=np.inf)
+    end, forks = ref.start + ref.n, [int(t) for t in ref.forks()]
+    # Above the floor a branch may couple from the first cursor on; with an
+    # unreachable floor only the true terminal within the cap settles it.
+    assert ref.couple_from == ref.start and never.couple_from == end
+    for cap in (1, 50):
+        assert all(ref.decidable(t, cap) for t in forks)
+        assert [t for t in forks if not never.decidable(t, cap)] == [t for t in forks if end - t > cap]
+    # A floor first reached part way (a rising equity path): coupling is
+    # possible from there on.
+    rows = world['rows']
+    mid = CF.Reference(world['env'].market_clock_counter, [r['cursor'] for r in rows],
+                       [r['reward'] for r in rows], np.linspace(1., 2., len(rows)),
+                       {k: np.stack([r[k] for r in rows]) for k in CF.INPUTS},
+                       [r['action'] for r in rows], world['terminal'], 1.5)
+    assert ref.start < mid.couple_from < end
+    assert mid.future_min_equity[mid.couple_from - mid.start - 1] < 1.5 <= mid.future_min_equity[
+        mid.couple_from - mid.start]
+    for t in forks:
+        assert mid.decidable(t, 50) == (mid.couple_from <= t + 50 or end - t <= 50)
+    # Here the full branches of undecided forks run into the cap (the
+    # synthetic account is far from a margin call). Not computed within a
+    # budget, a fork records no reward, return or label.
+    undecided = [t for t in forks if not never.decidable(t, 50)]
+    assert len(undecided) > 5
+    for t in undecided[:5]:
+        full = branch(world, never, t, max_steps=50)
+        assert (full['status'], full['reason'], full['steps']) == ('NOT_COMPARABLE', 'CAP', 50)
+    t = undecided[0]
+    out = CF.unavailable(never, t, 1 - int(never.action[never.row(t)]), 'BELOW_FLOOR_BEYOND_CAP')
+    assert out['status'] == 'UNAVAILABLE_BUDGET' and out['status'] in CF.STATUSES
+    assert out['steps'] == 0 and out['g'] is None and out['branch_rewards'] is None
+    p = CF.pair(never, out)
+    assert p['delta_g'] is None and p[('g_add', 'g_wait')[p['reference_action']]] is None
+    assert p[('g_wait', 'g_add')[p['reference_action']]] == never.g[never.row(t)]

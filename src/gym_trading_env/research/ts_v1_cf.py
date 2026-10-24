@@ -31,6 +31,15 @@ exactly: VALID_COMPLETE without a tail estimate. A branch that reaches the
 true terminal is complete too. A data end or the step cap before either is
 NOT_COMPARABLE and gets no numeric label. VALID_ESTIMATED (a declared tail
 estimator) belongs to the label contract but is not produced here.
+
+Budget. Where the reference stays below the floor for the whole cap window
+no cursor of it may couple, and a fork whose true terminal also lies beyond
+the cap can end validly only if the branch's own account terminates first
+(a Native MARGIN_CALL); only the full branch tells (Reference.decidable).
+A caller with a finite compute budget simulates an exact sample of these
+forks and gives the others UNAVAILABLE_BUDGET (`unavailable`): not
+computed, without reward, return, terminal or label, and without any claim
+that their branch could not have ended.
 """
 from __future__ import annotations
 
@@ -40,7 +49,7 @@ import numpy as np
 
 from .fg_single3_oracle import GAMMA
 
-STATUSES = ('VALID_COMPLETE', 'VALID_ESTIMATED', 'NOT_COMPARABLE')
+STATUSES = ('VALID_COMPLETE', 'VALID_ESTIMATED', 'NOT_COMPARABLE', 'UNAVAILABLE_BUDGET')
 WAIT, ADD = 0, 1
 INPUTS = ('position_state', 'action_mask', 'account_native')
 
@@ -92,6 +101,10 @@ class Reference:
         self.g = discounted_returns(clock, cursor, self.reward, gamma) if self.complete else None
         self.future_min_equity = np.minimum.accumulate(self.equity[::-1])[::-1]
         self.flat = self.inputs['position_state'][:, 1] == 0
+        # The first cursor where a branch may couple (start + n when none may):
+        # couples() needs future_min_equity >= floor, which never decreases.
+        reach = np.flatnonzero(self.future_min_equity >= self.floor)
+        self.couple_from = self.start + (int(reach[0]) if len(reach) else self.n)
 
     def row(self, cursor):
         i = int(cursor) - self.start
@@ -122,6 +135,21 @@ class Reference:
             return False
         gap = float(state['equity']) - self.equity[i]
         return self.future_min_equity[i] + min(gap, 0.) >= self.floor
+
+    def decidable(self, t, max_steps):
+        """False when a branch from fork t can neither couple nor reach the
+        true terminal within max_steps (module docstring, Budget)."""
+        end, last = self.start + self.n, int(t) + max_steps
+        return (self.couple_from < end and self.couple_from <= last) or end <= last
+
+
+def unavailable(reference, t, first_action, reason):
+    """The record of a fork not computed within the budget: no reward,
+    return, terminal or label."""
+    reference.row(t)
+    return dict(cursor=int(t), first_action=int(first_action), status='UNAVAILABLE_BUDGET',
+                reason=reason, steps=0, coupled_at=None, equity_gap=None,
+                branch_rewards=None, g=None)
 
 
 def run_branch(stepper, reference, first_action, max_steps=8192, witness=None):
