@@ -15,7 +15,11 @@ at cursor t pays r_t with feedback at t+1, and
 
   G(t) = r_t + gamma ** advance(t, t+1) * G(t+1),  G(last) = r_last at the true terminal.
 
-Coupling. Once a branch is flat at a cursor c where the reference is flat
+Coupling. Exact equality of the future-relevant Native and frozen-policy
+state at a common flat cursor is sufficient, even below the funds floor.
+`native_continuation` defines the deliberately limited Single3 projection;
+the caller supplies the policy continuation (including market carry/seeds).
+Alternatively, once a branch is flat at a cursor c where the reference is flat
 too, with equal position_state, action_mask and account_native, the two
 accounts differ only in cash and history. pi_k reads the same market memory
 (the market is exogenous) and the same account inputs, so it takes the same
@@ -32,17 +36,16 @@ true terminal is complete too. A data end or the step cap before either is
 NOT_COMPARABLE and gets no numeric label. VALID_ESTIMATED (a declared tail
 estimator) belongs to the label contract but is not produced here.
 
-Budget. Where the reference stays below the floor for the whole cap window
-no cursor of it may couple, and a fork whose true terminal also lies beyond
-the cap can end validly only if the branch's own account terminates first
-(a Native MARGIN_CALL); only the full branch tells (Reference.decidable).
-A caller with a finite compute budget simulates an exact sample of these
-forks and gives the others UNAVAILABLE_BUDGET (`unavailable`): not
-computed, without reward, return, terminal or label, and without any claim
-that their branch could not have ended.
+Budget. The funds floor cannot predict exact equality or a branch terminal.
+Every legal candidate may be probed. `advance_branch` pauses without making
+a label; its progress and the stepper state must be saved together. A caller
+may sample unfinished probes for continuation and mark the rest
+UNAVAILABLE_BUDGET, with no numeric Q. Probe and continuation share one cap.
 """
 from __future__ import annotations
 
+from copy import deepcopy
+from dataclasses import asdict, dataclass, field
 from decimal import Decimal
 
 import numpy as np
@@ -52,6 +55,101 @@ from .fg_single3_oracle import GAMMA
 STATUSES = ('VALID_COMPLETE', 'VALID_ESTIMATED', 'NOT_COMPARABLE', 'UNAVAILABLE_BUDGET')
 WAIT, ADD = 0, 1
 INPUTS = ('position_state', 'action_mask', 'account_native')
+
+
+def same_state(a, b):
+    """Exact structured equality, including array dtype and shape (no tolerance)."""
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(same_state(a[k], b[k]) for k in a)
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):
+        return len(a) == len(b) and all(same_state(x, y) for x, y in zip(a, b))
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        a, b = np.asarray(a), np.asarray(b)
+        return a.dtype == b.dtype and np.array_equal(a, b)
+    return type(a) is type(b) and a == b
+
+
+def native_continuation(env):
+    """Small, read-only sufficient state at a flat Single3 decision, or None.
+
+    This is NOT a replacement for the full restore snapshot. It is restricted
+    to FixedDirectionEntryEnv + Single3Reward, on the same immutable market
+    and configuration. Stepper/Reference must also compare policy state.
+
+    Exclusions follow the actual transition code:
+    * EntryEnv.step slices fills from fills_before, and _open_entry/settle_exit
+      read only the trade record just appended by the atomic Native commit.
+      Old journals, trades, attributions, equity and reward logs are reports.
+    * Single3Reward.step reads active positions and newly closed positions;
+      scorer totals/discounted/ambiguities and reward.total only accumulate.
+      Closed payloads never enter the next reward or account observation.
+    * seen and processed_fills guard duplicate IDs. At flat we verify that
+      every ID is from a completed entry in this account's monotone namespace,
+      with exactly one exit per entry. Future _open_entry IDs have a strictly
+      larger sequence, so their timestamps/reasons cannot collide. Unknown or
+      future IDs fail closed; historical payloads are not compared.
+    * legal_add_decisions, voluntary_waits, max_floating_loss, completed_accounts,
+      closed_trade_profits and last_close_position are reporting/rollback only.
+      No account reset or external settle_exit is performed by a CF stepper.
+
+    All ledger balances remain Decimal, including broker accounts. No
+    observation equality or float equity gap substitutes for financial state.
+    """
+    from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+    from gym_trading_env.rewards.single3_reward import Single3Reward
+    from gym_trading_env.research.fg_reward_candidates import FGRewardScorer
+    from .ts_v1_account import StudentEnv
+    if type(env) is StudentEnv:
+        env = env.env
+    if type(env) is not FixedDirectionEntryEnv or not env.single3:
+        return None
+    reward = env.reward_function
+    if type(reward) is not Single3Reward or type(reward.scorer) is not FGRewardScorer:
+        return None
+    scorer = reward.scorer
+    positions = (env.position_manager.long_positions, env.position_manager.short_positions)
+    if (env.net_lots or env.entries or scorer.active or
+            any(p is not None for side in positions for p in side)):
+        return None
+    prefix = f'{env.contract}:{env.account_sequence}:'
+    def past(entry_id):
+        suffix = entry_id[len(prefix):] if isinstance(entry_id, str) and entry_id.startswith(prefix) else ''
+        return suffix.isdecimal() and str(int(suffix)) == suffix and 1 <= int(suffix) <= env.entry_sequence
+    if (len(scorer.seen) != env.entry_sequence or set(scorer.closed) != scorer.seen
+            or not all(past(k) for k in scorer.seen)):
+        return None
+    fills = [k.split('|') for k in env.processed_fills]
+    if (len(fills) != env.entry_sequence or
+            any(len(k) != 4 or k[-1] != '3' for k in fills) or
+            {k[0] for k in fills} != scorer.seen):
+        return None
+    # Quality-day dictionaries must be empty after all positions close.
+    if (getattr(scorer, '_quality_last_day', {}) or
+            getattr(scorer, '_quality_crossed_days', {})):
+        return None
+    tr = env.config.trading
+    return deepcopy(dict(
+        contract=env.contract, config=env.config_hash,
+        cursor_time=str(env._raw.index[env.current_step]),
+        balances=env.ledger.snapshot(), ledger_total=env._ledger_total0,
+        ledger_rules={k: v.strict_nonnegative for k, v in env.ledger._accounts.items()},
+        realized_pnl=env.user_accounts.realized_pnl,
+        unrealized_pnl=env.user_accounts.unrealized_pnl,
+        position_slots=tuple(len(side) for side in positions),
+        counters={k: getattr(env, k) for k in ('current_step', 'episode_step_count',
+                  'chunk_count', 'entry_sequence', 'account_sequence', '_entries_used_today')},
+        current_price=env.current_price, published_mask=np.array(env._published_mask),
+        exit={k: getattr(env, k) for k in ('status', 'terminated', 'truncated', 'pending_reason')},
+        rules={k: getattr(tr, k) for k in ('intraday_single_position', 'max_entries_per_day',
+               'trade_lot', 'max_long_position', 'max_short_position', 'lot_size',
+               'leverage', 'trading_fee_per_lot', 'spread', 'is_round_turn')},
+        chunk_steps=env.chunk_steps, main_exit_at=env.main_exit_at,
+        capacity=(env.max_lots, env.max_entries), live=env._live_mode,
+        rng=env.np_random.bit_generator.state,
+        reward=dict(config=asdict(reward.config), v2=asdict(reward.v2_config),
+                    profile=scorer.tp_profile, schema=scorer.SCHEMA,
+                    last_mark=scorer.last_mark, last_end=scorer.last_end,
+                    step_number=scorer.step_number)))
 
 
 def coupling_floor(env):
@@ -86,7 +184,7 @@ class Reference:
     per cursor, the fork points and the coupling test."""
 
     def __init__(self, clock, cursor, reward, equity, inputs, action, terminal,
-                 floor, gamma=GAMMA):
+                 floor, gamma=GAMMA, continuations=None):
         cursor = np.asarray(cursor)
         if len(cursor) == 0 or not np.array_equal(cursor, np.arange(cursor[0], cursor[0] + len(cursor))):
             raise ValueError('A reference has one decision per consecutive market cursor')
@@ -96,13 +194,13 @@ class Reference:
         self.equity = np.asarray(equity, np.float64)
         self.action = np.asarray(action, np.int64)
         self.inputs = {k: np.asarray(inputs[k]) for k in INPUTS}
+        self.continuations = continuations if continuations is not None else {}
         # Only a trajectory that reached the true terminal has complete returns.
         self.complete = bool(terminal)
         self.g = discounted_returns(clock, cursor, self.reward, gamma) if self.complete else None
         self.future_min_equity = np.minimum.accumulate(self.equity[::-1])[::-1]
         self.flat = self.inputs['position_state'][:, 1] == 0
-        # The first cursor where a branch may couple (start + n when none may):
-        # couples() needs future_min_equity >= floor, which never decreases.
+        # Diagnostic for the funds-safe route ONLY. Never a candidate filter.
         reach = np.flatnonzero(self.future_min_equity >= self.floor)
         self.couple_from = self.start + (int(reach[0]) if len(reach) else self.n)
 
@@ -126,30 +224,71 @@ class Reference:
     def couples(self, state):
         """True when a branch state at state['cursor'] provably continues as
         the reference from there on (module docstring)."""
+        return self.coupling_kind(state) is not None
+
+    def coupling_kind(self, state):
         c = int(state['cursor'])
         if not self.start <= c < self.start + self.n:
-            return False
+            return None
         i = c - self.start
         if not (self.flat[i] and np.asarray(state['position_state'])[1] == 0
                 and self.same_inputs(c, state)):
-            return False
+            return None
+        saved = self.continuations.get(c)
+        if self.continuations:
+            # The actual production caller records the market-only carry and
+            # seed counter. An equal current z/action alone is not a proof of
+            # equal future policy decisions.
+            if saved is None or not same_state(state.get('policy'), saved['policy']):
+                return None
+            native = state.get('native')
+            if native is not None and saved['native'] is not None and same_state(native, saved['native']):
+                return 'EXACT_STATE'
+            # Keep the funds-safe proof, but only for otherwise compatible
+            # Native continuations. Different prior entry counts are harmless
+            # while neither account can hit its daily entry cap in this tail.
+            if native is None or saved['native'] is None:
+                return None
+            controls = []
+            for item in (native, saved['native']):
+                item = {k: v for k, v in item.items()
+                        if k not in ('balances', 'realized_pnl', 'unrealized_pnl')}
+                counts = dict(item['counters'])
+                counts.pop('entry_sequence')
+                used = counts.pop('_entries_used_today')
+                limit = item['rules']['max_entries_per_day']
+                if limit > 0 and used + self.n - i >= limit:
+                    return None
+                controls.append(dict(item, counters=counts))
+            if not same_state(*controls):
+                return None
         gap = float(state['equity']) - self.equity[i]
-        return self.future_min_equity[i] + min(gap, 0.) >= self.floor
-
-    def decidable(self, t, max_steps):
-        """False when a branch from fork t can neither couple nor reach the
-        true terminal within max_steps (module docstring, Budget)."""
-        end, last = self.start + self.n, int(t) + max_steps
-        return (self.couple_from < end and self.couple_from <= last) or end <= last
+        if self.future_min_equity[i] + min(gap, 0.) >= self.floor:
+            return 'FUNDS_SAFE'
+        return None
 
 
-def unavailable(reference, t, first_action, reason):
-    """The record of a fork not computed within the budget: no reward,
-    return, terminal or label."""
+def unavailable(reference, t, first_action, reason, progress=None):
+    """No complete Q within the allocation. An unfinished probe may report
+    observed step/reward totals, but never a numeric return or Q label."""
     reference.row(t)
+    if progress is not None:
+        if (progress.cursor, progress.first_action) != (t, first_action):
+            raise ValueError('Budget record and branch progress differ')
+        return _result(reference, t, first_action, 'UNAVAILABLE_BUDGET', reason, progress.rewards, None)
     return dict(cursor=int(t), first_action=int(first_action), status='UNAVAILABLE_BUDGET',
                 reason=reason, steps=0, coupled_at=None, equity_gap=None,
                 branch_rewards=None, g=None)
+
+
+@dataclass
+class BranchProgress:
+    """Save together with the Native/policy state, never restart a probe."""
+    cursor: int
+    first_action: int
+    rewards: list = field(default_factory=list)
+    done: bool = False
+    terminal: bool = False
 
 
 def run_branch(stepper, reference, first_action, max_steps=8192, witness=None):
@@ -163,32 +302,46 @@ def run_branch(stepper, reference, first_action, max_steps=8192, witness=None):
     witness(cursor) is called once the branch couples and must confirm that
     the policy decides exactly as the reference there (e.g. equal answers).
     """
+    progress = BranchProgress(int(stepper.state()['cursor']), int(first_action))
+    return advance_branch(stepper, reference, progress, max_steps, max_steps, witness)
+
+
+def advance_branch(stepper, reference, progress, stop_after, max_steps=8192, witness=None):
+    """Advance to an absolute branch step count. None means a paused probe,
+    not a label. Resume with the SAME progress and saved stepper state.
+    A terminal or coupling on the last allowed step takes precedence over CAP.
+    """
+    if max_steps < 1 or stop_after < 1:
+        raise ValueError('Branch cap and pause step must be positive')
+    t, first_action, rewards = progress.cursor, progress.first_action, progress.rewards
     state = stepper.state()
-    t = int(state['cursor'])
+    if int(state['cursor']) != t + len(rewards):
+        raise ValueError('Branch progress and Native cursor differ')
     if not reference.complete:
         return _result(reference, t, first_action, 'NOT_COMPARABLE', 'REFERENCE_INCOMPLETE', [], None)
-    if t not in set(reference.forks().tolist()) or not reference.same_inputs(t, state):
+    if not rewards and (t not in set(reference.forks().tolist()) or not reference.same_inputs(t, state)):
         raise ValueError(f'Cursor {t} is not a legal flat decision of the reference state')
-    rewards = []
-    reward, done, terminal = stepper.step(int(first_action))
-    rewards.append(float(reward))
     while True:
-        if done:
-            if terminal:
+        if progress.done:
+            if progress.terminal:
                 return _result(reference, t, first_action, 'VALID_COMPLETE', 'TERMINAL', rewards, None)
             return _result(reference, t, first_action, 'NOT_COMPARABLE', 'DATA_END', rewards, None)
         state = stepper.state()
         if int(state['cursor']) != t + len(rewards):
             raise ValueError('A branch step must advance exactly one market cursor')
-        if reference.couples(state):
+        kind = reference.coupling_kind(state) if rewards else None
+        if kind is not None:
             c = int(state['cursor'])
             if witness is not None and not witness(c):
                 raise RuntimeError(f'The frozen policy decides differently at the coupling cursor {c}')
             gap = float(state['equity']) - reference.equity[reference.row(c)]
-            return _result(reference, t, first_action, 'VALID_COMPLETE', 'COUPLED', rewards, c, gap)
+            return dict(_result(reference, t, first_action, 'VALID_COMPLETE', 'COUPLED', rewards, c, gap),
+                        coupling_kind=kind)
         if len(rewards) >= max_steps:
             return _result(reference, t, first_action, 'NOT_COMPARABLE', 'CAP', rewards, None)
-        reward, done, terminal = stepper.step(None)
+        if len(rewards) >= stop_after:
+            return None
+        reward, progress.done, progress.terminal = stepper.step(int(first_action) if not rewards else None)
         rewards.append(float(reward))
 
 
