@@ -4,6 +4,9 @@ The frozen policy here is a deterministic causal rule of the market minute
 and the account inputs, so a coupled return can be compared with the same
 branch run to the true terminal.
 """
+from copy import deepcopy
+from decimal import Decimal
+
 import numpy as np
 import pytest
 
@@ -25,7 +28,8 @@ class Stepper:
 
     def state(self):
         return dict(cursor=int(self.env.current_step), equity=float(self.env._calculate_equity()),
-                    **{k: np.array(self.obs[k]) for k in CF.INPUTS})
+                    **{k: np.array(self.obs[k]) for k in CF.INPUTS},
+                    native=CF.native_continuation(self.env), policy=dict(cursor=int(self.env.current_step)))
 
     def step(self, action=None):
         if action is None:
@@ -51,14 +55,16 @@ def world(tmp_path_factory):
                 floor=CF.coupling_floor(env), branch_env=branch_env)
 
 
-def reference(world, floor=None, terminal=None):
+def reference(world, floor=None, terminal=None, exact=False):
     rows = world['rows']
     return CF.Reference(
         world['env'].market_clock_counter, [r['cursor'] for r in rows],
         [r['reward'] for r in rows], [r['equity'] for r in rows],
         {k: np.stack([r[k] for r in rows]) for k in CF.INPUTS}, [r['action'] for r in rows],
         world['terminal'] if terminal is None else terminal,
-        world['floor'] if floor is None else floor)
+        world['floor'] if floor is None else floor,
+        continuations={r['cursor']: {k: r[k] for k in ('native', 'policy')}
+                       for r in rows if r['position_state'][1] == 0} if exact else None)
 
 
 def branch(world, ref, t, **kw):
@@ -131,39 +137,66 @@ def test_coupling_needs_the_policy_witness_and_a_fork_state(world):
         CF.run_branch(run, ref, CF.ADD)
 
 
-def test_only_a_full_branch_decides_a_fork_that_cannot_couple_or_end_in_the_cap(world):
-    ref, never = reference(world), reference(world, floor=np.inf)
-    end, forks = ref.start + ref.n, [int(t) for t in ref.forks()]
-    # Above the floor a branch may couple from the first cursor on; with an
-    # unreachable floor only the true terminal within the cap settles it.
-    assert ref.couple_from == ref.start and never.couple_from == end
-    for cap in (1, 50):
-        assert all(ref.decidable(t, cap) for t in forks)
-        assert [t for t in forks if not never.decidable(t, cap)] == [t for t in forks if end - t > cap]
-    # A floor first reached part way (a rising equity path): coupling is
-    # possible from there on.
-    rows = world['rows']
-    mid = CF.Reference(world['env'].market_clock_counter, [r['cursor'] for r in rows],
-                       [r['reward'] for r in rows], np.linspace(1., 2., len(rows)),
-                       {k: np.stack([r[k] for r in rows]) for k in CF.INPUTS},
-                       [r['action'] for r in rows], world['terminal'], 1.5)
-    assert ref.start < mid.couple_from < end
-    assert mid.future_min_equity[mid.couple_from - mid.start - 1] < 1.5 <= mid.future_min_equity[
-        mid.couple_from - mid.start]
-    for t in forks:
-        assert mid.decidable(t, 50) == (mid.couple_from <= t + 50 or end - t <= 50)
-    # Here the full branches of undecided forks run into the cap (the
-    # synthetic account is far from a margin call). Not computed within a
-    # budget, a fork records no reward, return or label.
-    undecided = [t for t in forks if not never.decidable(t, 50)]
-    assert len(undecided) > 5
-    for t in undecided[:5]:
-        full = branch(world, never, t, max_steps=50)
-        assert (full['status'], full['reason'], full['steps']) == ('NOT_COMPARABLE', 'CAP', 50)
-    t = undecided[0]
-    out = CF.unavailable(never, t, 1 - int(never.action[never.row(t)]), 'BELOW_FLOOR_BEYOND_CAP')
-    assert out['status'] == 'UNAVAILABLE_BUDGET' and out['status'] in CF.STATUSES
-    assert out['steps'] == 0 and out['g'] is None and out['branch_rewards'] is None
-    p = CF.pair(never, out)
-    assert p['delta_g'] is None and p[('g_add', 'g_wait')[p['reference_action']]] is None
-    assert p[('g_wait', 'g_add')[p['reference_action']]] == never.g[never.row(t)]
+def test_exact_native_state_couples_below_floor_but_cash_inputs_and_seeds_must_match(world):
+    ref = reference(world, floor=np.inf, exact=True)
+    t = int(ref.forks()[5])
+    env = world['branch_env']
+    run = Stepper(env, env.reset(seed=0, options={'resume': world['snapshots'][t]})[0])
+    state = run.state()
+    assert state['native'] is not None
+    assert ref.coupling_kind(state) == 'EXACT_STATE'
+    assert not reference(world, floor=np.inf).couples(state)  # old funds-only test
+    # These are append-only reporting payloads, not inputs to the next trade.
+    env.equity_history.append(dict(diagnostic='different history'))
+    env.reward_function.total += 123.
+    env.reward_function.scorer.totals['v2'] += 321.
+    env.reward_function.scorer.discounted['v2'] -= 12.
+    env.env.max_floating_loss += 100
+    assert ref.coupling_kind(run.state()) == 'EXACT_STATE'
+    # Decimal cash differences remain visible even when float account inputs
+    # saturate and the branch observation is identical.
+    balances = env.ledger.snapshot()
+    changed = dict(balances)
+    changed['user_cash'] += Decimal('0.01')
+    changed['broker_pnl'] -= Decimal('0.01')
+    env.ledger.restore(changed)
+    assert ref.same_inputs(t, run.state()) and not ref.couples(run.state())
+    env.ledger.restore(balances)
+    for field in CF.INPUTS:
+        altered = deepcopy(state)
+        altered[field][0] += 1
+        assert not ref.couples(altered)
+    altered = deepcopy(state)
+    altered['policy']['cursor'] += 1
+    assert not ref.couples(altered)
+    env.env.pending_reason = 'MARGIN_CALL'
+    assert not ref.couples(run.state())
+    env.env.pending_reason = None
+    rng = deepcopy(env.np_random.bit_generator.state)
+    env.np_random.random()
+    assert not ref.couples(run.state())
+    env.np_random.bit_generator.state = rng
+    env.processed_fills.add(f'{env.contract}:{env.account_sequence}:{env.entry_sequence + 1}|future|TAKE_PROFIT|3')
+    assert CF.native_continuation(env) is None  # cannot discard a future duplicate ID
+
+
+def test_probe_resumes_same_native_progress_without_repeating_first_action(world):
+    ref = reference(world, floor=np.inf)
+    t = int(ref.forks()[0])
+    first = 1 - int(ref.action[ref.row(t)])
+    env = world['branch_env']
+    run = Stepper(env, env.reset(seed=0, options={'resume': world['snapshots'][t]})[0])
+    progress = CF.BranchProgress(t, first)
+    assert CF.advance_branch(run, ref, progress, 7, 50) is None
+    paused = env.export_state()
+    off = CF.unavailable(ref, t, first, 'PROBE_UNFINISHED_BUDGET', progress)
+    assert off['steps'] == 7 and off['g'] is None and CF.pair(ref, off)['delta_g'] is None
+    restored = Stepper(env, env.reset(seed=0, options={'resume': paused})[0])
+    result = CF.advance_branch(restored, ref, progress, 50, 50)
+    final = env.export_state()
+    full = branch(world, ref, t, max_steps=50)
+    assert result == full and result['steps'] == 50 and result['reason'] == 'CAP'
+    assert final == env.export_state()
+    assert len(progress.rewards) == 50
+    with pytest.raises(ValueError, match='progress and Native cursor'):
+        CF.advance_branch(restored, ref, CF.BranchProgress(t, first), 50, 50)
