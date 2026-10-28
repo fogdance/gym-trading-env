@@ -7,6 +7,11 @@ import yaml
 from test_fg_single3_env import single_env
 from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
 
+# Graded teacher thresholds of the synthetic corpus (the formal values, given
+# explicitly): a TP has room 8, so a TP with mae_full 1 is GOOD (ADD); one
+# with mae_full 15 and every SL30 are POOR (WAIT).
+GRADES=dict(time_minutes=[15,120],mae_points=[3,5,10],room_points=[10,7.5,6],room_after_tp_minutes=60)
+
 
 def native_factory(folder, minutes=210, chunk=64, shift=0):
     folder=Path(folder);folder.mkdir(parents=True,exist_ok=True)
@@ -40,11 +45,11 @@ def native_factory(folder, minutes=210, chunk=64, shift=0):
     return factory,path,profile
 
 
-def ts_corpus(folder, minutes=210, workers=2, shift=0):
+def ts_corpus(folder, minutes=210, workers=2, shift=0, grades=GRADES):
     """Thinking Student teaching material of the synthetic market: (folder, source)."""
     from gym_trading_env.research import ts_v1_corpus as C
     folder=Path(folder);_,config,_=native_factory(folder/'market',minutes=minutes,shift=shift)
     row=dict(contract='CZCE.FG2701',path=str(config.parent/'market.csv'),env_config=str(config),
              role='train',eligible_for_training=True)
     corpus=folder/'corpus'/row['contract']
-    return corpus,C.produce(row,corpus,workers=workers,log=lambda *_:None)
+    return corpus,C.produce(row,corpus,grades,workers=workers,log=lambda *_:None)

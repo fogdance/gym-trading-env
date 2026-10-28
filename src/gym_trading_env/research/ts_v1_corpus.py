@@ -5,7 +5,9 @@ indexed by the market cursor:
 
   market/   the causal E observation of every cursor (policy market input)
   facts/    the Native "ADD now, then hold" trade from a flat account (L_outcome)
-  strict/   the strict TRAIN oracle's WAIT/ADD from a flat account (L_policy_demo)
+  strict/   the strict TRAIN oracle's WAIT/ADD from a flat account (the P4 plan)
+  graded/   the graded teacher's WAIT/ADD of that trade (L_policy_demo) and its
+            MFE targets (L_outcome); thresholds given (ts_v1_grades)
 
 A flat account whose equity is at least the funds floor gets exactly these
 facts and choices at the same cursor: the Native trade depends only on the
@@ -15,7 +17,7 @@ adds cash).
 
 behaviors/<P>/ holds the account side of the behavior accounts P0-P4, one
 row per cursor from the first minute to the true terminal (the TS env has no
-CHUNK_END). A reader joins market rows by cursor and puts facts and strict
+CHUNK_END). A reader joins market rows by cursor and puts facts and graded
 choices on the rows where that account is flat, may ADD and keeps the floor.
 
 No manifests, hashes or reconcile passes: `source.json` records the TRAIN
@@ -23,12 +25,14 @@ pool row, inputs, label sources, counts and timings. Production replays a
 few sampled cursors minute by minute through the Native env as the only
 cross-check of the indexed facts (C3 5.9).
 
-The market pool (TRAIN and VALIDATION rows, env files beside it) is the
-Thinking Student config set dreamerv3/configs/thinking_student/markets;
-it is always given, never assumed by the code:
+The market pool (TRAIN and VALIDATION rows, env files beside it) and the
+grade thresholds are Thinking Student configs (dreamerv3/configs/
+thinking_student/markets, entry_grades.yaml); they are always given, never
+assumed by the code:
 
   python -m gym_trading_env.research.ts_v1_corpus --contract CZCE.FG809 \
       --pool ../dreamerv3/configs/thinking_student/markets/pool.json \
+      --grades ../dreamerv3/configs/thinking_student/entry_grades.yaml \
       --out /data/logdir/fg_single3/thinking_student/corpus --workers 24
 """
 from __future__ import annotations
@@ -88,6 +92,8 @@ LABELS = {
     'facts': dict(source='TEACHER_ADD_FACT', ready_at='observed_until: the exit, '
                   'or the end of observation of a censored trade'),
     'strict': dict(source='TRAIN_STRICT_ORACLE', ready_at='flat_end: the whole TRAIN suffix'),
+    'graded': dict(source='GRADED_ENTRY_TEACHER', ready_at='ready_at: the exit, or the end of '
+                   'the room window of a same-day TP; an MFE target at the end of its window'),
     'behaviors': dict(source='EXECUTED_NATIVE behavior accounts P0-P4', ready_at='the row'),
 }
 NATIVE_SAMPLE = 32  # cursors replayed minute by minute at production
@@ -431,8 +437,10 @@ def _pool(workers):
     return ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context('spawn'))
 
 
-def produce(row, folder, workers=None, behaviors=None, log=print):
-    """Write the teaching material of one TRAIN pool row into `folder`."""
+def produce(row, folder, grades, workers=None, behaviors=None, log=print):
+    """Write the teaching material of one TRAIN pool row into `folder`;
+    `grades` are the thresholds of the graded teacher."""
+    from . import ts_v1_grades  # it reads this module
     folder = Path(folder)
     if folder.exists():
         raise FileExistsError(f'{folder} exists; remove it to regenerate')
@@ -463,6 +471,10 @@ def produce(row, folder, workers=None, behaviors=None, log=print):
     started = time.monotonic()
     strict, plan = strict_arrays(env, rows, flat_end, n)
     seconds['strict'] = round(time.monotonic() - started, 1)
+    started = time.monotonic()
+    graded, summary = ts_v1_grades.grade(env, facts, grades, index=index, strict=strict)
+    summary = ts_v1_grades.save(tmp / 'graded', row['contract'], graded, summary, started)
+    seconds['graded'] = summary['seconds']
     save_arrays(tmp / 'facts', facts)
     save_arrays(tmp / 'strict', strict)
     save_arrays(tmp / 'market', dict(
@@ -499,12 +511,13 @@ def produce(row, folder, workers=None, behaviors=None, log=print):
                     tie=int((strict['valid'] & strict['tie']).sum()),
                     plan_trades=len(strict['plan']), plan_cash_gain=plan['selected_cash_gain'],
                     exact_ties=plan['exact_ties']),
+        graded={k: summary[k] for k in ('grades', 'graded', 'demo')},
         behaviors={name: {**BEHAVIORS[name], **summaries[name]} for name in specs},
         seconds=dict(seconds, total=round(time.monotonic() - began, 1)), workers=workers,
         created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
     (tmp / 'source.json').write_text(json.dumps(source, indent=1))
     tmp.rename(folder)
-    log(json.dumps({k: source[k] for k in ('facts', 'strict', 'seconds')}, indent=1))
+    log(json.dumps({k: source[k] for k in ('facts', 'strict', 'graded', 'seconds')}, indent=1))
     return source
 
 
@@ -514,9 +527,13 @@ def main(argv=None):
     parser.add_argument('--out', required=True, help='corpus root; writes <out>/<contract>')
     parser.add_argument('--pool', required=True,
                         help='market pool (dreamerv3/configs/thinking_student/markets/pool.json)')
+    parser.add_argument('--grades', required=True,
+                        help='graded teacher (dreamerv3/configs/thinking_student/entry_grades.yaml)')
     parser.add_argument('--workers', type=int, default=os.cpu_count())
     args = parser.parse_args(argv)
-    produce(train_row(args.contract, args.pool), Path(args.out) / args.contract, args.workers)
+    from .ts_v1_grades import load_grades
+    produce(train_row(args.contract, args.pool), Path(args.out) / args.contract,
+            load_grades(args.grades), args.workers)
 
 
 if __name__ == '__main__':
