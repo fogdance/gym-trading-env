@@ -123,8 +123,8 @@ class CandidateConfig:
             _number(getattr(self, key), key)
         if self.beta < 0 or self.lam < 0 or self.alpha < 0 or not (0 < self.rho < 1):
             raise RewardInputError("Expected beta/lam/alpha>=0 and 0<rho<1")
-        if not (0 < self.gamma < 1) or self.risk_points <= 0 or self.take_profit_points != 5:
-            raise RewardInputError("Expected 0<gamma<1, positive risk_points, TP=5")
+        if not (0 < self.gamma < 1) or self.risk_points <= 0 or self.take_profit_points <= 0:
+            raise RewardInputError("Expected 0<gamma<1, positive risk_points and TP points")
 
 
 @dataclass
@@ -147,10 +147,10 @@ class _Position:
     intrabar_ambiguous: bool = False
 
 
-def _potential(active: Mapping[str, _Position], mark: float | None) -> float:
+def _potential(active: Mapping[str, _Position], mark: float | None, tp: float = 5.0) -> float:
     if mark is None or not active:
         return 0.0
-    return 0.5 * sum(max(-2.0, min(1.0, _side(p.side) * (mark - p.entry_price) / 5.0))
+    return 0.5 * sum(max(-2.0, min(1.0, _side(p.side) * (mark - p.entry_price) / tp))
                      for p in active.values())
 
 
@@ -259,7 +259,7 @@ class FGRewardScorer:
                         raise RewardInputError('Duplicate quality TP entry')
                     self._quality_last_day[entry_id] = official_day
                     self._quality_crossed_days[entry_id] = 0
-        phi_before = _potential(self.active, self.last_mark)
+        phi_before = _potential(self.active, self.last_mark, self.config.take_profit_points)
         newly_opened: list[str] = []
         for fill in entries:
             if fill.get("reason") != "ENTRY" or not _true_flag(fill.get("committed")):
@@ -324,8 +324,8 @@ class FGRewardScorer:
             reason = str(event.get("reason"))
             exit_price = _number(event.get("exit_price"), "exit price")
             if reason == "TAKE_PROFIT":
-                if _side(p.side)*(exit_price-p.entry_price) < 5-1e-10:
-                    raise RewardInputError("TP exit did not fill at +5")
+                if _side(p.side)*(exit_price-p.entry_price) < self.config.take_profit_points-1e-10:
+                    raise RewardInputError("TP exit did not fill at the TP distance")
                 if ((p.side == "LONG" and hi < exit_price - 1e-10) or
                         (p.side == "SHORT" and lo > exit_price + 1e-10)):
                     raise RewardInputError("TP claim contradicts observed OHLC")
@@ -365,7 +365,7 @@ class FGRewardScorer:
             raise RewardInputError("True terminal cannot silently discard open entries")
         # A nonterminal 1024-step chunk does not reset the mark, active slots,
         # first-adverse flags or potential. Right-censoring is NOT a terminal.
-        phi_after = _potential(self.active, close)
+        phi_after = _potential(self.active, close, self.config.take_profit_points)
         advance = int(valid_bar) if self.config.clock_protocol == 'S3_MARKET_MINUTE' else 1
         discount = self.config.gamma ** advance
         potential_basis = discount*phi_after-phi_before

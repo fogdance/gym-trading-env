@@ -48,6 +48,9 @@ def _e_market_features(frame, schedule):
 class FixedDirectionEntryEnv(CustomTradingEnv):
     """WAIT/ADD_3 strategy; does not call or rewrite legacy target-position step."""
     metadata = {"render_modes": []}
+    # TP5 / SL30 points; also the default of envs pickled before the keys existed.
+    take_profit_points = 5
+    stop_loss_points = 30
 
     def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
         gym.Env.__init__(self)
@@ -126,6 +129,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         tr.take_profit_enabled = True
         tr.lot_size = self.terms.multiplier
         self.main_exit_at = timestamp(self.entry_config["main_exit_at"]) if self.entry_config.get("main_exit_at") else None
+        # TP5 / SL30 by default; a paper-trading env may set other distances (user 2026-10-30).
+        for key in ("take_profit_points", "stop_loss_points"):
+            if key in self.entry_config:
+                value = int(self.entry_config[key])
+                if value <= 0 or not self.single3:
+                    raise ValueError(f"entry.{key} is a positive Single3 distance in points")
+                setattr(self, key, value)
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
@@ -288,10 +298,12 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._update_unrealized_pnl()
 
     def _compute_stop_loss_price(self, entry_exec_price, side):
-        return entry_exec_price + (-30 if side == "long" else 30) if self.single3 else None
+        d = self.stop_loss_points
+        return entry_exec_price + (-d if side == "long" else d) if self.single3 else None
 
     def _compute_take_profit_price(self, entry_exec_price, sl_exec_price, side):
-        return entry_exec_price + (5 if side == "long" else -5)
+        d = self.take_profit_points
+        return entry_exec_price + (d if side == "long" else -d)
 
     def _assert_ledger_conservation(self):
         if self.ledger.total_balance() != self._ledger_total0:
@@ -489,8 +501,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError("Exit precedes entry")
         side = item["side"]
         price = Decimal(str(price))
-        if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < 5:
-            raise ValueError("TP execution price does not reach five points")
+        if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < self.take_profit_points:
+            raise ValueError("TP execution price does not reach the TP distance")
         self._set_terms(time, closing=True, entry=item)
         fn = self._long_close if side == "LONG" else self._short_close
         code = fn(price, Decimal(0), slot=item["slot"], close_reason=reason,
@@ -533,7 +545,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if not self.single3:
             return FastTakeProfitReward()
         from gym_trading_env.rewards.single3_reward import Single3Reward
-        return Single3Reward(self.reward_config)
+        return Single3Reward(self.reward_config, self.take_profit_points, self.stop_loss_points)
 
     def _exit_request(self, item, pos, row, bob, time):
         """Shared executable quote rules; financial mutation stays in settle_exit.
@@ -802,7 +814,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.last_close_position, self._entries_used_today = None, self.entry_sequence
         if self.single3:
             from gym_trading_env.rewards.single3_reward import Single3Reward
-            self.reward_function = Single3Reward.restore(state['reward_state'], self.reward_config)
+            self.reward_function = Single3Reward.restore(state['reward_state'], self.reward_config,
+                                                         self.take_profit_points, self.stop_loss_points)
             self.last_reward_components = state['last_reward_components']
             if self.reward_function.rewarded != set(state['rewarded']):
                 raise ValueError('Single3 rewarded identity mismatch')

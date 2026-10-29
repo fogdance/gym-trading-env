@@ -47,9 +47,12 @@ class Single3RewardConfig:
 
 
 class Single3Reward:
-    def __init__(self, config):
+    def __init__(self, config, take_profit_points=5, stop_loss_points=30):
+        # TP5 / SL30 unless the env sets other distances (paper trading, user 2026-10-30).
         self.config = config
-        self.v2_config = CandidateConfig(beta=config.beta, rho=config.rho, clock_protocol=PROTOCOL)
+        self.stop_loss_points = stop_loss_points
+        self.v2_config = CandidateConfig(beta=config.beta, rho=config.rho, clock_protocol=PROTOCOL,
+                                         take_profit_points=float(take_profit_points))
         self.tp_profile = 'QUALITY_TP_V1' if config.schema == QUALITY_TP_SCHEMA else 'LEGACY_C1'
         self.scorer = FGRewardScorer(self.v2_config, tp_profile=self.tp_profile)
         self.total = 0.
@@ -83,7 +86,7 @@ class Single3Reward:
                 sl += value
             else:
                 loss = max(Decimal(0), -Decimal(event["net_trade_pnl"]))
-                value = -self.config.L * float(min(Decimal(1), loss / (3 * Decimal(str(multiplier)) * 30)))
+                value = -self.config.L * float(min(Decimal(1), loss / (3 * Decimal(str(multiplier)) * self.stop_loss_points)))
                 other += value
             events.append(dict(event, reward=value))
         value = result["v2"] + sl + other
@@ -99,10 +102,10 @@ class Single3Reward:
                     scorer=self.scorer.snapshot(), total=self.total)
 
     @classmethod
-    def restore(cls, state, config):
+    def restore(cls, state, config, take_profit_points=5, stop_loss_points=30):
         if state["schema"] != SCHEMA or state["config"] != asdict(config):
             raise ValueError("Single3 reward checkpoint/config mismatch")
-        obj = cls(config)
+        obj = cls(config, take_profit_points, stop_loss_points)
         obj.scorer = FGRewardScorer.restore(state["scorer"], obj.v2_config, tp_profile=obj.tp_profile)
         if len(obj.scorer.active) > 1:
             raise ValueError("Single3 checkpoint exceeds capacity")
