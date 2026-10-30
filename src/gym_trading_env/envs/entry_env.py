@@ -116,8 +116,15 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             **({'clock_protocol': TIME_PROTOCOL, 'market_window': 'last_60_valid_bars'} if self.single3 else {})))
         self._config(config_path)
         tr = self.config.trading
-        if tr.live_mode or not tr.is_future or tr.future_symbol != self.contract:
-            raise ValueError("Entry v1 requires an offline matching FG futures config")
+        if (tr.live_mode and not self.single3) or not tr.is_future or tr.future_symbol != self.contract:
+            raise ValueError("Entry v1 requires a matching FG futures config (live: Single3 only)")
+        # The base env's own order hook stays off: entry_live sends Single3 fills.
+        self._live, self._order_client = None, None
+        if tr.live_mode:
+            # Live mode (user 2026-10-30): DB bars, blocking step, order RPC.
+            from .entry_live import LiveFeed
+            self._live = LiveFeed(self.contract, self.entry_config.get('live', {}),
+                                  lambda m: print(m, flush=True))
         if (tr.initial_balance, tr.trade_lot, tr.max_long_position, tr.max_short_position) != (300000, 3, self.max_lots, self.max_lots):
             raise ValueError(f"Entry contract requires 300000 CNY, 3 lots per ADD and max {self.max_lots}")
         if self.single3 and raw['trading'].get('stop_loss_enabled') is not True:
@@ -167,7 +174,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
 
     def _load_market(self, df):
         if df is None:
-            df = pd.read_csv(Path(self.config.trading.data_path).expanduser())
+            live = getattr(self, '_live', None)
+            df = live.read() if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
+        if getattr(self, '_live', None):
+            self._live_frame = df
         input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index
         if not isinstance(input_index, pd.DatetimeIndex) or input_index.hasnans or input_index.has_duplicates or not input_index.is_monotonic_increasing:
             raise ValueError("Entry market timestamps must be unique, valid and ascending")
@@ -419,8 +429,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self._initialized and not self.terminated:
             if self.status == "CHUNK_END":
                 self.status, self.truncated, self.chunk_count = "ACTIVE", False, 0
-            elif self.current_step == 0 and not self.entries and not self.fills:
-                pass
+            elif not self.entries and not self.fills and self.current_step == (
+                    len(self._raw) - 1 if getattr(self, '_live', None) else 0):
+                pass  # a fresh account (live: at its latest bar)
             else:
                 raise RuntimeError("Reset would discard an unfinished account; continue or restore it")
             return self._get_obs(), self._get_info()
@@ -447,6 +458,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.pending_reason = None
         if self.single3:
             self._tp_info_cache = (0, 0, 0.)
+        if getattr(self, '_live', None):
+            # A live account starts empty at the latest bar; earlier bars
+            # only fill the observation window.
+            self.current_step = len(self._raw) - 1
+            self.current_price = Decimal(str(self._raw.iloc[-1].Close))
         self._initialized = True
         self._sample_equity()
         self._ensure_private_history()
@@ -573,6 +589,19 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         return (decision.reason, decision.price) if decision.reason else None
 
     def step(self, action):
+        live = getattr(self, '_live', None)
+        if live is None:
+            return self._native_step(action)
+        if self.current_step + 1 == len(self._raw) and not (self.terminated or self.truncated):
+            rows = live.wait(self._raw.index[-1])
+            self.status, self.truncated = "DATA_END", True
+            self.continue_data(pd.concat([self._live_frame, rows], ignore_index=True))
+        decision_time, fills = self._raw.index[self.current_step], len(self.fills)
+        result = self._native_step(action)
+        live.send(self, decision_time, self.fills[fills:])
+        return result
+
+    def _native_step(self, action):
         if not self.action_space.contains(action):
             raise ValueError(f"Invalid Entry action: {action}")
         if self.terminated or self.truncated:
