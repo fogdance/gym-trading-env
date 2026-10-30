@@ -175,7 +175,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def _load_market(self, df):
         if df is None:
             live = getattr(self, '_live', None)
-            df = live.read() if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
+            df = live.read(floor=self.terms.calendar[0]) if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
         if getattr(self, '_live', None):
             self._live_frame = df
         input_index = pd.DatetimeIndex(pd.to_datetime(df["Date"])) if "Date" in df else df.index

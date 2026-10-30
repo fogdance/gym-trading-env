@@ -3,6 +3,9 @@ live_mode: completed bars of the real contract come from the market DB
 (fut_bar_1m_v2), `step` blocks until the next bar, and committed fills are
 sent to the existing order RPC. The Native engine stays the only ledger;
 RPC acknowledgement means a queued signal, broker fills are not reconciled.
+Every start, a restart too, is a first run (user 2026-10-30): an empty
+account from the latest DB bar; the last history_days only fill the
+observation window.
 """
 import json
 import time
@@ -18,8 +21,7 @@ class LiveFeed:
 
     def __init__(self, contract, settings, log):
         self.contract, self.log = contract, log
-        # A fixed start keeps env cursors the same when a stopped run resumes.
-        self.history_start = pd.Timestamp(settings['history_start']).tz_localize(TZ)
+        self.history_days = float(settings.get('history_days', 10))
         self.poll_seconds = float(settings.get('poll_seconds', 2))
         self.max_signal_age = float(settings.get('max_signal_age_seconds', 90))
         self.rpc = None
@@ -48,10 +50,12 @@ class LiveFeed:
                 time.sleep(wait)
                 wait = min(wait * 2, 60)
 
-    def read(self, after=None):
-        """Bars after `after` (tz-aware), or from history_start."""
+    def read(self, after=None, floor=None):
+        """Bars after `after` (tz-aware), or of the last history_days (not
+        before `floor`, the first minute of the contract calendar)."""
         from gym_trading_env.utils.bar_source import JUEJIN_FUT_BAR_TABLE
-        bound = after if after is not None else self.history_start
+        bound = after if after is not None else max(
+            pd.Timestamp.now(tz=TZ) - pd.Timedelta(days=self.history_days), floor or pd.Timestamp(0, tz=TZ))
         rows = self._query(
             f'SELECT trading_date, bob, eob, `open`, `high`, `low`, `close`, volume, `position` '
             f'FROM {JUEJIN_FUT_BAR_TABLE} WHERE symbol=%s AND eob {">" if after is not None else ">="} %s '
