@@ -95,7 +95,7 @@ def funds_certificate(env):
     lo=Decimal(str(env._raw.Low.min()))-spread-slippage-env.terms.tick
     hi=Decimal(str(env._raw.High.max()))+spread+slippage+env.terms.tick
     bound=3*m*((hi-lo)+hi*rate)+3*(op+max(cl,ct))
-    tp_net_min=3*m*5-3*(op+max(cl,ct))
+    tp_net_min=3*m*env.take_profit_points-3*(op+max(cl,ct))
     initial=Decimal(str(env.config.trading.initial_balance))
     if bound>=initial or tp_net_min<=0:
         raise ValueError(f'NOT_PROVEN: funds bound {bound} / initial {initial}, TP net {tp_net_min}')
@@ -167,14 +167,14 @@ class CandidateIndex:
         side=entry['side'];sign=1 if side=='LONG' else -1
         price=Decimal(entry['price'])
         i=t+1;idx=self.indices[side]
-        s=idx['sl'].first(i,self.stop,float(sign*(price-sign*30)))
+        s=idx['sl'].first(i,self.stop,float(sign*(price-sign*env.stop_loss_points)))
         first_early=idx['early'].first(i,self.stop,sign*float(price)-10+1e-10)
         event=env.attributions[-1] if env.attributions else None
         if event is None:
             item=next(iter(env.entries.values()))
             pending=item['sl_pending']
             sl_exit=self.first_liquid(i+1 if pending else s) if pending or s<self.stop else self.stop
-            tp_exit=idx['tp'].first(i+1,self.stop,-float(sign*(price+sign*5))-float(env.terms.tick))
+            tp_exit=idx['tp'].first(i+1,self.stop,-float(sign*(price+sign*env.take_profit_points))-float(env.terms.tick))
             global_exit=self.first_liquid(max(i+1,self.global_at))
             u=min(sl_exit,tp_exit,global_exit)
             if u<self.stop:
@@ -195,7 +195,7 @@ class CandidateIndex:
         rewards={}
         for name in ('C0','C1','C2','C3'):
             # All skipped bars have no reward/event and only increment bars_seen.
-            scorer=Single3Reward(Single3RewardConfig.for_candidate(name))
+            scorer=Single3Reward(Single3RewardConfig.for_candidate(name),env.take_profit_points,env.stop_loss_points)
             sparse=[]
             for cursor in sorted({i,u,*([early] if early is not None else [])}):
                 row=env._raw.iloc[cursor]

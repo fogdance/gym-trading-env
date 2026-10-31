@@ -33,6 +33,9 @@ ACCOUNT_NATIVE_FIELDS = (
 ACCOUNT_NATIVE_KEY = 'account_native'
 ACCOUNT_NATIVE_SHAPE = (len(ACCOUNT_NATIVE_FIELDS),)
 _AGE_SCALE = np.log1p(43200)
+# Fixed input scales of the position distances (the default TP5 / SL30), not
+# the env's rule: a policy sees the same inputs under any TP / SL.
+_TP_SCALE, _SL_SCALE = 5., 30.
 _COVER_CAP = 4.
 
 
@@ -86,9 +89,9 @@ def _position(env, out):
                  else env.position_manager.short_positions)
     pos = positions[item['slot']]
     price = float(env.current_price)
-    out[3] = sign * (float(pos.take_profit_price) - price) / 5.
-    out[4] = sign * (price - float(pos.stop_loss_price)) / 30.
-    out[5] = sign * (price - float(item['entry_price'])) / 30.
+    out[3] = sign * (float(pos.take_profit_price) - price) / _TP_SCALE
+    out[4] = sign * (price - float(pos.stop_loss_price)) / _SL_SCALE
+    out[5] = sign * (price - float(item['entry_price'])) / _SL_SCALE
     held = env.market_clock_counter.held(item['entry_cursor'], env.current_step)
     out[6] = np.log1p(max(held, 0)) / _AGE_SCALE
     scorer = env.reward_function.scorer

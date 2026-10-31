@@ -36,8 +36,8 @@ def soft_teacher(label,strict):
     if not strict.get('valid') or not label.get('immediate_outcome_verified'):
         return dict(soft_target_source='INVALID',soft_target_pADD=None)
     early=label.get('first_adverse',{}).get('10')
-    risk=label.get('exit_type')=='SL30' or early is not None and early<=5
-    high=label.get('exit_type')=='TP5' and label.get('score_valid') and label['score']>=80
+    risk=label.get('exit_type')=='SL' or early is not None and early<=5
+    high=label.get('exit_type')=='TP' and label.get('score_valid') and label['score']>=80
     value=.90 if strict['action'] else .01 if risk else .25 if high else .05
     return dict(soft_target_source='HEURISTIC_V2',soft_target_pADD=value)
 
@@ -94,7 +94,7 @@ def validate_corpus_label(label):
                       ('touch_valid',(4,2)),('adverse',(4,)),('adverse_valid',(4,))):
         if np.asarray(facts[key]).shape!=shape:raise ValueError('Corpus L1 horizon shape differs')
     if facts.get('score_valid'):
-        reason={'TP5':'TAKE_PROFIT','SL30':'STOP_LOSS'}.get(facts.get('exit_type'))
+        reason={'TP':'TAKE_PROFIT','SL':'STOP_LOSS'}.get(facts.get('exit_type'))
         if not reason or not facts.get('immediate_outcome_verified'):
             raise ValueError('Corpus L1 score has no completed native outcome')
         expected,_=quality_for_exit(reason,facts['held_market_minutes'],facts['crossed_trading_days'])
@@ -157,18 +157,18 @@ def validate_label(label):
             bool(layers['L3']['valid'])!=bool(label.get('decision_oracle_certified'))):
         raise ValueError('Catalog layer validity differs from its certified target')
     if label.get('score_valid') and (not label.get('immediate_outcome_verified')
-            or label.get('exit_type') not in ('TP5','SL30') or label.get('score') is None
+            or label.get('exit_type') not in ('TP','SL') or label.get('score') is None
             or not np.isfinite(label['score']) or not 0<=label['score']<=100):
         raise ValueError('Unverified quality score target')
     if label.get('score_valid'):
         from .fg_s3_quality_score import quality_for_exit
-        expected,_=quality_for_exit('TAKE_PROFIT' if label['exit_type']=='TP5' else 'STOP_LOSS',
+        expected,_=quality_for_exit('TAKE_PROFIT' if label['exit_type']=='TP' else 'STOP_LOSS',
             label['held_market_minutes'],label['crossed_trading_days'])
         if label['score']!=expected: raise ValueError('Catalog score differs from the frozen Quality-first B formula')
         event=label.get('native_event')
         if (not event or fingerprint(event)!=label.get('native_event_hash') or
                 event['net_trade_pnl']!=label.get('net_pnl') or
-                event['reason']!=('TAKE_PROFIT' if label['exit_type']=='TP5' else 'STOP_LOSS') or
+                event['reason']!=('TAKE_PROFIT' if label['exit_type']=='TP' else 'STOP_LOSS') or
                 event['held_market_bars']!=label['held_market_minutes']):
             raise ValueError('Catalog score lacks its exact native settlement proof')
     for key,shape in (('event',(7,)),('event_valid',(7,)),('touch',(4,2)),('touch_valid',(4,2)),
@@ -228,8 +228,8 @@ def attach_quality(batch, records, *, teacher_identities, fold='TRAIN'):
         out['quality_outcome_valid'][pos] = True
         out['quality_score_valid'][pos] = label['score_valid']
         out['quality_score'][pos] = label['score'] if label['score_valid'] else 0.
-        out['quality_tp'][pos] = label.get('exit_type') == 'TP5'
-        out['quality_sl'][pos] = label.get('exit_type') == 'SL30'
+        out['quality_tp'][pos] = label.get('exit_type') == 'TP'
+        out['quality_sl'][pos] = label.get('exit_type') == 'SL'
         first = label.get('first_adverse',{}).get('10')
         out['quality_early5'][pos] = first is not None and first <= 5
         for key in ('event','event_valid','touch','touch_valid','adverse','adverse_valid'):
@@ -267,7 +267,7 @@ def coverage(records):
         for h in range(7):
             if label['event_valid'][h]:
                 counts[f'event_h{h}/valid']+=1
-                counts[f'event_h{h}/'+('TP5','SL30','OTHER','OPEN')[label['event'][h]]]+=1
+                counts[f'event_h{h}/'+('TP','SL','OTHER','OPEN')[label['event'][h]]]+=1
         counts['reason/'+label.get('primary',label.get('invalid_reason') or 'UNKNOWN')] += 1
     return signed(dict(protocol='FG_S3_QUALITY_COVERAGE_V1',counts=dict(counts),
         score_mean=float(np.mean(scores)) if scores else None,

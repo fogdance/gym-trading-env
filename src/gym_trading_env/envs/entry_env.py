@@ -36,6 +36,9 @@ SINGLE3_POSITION_OBS_FIELDS = ("direction", "position_ratio_3", "sl_pending",
     *POSITION_OBS_FIELDS[3:])
 SINGLE3_PROTOCOL = "fg_single3_v1"
 SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
+# Fixed input scale of the TP distance in position_state (the default TP5),
+# not the env's rule: a policy sees the same inputs under any TP / SL.
+POSITION_TP_SCALE = 5
 
 
 def _e_market_features(frame, schedule):
@@ -382,7 +385,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             sign = 1 if item["side"] == "LONG" else -1
             distance = sign * (pos.take_profit_price - self.current_price)
             offset = 3 + 3 * item["obs_slot"]
-            position[offset:offset+3] = [float(pos.size / 3), float(distance / 5),
+            position[offset:offset+3] = [float(pos.size / 3), float(distance / POSITION_TP_SCALE),
                                        np.log1p(age) / np.log1p(43200)]
         position[1] = float(held_quantity / self.max_lots)
         if held_quantity != self.net_lots:

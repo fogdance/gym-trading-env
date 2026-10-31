@@ -56,7 +56,7 @@ def test_original_env_parity_funds_boundary_and_forced_wait(tmp_path):
     env.step(1)
     assert float(env._calculate_equity())==298182 and list(env._published_mask)==[1,1]
     below=teacher.query_state(env,env._published_mask)
-    assert below['immediate_outcome_verified'] and below['exit_type']=='TP5' and below['score_valid']
+    assert below['immediate_outcome_verified'] and below['exit_type']=='TP' and below['score_valid']
     assert below['funds_after']==str(env._calculate_equity()+282)
     env.step(1)
     held=teacher.query_state(env,env._published_mask)

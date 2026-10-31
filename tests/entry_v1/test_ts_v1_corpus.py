@@ -85,6 +85,34 @@ def test_facts_equal_a_native_minute_trace_at_every_cursor(corpus):
     assert C.native_check(broken, t, reference_candidate(env, t)) == 'exit_cursor'
 
 
+def test_other_tp_sl_distances_reach_the_facts_grades_and_inputs(tmp_path, corpus):
+    """TP / SL are configurable (user 2026-10-31): the corpus inputs carry the
+    distances and every indexed fact is the Native minute trace at them."""
+    rules = dict(take_profit_points=4, stop_loss_points=15)
+    folder, source = ts_corpus(tmp_path, rules=rules)
+    assert source['inputs']['rules'] == rules
+    assert corpus[1]['inputs']['rules'] == dict(take_profit_points=5, stop_loss_points=30)
+    entry = C.read_yaml(folder / 'inputs' / 'env.yaml')['entry']
+    assert {k: entry[k] for k in rules} == rules
+    env = C.corpus_env(folder, market=False)
+    facts = C.load_arrays(folder / 'facts')
+    closed = facts['filled'] & (facts['exit_cursor'] >= 0)
+    assert {0, 1} <= set(facts['kind'][closed].tolist()), 'needs TP and SL'
+    for t in np.flatnonzero(facts['eligible']):
+        native = reference_candidate(env, int(t))
+        assert C.native_check(facts, t, native) is None, t
+        trade = native.get('exit')
+        if trade and trade['reason'] in ('TAKE_PROFIT', 'STOP_LOSS'):
+            sign = 1 if trade['side'] == 'LONG' else -1
+            move = sign * (float(trade['exit_price']) - float(trade['entry_price']))
+            assert (move == 4 if trade['reason'] == 'TAKE_PROFIT' else move <= -15), (t, move)
+    default = C.load_arrays(corpus[0] / 'facts')
+    assert not np.array_equal(default['exit_cursor'], facts['exit_cursor'])
+    # The graded teacher checks each TP against the TP distance of the env.
+    graded = C.load_arrays(folder / 'graded')
+    assert (graded['grade'][closed & (facts['kind'] == 1)] == 0).all(), 'an SL is POOR'
+
+
 def test_always_add_account_trades_exactly_the_facts(corpus):
     folder, source = corpus
     facts, p1 = C.load_arrays(folder / 'facts'), C.load_arrays(folder / 'behaviors' / 'P1')

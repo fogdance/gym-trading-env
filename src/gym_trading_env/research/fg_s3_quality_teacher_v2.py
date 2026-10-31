@@ -18,7 +18,7 @@ from .fg_s3_quality_score import PROTOCOL as SCORE_POLICY, quality_for_exit
 PROTOCOL = 'FG_S3_QUALITY_TEACHER_V1'
 HORIZONS = (5, 15, 60, 120, 240, 'entry_day_end', 'next_day_end')
 TOUCH_HORIZONS = (5, 60, 240, 'entry_day_end')
-EVENTS = ('TP5', 'SL30', 'OTHER', 'OPEN')
+EVENTS = ('TP', 'SL', 'OTHER', 'OPEN')
 
 
 @dataclass(frozen=True)
@@ -49,10 +49,10 @@ def official_day_index(env):
 
 
 def _window_label(age, exit_age, exit_type, observed, firsts):
-    closed = exit_type in ('TP5', 'SL30', 'OTHER_EXIT')
+    closed = exit_type in ('TP', 'SL', 'OTHER_EXIT')
     complete = age is not None and (closed or observed >= age)
     event_valid = age is not None and ((closed and exit_age <= age) or observed >= age)
-    event = (('TP5', 'SL30', 'OTHER_EXIT').index(exit_type)
+    event = (('TP', 'SL', 'OTHER_EXIT').index(exit_type)
              if event_valid and closed and exit_age <= age else 3)
     # A known touch remains known even on a censored path; a negative needs
     # complete exposure. Each binary event owns its own validity bit.
@@ -97,7 +97,7 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
     first_f = {str(k): first(favorable, k) for k in (1, 3, 5)}
     first_a = {str(k): first(adverse, k) for k in (5, 10, 20, 30)}
     reason = event['reason'] if event else None
-    kind = {'TAKE_PROFIT': 'TP5', 'STOP_LOSS': 'SL30'}.get(reason,
+    kind = {'TAKE_PROFIT': 'TP', 'STOP_LOSS': 'SL'}.get(reason,
                 'OTHER_EXIT' if event else 'RIGHT_CENSORED')
     unique,ordinal=calendar_index['unique'],calendar_index['ordinal']
     d = ordinal[days[u]] - ordinal[days[i]]
@@ -186,19 +186,19 @@ def wait_reasons(label, strict):
         tags = ['STRICT_ADD']
     else:
         tags = []
-        if label.get('exit_type') == 'SL30': tags.append('STRICT_WAIT_SL30')
+        if label.get('exit_type') == 'SL': tags.append('STRICT_WAIT_SL')
         adverse = label.get('first_adverse', {}).get('10')
         if adverse is not None and adverse <= 5: tags.append('STRICT_WAIT_EARLY_ADVERSE10')
-        if label.get('exit_type') == 'TP5' and label.get('crossed_trading_days', 0) >= 1:
+        if label.get('exit_type') == 'TP' and label.get('crossed_trading_days', 0) >= 1:
             tags.append('STRICT_WAIT_TP_AFTER_DAY')
         if label.get('entry_day_observed') and (label.get('first_favorable', {}).get('5') is None
                 or label.get('held_market_minutes', 0) > label['market_minutes_to_entry_day_end']):
             tags.append('STRICT_WAIT_NO_TP_BY_DAY')
-        if label.get('exit_type') == 'TP5' and label.get('score_valid') and label['score'] >= 80:
+        if label.get('exit_type') == 'TP' and label.get('score_valid') and label['score'] >= 80:
             tags.append('STRICT_WAIT_HIGH_QUALITY_ADD')
         if not tags: tags.append('STRICT_WAIT_OTHER')
     if label.get('exit_type') == 'RIGHT_CENSORED': tags.append('OUTCOME_RIGHT_CENSORED')
-    risk=any(t in tags for t in ('STRICT_WAIT_SL30','STRICT_WAIT_EARLY_ADVERSE10','STRICT_WAIT_TP_AFTER_DAY','STRICT_WAIT_NO_TP_BY_DAY'))
+    risk=any(t in tags for t in ('STRICT_WAIT_SL','STRICT_WAIT_EARLY_ADVERSE10','STRICT_WAIT_TP_AFTER_DAY','STRICT_WAIT_NO_TP_BY_DAY'))
     group=('UNVERIFIED' if not strict.get('valid') else 'STRICT_ADD' if strict['action']==1 else
            'VOLUNTARY_RISK' if risk else 'VOLUNTARY_HIGH_QUALITY' if 'STRICT_WAIT_HIGH_QUALITY_ADD' in tags else 'VOLUNTARY_OTHER')
     return dict(primary=tags[0], reasons=tags,wait_class=group,
@@ -415,7 +415,7 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         from gym_trading_env.rewards.single3_reward import Single3Reward,Single3RewardConfig
         if private_snapshot is None:clone.import_state(state)
         else:clone._restore_private_state(private_snapshot,source_env=env)
-        shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'))
+        shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'),env.take_profit_points,env.stop_loss_points)
                 if getattr(env,'_e_profile',None) is None else None)
         before = clone._calculate_equity()
         fills, exits = len(clone.fills), len(clone.attributions)

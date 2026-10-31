@@ -54,9 +54,9 @@ def walk(env, days, i, minutes, after=None):
 
 
 def expected_grade(kind, crossed, held, mae, room, complete, grades):
-    if kind in ('SL30', 'OTHER_EXIT') or (kind == 'TP5' and crossed):
+    if kind in ('SL', 'OTHER_EXIT') or (kind == 'TP' and crossed):
         return T.POOR
-    if kind != 'TP5' or not complete:
+    if kind != 'TP' or not complete:
         return -1
     (t1, t2), (m1, m2, m3), (r1, r2, r3) = (grades[k] for k in T.KEYS[:3])
     time = 3 if held <= t1 else 2 if held <= t2 else 1
@@ -88,7 +88,7 @@ def test_mfe_and_room_windows_walked_minute_by_minute(corpus):
             assert graded[f'mfe_{h}'][t] == np.float32(room), (t, h)
             assert graded[f'mfe_{h}_complete'][t] == complete, (t, h)
             cut += complete and days[end] == days[i] and end + 1 < len(days) and days[end + 1] != days[i]
-        if T.KINDS[facts['kind'][t]] == 'TP5' and facts['crossed_days'][t] == 0:
+        if T.KINDS[facts['kind'][t]] == 'TP' and facts['crossed_days'][t] == 0:
             room, end, complete = walk(env, days, i, 60, after=exit_at)
             assert graded['room'][t] == np.float32(room) and graded['room_complete'][t] == complete
             assert room >= 5 + float(env.terms.tick)  # the TP is in the window
@@ -112,7 +112,7 @@ def test_the_fill_minute_close_counts_only_with_volume_left_for_the_exit():
 
 def test_mfe_reaches_the_tp_exactly_when_the_trade_takes_profit_in_time(corpus):
     facts, graded = corpus['facts'], corpus['graded']
-    tp = np.flatnonzero(facts['filled'] & (facts['kind'] == C.KINDS.index('TP5')))
+    tp = np.flatnonzero(facts['filled'] & (facts['kind'] == C.KINDS.index('TP')))
     assert (facts['crossed_days'][tp] > 0).any()
     reach = 5 + float(corpus['env'].terms.tick)
     for h in T.MFE_MINUTES:
@@ -143,7 +143,7 @@ def test_grades_are_the_worst_dimension_and_label_add_and_wait(corpus, grades):
 
 def test_a_censored_trade_has_no_grade_and_a_late_tp_is_refused(corpus):
     env, facts = corpus['env'], dict(corpus['facts'])
-    tp = np.flatnonzero(facts['filled'] & (facts['kind'] == C.KINDS.index('TP5')))
+    tp = np.flatnonzero(facts['filled'] & (facts['kind'] == C.KINDS.index('TP')))
     kind = facts['kind'].copy()
     kind[tp[:5]] = C.KINDS.index('RIGHT_CENSORED')
     graded, summary = T.grade(env, dict(facts, kind=kind), GRADES)

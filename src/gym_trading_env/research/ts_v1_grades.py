@@ -23,10 +23,11 @@ price over the quotes a TP can fill at, as env.step exits: the close of the
 fill minute when its volume leaves an exit, then the high (low) of every
 later valid minute with Volume >= 3 (the TP index of fg_single3_oracle), up
 to room_after_tp_minutes market minutes after its TP, within the official
-trading day of the fill. A TP fills at the first such quote 5 points and a
-tick ahead, so the room of a same-day TP is at least that much.
+trading day of the fill. A TP fills at the first such quote the env's TP
+distance (entry.take_profit_points, TP5 by default) and a tick ahead, so the
+room of a same-day TP is at least that much.
 
-The grade of a trade is its worst grade. SL30 and other exits are POOR, and
+The grade of a trade is its worst grade. SL and other exits are POOR, and
 so is a TP on a later day. A right-censored trade, an ADD that did not fill
 and a same-day TP whose room window the data cuts have none. GOOD or better
 demonstrates ADD, POOR demonstrates WAIT, FAIR demonstrates nothing.
@@ -110,18 +111,18 @@ def _room(index, side, price, i, end, volume):
 
 def measure(env, facts, index=None, calendar=None):
     """Fill price, side and MFE of every filled cursor, checked against the
-    facts: the TP of each TP5 trade is the first quote a TP can fill at that
-    is 5 points and a tick ahead of the measured fill."""
+    facts: the TP of each TP trade is the first quote a TP can fill at that
+    is the env's TP distance and a tick ahead of the measured fill."""
     index = index or CandidateIndex(env)
     calendar = calendar or official_day_index(env)
     clock, stop, n = index.clock, index.stop, len(env._raw)
     day_last = np.array([calendar['last'][d] for d in calendar['days']], np.int64)
     opens, volume = env._raw.Open.to_numpy(), env._raw.Volume.to_numpy()
-    tick = float(env.terms.tick)
+    tick, tp_points = float(env.terms.tick), env.take_profit_points
     out = dict(entry_price=np.full(n, np.nan), sign=np.zeros(n, np.int8),
                **{f'mfe_{h}': np.full(n, np.nan, np.float32) for h in MFE_MINUTES},
                **{f'mfe_{h}_complete': np.zeros(n, bool) for h in MFE_MINUTES})
-    tp5, checked = KINDS.index('TP5'), 0
+    tp, checked = KINDS.index('TP'), 0
     for t in np.flatnonzero(facts['filled']):
         i = int(facts['entry_cursor'][t])
         side = env.direction_at(env.bobs[i], row_index=i)
@@ -132,9 +133,9 @@ def measure(env, facts, index=None, calendar=None):
             end, complete = _window_end(clock, int(day_last[i]), int(clock.prefix[i]), h, stop, n)
             out[f'mfe_{h}'][t] = _room(index, side, price, i, min(end, stop - 1), volume)
             out[f'mfe_{h}_complete'][t] = complete
-        if facts['kind'][t] == tp5:
-            first = (i if _room(index, side, price, i, i, volume) >= 5 + tick else
-                     index.indices[side]['tp'].first(i + 1, stop, -sign * (price + sign * 5) - tick))
+        if facts['kind'][t] == tp:
+            first = (i if _room(index, side, price, i, i, volume) >= tp_points + tick else
+                     index.indices[side]['tp'].first(i + 1, stop, -sign * (price + sign * tp_points) - tick))
             if first != facts['exit_cursor'][t]:
                 raise ValueError(f'cursor {t}: TP at {facts["exit_cursor"][t]}, but the measured '
                                  f'{side} fill {price} reaches TP first at {first}')
@@ -156,10 +157,10 @@ def grade(env, facts, grades, index=None, calendar=None, strict=None):
                grade=np.full(n, -1, np.int8), ready_at=np.full(n, -1, np.int32))
     for t in np.flatnonzero(facts['filled']):
         kind, exit_at = KINDS[facts['kind'][t]], int(facts['exit_cursor'][t])
-        if kind in ('SL30', 'OTHER_EXIT'):
+        if kind in ('SL', 'OTHER_EXIT'):
             out['grade'][t], out['ready_at'][t] = POOR, exit_at
             continue
-        if kind != 'TP5':
+        if kind != 'TP':
             continue  # RIGHT_CENSORED: no grade
         if facts['crossed_days'][t] > 0:
             out['grade_time'][t] = out['grade'][t] = POOR
