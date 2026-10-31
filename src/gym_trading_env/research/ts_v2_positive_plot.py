@@ -1,10 +1,10 @@
 """Review figures of V2 positive events (ts_v2_positive): 1m candles with the
-known prior high H, its entry zone, the SL, the activation, every positive
+known prior high H (the line), its entry zone, the SL, the touch start, every positive
 ADD with its TP and exit, and the volume and RV panels on the real clock.
 
 Colors: three categorical slots that pass the all-pairs CVD check on the
 light surface (blue = the level H, orange = the positive entries, aqua =
-the activation); candles, volume and the SL are ink. Every colored mark has
+the touch start); candles, volume and the SL are ink. Every colored mark has
 a direct text label, so identity never rests on color alone.
 """
 from __future__ import annotations
@@ -109,11 +109,13 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
         ax.annotate('H known', (confirm, H), xytext=(0, 10), textcoords='offset points',
                     color=INK2, fontsize=8, ha='center')
 
-    # Activation: the first RV >= 2 near H.
+    # Touch start: the first bar near H after a departure (on a line with
+    # its volume spike).
     for a in (ax, axv, axr):
         a.axvline(act, color=ACTIVATION, lw=1.4, zorder=4)
-    ax.text(act + 1, 0.975, f'activation RV {x["activation_rv"]:.1f}', color=INK, fontsize=8.5, va='top',
-            transform=ax.get_xaxis_transform())
+    rv = x['activation_rv']
+    ax.text(act + 1, 0.975, f'touch {int(x["touch"])} ' + (f'RV {rv:.1f}' if np.isfinite(rv) else 'RV n/a'),
+            color=INK, fontsize=8.5, va='top', transform=ax.get_xaxis_transform())
 
     # Candidates not in the library (audit only), then the positive ADDs.
     if len(others):
@@ -191,12 +193,12 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
     axr.set_xticklabels(labels)
     axr.set_xlim(lo - 1, hi + 8)
 
-    fig.suptitle(f'{x["contract"]}  event {x["event_id"]}  ·  H {H:g}  ·  {int(x["positives"])} positive ADD '
-                 f'({int(x["excellent"])} EXCELLENT)  ·  direction SHORT, {x["direction_source"]}',
-                 x=0.06, ha='left', y=1 - 0.14 / height, color=INK, fontsize=11.5)
-    fig.text(0.06, 1 - 0.53 / height, f'activation {x["activation_time"][:16]}  ·  event end {x["end_time"][:16]} '
-             f'({x["end_reason"]})  ·  1m bars, fill = next open - spread; entries are alternatives, '
-             'never summed', color=INK2, fontsize=8.5)
+    fig.suptitle(f'{x["contract"]}  event {x["event_id"]}  ·  H {H:g}, touch {int(x["touch"])}  ·  '
+                 f'{int(x["positives"])} positive ADD ({int(x["excellent"])} EXCELLENT)  ·  direction SHORT, '
+                 f'{x["direction_source"]}', x=0.06, ha='left', y=1 - 0.14 / height, color=INK, fontsize=11.5)
+    fig.text(0.06, 1 - 0.53 / height, f'line volume spike {x["line_spike_time"][:16]} RV {x["line_spike_rv"]:.1f}  ·  '
+             f'touch {x["activation_time"][:16]} to {x["end_time"][:16]} ({x["end_reason"]})  ·  1m bars, '
+             'fill = next open - spread; entries are alternatives, never summed', color=INK2, fontsize=8.5)
     if len(lines) > TABLE_ROWS:
         lines = lines[:TABLE_ROWS] + [f'... {len(lines) - TABLE_ROWS} more in teacher/positive_entries.csv']
     fig.text(0.06, 0.05 / height, '\n'.join(lines), color=INK, fontsize=7.6, family='monospace', va='bottom')

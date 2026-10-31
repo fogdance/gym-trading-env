@@ -22,13 +22,13 @@ real = pytest.mark.skipif(not (POOL.exists() and CONFIG.exists()), reason='Think
 
 # The rules of v2_positive_entry.yaml, so the synthetic tests stand alone.
 CFG = yaml.safe_load("""
-version: V2_POSITIVE_ENTRY_V1
+version: V2_POSITIVE_ENTRY_V2
 direction: SHORT
 direction_source: DIRECTION_ASSUMED
-prior_high: {pivot_left: 2, pivot_right: 2, lookback_buckets: 46, departure_points: 10}
+prior_high: {pivot_left: 2, pivot_right: 2, lookback_buckets: 115, departure_points: 10}
 volume: {baseline_minutes: 20, ratio: 2.0, exclude_segment_open: true}
-event: {near_points: 5, window_minutes: 60}
-entry: {zone_points: 5, stop_above_points: 5, max_risk_points: 10, target_r: 2.0, parallel_r: 1.5}
+event: {near_points: 5}
+entry: {zone_points: 7, stop_above_points: 5, max_risk_points: 12, target_r: 2.0, parallel_r: 1.5}
 quality: {excellent: {mae_r: 0.5, held_minutes: 120}, good: {mae_r: 0.8, held_minutes: 345}}
 timeline: {wait_rows_per_phase: 8}
 figures: {max_events: 12, per_contract: 2}
@@ -39,15 +39,22 @@ def _bars(price, high=None, n=15, volume=100.):
     return [(price, price if high is None else high, price - 1, price, volume)] * n
 
 
-def synthetic(spike=(96, 99, 96, 98, 500.)):
+QUIET_PEAK = _bars(95, 100)
+# The pivot bucket with a volume spike at its high (cursor 37).
+LOUD_PEAK = _bars(95, 100, 7) + [(95, 100, 94, 95, 500.)] + _bars(95, 100, 7)
+# After the first touch departs (cursor 105): a quiet return near H at
+# cursors 110-112, a second departure at 113.
+RETURN = _bars(88, 89, 5) + [(96, 97, 95, 96, 100.)] * 3 + _bars(88, 89, 7) + _bars(85, 86) * 3
+
+
+def synthetic(spike=(96, 99, 96, 98, 500.), peak=QUIET_PEAK, tail=_bars(88, 89) + _bars(85, 86) * 3):
     """15-bar buckets: a pivot high H = 100 (bucket 2), a departure to 87, a
     rebound (far, approach, near on low volume), a volume spike in the zone
     at cursor 96, three more in-zone minutes on low volume, then a drop."""
-    bars = (_bars(88, 90) + _bars(88, 90) + _bars(95, 100) + _bars(93, 95) + _bars(92, 94)
+    bars = (_bars(88, 90) + _bars(88, 90) + peak + _bars(93, 95) + _bars(92, 94)
             + _bars(87, 89) + [(89, 89, 88, 89, 100.)] + _bars(92, 93, 3) + _bars(96, 97, 2)
             + [spike, (98, 99, 97, 98, 100.), (98, 98, 96, 97, 100.),
-               (97, 97, 96, 97, 100.), (97, 97, 92, 93, 100.)] + _bars(92, 93, 4)
-            + _bars(88, 89) + _bars(85, 86) * 3)
+               (97, 97, 96, 97, 100.), (97, 97, 92, 93, 100.)] + _bars(92, 93, 4) + tail)
     o, h, lo, c, v = (np.array(x, float) for x in zip(*bars))
     n = len(bars)
     times = pd.date_range('2027-01-04 09:01', periods=n, freq='min', tz='Asia/Shanghai')
@@ -82,7 +89,9 @@ def assert_causal(a, buckets, cursors, cfg=CFG):
         known = [x for x in events if x['activation'] < m - 1]
         assert [x['event_id'] for x in e2] == [x['event_id'] for x in known]
         for x, y in zip(known, e2):
-            assert (y['H'], y['activation_rv'], y['wait']) == (x['H'], x['activation_rv'], x['wait'])
+            # NaN (RV of a segment-open minute) compares equal here.
+            np.testing.assert_equal([y[k] for k in ('H', 'touch', 'line_spike', 'activation_rv', 'wait')],
+                                    [x[k] for k in ('H', 'touch', 'line_spike', 'activation_rv', 'wait')])
             if x['end'] < m - 1:
                 assert (y['end'], y['end_reason']) == (x['end'], x['end_reason'])
         # Frames compare NaN (RV of a segment-open minute) as equal.
@@ -104,7 +113,7 @@ def test_one_event_activates_on_the_spike_and_keeps_later_low_volume_minutes():
     assert len(events) == 1
     x = events[0]
     assert (x['H'], x['activation'], x['end'], x['end_reason']) == (100., 96, 105, 'DEPARTED')
-    assert x['activation_rv'] == 5.
+    assert x['activation_rv'] == 5. and (x['touch'], x['line_spike']) == (1, 96)
     assert [(w['cursor'], w['teach']) for w in x['wait']] == [
         (90, 'WAIT_FAR'), (91, 'WAIT_APPROACH'), (92, 'WAIT_APPROACH'), (93, 'WAIT_APPROACH'),
         (94, 'WAIT_NEAR_NO_VOLUME'), (95, 'WAIT_NEAR_NO_VOLUME')]
@@ -118,6 +127,50 @@ def test_one_event_activates_on_the_spike_and_keeps_later_low_volume_minutes():
         assert c['obs_quote'] == a['close'][s] - 1 and c['obs_sl'] == 105.
         assert c['label_R'] == 105. - c['label_fill_expected'] and c['label_fill_in_zone']
         assert not any(k.startswith('obs_') and 'fill' in k for k in c)
+        assert (c['obs_touch'], c['obs_line_spike_rv']) == (1, 5.)
+
+
+def test_a_line_is_touched_again_after_a_departure_without_a_new_spike():
+    a, buckets = synthetic(tail=RETURN)
+    events, candidates = run(a, buckets)
+    assert [(x['H'], x['touch'], x['activation'], x['end'], x['end_reason']) for x in events] == [
+        (100., 1, 96, 105, 'DEPARTED'), (100., 2, 110, 113, 'DEPARTED')]
+    second = events[1]
+    # The return has no volume; the line's spike (cursor 96) carries it.
+    assert second['activation_rv'] < 2 and second['line_spike'] == 96
+    # Its WAIT starts after the first touch ended; nothing near H waits.
+    assert [w['teach'] for w in second['wait']] == ['WAIT_FAR'] and second['wait'][0]['cursor'] > 105
+    late = [c for c in candidates if c['event_id'] == second['event_id']]
+    assert [c['cursor'] for c in late] == [110, 111, 112]
+    assert {c['obs_touch'] for c in late} == {2} and all(c['obs_rv'] < 2 for c in late)
+    assert_causal(a, buckets, range(100, a['n'] + 1, 3))
+
+
+def test_a_spike_at_the_high_itself_marks_the_line():
+    # The pivot bucket's own spike: the first rebound near H needs no new
+    # one, so no minute near H waits for volume.
+    a, buckets = synthetic(spike=(96, 99, 96, 98, 100.), peak=LOUD_PEAK)
+    events, candidates = run(a, buckets)
+    x = events[0]
+    assert (x['touch'], x['line_spike'], x['activation']) == (1, 37, 94)
+    assert 'WAIT_NEAR_NO_VOLUME' not in {w['teach'] for w in x['wait']}
+    assert candidates[0]['cursor'] == 94 and candidates[0]['obs_line_spike_rv'] == 5.
+    # Without that spike the same rebound waits for the spike at cursor 96.
+    a, buckets = synthetic(spike=(96, 99, 96, 98, 500.))
+    assert run(a, buckets)[0][0]['activation'] == 96
+
+
+def test_a_touch_takes_the_lowest_armed_line():
+    a, buckets = synthetic()
+    env = SimpleNamespace(_e_market=SimpleNamespace(complete_buckets=buckets))
+    levels, _ = V.prior_highs(env, a, CFG)
+    # A second line, known and departed with the line at 100, never broken.
+    line = dict(levels[0], spike=0, expire=a['n'], broken=a['n'])
+    above = V.scan(a, levels + [dict(line, bucket=-1, H=104.)], CFG, a['n'], 'SYN')[0]
+    assert [(x['H'], x['activation']) for x in above] == [(100., 96)]
+    below = V.scan(a, levels + [dict(line, bucket=-1, H=97.)], CFG, a['n'], 'SYN')[0]
+    # The first bar within 5 of 97 starts a touch of the line at 97.
+    assert (below[0]['H'], below[0]['activation']) == (97., 91)
 
 
 def test_a_level_is_never_used_before_it_is_confirmed_or_after_it_broke():
@@ -178,9 +231,11 @@ def test_positives_keep_their_risk_and_their_fee_inclusive_pnl(corpus):
     lot, lots, (terms,) = float(contract['lot_size']), V.LOTS, contract['terms']
     assert terms['close_fee'] == terms['close_today_fee']
     fee = lots * (terms['open_fee'] + terms['close_fee'])
+    e_ = cfg['entry']
     for _, e in entries.iterrows():
-        assert 5 <= e.label_R <= 10 and e.obs_sl == e.obs_H + 5 == e.label_sl
-        assert e.obs_H - 5 <= e.label_fill_expected <= e.obs_H
+        assert e_['stop_above_points'] <= e.label_R <= e_['max_risk_points']
+        assert e.obs_sl == e.obs_H + e_['stop_above_points'] == e.label_sl
+        assert e.obs_H - e_['zone_points'] <= e.label_fill_expected <= e.obs_H
         assert e.label_tp == e.label_fill_expected - 2 * e.label_R
         assert e.label_exit_reason == 'TAKE_PROFIT' and e.label_exit_price == e.label_tp
         assert e.label_net_pnl == pytest.approx((e.label_fill_expected - e.label_exit_price) * lot * lots - fee)
@@ -258,5 +313,5 @@ def test_the_config_must_be_the_short_version(tmp_path):
     for change in (dict(direction='LONG'), dict(version='V0')):
         path = tmp_path / 'cfg.yaml'
         path.write_text(yaml.safe_dump(dict(CFG, **change)))
-        with pytest.raises(ValueError, match='not a V2_POSITIVE_ENTRY_V1 SHORT config'):
+        with pytest.raises(ValueError, match=f'not a {V.VERSION} SHORT config'):
             V.load_config(path)

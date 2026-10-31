@@ -1,24 +1,26 @@
-"""Thinking Student V2 positive entry corpus (Spec V0.3, user 2026-10-31).
+"""Thinking Student V2 positive entry corpus (Spec V0.3, user 2026-10-31;
+rules V2 after the user's review of the same day).
 
 Teacher demonstrations of one entry only: the direction is given as SHORT;
-wait for a rebound to a known prior 15m high H; the first 1m volume ratio
-RV >= 2 near H activates an event; then ADD at any of several in-zone
-minutes of that event, SL = H + 5 (R <= 10), TP = fill - 2R. The rules are
-docs/thinking_student_v2/DESIGN.md with the values of
-dreamerv3/configs/thinking_student/v2_positive_entry.yaml.
+a known prior 15m high H is a line; the line's first 1m volume ratio
+RV >= 2 near H (from its own 15m bucket on) marks it; every return to the
+line after the price departed is a touch (an event); ADD at any in-zone
+minute of a touch, SL = H + 5 (R <= 12), TP = fill - 2R. A line holds until
+the price breaks it. The rules are docs/thinking_student_v2/DESIGN.md with
+the values of dreamerv3/configs/thinking_student/v2_positive_entry.yaml.
 
-Levels, RV, events and candidates use only the bars up to their cursor and
+Lines, RV, touches and candidates use only the bars up to their cursor and
 the complete 15m buckets available by then. The future is used offline
 only: each candidate's Native trade (the real env with SL = R points and TP
 = 2R points) selects the teacher positives (EXCELLENT / GOOD). Every other
 candidate stays in audit/ with its reason and never becomes material.
-Candidates of one event are alternatives, each traded from a flat account;
-nothing adds their results.
+Candidates of one touch, and of the touches of one line, are alternatives,
+each traded from a flat account; nothing adds their results.
 
   python -m gym_trading_env.research.ts_v2_positive \\
       --pool ../dreamerv3/configs/thinking_student/markets/pool.json \\
       --config ../dreamerv3/configs/thinking_student/v2_positive_entry.yaml \\
-      --out /data/logdir/fg_single3/thinking_student/V2_POSITIVE_ENTRY_20261031 \\
+      --out /data/logdir/fg_single3/thinking_student/V2_POSITIVE_ENTRY_V2_20261031 \\
       --workers 12 [--contracts CZCE.FG809 ...]
 """
 from __future__ import annotations
@@ -41,7 +43,7 @@ from .fg_single3_oracle import CandidateIndex, reference_candidate
 from .ts_v1_corpus import _pool, _repos, native_env, train_row, write_inputs
 from .ts_v1_grades import _room
 
-VERSION = 'V2_POSITIVE_ENTRY_V1'
+VERSION = 'V2_POSITIVE_ENTRY_V2'
 SIDE = 'SHORT'
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
@@ -143,15 +145,19 @@ def volume_ratio(volume, eligible, baseline):
 
 
 def prior_highs(env, a, cfg):
-    """Pivot highs of the complete 15m buckets, each with the cursors at
-    which it becomes visible, expires, is first broken (a short's SL quote
-    reaches H + stop) and first departed (a close at H - departure)."""
+    """Pivot highs of the complete 15m buckets (the lines), each with the
+    cursors at which it becomes visible, expires, is first broken (a short's
+    SL quote reaches H + stop), first departed (a close at H - departure)
+    and first spiked (RV >= ratio on a bar near H, from the bars of its own
+    bucket on)."""
     p, stop = cfg['prior_high'], cfg['entry']['stop_above_points']
+    near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
     buckets = env._e_market.complete_buckets
     high = np.array([b['High'] for b in buckets], float)
     end_ns = np.array([pd.Timestamp(b['bucket_end']).value for b in buckets], np.int64)
     avail_ns = np.array([pd.Timestamp(b['available_at']).value for b in buckets], np.int64)
     n, left, right, look = a['n'], p['pivot_left'], p['pivot_right'], p['lookback_buckets']
+    spiky = a['valid'] & (np.nan_to_num(a['rv']) >= ratio)
 
     def seen(j):  # first cursor whose bar end is at or after bucket j's arrival
         return int(np.searchsorted(a['times_ns'], avail_ns[j], side='left')) if j < len(high) else n
@@ -165,13 +171,15 @@ def prior_highs(env, a, cfg):
         if not (high[j] > high[j - left:j].max() and high[j] >= high[j + 1:j + right + 1].max()):
             continue
         H = float(high[j])
+        own = int(np.searchsorted(a['bob_ns'], end_ns[j - 1], side='left'))  # first bar of bucket j
         start = int(np.searchsorted(a['bob_ns'], end_ns[j], side='left'))
         expire = seen(j + look + 1)
+        broken = first(a['valid'] & (a['buy_high'] >= H + stop), start, expire)
         levels.append(dict(
             bucket=j, H=H, bucket_end=str(pd.Timestamp(end_ns[j], tz='UTC').tz_convert(a['times'].tz)),
-            start=start, confirm=seen(j + right), expire=expire,
-            broken=first(a['valid'] & (a['buy_high'] >= H + stop), start, expire),
-            departed=first(a['valid'] & (a['close'] <= H - p['departure_points']), start, expire)))
+            start=start, confirm=seen(j + right), expire=expire, broken=broken,
+            departed=first(a['valid'] & (a['close'] <= H - p['departure_points']), start, expire),
+            spike=first(spiky & (a['high'] >= H - near), own, min(broken, expire))))
     return levels, len(buckets)
 
 
@@ -183,21 +191,24 @@ def deadline(env):
 
 
 def scan(a, levels, cfg, flat_end, contract):
-    """Events, candidates and the pre-activation WAIT rows of one market, in
-    one causal pass over the cursors (DESIGN sections 2-5, 8)."""
+    """Touches (events), candidates and the pre-touch WAIT rows of one
+    market, in one causal pass over the cursors (DESIGN sections 2-5, 8)."""
     e, ev, p = cfg['entry'], cfg['event'], cfg['prior_high']
     stop, zone, near = e['stop_above_points'], e['zone_points'], ev['near_points']
-    ratio, window, far = cfg['volume']['ratio'], ev['window_minutes'], p['departure_points']
-    n, prefix = a['n'], a['prefix']
+    far, n = p['departure_points'], a['n']
     pending = sorted(levels, key=lambda x: x['confirm'])
-    live, consumed, k = [], set(), 0
-    active = np.full(n, -1, np.int64)  # bucket of the active level of a cursor outside events
+    live, k = [], 0
+    # A line may start a touch from its first departure on, and again from
+    # the bar after each of its touches that ended by a departure.
+    armed = {x['bucket']: x['departed'] for x in levels}
+    touches = dict.fromkeys(armed, 0)
+    active = np.full(n, -1, np.int64)  # bucket of the active line of a cursor outside touches
     events, candidates, event = [], [], None
     for s in range(n):
         while k < len(pending) and pending[k]['confirm'] <= s:
             live.append(pending[k])
             k += 1
-        live = [x for x in live if x['expire'] > s and x['broken'] > s and x['bucket'] not in consumed]
+        live = [x for x in live if x['expire'] > s and x['broken'] > s]
         if event is not None:
             t, H = event['activation'], event['H']
             reason = None
@@ -205,7 +216,7 @@ def scan(a, levels, cfg, flat_end, contract):
                 reason = 'INVALIDATED'
             elif s > t and a['valid'][s] and a['close'][s] <= H - far:
                 reason = 'DEPARTED'
-            elif s > t and prefix[s + 1] - prefix[t + 1] > window:
+            elif s >= event['level_expire']:
                 reason = 'EXPIRED'
             elif s >= flat_end or s + 1 >= n:
                 reason = 'BOUNDARY'
@@ -216,21 +227,30 @@ def scan(a, levels, cfg, flat_end, contract):
                     candidates.append(_candidate(a, event, s, cfg, contract))
                 continue
             event.update(end=s, end_time=str(a['times'][s]), end_reason=reason)
+            if reason == 'DEPARTED':
+                armed[event['level_bucket']] = s + 1
             events.append(event)
             event = None
-        ready = [x for x in live if x['departed'] <= s]
+        ready = [x for x in live if armed[x['bucket']] <= s]
         if not ready or s >= flat_end or s + 1 >= n:
             continue
-        level = max(ready, key=lambda x: x['bucket'])
+        # The first line above the price: the lowest armed one.
+        level = min(ready, key=lambda x: (x['H'], -x['bucket']))
         active[s] = level['bucket']
         H = level['H']
-        if (a['valid'][s] and a['rv'][s] >= ratio and a['high'][s] >= H - near
-                and a['buy_high'][s] < H + stop):
-            consumed.add(level['bucket'])
+        # Near H, not through the stop, and the line has had its volume
+        # spike (this bar may be that spike).
+        if (a['valid'][s] and a['high'][s] >= H - near and a['buy_high'][s] < H + stop
+                and level['spike'] <= s):
+            armed[level['bucket']] = n
+            touches[level['bucket']] += 1
+            spike = level['spike']
             event = dict(
                 event_id=f'{contract}@{s}', contract=contract, direction_source=cfg['direction_source'],
                 H=H, level_bucket=level['bucket'], level_bucket_end=level['bucket_end'],
-                level_confirm=level['confirm'], level_departed=level['departed'],
+                level_confirm=level['confirm'], level_departed=level['departed'], level_expire=level['expire'],
+                touch=touches[level['bucket']], line_spike=spike, line_spike_time=str(a['times'][spike]),
+                line_spike_rv=float(a['rv'][spike]),
                 activation=s, activation_time=str(a['times'][s]), activation_rv=float(a['rv'][s]),
                 cursors=0, wait=_wait_rows(a, level, s, active, cfg))
             active[s] = -1
@@ -256,6 +276,7 @@ def _candidate(a, event, s, cfg, contract):
         obs_H=H, obs_close=float(a['close'][s]), obs_quote=q, obs_quote_below_h=H - q,
         obs_rv=float(a['rv'][s]), obs_rv_activation=event['activation_rv'],
         obs_minutes_since_activation=int(a['prefix'][s + 1] - a['prefix'][t + 1]),
+        obs_touch=event['touch'], obs_line_spike_rv=event['line_spike_rv'],
         obs_sl=H + e['stop_above_points'], obs_planned_risk=planned,
         obs_planned_tp=q - tp_points(cfg, planned, e['target_r']),
         label_fill_cursor=s + 1, label_fill_time=str(a['bobs'][s + 1]), label_fill_expected=fill,
@@ -263,8 +284,8 @@ def _candidate(a, event, s, cfg, contract):
 
 
 def _wait_rows(a, level, t, active, cfg):
-    """The WAIT rows before activation t: from the last close far below H
-    (and no earlier than the run of cursors where this level is the active
+    """The WAIT rows before touch start t: from the last close far below H
+    (and no earlier than the run of cursors where this line is the active
     one), each phase cut to its first, last and a few evenly spaced rows."""
     H, far = level['H'], cfg['prior_high']['departure_points']
     near, keep = cfg['event']['near_points'], cfg['timeline']['wait_rows_per_phase']
@@ -363,14 +384,16 @@ def _rv(rv):
 def explain(c, cfg):
     """Why a candidate is placed where it is, from its obs_* facts only."""
     e, H = cfg['entry'], c['obs_H']
-    return (f'quote {_at(c["obs_quote"], H)} in [H-{e["zone_points"]}, H]; {_rv(c["obs_rv"])}, activation '
-            f'RV {c["obs_rv_activation"]:.1f} {c["obs_minutes_since_activation"]} min ago; '
+    return (f'quote {_at(c["obs_quote"], H)} in [H-{e["zone_points"]}, H]; touch {c["obs_touch"]} of the line '
+            f'(line volume spike {_rv(c["obs_line_spike_rv"])}); {_rv(c["obs_rv"])}, touch began at '
+            f'{_rv(c["obs_rv_activation"])} {c["obs_minutes_since_activation"]} min ago; '
             f'SL H+{e["stop_above_points"]} = {c["obs_sl"]:g}, planned R {c["obs_planned_risk"]:g}, '
             f'planned TP {c["obs_planned_tp"]:g} ({e["target_r"]:g}R)')
 
 
-def wait_note(teach, o, cfg):
-    """Why a timeline row before an ADD waits or activates (obs_* facts)."""
+def wait_note(teach, o, cfg, spike_now=False):
+    """Why a timeline row before an ADD waits or starts a touch (obs_*
+    facts); `spike_now`: the touch's first bar is the line's volume spike."""
     H, far = o['obs_H'], cfg['prior_high']['departure_points']
     near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
     if teach == 'WAIT_FAR':
@@ -378,8 +401,11 @@ def wait_note(teach, o, cfg):
     if teach == 'WAIT_APPROACH':
         return f'rebound, high {_at(o["obs_high"], H)} below H-{near}: not near H yet; wait'
     if teach == 'WAIT_NEAR_NO_VOLUME':
-        return f'high {_at(o["obs_high"], H)} near H but {_rv(o["obs_rv"])} < {ratio:g}: no volume spike; wait'
-    return (f'{_rv(o["obs_rv"])} >= {ratio:g} with high {_at(o["obs_high"], H)} near H: the event starts; '
+        return (f'high {_at(o["obs_high"], H)} near H but {_rv(o["obs_rv"])} < {ratio:g} and the line has '
+                'had no volume spike; wait')
+    why = (f'{_rv(o["obs_rv"])} >= {ratio:g}: the line\'s volume spike' if spike_now else
+           f'the line had its volume spike ({_rv(o["obs_line_spike_rv"])}) before')
+    return (f'high {_at(o["obs_high"], H)} near H, {why}: touch {o["obs_touch"]} starts; '
             f'quote {_at(o["obs_quote"], H)}')
 
 
@@ -426,24 +452,30 @@ def _scan_job(job):
     levels, buckets = prior_highs(env, a, cfg)
     flat_end = min(CandidateIndex(env).flat_end, deadline(env))
     events, candidates = scan(a, levels, cfg, flat_end, row['contract'])
-    def seen(H, s):  # decision-time facts of cursor s against level H
-        q = float(a['sell_close'][s])
+    def seen(x, s):  # decision-time facts of cursor s against the line of touch x
+        H, q = x['H'], float(a['sell_close'][s])
+        # The touch number is the count of earlier touches plus one; the
+        # line's spike is known once it happened.
         return dict(obs_H=H, obs_close=float(a['close'][s]), obs_high=float(a['high'][s]),
                     obs_quote=q, obs_quote_below_h=H - q, obs_rv=float(a['rv'][s]),
-                    obs_in_zone=bool(0 <= H - q <= cfg['entry']['zone_points']))
+                    obs_in_zone=bool(0 <= H - q <= cfg['entry']['zone_points']), obs_touch=x['touch'],
+                    obs_line_spike_rv=x['line_spike_rv'] if x['line_spike'] <= s else math.nan)
 
     for x in events:
-        x['wait'] = [dict(w, time=str(a['times'][w['cursor']]), **seen(x['H'], w['cursor']),
+        x['wait'] = [dict(w, time=str(a['times'][w['cursor']]), **seen(x, w['cursor']),
                           obs_minutes_since_activation=-1) for w in x['wait']]
         for w in x['wait']:
             w['obs_explain'] = wait_note(w['teach'], w, cfg)
-        x['activation_obs'] = seen(x['H'], x['activation'])
-        x['activation_obs']['obs_explain'] = wait_note('ACTIVATION', x['activation_obs'], cfg)
+        x['activation_obs'] = seen(x, x['activation'])
+        x['activation_obs']['obs_explain'] = wait_note('ACTIVATION', x['activation_obs'], cfg,
+                                                       spike_now=x['line_spike'] == x['activation'])
     market = pd.DataFrame(dict(time=a['times'].astype(str), bob=a['bobs'].astype(str), open=a['open'],
                                high=a['high'], low=a['low'], close=a['close'], volume=a['volume'],
                                rv=a['rv'], valid=a['valid'], segment_open=a['segment_open']))
     stats = dict(rows=a['n'], buckets=buckets, levels=len(levels),
                  levels_departed=sum(x['departed'] < min(x['broken'], x['expire']) for x in levels),
+                 levels_spiked=sum(x['spike'] < min(x['broken'], x['expire']) for x in levels),
+                 levels_touched=len({x['level_bucket'] for x in events}),
                  flat_end=flat_end, first_time=str(a['times'][0]), last_time=str(a['times'][-1]),
                  multiplier=a['multiplier'], data_sha256=_sha256(row['path']))
     return row['contract'], events, candidates, market, stats
@@ -584,9 +616,9 @@ def assemble(events, candidates):
         pnl = np.array([c['label_net_pnl'] for c in good])
         positive_events.append(dict(
             {k: x[k] for k in ('event_id', 'contract', 'direction_source', 'H', 'level_bucket_end',
-                               'level_confirm', 'level_departed', 'activation', 'activation_time',
-                               'activation_rv', 'end', 'end_time', 'end_reason', 'cursors', 'candidates',
-                               'positives', 'excellent')},
+                               'level_confirm', 'level_departed', 'touch', 'line_spike_time', 'line_spike_rv',
+                               'activation', 'activation_time', 'activation_rv', 'end', 'end_time',
+                               'end_reason', 'cursors', 'candidates', 'positives', 'excellent')},
             entries=' '.join(c['entry_id'].rsplit(':', 1)[1] for c in good),
             first_positive_minutes=good[0]['obs_minutes_since_activation'],
             last_positive_minutes=good[-1]['obs_minutes_since_activation'],
@@ -682,11 +714,17 @@ def audit_summary(events, candidates, stats, cfg):
         per_event = {}
         for c in good:
             per_event[c['event_id']] = per_event.get(c['event_id'], 0) + 1
+        lines = {(x['contract'], x['level_bucket']) for x in evs if x['event_id'] in per_event}
+        spike_now = {x['event_id'] for x in evs if x['line_spike'] == x['activation']}
         return dict(
             events=len(evs), events_with_candidates=sum(x['candidates'] > 0 for x in evs),
             events_with_positive=len(per_event),
             events_with_2plus_positives=sum(v >= 2 for v in per_event.values()),
             positives_per_event=_counts(per_event.values()),
+            lines_with_positive=len(lines),
+            events_by_touch=_counts(min(x['touch'], 4) for x in evs),
+            positives_by_touch=_counts(min(c['obs_touch'], 4) for c in good),
+            positives_spike_at_touch_start=sum(c['event_id'] in spike_now for c in good),
             end_reasons=_counts(x['end_reason'] for x in evs),
             candidates=len(cs), filled=len(filled), reasons=reasons,
             excellent=sum(c['label_grade'] == 'EXCELLENT' for c in good),
@@ -701,8 +739,8 @@ def audit_summary(events, candidates, stats, cfg):
                                                 [c for c in candidates if c['contract'] == name]))
                  for name in stats}
     total = part(events, candidates)
-    total.update(contracts=len(stats), levels=sum(s['levels'] for s in stats.values()),
-                 rows=sum(s['rows'] for s in stats.values()))
+    total.update(contracts=len(stats), rows=sum(s['rows'] for s in stats.values()),
+                 **{k: sum(s[k] for s in stats.values()) for k in ('levels', 'levels_spiked', 'levels_touched')})
     return dict(version=VERSION, selection_bias=(
         'Positives are chosen by their own Native outcome: their TP rate is 100% by construction. '
         'The base rates of all candidates and of the first candidate of each event are the '
