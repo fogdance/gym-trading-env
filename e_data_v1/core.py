@@ -218,7 +218,8 @@ class MarketData:
             ).tz_localize('UTC').tz_convert(schedule['timezone'])
         frame['_duration'] = (raw.index-bobs).total_seconds()/60
         frame['_legal'] = market_clock.valid
-        return cls(raw,schedule,_env_inputs=dict(frame=frame,features=features,clock=market_clock),
+        config = helpers.pop('config', None)
+        return cls(raw,schedule,config,_env_inputs=dict(frame=frame,features=features,clock=market_clock),
                    **helpers)
 
     def _features(self, prepared=None):
@@ -488,13 +489,14 @@ class MarketData:
                 shared[-window_size:, LEGACY_FIELDS.index(name)] = values[name].astype(np.float32)
             if audit is not None:
                 audit[-window_size:] = np.log(prices / anchor).astype(np.float32)
-        indices = np.flatnonzero((self.bucket_end_ns <= cutoff.value) & (self.bucket_available_ns <= cutoff.value))[-24:]
+        depth = self.config.context_buckets
+        indices = np.flatnonzero((self.bucket_end_ns <= cutoff.value) & (self.bucket_available_ns <= cutoff.value))[-depth:]
         buckets = [self.complete_buckets[i] for i in indices]
-        context = np.zeros((24, 7), np.float32)
+        context = np.zeros((depth, 7), np.float32)
         ready = [i for i, item in enumerate(buckets) if item["feature_ready"]]
         if ready:
             selected = [buckets[i] for i in ready]
-            rows = np.asarray(ready) + 24 - len(buckets)
+            rows = np.asarray(ready) + depth - len(buckets)
             # Keep float64 log/clip followed by the original float32 store;
             # padding and unready buckets retain their exact all-zero rows.
             context[rows, :4] = np.log(np.array([
@@ -520,7 +522,7 @@ class MarketData:
                 vol_relative_raw=x["vol_relative_raw"], oi_change_raw=x["oi_change_raw"],
                 volume_baseline_bucket_ids=x["volume_baseline_bucket_ids"],
                 previous_OI_bucket_id=x["previous_OI_bucket_id"]) for x in buckets],
-            context_padding=24 - len(buckets), minute_padding=60 - window_size)
+            context_padding=depth - len(buckets), minute_padding=60 - window_size)
         return context, old, shared, anchor, audit, meta
 
     def _anchor(self, through, feature_end, cutoff):

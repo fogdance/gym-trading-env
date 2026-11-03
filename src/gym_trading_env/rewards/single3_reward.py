@@ -16,6 +16,9 @@ from gym_trading_env.utils.s3_market_clock import PROTOCOL
 
 SCHEMA = "FG_SINGLE3_REWARD_MARKET_MINUTE_V2"
 QUALITY_TP_SCHEMA = "FG_SINGLE3_REWARD_MARKET_MINUTE_TP_QUALITY_V1"
+# V2 (V0.5, user 2026-10-31): each exit pays its realized net trade PnL (both
+# fees) divided by one fixed reward_scale_cny; nothing else is rewarded.
+NET_PNL_SCHEMA = "FG_SINGLE3_REWARD_NET_PNL_V1"
 CANDIDATES = {"C0": (0., .4, 3.), "C1": (.5, .4, 3.),
               "C2": (1., .4, 3.), "C3": (1., .4, 6.)}
 
@@ -28,13 +31,17 @@ class Single3RewardConfig:
     L: float = 3.
     schema: str = SCHEMA
     clock_protocol: str = PROTOCOL
+    reward_scale_cny: float | None = None
 
     def __post_init__(self):
-        if (self.schema not in (SCHEMA, QUALITY_TP_SCHEMA) or self.clock_protocol != PROTOCOL or
+        net = self.schema == NET_PNL_SCHEMA
+        if (self.schema not in (SCHEMA, QUALITY_TP_SCHEMA, NET_PNL_SCHEMA) or self.clock_protocol != PROTOCOL or
                 self.candidate not in CANDIDATES or
-                (self.schema == QUALITY_TP_SCHEMA and self.candidate != 'C1') or
+                (self.schema in (QUALITY_TP_SCHEMA, NET_PNL_SCHEMA) and self.candidate != 'C1') or
                 any(not math.isfinite(x) for x in (self.beta, self.rho, self.L)) or
-                (self.beta, self.rho, self.L) != CANDIDATES[self.candidate]):
+                (self.beta, self.rho, self.L) != CANDIDATES[self.candidate] or
+                net != (self.reward_scale_cny is not None) or
+                (net and not (math.isfinite(self.reward_scale_cny) and self.reward_scale_cny > 0))):
             raise ValueError("Unknown or inconsistent frozen Single3 reward candidate")
 
     @classmethod
@@ -42,8 +49,13 @@ class Single3RewardConfig:
         return cls(name, *CANDIDATES[name])
 
     @property
+    def fields(self):
+        """The set fields; an unset scale leaves the earlier identity as it was."""
+        return {k: v for k, v in asdict(self).items() if v is not None}
+
+    @property
     def hash(self):
-        return fingerprint(asdict(self))
+        return fingerprint(self.fields)
 
 
 class Single3Reward:
@@ -70,6 +82,15 @@ class Single3Reward:
             if "net_trade_pnl" not in event or not Decimal(event["net_trade_pnl"]).is_finite():
                 raise ValueError("Single3 exit requires actual net trade PnL including both fees")
         result = self.scorer.step(bar)
+        if self.config.schema == NET_PNL_SCHEMA:
+            scale = Decimal(str(self.config.reward_scale_cny))
+            events = [dict(event, reward=float(Decimal(event["net_trade_pnl"]) / scale))
+                      for event in bar.get("exits", ())]
+            value = sum(e["reward"] for e in events)
+            self.total += value
+            return dict(tp=0., early=0., sl=0., other=0., net_pnl=value, total=value, legacy_tp=0.,
+                        early_first5=0., early_next10=0., penalized=[],
+                        intrabar_ambiguous=result["intrabar_ambiguous"], events=events)
         sl = other = 0.
         events = []
         for entry_id in result["penalized"]:
@@ -98,12 +119,12 @@ class Single3Reward:
                     events=events)
 
     def snapshot(self):
-        return dict(schema=SCHEMA, config=asdict(self.config),
+        return dict(schema=SCHEMA, config=self.config.fields,
                     scorer=self.scorer.snapshot(), total=self.total)
 
     @classmethod
     def restore(cls, state, config, take_profit_points=5, stop_loss_points=30):
-        if state["schema"] != SCHEMA or state["config"] != asdict(config):
+        if state["schema"] != SCHEMA or state["config"] != config.fields:
             raise ValueError("Single3 reward checkpoint/config mismatch")
         obj = cls(config, take_profit_points, stop_loss_points)
         obj.scorer = FGRewardScorer.restore(state["scorer"], obj.v2_config, tp_profile=obj.tp_profile)

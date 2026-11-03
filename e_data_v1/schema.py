@@ -48,11 +48,15 @@ class EDataConfig:
     oi_clip: tuple[float, float] = (-1.0, 1.0)
     audit_1m: bool = False
     legacy_root: Path | None = field(default=None, repr=False)
+    # Complete 15m buckets in the context (V2: 48, user 2026-10-31).
+    context_buckets: int = 24
 
     def __post_init__(self):
         for bounds in (self.volume_clip, self.oi_clip):
             if len(bounds) != 2 or not all(math.isfinite(x) for x in bounds) or bounds[0] >= bounds[1]:
                 raise ValueError("Clip bounds must be finite and increasing")
+        if type(self.context_buckets) is not int or self.context_buckets < 1:
+            raise ValueError("context_buckets is a positive number of 15m buckets")
 
     def schema(self, legacy_hashes):
         directory = Path(__file__).resolve().parent
@@ -60,7 +64,7 @@ class EDataConfig:
         indicator = legacy_helper("macd_5m_causal", self.legacy_root)
         value = {
             "macd_5m": indicator.CONTRACT, "macd_code_sha256": hashlib.sha256(Path(indicator.__file__).read_bytes()).hexdigest(),
-            "schema": SCHEMA, "context_shape": [24, 7], "minute_shape": [60, 18],
+            "schema": SCHEMA, "context_shape": [self.context_buckets, 7], "minute_shape": [60, 18],
             "dtype": "float32", "context_fields": list(CONTEXT_FIELDS),
             "minute_fields": list(LEGACY_FIELDS), "shared_fields": list(SHARED_FIELDS),
             "legacy_sources_sha256": legacy_hashes,
@@ -72,7 +76,7 @@ class EDataConfig:
             "volume": "log((V+1)/(mean(previous 20 compliant completed buckets)+1))",
             "oi": "log(last_OI/last_OI_of_previous_compliant_completed_bucket)",
             "volume_clip": list(self.volume_clip), "oi_clip": list(self.oi_clip),
-            "warmup": "keep last 24 complete visible buckets; unready rows all zero with valid=0",
+            "warmup": f"keep last {self.context_buckets} complete visible buckets; unready rows all zero with valid=0",
             "padding": "left zeros", "order": "oldest to newest",
             "bucket": "15 exact minute slots in one planned continuous session, (start,end]",
             "availability": "max(bucket_end, all constituent arrival times) <= visible_cutoff",

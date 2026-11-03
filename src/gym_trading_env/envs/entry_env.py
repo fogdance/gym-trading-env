@@ -39,6 +39,7 @@ SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
 # Fixed input scale of the TP distance in position_state (the default TP5),
 # not the env's rule: a policy sees the same inputs under any TP / SL.
 POSITION_TP_SCALE = 5
+PRIOR_HIGH_KEYS = ('pivot_left', 'pivot_right', 'lookback_buckets', 'departure_points')
 
 
 def _e_market_features(frame, schedule):
@@ -54,6 +55,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     # TP5 / SL30 points; also the default of envs pickled before the keys existed.
     take_profit_points = 5
     stop_loss_points = 30
+    # Structural SL / target-R TP of a SHORT (V2, user 2026-10-31): None keeps
+    # the fixed distances above. Complete 15m buckets in the E context.
+    stop_rule = None
+    context_15m_buckets = 24
+    _lines = None
 
     def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
         gym.Env.__init__(self)
@@ -101,7 +107,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
                     'close_today_fee','spread','slippage')})
         self.terms = ContractTerms(terms_raw, self.contract)
-        if e_profile is not None:
+        if e_profile is not None or self.entry_config.get('stop_rule'):
             self._e_schedule = dict(self.market_clock or {}, dated_sessions=terms_raw['sessions'])
         identity = {"env": raw, "strategy":master,"direction": self.directions.hash,
                     "contract": self.terms.hash,
@@ -146,6 +152,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 if value <= 0 or not self.single3:
                     raise ValueError(f"entry.{key} is a positive Single3 distance in points")
                 setattr(self, key, value)
+        self._stop_rule_config()
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
@@ -166,7 +173,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self._e_profile is not None:
             obs_spaces.update({
                 'market_seq_e_shared': spaces.Box(-np.inf, np.inf, (60, 18), np.float32),
-                'market_context_15m': spaces.Box(-np.inf, np.inf, (24, 7), np.float32),
+                'market_context_15m': spaces.Box(-np.inf, np.inf, (self.context_15m_buckets, 7), np.float32),
                 'market_macd_5m': spaces.Box(-np.inf, np.inf, (4,), np.float32),
             })
         self.observation_space = spaces.Dict(obs_spaces)
@@ -176,6 +183,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.reset()
 
     def _load_market(self, df):
+        self._lines = None  # the stop lines of the market loaded before
         if df is None:
             live = getattr(self, '_live', None)
             df = live.read(floor=self.terms.calendar[0]) if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
@@ -239,10 +247,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.bar_source = SimpleNamespace(store=SimpleNamespace(index=raw.index, n_rows=len(raw)))
         self.bobs, self.valid_fill_clock = bobs, valid
         self.market_clock_counter = MarketClock(valid)
-        if self._e_profile is not None:
+        if self._e_profile is not None or self.stop_rule:
             if 'trading_date' not in raw or self.market_clock is None:
                 raise ValueError('E requires the admitted real-clock TRAIN source')
             from e_data_v1.core import MarketData
+            from e_data_v1.schema import EDataConfig
             from gym_trading_env.utils.time_contract import ensure_feature_tz_index
             from gym_trading_env.utils.ohlcvi_contract import normalize_ohlcvi
             # Reuse the unpadded original feature frame including its auxiliary
@@ -250,6 +259,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             # the same original feature builder on the visible prefix only.
             self._e_market = MarketData.from_env(raw,self._e_schedule,
                 feature_frame,self.market_clock_counter,bobs,
+                config=EDataConfig(context_buckets=self.context_15m_buckets),
                 feature_function=_e_market_features,
                 market_clock_class=MarketClock,tz_normalizer=ensure_feature_tz_index,
                 ohlc_normalizer=normalize_ohlcvi)
@@ -311,12 +321,91 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._update_unrealized_pnl()
 
     def _compute_stop_loss_price(self, entry_exec_price, side):
+        if self.stop_rule:
+            # The ADD was decided at the close of the previous bar.
+            self._plan = self.planned_exit(self.current_step - 1, entry_exec_price, side)
+            return self._plan['stop_loss_price']
         d = self.stop_loss_points
         return entry_exec_price + (-d if side == "long" else d) if self.single3 else None
 
     def _compute_take_profit_price(self, entry_exec_price, sl_exec_price, side):
+        if self.stop_rule:
+            return self._plan['take_profit_price']
         d = self.take_profit_points
         return entry_exec_price + (d if side == "long" else -d)
+
+    def _stop_rule_config(self):
+        """entry.stop_rule (V0.5): `prior_15m_high` sets SL = H* + stop_above
+        and TP = fill - target_r * R, R = SL - fill, with H* the lowest line
+        (causal 15m pivot high, ts_v2_positive.pivot_levels) live at the
+        decision, already departed (ts_v2_positive.departed_at) and at or
+        above the fill. A stateless rule: no touch or event state is kept,
+        so a line confirmed during a material touch may differ (the teacher
+        drops those as STOP_LINE_DIFFERS). R is capped at max_risk, and with
+        no such line R = max_risk; `stop_source` names which. No ADD mask or
+        gate depends on it. entry.context_15m_buckets sets the E context."""
+        keys = ('stop_rule', 'stop_above_points', 'max_risk_points', 'target_r', 'prior_high')
+        given = {k: self.entry_config[k] for k in keys if k in self.entry_config}
+        if 'context_15m_buckets' in self.entry_config:
+            value = self.entry_config['context_15m_buckets']
+            if type(value) is not int or value < 1 or not self.single3:
+                raise ValueError('entry.context_15m_buckets is a positive Single3 bucket count')
+            self.context_15m_buckets = value
+        if not given:
+            return
+        if given.keys() != set(keys) or given['stop_rule'] != 'prior_15m_high' or not self.single3:
+            raise ValueError(f'entry.stop_rule prior_15m_high (Single3) needs exactly {keys}')
+        p = given['prior_high']
+        ints = (given['stop_above_points'], given['max_risk_points'], *(p.get(k) for k in PRIOR_HIGH_KEYS))
+        if (set(p) != set(PRIOR_HIGH_KEYS) or any(type(x) is not int or x < 1 for x in ints)
+                or given['max_risk_points'] < given['stop_above_points']
+                or not (isinstance(given['target_r'], (int, float)) and given['target_r'] > 0)):
+            raise ValueError(f'entry.stop_rule: positive integer points, max_risk_points >= '
+                             f'stop_above_points, prior_high {PRIOR_HIGH_KEYS}, target_r > 0')
+        self.stop_rule = dict(given)
+
+    def _stop_lines(self):
+        """H, confirm, broken and expire cursors of every line, computed once."""
+        if self._lines is None:
+            from gym_trading_env.research.ts_v2_positive import departed_at, pivot_levels
+            if self._e_market is None:
+                raise ValueError('entry.stop_rule needs the complete 15m buckets of the market')
+            raw, r, p = self._raw, self.stop_rule, self.stop_rule['prior_high']
+            a = dict(n=len(raw), times=raw.index, times_ns=raw.index.asi8,
+                     bob_ns=pd.DatetimeIndex(self.bobs).asi8, valid=np.asarray(self.valid_fill_clock, bool),
+                     close=raw.Close.to_numpy(float),
+                     buy_high=np.array([float(self._price(v, 'SHORT', t)) for v, t in zip(raw.High, raw.index)]))
+            levels = pivot_levels(self._e_market.complete_buckets, a, p['pivot_left'], p['pivot_right'],
+                                  p['lookback_buckets'], r['stop_above_points'])
+            for x in levels:
+                x['departed'] = departed_at(a, x, p['departure_points'])
+            self._lines = {k: np.array([x[k] for x in levels], float if k == 'H' else np.int64)
+                           for k in ('H', 'confirm', 'departed', 'broken', 'expire')}
+        return self._lines
+
+    def planned_exit(self, cursor, fill, side):
+        """SL / TP prices, R and stop_source of a SHORT decided at `cursor`
+        and filled at `fill` under entry.stop_rule."""
+        if str(side).upper() != 'SHORT':
+            raise ValueError('entry.stop_rule prior_15m_high is SHORT only')
+        r, lines, fill = self.stop_rule, self._stop_lines(), Decimal(str(fill))
+        # The lines known at the decision, not broken or expired, that the
+        # price has already left (a close at H - departure_points): the
+        # lowest one at or above the fill is the stop's line.
+        live = ((lines['confirm'] <= cursor) & (lines['departed'] <= cursor) & (cursor < lines['broken'])
+                & (cursor < lines['expire']) & (lines['H'] >= float(fill)))
+        cap = Decimal(r['max_risk_points'])
+        if live.any():
+            line = Decimal(str(lines['H'][live].min()))
+            risk = line + r['stop_above_points'] - fill
+            source = 'STRUCTURAL' if risk <= cap else 'CAPPED'
+            risk = min(risk, cap)
+        else:
+            line, risk, source = None, cap, 'NO_LINE'
+        tick = self.terms.tick
+        target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
+        return dict(line=None if line is None else str(line), risk_points=str(risk), stop_source=source,
+                    stop_loss_price=fill + risk, take_profit_price=fill - target)
 
     def _assert_ledger_conservation(self):
         if self.ledger.total_balance() != self._ledger_total0:
@@ -412,7 +501,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             arrays = dict(market_seq_e_shared=shared.copy(), market_context_15m=context.copy(),
                           market_macd_5m=macd)
             if (arrays['market_seq_e_shared'].shape != (60, 18)
-                    or arrays['market_context_15m'].shape != (24, 7)
+                    or arrays['market_context_15m'].shape != (self.context_15m_buckets, 7)
                     or any(x.dtype != np.float32 or not np.isfinite(x).all()
                            for x in arrays.values())
                     or not np.isin(context[:, 6], (0., 1.)).all()):
@@ -498,6 +587,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self.trade_record_manager.trade_history[-1].meta.update(entry_id=entry_id, fill_model=self.fill_model)
         self.fills.append(dict(entry_id=entry_id, time=str(time), side=side, quantity=3,
                                price=str(execution), reason="ENTRY", committed=True))
+        if self.stop_rule:
+            plan = {k: str(v) if isinstance(v, Decimal) else v for k, v in self._plan.items()}
+            self.fills[-1].update(plan)
+            item['planned_exit'] = plan
         return code
 
     def settle_exit(self, entry_id, price, time, reason, *, quantity=None, fill_id=None):
@@ -520,7 +613,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError("Exit precedes entry")
         side = item["side"]
         price = Decimal(str(price))
-        if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < self.take_profit_points:
+        distance = (Decimal(item['entry_price']) - Decimal(item['planned_exit']['take_profit_price'])
+                    if 'planned_exit' in item else self.take_profit_points)
+        if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < distance:
             raise ValueError("TP execution price does not reach the TP distance")
         self._set_terms(time, closing=True, entry=item)
         fn = self._long_close if side == "LONG" else self._short_close

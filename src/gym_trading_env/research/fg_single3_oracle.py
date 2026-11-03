@@ -23,7 +23,7 @@ import time
 import numpy as np
 
 from gym_trading_env.envs.entry_contract import fingerprint
-from gym_trading_env.rewards.single3_reward import Single3Reward, Single3RewardConfig
+from gym_trading_env.rewards.single3_reward import NET_PNL_SCHEMA, Single3Reward, Single3RewardConfig
 from .fg_replay import (SINGLE3_SCHEMA, check_files, digest, iter_sidecar, read_manifest,
                         signed, trace_manifest, write_json)
 from .fg_single3 import (execution_provenance, load_env, make_output, required_tests, source_witness)
@@ -167,14 +167,18 @@ class CandidateIndex:
         side=entry['side'];sign=1 if side=='LONG' else -1
         price=Decimal(entry['price'])
         i=t+1;idx=self.indices[side]
-        s=idx['sl'].first(i,self.stop,float(sign*(price-sign*env.stop_loss_points)))
+        # This trade's own SL / TP (a structural stop sets them per trade).
+        sl_price,tp_price=((Decimal(entry['stop_loss_price']),Decimal(entry['take_profit_price']))
+                           if 'stop_loss_price' in entry else
+                           (price-sign*env.stop_loss_points,price+sign*env.take_profit_points))
+        s=idx['sl'].first(i,self.stop,float(sign*sl_price))
         first_early=idx['early'].first(i,self.stop,sign*float(price)-10+1e-10)
         event=env.attributions[-1] if env.attributions else None
         if event is None:
             item=next(iter(env.entries.values()))
             pending=item['sl_pending']
             sl_exit=self.first_liquid(i+1 if pending else s) if pending or s<self.stop else self.stop
-            tp_exit=idx['tp'].first(i+1,self.stop,-float(sign*(price+sign*env.take_profit_points))-float(env.terms.tick))
+            tp_exit=idx['tp'].first(i+1,self.stop,-float(sign*tp_price)-float(env.terms.tick))
             global_exit=self.first_liquid(max(i+1,self.global_at))
             u=min(sl_exit,tp_exit,global_exit)
             if u<self.stop:
@@ -194,6 +198,11 @@ class CandidateIndex:
         early=first_early if first_early<=u else None
         rewards={}
         for name in ('C0','C1','C2','C3'):
+            if env.reward_config.schema==NET_PNL_SCHEMA:
+                # V0.5: the env's reward, whatever the candidate: the exit's net PnL / scale.
+                value=Decimal(event['net_trade_pnl'])/Decimal(str(env.reward_config.reward_scale_cny)) if event else 0
+                rewards[name]=[[u,float(np.float32(float(value)))]] if value else []
+                continue
             # All skipped bars have no reward/event and only increment bars_seen.
             scorer=Single3Reward(Single3RewardConfig.for_candidate(name),env.take_profit_points,env.stop_loss_points)
             sparse=[]

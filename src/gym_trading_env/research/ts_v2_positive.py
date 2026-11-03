@@ -32,6 +32,7 @@ import math
 import shutil
 import sys
 import time
+from decimal import Decimal
 from pathlib import Path
 
 import numpy as np
@@ -144,42 +145,61 @@ def volume_ratio(volume, eligible, baseline):
     return rv
 
 
-def prior_highs(env, a, cfg):
-    """Pivot highs of the complete 15m buckets (the lines), each with the
-    cursors at which it becomes visible, expires, is first broken (a short's
-    SL quote reaches H + stop), first departed (a close at H - departure)
-    and first spiked (RV >= ratio on a bar near H, from the bars of its own
-    bucket on)."""
-    p, stop = cfg['prior_high'], cfg['entry']['stop_above_points']
-    near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
-    buckets = env._e_market.complete_buckets
+def pivot_levels(buckets, a, left, right, look, stop):
+    """Pivot highs H of the complete 15m `buckets` (the lines), each with the
+    cursor of its first later bar (start), the cursors at which it becomes
+    visible (confirm) and expires, and the first at which it is broken (a
+    short's SL quote `a['buy_high']` reaches H + stop). Shared by the
+    material and the Native env's structural stop (V0.5)."""
     high = np.array([b['High'] for b in buckets], float)
     end_ns = np.array([pd.Timestamp(b['bucket_end']).value for b in buckets], np.int64)
     avail_ns = np.array([pd.Timestamp(b['available_at']).value for b in buckets], np.int64)
-    n, left, right, look = a['n'], p['pivot_left'], p['pivot_right'], p['lookback_buckets']
-    spiky = a['valid'] & (np.nan_to_num(a['rv']) >= ratio)
+    n = a['n']
 
     def seen(j):  # first cursor whose bar end is at or after bucket j's arrival
         return int(np.searchsorted(a['times_ns'], avail_ns[j], side='left')) if j < len(high) else n
-
-    def first(mask, lo, hi):
-        hit = np.flatnonzero(mask[lo:hi])
-        return lo + int(hit[0]) if len(hit) else n
 
     levels = []
     for j in range(left, len(high) - right):
         if not (high[j] > high[j - left:j].max() and high[j] >= high[j + 1:j + right + 1].max()):
             continue
         H = float(high[j])
-        own = int(np.searchsorted(a['bob_ns'], end_ns[j - 1], side='left'))  # first bar of bucket j
         start = int(np.searchsorted(a['bob_ns'], end_ns[j], side='left'))
         expire = seen(j + look + 1)
-        broken = first(a['valid'] & (a['buy_high'] >= H + stop), start, expire)
         levels.append(dict(
             bucket=j, H=H, bucket_end=str(pd.Timestamp(end_ns[j], tz='UTC').tz_convert(a['times'].tz)),
-            start=start, confirm=seen(j + right), expire=expire, broken=broken,
-            departed=first(a['valid'] & (a['close'] <= H - p['departure_points']), start, expire),
-            spike=first(spiky & (a['high'] >= H - near), own, min(broken, expire))))
+            start=start, confirm=seen(j + right), expire=expire,
+            broken=_first(a['valid'] & (a['buy_high'] >= H + stop), start, expire, n)))
+    return levels
+
+
+def _first(mask, lo, hi, n):
+    hit = np.flatnonzero(mask[lo:hi])
+    return lo + int(hit[0]) if len(hit) else n
+
+
+def departed_at(a, level, points):
+    """First cursor, from the line's start, of a 1m close at least `points`
+    below its H (the price has left the line; a touch may follow). Shared by
+    the material and the Native env's structural stop."""
+    return _first(a['valid'] & (a['close'] <= level['H'] - points), level['start'], level['expire'], a['n'])
+
+
+def prior_highs(env, a, cfg):
+    """The lines (`pivot_levels`), each also with the cursors at which it is
+    first departed (a close at H - departure) and first spiked (RV >= ratio
+    on a bar near H, from the bars of its own bucket on)."""
+    p, stop = cfg['prior_high'], cfg['entry']['stop_above_points']
+    near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
+    buckets = env._e_market.complete_buckets
+    end_ns = np.array([pd.Timestamp(b['bucket_end']).value for b in buckets], np.int64)
+    spiky = a['valid'] & (np.nan_to_num(a['rv']) >= ratio)
+    levels = pivot_levels(buckets, a, p['pivot_left'], p['pivot_right'], p['lookback_buckets'], stop)
+    for x in levels:
+        H, expire, j = x['H'], x['expire'], x['bucket']
+        own = int(np.searchsorted(a['bob_ns'], end_ns[j - 1], side='left'))  # first bar of bucket j
+        x.update(departed=departed_at(a, x, p['departure_points']),
+                 spike=_first(spiky & (a['high'] >= H - near), own, min(x['broken'], expire), a['n']))
     return levels, len(buckets)
 
 
@@ -690,6 +710,77 @@ def load_positive(folder):
     if not set(out['positive_timeline']['teach']) <= set(TEACH):
         raise ValueError('unknown teach rows')
     return out
+
+
+# ---- the teacher of a Thinking Student corpus (V0.5, user 2026-10-31) ----
+
+TEACHER_LABEL = dict(source='V2_POSITIVE_TEACHER', ready_at='ready_at: the TP exit of an ADD; '
+                     'the last kept TP exit of its touch for a WAIT')
+WAIT_ROWS = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME')
+
+
+def graded_teacher(env, facts, folder, contract, index=None):
+    """(graded arrays, summary) of one corpus from the positive material in
+    `folder`, in the arrays of ts_v1_grades.grade so L3 / L5 read it as they
+    are. ADD (grade GOOD / EXCELLENT, ready at its exit) on a positive with
+    R <= the env's max_risk_points whose Native trade the corpus facts
+    reproduce (TP, the same exit, the same net PnL; any other is an error);
+    WAIT on the WAIT rows of the touches that keep a positive; no
+    demonstration anywhere else (ACTIVATION and every other cursor). A
+    positive whose line the env's stateless stop does not take (a lower line
+    confirmed during its touch) is dropped as STOP_LINE_DIFFERS: its trade
+    is not the env's. Entry price, side and MFE are measured as for the
+    graded teacher."""
+    from .ts_v1_corpus import KINDS
+    from .ts_v1_grades import EXCELLENT, GOOD, MFE_MINUTES, measure
+    out, m = measure(env, facts, index)
+    n, max_risk = m['n'], env.stop_rule['max_risk_points']
+    tables = load_positive(folder)
+    entries = tables['positive_entries'][tables['positive_entries'].contract == contract]
+    timeline = tables['positive_timeline'][tables['positive_timeline'].contract == contract]
+    adds = timeline[timeline.teach.isin(('ADD', 'ACTIVATION_ADD'))]
+    if sorted(adds.cursor) != sorted(entries.cursor):
+        raise ValueError(f'{contract}: the ADD rows of the timeline are not the positive entries')
+    out.update(grade=np.full(n, -1, np.int8), ready_at=np.full(n, -1, np.int32),
+               valid=np.zeros(n, bool), action=np.zeros(n, np.int8))
+    dropped, kept, ready = {'RISK_ABOVE_MAX': 0, 'STOP_LINE_DIFFERS': 0}, set(), {}
+    tp = KINDS.index('TP')
+    for r in entries.itertuples():
+        t = int(r.cursor)
+        if r.label_R > max_risk:
+            dropped['RISK_ABOVE_MAX'] += 1
+            continue
+        plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), SIDE)
+        if float(plan['stop_loss_price']) != r.obs_sl:
+            dropped['STOP_LINE_DIFFERS'] += 1
+            continue
+        if not (facts['filled'][t] and facts['kind'][t] == tp and facts['exit_cursor'][t] == r.label_exit_cursor
+                and abs(facts['net_pnl'][t] - r.label_net_pnl) < 1e-6):
+            raise ValueError(f'{contract} cursor {t}: the Native trade differs from the positive')
+        out['grade'][t] = EXCELLENT if r.label_grade == 'EXCELLENT' else GOOD
+        out['ready_at'][t] = int(r.label_exit_cursor)
+        out['valid'][t], out['action'][t] = True, 1
+        kept.add(r.event_id)
+        ready[r.event_id] = max(ready.get(r.event_id, -1), int(r.label_exit_cursor))
+    waits = timeline[timeline.teach.isin(WAIT_ROWS)]
+    dropped['WAIT_OF_DROPPED_TOUCH'] = int((~waits.event_id.isin(kept)).sum())
+    for r in waits[waits.event_id.isin(kept)].itertuples():
+        t = int(r.cursor)
+        if out['valid'][t] or not facts['eligible'][t]:
+            raise ValueError(f'{contract} cursor {t}: a WAIT row on an ADD or a masked cursor')
+        out['ready_at'][t], out['valid'][t] = ready[r.event_id], True
+    dropped['ACTIVATION'] = int((timeline.teach == 'ACTIVATION').sum())
+    teacher = Path(folder) / 'teacher'
+    summary = dict(
+        contract=contract, label=TEACHER_LABEL, mfe_minutes=list(MFE_MINUTES),
+        grades=dict(teacher=VERSION, max_risk_points=max_risk, material=str(Path(folder).resolve()),
+                    sha256={name: _sha256(teacher / f'{name}.csv') for name in TEACHER}),
+        graded={'GOOD': int((out['grade'] == GOOD).sum()), 'EXCELLENT': int((out['grade'] == EXCELLENT).sum())},
+        demo=dict(add=int((out['valid'] & (out['action'] == 1)).sum()),
+                  wait=int((out['valid'] & (out['action'] == 0)).sum())),
+        touches=dict(kept=len(kept), material=int(entries.event_id.nunique())),
+        dropped=dropped, tp_checked=m['tp_checked'])
+    return out, summary
 
 
 def audit_summary(events, candidates, stats, cfg):

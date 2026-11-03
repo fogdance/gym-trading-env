@@ -50,6 +50,7 @@ import argparse
 import json
 import shutil
 import time
+from decimal import Decimal
 from pathlib import Path
 
 import numpy as np
@@ -112,7 +113,8 @@ def _room(index, side, price, i, end, volume):
 def measure(env, facts, index=None, calendar=None):
     """Fill price, side and MFE of every filled cursor, checked against the
     facts: the TP of each TP trade is the first quote a TP can fill at that
-    is the env's TP distance and a tick ahead of the measured fill."""
+    is the env's TP distance (the trade's own TP under entry.stop_rule) and
+    a tick ahead of the measured fill."""
     index = index or CandidateIndex(env)
     calendar = calendar or official_day_index(env)
     clock, stop, n = index.clock, index.stop, len(env._raw)
@@ -134,6 +136,8 @@ def measure(env, facts, index=None, calendar=None):
             out[f'mfe_{h}'][t] = _room(index, side, price, i, min(end, stop - 1), volume)
             out[f'mfe_{h}_complete'][t] = complete
         if facts['kind'][t] == tp:
+            if env.stop_rule:  # this trade's own TP distance
+                tp_points = sign * float(env.planned_exit(i - 1, price, side)['take_profit_price'] - Decimal(str(price)))
             first = (i if _room(index, side, price, i, i, volume) >= tp_points + tick else
                      index.indices[side]['tp'].first(i + 1, stop, -sign * (price + sign * tp_points) - tick))
             if first != facts['exit_cursor'][t]:

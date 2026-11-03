@@ -39,6 +39,12 @@ The Native TP / SL distances are those of the pool env (TP5 / SL30 unless
 it sets entry.take_profit_points / stop_loss_points); --take-profit-points
 and --stop-loss-points write other distances into inputs/env.yaml, so every
 facts, grades, collection, CF and exam built from the corpus uses them.
+
+V2 (V0.5, user 2026-10-31): --strategy adds a strategy overlay (dreamerv3/
+configs/thinking_student/markets/strategy_v2_short_structural.yaml: the
+structural stop, the 48-bucket 15m context, the net PnL reward) to the
+inputs, and --teacher writes graded/ from the V2 positive material
+(ts_v2_positive.graded_teacher) instead of the --grades thresholds.
 """
 from __future__ import annotations
 
@@ -136,7 +142,17 @@ def dev_row(contract, pool):
     return row
 
 
-def write_inputs(row, folder, rules=None):
+def load_strategy(path):
+    """A V2 strategy overlay (V0.5, user 2026-10-31): `entry` keys of the
+    Native env (stop_rule, context_15m_buckets, ...) and the `reward` that
+    replaces the Quality TP reward, for one external `direction`."""
+    strategy = read_yaml(path)
+    if set(strategy) != {'version', 'direction', 'entry', 'reward'} or strategy['direction'] != 'SHORT':
+        raise ValueError(f'{path}: a SHORT strategy of version, direction, entry and reward')
+    return strategy
+
+
+def write_inputs(row, folder, rules=None, strategy=None):
     """TS env inputs: the pool env with the Quality TP reward and without
     CHUNK_END (chunk_steps 0), so an account runs from the first minute to
     the true terminal and market memory never restarts artificially. The
@@ -144,7 +160,9 @@ def write_inputs(row, folder, rules=None):
     referenced relatively: apart from the market data the folder is
     self-contained and can move (produce renames it into place). `rules`
     (take_profit_points / stop_loss_points) replace the pool env's Native
-    TP / SL distances."""
+    TP / SL distances. `strategy` (load_strategy) adds its entry keys and
+    reward instead of the Quality TP reward; a contract the env trades in
+    another direction is refused."""
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     source = Path(row['env_config'])
@@ -156,19 +174,25 @@ def write_inputs(row, folder, rules=None):
         raise ValueError(f'{row["contract"]}: env market differs from the pool row')
     env['entry']['chunk_steps'] = 0
     env['entry'].update(rules or {})
+    if strategy is not None:
+        from .ts_v2_positive import contract_direction
+        if contract_direction(row) != strategy['direction']:
+            raise ValueError(f'{row["contract"]} is not traded {strategy["direction"]}')
+        env['entry'].update(strategy['entry'])
+    reward = dict(strategy['reward']) if strategy is not None else dict(schema=QUALITY_TP_SCHEMA)
     for key, name in (('contract_config', 'contract.yaml'), ('direction_config', 'directions.yaml')):
         if env['entry'].get(key):
             shutil.copyfile(env['entry'][key], folder / name)
             env['entry'][key] = name
     if env['entry'].get('strategy_config'):
         master = read_yaml(env['entry']['strategy_config'])
-        master['reward']['schema'] = QUALITY_TP_SCHEMA
+        master['reward'].update(reward)
         master['environment']['entry']['chunk_steps'] = 0
         strategy = folder / 'single3.yaml'
         strategy.write_text(yaml.safe_dump(master, sort_keys=False))
         env['entry']['strategy_config'] = strategy.name
     else:
-        env['entry']['reward']['schema'] = QUALITY_TP_SCHEMA
+        env['entry']['reward'].update(reward)
     config = folder / 'env.yaml'
     config.write_text(yaml.safe_dump(env, sort_keys=False))
     return config
@@ -205,7 +229,9 @@ def quality_rewards(env, row, days, ordinal):
 
 def candidate_facts(env, index, calendar, t):
     """The strict-oracle candidate (real entry, indexed exit, real settlement)
-    with Quality TP feedback, plus the trade facts the Outcome labels need."""
+    with the env's feedback (Quality TP; under the V2 net PnL reward the
+    candidate's own exit net PnL / scale), plus the trade facts the Outcome
+    labels need."""
     row = index.candidate(t)
     out = dict(cursor=t, eligible=bool(row['eligible']), filled=bool(row.get('filled')),
                rewards={'C1': []}, exit=None, release_cursor=None, facts=None)
@@ -447,10 +473,13 @@ def _pool(workers):
     return ProcessPoolExecutor(workers, mp_context=multiprocessing.get_context('spawn'))
 
 
-def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=None):
+def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=None,
+            strategy=None, teacher=None):
     """Write the teaching material of one TRAIN pool row into `folder`;
     `grades` are the thresholds of the graded teacher and `rules` the Native
-    TP / SL distances when they differ from the pool env's."""
+    TP / SL distances when they differ from the pool env's. `strategy` (a
+    load_strategy path) sets a V2 strategy; `teacher` (a V2 positive
+    material folder) writes graded/ from it instead of the graded teacher."""
     from . import ts_v1_grades  # it reads this module
     folder = Path(folder)
     if folder.exists():
@@ -459,7 +488,7 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
     if tmp.exists():
         shutil.rmtree(tmp)
     began, seconds = time.monotonic(), {}
-    config = write_inputs(row, tmp / 'inputs', rules)
+    config = write_inputs(row, tmp / 'inputs', rules, strategy and load_strategy(strategy))
     env = native_env(config, market=False)
     index = CandidateIndex(env)
     n, flat_end = len(env._raw), index.flat_end
@@ -483,8 +512,16 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
     strict, plan = strict_arrays(env, rows, flat_end, n)
     seconds['strict'] = round(time.monotonic() - started, 1)
     started = time.monotonic()
-    graded, summary = ts_v1_grades.grade(env, facts, grades, index=index, strict=strict)
-    summary = ts_v1_grades.save(tmp / 'graded', row['contract'], graded, summary, started)
+    if teacher is None:
+        graded, summary = ts_v1_grades.grade(env, facts, grades, index=index, strict=strict)
+        summary = ts_v1_grades.save(tmp / 'graded', row['contract'], graded, summary, started)
+    else:
+        from .ts_v2_positive import graded_teacher
+        graded, summary = graded_teacher(env, facts, teacher, row['contract'], index=index)
+        summary.update(seconds=round(time.monotonic() - started, 1),
+                       created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
+        save_arrays(tmp / 'graded', graded)
+        (tmp / 'graded' / 'summary.json').write_text(json.dumps(summary, indent=1))
     seconds['graded'] = summary['seconds']
     save_arrays(tmp / 'facts', facts)
     save_arrays(tmp / 'strict', strict)
@@ -509,9 +546,11 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
         inputs=dict(env=str(config.relative_to(tmp)), reward_schema=env.reward_config.schema,
                     chunk_steps=0, candidate=env.reward_config.candidate,
                     rules=dict(take_profit_points=env.take_profit_points,
-                               stop_loss_points=env.stop_loss_points)),
+                               stop_loss_points=env.stop_loss_points),
+                    strategy=strategy and dict(load_strategy(strategy), path=str(Path(strategy).resolve()))),
         rows=n, flat_end=flat_end, first_time=str(env._raw.index[0]),
-        last_time=str(env._raw.index[-1]), labels=LABELS,
+        last_time=str(env._raw.index[-1]),
+        labels=dict(LABELS, graded=summary['label']) if teacher else LABELS,
         native_check=dict(cursors=sample, agree=len(sample)),
         funds_floor=float(proof['required_equity_upper_bound']),
         initial_balance=float(env.config.trading.initial_balance),
@@ -540,19 +579,25 @@ def main(argv=None):
     parser.add_argument('--out', required=True, help='corpus root; writes <out>/<contract>')
     parser.add_argument('--pool', required=True,
                         help='market pool (dreamerv3/configs/thinking_student/markets/pool.json)')
-    parser.add_argument('--grades', required=True,
+    parser.add_argument('--grades',
                         help='graded teacher (dreamerv3/configs/thinking_student/entry_grades.yaml)')
     parser.add_argument('--workers', type=int, default=os.cpu_count())
     parser.add_argument('--take-profit-points', type=int,
                         help='Native TP distance in points (default: the pool env, TP5)')
     parser.add_argument('--stop-loss-points', type=int,
                         help='Native SL distance in points (default: the pool env, SL30)')
+    parser.add_argument('--strategy', help='V2 strategy overlay (configs/thinking_student/markets/'
+                        'strategy_v2_short_structural.yaml)')
+    parser.add_argument('--teacher', help='V2 positive material folder: graded/ from it, not --grades')
     args = parser.parse_args(argv)
     from .ts_v1_grades import load_grades
+    if not (args.grades or args.teacher):
+        parser.error('--grades or --teacher is required')
     rules = {k: v for k, v in (('take_profit_points', args.take_profit_points),
                                ('stop_loss_points', args.stop_loss_points)) if v is not None}
     produce(train_row(args.contract, args.pool), Path(args.out) / args.contract,
-            load_grades(args.grades), args.workers, rules=rules)
+            args.grades and load_grades(args.grades), args.workers, rules=rules, strategy=args.strategy,
+            teacher=args.teacher)
 
 
 if __name__ == '__main__':
