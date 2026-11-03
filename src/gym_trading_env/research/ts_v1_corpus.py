@@ -545,8 +545,10 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
         contract=row['contract'], fold='TRAIN', mode='OFFLINE_TRAIN', pool_row=row,
         inputs=dict(env=str(config.relative_to(tmp)), reward_schema=env.reward_config.schema,
                     chunk_steps=0, candidate=env.reward_config.candidate,
-                    rules=dict(take_profit_points=env.take_profit_points,
-                               stop_loss_points=env.stop_loss_points),
+                    # The Native exit rule: the fixed distances, or the V2 structural stop.
+                    rules=(dict(stop_rule=env.stop_rule) if env.stop_rule else
+                           dict(take_profit_points=env.take_profit_points,
+                                stop_loss_points=env.stop_loss_points)),
                     strategy=strategy and dict(load_strategy(strategy), path=str(Path(strategy).resolve()))),
         rows=n, flat_end=flat_end, first_time=str(env._raw.index[0]),
         last_time=str(env._raw.index[-1]),
@@ -595,6 +597,12 @@ def main(argv=None):
         parser.error('--grades or --teacher is required')
     rules = {k: v for k, v in (('take_profit_points', args.take_profit_points),
                                ('stop_loss_points', args.stop_loss_points)) if v is not None}
+    if args.strategy and rules:
+        parser.error('--strategy sets the exit rule: no --take-profit-points / --stop-loss-points')
+    if args.teacher and not args.strategy:
+        parser.error('--teacher (the V2 positive material) needs --strategy (its structural stop)')
+    if args.teacher and args.grades:
+        parser.error('--teacher or --grades, not both')
     produce(train_row(args.contract, args.pool), Path(args.out) / args.contract,
             args.grades and load_grades(args.grades), args.workers, rules=rules, strategy=args.strategy,
             teacher=args.teacher)

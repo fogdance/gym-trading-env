@@ -36,6 +36,8 @@ SINGLE3_POSITION_OBS_FIELDS = ("direction", "position_ratio_3", "sl_pending",
     *POSITION_OBS_FIELDS[3:])
 SINGLE3_PROTOCOL = "fg_single3_v1"
 SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
+# The same minute fills (risk first) with the V2 structural SL / target-R TP.
+STRUCTURAL_FILL_MODEL = "minute_structural_risk_first_v1"
 # Fixed input scale of the TP distance in position_state (the default TP5),
 # not the env's rule: a policy sees the same inputs under any TP / SL.
 POSITION_TP_SCALE = 5
@@ -80,7 +82,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         self._e_profile = e_profile
         self._e_market = None
         self.max_lots, self.max_entries = (3, 1) if self.single3 else (6, 2)
-        self.fill_model = SINGLE3_FILL_MODEL if self.single3 else "minute_close_confirm_v1"
+        self.fill_model = ((STRUCTURAL_FILL_MODEL if self.entry_config.get('stop_rule') else SINGLE3_FILL_MODEL)
+                           if self.single3 else "minute_close_confirm_v1")
         self.contract = self.entry_config["contract"]
         self.strategy_path=None
         if self.entry_config.get('strategy_config'):

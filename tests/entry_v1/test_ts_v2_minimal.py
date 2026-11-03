@@ -47,6 +47,7 @@ def _fill(env, s):
 def test_the_stop_is_the_prior_high_of_the_material_or_capped(fg809):
     env, entries = fg809['env'], fg809['entries']
     assert env.stop_rule['max_risk_points'] == 10 and env.context_15m_buckets == 48
+    assert env.fill_model == 'minute_structural_risk_first_v1'
     seen = set()
     for e in entries.itertuples():
         fill = _fill(env, int(e.cursor))
@@ -157,6 +158,7 @@ def test_the_v1_rules_and_identities_are_unchanged(fg809, tmp_path):
     env = C.native_env(C.write_inputs(fg809['row'], tmp_path / 'v1'), market=False)
     assert env.stop_rule is None and env.context_15m_buckets == 24 and env._e_market is None
     assert (env.take_profit_points, env.stop_loss_points) == (5, 30)
+    assert env.fill_model == 'minute_tp5_sl30_risk_first_v1'
     assert dict(config_hash=env.config_hash, observation_identity=env.observation_identity,
                 reward_hash=env.reward_config.hash) == V1_IDENTITY
 
@@ -214,4 +216,18 @@ def test_the_corpus_teacher_is_the_material_and_nothing_else():
     assert summary['label']['source'] == 'V2_POSITIVE_TEACHER' and summary['grades']['max_risk_points'] == 10
     source = json.loads((folder / 'source.json').read_text())
     assert source['inputs']['reward_schema'] == NET_PNL_SCHEMA
+    # The exit rule recorded is the structural stop, not the unused TP5 / SL30.
+    entry = C.load_strategy(STRATEGY)['entry']
+    assert source['inputs']['rules'] == {'stop_rule': {k: v for k, v in entry.items() if k != 'context_15m_buckets'}}
     assert np.load(folder / 'market' / 'market_context_15m.npy', mmap_mode='r').shape[1:] == (48, 7)
+
+
+@real
+def test_the_corpus_cli_refuses_mixed_exit_rules_and_teachers(tmp_path):
+    base = ['--contract', 'CZCE.FG809', '--pool', str(POOL), '--out', str(tmp_path)]
+    for extra in (['--strategy', str(STRATEGY), '--teacher', str(MATERIAL), '--take-profit-points', '5'],
+                  ['--teacher', str(MATERIAL)],
+                  ['--strategy', str(STRATEGY), '--teacher', str(MATERIAL), '--grades', 'x.yaml']):
+        with pytest.raises(SystemExit):
+            C.main(base + extra)
+    assert not any(tmp_path.iterdir())
