@@ -16,11 +16,28 @@ source.json, so corpus discovery skips it).
 Publishing is deterministic and never overwrites: a JSONL that exists with
 the same bytes is reused, with other bytes it is a conflict; the manifest is
 published once, after every file passed, and a rerun with the same content
-leaves it untouched. The run / student part of review-v1 is not here.
+leaves it untouched.
+
+The run part (user 2026-11-04: run manifest, stage status and student trades
+belong to the generation side) writes RUN/review/: the run manifest, fixed
+to the published corpus review of paths.corpus_root (its id and manifest
+sha256), with progress and status from run_state.json (formal_train records
+status), and one student dataset per finished result of a frozen policy:
+its TRAIN collection, TRAIN_SMOKE and DEV exams, and PAPER exams registered
+by hand. A student record is one committed Native entry (its ENTRY fill,
+open trade, closing trades and attribution, which must agree); an entry
+still open when the result ended is CENSORED. A registered file is never
+rewritten; the run manifest is replaced atomically, its revision raised
+only when its content changed. formal_train calls `export_run` after each
+state write and never lets a failed export stop the training; by hand, run
+it only while no formal_train call runs on the same run (one writer).
 
   python -m gym_trading_env.research.review_export corpus --input CORPUS_DIR \\
       --label "V2.1 teacher" --expect-contracts 18
-  python -m gym_trading_env.research.review_export validate --input CORPUS_DIR
+  python -m gym_trading_env.research.review_export run --input RUN_DIR
+  python -m gym_trading_env.research.review_export paper --input RUN_DIR \\
+      --results PAPER_DIR/TAG --policy pi_0000 --result r0001
+  python -m gym_trading_env.research.review_export validate --input CORPUS_DIR|RUN_DIR
 """
 from __future__ import annotations
 
@@ -31,6 +48,7 @@ import math
 import os
 import re
 import sys
+from decimal import Decimal
 from pathlib import Path
 
 import numpy as np
@@ -55,6 +73,12 @@ LINE = dict(SHORT='Prior high H', LONG='Prior low L')
 DATASET_LABEL = 'Teacher demonstrations of this training'
 MANIFEST_KEYS = ('schema', 'kind', 'id', 'revision', 'label', 'strategy', 'status', 'updated_at', 'timezone',
                  'contracts', 'datasets')
+RUN_KEYS = ('schema', 'kind', 'id', 'revision', 'label', 'strategy', 'status', 'updated_at', 'timezone', 'corpus',
+            'progress', 'latest_policy_id', 'best_dev_policy_id', 'contracts', 'datasets')
+RUN_STATUSES = ('running', 'completed', 'failed', 'cancelled')
+SCOPES = ('TRAIN', 'TRAIN_SMOKE', 'DEV', 'PAPER')
+STUDENT_SUMMARY = ('entries', 'closed', 'open', 'partial', 'censored')
+RESULT = re.compile(r'^[A-Za-z0-9_]+$')
 DAY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
 
 
@@ -113,29 +137,38 @@ def corpus_folders(root):
     return sorted(p for p in Path(root).iterdir() if (p / 'source.json').exists())
 
 
-def _market(folder, source):
-    """The pool CSV of the corpus: its bob, eob and trading_date per cursor,
-    after its sha256, rows and times are checked against the corpus."""
-    row = source['pool_row']
+def _pool_market(row):
+    """The bars of a pool row's CSV (bob, eob = Date, trading_date), after
+    its sha256, rows and symbol are checked against the row."""
     if _sha256(row['path']) != row['sha256']:
         raise ReviewError(f'{row["contract"]}: {row["path"]} is not the pool row\'s market')
     raw = pd.read_csv(row['path'], usecols=['Date', 'bob', 'trading_date', 'symbol'], dtype=str)
-    times = np.load(Path(folder) / 'market' / 'time.npy')
-    if len(raw) != row['rows'] or len(raw) != source['rows'] or len(times) != len(raw):
-        raise ReviewError(f'{row["contract"]}: market rows differ from the corpus')
+    if len(raw) != row['rows']:
+        raise ReviewError(f'{row["contract"]}: market rows differ from the pool row')
     if set(raw.symbol) != {row['contract']}:
         raise ReviewError(f'{row["contract"]}: the market CSV holds another symbol')
-    eob = pd.to_datetime(raw.Date).dt.tz_localize(TIMEZONE)
-    bob = pd.to_datetime(raw.bob).dt.tz_localize(TIMEZONE)
-    if not (eob == pd.to_datetime(pd.Series(times))).all():
-        raise ReviewError(f'{row["contract"]}: market times differ from the corpus')
     # bob < eob is checked on the bars a record marks (check_record): the
     # source has a few closing-auction bars with bob = eob (FG001 2019-09-24
     # 11:30) that no label uses.
     if not raw.trading_date.str.match(DAY.pattern).all():
         raise ReviewError(f'{row["contract"]}: a bar without a trading_date')
+    eob = pd.to_datetime(raw.Date).dt.tz_localize(TIMEZONE)
+    bob = pd.to_datetime(raw.bob).dt.tz_localize(TIMEZONE)
     return dict(eob=[t.isoformat() for t in eob], bob=[t.isoformat() for t in bob],
-                day=raw.trading_date.tolist())
+                day=raw.trading_date.tolist(), times=eob)
+
+
+def _market(folder, source):
+    """The pool CSV of the corpus: its bob, eob and trading_date per cursor,
+    after its sha256, rows and times are checked against the corpus."""
+    row = source['pool_row']
+    m = _pool_market(row)
+    times = np.load(Path(folder) / 'market' / 'time.npy')
+    if len(m['eob']) != source['rows'] or len(times) != len(m['eob']):
+        raise ReviewError(f'{row["contract"]}: market rows differ from the corpus')
+    if not (m.pop('times') == pd.to_datetime(pd.Series(times))).all():
+        raise ReviewError(f'{row["contract"]}: market times differ from the corpus')
+    return m
 
 
 def _arrays(folder, group, names):
@@ -242,6 +275,133 @@ def file_summary(records):
                 excellent=grades.count('EXCELLENT'), good=grades.count('GOOD'))
 
 
+# ---- student records (Native results) ----
+
+def native_state(collect):
+    """The Native account state (export_state) a finished collection or exam
+    left in its collect folder."""
+    import pickle
+    with open(Path(collect) / 'state.pkl', 'rb') as f:
+        return pickle.load(f)['run']['env']
+
+
+def _entry_order(entry_id):
+    _, account, entry = entry_id.rsplit(':', 2)
+    return int(account), int(entry)
+
+
+def _dec(x):
+    return Decimal(str(x))
+
+
+def _student_record(symbol, eid, fill, exits, closed, still, trades, m):
+    """One committed Native entry: its ENTRY fill, its open and closing
+    trades, and its attribution (closed) or its open entry (still)."""
+    n = len(m['eob'])
+    source = closed if closed is not None else still
+    t = source.get('entry_cursor')
+    # Native fills an ADD of bar t - 1 at the open (bob) of bar t.
+    if not isinstance(t, int) or not 0 < t < n:
+        raise ReviewError(f'{eid}: no entry cursor to mark its bar')
+    entry_time = _iso(fill['time'])
+    if entry_time != m['bob'][t] or _iso(source['entry_time']) != entry_time:
+        raise ReviewError(f'{eid}: the fill at {entry_time} is not the open of bar {t} ({m["bob"][t]})')
+    if fill['side'] not in ('LONG', 'SHORT') or source['side'] != fill['side'] or (
+            _dec(source['entry_price']) != _dec(fill['price'])):
+        raise ReviewError(f'{eid}: the entry fill disagrees with its entry')
+    opens = [x for x in trades if x['operation_type'].endswith('_OPEN')]
+    closes = [x for x in trades if x['operation_type'].endswith('_CLOSE')]
+    if len(opens) + len(closes) != len(trades) or len(opens) != 1 or (
+            _dec(opens[0]['open_price']) != _dec(fill['price'])) or (
+            _dec(opens[0]['position_size']) != _dec(fill['quantity'])):
+        raise ReviewError(f'{eid}: its open trade disagrees with the entry fill')
+    if len(closes) != len(exits):
+        raise ReviewError(f'{eid}: {len(closes)} closing trades, {len(exits)} exit fills')
+    gross = sum((_dec(x['pnl']) for x in closes), Decimal(0))
+    fees = sum((_dec(x['fee']) for x in trades), Decimal(0))
+    shut = sum((_dec(x['closed_size']) for x in closes), Decimal(0))
+    details = {'Native entry ID': eid, 'Account': eid.rsplit(':', 1)[0], 'Stop source': fill.get('stop_source'),
+               'Line': _optional(fill.get('line')), 'Risk (points)': _optional(fill.get('risk_points'))}
+    if closed is not None:
+        x = closed.get('exit_cursor')
+        if not isinstance(x, int) or not t <= x < n:
+            raise ReviewError(f'{eid}: no exit cursor')
+        if not exits or shut != _dec(fill['quantity']) or _dec(closed['closed_quantity']) != shut:
+            raise ReviewError(f'{eid}: closed {shut} of {fill["quantity"]}')
+        exit_time = _iso(closed['exit_time'])
+        if exit_time != m['eob'][x] or _iso(exits[-1]['time']) != exit_time:
+            raise ReviewError(f'{eid}: the exit at {exit_time} is not the end of bar {x} ({m["eob"][x]})')
+        net = gross - fees
+        if _dec(closed['net_trade_pnl']) != net:
+            raise ReviewError(f'{eid}: attributed net {closed["net_trade_pnl"]}, its trades {net}')
+        prices, reasons = {_dec(f['price']) for f in exits}, {f['reason'] for f in exits}
+        if len(prices) == 1 and _dec(closed['exit_price']) != next(iter(prices)) or (
+                len(reasons) == 1 and closed['reason'] != next(iter(reasons))):
+            raise ReviewError(f'{eid}: the attribution disagrees with its exit fill')
+        outcome = dict(status='CLOSED', exit_time=exit_time,
+                       exit_price=_number(closed['exit_price']) if len(prices) == 1 else None,
+                       exit_reason=closed['reason'] if len(reasons) == 1 else None, net_pnl=_number(net))
+        details.update({'Held (market minutes)': _optional(closed.get('held_market_bars')),
+                        'Gross PnL (CNY)': _number(gross), 'Fees (CNY)': _number(fees),
+                        'Gap slippage (points)': _optional(closed.get('gap_slippage_points')),
+                        'Exit fills': len(exits)})
+    else:
+        # The result ended (its collection or exam is finished) with the
+        # entry not wholly closed: its later outcome is not visible.
+        outcome = dict(status='CENSORED', exit_time=None, exit_price=None, exit_reason=None, net_pnl=None)
+        details['Open at the end of the result'] = True
+        if shut:
+            details.update({'Closed quantity': _number(shut), 'Realized gross PnL (CNY)': _number(gross)})
+    return dict(id=f'student:{eid}', symbol=symbol, action='ADD', direction=fill['side'],
+                decision_time=m['eob'][t - 1], entry_time=entry_time, bar_bob=m['bob'][t], bar_eob=m['eob'][t],
+                trading_day=m['day'][t], entry_price=_number(fill['price']), volume=_number(fill['quantity']),
+                stop_price=_optional(fill.get('stop_loss_price')),
+                target_price=_optional(fill.get('take_profit_price')), grade=None, label_ready_at=None,
+                outcome=outcome, details=details, note='')
+
+
+def student_records(env, m, symbol):
+    """The review-v1 records of every committed entry of a Native state (its
+    completed accounts first), by account and entry; `m` its market bars."""
+    records = []
+    for account in [*env['completed_accounts'], env]:
+        if account['contract'] != symbol:
+            raise ReviewError(f'{symbol}: a Native account of {account["contract"]}')
+        fills = account['fills']
+        if not all(f.get('committed') for f in fills):
+            raise ReviewError(f'{symbol}: an uncommitted fill')
+        entries = [f for f in fills if f['reason'] == 'ENTRY']
+        opened = {f['entry_id']: f for f in entries}
+        exits = {}
+        for f in fills:
+            if f['reason'] != 'ENTRY':
+                exits.setdefault(f['entry_id'], []).append(f)
+        closed = {a['entry_id']: a for a in account['attributions']}
+        still = account['entries']
+        trades = {}
+        for x in account['trade_history']:
+            eid = (x.get('meta') or {}).get('entry_id')
+            if eid is None:
+                raise ReviewError(f'{symbol}: a trade without its entry')
+            trades.setdefault(eid, []).append(x)
+        if (len(opened) != len(entries) or len(closed) != len(account['attributions'])
+                or set(closed) & set(still) or set(closed) | set(still) != set(opened)
+                or not set(exits) <= set(opened) or set(trades) != set(opened)):
+            raise ReviewError(f'{symbol}: entry fills, trades, attributions and open entries disagree')
+        for eid in sorted(opened, key=_entry_order):
+            records.append(_student_record(symbol, eid, opened[eid], exits.get(eid, []), closed.get(eid),
+                                           still.get(eid), trades[eid], m))
+    for r in records:
+        check_record(r, symbol, 'student')
+    return records
+
+
+def student_summary(records):
+    status = [r['outcome']['status'] for r in records]
+    return dict(entries=len(records), closed=status.count('CLOSED'), open=status.count('OPEN'),
+                partial=status.count('PARTIAL'), censored=status.count('CENSORED'))
+
+
 # ---- checks (shared by the export and validate) ----
 
 def _is_number(x):
@@ -257,8 +417,8 @@ def _is_time(x):
         return False
 
 
-def check_record(r, symbol):
-    """One review-v1 record of a teacher file of `symbol`."""
+def check_record(r, symbol, kind='teacher'):
+    """One review-v1 record of a teacher or student file of `symbol`."""
     def bad(why):
         raise ReviewError(f'{r.get("id", "?") if isinstance(r, dict) else "?"}: {why}')
     if not isinstance(r, dict) or tuple(r) != FIELDS:
@@ -297,6 +457,18 @@ def check_record(r, symbol):
         if any(o[k] is not None and not _is_time(o[k]) for k in ('exit_time',)) or any(
                 o[k] is not None and not _is_number(o[k]) for k in ('exit_price', 'net_pnl')):
             bad('outcome exit time / price / net PnL')
+    if kind == 'student':
+        # A committed Native entry: its fill, no teacher label; a CLOSED one
+        # has its exit time and net PnL, the others no exit at all.
+        if r['action'] != 'ADD' or r['grade'] is not None or r['label_ready_at'] is not None or any(
+                r[k] is None for k in ('direction', 'decision_time', 'entry_time', 'entry_price', 'volume')):
+            bad('a student record is a committed ADD with its fill and no teacher label')
+        o = r['outcome']
+        if o['status'] == 'CLOSED':
+            if o['exit_time'] is None or o['net_pnl'] is None:
+                bad('a CLOSED entry needs its exit time and net PnL')
+        elif any(o[k] is not None for k in OUTCOME[1:]):
+            bad(f'a {o["status"]} entry has no exit fields')
 
 
 def _strict_loads(line):
@@ -305,7 +477,7 @@ def _strict_loads(line):
     return json.loads(line, parse_constant=reject)
 
 
-def check_file(path, symbol, records, sha256):
+def check_file(path, symbol, records, sha256, kind='teacher'):
     """A published JSONL: its bytes, line count and every record."""
     data = Path(path).read_bytes()
     if hashlib.sha256(data).hexdigest() != sha256:
@@ -320,7 +492,7 @@ def check_file(path, symbol, records, sha256):
     if len(set(ids)) != len(ids):
         raise ReviewError(f'{path}: duplicate record ids')
     for r in rows:
-        check_record(r, symbol)
+        check_record(r, symbol, kind)
     return rows
 
 
@@ -332,27 +504,41 @@ def _inside(review, rel):
 
 
 def validate(root):
-    """A published corpus review (ROOT/review): its manifest, every
+    """A published corpus or run review (ROOT/review): its manifest, every
     registered file and record. Returns the totals; any failure raises
     ReviewError."""
     return validate_review(Path(root) / 'review')
 
 
-def validate_review(review):
-    review = Path(review)
-    path = review / 'manifest.json'
+def _load_manifest(review):
+    path = Path(review) / 'manifest.json'
     if not path.exists():
         raise ReviewError(f'{path} does not exist')
     m = _strict_loads(path.read_text())
     if not isinstance(m, dict) or m.get('schema') != SCHEMA:
         raise ReviewError(f'{path}: schema is not {SCHEMA}')
-    if m.get('kind') != 'corpus' or tuple(m) != MANIFEST_KEYS or m['status'] != 'ready':
-        raise ReviewError(f'{path}: not a ready corpus manifest of the review-v1 fields')
-    symbols = [c['symbol'] for c in m['contracts']]
+    return path, m
+
+
+def _check_contracts(path, contracts):
+    symbols = [c.get('symbol') for c in contracts]
     if len(set(symbols)) != len(symbols) or not all(
             set(c) == {'symbol', 'price_tick', 'multiplier', 'currency'} and _is_number(c['price_tick'])
-            and _is_number(c['multiplier']) for c in m['contracts']):
+            and _is_number(c['multiplier']) for c in contracts):
         raise ReviewError(f'{path}: contracts')
+    return symbols
+
+
+def validate_review(review, corpus=True):
+    """A review/ folder of either kind; `corpus` False skips the full check
+    of the corpus a run is fixed to (its manifest sha256 is still checked)."""
+    review = Path(review)
+    path, m = _load_manifest(review)
+    if m.get('kind') == 'run':
+        return validate_run(review, m, corpus)
+    if m.get('kind') != 'corpus' or tuple(m) != MANIFEST_KEYS or m['status'] != 'ready':
+        raise ReviewError(f'{path}: not a ready corpus manifest of the review-v1 fields')
+    symbols = _check_contracts(path, m['contracts'])
     totals = dict(files=0, records=0, add=0, wait=0, excellent=0, good=0)
     for d in m['datasets']:
         if d.get('kind') != 'teacher' or d.get('policy_id') is not None:
@@ -368,6 +554,64 @@ def validate_review(review):
             for k, v in f['summary'].items():
                 totals[k] += v
     return totals
+
+
+def _corpus_ref(review, ref):
+    """The corpus manifest a run manifest is fixed to: the file it names
+    (relative to the run's review/) must have its id and sha256."""
+    if not isinstance(ref, dict) or set(ref) != {'id', 'manifest', 'sha256'}:
+        raise ReviewError(f'{review}: the corpus reference needs id, manifest and sha256')
+    target = (Path(review) / ref['manifest']).resolve()
+    if target.name != 'manifest.json' or target.parent.name != 'review' or not target.exists():
+        raise ReviewError(f'{review}: the corpus manifest {ref["manifest"]} does not exist')
+    if _sha256(target) != ref['sha256']:
+        raise ReviewError(f'{review}: the corpus manifest {target} is not the one this run is fixed to')
+    if _read_json(target).get('id') != ref['id']:
+        raise ReviewError(f'{review}: the corpus manifest {target} is not of {ref["id"]}')
+    return target.parent
+
+
+def validate_run(review, m=None, corpus=True):
+    """A run review: the fixed corpus, the progress and status, every
+    registered student file and its summary (entries = records = closed +
+    open + partial + censored); the policy ids refer to published results."""
+    review = Path(review)
+    path, m = (review / 'manifest.json', m) if m is not None else _load_manifest(review)
+    if m.get('kind') != 'run' or tuple(m) != RUN_KEYS or m['status'] not in RUN_STATUSES or not (
+            isinstance(m['revision'], int) and m['revision'] >= 1) or not _is_time(m['updated_at']):
+        raise ReviewError(f'{path}: not a run manifest of the review-v1 fields')
+    folder = _corpus_ref(review, m['corpus'])
+    if corpus:
+        validate_review(folder)
+    p = m['progress']
+    if not isinstance(p, dict) or set(p) != {'phase', 'step', 'round'}:
+        raise ReviewError(f'{path}: progress needs phase, step and round')
+    symbols = _check_contracts(path, m['contracts'])
+    ids = [d.get('id') for d in m['datasets']]
+    if len(set(ids)) != len(ids):
+        raise ReviewError(f'{path}: duplicate dataset ids')
+    totals = dict(files=0, records=0, **{k: 0 for k in STUDENT_SUMMARY})
+    policies = set()
+    for d in m['datasets']:
+        if d.get('kind') != 'student' or d.get('scope') not in SCOPES or not isinstance(d.get('policy_id'), str) or (
+                d['id'] != f'student:{d["policy_id"]}:{d["scope"]}:{d["id"].rsplit(":", 1)[-1]}'):
+            raise ReviewError(f'{path}: dataset {d.get("id")} is not a student dataset')
+        policies.add(d['policy_id'])
+        for f in d['files']:
+            if f['symbol'] not in symbols or f.get('market_complete') not in (True, False, None) or set(f) != {
+                    'symbol', 'path', 'records', 'sha256', 'summary', 'market_complete'}:
+                raise ReviewError(f'{path}: file {f.get("path")} of {d["id"]}')
+            rows = check_file(_inside(review, f['path']), f['symbol'], f['records'], f['sha256'], 'student')
+            if student_summary(rows) != f['summary']:
+                raise ReviewError(f'{f["path"]}: the summary differs from its records')
+            totals['files'] += 1
+            totals['records'] += len(rows)
+            for k, v in f['summary'].items():
+                totals[k] += v
+    for k in ('latest_policy_id', 'best_dev_policy_id'):
+        if m[k] is not None and m[k] not in policies:
+            raise ReviewError(f'{path}: {k} {m[k]} has no published result')
+    return dict(totals, datasets=len(m['datasets']), revision=m['revision'], status=m['status'])
 
 
 # ---- publishing ----
@@ -447,6 +691,155 @@ def export_corpus(root, label, expect_contracts, out=None, now=None, log=print):
                 totals=totals)
 
 
+# ---- run export ----
+
+def _exam_part(folder):
+    """(symbol, collect folder, pool row, folder of inputs/contract.yaml) of
+    a finished exam (exam.json is written last)."""
+    folder = Path(folder)
+    source = _read_json(folder / 'exam.json')['source']
+    if 'row' in source:
+        row, corpus = source['row'], None
+    else:
+        corpus = Path(source['corpus'])
+        row = _read_json(corpus / 'source.json')['pool_row']
+    inputs = folder if (folder / 'inputs' / 'contract.yaml').exists() else corpus
+    if inputs is None or row['contract'] != source.get('contract', row['contract']):
+        raise ReviewError(f'{folder}: the exam names no market of its contract')
+    return row['contract'], folder / 'collect', row, inputs
+
+
+def run_results(root, cfg, state):
+    """The finished student results of a formal run, per frozen policy:
+    (policy, scope, result, parts). A result counts when all of it is done:
+    the TRAIN collection of every contract of the policy's round, the
+    TRAIN smoke of `smoke_contracts` contracts, the DEV exam of every DEV
+    contract. Each is the policy's one result of that scope (r0001); its
+    files are ordered by symbol."""
+    root = Path(root)
+    corpus_root = Path(cfg['paths']['corpus_root'])
+    out = []
+    for policy in sorted((root / 'policies').glob('pi_[0-9][0-9][0-9][0-9]')):
+        if not (policy / 'policy.json').exists():
+            continue
+        name = policy.name
+        rec = (state.get('rounds') or {}).get(str(int(name[3:]) + 1))
+        if rec and rec.get('policy_in') == name and rec.get('contracts'):
+            parts = []
+            for c in rec['contracts']:
+                collect = root / 'experience' / name / 'collect' / c
+                meta = _read_json(collect / 'meta.json') if (collect / 'meta.json').exists() else None
+                if not (meta and meta.get('done')):
+                    break
+                parts.append((c, collect, _read_json(corpus_root / c / 'source.json')['pool_row'], corpus_root / c))
+            else:
+                out.append((name, 'TRAIN', 'r0001', sorted(parts, key=lambda x: x[0])))
+        smoke = sorted((root / 'eval' / name / 'TRAIN_SMOKE').glob('*/exam.json'))
+        if smoke and len(smoke) == cfg['evaluation']['smoke_contracts']:
+            out.append((name, 'TRAIN_SMOKE', 'r0001', sorted((_exam_part(e.parent) for e in smoke), key=lambda x: x[0])))
+        dev = [root / 'eval' / name / 'DEV' / c for c in cfg['dev']['contracts']]
+        if dev and all((d / 'exam.json').exists() for d in dev):
+            out.append((name, 'DEV', 'r0001', sorted(map(_exam_part, dev), key=lambda x: x[0])))
+    return out
+
+
+def paper_results(folder, policy, result):
+    """A paper result: one exam (exam --paper-pool) per contract folder."""
+    folder = Path(folder)
+    parts = sorted(p for p in folder.iterdir() if p.is_dir())
+    if not parts or not all((p / 'exam.json').exists() for p in parts):
+        raise ReviewError(f'{folder}: not every paper exam is finished')
+    return policy, 'PAPER', result, sorted(map(_exam_part, parts), key=lambda x: x[0])
+
+
+def _dataset_label(policy, scope, result):
+    return f'Student {policy} · {scope}' + ('' if result == 'r0001' else f' · {result}')
+
+
+def export_run(root, paper=(), now=None, log=print):
+    """Publish or update RUN/review: the run manifest fixed to the corpus
+    review of paths.corpus_root, its progress and status from run_state.json,
+    and a student dataset for each finished result not yet registered
+    (`paper`: (folder, policy, result) of paper results to register too).
+    Registered datasets and files are kept as they are."""
+    root = Path(root)
+    review = root / 'review'
+    cfg = yaml.safe_load((root / 'config.yaml').read_text())
+    state = _read_json(root / 'run_state.json')
+    if state.get('status') not in RUN_STATUSES:
+        raise ReviewError(f'{root}: run_state.json records no status {RUN_STATUSES}')
+    path = review / 'manifest.json'
+    old = _read_json(path) if path.exists() else None
+    corpus_review = Path(cfg['paths']['corpus_root']) / 'review'
+    target = corpus_review / 'manifest.json'
+    if not target.exists():
+        raise ReviewError(f'{target}: the corpus review is not published')
+    ref = dict(id=_read_json(target)['id'], manifest=os.path.relpath(target, review), sha256=_sha256(target))
+    if old is None:
+        validate_review(corpus_review)
+    elif old.get('kind') != 'run' or old.get('corpus') != ref:
+        raise ConflictError(f'{path} is fixed to the corpus {old.get("corpus")}, not {ref}')
+    datasets = {d['id']: d for d in (old['datasets'] if old else [])}
+    contracts = {c['symbol']: c for c in (old['contracts'] if old else [])}
+    for d in datasets.values():
+        for f in d['files']:
+            if _sha256(_inside(review, f['path'])) != f['sha256']:
+                raise ReviewError(f'{f["path"]}: a registered file changed')
+    for _, policy, _ in paper:
+        if not (root / 'policies' / policy / 'policy.json').exists():
+            raise ReviewError(f'{policy} is not a frozen policy of {root.name}')
+    new = []
+    for policy, scope, result, parts in run_results(root, cfg, state) + [paper_results(*p) for p in paper]:
+        did = f'student:{policy}:{scope}:{result}'
+        if not RESULT.match(result) or did in datasets:
+            continue
+        files = []
+        for symbol, collect, row, inputs in parts:
+            meta = _contract_meta(inputs)
+            if meta['symbol'] != symbol or contracts.get(symbol, meta) != meta:
+                raise ReviewError(f'{symbol}: contract terms differ between results')
+            env = native_state(collect)
+            records = student_records(env, _pool_market(row), symbol)
+            rel = f'student/{policy}/{scope}/{result}/{symbol}.jsonl'
+            blob = ''.join(map(dumps, records)).encode('utf-8')
+            _publish(blob, review / rel)
+            sha = hashlib.sha256(blob).hexdigest()
+            check_file(review / rel, symbol, len(records), sha, 'student')
+            files.append(dict(symbol=symbol, path=rel, records=len(records), sha256=sha,
+                              summary=student_summary(records), market_complete=bool(env['terminated'])))
+            contracts[symbol] = meta
+        datasets[did] = dict(id=did, label=_dataset_label(policy, scope, result), kind='student', scope=scope,
+                             policy_id=policy, files=files)
+        new.append(did)
+        log(f'{did}: ' + ', '.join(f'{f["symbol"]} {f["summary"]}' for f in files))
+    published = {d['policy_id'] for d in datasets.values()}
+    latest = Path(state['latest_candidate']).name if state.get('latest_candidate') else None
+    best = Path(state['best_dev']['policy']).name if state.get('best_dev') else None
+    manifest = dict(schema=SCHEMA, kind='run', id=root.name, revision=None,
+                    label=(cfg.get('review') or {}).get('label') or root.name,
+                    strategy=_read_json(target)['strategy'], status=state['status'], updated_at=None,
+                    timezone=TIMEZONE, corpus=ref,
+                    progress=dict(phase=state.get('phase'), step=state.get('step'), round=state.get('round')),
+                    latest_policy_id=latest if latest in published else None,
+                    best_dev_policy_id=best if best in published else None,
+                    contracts=[contracts[s] for s in sorted(contracts)],
+                    datasets=sorted(datasets.values(),
+                                    key=lambda d: (d['policy_id'], SCOPES.index(d['scope']), d['id'])))
+    fixed = ('revision', 'updated_at')
+    if old is not None and {k: v for k, v in old.items() if k not in fixed} == {
+            k: v for k, v in manifest.items() if k not in fixed}:
+        return dict(manifest='unchanged', revision=old['revision'], datasets=len(datasets), new=new)
+    manifest['revision'] = old['revision'] + 1 if old else 1
+    manifest['updated_at'] = now or pd.Timestamp.now(tz=TIMEZONE).floor('s').isoformat()
+    review.mkdir(parents=True, exist_ok=True)
+    validate_run(review, manifest, corpus=False)
+    tmp = path.with_name('manifest.json.tmp')
+    tmp.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n')
+    os.replace(tmp, path)
+    return dict(manifest='published' if old is None else 'updated', revision=manifest['revision'],
+                datasets=len(datasets), new=new)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     sub = parser.add_subparsers(dest='command', required=True)
@@ -454,12 +847,23 @@ def main(argv=None):
     c.add_argument('--input', required=True, help='corpus root (one folder per contract)')
     c.add_argument('--label', required=True, help='manifest label, e.g. "V2.1 teacher"')
     c.add_argument('--expect-contracts', type=int, required=True, help='corpora the root must hold')
+    r = sub.add_parser('run', help='publish or update RUN/review from the run\'s finished results')
+    r.add_argument('--input', required=True, help='formal run root (run_state.json, config.yaml)')
+    p = sub.add_parser('paper', help='register a paper result of a frozen policy of the run')
+    p.add_argument('--input', required=True, help='formal run root')
+    p.add_argument('--results', required=True, help='paper folder of one policy: one exam folder per contract')
+    p.add_argument('--policy', required=True, help='the frozen policy that traded, e.g. pi_0000')
+    p.add_argument('--result', required=True, help='result id of this paper run, e.g. r0001')
     v = sub.add_parser('validate', help='check ROOT/review/manifest.json and its files')
     v.add_argument('--input', required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == 'corpus':
             out = export_corpus(args.input, args.label, args.expect_contracts)
+        elif args.command == 'run':
+            out = export_run(args.input)
+        elif args.command == 'paper':
+            out = export_run(args.input, paper=[(args.results, args.policy, args.result)])
         else:
             out = dict(totals=validate(args.input))
     except ReviewError as e:
