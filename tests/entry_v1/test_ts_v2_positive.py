@@ -1,6 +1,7 @@
 """Thinking Student V2 positive entry corpus: causal levels and events, the
 Native facts of the positives, the teacher reader, the TRAIN scope of each
-side, the LONG mirror (V2.1) and the combined SHORT + LONG material."""
+side, the LONG mirror (V2.1), the combined SHORT + LONG material and the
+per-touch volume spike of rules V3 (V2.2)."""
 import json
 import shutil
 from pathlib import Path
@@ -18,6 +19,7 @@ from gym_trading_env.research.ts_v1_corpus import native_env, read_yaml, train_r
 DREAMER = Path(__file__).resolve().parents[3] / 'dreamerv3'
 POOL = DREAMER / 'configs/thinking_student/markets/pool.json'
 CONFIG = DREAMER / 'configs/thinking_student/v2_positive_entry.yaml'
+CONFIGS_V3 = [DREAMER / f'configs/thinking_student/v2_positive_entry_v3{x}.yaml' for x in ('', '_long')]
 SHORT = {'CZCE.FG809', 'CZCE.FG901', 'CZCE.FG905', 'CZCE.FG005', 'CZCE.FG201', 'CZCE.FG205',
          'CZCE.FG209', 'CZCE.FG301', 'CZCE.FG405'}
 LONG = {'CZCE.FG001', 'CZCE.FG009', 'CZCE.FG101', 'CZCE.FG105', 'CZCE.FG109', 'CZCE.FG305',
@@ -37,6 +39,8 @@ quality: {excellent: {mae_r: 0.5, held_minutes: 120}, good: {mae_r: 0.8, held_mi
 timeline: {wait_rows_per_phase: 8}
 figures: {max_events: 12, per_contract: 2}
 """)
+# Rules V3 (V2.2, user 2026-11-04): each touch needs its own volume spike near H.
+CFG3 = dict(CFG, version='V2_POSITIVE_ENTRY_V3', volume=dict(CFG['volume'], activation='touch'))
 
 
 def _bars(price, high=None, n=15, volume=100.):
@@ -49,6 +53,9 @@ LOUD_PEAK = _bars(95, 100, 7) + [(95, 100, 94, 95, 500.)] + _bars(95, 100, 7)
 # After the first touch departs (cursor 105): a quiet return near H at
 # cursors 110-112, a second departure at 113.
 RETURN = _bars(88, 89, 5) + [(96, 97, 95, 96, 100.)] * 3 + _bars(88, 89, 7) + _bars(85, 86) * 3
+# The same return with a volume spike near H at cursor 111.
+LOUD_RETURN = (_bars(88, 89, 5) + [(96, 97, 95, 96, 100.), (96, 97, 95, 96, 500.), (96, 97, 95, 96, 100.)]
+               + _bars(88, 89, 7) + _bars(85, 86) * 3)
 
 
 def synthetic(spike=(96, 99, 96, 98, 500.), peak=QUIET_PEAK, tail=_bars(88, 89) + _bars(85, 86) * 3):
@@ -321,7 +328,14 @@ def test_the_config_must_be_the_version_and_one_side(tmp_path):
     assert V.load_config(path)['direction'] == 'LONG'
     for change in (dict(direction='BOTH'), dict(version='V0')):
         path.write_text(yaml.safe_dump(dict(CFG, **change)))
-        with pytest.raises(ValueError, match=f'not a {V.VERSION} SHORT or LONG config'):
+        with pytest.raises(ValueError, match='V2_POSITIVE_ENTRY_V2 / V2_POSITIVE_ENTRY_V3 SHORT or LONG config'):
+            V.load_config(path)
+    # The version names its volume rule: V3 with activation touch, V2 without.
+    path.write_text(yaml.safe_dump(CFG3))
+    assert V.load_config(path)['volume']['activation'] == 'touch'
+    for cfg in (dict(CFG3, volume=CFG['volume']), dict(CFG, volume=CFG3['volume'])):
+        path.write_text(yaml.safe_dump(cfg))
+        with pytest.raises(ValueError, match='needs volume.activation'):
             V.load_config(path)
     with pytest.raises(ValueError, match='not SHORT or LONG'):
         V.sign('BOTH')
@@ -410,3 +424,50 @@ def test_two_sides_combine_into_one_material_byte_for_byte(corpus, tmp_path):
     with pytest.raises(ValueError, match='different columns'):
         V.combine([corpus, other], tmp_path / 'columns')
     assert not (tmp_path / 'columns').exists()
+
+
+def test_v3_a_touch_starts_only_on_its_own_spike_near_h():
+    # The line spiked at its own high (cursor 37): V2 starts the first
+    # rebound near H at 94; V3 waits there for a spike that never comes.
+    a, buckets = synthetic(spike=(96, 99, 96, 98, 100.), peak=LOUD_PEAK)
+    assert run(a, buckets)[0][0]['activation'] == 94
+    assert run(a, buckets, CFG3) == ([], [])
+    # With a spike at cursor 96, V3 starts there; 94 and 95 wait for volume.
+    a, buckets = synthetic(peak=LOUD_PEAK)
+    (x,), candidates = run(a, buckets, CFG3)
+    assert (x['activation'], x['activation_rv'], x['touch'], x['line_spike']) == (96, 5., 1, 37)
+    assert [(w['cursor'], w['teach']) for w in x['wait']][-2:] == [(94, 'WAIT_NEAR_NO_VOLUME'), (95, 'WAIT_NEAR_NO_VOLUME')]
+    assert [c['cursor'] for c in candidates] == [96, 97, 98, 99]
+    assert all(c['obs_rv'] < 2 for c in candidates[1:])
+    # A quiet peak: the line's first spike is the touch's own, and V2 = V3.
+    a, buckets = synthetic()
+    assert run(a, buckets, CFG3) == run(a, buckets)
+
+
+def test_v3_a_return_to_the_line_needs_a_new_spike():
+    # V2 touches the line again on the quiet return (cursor 110); V3 does not.
+    a, buckets = synthetic(tail=RETURN)
+    assert [x['activation'] for x in run(a, buckets)[0]] == [96, 110]
+    events, candidates = assert_causal(a, buckets, range(100, a['n'] + 1, 3), CFG3)
+    assert [x['activation'] for x in events] == [96] and max(c['cursor'] for c in candidates) == 99
+    # With its own spike at cursor 111 the return is touch 2; 110 waits.
+    a, buckets = synthetic(tail=LOUD_RETURN)
+    events, candidates = assert_causal(a, buckets, range(100, a['n'] + 1, 3), CFG3)
+    assert [(x['touch'], x['activation'], x['end'], x['end_reason']) for x in events] == [
+        (1, 96, 105, 'DEPARTED'), (2, 111, 113, 'DEPARTED')]
+    assert events[1]['activation_rv'] >= 2 and events[1]['wait'][-1] == dict(cursor=110, teach='WAIT_NEAR_NO_VOLUME')
+    assert [c['cursor'] for c in candidates if c['event_id'] == events[1]['event_id']] == [111, 112]
+    # The timeline notes say which spike a V3 touch waits for.
+    o = dict(obs_H=100., obs_high=97., obs_rv=1., obs_close=96., obs_quote=95., obs_touch=2, obs_line_spike_rv=5.)
+    assert V.wait_note('WAIT_NEAR_NO_VOLUME', o, CFG3).endswith('RV 1.0 < 2: no volume spike on this touch yet; wait')
+    assert V.wait_note('WAIT_NEAR_NO_VOLUME', o, CFG).endswith('and the line has had no volume spike; wait')
+    assert "RV 5.0 >= 2: this touch's volume spike: touch 2 starts" in V.wait_note('ACTIVATION', dict(o, obs_rv=5.), CFG3)
+
+
+@pytest.mark.skipif(not all(p.exists() for p in CONFIGS_V3), reason='Thinking Student configs not present')
+def test_v3_configs_are_the_v2_rules_with_the_touch_spike():
+    v2 = V.load_config(CONFIG)
+    for path, side in zip(CONFIGS_V3, ('SHORT', 'LONG')):
+        v3 = V.load_config(path)
+        assert v3 == dict(v2, version='V2_POSITIVE_ENTRY_V3', direction=side,
+                          volume=dict(v2['volume'], activation='touch'))

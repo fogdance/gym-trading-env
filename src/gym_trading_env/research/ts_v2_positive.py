@@ -10,6 +10,12 @@ minute of a touch, SL = H + 5 (R <= 12), TP = fill - 2R. A line holds until
 the price breaks it. The rules are docs/thinking_student_v2/DESIGN.md with
 the values of dreamerv3/configs/thinking_student/v2_positive_entry.yaml.
 
+Rules V3 (V2.2, user 2026-11-04) restore the Spec V0.3 high-position volume
+spike: each touch starts only on its own first bar near H with RV >= 2
+(bars near H before it wait, WAIT_NEAR_NO_VOLUME); later minutes of the
+touch need no new spike. V2 lets the line's spike carry every touch, so
+volume barely filtered. Every other rule is V2's.
+
 LONG (V2.1, user 2026-11-04) is the mirror: the line is a prior 15m low L,
 the zone [L, L + 7], SL = L - 5, TP = fill + 2R, a departure a close at
 L + 10. It runs the same scan in short space: every price of a LONG market
@@ -52,7 +58,11 @@ from .fg_single3_oracle import CandidateIndex, reference_candidate
 from .ts_v1_corpus import _pool, _repos, native_env, train_row, write_inputs
 from .ts_v1_grades import _room
 
-VERSION = 'V2_POSITIVE_ENTRY_V2'
+# Material versions and the volume spike that starts a touch: V2, the
+# line's first spike from its own 15m bucket on (touches after it need
+# none); V3 (user 2026-11-04), each touch's own bar near the line with RV >=
+# ratio, as Spec V0.3 and rules V1 (config volume.activation: touch).
+ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch'}
 SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
@@ -72,8 +82,10 @@ LABELS = dict(exit_reason='exit_reason', exit_cursor='exit_cursor', exit_time='e
 
 def load_config(path):
     cfg = yaml.safe_load(Path(path).read_text())
-    if cfg.get('version') != VERSION or cfg.get('direction') not in SIDES:
-        raise ValueError(f'{path}: not a {VERSION} SHORT or LONG config')
+    if cfg.get('version') not in ACTIVATION or cfg.get('direction') not in SIDES:
+        raise ValueError(f'{path}: not a {" / ".join(ACTIVATION)} SHORT or LONG config')
+    if cfg['volume'].get('activation', 'line') != ACTIVATION[cfg['version']]:
+        raise ValueError(f'{path}: {cfg["version"]} needs volume.activation {ACTIVATION[cfg["version"]]}')
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
@@ -246,6 +258,7 @@ def scan(a, levels, cfg, flat_end, contract):
     e, ev, p = cfg['entry'], cfg['event'], cfg['prior_high']
     stop, zone, near = e['stop_above_points'], e['zone_points'], ev['near_points']
     far, n = p['departure_points'], a['n']
+    ratio, own_spike = cfg['volume']['ratio'], ACTIVATION[cfg['version']] == 'touch'
     pending = sorted(levels, key=lambda x: x['confirm'])
     live, k = [], 0
     # A line may start a touch from its first departure on, and again from
@@ -288,10 +301,10 @@ def scan(a, levels, cfg, flat_end, contract):
         level = min(ready, key=lambda x: (x['H'], -x['bucket']))
         active[s] = level['bucket']
         H = level['H']
-        # Near H, not through the stop, and the line has had its volume
-        # spike (this bar may be that spike).
-        if (a['valid'][s] and a['high'][s] >= H - near and a['buy_high'][s] < H + stop
-                and level['spike'] <= s):
+        # Near H, not through the stop, and with a volume spike: V3, this
+        # bar's own RV >= ratio; V2, the line's spike (this bar may be it).
+        spiked = a['rv'][s] >= ratio if own_spike else level['spike'] <= s
+        if a['valid'][s] and a['high'][s] >= H - near and a['buy_high'][s] < H + stop and spiked:
             armed[level['bucket']] = n
             touches[level['bucket']] += 1
             spike = level['spike']
@@ -476,10 +489,12 @@ def wait_note(teach, o, cfg, spike_now=False):
         return f'close {_at(o["obs_close"], H, N)} {far_from}: far from {N}; wait'
     if teach == 'WAIT_APPROACH':
         return f'{move} {_at(o["obs_high"], H, N)} {not_near}: not near {N} yet; wait'
+    own = ACTIVATION[cfg['version']] == 'touch'
     if teach == 'WAIT_NEAR_NO_VOLUME':
-        return (f'{end} {_at(o["obs_high"], H, N)} near {N} but {_rv(o["obs_rv"])} < {ratio:g} and the line has '
-                'had no volume spike; wait')
-    why = (f'{_rv(o["obs_rv"])} >= {ratio:g}: the line\'s volume spike' if spike_now else
+        return (f'{end} {_at(o["obs_high"], H, N)} near {N} but {_rv(o["obs_rv"])} < {ratio:g}'
+                + (': no volume spike on this touch yet; wait' if own else ' and the line has had no volume spike; wait'))
+    why = (f'{_rv(o["obs_rv"])} >= {ratio:g}: this touch\'s volume spike' if own else
+           f'{_rv(o["obs_rv"])} >= {ratio:g}: the line\'s volume spike' if spike_now else
            f'the line had its volume spike ({_rv(o["obs_line_spike_rv"])}) before')
     return (f'{end} {_at(o["obs_high"], H, N)} near {N}, {why}: touch {o["obs_touch"]} starts; '
             f'quote {_at(o["obs_quote"], H, N)}')
@@ -670,7 +685,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     chosen = choose_figures(tables['positive_events'], cfg)
     figures = plot_events(tmp / 'figures', chosen, tables, markets, cfg)
     seconds['figures'] = round(time.monotonic() - started, 1)
-    source = dict(version=VERSION, direction=side, command=command, fold='TRAIN', mode='OFFLINE_TRAIN',
+    source = dict(version=cfg['version'], direction=side, command=command, fold='TRAIN', mode='OFFLINE_TRAIN',
                   rows=rows, stats=stats, figures=figures, workers=workers,
                   seconds=dict(seconds, total=round(time.monotonic() - began, 1)),
                   created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
@@ -835,7 +850,7 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
     teacher = Path(folder) / 'teacher'
     summary = dict(
         contract=contract, label=TEACHER_LABEL, mfe_minutes=list(MFE_MINUTES),
-        grades=dict(teacher=VERSION, max_risk_points=max_risk, material=str(Path(folder).resolve()),
+        grades=dict(teacher=json.loads((Path(folder) / 'source.json').read_text())['version'], max_risk_points=max_risk, material=str(Path(folder).resolve()),
                     sha256={name: _sha256(teacher / f'{name}.csv') for name in TEACHER}),
         graded={'GOOD': int((out['grade'] == GOOD).sum()), 'EXCELLENT': int((out['grade'] == EXCELLENT).sum())},
         demo=dict(add=int((out['valid'] & (out['action'] == 1)).sum()),
@@ -894,7 +909,7 @@ def audit_summary(events, candidates, stats, cfg):
     total = part(events, candidates)
     total.update(contracts=len(stats), rows=sum(s['rows'] for s in stats.values()),
                  **{k: sum(s[k] for s in stats.values()) for k in ('levels', 'levels_spiked', 'levels_touched')})
-    return dict(version=VERSION, selection_bias=(
+    return dict(version=cfg['version'], selection_bias=(
         'Positives are chosen by their own Native outcome: their TP rate is 100% by construction. '
         'The base rates of all candidates and of the first candidate of each event are the '
         'rule\'s own record; neither shows a verified edge, and the direction is assumed.'),
@@ -935,7 +950,7 @@ def combine(folders, out):
     folders = [Path(f) for f in folders]
     params = [yaml.safe_load((f / 'params.yaml').read_text()) for f in folders]
     rules = [{k: v for k, v in x.items() if k != 'direction'} for x in params]
-    if any(x['version'] != VERSION for x in params) or any(r != rules[0] for r in rules):
+    if any(x['version'] not in ACTIVATION for x in params) or any(r != rules[0] for r in rules):
         raise ValueError('the materials differ in version or in rules other than the direction')
     contracts = [set(load_positive(f)['positive_events'].contract) for f in folders]
     if sum(map(len, contracts)) != len(set().union(*contracts)):
@@ -950,7 +965,7 @@ def combine(folders, out):
             raise ValueError(f'{name}: the materials have different columns')
         (tmp / 'teacher' / f'{name}.csv').write_text(texts[0][0] + ''.join(x for t in texts for x in t[1:]))
     load_positive(tmp)
-    source = dict(version=VERSION, combined=[
+    source = dict(version=params[0]['version'], combined=[
         dict(folder=str(f.resolve()), direction=x['direction'], contracts=sorted(c),
              sha256={name: _sha256(f / 'teacher' / f'{name}.csv') for name in TEACHER})
         for f, x, c in zip(folders, params, contracts)],
