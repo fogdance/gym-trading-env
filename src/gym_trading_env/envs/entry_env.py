@@ -42,6 +42,10 @@ STRUCTURAL_FILL_MODEL = "minute_structural_risk_first_v1"
 # not the env's rule: a policy sees the same inputs under any TP / SL.
 POSITION_TP_SCALE = 5
 PRIOR_HIGH_KEYS = ('pivot_left', 'pivot_right', 'lookback_buckets', 'departure_points')
+# entry.stop_rule values: the prior 15m high of a SHORT (V0.5), and the prior
+# 15m extreme of either direction (V2.1, user 2026-11-04: the high of a SHORT,
+# the low of a LONG).
+STOP_RULES = ('prior_15m_high', 'prior_15m_extreme')
 
 
 def _e_market_features(frame, schedule):
@@ -57,8 +61,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     # TP5 / SL30 points; also the default of envs pickled before the keys existed.
     take_profit_points = 5
     stop_loss_points = 30
-    # Structural SL / target-R TP of a SHORT (V2, user 2026-10-31): None keeps
-    # the fixed distances above. Complete 15m buckets in the E context.
+    # Structural SL / target-R TP (V2, user 2026-10-31; LONG too in V2.1): None
+    # keeps the fixed distances above. Complete 15m buckets in the E context.
     stop_rule = None
     context_15m_buckets = 24
     _lines = None
@@ -346,7 +350,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         so a line confirmed during a material touch may differ (the teacher
         drops those as STOP_LINE_DIFFERS). R is capped at max_risk, and with
         no such line R = max_risk; `stop_source` names which. No ADD mask or
-        gate depends on it. entry.context_15m_buckets sets the E context."""
+        gate depends on it. `prior_15m_high` is SHORT only; `prior_15m_extreme`
+        (V2.1) is the same for a SHORT and its mirror for a LONG: L* the
+        highest departed prior 15m pivot low at or below the fill, SL =
+        L* - stop_above, TP = fill + target_r * R (ts_v2_positive short space).
+        entry.context_15m_buckets sets the E context."""
         keys = ('stop_rule', 'stop_above_points', 'max_risk_points', 'target_r', 'prior_high')
         given = {k: self.entry_config[k] for k in keys if k in self.entry_config}
         if 'context_15m_buckets' in self.entry_config:
@@ -356,8 +364,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.context_15m_buckets = value
         if not given:
             return
-        if given.keys() != set(keys) or given['stop_rule'] != 'prior_15m_high' or not self.single3:
-            raise ValueError(f'entry.stop_rule prior_15m_high (Single3) needs exactly {keys}')
+        if given.keys() != set(keys) or given['stop_rule'] not in STOP_RULES or not self.single3:
+            raise ValueError(f'entry.stop_rule {STOP_RULES} (Single3) needs exactly {keys}')
         p = given['prior_high']
         ints = (given['stop_above_points'], given['max_risk_points'], *(p.get(k) for k in PRIOR_HIGH_KEYS))
         if (set(p) != set(PRIOR_HIGH_KEYS) or any(type(x) is not int or x < 1 for x in ints)
@@ -367,48 +375,58 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                              f'stop_above_points, prior_high {PRIOR_HIGH_KEYS}, target_r > 0')
         self.stop_rule = dict(given)
 
-    def _stop_lines(self):
-        """H, confirm, broken and expire cursors of every line, computed once."""
+    def _stop_lines(self, side):
+        """H, confirm, broken and expire cursors of every line of `side` in
+        short space (a LONG's H is minus its prior low), computed once."""
         if self._lines is None:
-            from gym_trading_env.research.ts_v2_positive import departed_at, pivot_levels
+            self._lines = {}
+        if side not in self._lines:
+            from gym_trading_env.research.ts_v2_positive import departed_at, pivot_levels, side_buckets, sign
             if self._e_market is None:
                 raise ValueError('entry.stop_rule needs the complete 15m buckets of the market')
-            raw, r, p = self._raw, self.stop_rule, self.stop_rule['prior_high']
+            raw, r, p, s = self._raw, self.stop_rule, self.stop_rule['prior_high'], sign(side)
+            # The quote the position's SL checks: a SHORT buys at the high, a LONG sells at the low.
+            stop_quote = np.array([float(self._price(v, side, t)) for v, t in
+                                   zip(raw.High if s > 0 else raw.Low, raw.index)])
             a = dict(n=len(raw), times=raw.index, times_ns=raw.index.asi8,
                      bob_ns=pd.DatetimeIndex(self.bobs).asi8, valid=np.asarray(self.valid_fill_clock, bool),
-                     close=raw.Close.to_numpy(float),
-                     buy_high=np.array([float(self._price(v, 'SHORT', t)) for v, t in zip(raw.High, raw.index)]))
-            levels = pivot_levels(self._e_market.complete_buckets, a, p['pivot_left'], p['pivot_right'],
-                                  p['lookback_buckets'], r['stop_above_points'])
+                     close=s * raw.Close.to_numpy(float), buy_high=s * stop_quote)
+            levels = pivot_levels(side_buckets(self._e_market.complete_buckets, s), a, p['pivot_left'],
+                                  p['pivot_right'], p['lookback_buckets'], r['stop_above_points'])
             for x in levels:
                 x['departed'] = departed_at(a, x, p['departure_points'])
-            self._lines = {k: np.array([x[k] for x in levels], float if k == 'H' else np.int64)
-                           for k in ('H', 'confirm', 'departed', 'broken', 'expire')}
-        return self._lines
+            self._lines[side] = {k: np.array([x[k] for x in levels], float if k == 'H' else np.int64)
+                                 for k in ('H', 'confirm', 'departed', 'broken', 'expire')}
+        return self._lines[side]
 
     def planned_exit(self, cursor, fill, side):
-        """SL / TP prices, R and stop_source of a SHORT decided at `cursor`
-        and filled at `fill` under entry.stop_rule."""
-        if str(side).upper() != 'SHORT':
-            raise ValueError('entry.stop_rule prior_15m_high is SHORT only')
-        r, lines, fill = self.stop_rule, self._stop_lines(), Decimal(str(fill))
-        # The lines known at the decision, not broken or expired, that the
-        # price has already left (a close at H - departure_points): the
-        # lowest one at or above the fill is the stop's line.
+        """SL / TP prices, R and stop_source of a SHORT (or, under
+        prior_15m_extreme, a LONG) decided at `cursor` and filled at `fill`
+        under entry.stop_rule."""
+        side = str(side).upper()
+        if side != 'SHORT' and (side != 'LONG' or self.stop_rule['stop_rule'] == 'prior_15m_high'):
+            raise ValueError('entry.stop_rule prior_15m_high is SHORT only; prior_15m_extreme is SHORT or LONG')
+        s = 1 if side == 'SHORT' else -1
+        r, lines, fill = self.stop_rule, self._stop_lines(side), Decimal(str(fill))
+        # In short space (a LONG's prices negated): the lines known at the
+        # decision, not broken or expired, that the price has already left (a
+        # close at H - departure_points): the lowest one at or above the fill
+        # is the stop's line.
+        f = s * fill
         live = ((lines['confirm'] <= cursor) & (lines['departed'] <= cursor) & (cursor < lines['broken'])
-                & (cursor < lines['expire']) & (lines['H'] >= float(fill)))
+                & (cursor < lines['expire']) & (lines['H'] >= float(f)))
         cap = Decimal(r['max_risk_points'])
         if live.any():
             line = Decimal(str(lines['H'][live].min()))
-            risk = line + r['stop_above_points'] - fill
+            risk = line + r['stop_above_points'] - f
             source = 'STRUCTURAL' if risk <= cap else 'CAPPED'
             risk = min(risk, cap)
         else:
             line, risk, source = None, cap, 'NO_LINE'
         tick = self.terms.tick
         target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
-        return dict(line=None if line is None else str(line), risk_points=str(risk), stop_source=source,
-                    stop_loss_price=fill + risk, take_profit_price=fill - target)
+        return dict(line=None if line is None else str(s * line), risk_points=str(risk), stop_source=source,
+                    stop_loss_price=fill + s * risk, take_profit_price=fill - s * target)
 
     def _assert_ledger_conservation(self):
         if self.ledger.total_balance() != self._ledger_total0:
@@ -616,7 +634,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError("Exit precedes entry")
         side = item["side"]
         price = Decimal(str(price))
-        distance = (Decimal(item['entry_price']) - Decimal(item['planned_exit']['take_profit_price'])
+        # The TP distance of this entry (its planned TP: below a SHORT's fill, above a LONG's).
+        distance = (abs(Decimal(item['entry_price']) - Decimal(item['planned_exit']['take_profit_price']))
                     if 'planned_exit' in item else self.take_profit_points)
         if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < distance:
             raise ValueError("TP execution price does not reach the TP distance")

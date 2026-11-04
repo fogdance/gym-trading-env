@@ -1,6 +1,7 @@
 """Review figures of V2 positive events (ts_v2_positive): 1m candles with the
-known prior high H (the line), its entry zone, the SL, the touch start, every positive
-ADD with its TP and exit, and the volume and RV panels on the real clock.
+known prior high H (the line; LONG: the prior low L), its entry zone, the SL, the
+touch start, every positive ADD with its TP and exit, and the volume and RV panels
+on the real clock.
 
 Colors: three categorical slots that pass the all-pairs CVD check on the
 light surface (blue = the level H, orange = the positive entries, aqua =
@@ -50,7 +51,11 @@ def plot_events(folder, event_ids, tables, markets, cfg):
 def plot_event(path, x, entries, others, timeline, market, cfg):
     e = cfg['entry']
     H, act = float(x['H']), int(x['activation'])
-    sl = H + e['stop_above_points']
+    side = cfg['direction']
+    s = 1 if side == 'SHORT' else -1
+    N = 'H' if s > 0 else 'L'
+    sl = H + s * e['stop_above_points']
+    zone = (H - e['zone_points'], H) if s > 0 else (H, H + e['zone_points'])
     first = int(timeline.cursor.min()) if len(timeline) else act
     last = int(np.nanmax(entries.label_exit_cursor)) if len(entries) else act
     lo, hi = max(0, min(first, act - 30) - 5), min(len(market) - 1, max(last, act + 30) + 10)
@@ -63,10 +68,10 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
                                        gridspec_kw=dict(height_ratios=[4.2, 1.1, 1.1], hspace=0.06))
     for a in (ax, axv, axr):
         a.set_facecolor(SURFACE)
-        for side in ('top', 'right'):
-            a.spines[side].set_visible(False)
-        for side in ('left', 'bottom'):
-            a.spines[side].set_color(VOLUME)
+        for spine in ('top', 'right'):
+            a.spines[spine].set_visible(False)
+        for spine in ('left', 'bottom'):
+            a.spines[spine].set_color(VOLUME)
         a.tick_params(colors=INK2, labelsize=8)
         a.grid(axis='y', color=GRID, lw=0.6)
         a.set_axisbelow(True)
@@ -93,21 +98,21 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
     ax.bar(xs[~up], np.maximum(o - c, 0.2)[~up], 0.62, c[~up], color=CANDLE_DOWN, zorder=3)
 
     # The level, its zone and the structural stop.
-    ax.axhspan(H - e['zone_points'], H, color=LEVEL, alpha=0.10, lw=0, zorder=1)
+    ax.axhspan(*zone, color=LEVEL, alpha=0.10, lw=0, zorder=1)
     ax.axhline(H, color=LEVEL, lw=1.6, zorder=4)
     ax.axhline(sl, color=INK, lw=1.1, ls=(0, (4, 3)), zorder=4)
     # Level labels sit in the right margin, outside the plot.
     margin = ax.get_yaxis_transform()
-    ax.text(1.005, H, f'H {H:g}', color=INK, fontsize=9, va='center', transform=margin)
-    ax.text(1.005, H - e['zone_points'] / 2, f'zone H-{e["zone_points"]}..H', color=INK2, fontsize=8,
-            va='center', transform=margin)
-    ax.text(1.005, sl, f'SL H+{e["stop_above_points"]} = {sl:g}', color=INK, fontsize=9, va='center',
+    ax.text(1.005, H, f'{N} {H:g}', color=INK, fontsize=9, va='center', transform=margin)
+    ax.text(1.005, sum(zone) / 2, f'zone H-{e["zone_points"]}..H' if s > 0 else f'zone L..L+{e["zone_points"]}',
+            color=INK2, fontsize=8, va='center', transform=margin)
+    ax.text(1.005, sl, f'SL {N}{s * e["stop_above_points"]:+d} = {sl:g}', color=INK, fontsize=9, va='center',
             transform=margin)
     confirm = int(x['level_confirm'])
     if lo <= confirm <= hi:
         ax.plot([confirm], [H], marker='|', ms=14, mew=2, color=LEVEL, zorder=5)
-        ax.annotate('H known', (confirm, H), xytext=(0, 10), textcoords='offset points',
-                    color=INK2, fontsize=8, ha='center')
+        ax.annotate(f'{N} known', (confirm, H), xytext=(0, 10 * s), textcoords='offset points',
+                    color=INK2, fontsize=8, ha='center', va='bottom' if s > 0 else 'top')
 
     # Touch start: the first bar near H after a departure (on a line with
     # its volume spike).
@@ -128,7 +133,7 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
         fx, fy = int(r.label_fill_cursor), float(r.label_fill_expected)
         ex = int(r.label_exit_cursor)
         ax.plot([fx, ex], [r.label_tp, r.label_tp], color=ENTRY, lw=1.1, ls=(0, (2, 2)), zorder=5)
-        ax.scatter([fx], [fy], marker='v', s=70, color=ENTRY, edgecolor=SURFACE, lw=1.2, zorder=6)
+        ax.scatter([fx], [fy], marker='v' if s > 0 else '^', s=70, color=ENTRY, edgecolor=SURFACE, lw=1.2, zorder=6)
         ax.scatter([ex], [r.label_exit_price], marker='o', s=40, facecolor=SURFACE, edgecolor=ENTRY,
                    lw=1.6, zorder=6)
         gap = ' (segment-open exit)' if r.get('label_exit_at_segment_open', False) else ''
@@ -148,9 +153,10 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
             start = i
     for g in groups:
         name = letters[g[0]] if len(g) == 1 else f'{letters[g[0]]}-{letters[g[-1]]}'
-        top = max(float(entries.label_fill_expected.iloc[i]) for i in g)
-        ax.annotate(name, ((fills[g[0]] + fills[g[-1]]) / 2, top), xytext=(0, 9),
-                    textcoords='offset points', ha='center', color=INK, fontsize=9, fontweight='bold')
+        top = (max if s > 0 else min)(float(entries.label_fill_expected.iloc[i]) for i in g)
+        ax.annotate(name, ((fills[g[0]] + fills[g[-1]]) / 2, top), xytext=(0, 9 * s),
+                    textcoords='offset points', ha='center', va='bottom' if s > 0 else 'top',
+                    color=INK, fontsize=9, fontweight='bold')
     exits = {}
     for letter, (_, r) in zip(letters, entries.iterrows()):
         exits.setdefault((int(r.label_exit_cursor), float(r.label_tp)), []).append(letter)
@@ -159,12 +165,13 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
         ax.annotate(f'TP {",".join(names)}', (ex, tp), xytext=(7, 0), textcoords='offset points',
                     color=INK2, fontsize=7.5, va='center',
                     bbox=dict(boxstyle='square,pad=0.15', fc=SURFACE, ec='none', alpha=0.9))
-    ax.scatter([], [], marker='v', s=70, color=ENTRY, label='positive ADD fill (A, B, ...)')
+    ax.scatter([], [], marker='v' if s > 0 else '^', s=70, color=ENTRY, label='positive ADD fill (A, B, ...)')
     ax.scatter([], [], marker='o', s=40, facecolor=SURFACE, edgecolor=ENTRY, lw=1.6, label='its TP exit')
     ax.legend(loc='lower left', fontsize=8, frameon=False, labelcolor=INK2)
     ax.set_ylabel('price', color=INK2, fontsize=9)
-    ymin = min(np.nanmin(l), np.nanmin(entries.label_tp) if len(entries) else H) - 3
-    ax.set_ylim(ymin, max(np.nanmax(h), sl) + 6)
+    tps = entries.label_tp.to_numpy(float) if len(entries) else np.array([H])
+    ymin = min(np.nanmin(l), np.nanmin(tps), sl) - (3 if s > 0 else 6)
+    ax.set_ylim(ymin, max(np.nanmax(h), np.nanmax(tps), sl) + (6 if s > 0 else 3))
 
     # Volume and RV (separate panels, one axis each).
     vol = m.volume.to_numpy()
@@ -193,12 +200,13 @@ def plot_event(path, x, entries, others, timeline, market, cfg):
     axr.set_xticklabels(labels)
     axr.set_xlim(lo - 1, hi + 8)
 
-    fig.suptitle(f'{x["contract"]}  event {x["event_id"]}  ·  H {H:g}, touch {int(x["touch"])}  ·  '
-                 f'{int(x["positives"])} positive ADD ({int(x["excellent"])} EXCELLENT)  ·  direction SHORT, '
+    fig.suptitle(f'{x["contract"]}  event {x["event_id"]}  ·  {N} {H:g}, touch {int(x["touch"])}  ·  '
+                 f'{int(x["positives"])} positive ADD ({int(x["excellent"])} EXCELLENT)  ·  direction {side}, '
                  f'{x["direction_source"]}', x=0.06, ha='left', y=1 - 0.14 / height, color=INK, fontsize=11.5)
     fig.text(0.06, 1 - 0.53 / height, f'line volume spike {x["line_spike_time"][:16]} RV {x["line_spike_rv"]:.1f}  ·  '
              f'touch {x["activation_time"][:16]} to {x["end_time"][:16]} ({x["end_reason"]})  ·  1m bars, '
-             'fill = next open - spread; entries are alternatives, never summed', color=INK2, fontsize=8.5)
+             f'fill = next open {"-" if s > 0 else "+"} spread; entries are alternatives, never summed',
+             color=INK2, fontsize=8.5)
     if len(lines) > TABLE_ROWS:
         lines = lines[:TABLE_ROWS] + [f'... {len(lines) - TABLE_ROWS} more in teacher/positive_entries.csv']
     fig.text(0.06, 0.05 / height, '\n'.join(lines), color=INK, fontsize=7.6, family='monospace', va='bottom')

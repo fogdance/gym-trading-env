@@ -145,10 +145,14 @@ def dev_row(contract, pool):
 def load_strategy(path):
     """A V2 strategy overlay (V0.5, user 2026-10-31): `entry` keys of the
     Native env (stop_rule, context_15m_buckets, ...) and the `reward` that
-    replaces the Quality TP reward, for one external `direction`."""
+    replaces the Quality TP reward, for one external `direction`: SHORT, or
+    BOTH (V2.1, user 2026-11-04: each contract in the direction its env
+    trades, with the two-sided stop rule prior_15m_extreme)."""
     strategy = read_yaml(path)
-    if set(strategy) != {'version', 'direction', 'entry', 'reward'} or strategy['direction'] != 'SHORT':
-        raise ValueError(f'{path}: a SHORT strategy of version, direction, entry and reward')
+    if set(strategy) != {'version', 'direction', 'entry', 'reward'} or strategy['direction'] not in ('SHORT', 'BOTH'):
+        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry and reward')
+    if strategy['direction'] == 'BOTH' and strategy['entry'].get('stop_rule') != 'prior_15m_extreme':
+        raise ValueError(f'{path}: a BOTH strategy needs entry.stop_rule prior_15m_extreme')
     return strategy
 
 
@@ -176,7 +180,7 @@ def write_inputs(row, folder, rules=None, strategy=None):
     env['entry'].update(rules or {})
     if strategy is not None:
         from .ts_v2_positive import contract_direction
-        if contract_direction(row) != strategy['direction']:
+        if strategy['direction'] != 'BOTH' and contract_direction(row) != strategy['direction']:
             raise ValueError(f'{row["contract"]} is not traded {strategy["direction"]}')
         env['entry'].update(strategy['entry'])
     reward = dict(strategy['reward']) if strategy is not None else dict(schema=QUALITY_TP_SCHEMA)
@@ -516,8 +520,9 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
         graded, summary = ts_v1_grades.grade(env, facts, grades, index=index, strict=strict)
         summary = ts_v1_grades.save(tmp / 'graded', row['contract'], graded, summary, started)
     else:
-        from .ts_v2_positive import graded_teacher
-        graded, summary = graded_teacher(env, facts, teacher, row['contract'], index=index)
+        from .ts_v2_positive import contract_direction, graded_teacher
+        graded, summary = graded_teacher(env, facts, teacher, row['contract'], contract_direction(row),
+                                         index=index)
         summary.update(seconds=round(time.monotonic() - started, 1),
                        created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
         save_arrays(tmp / 'graded', graded)

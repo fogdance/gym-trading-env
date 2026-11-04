@@ -1,8 +1,10 @@
 """Thinking Student V2 minimal change (V0.5, user 2026-10-31): the Native
 env's structural stop and 2R target, the net PnL reward, the longer 15m
-context, the strategy overlay and the V2 positive teacher of a corpus. The
-V1 rules and identities stay as they were."""
+context, the strategy overlay and the V2 positive teacher of a corpus; the
+two-sided stop of V2.1 (user 2026-11-04: LONG mirrors SHORT). The V1 rules
+and identities stay as they were."""
 import json
+from collections import Counter
 from decimal import Decimal
 from pathlib import Path
 
@@ -19,6 +21,7 @@ from gym_trading_env.rewards.single3_reward import NET_PNL_SCHEMA, Single3Reward
 DREAMER = Path(__file__).resolve().parents[3] / 'dreamerv3'
 POOL = DREAMER / 'configs/thinking_student/markets/pool.json'
 STRATEGY = DREAMER / 'configs/thinking_student/markets/strategy_v2_short_structural.yaml'
+STRATEGY_BOTH = DREAMER / 'configs/thinking_student/markets/strategy_v2_1_structural.yaml'
 MATERIAL = Path('/data/logdir/fg_single3/thinking_student/V2_1_POSITIVE_ENTRY_20261031')
 CORPUS = Path('/data/logdir/fg_single3/thinking_student/corpus_v2_minimal_20261031')
 real = pytest.mark.skipif(not (POOL.exists() and MATERIAL.exists()), reason='pool or V2_1 material missing')
@@ -66,7 +69,7 @@ def test_the_stop_is_the_prior_high_of_the_material_or_capped(fg809):
 @real
 def test_without_a_line_at_or_above_the_fill_the_stop_is_max_risk(fg809):
     env = fg809['env']
-    lines = env._stop_lines()
+    lines = env._stop_lines('SHORT')
     for s in range(200, len(env._raw) - 1, 97):
         fill = _fill(env, s)
         live = ((lines['confirm'] <= s) & (lines['departed'] <= s) & (s < lines['broken'])
@@ -180,7 +183,7 @@ def test_the_strategy_refuses_a_long_contract_and_unknown_keys(tmp_path):
         C.write_inputs(long_row, tmp_path / 'long', strategy=C.load_strategy(STRATEGY))
     bad = tmp_path / 'bad.yaml'
     bad.write_text(STRATEGY.read_text().replace('direction: SHORT', 'direction: LONG'))
-    with pytest.raises(ValueError, match='SHORT strategy'):
+    with pytest.raises(ValueError, match='SHORT or BOTH strategy'):
         C.load_strategy(bad)
     config = C.write_inputs(C.train_row('CZCE.FG809', POOL), tmp_path / 'v2',
                             strategy=C.load_strategy(STRATEGY))
@@ -190,6 +193,86 @@ def test_the_strategy_refuses_a_long_contract_and_unknown_keys(tmp_path):
     broken.write_text(json.dumps(env))
     with pytest.raises(ValueError, match='stop_rule'):
         C.native_env(broken, market=False)
+
+
+@pytest.fixture(scope='module')
+def fg401(tmp_path_factory):
+    row = C.train_row('CZCE.FG401', POOL)
+    config = C.write_inputs(row, tmp_path_factory.mktemp('v21'), strategy=C.load_strategy(STRATEGY_BOTH))
+    return dict(row=row, env=C.native_env(config, market=False))
+
+
+def _long_fill(env, s):
+    return env._price(env._raw.Open.iloc[s + 1], 'LONG', env.bobs[s + 1], opening=True)
+
+
+@real
+def test_a_long_stop_is_the_prior_15m_low_minus_5_or_capped(fg401):
+    """V2.1: the highest live 15m pivot low L at or below the fill, SL = L - 5,
+    TP = fill + 2R; capped at 10 or without a line, SL = fill - 10."""
+    env = fg401['env']
+    assert env.stop_rule['stop_rule'] == 'prior_15m_extreme' and env.stop_rule['max_risk_points'] == 10
+    lines = env._stop_lines('LONG')  # short space: H = -L
+    seen = Counter()
+    for s in range(200, len(env._raw) - 1, 37):
+        fill = _long_fill(env, s)
+        p = env.planned_exit(s, fill, 'LONG')
+        live = ((lines['confirm'] <= s) & (lines['departed'] <= s) & (s < lines['broken'])
+                & (s < lines['expire']) & (-lines['H'] <= float(fill)))
+        if live.any():
+            L = float(-lines['H'][live].min())
+            assert float(p['line']) == L
+            sl = L - 5 if float(fill) - (L - 5) <= 10 else float(fill) - 10
+            assert p['stop_source'] == ('STRUCTURAL' if float(fill) - (L - 5) <= 10 else 'CAPPED')
+        else:
+            sl = float(fill) - 10
+            assert p['stop_source'] == 'NO_LINE' and p['line'] is None
+        assert float(p['stop_loss_price']) == sl < float(fill)
+        assert float(p['risk_points']) == float(fill) - sl
+        assert float(p['take_profit_price']) == float(fill) + 2 * (float(fill) - sl)
+        seen[p['stop_source']] += 1
+    assert set(seen) == {'STRUCTURAL', 'CAPPED', 'NO_LINE'}, seen
+
+
+@real
+def test_a_long_add_trades_its_planned_exit_and_is_paid_its_net_pnl(fg401):
+    env = fg401['env']
+    index, found = CandidateIndex(env), {}
+    for t in range(300, len(env._raw), 53):
+        row = index.candidate(t)
+        if not (row.get('filled') and row['exit']):
+            continue
+        entry = next(f for f in env.fills if f['reason'] == 'ENTRY')
+        if entry['stop_source'] != 'STRUCTURAL' or row['exit']['reason'] in found:
+            continue
+        fill, sl, tp = (Decimal(entry[k]) for k in ('price', 'stop_loss_price', 'take_profit_price'))
+        assert sl < fill < tp and tp - fill == 2 * (fill - sl) == 2 * Decimal(entry['risk_points'])
+        out, net = Decimal(row['exit']['exit_price']), Decimal(row['exit']['net_trade_pnl'])
+        assert net == (out - fill) * 60 - 18
+        if row['exit']['reason'] == 'TAKE_PROFIT':
+            assert out >= tp
+        elif row['exit']['reason'] == 'STOP_LOSS':
+            assert out <= sl and net <= -(5 * 60 + 18)
+        assert row['rewards']['C1'] == [[row['exit_cursor'], float(np.float32(float(net) / SCALE))]]
+        found[row['exit']['reason']] = t
+        if {'TAKE_PROFIT', 'STOP_LOSS'} <= set(found):
+            return
+    pytest.fail(f'no structural LONG TP and SL found: {found}')
+
+
+@real
+def test_the_two_sided_stop_keeps_the_short_stop(fg809, tmp_path):
+    """The V2.1 strategy trades SHORT contracts with exactly the V0.5 stop, and
+    only a two-sided stop rule may trade BOTH directions."""
+    both = C.native_env(C.write_inputs(fg809['row'], tmp_path / 'both', strategy=C.load_strategy(STRATEGY_BOTH)),
+                        market=False)
+    env = fg809['env']
+    for s in range(200, len(env._raw) - 1, 101):
+        assert both.planned_exit(s, _fill(env, s), 'SHORT') == env.planned_exit(s, _fill(env, s), 'SHORT')
+    bad = tmp_path / 'bad.yaml'
+    bad.write_text(STRATEGY_BOTH.read_text().replace('prior_15m_extreme', 'prior_15m_high'))
+    with pytest.raises(ValueError, match='BOTH strategy needs entry.stop_rule prior_15m_extreme'):
+        C.load_strategy(bad)
 
 
 @pytest.mark.skipif(not (CORPUS / 'CZCE.FG809' / 'source.json').exists(), reason='V2 corpus not built')

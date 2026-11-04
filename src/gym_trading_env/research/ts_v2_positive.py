@@ -1,13 +1,20 @@
 """Thinking Student V2 positive entry corpus (Spec V0.3, user 2026-10-31;
 rules V2 after the user's review of the same day).
 
-Teacher demonstrations of one entry only: the direction is given as SHORT;
-a known prior 15m high H is a line; the line's first 1m volume ratio
-RV >= 2 near H (from its own 15m bucket on) marks it; every return to the
-line after the price departed is a touch (an event); ADD at any in-zone
+Teacher demonstrations of one entry only: the direction is given (the
+config's `direction`, SHORT or LONG, the contracts the env trades that way);
+for SHORT a known prior 15m high H is a line; the line's first 1m volume
+ratio RV >= 2 near H (from its own 15m bucket on) marks it; every return to
+the line after the price departed is a touch (an event); ADD at any in-zone
 minute of a touch, SL = H + 5 (R <= 12), TP = fill - 2R. A line holds until
 the price breaks it. The rules are docs/thinking_student_v2/DESIGN.md with
 the values of dreamerv3/configs/thinking_student/v2_positive_entry.yaml.
+
+LONG (V2.1, user 2026-11-04) is the mirror: the line is a prior 15m low L,
+the zone [L, L + 7], SL = L - 5, TP = fill + 2R, a departure a close at
+L + 10. It runs the same scan in short space: every price of a LONG market
+negated (its lows become highs, its buy quotes sell quotes, rounding
+included: floor(-x) = -ceil(x)), and the prices written out are real again.
 
 Lines, RV, touches and candidates use only the bars up to their cursor and
 the complete 15m buckets available by then. The future is used offline
@@ -22,6 +29,7 @@ each traded from a flat account; nothing adds their results.
       --config ../dreamerv3/configs/thinking_student/v2_positive_entry.yaml \\
       --out /data/logdir/fg_single3/thinking_student/V2_POSITIVE_ENTRY_V2_20261031 \\
       --workers 12 [--contracts CZCE.FG809 ...]
+  python -m gym_trading_env.research.ts_v2_positive --combine SHORT_DIR LONG_DIR --out DIR
 """
 from __future__ import annotations
 
@@ -45,7 +53,7 @@ from .ts_v1_corpus import _pool, _repos, native_env, train_row, write_inputs
 from .ts_v1_grades import _room
 
 VERSION = 'V2_POSITIVE_ENTRY_V2'
-SIDE = 'SHORT'
+SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
 REASONS = ('FILL_OUT_OF_ZONE', 'MASKED', 'NOT_FILLED', 'STOP_LOSS', 'OTHER_EXIT',
@@ -64,8 +72,8 @@ LABELS = dict(exit_reason='exit_reason', exit_cursor='exit_cursor', exit_time='e
 
 def load_config(path):
     cfg = yaml.safe_load(Path(path).read_text())
-    if cfg.get('version') != VERSION or cfg.get('direction') != SIDE:
-        raise ValueError(f'{path}: not a {VERSION} {SIDE} config')
+    if cfg.get('version') != VERSION or cfg.get('direction') not in SIDES:
+        raise ValueError(f'{path}: not a {VERSION} SHORT or LONG config')
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
@@ -84,34 +92,56 @@ def contract_direction(row):
     return sides.pop()
 
 
-def short_rows(pool, contracts=None):
-    """TRAIN pool rows of SHORT contracts: the given ones (any other is
-    refused) or all of the pool."""
+def side_rows(pool, side, contracts=None):
+    """TRAIN pool rows of the contracts traded `side`: the given ones (any
+    other is refused) or all of the pool."""
     names = contracts or [r['contract'] for r in json.loads(Path(pool).read_text())['files']
                           if r.get('role') == 'train' and r.get('eligible_for_training')]
     rows = [train_row(c, pool) for c in names]
     if contracts:
-        wrong = [r['contract'] for r in rows if contract_direction(r) != SIDE]
+        wrong = [r['contract'] for r in rows if contract_direction(r) != side]
         if wrong:
-            raise ValueError(f'not {SIDE} contracts: {wrong}')
+            raise ValueError(f'not {side} contracts: {wrong}')
         return rows
-    return [r for r in rows if contract_direction(r) == SIDE]
+    return [r for r in rows if contract_direction(r) == side]
+
+
+def sign(side):
+    """+1 for SHORT, -1 for LONG: a price times the sign is its short-space price."""
+    if side not in SIDES:
+        raise ValueError(f'direction {side} is not SHORT or LONG')
+    return 1 if side == 'SHORT' else -1
+
+
+def side_buckets(buckets, s):
+    """Complete 15m buckets in short space: a LONG market's negated lows are
+    its highs (the only bar price pivot_levels reads)."""
+    return buckets if s > 0 else [dict(b, High=-float(b['Low'])) for b in buckets]
 
 
 def tp_points(cfg, risk, multiple):
-    """TP distance of a short at `multiple` R, rounded away from the fill."""
+    """TP distance at `multiple` R, rounded away from the fill."""
     return int(math.ceil(multiple * risk - 1e-9))
 
 
 # ---- causal market facts ----
 
 def market_arrays(env, cfg):
-    """Per-cursor bars, the executable short quotes and RV of one market."""
-    raw, side = env._raw, SIDE
+    """Per-cursor bars, the executable quotes and RV of one market in short
+    space (module docstring): a SHORT market as it is, a LONG one negated,
+    its lows in `high` and its buy quotes in `sell_*`."""
+    raw, side = env._raw, cfg['direction']
+    s = sign(side)
     times, bobs = raw.index, pd.DatetimeIndex(env.bobs)
+    top, bottom = ('High', 'Low') if s > 0 else ('Low', 'High')
 
     def quotes(column, at, opening):
-        return np.array([float(env._price(v, side, t, opening=opening)) for v, t in zip(raw[column], at)])
+        q = np.array([float(env._price(v, side, t, opening=opening)) for v, t in zip(raw[column], at)])
+        return q if s > 0 else -q
+
+    def price(column):
+        v = raw[column].to_numpy(float)
+        return v if s > 0 else -v
 
     starts = {a for a, _ in env.market_clock['segments']}
     valid = np.asarray(env.valid_fill_clock, bool)
@@ -121,14 +151,14 @@ def market_arrays(env, cfg):
     volume = raw.Volume.to_numpy(float)
     return dict(
         n=len(raw), times=times, bobs=bobs, times_ns=times.asi8, bob_ns=bobs.asi8,
-        open=raw.Open.to_numpy(float), high=raw.High.to_numpy(float),
-        low=raw.Low.to_numpy(float), close=raw.Close.to_numpy(float), volume=volume,
+        open=price('Open'), high=price(top), low=price(bottom), close=price('Close'), volume=volume,
         valid=valid, segment_open=segment_open,
         sell_close=quotes('Close', times, True),   # an ADD decided at the close
         sell_open=quotes('Open', bobs, True),      # the fill of an ADD decided a bar earlier
-        buy_high=quotes('High', times, False),     # the quote a short's SL checks
+        buy_high=quotes(top, times, False),        # the quote the position's SL checks
         rv=volume_ratio(volume, eligible, v['baseline_minutes']),
-        prefix=env.market_clock_counter.prefix, multiplier=float(env.terms.multiplier))
+        prefix=env.market_clock_counter.prefix, multiplier=float(env.terms.multiplier),
+        side=side, sign=s)
 
 
 def volume_ratio(volume, eligible, baseline):
@@ -191,7 +221,7 @@ def prior_highs(env, a, cfg):
     on a bar near H, from the bars of its own bucket on)."""
     p, stop = cfg['prior_high'], cfg['entry']['stop_above_points']
     near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
-    buckets = env._e_market.complete_buckets
+    buckets = side_buckets(env._e_market.complete_buckets, a['sign'])
     end_ns = np.array([pd.Timestamp(b['bucket_end']).value for b in buckets], np.int64)
     spiky = a['valid'] & (np.nan_to_num(a['rv']) >= ratio)
     levels = pivot_levels(buckets, a, p['pivot_left'], p['pivot_right'], p['lookback_buckets'], stop)
@@ -333,7 +363,7 @@ def _trade_job(job):
     """Native trades "ADD at cursor s, then hold" from a flat account at one
     SL / TP (points): the indexed trade and, for `verify` cursors, its
     minute-by-minute Native trace."""
-    config, cursors, verify = job
+    config, cursors, verify, side = job
     env = native_env(config, market=False)
     index = CandidateIndex(env)
     volume = env._raw.Volume.to_numpy()
@@ -351,7 +381,7 @@ def _trade_job(job):
                        exit_price=float(exit['exit_price']) if exit else math.nan,
                        net_pnl=float(exit['net_trade_pnl']) if exit else math.nan,
                        held=int(row['held_market_bars']), mae=float(row['MAE_points']),
-                       mfe=float(_room(index, SIDE, fill, i, int(row['observed_until_cursor']), volume)),
+                       mfe=float(_room(index, side, fill, i, int(row['observed_until_cursor']), volume)),
                        ambiguous=bool(exit and exit.get('ambiguous_tp_sl')))
         out[s] = rec
     checks = {}
@@ -393,8 +423,27 @@ def classify(c, trade, cfg):
     return 'POSITIVE', grade, 0.5 * (1 - mae / risk) + 0.5 * (1 - min(held, day) / day)
 
 
-def _at(price, H):
-    return f'{price:g} (H{price - H:+g})'
+# The prices of a record; a LONG market's are negated back from short space.
+PRICES = ('H', 'obs_H', 'obs_close', 'obs_high', 'obs_quote', 'obs_sl', 'obs_planned_tp', 'label_fill_expected')
+
+
+def _real(record, s):
+    """`record` with real prices (short space for SHORT is real already)."""
+    if s < 0:
+        record.update({k: -record[k] for k in PRICES if k in record})
+    return record
+
+
+def _words(cfg):
+    """The line's name, its zone and its stop in the texts."""
+    e = cfg['entry']
+    if sign(cfg['direction']) > 0:
+        return 'H', f'[H-{e["zone_points"]}, H]', f'H+{e["stop_above_points"]}'
+    return 'L', f'[L, L+{e["zone_points"]}]', f'L-{e["stop_above_points"]}'
+
+
+def _at(price, H, name='H'):
+    return f'{price:g} ({name}{price - H:+g})'
 
 
 def _rv(rv):
@@ -404,10 +453,11 @@ def _rv(rv):
 def explain(c, cfg):
     """Why a candidate is placed where it is, from its obs_* facts only."""
     e, H = cfg['entry'], c['obs_H']
-    return (f'quote {_at(c["obs_quote"], H)} in [H-{e["zone_points"]}, H]; touch {c["obs_touch"]} of the line '
+    N, zone, stop = _words(cfg)
+    return (f'quote {_at(c["obs_quote"], H, N)} in {zone}; touch {c["obs_touch"]} of the line '
             f'(line volume spike {_rv(c["obs_line_spike_rv"])}); {_rv(c["obs_rv"])}, touch began at '
             f'{_rv(c["obs_rv_activation"])} {c["obs_minutes_since_activation"]} min ago; '
-            f'SL H+{e["stop_above_points"]} = {c["obs_sl"]:g}, planned R {c["obs_planned_risk"]:g}, '
+            f'SL {stop} = {c["obs_sl"]:g}, planned R {c["obs_planned_risk"]:g}, '
             f'planned TP {c["obs_planned_tp"]:g} ({e["target_r"]:g}R)')
 
 
@@ -416,25 +466,32 @@ def wait_note(teach, o, cfg, spike_now=False):
     facts); `spike_now`: the touch's first bar is the line's volume spike."""
     H, far = o['obs_H'], cfg['prior_high']['departure_points']
     near, ratio = cfg['event']['near_points'], cfg['volume']['ratio']
+    N = _words(cfg)[0]
+    # obs_high is the bar's extreme toward the line: its high (SHORT), its low (LONG).
+    if sign(cfg['direction']) > 0:
+        far_from, not_near, move, end = f'at or below H-{far}', f'below H-{near}', 'rebound, high', 'high'
+    else:
+        far_from, not_near, move, end = f'at or above L+{far}', f'above L+{near}', 'pullback, low', 'low'
     if teach == 'WAIT_FAR':
-        return f'close {_at(o["obs_close"], H)} at or below H-{far}: far from H; wait'
+        return f'close {_at(o["obs_close"], H, N)} {far_from}: far from {N}; wait'
     if teach == 'WAIT_APPROACH':
-        return f'rebound, high {_at(o["obs_high"], H)} below H-{near}: not near H yet; wait'
+        return f'{move} {_at(o["obs_high"], H, N)} {not_near}: not near {N} yet; wait'
     if teach == 'WAIT_NEAR_NO_VOLUME':
-        return (f'high {_at(o["obs_high"], H)} near H but {_rv(o["obs_rv"])} < {ratio:g} and the line has '
+        return (f'{end} {_at(o["obs_high"], H, N)} near {N} but {_rv(o["obs_rv"])} < {ratio:g} and the line has '
                 'had no volume spike; wait')
     why = (f'{_rv(o["obs_rv"])} >= {ratio:g}: the line\'s volume spike' if spike_now else
            f'the line had its volume spike ({_rv(o["obs_line_spike_rv"])}) before')
-    return (f'high {_at(o["obs_high"], H)} near H, {why}: touch {o["obs_touch"]} starts; '
-            f'quote {_at(o["obs_quote"], H)}')
+    return (f'{end} {_at(o["obs_high"], H, N)} near {N}, {why}: touch {o["obs_touch"]} starts; '
+            f'quote {_at(o["obs_quote"], H, N)}')
 
 
 def grade_reason(c, cfg):
     """The offline reason of a candidate's reason / grade."""
-    q, e, H, reason = cfg['quality'], cfg['entry'], c['obs_H'], c['reason']
-    fill = f'fill {_at(c["label_fill_expected"], H)}'
+    q, H, reason = cfg['quality'], c['obs_H'], c['reason']
+    N, zone, _ = _words(cfg)
+    fill = f'fill {_at(c["label_fill_expected"], H, N)}'
     if reason == 'FILL_OUT_OF_ZONE':
-        return f'{fill} (next open - spread) outside [H-{e["zone_points"]}, H]'
+        return f'{fill} (next open {"-" if sign(cfg["direction"]) > 0 else "+"} spread) outside {zone}'
     if reason == 'MASKED':
         return 'ADD masked for a flat account'
     if reason == 'NOT_FILLED':
@@ -466,20 +523,20 @@ def _scan_job(job):
     config = write_inputs(row, Path(folder) / 'inputs' / row['contract'] / 'base')
     env = native_env(config, market=True)
     if (env.take_profit_points, env.stop_loss_points) != (5, 30) or env.direction_at(
-            env._raw.index[0], 0) not in (SIDE, 'NO_TRADE'):
+            env._raw.index[0], 0) not in (cfg['direction'], 'NO_TRADE'):
         raise ValueError(f'{row["contract"]}: unexpected base env')
     a = market_arrays(env, cfg)
     levels, buckets = prior_highs(env, a, cfg)
     flat_end = min(CandidateIndex(env).flat_end, deadline(env))
     events, candidates = scan(a, levels, cfg, flat_end, row['contract'])
-    def seen(x, s):  # decision-time facts of cursor s against the line of touch x
+    def seen(x, s):  # decision-time facts of cursor s against the line of touch x (real prices)
         H, q = x['H'], float(a['sell_close'][s])
         # The touch number is the count of earlier touches plus one; the
         # line's spike is known once it happened.
-        return dict(obs_H=H, obs_close=float(a['close'][s]), obs_high=float(a['high'][s]),
-                    obs_quote=q, obs_quote_below_h=H - q, obs_rv=float(a['rv'][s]),
-                    obs_in_zone=bool(0 <= H - q <= cfg['entry']['zone_points']), obs_touch=x['touch'],
-                    obs_line_spike_rv=x['line_spike_rv'] if x['line_spike'] <= s else math.nan)
+        return _real(dict(obs_H=H, obs_close=float(a['close'][s]), obs_high=float(a['high'][s]),
+                          obs_quote=q, obs_quote_below_h=H - q, obs_rv=float(a['rv'][s]),
+                          obs_in_zone=bool(0 <= H - q <= cfg['entry']['zone_points']), obs_touch=x['touch'],
+                          obs_line_spike_rv=x['line_spike_rv'] if x['line_spike'] <= s else math.nan), a['sign'])
 
     for x in events:
         x['wait'] = [dict(w, time=str(a['times'][w['cursor']]), **seen(x, w['cursor']),
@@ -489,8 +546,12 @@ def _scan_job(job):
         x['activation_obs'] = seen(x, x['activation'])
         x['activation_obs']['obs_explain'] = wait_note('ACTIVATION', x['activation_obs'], cfg,
                                                        spike_now=x['line_spike'] == x['activation'])
-    market = pd.DataFrame(dict(time=a['times'].astype(str), bob=a['bobs'].astype(str), open=a['open'],
-                               high=a['high'], low=a['low'], close=a['close'], volume=a['volume'],
+    for record in (*events, *candidates):
+        _real(record, a['sign'])
+    raw = env._raw
+    market = pd.DataFrame(dict(time=a['times'].astype(str), bob=a['bobs'].astype(str),
+                               open=raw.Open.to_numpy(float), high=raw.High.to_numpy(float),
+                               low=raw.Low.to_numpy(float), close=raw.Close.to_numpy(float), volume=a['volume'],
                                rv=a['rv'], valid=a['valid'], segment_open=a['segment_open']))
     stats = dict(rows=a['n'], buckets=buckets, levels=len(levels),
                  levels_departed=sum(x['departed'] < min(x['broken'], x['expire']) for x in levels),
@@ -547,9 +608,10 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     log(f'scan: {len(events)} events, {len(candidates)} candidates ({seconds["scan"]} s)')
 
     jobs = _trade_inputs(rows, cfg, tmp, candidates)
+    side, s = cfg['direction'], sign(cfg['direction'])
     started = time.monotonic()
     with _pool(max(1, min(workers, len(jobs)))) as pool:
-        done = list(pool.map(_trade_job, [(j['config'], j['cursors'], []) for j in jobs]))
+        done = list(pool.map(_trade_job, [(j['config'], j['cursors'], [], side) for j in jobs]))
     trades = {(j['contract'], j['name'], s): rec for j, (_, out_, _) in zip(jobs, done)
               for s, rec in out_.items()}
     seconds['trades'] = round(time.monotonic() - started, 1)
@@ -565,7 +627,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
             c[prefix + 'filled'] = bool(rec.get('filled', False))
         c['label_tp15_points'] = tp_points(cfg, c['label_R'], cfg['entry']['parallel_r']) \
             if c['label_fill_in_zone'] else math.nan
-        c['label_tp'] = c['label_fill_expected'] - tp_points(cfg, c['label_R'], cfg['entry']['target_r'])
+        c['label_tp'] = c['label_fill_expected'] - s * tp_points(cfg, c['label_R'], cfg['entry']['target_r'])
         c['label_sl'] = c['obs_sl']
         mult = stats[c['contract']]['multiplier']
         c['label_net_R'] = c['label_net_pnl'] / (c['label_R'] * LOTS * mult) if c['label_filled'] else math.nan
@@ -585,7 +647,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
             cursors = [c['cursor'] for c in candidates if c['contract'] == j['contract']
                        and c['reason'] == 'POSITIVE' and int(c['label_R']) == j['risk']]
             if cursors:
-                verify.append((j['config'], cursors, cursors))
+                verify.append((j['config'], cursors, cursors, side))
     with _pool(max(1, min(workers, len(verify) or 1))) as pool:
         checks = {}
         for config, _, check in pool.map(_trade_job, verify):
@@ -608,7 +670,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     chosen = choose_figures(tables['positive_events'], cfg)
     figures = plot_events(tmp / 'figures', chosen, tables, markets, cfg)
     seconds['figures'] = round(time.monotonic() - started, 1)
-    source = dict(version=VERSION, command=command, fold='TRAIN', mode='OFFLINE_TRAIN',
+    source = dict(version=VERSION, direction=side, command=command, fold='TRAIN', mode='OFFLINE_TRAIN',
                   rows=rows, stats=stats, figures=figures, workers=workers,
                   seconds=dict(seconds, total=round(time.monotonic() - began, 1)),
                   created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
@@ -719,7 +781,7 @@ TEACHER_LABEL = dict(source='V2_POSITIVE_TEACHER', ready_at='ready_at: the TP ex
 WAIT_ROWS = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME')
 
 
-def graded_teacher(env, facts, folder, contract, index=None):
+def graded_teacher(env, facts, folder, contract, side, index=None):
     """(graded arrays, summary) of one corpus from the positive material in
     `folder`, in the arrays of ts_v1_grades.grade so L3 / L5 read it as they
     are. ADD (grade GOOD / EXCELLENT, ready at its exit) on a positive with
@@ -730,7 +792,7 @@ def graded_teacher(env, facts, folder, contract, index=None):
     positive whose line the env's stateless stop does not take (a lower line
     confirmed during its touch) is dropped as STOP_LINE_DIFFERS: its trade
     is not the env's. Entry price, side and MFE are measured as for the
-    graded teacher."""
+    graded teacher. `side` is the contract's direction (V2.1: SHORT or LONG)."""
     from .ts_v1_corpus import KINDS
     from .ts_v1_grades import EXCELLENT, GOOD, MFE_MINUTES, measure
     out, m = measure(env, facts, index)
@@ -750,7 +812,7 @@ def graded_teacher(env, facts, folder, contract, index=None):
         if r.label_R > max_risk:
             dropped['RISK_ABOVE_MAX'] += 1
             continue
-        plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), SIDE)
+        plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), side)
         if float(plan['stop_loss_price']) != r.obs_sl:
             dropped['STOP_LINE_DIFFERS'] += 1
             continue
@@ -861,18 +923,63 @@ def choose_figures(positive_events, cfg):
     return chosen
 
 
+def combine(folders, out):
+    """One teacher material of several (V2.1, user 2026-11-04: the V2_1 SHORT
+    material and its LONG mirror), so that every corpus has one graded
+    teacher: each teacher table is the header and then the rows of every
+    folder's, byte for byte and in the order given. The folders must share
+    the version and every rule but the direction, and no contract."""
+    out = Path(out)
+    if out.exists():
+        raise FileExistsError(f'{out} exists; remove it to combine again')
+    folders = [Path(f) for f in folders]
+    params = [yaml.safe_load((f / 'params.yaml').read_text()) for f in folders]
+    rules = [{k: v for k, v in x.items() if k != 'direction'} for x in params]
+    if any(x['version'] != VERSION for x in params) or any(r != rules[0] for r in rules):
+        raise ValueError('the materials differ in version or in rules other than the direction')
+    contracts = [set(load_positive(f)['positive_events'].contract) for f in folders]
+    if sum(map(len, contracts)) != len(set().union(*contracts)):
+        raise ValueError('a contract is in more than one material')
+    tmp = out.with_name(out.name + '.tmp')
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    (tmp / 'teacher').mkdir(parents=True)
+    for name in TEACHER:
+        texts = [(f / 'teacher' / f'{name}.csv').read_text().splitlines(keepends=True) for f in folders]
+        if any(t[0] != texts[0][0] for t in texts):
+            raise ValueError(f'{name}: the materials have different columns')
+        (tmp / 'teacher' / f'{name}.csv').write_text(texts[0][0] + ''.join(x for t in texts for x in t[1:]))
+    load_positive(tmp)
+    source = dict(version=VERSION, combined=[
+        dict(folder=str(f.resolve()), direction=x['direction'], contracts=sorted(c),
+             sha256={name: _sha256(f / 'teacher' / f'{name}.csv') for name in TEACHER})
+        for f, x, c in zip(folders, params, contracts)],
+        rules=rules[0], created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
+    (tmp / 'source.json').write_text(json.dumps(source, indent=1, default=str))
+    tmp.rename(out)
+    return source
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
-    parser.add_argument('--pool', required=True,
-                        help='market pool (dreamerv3/configs/thinking_student/markets/pool.json)')
-    parser.add_argument('--config', required=True,
-                        help='rules (dreamerv3/configs/thinking_student/v2_positive_entry.yaml)')
+    parser.add_argument('--pool', help='market pool (dreamerv3/configs/thinking_student/markets/pool.json)')
+    parser.add_argument('--config', help='rules (dreamerv3/configs/thinking_student/v2_positive_entry.yaml)')
+    parser.add_argument('--combine', nargs='+', metavar='MATERIAL',
+                        help='combine these materials into --out (combine) instead of producing one')
     parser.add_argument('--out', required=True)
-    parser.add_argument('--contracts', nargs='*', help='SHORT TRAIN contracts (default: all of the pool)')
+    parser.add_argument('--contracts', nargs='*',
+                        help="TRAIN contracts of the config's direction (default: all of the pool)")
     parser.add_argument('--workers', type=int, default=12)
     args = parser.parse_args(argv)
+    if args.combine:
+        if args.pool or args.config or args.contracts:
+            parser.error('--combine takes only --out')
+        print(json.dumps(combine(args.combine, args.out)['combined'], indent=1))
+        return
+    if not (args.pool and args.config):
+        parser.error('--pool and --config are required (or --combine)')
     cfg = load_config(args.config)
-    rows = short_rows(args.pool, args.contracts)
+    rows = side_rows(args.pool, cfg['direction'], args.contracts)
     produce(rows, cfg, args.out, args.workers, command=' '.join(sys.argv))
 
 

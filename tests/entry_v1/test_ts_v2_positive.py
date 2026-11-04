@@ -1,6 +1,8 @@
 """Thinking Student V2 positive entry corpus: causal levels and events, the
-Native facts of the positives, the teacher reader and the TRAIN SHORT scope."""
+Native facts of the positives, the teacher reader, the TRAIN scope of each
+side, the LONG mirror (V2.1) and the combined SHORT + LONG material."""
 import json
+import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -18,6 +20,8 @@ POOL = DREAMER / 'configs/thinking_student/markets/pool.json'
 CONFIG = DREAMER / 'configs/thinking_student/v2_positive_entry.yaml'
 SHORT = {'CZCE.FG809', 'CZCE.FG901', 'CZCE.FG905', 'CZCE.FG005', 'CZCE.FG201', 'CZCE.FG205',
          'CZCE.FG209', 'CZCE.FG301', 'CZCE.FG405'}
+LONG = {'CZCE.FG001', 'CZCE.FG009', 'CZCE.FG101', 'CZCE.FG105', 'CZCE.FG109', 'CZCE.FG305',
+        'CZCE.FG309', 'CZCE.FG401', 'CZCE.FG909'}
 real = pytest.mark.skipif(not (POOL.exists() and CONFIG.exists()), reason='Thinking Student pool not present')
 
 # The rules of v2_positive_entry.yaml, so the synthetic tests stand alone.
@@ -62,7 +66,7 @@ def synthetic(spike=(96, 99, 96, 98, 500.), peak=QUIET_PEAK, tail=_bars(88, 89) 
     a = dict(n=n, times=times, bobs=times - pd.Timedelta(minutes=1), times_ns=times.asi8,
              bob_ns=(times - pd.Timedelta(minutes=1)).asi8, open=o, high=h, low=lo, close=c, volume=v,
              valid=valid, segment_open=np.zeros(n, bool), sell_close=c - 1, sell_open=o - 1, buy_high=h + 1,
-             rv=V.volume_ratio(v, valid, 20), prefix=np.arange(n + 1), multiplier=20.)
+             rv=V.volume_ratio(v, valid, 20), prefix=np.arange(n + 1), multiplier=20., side='SHORT', sign=1)
     buckets = [dict(High=float(h[i:i + 15].max()), bucket_end=times[i + 14], available_at=times[i + 14])
                for i in range(0, n - 14, 15)]
     return a, buckets
@@ -76,9 +80,10 @@ def run(a, buckets, cfg=CFG):
 
 def truncate(a, buckets, m):
     """The market as it was with bars [0, m) only."""
-    cut = {k: (v[:m + 1] if k == 'prefix' else v[:m]) for k, v in a.items() if k not in ('n', 'multiplier')}
+    whole = ('n', 'multiplier', 'side', 'sign')
+    cut = {k: (v[:m + 1] if k == 'prefix' else v[:m]) for k, v in a.items() if k not in whole}
     last = a['times'][m - 1]
-    return (dict(cut, n=m, multiplier=a['multiplier']),
+    return (dict(cut, n=m, **{k: a[k] for k in whole[1:]}),
             [b for b in buckets if pd.Timestamp(b['available_at']) <= last])
 
 
@@ -216,7 +221,7 @@ def test_the_scan_is_causal_on_a_real_train_market(fg809):
 @pytest.fixture(scope='module')
 def corpus(tmp_path_factory):
     out = tmp_path_factory.mktemp('v2') / 'corpus'
-    rows = V.short_rows(POOL, ['CZCE.FG809'])
+    rows = V.side_rows(POOL, 'SHORT', ['CZCE.FG809'])
     V.produce(rows, V.load_config(CONFIG), out, workers=8, log=lambda *_: None)
     return out
 
@@ -299,19 +304,109 @@ def test_the_reader_returns_teacher_tables_only(corpus, tmp_path):
 
 
 @real
-def test_only_short_train_contracts_are_read():
-    assert {r['contract'] for r in V.short_rows(POOL)} == SHORT
-    longs = [f['contract'] for f in json.loads(POOL.read_text())['files']
-             if f.get('role') == 'train' and f['contract'] not in SHORT]
+def test_only_train_contracts_of_the_side_are_read():
+    assert {r['contract'] for r in V.side_rows(POOL, 'SHORT')} == SHORT
+    assert {r['contract'] for r in V.side_rows(POOL, 'LONG')} == LONG
     with pytest.raises(ValueError, match='not SHORT contracts'):
-        V.short_rows(POOL, ['CZCE.FG809', longs[0]])
+        V.side_rows(POOL, 'SHORT', ['CZCE.FG809', 'CZCE.FG401'])
+    with pytest.raises(ValueError, match='not LONG contracts'):
+        V.side_rows(POOL, 'LONG', ['CZCE.FG401', 'CZCE.FG809'])
     with pytest.raises(ValueError, match='not a TRAIN member'):
-        V.short_rows(POOL, ['CZCE.FG409'])
+        V.side_rows(POOL, 'SHORT', ['CZCE.FG409'])
 
 
-def test_the_config_must_be_the_short_version(tmp_path):
-    for change in (dict(direction='LONG'), dict(version='V0')):
-        path = tmp_path / 'cfg.yaml'
+def test_the_config_must_be_the_version_and_one_side(tmp_path):
+    path = tmp_path / 'cfg.yaml'
+    path.write_text(yaml.safe_dump(dict(CFG, direction='LONG')))
+    assert V.load_config(path)['direction'] == 'LONG'
+    for change in (dict(direction='BOTH'), dict(version='V0')):
         path.write_text(yaml.safe_dump(dict(CFG, **change)))
-        with pytest.raises(ValueError, match=f'not a {V.VERSION} SHORT config'):
+        with pytest.raises(ValueError, match=f'not a {V.VERSION} SHORT or LONG config'):
             V.load_config(path)
+    with pytest.raises(ValueError, match='not SHORT or LONG'):
+        V.sign('BOTH')
+
+
+@pytest.fixture(scope='module')
+def fg401(tmp_path_factory):
+    folder = tmp_path_factory.mktemp('fg401')
+    env = native_env(write_inputs(train_row('CZCE.FG401', POOL), folder), market=True)
+    cfg = dict(V.load_config(CONFIG), direction='LONG')
+    return env, V.market_arrays(env, cfg), cfg
+
+
+@real
+def test_a_long_market_is_scanned_as_its_mirror_in_short_space(fg401):
+    """V2.1 (user 2026-11-04): LONG is the SHORT rules on the negated market.
+    Its lows are the short-space highs, its buy quotes the short-space sell
+    quotes, its sell quote at the low the quote its SL checks."""
+    env, a, cfg = fg401
+    raw = env._raw
+    assert (a['side'], a['sign']) == ('LONG', -1)
+    for key, column in (('open', 'Open'), ('high', 'Low'), ('low', 'High'), ('close', 'Close')):
+        np.testing.assert_array_equal(a[key], -raw[column].to_numpy(float))
+    for t in np.random.default_rng(0).integers(0, a['n'], 50):
+        at = raw.index[t]
+        assert a['sell_close'][t] == -float(env._price(raw.Close.iloc[t], 'LONG', at, opening=True))
+        assert a['buy_high'][t] == -float(env._price(raw.Low.iloc[t], 'LONG', at, opening=False))
+    # Buy above the ask: the short-space quote lies below the negated close, as a SHORT sell quote does.
+    assert (a['sell_close'] <= a['close']).all()
+    levels, _ = V.prior_highs(env, a, cfg)
+    lows = [-float(b['Low']) for b in env._e_market.complete_buckets]
+    assert levels and all(x['H'] == lows[x['bucket']] for x in levels)
+    # A line in short space is a 15m pivot low: no lower low within 2 buckets either side.
+    for x in levels[:50]:
+        j = x['bucket']
+        assert x['H'] == max(lows[max(0, j - 2):j + 3])
+    events, candidates = run(a, env._e_market.complete_buckets, cfg)
+    assert events and candidates
+    # Converted back to real prices: the line L is a real low, the SL L - 5 below it, the quote in [L, L+7], the
+    # risk the fill above the SL, the planned TP 2R above the quote.
+    e = cfg['entry']
+    assert all(V._real(dict(x), -1)['H'] == -x['H'] > 0 for x in events)
+    for c in candidates:
+        r = V._real(dict(c), a['sign'])
+        L = r['obs_H']
+        assert L == -c['obs_H'] > 0 and r['obs_sl'] == L - e['stop_above_points']
+        assert L <= r['obs_quote'] <= L + e['zone_points']
+        assert r['label_fill_expected'] - r['obs_sl'] == c['label_R']
+        assert r['obs_planned_tp'] == r['obs_quote'] + e['target_r'] * r['obs_planned_risk']
+
+
+@real
+def test_two_sides_combine_into_one_material_byte_for_byte(corpus, tmp_path):
+    # The FG809 material and a copy of it under another contract name and the LONG rules.
+    other = tmp_path / 'long'
+    shutil.copytree(corpus, other)
+    for name in V.TEACHER:
+        f = other / 'teacher' / f'{name}.csv'
+        f.write_text(f.read_text().replace('CZCE.FG809', 'CZCE.FG401'))
+    params = yaml.safe_load((other / 'params.yaml').read_text())
+    (other / 'params.yaml').write_text(yaml.safe_dump(dict(params, direction='LONG'), sort_keys=False))
+    out = tmp_path / 'both'
+    source = V.combine([corpus, other], out)
+    for name in V.TEACHER:
+        a, b = ((f / 'teacher' / f'{name}.csv').read_text().splitlines(keepends=True) for f in (corpus, other))
+        assert (out / 'teacher' / f'{name}.csv').read_text() == ''.join(a + b[1:])
+    both = V.load_positive(out)
+    assert set(both['positive_events'].contract) == {'CZCE.FG809', 'CZCE.FG401'}
+    assert [(x['direction'], x['contracts']) for x in source['combined']] == [
+        ('SHORT', ['CZCE.FG809']), ('LONG', ['CZCE.FG401'])]
+    assert json.loads((out / 'source.json').read_text())['combined'][1]['sha256'] == {
+        name: V._sha256(other / 'teacher' / f'{name}.csv') for name in V.TEACHER}
+    with pytest.raises(FileExistsError):
+        V.combine([corpus, other], out)
+    with pytest.raises(ValueError, match='more than one material'):
+        V.combine([corpus, corpus], tmp_path / 'twice')
+    (other / 'params.yaml').write_text(yaml.safe_dump(dict(params, direction='LONG', target_r=3.0), sort_keys=False))
+    with pytest.raises(ValueError, match='rules other than the direction'):
+        V.combine([corpus, other], tmp_path / 'rules')
+    (other / 'params.yaml').write_text(yaml.safe_dump(dict(params, direction='LONG'), sort_keys=False))
+    # The same table with its columns in another order (pandas orders them by the first row a run sees).
+    timeline = other / 'teacher' / 'positive_timeline.csv'
+    frame = pd.read_csv(timeline, dtype=str, keep_default_na=False)
+    frame[list(frame.columns[1:]) + [frame.columns[0]]].to_csv(timeline, index=False)
+    V.load_positive(other)
+    with pytest.raises(ValueError, match='different columns'):
+        V.combine([corpus, other], tmp_path / 'columns')
+    assert not (tmp_path / 'columns').exists()
