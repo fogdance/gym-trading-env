@@ -21,7 +21,7 @@ NOW = '2026-11-04T16:00:00+08:00'
 @pytest.fixture(scope='module')
 def review(tmp_path_factory):
     out = tmp_path_factory.mktemp('corpus') / 'review'
-    result = X.export_corpus(ROOT, 'V2.1 训练教材', 18, out=out, now=NOW, log=lambda m: None)
+    result = X.export_corpus(ROOT, 'V2.1 teacher', 18, out=out, now=NOW, log=lambda m: None)
     assert result['manifest'] == 'published'
     return out
 
@@ -43,18 +43,19 @@ def test_the_spec_records_of_fg205_and_the_totals(review):
         label_ready_at='2021-12-14T21:01:00+08:00',
         outcome=dict(status='CLOSED', exit_time='2021-12-14T21:01:00+08:00', exit_price=1828,
                      exit_reason='TAKE_PROFIT', net_pnl=1062))
-    assert {k: add['details'][k] for k in ('原始正例编号', '前高 H', '第几次触线', '持有市场分钟', '最大逆行（点）',
-                                           '最大顺行（点）')} == {'原始正例编号': 'CZCE.FG205@941:A', '前高 H': 1850,
-                                                              '第几次触线': 1, '持有市场分钟': 94,
-                                                              '最大逆行（点）': 2, '最大顺行（点）': 19}
-    assert add['details']['该线放量量比'] == pytest.approx(3.165053622809312) and add['note'] == X.NOTE_ADD
+    assert {k: add['details'][k] for k in ('Positive ID', 'Prior high H', 'Touch', 'Risk R (points)',
+                                           'Held (market minutes)', 'MAE (points)', 'MFE (points)')} == {
+        'Positive ID': 'CZCE.FG205@941:A', 'Prior high H': 1850, 'Touch': 1, 'Risk R (points)': 9,
+        'Held (market minutes)': 94, 'MAE (points)': 2, 'MFE (points)': 19}
+    assert add['details']['Line spike RV'] == pytest.approx(3.165053622809312) and add['note'] == X.NOTE_ADD
     wait = fg205['teacher:CZCE.FG205:956']
     assert (wait['action'], wait['grade'], wait['entry_price'], wait['entry_time'], wait['outcome']) == (
         'WAIT', None, None, None, None)
     assert (wait['bar_bob'], wait['bar_eob'], wait['label_ready_at']) == (
         '2021-12-14T13:41:00+08:00', '2021-12-14T13:42:00+08:00', '2021-12-14T21:08:00+08:00')
     # Directions come from the corpus and its env, never from prices.
-    assert {r['direction'] for r in records(review, 'CZCE.FG001').values()} == {'LONG'}
+    fg001 = records(review, 'CZCE.FG001').values()
+    assert {r['direction'] for r in fg001} == {'LONG'} and all('Prior low L' in r['details'] for r in fg001)
     assert {r['direction'] for r in fg205.values()} == {'SHORT'}
 
 
@@ -74,7 +75,7 @@ def test_an_add_is_marked_on_its_fill_bar_across_lunch_and_at_night(review):
 
 def test_a_rerun_is_byte_identical_and_a_changed_file_is_a_conflict(review, tmp_path):
     before = {p.name: p.read_bytes() for p in [review / 'manifest.json', *(review / 'teacher').glob('*')]}
-    again = X.export_corpus(ROOT, 'V2.1 训练教材', 18, out=review, log=lambda m: None)
+    again = X.export_corpus(ROOT, 'V2.1 teacher', 18, out=review, log=lambda m: None)
     assert again['manifest'] == 'unchanged' and again['files'] == dict(published=0, reused=18)
     assert {p.name: p.read_bytes() for p in [review / 'manifest.json', *(review / 'teacher').glob('*')]} == before
     copy = tmp_path / 'review'
@@ -83,13 +84,13 @@ def test_a_rerun_is_byte_identical_and_a_changed_file_is_a_conflict(review, tmp_
     f.write_bytes(f.read_bytes().replace(b'"entry_price":1846', b'"entry_price":1847', 1))
     manifest = (copy / 'manifest.json').read_bytes()
     with pytest.raises(X.ConflictError, match='exists with other content'):
-        X.export_corpus(ROOT, 'V2.1 训练教材', 18, out=copy, log=lambda m: None)
+        X.export_corpus(ROOT, 'V2.1 teacher', 18, out=copy, log=lambda m: None)
     assert (copy / 'manifest.json').read_bytes() == manifest and not list(copy.rglob('*.tmp'))
     # Another label is another publication: refused, the manifest kept.
     with pytest.raises(X.ConflictError, match='a new teacher needs a new corpus id'):
-        X.export_corpus(ROOT, 'V2.2', 18, out=review, log=lambda m: None)
+        X.export_corpus(ROOT, 'V2.2 teacher', 18, out=review, log=lambda m: None)
     with pytest.raises(X.ReviewError, match='expected 17'):
-        X.export_corpus(ROOT, 'V2.1 训练教材', 17, out=tmp_path / 'short', log=lambda m: None)
+        X.export_corpus(ROOT, 'V2.1 teacher', 17, out=tmp_path / 'short', log=lambda m: None)
 
 
 def _broken(review, tmp_path, change):

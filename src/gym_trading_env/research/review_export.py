@@ -19,7 +19,7 @@ published once, after every file passed, and a rerun with the same content
 leaves it untouched. The run / student part of review-v1 is not here.
 
   python -m gym_trading_env.research.review_export corpus --input CORPUS_DIR \\
-      --label "V2.1 训练教材" --expect-contracts 18
+      --label "V2.1 teacher" --expect-contracts 18
   python -m gym_trading_env.research.review_export validate --input CORPUS_DIR
 """
 from __future__ import annotations
@@ -48,7 +48,11 @@ STATUSES = ('CLOSED', 'OPEN', 'PARTIAL', 'CENSORED')
 # graded.grade codes (ts_v1_grades: POOR, FAIR, GOOD, EXCELLENT = 0..3; WAIT -1).
 GRADES = {2: 'GOOD', 3: 'EXCELLENT'}
 WAIT_ROWS = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME')
-NOTE_ADD, NOTE_WAIT = 'Native 逐分钟复核通过', '有效 WAIT 教师示范'
+# Text the exporter writes is English (user 2026-11-04); Risk R is the
+# fill's risk (SL - fill), not the decision-time plan in the explanation.
+NOTE_ADD, NOTE_WAIT = 'Native minute trace verified', 'Valid teacher WAIT'
+LINE = dict(SHORT='Prior high H', LONG='Prior low L')
+DATASET_LABEL = 'Teacher demonstrations of this training'
 MANIFEST_KEYS = ('schema', 'kind', 'id', 'revision', 'label', 'strategy', 'status', 'updated_at', 'timezone',
                  'contracts', 'datasets')
 DAY = re.compile(r'^\d{4}-\d{2}-\d{2}$')
@@ -176,7 +180,6 @@ def contract_records(folder, tables):
     entries = tables['positive_entries']
     timeline = tables['positive_timeline']
     waits = timeline[timeline.teach.isin(WAIT_ROWS)]
-    line = 'H' if side == 'SHORT' else 'L'
     records = []
     for s in np.flatnonzero(g['valid']):
         s = int(s)
@@ -206,12 +209,12 @@ def contract_records(folder, tables):
                 stop_price=_number(e.label_sl), target_price=_number(e.label_tp), grade=grade,
                 outcome=dict(status='CLOSED', exit_time=m['eob'][x], exit_price=_number(e.label_exit_price),
                              exit_reason=str(f['exit_reason'][s]), net_pnl=_number(f['net_pnl'][s])),
-                details={'原始正例编号': e.entry_id, f'前{"高" if line == "H" else "低"} {line}': _number(e.obs_H),
-                         '第几次触线': _number(e.obs_touch), '该线放量量比': _optional(e.obs_line_spike_rv),
-                         '本次触线起始量比': _optional(e.obs_rv_activation), '决策报价': _number(e.obs_quote),
-                         '成交后风险 R（点）': _number(e.label_R), '持有市场分钟': _number(e.label_held_minutes),
-                         '最大逆行（点）': _number(e.label_mae_points), '最大顺行（点）': _number(e.label_mfe_points),
-                         '教学解释': str(e.obs_explain)},
+                details={'Positive ID': e.entry_id, LINE[side]: _number(e.obs_H),
+                         'Touch': _number(e.obs_touch), 'Line spike RV': _optional(e.obs_line_spike_rv),
+                         'Touch start RV': _optional(e.obs_rv_activation), 'Decision quote': _number(e.obs_quote),
+                         'Risk R (points)': _number(e.label_R), 'Held (market minutes)': _number(e.label_held_minutes),
+                         'MAE (points)': _number(e.label_mae_points), 'MFE (points)': _number(e.label_mfe_points),
+                         'Explanation': str(e.obs_explain)},
                 note=NOTE_ADD if bool(e.label_native_verified) else ''))
         else:
             w = _one(waits, symbol, s, 'WAIT')
@@ -219,9 +222,8 @@ def contract_records(folder, tables):
                 common, action='WAIT', entry_time=None, bar_bob=m['bob'][s], bar_eob=m['eob'][s],
                 trading_day=m['day'][s], entry_price=None, volume=None, stop_price=None, target_price=None,
                 grade=None, outcome=None,
-                details={'等待类型': w.teach, f'前{"高" if line == "H" else "低"} {line}': _number(w.obs_H),
-                         '第几次触线': _number(w.obs_touch), '当分钟量比': _optional(w.obs_rv),
-                         '教学解释': str(w.obs_explain)},
+                details={'Wait type': w.teach, LINE[side]: _number(w.obs_H), 'Touch': _number(w.obs_touch),
+                         'RV': _optional(w.obs_rv), 'Explanation': str(w.obs_explain)},
                 note=NOTE_WAIT))
     records = [{k: r[k] for k in FIELDS} for r in records]
     counts = file_summary(records)
@@ -424,7 +426,7 @@ def export_corpus(root, label, expect_contracts, out=None, now=None, log=print):
                     strategy=strategy.get('version'), status='ready',
                     updated_at=now or pd.Timestamp.now(tz=TIMEZONE).floor('s').isoformat(), timezone=TIMEZONE,
                     contracts=contracts,
-                    datasets=[dict(id='teacher', label='本次训练的教师示范', kind='teacher', scope='TRAIN',
+                    datasets=[dict(id='teacher', label=DATASET_LABEL, kind='teacher', scope='TRAIN',
                                    policy_id=None, files=files)])
     path = review / 'manifest.json'
     if path.exists():
@@ -450,7 +452,7 @@ def main(argv=None):
     sub = parser.add_subparsers(dest='command', required=True)
     c = sub.add_parser('corpus', help='export the teacher of a corpus root into ROOT/review')
     c.add_argument('--input', required=True, help='corpus root (one folder per contract)')
-    c.add_argument('--label', required=True, help='manifest label, e.g. "V2.1 训练教材"')
+    c.add_argument('--label', required=True, help='manifest label, e.g. "V2.1 teacher"')
     c.add_argument('--expect-contracts', type=int, required=True, help='corpora the root must hold')
     v = sub.add_parser('validate', help='check ROOT/review/manifest.json and its files')
     v.add_argument('--input', required=True)
