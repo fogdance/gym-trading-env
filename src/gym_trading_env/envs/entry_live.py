@@ -72,6 +72,11 @@ class LiveFeed:
             'symbol': self.contract,
             'bob': pd.to_datetime(f.bob).dt.strftime('%Y-%m-%d %H:%M:%S'),
             'trading_date': pd.to_datetime(f.trading_date).dt.strftime('%Y-%m-%d')})
+        if after is None and bound > (floor or pd.Timestamp(0, tz=TZ)):
+            # The history begins at a whole trading day (V2 live, 2026-11-05): the
+            # 5m / 15m buckets of the E market and its causal MACD need a session
+            # from its first bar, and now - history_days cuts one anywhere.
+            out = out[out.trading_date != out.trading_date.iloc[0]].reset_index(drop=True)
         return out
 
     def wait(self, last):
