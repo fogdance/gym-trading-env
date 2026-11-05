@@ -22,6 +22,8 @@ CONFIGS = DREAMER / 'configs/thinking_student'
 POOL = CONFIGS / 'markets/pool.json'
 STRATEGY = CONFIGS / 'markets/strategy_v2_4_fixed_stop.yaml'
 STRATEGY_V21 = CONFIGS / 'markets/strategy_v2_1_structural.yaml'
+# V2.5: the same gate (rules V6), the stop of the touch's own line H + 5.
+STRATEGY_V25 = CONFIGS / 'markets/strategy_v2_5_h5_stop.yaml'
 PRESET = CONFIGS / 'markets/costs_fg_real_20261105.yaml'
 RULES = {'SHORT': CONFIGS / 'v2_positive_entry_v5.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v5_long.yaml'}
 real = pytest.mark.skipif(not (POOL.exists() and STRATEGY.exists()), reason='Thinking Student V2.4 configs missing')
@@ -211,3 +213,58 @@ def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
     path.write_text(yaml.safe_dump(bad))
     with pytest.raises(ValueError, match='fixed_stop_points'):
         V.load_config(path)
+
+
+@real
+@pytest.mark.parametrize('contract', sorted(SIDES))
+def test_a_v6_gated_stop_is_the_touch_line(pair, contract, tmp_path):
+    """V2.5 (rules V6, user 2026-11-05: \"V2.4 的设置下，把止损换回 H+5\"): the stop of the touch's own line."""
+    p = pair[contract]
+    side = p['side']
+    env = C.native_env(C.write_inputs(p['row'], tmp_path / 'v6', strategy=C.load_strategy(STRATEGY_V25)), market=False)
+    s, g = V.sign(side), env._gate(side)
+    for c in p['candidates'][:300]:
+        t = c['cursor']
+        fill = env._price(env._raw.Open.iloc[t + 1], side, env.bobs[t + 1], opening=True)
+        assert float(fill) == float(env._raw.Open.iloc[t + 1]) == c['label_fill_expected']  # no spread
+        plan = env.planned_exit(t, fill, side)
+        line = Decimal(str(c['obs_H']))
+        assert plan['rule_event'] == c['event_id'] and plan['touch'] == c['obs_touch']
+        risk = s * (line - fill) + 5
+        if 0 < risk <= 10:
+            assert plan['stop_source'] == 'RULE' and plan['stop_loss_price'] == line + s * 5
+            assert plan['take_profit_price'] == fill - s * 2 * risk
+        else:
+            assert plan['stop_source'] in ('CAPPED', 'GAP') and plan['stop_loss_price'] == fill + s * 10
+    t = p['candidates'][0]['cursor']
+    line = Decimal(str(p['candidates'][0]['obs_H']))
+    capped = env.planned_exit(t, line - s * 6, side)      # R 11 by a fill gap
+    gap = env.planned_exit(t, line + s * 5, side)         # filled at the stop
+    assert capped['stop_source'] == 'CAPPED' and capped['risk_points'] == '10'
+    assert gap['stop_source'] == 'GAP' and gap['stop_loss_price'] == line + s * 15
+    with pytest.raises(ValueError, match='not a rule position'):
+        env.planned_exit(int(np.flatnonzero(~g['open'])[100]), line, side)
+
+
+@real
+def test_a_gated_trade_filled_above_its_line_settles_its_own_short_tp(tmp_path):
+    """A fill gapped 3-4 points above the touch line has R <= 2 and a TP nearer than the env's
+    fixed 5 points: the reward scorer checks its exit against the trade's own planned TP
+    (corpus build 2026-11-05: FG005 / FG105 / FG201 failed on it)."""
+    row = C.train_row('CZCE.FG005', POOL)
+    env = C.native_env(C.write_inputs(row, tmp_path / 'in', strategy=C.load_strategy(STRATEGY_V25)), market=False)
+    g, index = env._gate('SHORT'), CandidateIndex(env)
+    opens = env._raw.Open.to_numpy(float)
+    near = [t for t in np.flatnonzero(g['open'][:index.flat_end])
+            if 3 <= opens[t + 1] - g['H'][g['event'][t]] < 5]  # R 1-2: TP 2-4 points
+    settled = 0
+    for t in near:
+        trade = index.candidate(int(t)).get('exit')
+        if trade is None or trade['reason'] != 'TAKE_PROFIT':
+            continue
+        opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
+        distance = Decimal(opening['price']) - Decimal(opening['take_profit_price'])
+        assert opening['stop_source'] == 'RULE' and distance < 5
+        assert Decimal(trade['entry_price']) - Decimal(trade['exit_price']) >= distance
+        settled += 1
+    assert settled > 0

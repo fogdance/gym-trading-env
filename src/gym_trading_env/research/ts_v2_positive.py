@@ -68,8 +68,10 @@ from .ts_v1_grades import _room
 # "止损固定5点", "全部：SL = 成交价+5"): V4 with entry.fixed_stop_points, the
 # SL at the fill + 5 (R 5, TP 2R = 10) for every ADD, a gap fill included;
 # the line H still places the rule positions and ends a touch it breaks.
+# V6 (V2.5, user 2026-11-05: "V2.4 的设置下，把止损换回 H+5"): V5 without
+# fixed_stop_points, the stop of V4 (SL = the touch's H + 5, R <= 10).
 ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch', 'V2_POSITIVE_ENTRY_V4': 'touch',
-              'V2_POSITIVE_ENTRY_V5': 'touch'}
+              'V2_POSITIVE_ENTRY_V5': 'touch', 'V2_POSITIVE_ENTRY_V6': 'touch'}
 SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
