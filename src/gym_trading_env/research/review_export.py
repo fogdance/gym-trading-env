@@ -217,7 +217,11 @@ def contract_records(folder, tables):
     records = []
     for s in np.flatnonzero(g['valid']):
         s = int(s)
-        direction = {1: 'LONG', -1: 'SHORT'}.get(int(g['sign'][s]))
+        # sign is a fill fact (ts_v1_grades.measure): a WAIT label at a legal
+        # minute whose ADD would not fill (NOT_FILLED, V2.4 corpus build
+        # 2026-11-05: FG005 cursor 9175) has none and keeps the env's side.
+        unfilled_wait = int(g['action'][s]) == 0 and int(g['sign'][s]) == 0
+        direction = side if unfilled_wait else {1: 'LONG', -1: 'SHORT'}.get(int(g['sign'][s]))
         if direction != side:
             raise ReviewError(f'{symbol} cursor {s}: sign {g["sign"][s]} is not the env\'s direction {side}')
         ready = int(g['ready_at'][s])
