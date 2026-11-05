@@ -61,14 +61,17 @@ from .ts_v1_grades import _room
 # Material versions and the volume spike that starts a touch: V2, the
 # line's first spike from its own 15m bucket on (touches after it need
 # none); V3 (user 2026-11-04), each touch's own bar near the line with RV >=
-# ratio, as Spec V0.3 and rules V1 (config volume.activation: touch).
-ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch'}
+# ratio, as Spec V0.3 and rules V1 (config volume.activation: touch). V4
+# (user 2026-11-05): V3 with zone 5 (planned R <= 10), the WAIT_IN_RULE rows
+# (timeline.wait_in_rule) and the costs of a cost preset; the V2.3 env's rule
+# gate opens ADD at its rule positions (rule_cursors).
+ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch', 'V2_POSITIVE_ENTRY_V4': 'touch'}
 SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
 REASONS = ('FILL_OUT_OF_ZONE', 'MASKED', 'NOT_FILLED', 'STOP_LOSS', 'OTHER_EXIT',
            'RIGHT_CENSORED', 'TP_DEEP_MAE', 'TP_SLOW', 'POSITIVE')
-TEACH = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME', 'ACTIVATION', 'ACTIVATION_ADD', 'ADD')
+TEACH = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME', 'ACTIVATION', 'ACTIVATION_ADD', 'ADD', 'WAIT_IN_RULE')
 # Teacher table columns other than obs_* (decision-time) and label_* (offline).
 META = ('event_id', 'entry_id', 'contract', 'cursor', 'time', 'direction_source', 'teach')
 TEACHER = ('positive_events', 'positive_entries', 'positive_timeline')
@@ -89,6 +92,11 @@ def load_config(path):
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
+    if not isinstance(cfg['timeline'].get('wait_in_rule', False), bool):
+        raise ValueError(f'{path}: timeline.wait_in_rule is true or false')
+    if 'costs' in cfg:  # a cost preset path relative to this file, read (ts_v1_corpus.load_costs)
+        from .ts_v1_corpus import load_costs
+        cfg['costs'] = load_costs(cfg['costs'], path)
     return cfg
 
 
@@ -252,9 +260,17 @@ def deadline(env):
     return int(min(np.searchsorted(times, t, side='left') for t in ends))
 
 
-def scan(a, levels, cfg, flat_end, contract):
-    """Touches (events), candidates and the pre-touch WAIT rows of one
-    market, in one causal pass over the cursors (DESIGN sections 2-5, 8)."""
+def rule_pass(a, levels, cfg, end, contract):
+    """The rule's causal pass over the cursors of one market (DESIGN
+    sections 2-5): its touches (events, WAIT rows not attached) and, per
+    cursor, `event_of` (index into the events, -1 outside a touch),
+    `in_zone` (a rule position: inside a touch, a valid minute, the decision
+    quote in [H - zone, H]) and `active` (the bucket of the active line
+    outside touches, read by the WAIT rows); `lines` holds each event's
+    line. No touch continues or starts at `end` or later (BOUNDARY): the
+    material passes min(flat_end, n - 1), so every rule position has its
+    fill bar; the env's rule gate passes n, so the newest minute of a live
+    market can be one."""
     e, ev, p = cfg['entry'], cfg['event'], cfg['prior_high']
     stop, zone, near = e['stop_above_points'], e['zone_points'], ev['near_points']
     far, n = p['departure_points'], a['n']
@@ -266,7 +282,9 @@ def scan(a, levels, cfg, flat_end, contract):
     armed = {x['bucket']: x['departed'] for x in levels}
     touches = dict.fromkeys(armed, 0)
     active = np.full(n, -1, np.int64)  # bucket of the active line of a cursor outside touches
-    events, candidates, event = [], [], None
+    event_of = np.full(n, -1, np.int64)
+    in_zone = np.zeros(n, bool)
+    events, lines, event = [], [], None
     for s in range(n):
         while k < len(pending) and pending[k]['confirm'] <= s:
             live.append(pending[k])
@@ -281,13 +299,12 @@ def scan(a, levels, cfg, flat_end, contract):
                 reason = 'DEPARTED'
             elif s >= event['level_expire']:
                 reason = 'EXPIRED'
-            elif s >= flat_end or s + 1 >= n:
+            elif s >= end:
                 reason = 'BOUNDARY'
             if reason is None:
                 event['cursors'] += 1
-                q = a['sell_close'][s]
-                if a['valid'][s] and H - zone <= q <= H:
-                    candidates.append(_candidate(a, event, s, cfg, contract))
+                event_of[s] = len(events)
+                in_zone[s] = a['valid'][s] and H - zone <= a['sell_close'][s] <= H
                 continue
             event.update(end=s, end_time=str(a['times'][s]), end_reason=reason)
             if reason == 'DEPARTED':
@@ -295,7 +312,7 @@ def scan(a, levels, cfg, flat_end, contract):
             events.append(event)
             event = None
         ready = [x for x in live if armed[x['bucket']] <= s]
-        if not ready or s >= flat_end or s + 1 >= n:
+        if not ready or s >= end:
             continue
         # The first line above the price: the lowest armed one.
         level = min(ready, key=lambda x: (x['H'], -x['bucket']))
@@ -315,16 +332,48 @@ def scan(a, levels, cfg, flat_end, contract):
                 touch=touches[level['bucket']], line_spike=spike, line_spike_time=str(a['times'][spike]),
                 line_spike_rv=float(a['rv'][spike]),
                 activation=s, activation_time=str(a['times'][s]), activation_rv=float(a['rv'][s]),
-                cursors=0, wait=_wait_rows(a, level, s, active, cfg))
+                cursors=0, wait=None)
+            lines.append(level)
             active[s] = -1
             # The activation minute is itself the first decision of the event.
             event['cursors'] += 1
-            if H - zone <= a['sell_close'][s] <= H:
-                candidates.append(_candidate(a, event, s, cfg, contract))
+            event_of[s] = len(events)
+            in_zone[s] = H - zone <= a['sell_close'][s] <= H
     if event is not None:
         event.update(end=n - 1, end_time=str(a['times'][n - 1]), end_reason='BOUNDARY')
         events.append(event)
+    return dict(events=events, lines=lines, event_of=event_of, in_zone=in_zone, active=active)
+
+
+def scan(a, levels, cfg, flat_end, contract):
+    """Touches (events), candidates and the pre-touch WAIT rows of one
+    market (DESIGN sections 2-5, 8): rule_pass with its boundary at
+    flat_end and before the last minute (a candidate needs its fill bar);
+    the candidates are its rule positions, and each touch's WAIT rows read
+    the active lines before it."""
+    r = rule_pass(a, levels, cfg, min(flat_end, a['n'] - 1), contract)
+    events = r['events']
+    for x, level in zip(events, r['lines']):
+        x['wait'] = _wait_rows(a, level, x['activation'], r['active'], cfg)
+    candidates = [_candidate(a, events[r['event_of'][s]], int(s), cfg, contract)
+                  for s in np.flatnonzero(r['in_zone'])]
     return events, candidates
+
+
+def rule_cursors(env, cfg):
+    """The rule positions of one env's market in the direction of `cfg`
+    (V2.3 rule gate, user 2026-11-05): the material's own rule_pass over
+    the whole market, with no boundary before its last minute. Per cursor
+    `open` (a rule position) and `event` (its touch, -1 outside); per touch
+    its line `H` (short space: a LONG's prior low negated), `touch` (the
+    line's touch count) and `event_id`; `sign` of the side."""
+    a = market_arrays(env, cfg)
+    levels, _ = prior_highs(env, a, cfg)
+    r = rule_pass(a, levels, cfg, a['n'], env.contract)
+    return dict(open=r['in_zone'], event=r['event_of'], sign=a['sign'],
+                H=np.array([x['H'] for x in r['events']], float),
+                touch=np.array([x['touch'] for x in r['events']], np.int64),
+                event_id=[x['event_id'] for x in r['events']])
 
 
 def _candidate(a, event, s, cfg, contract):
@@ -487,6 +536,10 @@ def wait_note(teach, o, cfg, spike_now=False):
         far_from, not_near, move, end = f'at or above L+{far}', f'above L+{near}', 'pullback, low', 'low'
     if teach == 'WAIT_FAR':
         return f'close {_at(o["obs_close"], H, N)} {far_from}: far from {N}; wait'
+    if teach == 'WAIT_IN_RULE':
+        return (f'rule position: quote {_at(o["obs_quote"], H, N)} in {_words(cfg)[1]}, touch {o["obs_touch"]}, '
+                f'{_rv(o["obs_rv"])}, {o["obs_minutes_since_activation"]} min after the touch began; '
+                f'the teacher waits for a later entry of this touch')
     if teach == 'WAIT_APPROACH':
         return f'{move} {_at(o["obs_high"], H, N)} {not_near}: not near {N} yet; wait'
     own = ACTIVATION[cfg['version']] == 'touch'
@@ -535,7 +588,7 @@ def grade_reason(c, cfg):
 
 def _scan_job(job):
     row, cfg, folder = job
-    config = write_inputs(row, Path(folder) / 'inputs' / row['contract'] / 'base')
+    config = write_inputs(row, Path(folder) / 'inputs' / row['contract'] / 'base', costs=cfg.get('costs'))
     env = native_env(config, market=True)
     if (env.take_profit_points, env.stop_loss_points) != (5, 30) or env.direction_at(
             env._raw.index[0], 0) not in (cfg['direction'], 'NO_TRADE'):
@@ -598,7 +651,8 @@ def _trade_inputs(rows, cfg, folder, candidates):
             for name, multiple in (('target', e['target_r']), ('parallel', e['parallel_r'])):
                 tp = tp_points(cfg, risk, multiple)
                 rules = dict(take_profit_points=tp, stop_loss_points=risk)
-                config = write_inputs(by_row[contract], Path(folder) / 'inputs' / contract / f'R{risk}_TP{tp}', rules)
+                config = write_inputs(by_row[contract], Path(folder) / 'inputs' / contract / f'R{risk}_TP{tp}', rules,
+                                      costs=cfg.get('costs'))
                 jobs.append(dict(contract=contract, risk=risk, name=name, tp=tp,
                                  config=str(config), cursors=cursors))
     return jobs
@@ -675,7 +729,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
         raise ValueError(f'Indexed positives differ from their Native minute trace: {bad}')
     seconds['native_verify'] = round(time.monotonic() - started, 1)
 
-    tables = assemble(events, candidates)
+    tables = assemble(events, candidates, cfg)
     write_tables(tmp, tables)
     summary = audit_summary(events, candidates, stats, cfg)
     (tmp / 'audit' / 'audit_summary.json').write_text(json.dumps(summary, indent=1))
@@ -695,8 +749,14 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     return summary
 
 
-def assemble(events, candidates):
-    """Teacher tables (positives only) and audit tables (everything)."""
+def assemble(events, candidates, cfg=None):
+    """Teacher tables (positives only) and audit tables (everything). With
+    `cfg` timeline.wait_in_rule (V4, user 2026-11-05: "正例之前的位置标
+    WAIT"), every candidate of a touch before its first positive is a
+    WAIT_IN_RULE row (at the activation minute in place of its ACTIVATION
+    row), but a MASKED one: no ADD is legal there, so there is no decision
+    to teach; a touch without a positive keeps none."""
+    in_rule = bool(cfg and cfg['timeline'].get('wait_in_rule'))
     by_event = {}
     for c in candidates:
         by_event.setdefault(c['event_id'], []).append(c)
@@ -711,6 +771,8 @@ def assemble(events, candidates):
         for k, c in enumerate(good):
             c['entry_id'] = f'{x["event_id"]}:{_letter(k)}'
         pnl = np.array([c['label_net_pnl'] for c in good])
+        rule_wait = ([c for c in mine if c['cursor'] < good[0]['cursor'] and c['reason'] != 'MASKED']
+                     if in_rule else [])
         positive_events.append(dict(
             {k: x[k] for k in ('event_id', 'contract', 'direction_source', 'H', 'level_bucket_end',
                                'level_confirm', 'level_departed', 'touch', 'line_spike_time', 'line_spike_rv',
@@ -720,17 +782,22 @@ def assemble(events, candidates):
             first_positive_minutes=good[0]['obs_minutes_since_activation'],
             last_positive_minutes=good[-1]['obs_minutes_since_activation'],
             fill_range=max(c['label_fill_expected'] for c in good) - min(c['label_fill_expected'] for c in good),
-            best_net_pnl=float(pnl.max()), median_net_pnl=float(np.median(pnl))))
+            best_net_pnl=float(pnl.max()), median_net_pnl=float(np.median(pnl)),
+            **(dict(wait_in_rule=len(rule_wait)) if in_rule else {})))
         entries += [dict(c) for c in good]
         add = {c['cursor']: c for c in good}
         for w in x['wait']:
             timeline.append(dict(event_id=x['event_id'], contract=x['contract'],
                                  direction_source=x['direction_source'], **w))
         act = x['activation']
-        if act not in add:
+        if act not in add and not any(c['cursor'] == act for c in rule_wait):
             timeline.append(dict(event_id=x['event_id'], contract=x['contract'], cursor=act,
                                  time=x['activation_time'], direction_source=x['direction_source'],
                                  teach='ACTIVATION', **x['activation_obs'], obs_minutes_since_activation=0))
+        for c in rule_wait:
+            timeline.append(dict({k: v for k, v in c.items() if k in META or k.startswith('obs_')},
+                                 obs_explain=wait_note('WAIT_IN_RULE', c, cfg), teach='WAIT_IN_RULE',
+                                 obs_in_zone=True))
         for c in good:
             timeline.append(dict({k: v for k, v in c.items() if k in META or k.startswith('obs_')},
                                  teach='ACTIVATION_ADD' if c['cursor'] == act else 'ADD', obs_in_zone=True))
@@ -794,6 +861,9 @@ def load_positive(folder):
 TEACHER_LABEL = dict(source='V2_POSITIVE_TEACHER', ready_at='ready_at: the TP exit of an ADD; '
                      'the last kept TP exit of its touch for a WAIT')
 WAIT_ROWS = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME')
+# The WAIT rows of a gated env (V2.3): at the rule positions before a touch's
+# first positive; the pre-touch rows above are masked minutes there.
+RULE_WAIT_ROWS = ('WAIT_IN_RULE',)
 
 
 def graded_teacher(env, facts, folder, contract, side, index=None):
@@ -807,11 +877,21 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
     positive whose line the env's stateless stop does not take (a lower line
     confirmed during its touch) is dropped as STOP_LINE_DIFFERS: its trade
     is not the env's. Entry price, side and MFE are measured as for the
-    graded teacher. `side` is the contract's direction (V2.1: SHORT or LONG)."""
+    graded teacher. `side` is the contract's direction (V2.1: SHORT or LONG).
+
+    A gated env (V2.3, entry.rule_gate; user 2026-11-05) needs the material
+    of its own rules: every label is at a rule position (a legal minute);
+    the stop is the touch's own line, so a positive whose SL the env does
+    not reproduce is an error; WAIT is taught on the WAIT_IN_RULE rows only,
+    and the pre-touch WAIT rows, masked minutes there, are dropped
+    (WAIT_OFF_RULE)."""
     from .ts_v1_corpus import KINDS
     from .ts_v1_grades import EXCELLENT, GOOD, MFE_MINUTES, measure
     out, m = measure(env, facts, index)
     n, max_risk = m['n'], env.stop_rule['max_risk_points']
+    gate = getattr(env, 'rule_gate', None)
+    if gate is not None and _material_rules(folder) != _json({k: v for k, v in gate[side].items() if k != 'direction'}):
+        raise ValueError(f'{contract}: the material {folder} is not of the env\'s rule gate')
     tables = load_positive(folder)
     entries = tables['positive_entries'][tables['positive_entries'].contract == contract]
     timeline = tables['positive_timeline'][tables['positive_timeline'].contract == contract]
@@ -827,8 +907,12 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
         if r.label_R > max_risk:
             dropped['RISK_ABOVE_MAX'] += 1
             continue
+        if gate is not None and not facts['eligible'][t]:
+            raise ValueError(f'{contract} cursor {t}: a positive at a minute the rule gate masks')
         plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), side)
         if float(plan['stop_loss_price']) != r.obs_sl:
+            if gate is not None:
+                raise ValueError(f'{contract} cursor {t}: the gated stop {plan["stop_loss_price"]} is not SL {r.obs_sl}')
             dropped['STOP_LINE_DIFFERS'] += 1
             continue
         if not (facts['filled'][t] and facts['kind'][t] == tp and facts['exit_cursor'][t] == r.label_exit_cursor
@@ -839,7 +923,9 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
         out['valid'][t], out['action'][t] = True, 1
         kept.add(r.event_id)
         ready[r.event_id] = max(ready.get(r.event_id, -1), int(r.label_exit_cursor))
-    waits = timeline[timeline.teach.isin(WAIT_ROWS)]
+    waits = timeline[timeline.teach.isin(RULE_WAIT_ROWS if gate is not None else WAIT_ROWS)]
+    if gate is not None:
+        dropped['WAIT_OFF_RULE'] = int(timeline.teach.isin(WAIT_ROWS).sum())
     dropped['WAIT_OF_DROPPED_TOUCH'] = int((~waits.event_id.isin(kept)).sum())
     for r in waits[waits.event_id.isin(kept)].itertuples():
         t = int(r.cursor)
@@ -857,7 +943,26 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
                   wait=int((out['valid'] & (out['action'] == 0)).sum())),
         touches=dict(kept=len(kept), material=int(entries.event_id.nunique())),
         dropped=dropped, tp_checked=m['tp_checked'])
+    if gate is not None:
+        rule = int(env._gate(side)['open'][:n].sum())
+        labels = summary['demo']['add'] + summary['demo']['wait']
+        summary['rule_gate'] = dict(rule_positions=rule, labels=labels,
+                                    label_coverage=round(labels / rule, 4) if rule else None)
     return out, summary
+
+
+def _json(x):
+    return json.loads(json.dumps(x, default=str))
+
+
+def _material_rules(folder):
+    """The rules of a material but its direction: a combined material's
+    source.json `rules`, or a single one's params.yaml."""
+    source = json.loads((Path(folder) / 'source.json').read_text())
+    if 'rules' in source:
+        return _json(source['rules'])
+    return _json({k: v for k, v in yaml.safe_load((Path(folder) / 'params.yaml').read_text()).items()
+                  if k != 'direction'})
 
 
 def audit_summary(events, candidates, stats, cfg):

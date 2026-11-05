@@ -65,7 +65,6 @@ OUTCOME = ('status', 'exit_time', 'exit_price', 'exit_reason', 'net_pnl')
 STATUSES = ('CLOSED', 'OPEN', 'PARTIAL', 'CENSORED')
 # graded.grade codes (ts_v1_grades: POOR, FAIR, GOOD, EXCELLENT = 0..3; WAIT -1).
 GRADES = {2: 'GOOD', 3: 'EXCELLENT'}
-WAIT_ROWS = ('WAIT_FAR', 'WAIT_APPROACH', 'WAIT_NEAR_NO_VOLUME')
 # Text the exporter writes is English (user 2026-11-04); Risk R is the
 # fill's risk (SL - fill), not the decision-time plan in the explanation.
 NOTE_ADD, NOTE_WAIT = 'Native minute trace verified', 'Valid teacher WAIT'
@@ -199,7 +198,7 @@ def _one(frame, contract, cursor, what):
 def contract_records(folder, tables):
     """The review-v1 records of one corpus's valid teacher labels, by
     cursor, and its file summary; `tables` is its material (`material`)."""
-    from .ts_v2_positive import contract_direction
+    from .ts_v2_positive import RULE_WAIT_ROWS, WAIT_ROWS, contract_direction
     folder = Path(folder)
     source = _read_json(folder / 'source.json')
     summary = _read_json(folder / 'graded' / 'summary.json')
@@ -212,7 +211,9 @@ def contract_records(folder, tables):
     n = len(m['eob'])
     entries = tables['positive_entries']
     timeline = tables['positive_timeline']
-    waits = timeline[timeline.teach.isin(WAIT_ROWS)]
+    # The pre-touch WAIT rows; under a rule gate (V2.3) those at the rule
+    # positions before a touch's first positive.
+    waits = timeline[timeline.teach.isin(WAIT_ROWS + RULE_WAIT_ROWS)]
     records = []
     for s in np.flatnonzero(g['valid']):
         s = int(s)
@@ -256,7 +257,11 @@ def contract_records(folder, tables):
                 trading_day=m['day'][s], entry_price=None, volume=None, stop_price=None, target_price=None,
                 grade=None, outcome=None,
                 details={'Wait type': w.teach, LINE[side]: _number(w.obs_H), 'Touch': _number(w.obs_touch),
-                         'RV': _optional(w.obs_rv), 'Explanation': str(w.obs_explain)},
+                         'RV': _optional(w.obs_rv),
+                         **({'Decision quote': _number(w.obs_quote), 'Planned R (points)': _number(w.obs_planned_risk),
+                             'Minutes since touch began': _number(w.obs_minutes_since_activation)}
+                            if w.teach in RULE_WAIT_ROWS else {}),
+                         'Explanation': str(w.obs_explain)},
                 note=NOTE_WAIT))
     records = [{k: r[k] for k in FIELDS} for r in records]
     counts = file_summary(records)
@@ -322,6 +327,8 @@ def _student_record(symbol, eid, fill, exits, closed, still, trades, m):
     shut = sum((_dec(x['closed_size']) for x in closes), Decimal(0))
     details = {'Native entry ID': eid, 'Account': eid.rsplit(':', 1)[0], 'Stop source': fill.get('stop_source'),
                'Line': _optional(fill.get('line')), 'Risk (points)': _optional(fill.get('risk_points'))}
+    if fill.get('rule_event') is not None:  # a rule-gated ADD (V2.3): the touch of its rule position
+        details.update({'Rule touch': fill['rule_event'], 'Touch': _number(fill.get('touch'))})
     if closed is not None:
         x = closed.get('exit_cursor')
         if not isinstance(x, int) or not t <= x < n:

@@ -66,6 +66,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     stop_rule = None
     context_15m_buckets = 24
     _lines = None
+    # V2.3 rule gate (user 2026-11-05): {SHORT, LONG} rules of the V4
+    # material; None opens an ADD wherever the account allows it.
+    rule_gate = None
+    _gates = None
 
     def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
         gym.Env.__init__(self)
@@ -160,6 +164,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     raise ValueError(f"entry.{key} is a positive Single3 distance in points")
                 setattr(self, key, value)
         self._stop_rule_config()
+        self._rule_gate_config(config_path, master)
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
@@ -191,6 +196,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
 
     def _load_market(self, df):
         self._lines = None  # the stop lines of the market loaded before
+        self._gates = None  # and its rule positions
         if df is None:
             live = getattr(self, '_live', None)
             df = live.read(floor=self.terms.calendar[0]) if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
@@ -350,7 +356,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         so a line confirmed during a material touch may differ (the teacher
         drops those as STOP_LINE_DIFFERS). R is capped at max_risk, and with
         no such line R = max_risk; `stop_source` names which. No ADD mask or
-        gate depends on it. `prior_15m_high` is SHORT only; `prior_15m_extreme`
+        gate depends on it, unless entry.rule_gate sets one
+        (_rule_gate_config: then the line is the touch's own). `prior_15m_high` is SHORT only; `prior_15m_extreme`
         (V2.1) is the same for a SHORT and its mirror for a LONG: L* the
         highest departed prior 15m pivot low at or below the fill, SL =
         L* - stop_above, TP = fill + target_r * R (ts_v2_positive short space).
@@ -374,6 +381,48 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError(f'entry.stop_rule: positive integer points, max_risk_points >= '
                              f'stop_above_points, prior_high {PRIOR_HIGH_KEYS}, target_r > 0')
         self.stop_rule = dict(given)
+
+    def _rule_gate_config(self, config_path, master):
+        """entry.rule_gate (V2.3, user 2026-11-05: "规则决定学生能在哪里交易；
+        大脑决定在这些位置中什么时候交易"): {SHORT, LONG} rules files of the V4
+        material (ts_v2_positive.load_config). An ADD is legal only at their
+        rule positions (_gate: rule_cursors, the material's own pass), and its
+        stop is the touch's own line (planned_exit). The rules must share the
+        stop rule's lines, stop and target, keep the planned risk of a rule
+        position within max_risk_points, and carry this env's costs."""
+        paths = self.entry_config.get('rule_gate')
+        if paths is None:
+            return
+        from gym_trading_env.research.ts_v2_positive import load_config
+        r = self.stop_rule
+        if (not r or r['stop_rule'] != 'prior_15m_extreme' or not isinstance(paths, dict)
+                or set(paths) != {'SHORT', 'LONG'} or master is None):
+            raise ValueError('entry.rule_gate {SHORT, LONG} needs stop_rule prior_15m_extreme and a strategy_config')
+        values = ('lot_size', 'margin_rate', 'open_fee', 'close_fee', 'close_today_fee', 'spread', 'slippage')
+        gate = {}
+        for side, path in paths.items():
+            cfg = load_config(resolve_path(config_path, path))
+            e, costs = cfg['entry'], cfg.get('costs')
+            if (cfg['direction'] != side or e['stop_above_points'] != r['stop_above_points']
+                    or e['target_r'] != r['target_r'] or cfg['prior_high'] != r['prior_high']
+                    or e['stop_above_points'] + e['zone_points'] > r['max_risk_points']):
+                raise ValueError(f'entry.rule_gate {side}: rules of another side, line, stop, target or risk')
+            if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
+                raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s')
+            gate[side] = cfg
+        self.rule_gate = gate
+
+    def _gate(self, side):
+        """The rule positions of `side` in the market loaded
+        (ts_v2_positive.rule_cursors), computed once per market."""
+        if self._gates is None:
+            self._gates = {}
+        if side not in self._gates:
+            from gym_trading_env.research.ts_v2_positive import rule_cursors
+            if self._e_market is None:
+                raise ValueError('entry.rule_gate needs the complete 15m buckets of the market')
+            self._gates[side] = rule_cursors(self, self.rule_gate[side])
+        return self._gates[side]
 
     def _stop_lines(self, side):
         """H, confirm, broken and expire cursors of every line of `side` in
@@ -413,9 +462,27 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         # close at H - departure_points): the lowest one at or above the fill
         # is the stop's line.
         f = s * fill
+        cap = Decimal(r['max_risk_points'])
+        rule = {}
+        if self.rule_gate is not None:
+            # V2.3: the line of the rule position's touch; a fill gap beyond
+            # max_risk caps R (CAPPED), a fill at or through the stop takes
+            # R = max_risk (GAP).
+            g = self._gate(side)
+            if not g['open'][cursor]:
+                raise ValueError(f'{self.contract} cursor {cursor}: not a rule position, no gated ADD')
+            i = int(g['event'][cursor])
+            line = Decimal(str(g['H'][i]))
+            risk = line + r['stop_above_points'] - f
+            source = 'RULE' if 0 < risk <= cap else 'CAPPED' if risk > cap else 'GAP'
+            risk = risk if source == 'RULE' else cap
+            rule = dict(rule_event=g['event_id'][i], touch=int(g['touch'][i]))
+            tick = self.terms.tick
+            target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
+            return dict(line=str(s * line), risk_points=str(risk), stop_source=source,
+                        stop_loss_price=fill + s * risk, take_profit_price=fill - s * target, **rule)
         live = ((lines['confirm'] <= cursor) & (lines['departed'] <= cursor) & (cursor < lines['broken'])
                 & (cursor < lines['expire']) & (lines['H'] >= float(f)))
-        cap = Decimal(r['max_risk_points'])
         if live.any():
             line = Decimal(str(lines['H'][live].min()))
             risk = line + r['stop_above_points'] - f
@@ -464,6 +531,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         direction = self.direction_at(time)
         status = 'ACTIVE' if continuing and self.status=='CHUNK_END' else self.status
         if status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
+            return False
+        if self.rule_gate is not None and not self._gate(direction)['open'][self.current_step]:
             return False
         self._set_terms(time)
         price = self._price(self._market_row(self.current_step).Close, direction, time, opening=True)

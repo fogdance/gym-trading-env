@@ -142,21 +142,57 @@ def dev_row(contract, pool):
     return row
 
 
+# The `costs` block of a master strategy (gym fg_entry_v1.configured_fg_costs).
+COST_KEYS = ('source_path', 'source_sha256', 'cost_basis', 'lot_size', 'margin_rate', 'open_fee', 'close_fee',
+             'close_today_fee', 'spread', 'slippage')
+STRATEGY_KEYS = {'version', 'direction', 'entry', 'reward'}
+
+
+def load_costs(value, base):
+    """A `costs` block: a CZCE_FG cost preset path (relative to the file
+    `base`) read by fg_entry_v1.configured_fg_costs, as the master
+    strategies were built (user 2026-11-05: "交易成本需要可配置，以前就是
+    可配置的"), or such a block already read (a written copy)."""
+    if isinstance(value, str):
+        from .fg_entry_v1 import configured_fg_costs
+        value = configured_fg_costs(resolve_path(base, value))
+    if not isinstance(value, dict) or set(value) != set(COST_KEYS) or any(
+            not isinstance(value[k], (int, float)) or value[k] < 0 for k in COST_KEYS[3:]):
+        raise ValueError(f'{base}: costs is a CZCE_FG cost preset path or a costs block {COST_KEYS}')
+    return dict(value)
+
+
 def load_strategy(path):
     """A V2 strategy overlay (V0.5, user 2026-10-31): `entry` keys of the
     Native env (stop_rule, context_15m_buckets, ...) and the `reward` that
     replaces the Quality TP reward, for one external `direction`: SHORT, or
     BOTH (V2.1, user 2026-11-04: each contract in the direction its env
-    trades, with the two-sided stop rule prior_15m_extreme)."""
+    trades, with the two-sided stop rule prior_15m_extreme). V2.3 (user
+    2026-11-05) may add `costs` (a CZCE_FG cost preset path, load_costs) in
+    place of the costs of the pool env's master strategy, and
+    `entry.rule_gate` ({SHORT, LONG}: V4 material rules files) that opens
+    an ADD only at their rule positions; both paths are relative to the
+    strategy file and come back resolved."""
     strategy = read_yaml(path)
-    if set(strategy) != {'version', 'direction', 'entry', 'reward'} or strategy['direction'] not in ('SHORT', 'BOTH'):
-        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry and reward')
+    if not STRATEGY_KEYS <= set(strategy) <= STRATEGY_KEYS | {'costs'} or strategy['direction'] not in ('SHORT', 'BOTH'):
+        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry, reward (and costs)')
     if strategy['direction'] == 'BOTH' and strategy['entry'].get('stop_rule') != 'prior_15m_extreme':
         raise ValueError(f'{path}: a BOTH strategy needs entry.stop_rule prior_15m_extreme')
+    if 'costs' in strategy:
+        strategy['costs'] = load_costs(strategy['costs'], path)
+    gate = strategy['entry'].get('rule_gate')
+    if gate is not None:
+        if strategy['direction'] != 'BOTH' or not isinstance(gate, dict) or set(gate) != {'SHORT', 'LONG'}:
+            raise ValueError(f'{path}: entry.rule_gate is {{SHORT, LONG}} rules files of a BOTH strategy')
+        from .ts_v2_positive import load_config
+        strategy['entry']['rule_gate'] = {side: str(resolve_path(path, f)) for side, f in gate.items()}
+        for side, f in strategy['entry']['rule_gate'].items():
+            if load_config(f)['direction'] != side:
+                raise ValueError(f'{path}: entry.rule_gate {side} is the rules of another direction')
     return strategy
 
 
-def write_inputs(row, folder, rules=None, strategy=None):
+def write_inputs(row, folder, rules=None, strategy=None, costs=None):
     """TS env inputs: the pool env with the Quality TP reward and without
     CHUNK_END (chunk_steps 0), so an account runs from the first minute to
     the true terminal and market memory never restarts artificially. The
@@ -166,7 +202,10 @@ def write_inputs(row, folder, rules=None, strategy=None):
     (take_profit_points / stop_loss_points) replace the pool env's Native
     TP / SL distances. `strategy` (load_strategy) adds its entry keys and
     reward instead of the Quality TP reward; a contract the env trades in
-    another direction is refused."""
+    another direction is refused. `costs` (a load_costs block, or the
+    strategy's) replaces the costs of the copied master strategy; the rules
+    files of the strategy's entry.rule_gate are written next to env.yaml,
+    their costs read."""
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     source = Path(row['env_config'])
@@ -183,6 +222,17 @@ def write_inputs(row, folder, rules=None, strategy=None):
         if strategy['direction'] != 'BOTH' and contract_direction(row) != strategy['direction']:
             raise ValueError(f'{row["contract"]} is not traded {strategy["direction"]}')
         env['entry'].update(strategy['entry'])
+        if 'costs' in strategy:
+            if costs is not None and costs != strategy['costs']:
+                raise ValueError('write_inputs: costs differ from the strategy\'s')
+            costs = strategy['costs']
+    if env['entry'].get('rule_gate'):
+        from .ts_v2_positive import load_config
+        names = {}
+        for side, f in env['entry']['rule_gate'].items():
+            names[side] = f'rule_gate_{side.lower()}.yaml'
+            (folder / names[side]).write_text(yaml.safe_dump(load_config(f), sort_keys=False, allow_unicode=True))
+        env['entry']['rule_gate'] = names
     reward = dict(strategy['reward']) if strategy is not None else dict(schema=QUALITY_TP_SCHEMA)
     for key, name in (('contract_config', 'contract.yaml'), ('direction_config', 'directions.yaml')):
         if env['entry'].get(key):
@@ -191,11 +241,15 @@ def write_inputs(row, folder, rules=None, strategy=None):
     if env['entry'].get('strategy_config'):
         master = read_yaml(env['entry']['strategy_config'])
         master['reward'].update(reward)
+        if costs is not None:
+            master['costs'] = load_costs(costs, folder)
         master['environment']['entry']['chunk_steps'] = 0
         strategy = folder / 'single3.yaml'
         strategy.write_text(yaml.safe_dump(master, sort_keys=False))
         env['entry']['strategy_config'] = strategy.name
     else:
+        if costs is not None:
+            raise ValueError(f'{row["contract"]}: costs replace a master strategy_config\'s, this env has none')
         env['entry']['reward'].update(reward)
     config = folder / 'env.yaml'
     config.write_text(yaml.safe_dump(env, sort_keys=False))
