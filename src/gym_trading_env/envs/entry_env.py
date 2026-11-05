@@ -20,7 +20,7 @@ from .accounting import JournalEntry, Posting
 from .position import Position
 from .trade_record import TradeRecord
 from .trading_env import CustomTradingEnv
-from .entry_contract import (ContractTerms, DirectionSchedule, fingerprint,
+from .entry_contract import (PRODUCTS, ContractTerms, DirectionSchedule, fingerprint,
                              read_yaml, resolve_path, timestamp)
 from gym_trading_env.utils.bar_source import CsvBarSource, normalize_csv_frame
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
@@ -103,7 +103,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             master=read_yaml(self.strategy_path)
             expected_reward = master.get('protocol') == SINGLE3_PROTOCOL if self.single3 else master['reward']=={
                     'formula':'60/(60+T_minutes)', 'complete_quantity':3,'take_profit_points':5}
-            if (master['product']!='FG' or not expected_reward or master['expiry']['mode']!='main_qualification'):
+            if (master['product'] not in PRODUCTS or not expected_reward or master['expiry']['mode']!='main_qualification'):
                 raise ValueError('Unified FG configuration changes the frozen business contract')
             for key,value in master['environment']['trading'].items():
                 if raw['trading'].get(key)!=value:

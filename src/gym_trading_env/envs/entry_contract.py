@@ -35,6 +35,16 @@ def is_fg(contract):
     return bool(re.fullmatch(r"CZCE\.FG\d{3,4}", contract))
 
 
+# Products the Entry env trades (SA, user 2026-11-05: "SA和FG一样": the same
+# CZCE terms, 20 t per lot, tick 1, the FG strategy and its paper dates).
+PRODUCTS = ('FG', 'SA')
+
+
+def is_entry_contract(contract):
+    import re
+    return bool(re.fullmatch(rf"CZCE\.({'|'.join(PRODUCTS)})\d{{3,4}}", contract))
+
+
 def read_direction_text(path):
     """Manual fg.txt dates are inclusive trading dates, not midnight timestamps."""
     import csv
@@ -47,7 +57,7 @@ def read_direction_text(path):
         symbol,start,end,side=(v.strip() for v in row)
         contract="CZCE."+symbol.upper()
         a,b=timestamp(start),timestamp(end)+pd.Timedelta(days=1)
-        if not is_fg(contract) or a>=b or side not in ("LONG","SHORT"):
+        if not is_entry_contract(contract) or a>=b or side not in ("LONG","SHORT"):
             raise ValueError(f"Invalid direction line {number}")
         raw["intervals"].append(dict(contract=contract,start=str(a),end=str(b),direction=side))
     DirectionSchedule(raw)
@@ -67,7 +77,7 @@ class DirectionSchedule:
             contract = item["contract"]
             start, end = timestamp(item["start"]), timestamp(item["end"])
             direction = item["direction"]
-            if not is_fg(contract) or start >= end or direction not in ("LONG", "SHORT"):
+            if not is_entry_contract(contract) or start >= end or direction not in ("LONG", "SHORT"):
                 raise ValueError("Invalid FG direction interval")
             self.intervals.append((contract, start, end, direction))
         self.intervals.sort(key=lambda x: (x[0], x[1]))
@@ -90,7 +100,7 @@ class DirectionSchedule:
 class ContractTerms:
     """Explicit effective costs, deadlines and actual dated trading sessions."""
     def __init__(self, raw, contract):
-        if raw.get("contract") != contract or not is_fg(contract):
+        if raw.get("contract") != contract or not is_entry_contract(contract):
             raise ValueError("Contract metadata must match the real FG contract")
         self.hash = fingerprint(raw)
         self.tick = Decimal(str(raw["tick_size"]))
