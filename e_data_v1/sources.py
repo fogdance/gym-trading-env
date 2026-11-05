@@ -38,7 +38,7 @@ def _resolve(parent, value):
 def pool_entries(path, contracts=()):
     record = stable_identity(path)
     pool = json.loads(Path(record["path"]).read_text())
-    if pool.get("product") != "FG" or not isinstance(pool.get("files"), list):
+    if pool.get("product") not in ("FG", "SA") or not isinstance(pool.get("files"), list):
         raise ValueError("Expected an existing FG pool manifest")
     entries = [f for f in pool["files"] if f.get("role") == "train" and f.get("eligible_for_training")]
     if contracts:

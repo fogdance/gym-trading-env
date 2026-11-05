@@ -176,8 +176,9 @@ class MarketData:
         if len(contracts) != 1:
             raise EDataError("MarketData requires one real contract; separate contracts before aggregation")
         self.contract = next(iter(contracts))
-        if not re.fullmatch(r"CZCE\.FG\d{3,4}", self.contract):
-            raise EDataError("S3-E V1 requires an explicit real CZCE.FG contract")
+        # SA too (user 2026-11-05: "SA和FG一样"), the products of the Entry env.
+        if not re.fullmatch(r"CZCE\.(FG|SA)\d{3,4}", self.contract):
+            raise EDataError("S3-E V1 requires an explicit real CZCE.FG or CZCE.SA contract")
         self.clock, starts, ends = _clock_slots(self.frame, schedule)
         self.calendar = _calendar(schedule)
         self.good, self.events = _validate(self.frame, schedule, starts, self.calendar)
