@@ -8,6 +8,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from gym_trading_env.envs.entry_contract import PRODUCTS
 from .io import sha256, stable_identity
 
 
@@ -38,7 +39,7 @@ def _resolve(parent, value):
 def pool_entries(path, contracts=()):
     record = stable_identity(path)
     pool = json.loads(Path(record["path"]).read_text())
-    if pool.get("product") not in ("FG", "SA") or not isinstance(pool.get("files"), list):
+    if pool.get("product") not in PRODUCTS or not isinstance(pool.get("files"), list):
         raise ValueError("Expected an existing FG pool manifest")
     entries = [f for f in pool["files"] if f.get("role") == "train" and f.get("eligible_for_training")]
     if contracts:

@@ -35,14 +35,16 @@ def is_fg(contract):
     return bool(re.fullmatch(r"CZCE\.FG\d{3,4}", contract))
 
 
-# Products the Entry env trades (SA, user 2026-11-05: "SA和FG一样": the same
-# CZCE terms, 20 t per lot, tick 1, the FG strategy and its paper dates).
-PRODUCTS = ('FG', 'SA')
+# Products the Entry env trades, with their contract names (SA, user 2026-11-05: "SA和FG一样": the same
+# CZCE terms, 20 t per lot, tick 1, the FG strategy and its paper dates; RB, user 2026-11-05:
+# "RB螺纹钢和SA一样，也做个paper": SHFE rb, the same strategy, costs and paper dates).
+CONTRACT_NAMES = {'FG': r"CZCE\.FG\d{3,4}", 'SA': r"CZCE\.SA\d{3,4}", 'RB': r"SHFE\.rb\d{4}"}
+PRODUCTS = tuple(CONTRACT_NAMES)
 
 
 def is_entry_contract(contract):
     import re
-    return bool(re.fullmatch(rf"CZCE\.({'|'.join(PRODUCTS)})\d{{3,4}}", contract))
+    return any(re.fullmatch(x, contract) for x in CONTRACT_NAMES.values())
 
 
 def read_direction_text(path):
