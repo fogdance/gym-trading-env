@@ -142,6 +142,26 @@ def dev_row(contract, pool):
     return row
 
 
+# The `costs` block of a master strategy (gym fg_entry_v1.configured_fg_costs).
+COST_KEYS = ('source_path', 'source_sha256', 'cost_basis', 'lot_size', 'margin_rate', 'open_fee', 'close_fee',
+             'close_today_fee', 'spread', 'slippage')
+STRATEGY_KEYS = {'version', 'direction', 'entry', 'reward'}
+
+
+def load_costs(value, base):
+    """A `costs` block: a CZCE_FG cost preset path (relative to the file
+    `base`) read by fg_entry_v1.configured_fg_costs, as the master
+    strategies were built (user 2026-11-05: "交易成本需要可配置，以前就是
+    可配置的"), or such a block already read (a written copy)."""
+    if isinstance(value, str):
+        from .fg_entry_v1 import configured_fg_costs
+        value = configured_fg_costs(resolve_path(base, value))
+    if not isinstance(value, dict) or set(value) != set(COST_KEYS) or any(
+            not isinstance(value[k], (int, float)) or value[k] < 0 for k in COST_KEYS[3:]):
+        raise ValueError(f'{base}: costs is a CZCE_FG cost preset path or a costs block {COST_KEYS}')
+    return dict(value)
+
+
 def load_strategy(path):
     """A V2 strategy overlay (V0.5, user 2026-10-31): `entry` keys of the
     Native env (stop_rule, context_15m_buckets, ...) and the `reward` that
@@ -149,10 +169,13 @@ def load_strategy(path):
     BOTH (V2.1, user 2026-11-04: each contract in the direction its env
     trades, with the two-sided stop rule prior_15m_extreme)."""
     strategy = read_yaml(path)
-    if set(strategy) != {'version', 'direction', 'entry', 'reward'} or strategy['direction'] not in ('SHORT', 'BOTH'):
-        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry and reward')
+    if not STRATEGY_KEYS <= set(strategy) <= STRATEGY_KEYS | {'costs'} or strategy['direction'] not in ('SHORT', 'BOTH'):
+        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry, reward (and costs)')
     if strategy['direction'] == 'BOTH' and strategy['entry'].get('stop_rule') != 'prior_15m_extreme':
         raise ValueError(f'{path}: a BOTH strategy needs entry.stop_rule prior_15m_extreme')
+    # User 2026-11-05: only the costs of the V2.3 change, for the V2.2 paper under real costs.
+    if 'costs' in strategy:
+        strategy['costs'] = load_costs(strategy['costs'], path)
     return strategy
 
 
@@ -170,6 +193,7 @@ def write_inputs(row, folder, rules=None, strategy=None):
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     source = Path(row['env_config'])
+    costs = (strategy or {}).get('costs')  # the strategy's cost preset, if any (load_strategy)
     env = read_yaml(source)
     for group, key in PATH_KEYS:
         if env.get(group, {}).get(key):
@@ -191,6 +215,8 @@ def write_inputs(row, folder, rules=None, strategy=None):
     if env['entry'].get('strategy_config'):
         master = read_yaml(env['entry']['strategy_config'])
         master['reward'].update(reward)
+        if costs is not None:
+            master['costs'] = costs
         master['environment']['entry']['chunk_steps'] = 0
         strategy = folder / 'single3.yaml'
         strategy.write_text(yaml.safe_dump(master, sort_keys=False))
