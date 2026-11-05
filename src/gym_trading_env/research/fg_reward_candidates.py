@@ -145,6 +145,9 @@ class _Position:
     original_tp: float = 0.0
     timeboxed_tp: float = 0.0
     intrabar_ambiguous: bool = False
+    # The entry's own TP distance when its fill carries a planned TP (a
+    # structural or rule-gated stop, V2); None: the config's fixed distance.
+    tp_distance: float | None = None
 
 
 def _potential(active: Mapping[str, _Position], mark: float | None, tp: float = 5.0) -> float:
@@ -276,6 +279,8 @@ class FGRewardScorer:
             if price <= 0:
                 raise RewardInputError("Invalid ENTRY price")
             p = _Position(entry_id, str(fill["side"]), str(entry_time), price)
+            if fill.get("take_profit_price") is not None:
+                p.tp_distance = abs(_number(fill["take_profit_price"], "planned TP") - price)
             _side(p.side)
             self.active[entry_id] = p
             self.seen.add(entry_id)
@@ -324,7 +329,8 @@ class FGRewardScorer:
             reason = str(event.get("reason"))
             exit_price = _number(event.get("exit_price"), "exit price")
             if reason == "TAKE_PROFIT":
-                if _side(p.side)*(exit_price-p.entry_price) < self.config.take_profit_points-1e-10:
+                distance = self.config.take_profit_points if p.tp_distance is None else p.tp_distance
+                if _side(p.side)*(exit_price-p.entry_price) < distance-1e-10:
                     raise RewardInputError("TP exit did not fill at the TP distance")
                 if ((p.side == "LONG" and hi < exit_price - 1e-10) or
                         (p.side == "SHORT" and lo > exit_price + 1e-10)):

@@ -207,3 +207,27 @@ def test_the_real_costs_come_from_a_configurable_preset(pair, tmp_path):
             C.native_env(p['config'], market=False)
     finally:
         (p['config'].parent / 'single3.yaml').write_text(yaml.safe_dump(master, sort_keys=False))
+
+
+@real
+def test_a_gated_trade_filled_above_its_line_settles_its_own_short_tp(tmp_path):
+    """A fill gapped 3-4 points above the touch line has R <= 2 and a TP nearer than the env's
+    fixed 5 points: the reward scorer checks its exit against the trade's own planned TP
+    (corpus build 2026-11-05: FG005 / FG105 / FG201 failed on it)."""
+    row = C.train_row('CZCE.FG005', POOL)
+    env = C.native_env(C.write_inputs(row, tmp_path / 'in', strategy=C.load_strategy(STRATEGY)), market=False)
+    g, index = env._gate('SHORT'), CandidateIndex(env)
+    opens = env._raw.Open.to_numpy(float)
+    near = [t for t in np.flatnonzero(g['open'][:index.flat_end])
+            if 3 <= opens[t + 1] - g['H'][g['event'][t]] < 5]  # R 1-2: TP 2-4 points
+    settled = 0
+    for t in near:
+        trade = index.candidate(int(t)).get('exit')
+        if trade is None or trade['reason'] != 'TAKE_PROFIT':
+            continue
+        opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
+        distance = Decimal(opening['price']) - Decimal(opening['take_profit_price'])
+        assert opening['stop_source'] == 'RULE' and distance < 5
+        assert Decimal(trade['entry_price']) - Decimal(trade['exit_price']) >= distance
+        settled += 1
+    assert settled > 0
