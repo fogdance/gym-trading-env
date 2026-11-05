@@ -89,11 +89,11 @@ class LiveFeed:
 
     def bar_line(self, env, cursor, legal, action, fills):
         """One short line per decided bar (user 2026-11-05: "每分钟k线输出一根k线信息，如果有仓位操作，
-        加在后面。尽量简洁"): time, OHLCV, the decision (ADD / WAIT where an ADD is legal), the position,
+        加在后面。尽量简洁"): time, O/H/L/C/V, the decision (ADD / WAIT where an ADD is legal), the position,
         then each fill."""
         b = env._raw.iloc[cursor]
-        text = (f"{env._raw.index[cursor].tz_convert(TZ):%m-%d %H:%M} O{b.Open:g} H{b.High:g} L{b.Low:g} "
-                f"C{b.Close:g} V{b.Volume:g} | {('ADD' if action == 1 else 'WAIT') if legal else '-'}")
+        text = (f"{env._raw.index[cursor].tz_convert(TZ):%m-%d %H:%M} "
+                f"{b.Open:g}/{b.High:g}/{b.Low:g}/{b.Close:g}/{b.Volume:g} | {('ADD' if action == 1 else 'WAIT') if legal else '-'}")
         lots = env.net_lots
         if lots:
             text += f" | {env._positions()[0]} {abs(lots)}"
