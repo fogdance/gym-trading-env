@@ -895,10 +895,10 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
 
     A gated env (V2.3, entry.rule_gate; user 2026-11-05) needs the material
     of its own rules: every label is at a rule position (a legal minute);
-    the stop is the touch's own line, so a positive whose SL the env does
-    not reproduce is an error; WAIT is taught on the WAIT_IN_RULE rows only,
+    the stop is fixed from the fill (rules V5, label_sl), so a positive
+    whose SL the env does not reproduce is an error; WAIT is taught on the WAIT_IN_RULE rows only,
     and the pre-touch WAIT rows, masked minutes there, are dropped
-    (WAIT_OFF_RULE). Under rules V5 the stop is the fill's (label_sl)."""
+    (WAIT_OFF_RULE)."""
     from .ts_v1_corpus import KINDS
     from .ts_v1_grades import EXCELLENT, GOOD, MFE_MINUTES, measure
     out, m = measure(env, facts, index)
@@ -924,7 +924,7 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
         if gate is not None and not facts['eligible'][t]:
             raise ValueError(f'{contract} cursor {t}: a positive at a minute the rule gate masks')
         plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), side)
-        want = r.label_sl if gate is not None and fixed_stop(gate[side]) is not None else r.obs_sl
+        want = r.label_sl if gate is not None else r.obs_sl
         if float(plan['stop_loss_price']) != want:
             if gate is not None:
                 raise ValueError(f'{contract} cursor {t}: the gated stop {plan["stop_loss_price"]} is not SL {want}')

@@ -1,10 +1,9 @@
-"""Thinking Student V2.3 (user 2026-11-05): the env's rule gate opens an ADD
-exactly at the rule positions of the V4 material, on both sides; it is causal
-(a live market's newest minute can be one); a gated ADD's stop is its touch's
-own line; the V4 timeline teaches WAIT before a touch's first positive only;
-the real costs come from a CZCE_FG cost preset and stay configurable. V2.4
-(rules V5, user 2026-11-05: "止损固定5点", "全部：SL = 成交价+5"): the same
-rule positions, every gated stop at the fill +/- 5 with TP at 2R = 10."""
+"""Thinking Student rule gate (V2.3, user 2026-11-05) with rules V5 (V2.4: "止损固定5点",
+"全部：SL = 成交价+5"): the env's rule gate opens an ADD exactly at the rule
+positions of the V5 material, on both sides; it is causal (a live market's
+newest minute can be one); every gated stop is fixed at the fill +/- 5 with TP
+at 2R = 10; the timeline teaches WAIT before a touch's first positive only;
+the real costs come from a CZCE_FG cost preset and stay configurable."""
 from decimal import Decimal
 from pathlib import Path
 
@@ -21,13 +20,11 @@ from gym_trading_env.research.fg_single3_oracle import CandidateIndex, empty_at
 DREAMER = Path(__file__).resolve().parents[3] / 'dreamerv3'
 CONFIGS = DREAMER / 'configs/thinking_student'
 POOL = CONFIGS / 'markets/pool.json'
-STRATEGY = CONFIGS / 'markets/strategy_v2_3_rule_gate.yaml'
+STRATEGY = CONFIGS / 'markets/strategy_v2_4_fixed_stop.yaml'
 STRATEGY_V21 = CONFIGS / 'markets/strategy_v2_1_structural.yaml'
 PRESET = CONFIGS / 'markets/costs_fg_real_20261105.yaml'
-RULES = {'SHORT': CONFIGS / 'v2_positive_entry_v4.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v4_long.yaml'}
-STRATEGY_V24 = CONFIGS / 'markets/strategy_v2_4_fixed_stop.yaml'
-RULES_V5 = {'SHORT': CONFIGS / 'v2_positive_entry_v5.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v5_long.yaml'}
-real = pytest.mark.skipif(not (POOL.exists() and STRATEGY.exists()), reason='Thinking Student V2.3 configs missing')
+RULES = {'SHORT': CONFIGS / 'v2_positive_entry_v5.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v5_long.yaml'}
+real = pytest.mark.skipif(not (POOL.exists() and STRATEGY.exists()), reason='Thinking Student V2.4 configs missing')
 SIDES = {'CZCE.FG205': 'SHORT', 'CZCE.FG401': 'LONG'}
 # FG205's inputs in the V2.2 corpus, written before V2.3 (V2.1 structural strategy).
 CORPUS_V22 = Path('/data/logdir/fg_single3/thinking_student/corpus_v2_2_20261104/CZCE.FG205/inputs')
@@ -35,7 +32,7 @@ CORPUS_V22 = Path('/data/logdir/fg_single3/thinking_student/corpus_v2_2_20261104
 
 @pytest.fixture(scope='module')
 def pair(tmp_path_factory):
-    """Per contract: the V4 material's own scan (_scan_job) and the gated env."""
+    """Per contract: the V5 material's own scan (_scan_job) and the gated env."""
     out = {}
     for contract, side in SIDES.items():
         row, cfg = C.train_row(contract, POOL), V.load_config(RULES[side])
@@ -58,7 +55,7 @@ def test_the_gate_opens_add_exactly_at_the_material_rule_positions(pair, contrac
     sign = V.sign(side)
     for c in p['candidates']:  # the same touch line, in short space
         assert g['H'][g['event'][c['cursor']]] == sign * c['obs_H']
-        assert 5 <= c['obs_planned_risk'] <= 10
+        assert c['label_R'] == c['obs_planned_risk'] == 5 and c['obs_sl'] == c['obs_quote'] + sign * 5
     # A flat account may ADD at a rule position (where the ungated env would)
     # and nowhere else.
     rng = np.random.default_rng(5)
@@ -102,7 +99,7 @@ def test_the_gate_is_causal_and_recomputed_for_a_longer_market(pair):
 
 @real
 @pytest.mark.parametrize('contract', sorted(SIDES))
-def test_a_gated_stop_is_the_touch_line(pair, contract):
+def test_every_gated_stop_is_fixed_at_the_fill(pair, contract):
     p = pair[contract]
     env, side = p['env'], p['side']
     s, g = V.sign(side), env._gate(side)
@@ -111,26 +108,19 @@ def test_a_gated_stop_is_the_touch_line(pair, contract):
         fill = env._price(env._raw.Open.iloc[t + 1], side, env.bobs[t + 1], opening=True)
         assert float(fill) == float(env._raw.Open.iloc[t + 1]) == c['label_fill_expected']  # no spread
         plan = env.planned_exit(t, fill, side)
-        line = Decimal(str(c['obs_H']))
         assert plan['rule_event'] == c['event_id'] and plan['touch'] == c['obs_touch']
-        risk = s * (line - fill) + 5
-        if 0 < risk <= 10:
-            assert plan['stop_source'] == 'RULE' and plan['stop_loss_price'] == line + s * 5
-            assert plan['take_profit_price'] == fill - s * 2 * risk
-        else:
-            assert plan['stop_source'] in ('CAPPED', 'GAP') and plan['stop_loss_price'] == fill + s * 10
-    t = p['candidates'][0]['cursor']
-    line = Decimal(str(p['candidates'][0]['obs_H']))
-    capped = env.planned_exit(t, line - s * 6, side)      # R 11 by a fill gap
-    gap = env.planned_exit(t, line + s * 5, side)         # filled at the stop
-    assert capped['stop_source'] == 'CAPPED' and capped['risk_points'] == '10'
-    assert gap['stop_source'] == 'GAP' and gap['stop_loss_price'] == line + s * 15
+        assert plan['stop_source'] == 'FIXED' and plan['risk_points'] == '5'
+        assert plan['stop_loss_price'] == fill + s * 5 and plan['take_profit_price'] == fill - s * 10
+    # A gap fill far beyond the line keeps the fixed stop too ("全部").
+    t, line = p['candidates'][0]['cursor'], Decimal(str(p['candidates'][0]['obs_H']))
+    far = env.planned_exit(t, line + s * 9, side)
+    assert far['stop_source'] == 'FIXED' and far['stop_loss_price'] == line + s * 14
     with pytest.raises(ValueError, match='not a rule position'):
         env.planned_exit(int(np.flatnonzero(~g['open'])[100]), line, side)
 
 
 @real
-def test_the_v4_timeline_waits_before_a_touchs_first_positive_only():
+def test_the_timeline_waits_before_a_touchs_first_positive_only():
     cfg = V.load_config(RULES['SHORT'])
 
     def cand(event, cursor, reason):
@@ -174,15 +164,14 @@ def test_the_real_costs_come_from_a_configurable_preset(pair, tmp_path):
     # touch and the touch's stop, and pays 2.1 CNY per lot each way.
     index = CandidateIndex(env)
     for c in p['candidates']:
-        if c['label_fill_in_zone']:
-            row = index.candidate(c['cursor'])
-            if row.get('filled') and row['exit'] is not None:
-                break
+        row = index.candidate(c['cursor'])
+        if row.get('filled') and row['exit'] is not None:
+            break
     t, trade = c['cursor'], row['exit']
     opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
     assert Decimal(row['entry_price']) == Decimal(str(env._raw.Open.iloc[t + 1]))
-    assert opening['rule_event'] == c['event_id'] and opening['stop_source'] == 'RULE'
-    assert Decimal(opening['stop_loss_price']) == Decimal(str(c['obs_H'])) + 5
+    assert opening['rule_event'] == c['event_id'] and opening['stop_source'] == 'FIXED'
+    assert Decimal(opening['stop_loss_price']) == Decimal(opening['price']) + 5
     assert Decimal(trade['open_fee']) == Decimal(trade['close_fee']) == Decimal('6.3')
     assert Decimal(trade['net_trade_pnl']) == Decimal(trade['gross_trade_pnl']) - Decimal('12.6')
     # Another preset, other costs: nothing about them is fixed in the code.
@@ -214,68 +203,8 @@ def test_the_real_costs_come_from_a_configurable_preset(pair, tmp_path):
 
 
 @real
-def test_a_gated_trade_filled_above_its_line_settles_its_own_short_tp(tmp_path):
-    """A fill gapped 3-4 points above the touch line has R <= 2 and a TP nearer than the env's
-    fixed 5 points: the reward scorer checks its exit against the trade's own planned TP
-    (corpus build 2026-11-05: FG005 / FG105 / FG201 failed on it)."""
-    row = C.train_row('CZCE.FG005', POOL)
-    env = C.native_env(C.write_inputs(row, tmp_path / 'in', strategy=C.load_strategy(STRATEGY)), market=False)
-    g, index = env._gate('SHORT'), CandidateIndex(env)
-    opens = env._raw.Open.to_numpy(float)
-    near = [t for t in np.flatnonzero(g['open'][:index.flat_end])
-            if 3 <= opens[t + 1] - g['H'][g['event'][t]] < 5]  # R 1-2: TP 2-4 points
-    settled = 0
-    for t in near:
-        trade = index.candidate(int(t)).get('exit')
-        if trade is None or trade['reason'] != 'TAKE_PROFIT':
-            continue
-        opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
-        distance = Decimal(opening['price']) - Decimal(opening['take_profit_price'])
-        assert opening['stop_source'] == 'RULE' and distance < 5
-        assert Decimal(trade['entry_price']) - Decimal(trade['exit_price']) >= distance
-        settled += 1
-    assert settled > 0
-
-
-@real
-@pytest.mark.parametrize('contract', sorted(SIDES))
-def test_v5_fixes_every_gated_stop_at_the_fill(pair, contract, tmp_path):
-    p = pair[contract]
-    side, s = p['side'], V.sign(p['side'])
-    cfg = V.load_config(RULES_V5[side])
-    _, _, candidates, _, _ = V._scan_job((p['row'], cfg, str(tmp_path / 'material')))
-    # The line still places the rule positions: V5's are V4's.
-    assert [c['cursor'] for c in candidates] == [c['cursor'] for c in p['candidates']]
-    for c in candidates:
-        assert c['label_R'] == c['obs_planned_risk'] == 5 and c['obs_sl'] == c['obs_quote'] + s * 5
-    env = C.native_env(C.write_inputs(p['row'], tmp_path / 'gate', strategy=C.load_strategy(STRATEGY_V24)),
-                       market=False)
-    assert np.array_equal(env._gate(side)['open'], p['env']._gate(side)['open'])
-    gaps = 0
-    for c in candidates[:300]:
-        t = c['cursor']
-        fill = env._price(env._raw.Open.iloc[t + 1], side, env.bobs[t + 1], opening=True)
-        plan = env.planned_exit(t, fill, side)
-        assert plan['stop_source'] == 'FIXED' and plan['risk_points'] == '5'
-        assert plan['stop_loss_price'] == fill + s * 5 and plan['take_profit_price'] == fill - s * 10
-        assert plan['rule_event'] == c['event_id']
-        gaps += not c['label_fill_in_zone']
-    # A gap fill far beyond the line keeps the fixed stop too ("全部").
-    t, line = candidates[0]['cursor'], Decimal(str(candidates[0]['obs_H']))
-    far = env.planned_exit(t, line + s * 9, side)
-    assert far['stop_source'] == 'FIXED' and far['stop_loss_price'] == line + s * 14
-    # Through env.step: the ADD fills at the next open with SL fill +/- 5.
-    index = CandidateIndex(env)
-    row = next(r for r in (index.candidate(c['cursor']) for c in candidates[:200]) if r.get('filled'))
-    opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
-    price = Decimal(opening['price'])
-    assert price == Decimal(row['entry_price']) and opening['stop_source'] == 'FIXED'
-    assert Decimal(opening['stop_loss_price']) == price + s * 5 and Decimal(opening['take_profit_price']) == price - s * 10
-
-
-@real
 def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
-    bad = yaml.safe_load(RULES_V5['SHORT'].read_text())
+    bad = yaml.safe_load(RULES['SHORT'].read_text())
     bad['entry']['fixed_stop_points'] = 11
     bad.pop('costs')
     path = tmp_path / 'bad.yaml'
