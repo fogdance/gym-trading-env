@@ -357,7 +357,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         drops those as STOP_LINE_DIFFERS). R is capped at max_risk, and with
         no such line R = max_risk; `stop_source` names which. No ADD mask or
         gate depends on it, unless entry.rule_gate sets one
-        (_rule_gate_config: then the stop is fixed from the fill). `prior_15m_high` is SHORT only; `prior_15m_extreme`
+        (_rule_gate_config: then the line is the touch's own). `prior_15m_high` is SHORT only; `prior_15m_extreme`
         (V2.1) is the same for a SHORT and its mirror for a LONG: L* the
         highest departed prior 15m pivot low at or below the fill, SL =
         L* - stop_above, TP = fill + target_r * R (ts_v2_positive short space).
@@ -386,12 +386,12 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         """entry.rule_gate (V2.3, user 2026-11-05: "规则决定学生能在哪里交易；
         大脑决定在这些位置中什么时候交易"): {SHORT, LONG} rules files of the V4
         material (ts_v2_positive.load_config). An ADD is legal only at their
-        rule positions (_gate: rule_cursors, the material's own pass). Its
-        stop is fixed from the fill (rules V5, user 2026-11-05: "止损固定5点",
-        "全部：SL = 成交价+5"): entry.fixed_stop_points, the same on both sides
-        and within max_risk_points (planned_exit, FIXED). The rules must share
-        the stop rule's lines, line break and target and carry this env's
-        costs."""
+        rule positions (_gate: rule_cursors, the material's own pass), and its
+        stop is the touch's own line (planned_exit). The rules must share the
+        stop rule's lines, stop and target, keep the planned risk of a rule
+        position within max_risk_points, and carry this env's costs. Rules V5
+        (user 2026-11-05, "止损固定5点"): entry.fixed_stop_points sets R from the
+        fill (FIXED), the same on both sides and within max_risk_points."""
         paths = self.entry_config.get('rule_gate')
         if paths is None:
             return
@@ -410,8 +410,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     or e['stop_above_points'] + e['zone_points'] > r['max_risk_points']):
                 raise ValueError(f'entry.rule_gate {side}: rules of another side, line, stop, target or risk')
             fixed = e.get('fixed_stop_points')
-            if fixed is None or fixed > r['max_risk_points']:
-                raise ValueError(f'entry.rule_gate {side}: needs fixed_stop_points <= max_risk_points (rules V5)')
+            if fixed is not None and fixed > r['max_risk_points']:
+                raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points')
             if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
                 raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s')
             gate[side] = cfg
@@ -472,13 +472,21 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         cap = Decimal(r['max_risk_points'])
         rule = {}
         if self.rule_gate is not None:
-            # The rule position's touch names the trade; R is fixed from the fill.
+            # V2.3: the line of the rule position's touch; a fill gap beyond
+            # max_risk caps R (CAPPED), a fill at or through the stop takes
+            # R = max_risk (GAP).
             g = self._gate(side)
             if not g['open'][cursor]:
                 raise ValueError(f'{self.contract} cursor {cursor}: not a rule position, no gated ADD')
             i = int(g['event'][cursor])
             line = Decimal(str(g['H'][i]))
-            risk, source = Decimal(self.rule_gate[side]['entry']['fixed_stop_points']), 'FIXED'
+            fixed = self.rule_gate[side]['entry'].get('fixed_stop_points')
+            if fixed is not None:  # V5: R from the fill, whatever the line
+                risk, source = Decimal(fixed), 'FIXED'
+            else:
+                risk = line + r['stop_above_points'] - f
+                source = 'RULE' if 0 < risk <= cap else 'CAPPED' if risk > cap else 'GAP'
+                risk = risk if source == 'RULE' else cap
             rule = dict(rule_event=g['event_id'][i], touch=int(g['touch'][i]))
             tick = self.terms.tick
             target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
