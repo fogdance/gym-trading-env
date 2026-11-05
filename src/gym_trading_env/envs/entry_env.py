@@ -859,8 +859,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.status, self.truncated = "DATA_END", True
             self.continue_data(pd.concat([self._live_frame, rows], ignore_index=True))
         decision_time, fills = self._raw.index[self.current_step], len(self.fills)
+        cursor, legal = self.current_step, bool(self._published_mask[1])
         result = self._native_step(action)
         live.send(self, decision_time, self.fills[fills:])
+        live.bar_line(self, cursor, legal, int(action), self.fills[fills:])
         return result
 
     def _native_step(self, action):

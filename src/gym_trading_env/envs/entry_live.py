@@ -87,6 +87,23 @@ class LiveFeed:
                 return rows
             time.sleep(self.poll_seconds)
 
+    def bar_line(self, env, cursor, legal, action, fills):
+        """One short line per decided bar (user 2026-11-05: "每分钟k线输出一根k线信息，如果有仓位操作，
+        加在后面。尽量简洁"): time, OHLCV, the decision (ADD / WAIT where an ADD is legal), the position,
+        then each fill."""
+        b = env._raw.iloc[cursor]
+        text = (f"{env._raw.index[cursor].tz_convert(TZ):%m-%d %H:%M} O{b.Open:g} H{b.High:g} L{b.Low:g} "
+                f"C{b.Close:g} V{b.Volume:g} | {('ADD' if action == 1 else 'WAIT') if legal else '-'}")
+        lots = env.net_lots
+        if lots:
+            text += f" | {env._positions()[0]} {abs(lots)}"
+        for f in fills:
+            if f['reason'] == 'ENTRY':
+                text += f" | OPEN {f['side']} @{float(f['price']):g} SL {float(f['stop_loss_price']):g} TP {float(f['take_profit_price']):g}"
+            else:
+                text += f" | CLOSE {f['reason']} @{float(f['price']):g}"
+        self.log(text)
+
     def send(self, env, decision_time, fills):
         """Mirror committed fills to the order RPC; a decision older than
         max_signal_age (a restart catching up) is logged, not sent."""
@@ -104,7 +121,6 @@ class LiveFeed:
                     volume=3, price=float(fill['price']), action_result=ForexCode.SUCCESS.value,
                     meta=dict(fill_reason=fill['reason'], simulated_fill_time=fill['time']))
                 record.update(sent=True, response=self.rpc.send(sig))
-            self.log(f'[LIVE] {json.dumps(record, default=str)}')
             if self.action_log is not None:
                 with self.action_log.open('a') as f:
                     f.write(json.dumps(record, default=str) + '\n')
