@@ -64,8 +64,12 @@ from .ts_v1_grades import _room
 # ratio, as Spec V0.3 and rules V1 (config volume.activation: touch). V4
 # (user 2026-11-05): V3 with zone 5 (planned R <= 10), the WAIT_IN_RULE rows
 # (timeline.wait_in_rule) and the costs of a cost preset; the V2.3 env's rule
-# gate opens ADD at its rule positions (rule_cursors).
-ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch', 'V2_POSITIVE_ENTRY_V4': 'touch'}
+# gate opens ADD at its rule positions (rule_cursors). V5 (user 2026-11-05,
+# "止损固定5点", "全部：SL = 成交价+5"): V4 with entry.fixed_stop_points, the
+# SL at the fill + 5 (R 5, TP 2R = 10) for every ADD, a gap fill included;
+# the line H still places the rule positions and ends a touch it breaks.
+ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch', 'V2_POSITIVE_ENTRY_V4': 'touch',
+              'V2_POSITIVE_ENTRY_V5': 'touch'}
 SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
@@ -92,6 +96,9 @@ def load_config(path):
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
+    fixed = e.get('fixed_stop_points')
+    if fixed is not None and not (isinstance(fixed, int) and 0 < fixed <= e['max_risk_points']):
+        raise ValueError(f'{path}: entry.fixed_stop_points is a positive integer <= max_risk_points')
     if not isinstance(cfg['timeline'].get('wait_in_rule', False), bool):
         raise ValueError(f'{path}: timeline.wait_in_rule is true or false')
     if 'costs' in cfg:  # a cost preset path relative to this file, read (ts_v1_corpus.load_costs)
@@ -137,6 +144,11 @@ def side_buckets(buckets, s):
     """Complete 15m buckets in short space: a LONG market's negated lows are
     its highs (the only bar price pivot_levels reads)."""
     return buckets if s > 0 else [dict(b, High=-float(b['Low'])) for b in buckets]
+
+
+def fixed_stop(cfg):
+    """entry.fixed_stop_points (V5): R in points from the fill, or None (SL = H + stop_above)."""
+    return cfg['entry'].get('fixed_stop_points')
 
 
 def tp_points(cfg, risk, multiple):
@@ -379,9 +391,9 @@ def rule_cursors(env, cfg):
 def _candidate(a, event, s, cfg, contract):
     e = cfg['entry']
     H, t, q = event['H'], event['activation'], float(a['sell_close'][s])
-    planned = H + e['stop_above_points'] - q
-    fill = float(a['sell_open'][s + 1])
-    risk = H + e['stop_above_points'] - fill
+    fill, fixed = float(a['sell_open'][s + 1]), fixed_stop(cfg)
+    planned = H + e['stop_above_points'] - q if fixed is None else float(fixed)
+    risk = H + e['stop_above_points'] - fill if fixed is None else float(fixed)
     return dict(
         event_id=event['event_id'], contract=contract, cursor=s, time=str(a['times'][s]),
         direction_source=event['direction_source'],
@@ -389,7 +401,7 @@ def _candidate(a, event, s, cfg, contract):
         obs_rv=float(a['rv'][s]), obs_rv_activation=event['activation_rv'],
         obs_minutes_since_activation=int(a['prefix'][s + 1] - a['prefix'][t + 1]),
         obs_touch=event['touch'], obs_line_spike_rv=event['line_spike_rv'],
-        obs_sl=H + e['stop_above_points'], obs_planned_risk=planned,
+        obs_sl=q + planned if fixed is not None else H + e['stop_above_points'], obs_planned_risk=planned,
         obs_planned_tp=q - tp_points(cfg, planned, e['target_r']),
         label_fill_cursor=s + 1, label_fill_time=str(a['bobs'][s + 1]), label_fill_expected=fill,
         label_R=risk, label_fill_in_zone=bool(H - e['zone_points'] <= fill <= H))
@@ -460,7 +472,7 @@ def _trade_job(job):
 def classify(c, trade, cfg):
     """(reason, grade, quality) of a candidate from its target trade."""
     q = cfg['quality']
-    if not c['label_fill_in_zone']:
+    if not c['label_fill_in_zone'] and fixed_stop(cfg) is None:  # V5 trades a gap fill too
         return 'FILL_OUT_OF_ZONE', '', math.nan
     if not trade['eligible']:
         return 'MASKED', '', math.nan
@@ -498,10 +510,10 @@ def _real(record, s):
 
 def _words(cfg):
     """The line's name, its zone and its stop in the texts."""
-    e = cfg['entry']
+    e, fixed = cfg['entry'], fixed_stop(cfg)
     if sign(cfg['direction']) > 0:
-        return 'H', f'[H-{e["zone_points"]}, H]', f'H+{e["stop_above_points"]}'
-    return 'L', f'[L, L+{e["zone_points"]}]', f'L-{e["stop_above_points"]}'
+        return 'H', f'[H-{e["zone_points"]}, H]', f'H+{e["stop_above_points"]}' if fixed is None else f'fill+{fixed}'
+    return 'L', f'[L, L+{e["zone_points"]}]', f'L-{e["stop_above_points"]}' if fixed is None else f'fill-{fixed}'
 
 
 def _at(price, H, name='H'):
@@ -645,7 +657,8 @@ def _trade_inputs(rows, cfg, folder, candidates):
     e = cfg['entry']
     by_row = {r['contract']: r for r in rows}
     for contract in sorted({c['contract'] for c in candidates}):
-        mine = [c for c in candidates if c['contract'] == contract and c['label_fill_in_zone']]
+        mine = [c for c in candidates if c['contract'] == contract
+                and (c['label_fill_in_zone'] or fixed_stop(cfg) is not None)]
         for risk in sorted({int(c['label_R']) for c in mine}):
             cursors = [c['cursor'] for c in mine if int(c['label_R']) == risk]
             for name, multiple in (('target', e['target_r']), ('parallel', e['parallel_r'])):
@@ -695,9 +708,10 @@ def produce(rows, cfg, out, workers, log=print, command=None):
                       for old, new in LABELS.items()})
             c[prefix + 'filled'] = bool(rec.get('filled', False))
         c['label_tp15_points'] = tp_points(cfg, c['label_R'], cfg['entry']['parallel_r']) \
-            if c['label_fill_in_zone'] else math.nan
+            if c['label_fill_in_zone'] or fixed_stop(cfg) is not None else math.nan
         c['label_tp'] = c['label_fill_expected'] - s * tp_points(cfg, c['label_R'], cfg['entry']['target_r'])
-        c['label_sl'] = c['obs_sl']
+        # V5: the SL of the actual fill (obs_sl is the one planned at the quote).
+        c['label_sl'] = c['obs_sl'] if fixed_stop(cfg) is None else c['label_fill_expected'] + s * c['label_R']
         mult = stats[c['contract']]['multiplier']
         c['label_net_R'] = c['label_net_pnl'] / (c['label_R'] * LOTS * mult) if c['label_filled'] else math.nan
         c['label_mae_R'] = c['label_mae_points'] / c['label_R'] if c['label_filled'] else math.nan
@@ -884,7 +898,7 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
     the stop is the touch's own line, so a positive whose SL the env does
     not reproduce is an error; WAIT is taught on the WAIT_IN_RULE rows only,
     and the pre-touch WAIT rows, masked minutes there, are dropped
-    (WAIT_OFF_RULE)."""
+    (WAIT_OFF_RULE). Under rules V5 the stop is the fill's (label_sl)."""
     from .ts_v1_corpus import KINDS
     from .ts_v1_grades import EXCELLENT, GOOD, MFE_MINUTES, measure
     out, m = measure(env, facts, index)
@@ -910,9 +924,10 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
         if gate is not None and not facts['eligible'][t]:
             raise ValueError(f'{contract} cursor {t}: a positive at a minute the rule gate masks')
         plan = env.planned_exit(t, Decimal(str(r.label_fill_expected)), side)
-        if float(plan['stop_loss_price']) != r.obs_sl:
+        want = r.label_sl if gate is not None and fixed_stop(gate[side]) is not None else r.obs_sl
+        if float(plan['stop_loss_price']) != want:
             if gate is not None:
-                raise ValueError(f'{contract} cursor {t}: the gated stop {plan["stop_loss_price"]} is not SL {r.obs_sl}')
+                raise ValueError(f'{contract} cursor {t}: the gated stop {plan["stop_loss_price"]} is not SL {want}')
             dropped['STOP_LINE_DIFFERS'] += 1
             continue
         if not (facts['filled'][t] and facts['kind'][t] == tp and facts['exit_cursor'][t] == r.label_exit_cursor

@@ -328,7 +328,7 @@ def test_the_config_must_be_the_version_and_one_side(tmp_path):
     assert V.load_config(path)['direction'] == 'LONG'
     for change in (dict(direction='BOTH'), dict(version='V0')):
         path.write_text(yaml.safe_dump(dict(CFG, **change)))
-        with pytest.raises(ValueError, match='V2_POSITIVE_ENTRY_V2 / V2_POSITIVE_ENTRY_V3 / V2_POSITIVE_ENTRY_V4 SHORT or LONG config'):
+        with pytest.raises(ValueError, match='V2_POSITIVE_ENTRY_V2 / V2_POSITIVE_ENTRY_V3 / V2_POSITIVE_ENTRY_V4 / V2_POSITIVE_ENTRY_V5 SHORT or LONG config'):
             V.load_config(path)
     # The version names its volume rule: V3 with activation touch, V2 without.
     path.write_text(yaml.safe_dump(CFG3))

@@ -2,7 +2,9 @@
 exactly at the rule positions of the V4 material, on both sides; it is causal
 (a live market's newest minute can be one); a gated ADD's stop is its touch's
 own line; the V4 timeline teaches WAIT before a touch's first positive only;
-the real costs come from a CZCE_FG cost preset and stay configurable."""
+the real costs come from a CZCE_FG cost preset and stay configurable. V2.4
+(rules V5, user 2026-11-05: "止损固定5点", "全部：SL = 成交价+5"): the same
+rule positions, every gated stop at the fill +/- 5 with TP at 2R = 10."""
 from decimal import Decimal
 from pathlib import Path
 
@@ -23,6 +25,8 @@ STRATEGY = CONFIGS / 'markets/strategy_v2_3_rule_gate.yaml'
 STRATEGY_V21 = CONFIGS / 'markets/strategy_v2_1_structural.yaml'
 PRESET = CONFIGS / 'markets/costs_fg_real_20261105.yaml'
 RULES = {'SHORT': CONFIGS / 'v2_positive_entry_v4.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v4_long.yaml'}
+STRATEGY_V24 = CONFIGS / 'markets/strategy_v2_4_fixed_stop.yaml'
+RULES_V5 = {'SHORT': CONFIGS / 'v2_positive_entry_v5.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v5_long.yaml'}
 real = pytest.mark.skipif(not (POOL.exists() and STRATEGY.exists()), reason='Thinking Student V2.3 configs missing')
 SIDES = {'CZCE.FG205': 'SHORT', 'CZCE.FG401': 'LONG'}
 # FG205's inputs in the V2.2 corpus, written before V2.3 (V2.1 structural strategy).
@@ -231,3 +235,50 @@ def test_a_gated_trade_filled_above_its_line_settles_its_own_short_tp(tmp_path):
         assert Decimal(trade['entry_price']) - Decimal(trade['exit_price']) >= distance
         settled += 1
     assert settled > 0
+
+
+@real
+@pytest.mark.parametrize('contract', sorted(SIDES))
+def test_v5_fixes_every_gated_stop_at_the_fill(pair, contract, tmp_path):
+    p = pair[contract]
+    side, s = p['side'], V.sign(p['side'])
+    cfg = V.load_config(RULES_V5[side])
+    _, _, candidates, _, _ = V._scan_job((p['row'], cfg, str(tmp_path / 'material')))
+    # The line still places the rule positions: V5's are V4's.
+    assert [c['cursor'] for c in candidates] == [c['cursor'] for c in p['candidates']]
+    for c in candidates:
+        assert c['label_R'] == c['obs_planned_risk'] == 5 and c['obs_sl'] == c['obs_quote'] + s * 5
+    env = C.native_env(C.write_inputs(p['row'], tmp_path / 'gate', strategy=C.load_strategy(STRATEGY_V24)),
+                       market=False)
+    assert np.array_equal(env._gate(side)['open'], p['env']._gate(side)['open'])
+    gaps = 0
+    for c in candidates[:300]:
+        t = c['cursor']
+        fill = env._price(env._raw.Open.iloc[t + 1], side, env.bobs[t + 1], opening=True)
+        plan = env.planned_exit(t, fill, side)
+        assert plan['stop_source'] == 'FIXED' and plan['risk_points'] == '5'
+        assert plan['stop_loss_price'] == fill + s * 5 and plan['take_profit_price'] == fill - s * 10
+        assert plan['rule_event'] == c['event_id']
+        gaps += not c['label_fill_in_zone']
+    # A gap fill far beyond the line keeps the fixed stop too ("全部").
+    t, line = candidates[0]['cursor'], Decimal(str(candidates[0]['obs_H']))
+    far = env.planned_exit(t, line + s * 9, side)
+    assert far['stop_source'] == 'FIXED' and far['stop_loss_price'] == line + s * 14
+    # Through env.step: the ADD fills at the next open with SL fill +/- 5.
+    index = CandidateIndex(env)
+    row = next(r for r in (index.candidate(c['cursor']) for c in candidates[:200]) if r.get('filled'))
+    opening = next(f for f in env.fills if f['reason'] == 'ENTRY')
+    price = Decimal(opening['price'])
+    assert price == Decimal(row['entry_price']) and opening['stop_source'] == 'FIXED'
+    assert Decimal(opening['stop_loss_price']) == price + s * 5 and Decimal(opening['take_profit_price']) == price - s * 10
+
+
+@real
+def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
+    bad = yaml.safe_load(RULES_V5['SHORT'].read_text())
+    bad['entry']['fixed_stop_points'] = 11
+    bad.pop('costs')
+    path = tmp_path / 'bad.yaml'
+    path.write_text(yaml.safe_dump(bad))
+    with pytest.raises(ValueError, match='fixed_stop_points'):
+        V.load_config(path)

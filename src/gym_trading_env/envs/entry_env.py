@@ -389,7 +389,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         rule positions (_gate: rule_cursors, the material's own pass), and its
         stop is the touch's own line (planned_exit). The rules must share the
         stop rule's lines, stop and target, keep the planned risk of a rule
-        position within max_risk_points, and carry this env's costs."""
+        position within max_risk_points, and carry this env's costs. Rules V5
+        (user 2026-11-05, "止损固定5点"): entry.fixed_stop_points sets R from the
+        fill (FIXED), the same on both sides and within max_risk_points."""
         paths = self.entry_config.get('rule_gate')
         if paths is None:
             return
@@ -407,9 +409,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                     or e['target_r'] != r['target_r'] or cfg['prior_high'] != r['prior_high']
                     or e['stop_above_points'] + e['zone_points'] > r['max_risk_points']):
                 raise ValueError(f'entry.rule_gate {side}: rules of another side, line, stop, target or risk')
+            fixed = e.get('fixed_stop_points')
+            if fixed is not None and fixed > r['max_risk_points']:
+                raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points')
             if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
                 raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s')
             gate[side] = cfg
+        if len({c['entry'].get('fixed_stop_points') for c in gate.values()}) != 1:
+            raise ValueError('entry.rule_gate: SHORT and LONG have different stops')
         self.rule_gate = gate
 
     def _gate(self, side):
@@ -473,9 +480,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 raise ValueError(f'{self.contract} cursor {cursor}: not a rule position, no gated ADD')
             i = int(g['event'][cursor])
             line = Decimal(str(g['H'][i]))
-            risk = line + r['stop_above_points'] - f
-            source = 'RULE' if 0 < risk <= cap else 'CAPPED' if risk > cap else 'GAP'
-            risk = risk if source == 'RULE' else cap
+            fixed = self.rule_gate[side]['entry'].get('fixed_stop_points')
+            if fixed is not None:  # V5: R from the fill, whatever the line
+                risk, source = Decimal(fixed), 'FIXED'
+            else:
+                risk = line + r['stop_above_points'] - f
+                source = 'RULE' if 0 < risk <= cap else 'CAPPED' if risk > cap else 'GAP'
+                risk = risk if source == 'RULE' else cap
             rule = dict(rule_event=g['event_id'][i], touch=int(g['touch'][i]))
             tick = self.terms.tick
             target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
