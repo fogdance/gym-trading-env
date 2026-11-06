@@ -427,15 +427,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
 
     def _exit_rule_config(self):
         """entry.exit_rule (V3, user 2026-11-06: "这个是新的策略，做长线，而不是短线";
-        "入场方式没变"): research.swing_trail. Only with the rule gate, whose stop
-        (FIXED or the touch's H + 5) is the entry's initial stop; the plan keeps
+        "入场方式没变"): research.swing_trail. The entry's own stop is the initial
+        stop: the rule gate's (FIXED or the touch's H + 5) or, without the gate
+        (V2.2, user 2026-11-06: "不需要阀门"), the structural H* + 5; the plan keeps
         its TP as the observation's reference only, and no TP exit is taken."""
         cfg = self.entry_config.get('exit_rule')
         if cfg is None:
             return
         from gym_trading_env.research.swing_trail import check_config
-        if self.rule_gate is None:
-            raise ValueError('entry.exit_rule needs entry.rule_gate')
         self.exit_rule = check_config(cfg)
 
     def _swing_chain(self):
@@ -508,6 +507,14 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         """SL / TP prices, R and stop_source of a SHORT (or, under
         prior_15m_extreme, a LONG) decided at `cursor` and filled at `fill`
         under entry.stop_rule."""
+        plan = self._planned_stop(cursor, fill, side)
+        if self.exit_rule is not None:
+            # V3: no TP exit; the stop rule's TP stays the observation's reference.
+            plan.update(take_profit_price=None, reference_tp_price=plan['take_profit_price'],
+                        exit_rule=self.exit_rule['kind'])
+        return plan
+
+    def _planned_stop(self, cursor, fill, side):
         side = str(side).upper()
         if side != 'SHORT' and (side != 'LONG' or self.stop_rule['stop_rule'] == 'prior_15m_high'):
             raise ValueError('entry.stop_rule prior_15m_high is SHORT only; prior_15m_extreme is SHORT or LONG')
@@ -539,13 +546,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             rule = dict(rule_event=g['event_id'][i], touch=int(g['touch'][i]))
             tick = self.terms.tick
             target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
-            plan = dict(line=str(s * line), risk_points=str(risk), stop_source=source,
+            return dict(line=str(s * line), risk_points=str(risk), stop_source=source,
                         stop_loss_price=fill + s * risk, take_profit_price=fill - s * target, **rule)
-            if self.exit_rule is not None:
-                # V3: no TP exit; the rule's TP stays the observation's reference.
-                plan.update(take_profit_price=None, reference_tp_price=plan['take_profit_price'],
-                            exit_rule=self.exit_rule['kind'])
-            return plan
         live = ((lines['confirm'] <= cursor) & (lines['departed'] <= cursor) & (cursor < lines['broken'])
                 & (cursor < lines['expire']) & (lines['H'] >= float(f)))
         if live.any():

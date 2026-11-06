@@ -3,7 +3,8 @@ under entry.exit_rule there is no TP; the stop of an open position moves with th
 troughs (a LONG: peaks) after the fill (research.swing_trail): 0 troughs the gate's own
 stop, 8 points past the fill or 1 trough break-even, 2 troughs fill -/+ 5, >= 3 troughs the
 last trough but one; it never moves back, and a swing counts only once its confirming
-bucket is available."""
+bucket is available. Without the rule gate (V2.2, user 2026-11-06: "不需要阀门") the initial
+stop is the structural H* + 5."""
 from decimal import Decimal
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from gym_trading_env.research.swing_trail import Swings, trail_stop
 CONFIGS = Path(__file__).resolve().parents[3] / 'dreamerv3' / 'configs/thinking_student'
 POOL = CONFIGS / 'markets/pool.json'
 STRATEGY = CONFIGS / 'markets/strategy_v3_trend_trail.yaml'
+STRUCTURAL = CONFIGS / 'markets/strategy_v2_2_structural_v3_trend.yaml'
 FIXED = {'SHORT': CONFIGS / 'v2_positive_entry_v5.yaml', 'LONG': CONFIGS / 'v2_positive_entry_v5_long.yaml'}
 CFG = dict(kind='swing_trail', timeframe='15m', pivot_left=2, pivot_right=2, breakeven_points=8, lock_points=5)
 real = pytest.mark.skipif(not (POOL.exists() and STRATEGY.exists()), reason='Thinking Student V3 configs missing')
@@ -40,8 +42,8 @@ def runs(tmp_path_factory):
     """Per contract and initial stop: the always-ADD account of the whole contract."""
     out = {}
     for contract in ('CZCE.FG205', 'CZCE.FG401'):
-        for stop in ('H5', 'FIXED'):
-            strategy = C.load_strategy(STRATEGY)
+        for stop in ('H5', 'FIXED', 'STRUCTURAL'):
+            strategy = C.load_strategy(STRUCTURAL if stop == 'STRUCTURAL' else STRATEGY)
             if stop == 'FIXED':
                 strategy['entry']['rule_gate'] = {k: str(v) for k, v in FIXED.items()}
             row = C.train_row(contract, POOL)
@@ -71,7 +73,7 @@ def test_replayed_swings_are_the_prefix_analysis(runs):
 
 
 @real
-@pytest.mark.parametrize('stop', ['H5', 'FIXED'])
+@pytest.mark.parametrize('stop', ['H5', 'FIXED', 'STRUCTURAL'])
 @pytest.mark.parametrize('contract', ['CZCE.FG205', 'CZCE.FG401'])
 def test_the_stop_trails_the_known_swings(runs, contract, stop):
     env = runs[contract, stop]
@@ -88,6 +90,8 @@ def test_the_stop_trails_the_known_swings(runs, contract, stop):
         assert plan['take_profit_price'] is None and plan['exit_rule'] == 'swing_trail'
         if stop == 'FIXED':
             assert plan['stop_source'] == 'FIXED' and initial == fill + s * 5
+        elif stop == 'STRUCTURAL':
+            assert plan['stop_source'] in ('STRUCTURAL', 'CAPPED', 'NO_LINE') and 'rule_event' not in plan
         else:
             assert plan['stop_source'] in ('RULE', 'CAPPED', 'GAP')
         path = [initial] + [Decimal(h['stop']) for h in t['stop_history']]
