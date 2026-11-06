@@ -138,11 +138,13 @@ def corpus_folders(root):
 
 def _pool_market(row):
     """The bars of a pool row's CSV (bob, eob = Date, trading_date), after
-    its sha256, rows and symbol are checked against the row."""
+    its sha256, rows and symbol are checked against the row. A row without
+    rows (the SA paper pool, user 2026-11-06: "V3 paper SA 没有发布复盘数据") is
+    pinned by its sha256 alone."""
     if _sha256(row['path']) != row['sha256']:
         raise ReviewError(f'{row["contract"]}: {row["path"]} is not the pool row\'s market')
     raw = pd.read_csv(row['path'], usecols=['Date', 'bob', 'trading_date', 'symbol'], dtype=str)
-    if len(raw) != row['rows']:
+    if 'rows' in row and len(raw) != row['rows']:
         raise ReviewError(f'{row["contract"]}: market rows differ from the pool row')
     if set(raw.symbol) != {row['contract']}:
         raise ReviewError(f'{row["contract"]}: the market CSV holds another symbol')
