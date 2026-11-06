@@ -89,7 +89,9 @@ def _position(env, out):
                  else env.position_manager.short_positions)
     pos = positions[item['slot']]
     price = float(env.current_price)
-    out[3] = sign * (float(pos.take_profit_price) - price) / _TP_SCALE
+    # V3 (entry.exit_rule): no TP; the rule's TP stays the reference of this feature.
+    tp = pos.take_profit_price if pos.take_profit_price is not None else item['planned_exit']['reference_tp_price']
+    out[3] = sign * (float(tp) - price) / _TP_SCALE
     out[4] = sign * (price - float(pos.stop_loss_price)) / _SL_SCALE
     out[5] = sign * (price - float(item['entry_price'])) / _SL_SCALE
     held = env.market_clock_counter.held(item['entry_cursor'], env.current_step)

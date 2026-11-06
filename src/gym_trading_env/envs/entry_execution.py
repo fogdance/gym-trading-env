@@ -110,7 +110,8 @@ def single3_exit_decision(*, side, entry_time, stop_price, tp_price, opening_quo
                          tick, valid_bar, was_pending=False, trigger_time=None,
                          global_reason=None):
     sign = 1 if side == 'LONG' else -1
-    tp_touch = sign * (favorable_quote-tp_price) >= tick
+    # No TP (entry.exit_rule, V3): the stop is the only planned exit.
+    tp_touch = tp_price is not None and sign * (favorable_quote-tp_price) >= tick
     sl_touch = valid_bar and sign * (adverse_quote-stop_price) <= 0
     pending = was_pending or sl_touch
     trigger_time = trigger_time or (str(time) if sl_touch else None)

@@ -70,6 +70,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     # material; None opens an ADD wherever the account allows it.
     rule_gate = None
     _gates = None
+    # V3 long trend exit (user 2026-11-06, research.swing_trail): no TP, the
+    # stop moves with the 15m troughs (peaks) after the fill; None keeps the TP.
+    exit_rule = None
+    _swings = None
 
     def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
         gym.Env.__init__(self)
@@ -165,6 +169,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 setattr(self, key, value)
         self._stop_rule_config()
         self._rule_gate_config(config_path, master)
+        self._exit_rule_config()
         self.chunk_steps = int(self.entry_config.get("chunk_steps", 0))
         if self.chunk_steps < 0:
             raise ValueError("chunk_steps must be nonnegative")
@@ -197,6 +202,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     def _load_market(self, df):
         self._lines = None  # the stop lines of the market loaded before
         self._gates = None  # and its rule positions
+        self._swings = None  # and its 15m swings
         if df is None:
             live = getattr(self, '_live', None)
             df = live.read(floor=self.terms.calendar[0]) if live else pd.read_csv(Path(self.config.trading.data_path).expanduser())
@@ -419,6 +425,49 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             raise ValueError('entry.rule_gate: SHORT and LONG have different stops')
         self.rule_gate = gate
 
+    def _exit_rule_config(self):
+        """entry.exit_rule (V3, user 2026-11-06: "这个是新的策略，做长线，而不是短线";
+        "入场方式没变"): research.swing_trail. Only with the rule gate, whose stop
+        (FIXED or the touch's H + 5) is the entry's initial stop; the plan keeps
+        its TP as the observation's reference only, and no TP exit is taken."""
+        cfg = self.entry_config.get('exit_rule')
+        if cfg is None:
+            return
+        from gym_trading_env.research.swing_trail import check_config
+        if self.rule_gate is None:
+            raise ValueError('entry.exit_rule needs entry.rule_gate')
+        self.exit_rule = check_config(cfg)
+
+    def _swing_chain(self):
+        """The 15m swings of the market loaded (research.swing_trail.Swings), once per market."""
+        if self._swings is None:
+            from gym_trading_env.research.swing_trail import Swings
+            r = self.exit_rule
+            self._swings = Swings(self._e_market.complete_buckets, r['pivot_left'], r['pivot_right'])
+        return self._swings
+
+    def _trail(self, item, pos, row, bob, time):
+        """After the close of bar `time`: the stop of an open entry under
+        entry.exit_rule, effective from the next bar. best is the most
+        favourable price since the fill (the entry bar: its close only, as the
+        TP rule's same-bar quote)."""
+        from gym_trading_env.research.swing_trail import trail_stop
+        s = -1 if item['side'] == 'LONG' else 1  # short space
+        same_bar = timestamp(item['entry_time']) == bob
+        quote = Decimal(str(row.Close if same_bar else (row.Low if s > 0 else row.High)))
+        best = min(Decimal(item['best_price']), s * quote) if 'best_price' in item else s * quote
+        item['best_price'] = str(best)
+        fill_ns = timestamp(item['entry_time']).value
+        kind = 'L' if s > 0 else 'H'
+        swings = [s * Decimal(str(x)) for x in self._swing_chain().after(kind, fill_ns, timestamp(time).value)]
+        stop, stage = trail_stop(s * Decimal(item['entry_price']), s * pos.stop_loss_price,
+                                 item.get('stop_stage', 'INITIAL'), best, swings, self.exit_rule)
+        if s * stop != pos.stop_loss_price:
+            pos.stop_loss_price = s * stop
+            item.setdefault('stop_history', []).append(dict(time=str(time), stop=str(s * stop), stage=stage,
+                                                             swings=len(swings)))
+        item['stop_stage'], item['swings_after_fill'] = stage, len(swings)
+
     def _gate(self, side):
         """The rule positions of `side` in the market loaded
         (ts_v2_positive.rule_cursors), computed once per market."""
@@ -490,8 +539,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             rule = dict(rule_event=g['event_id'][i], touch=int(g['touch'][i]))
             tick = self.terms.tick
             target = (Decimal(str(r['target_r'])) * risk / tick).to_integral_value(rounding=ROUND_CEILING) * tick
-            return dict(line=str(s * line), risk_points=str(risk), stop_source=source,
+            plan = dict(line=str(s * line), risk_points=str(risk), stop_source=source,
                         stop_loss_price=fill + s * risk, take_profit_price=fill - s * target, **rule)
+            if self.exit_rule is not None:
+                # V3: no TP exit; the rule's TP stays the observation's reference.
+                plan.update(take_profit_price=None, reference_tp_price=plan['take_profit_price'],
+                            exit_rule=self.exit_rule['kind'])
+            return plan
         live = ((lines['confirm'] <= cursor) & (lines['departed'] <= cursor) & (cursor < lines['broken'])
                 & (cursor < lines['expire']) & (lines['H'] >= float(f)))
         if live.any():
@@ -573,7 +627,9 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             if age < 0:
                 raise RuntimeError("Position observation precedes the actual entry fill")
             sign = 1 if item["side"] == "LONG" else -1
-            distance = sign * (pos.take_profit_price - self.current_price)
+            tp = (pos.take_profit_price if pos.take_profit_price is not None
+                  else Decimal(item['planned_exit']['reference_tp_price']))
+            distance = sign * (tp - self.current_price)
             offset = 3 + 3 * item["obs_slot"]
             position[offset:offset+3] = [float(pos.size / 3), float(distance / POSITION_TP_SCALE),
                                        np.log1p(age) / np.log1p(43200)]
@@ -715,8 +771,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         side = item["side"]
         price = Decimal(str(price))
         # The TP distance of this entry (its planned TP: below a SHORT's fill, above a LONG's).
+        if reason == "TAKE_PROFIT" and item.get('planned_exit', {}).get('take_profit_price', '') is None:
+            raise ValueError('entry.exit_rule takes no TP exit')
         distance = (abs(Decimal(item['entry_price']) - Decimal(item['planned_exit']['take_profit_price']))
-                    if 'planned_exit' in item else self.take_profit_points)
+                    if reason == "TAKE_PROFIT" and 'planned_exit' in item else self.take_profit_points)
         if reason == "TAKE_PROFIT" and (1 if side == "LONG" else -1) * (price - Decimal(item["entry_price"])) < distance:
             raise ValueError("TP execution price does not reach the TP distance")
         self._set_terms(time, closing=True, entry=item)
@@ -748,6 +806,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                          close_fee=str(record.fee),
                          net_trade_pnl=str(record.pnl - record.fee - Decimal(item['open_fee'])),
                          **item.get('exit_metadata', {}))
+            if self.exit_rule is not None:
+                event.update(stop_stage=item.get('stop_stage', 'INITIAL'), final_stop_price=str(
+                    item.get('stop_history', [{}])[-1].get('stop', item['planned_exit']['stop_loss_price'])),
+                    swings_after_fill=item.get('swings_after_fill', 0), stop_history=item.get('stop_history', []))
             event.update(entry_cursor=item['entry_cursor'], exit_cursor=self.current_step,
                          held_market_bars=self.market_clock_counter.held(item['entry_cursor'], self.current_step),
                          clock_protocol=TIME_PROTOCOL)
@@ -890,6 +952,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 remaining_volume -= size
                 if event is not None:
                     events.append(event)
+        if self.exit_rule is not None and not self.pending_reason:
+            # The stops for the next bar, from this bar's close (a pending SL exits at the next open anyway).
+            for item in self.entries.values():
+                if not item.get('sl_pending'):
+                    positions = (self.position_manager.long_positions if item['side'] == 'LONG'
+                                 else self.position_manager.short_positions)
+                    self._trail(item, positions[item['slot']], row, bob, time)
         if self.single3:
             bar = dict(bar_open=str(bob), bar_end=str(time),
                 **{k.lower(): float(row[k]) for k in ('Open', 'High', 'Low', 'Close')},
