@@ -8,6 +8,8 @@ account from the latest DB bar; the last history_days only fill the
 observation window.
 """
 import json
+import os
+import subprocess
 import time
 from pathlib import Path
 
@@ -31,6 +33,10 @@ class LiveFeed:
             self.rpc = LanOrderClient(RPC_ORDER_CONFIG.order_endpoint, RPC_ORDER_CONFIG.order_token,
                                       RPC_ORDER_CONFIG.order_timeout_sec)
         self.action_log = Path(settings['action_log']) if settings.get('action_log') else None
+        # A desktop notification per open and close (user 2026-11-06: "live模式，开仓，平仓，通过notify-send通知，
+        # 可配置，默认开启"): `notify` (default true); a stale fill (a restart catching up) is not notified.
+        self.notify = bool(settings.get('notify', True))
+        self._notify_failed = False
 
     def _query(self, sql, args):
         import pymysql
@@ -110,6 +116,42 @@ class LiveFeed:
             else:
                 text += f" | CLOSE {f['reason']} @{float(f['price']):g}"
         self.log(text)
+
+    def _notify(self, title, body):
+        """notify-send, never blocking or stopping the live; a missing session bus falls back to the
+        user's /run/user/<uid>/bus. The first failure is logged once."""
+        environ = dict(os.environ)
+        bus = f'/run/user/{os.getuid()}/bus'
+        if 'DBUS_SESSION_BUS_ADDRESS' not in environ and os.path.exists(bus):
+            environ['DBUS_SESSION_BUS_ADDRESS'] = f'unix:path={bus}'
+        try:
+            subprocess.Popen(['notify-send', '-a', 'TS live', title, body], env=environ,
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        except OSError as error:
+            if not self._notify_failed:
+                self._notify_failed = True
+                self.log(f'[LIVE] notify-send failed, notifications off: {error}')
+
+    def notify_fills(self, env, decision_time, fills):
+        """One notification per fill: OPEN side lots @price SL, or CLOSE reason @price with the stop stage."""
+        age = (pd.Timestamp.now(tz=TZ) - decision_time).total_seconds()
+        if not self.notify or self._notify_failed or age > self.max_signal_age:
+            return
+        name = env.contract.split('.')[-1]
+        for f in fills:
+            if f['reason'] == 'ENTRY':
+                body = f"{f['side']} {f.get('quantity', '')} @{float(f['price']):g} SL {float(f['stop_loss_price']):g}"
+                tp = f.get('take_profit_price')
+                body += f" TP {float(tp):g}" if tp is not None else ''
+                self._notify(f'{name} OPEN', body)
+            else:
+                body = f"{f['side']} {f.get('quantity', '')} @{float(f['price']):g} {f['reason']}"
+                done = next((e for e in reversed(env.attributions) if e['entry_id'] == f['entry_id']
+                             and e['exit_time'] == f['time']), None)  # the closed trade, once all lots are out
+                if done is not None:
+                    body += f" ({done['stop_stage']})" if done.get('stop_stage') else ''
+                    body += f" net {float(done['net_trade_pnl']):+.0f}" if done.get('net_trade_pnl') else ''
+                self._notify(f'{name} CLOSE', body)
 
     def send(self, env, decision_time, fills):
         """Mirror committed fills to the order RPC; a decision older than

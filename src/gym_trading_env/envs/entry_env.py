@@ -862,6 +862,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         cursor, legal = self.current_step, bool(self._published_mask[1])
         result = self._native_step(action)
         live.send(self, decision_time, self.fills[fills:])
+        live.notify_fills(self, decision_time, self.fills[fills:])
         live.bar_line(self, cursor, legal, int(action), self.fills[fills:])
         return result
 
