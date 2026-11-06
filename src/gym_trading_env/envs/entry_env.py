@@ -406,7 +406,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if (not r or r['stop_rule'] != 'prior_15m_extreme' or not isinstance(paths, dict)
                 or set(paths) != {'SHORT', 'LONG'} or master is None):
             raise ValueError('entry.rule_gate {SHORT, LONG} needs stop_rule prior_15m_extreme and a strategy_config')
-        values = ('lot_size', 'margin_rate', 'open_fee', 'close_fee', 'close_today_fee', 'spread', 'slippage')
+        # The rules' costs must agree with the env's only where they place the rule positions: the
+        # spread of the decision quote. Point value, fees and margin are the strategy's alone, so one
+        # rules file serves every product (user 2026-11-06: "应该只需要改1个地方才对，这样配置冗余了").
+        values = ('spread',)
         gate = {}
         for side, path in paths.items():
             cfg = load_config(resolve_path(config_path, path))
@@ -419,7 +422,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             if fixed is not None and fixed > r['max_risk_points']:
                 raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points')
             if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
-                raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s')
+                raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s (spread)')
             gate[side] = cfg
         if len({c['entry'].get('fixed_stop_points') for c in gate.values()}) != 1:
             raise ValueError('entry.rule_gate: SHORT and LONG have different stops')

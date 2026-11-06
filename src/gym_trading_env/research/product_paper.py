@@ -15,8 +15,9 @@ of the bars, the last bar the main exit, the FG master costs). The product must 
             strategy_quality_tp_v1_<name>.yaml and paper_pool_<name>.json; contracts without bars are reported
             and left out; OUT/build_report.json. --costs PRESET (a cost preset as costs_fg_real_20261105.yaml,
             under the product's key; user 2026-11-06: "paper 里rb是1点10元") sets the master's costs and the
-            contracts' lot size in place of FG's; --strategy S (a paper strategy under markets/, repeatable)
-            writes markets/<name>/<S stem>_<name>.yaml and copies of its rule_gate files whose costs are the preset
+            contracts' lot size in place of FG's (the env reads them from the strategy's costs; the contract
+            files only mirror them); --strategy S (a paper strategy under markets/, repeatable) writes
+            markets/<name>/<S stem>_<name>.yaml, S with its costs the preset and the same rules files
 
 Usage (gym-trading-env/, PYTHONPATH=.:src):
   python -m gym_trading_env.research.product_paper coverage --directions D.yaml
@@ -27,6 +28,7 @@ Usage (gym-trading-env/, PYTHONPATH=.:src):
 import argparse
 import copy
 import json
+import os
 import re
 import subprocess
 import sys
@@ -103,27 +105,20 @@ def ingest(contracts, dry_run=False, archive=ARCHIVE, manifest=MANIFEST):
 
 
 def product_strategy(markets, target, name, strategy, preset):
-    """A copy of the paper strategy `strategy` (relative to markets/) for the product: its costs the
-    product preset, its rule_gate files copied with the same costs; all paths relative to markets/<name>/."""
+    """A copy of the paper strategy `strategy` (relative to markets/) for the product with one change: its
+    costs, the product preset (the only place of the point value and fees; the env gives them to the
+    contract terms, and the rule gate compares the rules' spread only). Its other paths are rewritten
+    relative to markets/<name>/, so it uses the same rules files."""
     from gym_trading_env.envs.entry_contract import resolve_path
     src = (markets / strategy).resolve()
     text = yaml.safe_load(src.read_text())
-    rel = lambda p: str(Path('..') / Path(p).resolve().relative_to(markets.resolve()))  # noqa: E731
-    cost = Path(preset).resolve().relative_to(target.resolve())
-    text['costs'] = str(cost)
-    for side, path in (text.get('entry', {}).get('rule_gate') or {}).items():
-        rule_src = resolve_path(src, path)
-        rule = yaml.safe_load(Path(rule_src).read_text())
-        rule['costs'] = str(cost)
-        rule_name = f'{Path(rule_src).stem}_{name}.yaml'
-        (target / rule_name).write_text(f'# {Path(rule_src).name} with the {name.upper()} cost preset {cost} '
-                                        '(gym research.product_paper).\n' + yaml.safe_dump(rule, sort_keys=False, allow_unicode=True))
-        text['entry']['rule_gate'][side] = rule_name
-    for key in ('strategy_config',):
-        if key in text:
-            text[key] = rel(resolve_path(src, text[key]))
+    rel = lambda p: os.path.relpath(Path(p).resolve(), target.resolve())  # noqa: E731
+    text['costs'] = rel(preset)
+    gate = text.get('entry', {}).get('rule_gate') or {}
+    for side, path in gate.items():
+        gate[side] = rel(resolve_path(src, path))
     out = target / f'{src.stem}_{name}.yaml'
-    out.write_text(f'# {src.name} for {name.upper()}: costs {cost} (gym research.product_paper).\n'
+    out.write_text(f'# {src.name} for {name.upper()}: only costs changed, {text["costs"]} (gym research.product_paper).\n'
                    + yaml.safe_dump(text, sort_keys=False, allow_unicode=True))
     return out
 
@@ -178,7 +173,9 @@ def build(directions, configs, out, name=None, costs_preset=None, strategies=())
                         liquidate_at=str(times[-1]), terms=[terms], sessions=sessions,
                         calendar_basis='user_confirmed_complete_market', expiry_basis='main_qualification',
                         costs_basis=costs['cost_basis'], source_sha256=sha)
-            (target / 'contracts' / f'{stem}_contract.yaml').write_text(yaml.safe_dump(meta, sort_keys=False))
+            (target / 'contracts' / f'{stem}_contract.yaml').write_text(
+                '# lot_size and the fees mirror the strategy\'s costs; the env takes them from there.\n'
+                + yaml.safe_dump(meta, sort_keys=False))
             env = copy.deepcopy(fg_env)
             env['entry'].update(contract=contract, contract_config=f'../contracts/{stem}_contract.yaml',
                                 main_exit_at=str(times[-1].tz_localize(None)),
