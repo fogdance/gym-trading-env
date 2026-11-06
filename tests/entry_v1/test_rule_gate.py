@@ -211,3 +211,38 @@ def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
     path.write_text(yaml.safe_dump(bad))
     with pytest.raises(ValueError, match='fixed_stop_points'):
         V.load_config(path)
+
+
+STRATEGY_V7 = CONFIGS / 'markets/strategy_v3_trend_trail_v7.yaml'
+
+
+@real
+@pytest.mark.parametrize('contract', sorted(SIDES))
+def test_rules_v7_zone_above_the_line_and_a_touch_through_a_break(contract, tmp_path):
+    """Rules V7 (paper only, user 2026-11-06: "[H−5, H+2]，以及后续回落到[H−5, H+2]都可以入场";
+    "放量2x改为3x"): every rule position's quote is within [H - 5, H + 2] (short space), some
+    are above the line, some follow an H + 5 break inside their touch, every touch starts on a
+    3x bar, and no touch ends INVALIDATED; the gate opens ADD exactly there, with SL H + 5."""
+    row, side = C.train_row(contract, POOL), SIDES[contract]
+    env = C.native_env(C.write_inputs(row, tmp_path, strategy=C.load_strategy(STRATEGY_V7)), market=False)
+    cfg = env.rule_gate[side]
+    a = V.market_arrays(env, cfg)
+    levels, _ = V.prior_highs(env, a, cfg)
+    r = V.rule_pass(a, levels, cfg, a['n'], env.contract)
+    assert np.array_equal(r['in_zone'], env._gate(side)['open'])
+    cursors = np.flatnonzero(r['in_zone'])
+    H = np.array([r['events'][i]['H'] for i in r['event_of'][cursors]])
+    q = a['sell_close'][cursors]
+    assert len(cursors) > 200 and ((H - 5 <= q) & (q <= H + 2)).all() and (q > H).any()
+    after_break = 0
+    for s, h in zip(cursors, H):
+        x = r['events'][r['event_of'][s]]
+        after_break += bool((a['valid'][x['activation'] + 1:s] & (a['buy_high'][x['activation'] + 1:s] >= h + 5)).any())
+    assert after_break > 0
+    assert all(x['activation_rv'] >= 3 for x in r['events'])
+    assert 'INVALIDATED' not in {x['end_reason'] for x in r['events']}
+    s = int(cursors[len(cursors) // 2])
+    plan = env.planned_exit(s, a['sell_open'][s + 1] * a['sign'], side)
+    i = r['event_of'][s]
+    if plan['stop_source'] == 'RULE':
+        assert V.sign(side) * float(plan['stop_loss_price']) == r['events'][i]['H'] + 5
