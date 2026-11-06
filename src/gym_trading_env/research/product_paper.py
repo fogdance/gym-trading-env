@@ -13,12 +13,16 @@ of the bars, the last bar the main exit, the FG master costs). The product must 
             ingest_archive_to_db_v2 job (skips months already DONE); --dry-run prints the plan only
   build     the exports (OUT/export), and under CONFIGS/markets/<name>/ the contract files, the envs, the master
             strategy_quality_tp_v1_<name>.yaml and paper_pool_<name>.json; contracts without bars are reported
-            and left out; OUT/build_report.json
+            and left out; OUT/build_report.json. --costs PRESET (a cost preset as costs_fg_real_20261105.yaml,
+            under the product's key; user 2026-11-06: "paper 里rb是1点10元") sets the master's costs and the
+            contracts' lot size in place of FG's; --strategy S (a paper strategy under markets/, repeatable)
+            writes markets/<name>/<S stem>_<name>.yaml and copies of its rule_gate files whose costs are the preset
 
 Usage (gym-trading-env/, PYTHONPATH=.:src):
   python -m gym_trading_env.research.product_paper coverage --directions D.yaml
   python -m gym_trading_env.research.product_paper ingest --directions D.yaml [--dry-run]
-  python -m gym_trading_env.research.product_paper build --directions D.yaml --configs ../dreamerv3/configs/thinking_student --out DIR
+  python -m gym_trading_env.research.product_paper build --directions D.yaml --configs ../dreamerv3/configs/thinking_student --out DIR \
+      [--costs markets/<name>/costs.yaml] [--strategy markets/strategy_v3_trend_trail.yaml]
 """
 import argparse
 import copy
@@ -98,10 +102,36 @@ def ingest(contracts, dry_run=False, archive=ARCHIVE, manifest=MANIFEST):
     return subprocess.call(cmd, cwd=JUEJIN, env={'PYTHONPATH': str(JUEJIN), 'PATH': '/usr/bin:/bin'})
 
 
-def build(directions, configs, out, name=None):
+def product_strategy(markets, target, name, strategy, preset):
+    """A copy of the paper strategy `strategy` (relative to markets/) for the product: its costs the
+    product preset, its rule_gate files copied with the same costs; all paths relative to markets/<name>/."""
+    from gym_trading_env.envs.entry_contract import resolve_path
+    src = (markets / strategy).resolve()
+    text = yaml.safe_load(src.read_text())
+    rel = lambda p: str(Path('..') / Path(p).resolve().relative_to(markets.resolve()))  # noqa: E731
+    cost = Path(preset).resolve().relative_to(target.resolve())
+    text['costs'] = str(cost)
+    for side, path in (text.get('entry', {}).get('rule_gate') or {}).items():
+        rule_src = resolve_path(src, path)
+        rule = yaml.safe_load(Path(rule_src).read_text())
+        rule['costs'] = str(cost)
+        rule_name = f'{Path(rule_src).stem}_{name}.yaml'
+        (target / rule_name).write_text(f'# {Path(rule_src).name} with the {name.upper()} cost preset {cost} '
+                                        '(gym research.product_paper).\n' + yaml.safe_dump(rule, sort_keys=False, allow_unicode=True))
+        text['entry']['rule_gate'][side] = rule_name
+    for key in ('strategy_config',):
+        if key in text:
+            text[key] = rel(resolve_path(src, text[key]))
+    out = target / f'{src.stem}_{name}.yaml'
+    out.write_text(f'# {src.name} for {name.upper()}: costs {cost} (gym research.product_paper).\n'
+                   + yaml.safe_dump(text, sort_keys=False, allow_unicode=True))
+    return out
+
+
+def build(directions, configs, out, name=None, costs_preset=None, strategies=()):
     """The paper inputs of the direction file's product (module docstring); returns the build report."""
     from gym_trading_env.research.entry_pipeline import file_hash
-    from gym_trading_env.research.fg_entry_v1 import trim_fg_export_minutes
+    from gym_trading_env.research.fg_entry_v1 import configured_fg_costs, trim_fg_export_minutes
     raw, groups = load_directions(directions)
     product = str(raw['product']).upper()
     name = name or product.lower()
@@ -111,7 +141,7 @@ def build(directions, configs, out, name=None):
         d.mkdir(parents=True, exist_ok=True)
     master = yaml.safe_load((markets / 'strategy_quality_tp_v1.yaml').read_text())
     fg_env = yaml.safe_load((markets / 'envs' / 'CZCE_FG501_env.yaml').read_text())
-    costs = master['costs']
+    costs = configured_fg_costs(costs_preset) if costs_preset else master['costs']
     rows, report, used = [], {}, []
     with _conn().cursor() as c:
         for k, (contract, ivs) in enumerate(groups.items()):
@@ -167,6 +197,7 @@ def build(directions, configs, out, name=None):
                                     last=rows[-1]['last_timestamp'])
     strategy = copy.deepcopy(master)
     strategy['product'] = product
+    strategy['costs'] = costs
     strategy['directions'] = dict(master['directions'], intervals=used)  # the FG date basis and timezone
     strategy['data'].update(start=rows[0]['first_timestamp'][:10], end_inclusive=rows[-1]['last_timestamp'][:10],
                             excluded_contracts=[])
@@ -180,6 +211,9 @@ def build(directions, configs, out, name=None):
                                        'Never training material.'),
                 directions_source=dict(path=str(Path(directions).resolve()), sha256=file_hash(directions)), files=rows)
     (target / f'paper_pool_{name}.json').write_text(json.dumps(pool, indent=1))
+    for s in strategies:
+        report.setdefault('_strategies', []).append(str(product_strategy(markets, target, name, s, costs_preset)))
+    report['_costs'] = costs
     (out / 'build_report.json').write_text(json.dumps(report, indent=1, default=str))
     return report
 
@@ -192,6 +226,8 @@ def main(argv=None):
     p.add_argument('--out', help='export and report directory (build)')
     p.add_argument('--name', help='markets/<name> (build; default the product, lower case)')
     p.add_argument('--contracts', default='', help='ingest: these contracts (default: those with missing days)')
+    p.add_argument('--costs', help='build: the product cost preset (default: the FG master costs)')
+    p.add_argument('--strategy', action='append', default=[], help='build: a paper strategy under markets/ to copy with --costs')
     p.add_argument('--dry-run', action='store_true')
     a = p.parse_args(argv)
     _, groups = load_directions(a.directions)
@@ -207,7 +243,9 @@ def main(argv=None):
     else:
         if not (a.configs and a.out):
             p.error('build needs --configs and --out')
-        print(json.dumps(build(a.directions, a.configs, a.out, a.name), indent=1, default=str))
+        if a.strategy and not a.costs:
+            p.error('--strategy needs --costs')
+        print(json.dumps(build(a.directions, a.configs, a.out, a.name, a.costs, a.strategy), indent=1, default=str))
     return 0
 
 
