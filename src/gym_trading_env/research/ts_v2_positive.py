@@ -101,10 +101,10 @@ def load_config(path):
     # still below its stop; a touch ends once the SL quote reaches H + touch_break_points (default:
     # the stop), so with 6 a touch that went past H + 5 but stayed below H + 6 goes on and a fall
     # back into the zone is a rule position again. A line still ends at H + stop outside a touch.
-    above = e.setdefault('zone_above_points', 0)
+    above = e.get('zone_above_points', 0)  # read, not written: params.yaml of V2-V5 material stays the same
     if not 0 <= above < e['stop_above_points']:
         raise ValueError(f'{path}: entry.zone_above_points is >= 0 and below stop_above_points')
-    if not e.setdefault('touch_break_points', e['stop_above_points']) >= e['stop_above_points']:
+    if not e.get('touch_break_points', e['stop_above_points']) >= e['stop_above_points']:
         raise ValueError(f'{path}: entry.touch_break_points is at least stop_above_points')
     fixed = e.get('fixed_stop_points')
     if fixed is not None and not (isinstance(fixed, int) and 0 < fixed <= e['max_risk_points']):

@@ -213,20 +213,22 @@ def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
         V.load_config(path)
 
 
-STRATEGY_V7 = CONFIGS / 'markets/strategy_v3_trend_trail_v7.yaml'
+
+STRATEGY_FG = CONFIGS / 'markets/strategy_v3_trend_trail_zone_h2.yaml'
 
 
 @real
 @pytest.mark.parametrize('contract', sorted(SIDES))
-def test_rules_v7_zone_above_the_line_and_a_touch_through_a_break(contract, tmp_path):
-    """Rules V7 (paper only, user 2026-11-06: "[H−5, H+2]，以及后续回落到[H−5, H+2]都可以入场";
-    "放量2x改为3x"; "V7再调整下>h && <H+6的回落可以做，>=h+6的回落不做"): every rule position's quote is within
-    [H - 5, H + 2] (short space), some are above the line, none follows an SL quote at H + 6 in its
-    touch, every touch that reached it ends there (INVALIDATED), every touch starts on a 3x bar;
-    the gate opens ADD exactly there, with SL H + 5."""
+def test_fg_zone_above_the_line(contract, tmp_path):
+    """The FG rules since 2026-11-06 (user: "明白了，FG只扩区间到 H+2， SA保持不变"): the V5 rules with
+    zone_above_points 2. Every rule position's quote is within [H - 5, H + 2] (short space), some are
+    above the line, none follows an SL quote at H + 5 in its touch, a touch ends INVALIDATED exactly
+    where it first reaches H + 5, every touch starts on a 2x bar; the gate opens ADD exactly there,
+    with SL H + 5."""
     row, side = C.train_row(contract, POOL), SIDES[contract]
-    env = C.native_env(C.write_inputs(row, tmp_path, strategy=C.load_strategy(STRATEGY_V7)), market=False)
+    env = C.native_env(C.write_inputs(row, tmp_path, strategy=C.load_strategy(STRATEGY_FG)), market=False)
     cfg = env.rule_gate[side]
+    assert cfg['entry']['zone_above_points'] == 2 and 'touch_break_points' not in cfg['entry']
     a = V.market_arrays(env, cfg)
     levels, _ = V.prior_highs(env, a, cfg)
     r = V.rule_pass(a, levels, cfg, a['n'], env.contract)
@@ -237,14 +239,13 @@ def test_rules_v7_zone_above_the_line_and_a_touch_through_a_break(contract, tmp_
     assert len(cursors) > 200 and ((H - 5 <= q) & (q <= H + 2)).all() and (q > H).any()
     for s, h in zip(cursors, H):
         x = r['events'][r['event_of'][s]]
-        assert not (a['valid'][x['activation'] + 1:s + 1] & (a['buy_high'][x['activation'] + 1:s + 1] >= h + 6)).any()
+        assert not (a['valid'][x['activation'] + 1:s + 1] & (a['buy_high'][x['activation'] + 1:s + 1] >= h + 5)).any()
     for x in r['events']:
         t, end = x['activation'], x['end']
-        hit = np.flatnonzero(a['valid'][t + 1:end + 1] & (a['buy_high'][t + 1:end + 1] >= x['H'] + 6))
+        hit = np.flatnonzero(a['valid'][t + 1:end + 1] & (a['buy_high'][t + 1:end + 1] >= x['H'] + 5))
         assert (x['end_reason'] == 'INVALIDATED') == (len(hit) > 0 and t + 1 + hit[0] == end)
-    assert all(x['activation_rv'] >= 3 for x in r['events'])
+    assert all(x['activation_rv'] >= 2 for x in r['events'])
     s = int(cursors[len(cursors) // 2])
     plan = env.planned_exit(s, a['sell_open'][s + 1] * a['sign'], side)
-    i = r['event_of'][s]
     if plan['stop_source'] == 'RULE':
-        assert V.sign(side) * float(plan['stop_loss_price']) == r['events'][i]['H'] + 5
+        assert V.sign(side) * float(plan['stop_loss_price']) == r['events'][r['event_of'][s]]['H'] + 5
