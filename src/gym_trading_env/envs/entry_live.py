@@ -97,9 +97,16 @@ class LiveFeed:
         lots = env.net_lots
         if lots:
             text += f" | {env._positions()[0]} {abs(lots)}"
+            # V3 (entry.exit_rule): the stop moved at this bar's close, with its stage.
+            for item in env.entries.values():
+                moved = item.get('stop_history') or []
+                if moved and moved[-1]['time'] == str(env._raw.index[env.current_step]):
+                    text += f" | SL->{float(moved[-1]['stop']):g} {moved[-1]['stage']}"
         for f in fills:
             if f['reason'] == 'ENTRY':
-                text += f" | OPEN {f['side']} @{float(f['price']):g} SL {float(f['stop_loss_price']):g} TP {float(f['take_profit_price']):g}"
+                tp = f.get('take_profit_price')
+                text += (f" | OPEN {f['side']} @{float(f['price']):g} SL {float(f['stop_loss_price']):g}"
+                         + (f" TP {float(tp):g}" if tp is not None else ''))
             else:
                 text += f" | CLOSE {f['reason']} @{float(f['price']):g}"
         self.log(text)
