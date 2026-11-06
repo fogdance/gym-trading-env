@@ -96,17 +96,16 @@ def load_config(path):
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
-    # Rules V7 (paper only, user 2026-11-06: "[H−5, H+2]，以及后续回落到[H−5, H+2]都可以入场"): the zone
-    # reaches zone_above_points above the line, still below its stop; break_ends_touch false keeps a
-    # touch through an H + stop break (a fall back into the zone is a rule position again) until a
-    # close break_departure_points above H, the departure below, the line's expiry or the boundary.
+    # Rules V7 (paper only, user 2026-11-06: "[H−5, H+2]，以及后续回落到[H−5, H+2]都可以入场";
+    # "V7再调整下>h && <H+6的回落可以做，>=h+6的回落不做"): the zone reaches zone_above_points above the line,
+    # still below its stop; a touch ends once the SL quote reaches H + touch_break_points (default:
+    # the stop), so with 6 a touch that went past H + 5 but stayed below H + 6 goes on and a fall
+    # back into the zone is a rule position again. A line still ends at H + stop outside a touch.
     above = e.setdefault('zone_above_points', 0)
     if not 0 <= above < e['stop_above_points']:
         raise ValueError(f'{path}: entry.zone_above_points is >= 0 and below stop_above_points')
-    if not isinstance(e.setdefault('break_ends_touch', True), bool):
-        raise ValueError(f'{path}: entry.break_ends_touch is true or false')
-    if not e['break_ends_touch'] and not e.get('break_departure_points', 0) > e['stop_above_points']:
-        raise ValueError(f'{path}: break_ends_touch false needs break_departure_points above stop_above_points')
+    if not e.setdefault('touch_break_points', e['stop_above_points']) >= e['stop_above_points']:
+        raise ValueError(f'{path}: entry.touch_break_points is at least stop_above_points')
     fixed = e.get('fixed_stop_points')
     if fixed is not None and not (isinstance(fixed, int) and 0 < fixed <= e['max_risk_points']):
         raise ValueError(f'{path}: entry.fixed_stop_points is a positive integer <= max_risk_points')
@@ -296,7 +295,7 @@ def rule_pass(a, levels, cfg, end, contract):
     market can be one."""
     e, ev, p = cfg['entry'], cfg['event'], cfg['prior_high']
     stop, zone, near = e['stop_above_points'], e['zone_points'], ev['near_points']
-    above, ends, run = e.get('zone_above_points', 0), e.get('break_ends_touch', True), e.get('break_departure_points')
+    above, brk = e.get('zone_above_points', 0), e.get('touch_break_points', stop)
     far, n = p['departure_points'], a['n']
     ratio, own_spike = cfg['volume']['ratio'], ACTIVATION[cfg['version']] == 'touch'
     pending = sorted(levels, key=lambda x: x['confirm'])
@@ -317,10 +316,8 @@ def rule_pass(a, levels, cfg, end, contract):
         if event is not None:
             t, H = event['activation'], event['H']
             reason = None
-            if ends and s > t and a['valid'][s] and a['buy_high'][s] >= H + stop:
+            if s > t and a['valid'][s] and a['buy_high'][s] >= H + brk:
                 reason = 'INVALIDATED'
-            elif not ends and s > t and a['valid'][s] and a['close'][s] >= H + run:
-                reason = 'BROKEN_DEPARTED'  # V7: a break goes on, a close far above ends the touch
             elif s > t and a['valid'][s] and a['close'][s] <= H - far:
                 reason = 'DEPARTED'
             elif s >= event['level_expire']:
