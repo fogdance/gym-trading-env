@@ -18,12 +18,18 @@ of the bars, the last bar the main exit, the FG master costs). The product must 
             contracts' lot size in place of FG's (the env reads them from the strategy's costs; the contract
             files only mirror them); --strategy S (a paper strategy under markets/, repeatable) writes
             markets/<name>/<S stem>_<name>.yaml, S with its costs the preset and the same rules files
+  split     a training pool from the built paper pool (user 2026-11-07: "针对rb,单独创建教材重新训练", FG's dates):
+            markets/<name>/pool_<name>.json with the contracts whose last bar is on or before --train-end as TRAIN
+            (eligible for training) and then up to --validation-end as VALIDATION (DEV exams), and
+            paper_pool_<name>_heldout.json with the later contracts (paper only); the same exports and envs
 
 Usage (gym-trading-env/, PYTHONPATH=.:src):
   python -m gym_trading_env.research.product_paper coverage --directions D.yaml
   python -m gym_trading_env.research.product_paper ingest --directions D.yaml [--dry-run]
   python -m gym_trading_env.research.product_paper build --directions D.yaml --configs ../dreamerv3/configs/thinking_student --out DIR \
       [--costs markets/<name>/costs.yaml] [--strategy markets/strategy_v3_trend_trail.yaml]
+  python -m gym_trading_env.research.product_paper split --configs ../dreamerv3/configs/thinking_student --name rb \
+      --train-end 2024-04-08 --validation-end 2024-08-19
 """
 import argparse
 import copy
@@ -215,18 +221,56 @@ def build(directions, configs, out, name=None, costs_preset=None, strategies=())
     return report
 
 
+def split(configs, name, train_end, validation_end):
+    """pool_<name>.json (TRAIN and VALIDATION) and paper_pool_<name>_heldout.json from paper_pool_<name>.json
+    (module docstring); returns {contract: role}."""
+    target = Path(configs).resolve() / 'markets' / name
+    source = target / f'paper_pool_{name}.json'
+    pool = json.loads(source.read_text())
+    if not str(train_end) < str(validation_end):
+        raise ValueError('--train-end is before --validation-end')
+    roles, fit, held = {}, [], []
+    for r in pool['files']:
+        day = r['last_timestamp'][:10]
+        role = 'train' if day <= train_end else 'validation' if day <= validation_end else 'paper'
+        row = dict(r, role=role, eligible_for_training=role == 'train')
+        (held if role == 'paper' else fit).append(row)
+        roles[r['contract']] = role
+    if not any(r['role'] == 'train' for r in fit) or not any(r['role'] == 'validation' for r in fit) or not held:
+        raise ValueError(f'{source}: the dates leave a fold empty {roles}')
+    base = dict(product=pool['product'], directions_source=pool['directions_source'],
+                split=dict(source=str(source), train_end_inclusive=train_end, validation_end_inclusive=validation_end))
+    (target / f'pool_{name}.json').write_text(json.dumps(dict(base, note=(
+        f'{pool["product"]} training pool (gym research.product_paper split): TRAIN rows build the corpora, '
+        'VALIDATION rows are Teacher-free DEV exams; the later contracts are in the held-out paper pool.'),
+        files=fit), indent=1))
+    (target / f'paper_pool_{name}_heldout.json').write_text(json.dumps(dict(base, note=(
+        f'{pool["product"]} held-out paper contracts after the training pool\'s VALIDATION; never training '
+        'material.'), files=held), indent=1))
+    return roles
+
+
 def main(argv=None):
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('command', choices=('coverage', 'ingest', 'build'))
-    p.add_argument('--directions', required=True)
+    p.add_argument('command', choices=('coverage', 'ingest', 'build', 'split'))
+    p.add_argument('--directions', help='the direction file (coverage, ingest, build)')
     p.add_argument('--configs', help='dreamerv3/configs/thinking_student (build)')
     p.add_argument('--out', help='export and report directory (build)')
     p.add_argument('--name', help='markets/<name> (build; default the product, lower case)')
     p.add_argument('--contracts', default='', help='ingest: these contracts (default: those with missing days)')
     p.add_argument('--costs', help='build: the product cost preset (default: the FG master costs)')
     p.add_argument('--strategy', action='append', default=[], help='build: a paper strategy under markets/ to copy with --costs')
+    p.add_argument('--train-end', help='split: last TRAIN day, YYYY-MM-DD inclusive')
+    p.add_argument('--validation-end', help='split: last VALIDATION day, YYYY-MM-DD inclusive')
     p.add_argument('--dry-run', action='store_true')
     a = p.parse_args(argv)
+    if a.command == 'split':
+        if not (a.configs and a.name and a.train_end and a.validation_end):
+            p.error('split needs --configs, --name, --train-end and --validation-end')
+        print(json.dumps(split(a.configs, a.name, a.train_end, a.validation_end), indent=1))
+        return 0
+    if not a.directions:
+        p.error(f'{a.command} needs --directions')
     _, groups = load_directions(a.directions)
     if a.command == 'coverage':
         print(json.dumps(coverage(groups), indent=1))

@@ -231,7 +231,10 @@ def write_inputs(row, folder, rules=None, strategy=None, costs=None):
         names = {}
         for side, f in env['entry']['rule_gate'].items():
             names[side] = f'rule_gate_{side.lower()}.yaml'
-            (folder / names[side]).write_text(yaml.safe_dump(load_config(f), sort_keys=False, allow_unicode=True))
+            rules = load_config(f)
+            if costs is not None and 'costs' in rules:  # one rules file for every product (RB, user 2026-11-07):
+                rules['costs'] = load_costs(costs, folder)  # its copy takes the strategy's costs, as the material
+            (folder / names[side]).write_text(yaml.safe_dump(rules, sort_keys=False, allow_unicode=True))
         env['entry']['rule_gate'] = names
     reward = dict(strategy['reward']) if strategy is not None else dict(schema=QUALITY_TP_SCHEMA)
     for key, name in (('contract_config', 'contract.yaml'), ('direction_config', 'directions.yaml')):

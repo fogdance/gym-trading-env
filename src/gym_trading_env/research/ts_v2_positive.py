@@ -1115,16 +1115,21 @@ def main(argv=None):
     parser.add_argument('--out', required=True)
     parser.add_argument('--contracts', nargs='*',
                         help="TRAIN contracts of the config's direction (default: all of the pool)")
+    parser.add_argument('--costs', help="a product cost preset in place of the rules' costs (another product, "
+                                        'e.g. markets/rb/costs_rb_20261106.yaml; recorded in params.yaml)')
     parser.add_argument('--workers', type=int, default=12)
     args = parser.parse_args(argv)
     if args.combine:
-        if args.pool or args.config or args.contracts:
+        if args.pool or args.config or args.contracts or args.costs:
             parser.error('--combine takes only --out')
         print(json.dumps(combine(args.combine, args.out)['combined'], indent=1))
         return
     if not (args.pool and args.config):
         parser.error('--pool and --config are required (or --combine)')
     cfg = load_config(args.config)
+    if args.costs:  # one rules file for every product; the product's own point value and fees
+        from .ts_v1_corpus import load_costs
+        cfg['costs'] = load_costs(str(Path(args.costs).resolve()), Path.cwd() / 'x')
     rows = side_rows(args.pool, cfg['direction'], args.contracts)
     produce(rows, cfg, args.out, args.workers, command=' '.join(sys.argv))
 
