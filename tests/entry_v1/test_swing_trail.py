@@ -37,11 +37,15 @@ def test_trail_stop_stages():
 
 
 def test_trough_ladder():
-    # User 2026-11-07: 3-4 troughs the 2nd, 5-6 the 3rd, 7-10 the 5th, n > 11 the (n // 2)-th, from the first.
+    # User 2026-11-07 ("都是倒数"): 3-4 troughs the 2nd from the last, 5-6 the 3rd, 7-10 the 5th, n > 11 the (n // 2)-th.
     cfg = dict(CFG, trough_ladder=[[3, 2], [5, 3], [7, 5], [11, 'half']])
     troughs = list(range(99, 79, -1))  # 99, 98, ...: the i-th trough is 100 - i
-    for n, nth in ((3, 2), (4, 2), (5, 3), (6, 3), (7, 5), (10, 5), (11, 5), (12, 6), (15, 7), (20, 10)):
-        assert trail_stop(100, 105, 'LOCK', 80, troughs[:n], cfg) == (100 - nth, 'TROUGH'), n
+    for n, back in ((3, 2), (4, 2), (5, 3), (6, 3), (7, 5), (10, 5), (11, 5), (12, 6), (15, 7), (20, 10)):
+        assert trail_stop(100, 105, 'LOCK', 80, troughs[:n], cfg) == (100 - (n - back + 1), 'TROUGH'), n
+    # From a stop at the 2nd from the last of 4 (trough 3, 97), 5 troughs name trough 3 again: it stays.
+    assert trail_stop(100, 97, 'TROUGH', 80, troughs[:5], cfg) == (97, 'TROUGH')
+    assert trail_stop(100, 97, 'TROUGH', 80, troughs[:7], cfg) == (97, 'TROUGH')  # trough 3 again
+    assert trail_stop(100, 97, 'TROUGH', 80, troughs[:8], cfg) == (96, 'TROUGH')  # trough 4
     assert trail_stop(100, 95, 'LOCK', 90, [96, 91], cfg) == (95, 'LOCK')
     assert trail_stop(100, 97, 'TROUGH', 80, troughs[:3], cfg) == (97, 'TROUGH')  # never back
     from gym_trading_env.research.swing_trail import check_config

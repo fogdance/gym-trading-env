@@ -10,9 +10,11 @@ the peaks) of the complete 15m buckets formed after the fill:
 
 Optional `trough_ladder` (user 2026-11-07: "3-4个波谷， 2个波谷止损 / 5-6个波谷， 3个波谷止损 / 7-10个波谷，
 5个波谷止损 / n>11个波谷， n/2个波谷止损"): rungs [from_troughs, trough] in place of the last trough but
-one; with n troughs the highest rung with from_troughs <= n names the trough of the stop, counted from
-the first trough after the fill (1-based), or `half` for the (n // 2)-th. E.g. [[3, 2], [5, 3], [7, 5],
-[11, half]]: 3-4 troughs the 2nd, 5-6 the 3rd, 7-11 the 5th, n >= 12 the (n // 2)-th.
+one; with n troughs the highest rung with from_troughs <= n names the trough of the stop, counted back
+from the last trough (1-based, "都是倒数": 1 is the last, 2 the last but one), or `half` for the (n // 2)-th
+from the last. E.g. [[3, 2], [5, 3], [7, 5], [11, half]]: 3-4 troughs the last but one, 5-6 the 3rd from
+the last, 7-11 the 5th from the last, n >= 12 the (n // 2)-th from the last. The stop still never moves
+back, so a rung that names an older (higher) trough keeps the stop where it is.
 
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
@@ -51,11 +53,11 @@ def check_config(cfg):
 
 
 def ladder_trough(troughs, ladder):
-    """The trough of the stop by the ladder (module docstring): its price, oldest first counting."""
+    """The trough of the stop by the ladder (module docstring): its price, counted back from the last."""
     n = len(troughs)
     rung = [r for r in ladder if r[0] <= n][-1]
     k = n // 2 if rung[1] == 'half' else rung[1]
-    return troughs[k - 1]
+    return troughs[-k]
 
 
 class Swings:
