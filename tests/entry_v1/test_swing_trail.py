@@ -35,6 +35,21 @@ def test_trail_stop_stages():
     assert trail_stop(100, 95, 'LOCK', 99, [96], CFG) == (95, 'LOCK')
 
 
+
+def test_trough_ladder():
+    # User 2026-11-07: 3-4 troughs the 2nd, 5-6 the 3rd, 7-10 the 5th, n > 11 the (n // 2)-th, from the first.
+    cfg = dict(CFG, trough_ladder=[[3, 2], [5, 3], [7, 5], [11, 'half']])
+    troughs = list(range(99, 79, -1))  # 99, 98, ...: the i-th trough is 100 - i
+    for n, nth in ((3, 2), (4, 2), (5, 3), (6, 3), (7, 5), (10, 5), (11, 5), (12, 6), (15, 7), (20, 10)):
+        assert trail_stop(100, 105, 'LOCK', 80, troughs[:n], cfg) == (100 - nth, 'TROUGH'), n
+    assert trail_stop(100, 95, 'LOCK', 90, [96, 91], cfg) == (95, 'LOCK')
+    assert trail_stop(100, 97, 'TROUGH', 80, troughs[:3], cfg) == (97, 'TROUGH')  # never back
+    from gym_trading_env.research.swing_trail import check_config
+    assert check_config(cfg)['trough_ladder'][-1] == [11, 'half']
+    for bad in ([[2, 1]], [[3, 4]], [[3, 2], [3, 3]], [[3, 'x']], []):
+        with pytest.raises(ValueError, match='trough_ladder'):
+            check_config(dict(CFG, trough_ladder=bad))
+
 @pytest.fixture(scope='module')
 def runs(tmp_path_factory):
     """Per contract and initial stop: the always-ADD account of the whole contract."""

@@ -8,6 +8,12 @@ the peaks) of the complete 15m buckets formed after the fill:
     2 troughs            fill - 5 (5 points locked)
     >= 3 troughs         the last trough but one ("倒数第二个波谷")
 
+Optional `trough_ladder` (user 2026-11-07: "3-4个波谷， 2个波谷止损 / 5-6个波谷， 3个波谷止损 / 7-10个波谷，
+5个波谷止损 / n>11个波谷， n/2个波谷止损"): rungs [from_troughs, trough] in place of the last trough but
+one; with n troughs the highest rung with from_troughs <= n names the trough of the stop, counted from
+the first trough after the fill (1-based), or `half` for the (n // 2)-th. E.g. [[3, 2], [5, 3], [7, 5],
+[11, half]]: 3-4 troughs the 2nd, 5-6 the 3rd, 7-11 the 5th, n >= 12 the (n // 2)-th.
+
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
 known at the close of the bucket that confirms them (confirm_index) and only once that
@@ -23,16 +29,33 @@ import pandas as pd
 from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
+OPTIONAL = ('trough_ladder',)
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
 
 
 def check_config(cfg):
     """entry.exit_rule: exactly KEYS, kind swing_trail, timeframe 15m, positive integers."""
-    if not isinstance(cfg, dict) or set(cfg) != set(KEYS) or cfg['kind'] != 'swing_trail' or cfg['timeframe'] != '15m':
-        raise ValueError(f'entry.exit_rule needs exactly {KEYS}, kind swing_trail, timeframe 15m')
+    if (not isinstance(cfg, dict) or not set(KEYS) <= set(cfg) <= set(KEYS + OPTIONAL) or cfg['kind'] != 'swing_trail'
+            or cfg['timeframe'] != '15m'):
+        raise ValueError(f'entry.exit_rule needs exactly {KEYS} (and optionally {OPTIONAL}), kind swing_trail, timeframe 15m')
     if any(type(cfg[k]) is not int or cfg[k] < 1 for k in KEYS[2:]):
         raise ValueError('entry.exit_rule: pivot_left, pivot_right, breakeven_points, lock_points are positive integers')
+    if 'trough_ladder' in cfg:
+        rungs = cfg['trough_ladder']
+        ok = isinstance(rungs, list) and rungs and all(
+            isinstance(r, list) and len(r) == 2 and type(r[0]) is int and r[0] >= 3
+            and (r[1] == 'half' or (type(r[1]) is int and 1 <= r[1] <= r[0])) for r in rungs)
+        if not ok or any(a[0] >= b[0] for a, b in zip(rungs, rungs[1:])) or rungs[0][0] != 3:
+            raise ValueError('entry.exit_rule.trough_ladder: rungs [from_troughs, trough | half], from 3, increasing')
     return dict(cfg)
+
+
+def ladder_trough(troughs, ladder):
+    """The trough of the stop by the ladder (module docstring): its price, oldest first counting."""
+    n = len(troughs)
+    rung = [r for r in ladder if r[0] <= n][-1]
+    k = n // 2 if rung[1] == 'half' else rung[1]
+    return troughs[k - 1]
 
 
 class Swings:
@@ -89,7 +112,8 @@ def trail_stop(fill, stop, stage, best, troughs, cfg):
     if k == 2:
         candidates.append((fill - cfg['lock_points'], 'LOCK'))
     if k >= 3:
-        candidates.append((Decimal(str(troughs[-2])), 'TROUGH'))
+        trough = ladder_trough(troughs, cfg['trough_ladder']) if cfg.get('trough_ladder') else troughs[-2]
+        candidates.append((Decimal(str(trough)), 'TROUGH'))
     for price, name in candidates:
         if price < stop:
             stop, stage = price, name
