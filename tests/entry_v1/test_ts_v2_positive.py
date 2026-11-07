@@ -328,7 +328,7 @@ def test_the_config_must_be_the_version_and_one_side(tmp_path):
     assert V.load_config(path)['direction'] == 'LONG'
     for change in (dict(direction='BOTH'), dict(version='V0')):
         path.write_text(yaml.safe_dump(dict(CFG, **change)))
-        with pytest.raises(ValueError, match='V2_POSITIVE_ENTRY_V2 / V2_POSITIVE_ENTRY_V3 / V2_POSITIVE_ENTRY_V4 / V2_POSITIVE_ENTRY_V5 SHORT or LONG config'):
+        with pytest.raises(ValueError, match='V2_POSITIVE_ENTRY_V2 / V2_POSITIVE_ENTRY_V3 / V2_POSITIVE_ENTRY_V4 / V2_POSITIVE_ENTRY_V5 / V2_POSITIVE_ENTRY_V7 SHORT or LONG config'):
             V.load_config(path)
     # The version names its volume rule: V3 with activation touch, V2 without.
     path.write_text(yaml.safe_dump(CFG3))
@@ -421,9 +421,19 @@ def test_two_sides_combine_into_one_material_byte_for_byte(corpus, tmp_path):
     frame = pd.read_csv(timeline, dtype=str, keep_default_na=False)
     frame[list(frame.columns[1:]) + [frame.columns[0]]].to_csv(timeline, index=False)
     V.load_positive(other)
+    # Combined in the first material's order (user 2026-11-08, zone [H-3, H+1]: the sides met their row kinds
+    # in another order); the rows are the same.
+    V.combine([corpus, other], tmp_path / 'columns')
+    a = (corpus / 'teacher' / 'positive_timeline.csv').read_text().splitlines(keepends=True)
+    got = pd.read_csv(tmp_path / 'columns' / 'teacher' / 'positive_timeline.csv', dtype=str, keep_default_na=False)
+    want = pd.concat([pd.read_csv(f / 'teacher' / 'positive_timeline.csv', dtype=str, keep_default_na=False)
+                      for f in (corpus, other)], ignore_index=True)
+    assert list(got.columns) == a[0].rstrip('\n').split(',')
+    pd.testing.assert_frame_equal(got, want[got.columns])
+    frame.assign(extra='1').to_csv(timeline, index=False)
     with pytest.raises(ValueError, match='different columns'):
-        V.combine([corpus, other], tmp_path / 'columns')
-    assert not (tmp_path / 'columns').exists()
+        V.combine([corpus, other], tmp_path / 'columns2')
+    assert not (tmp_path / 'columns2').exists()
 
 
 def test_v3_a_touch_starts_only_on_its_own_spike_near_h():
@@ -471,3 +481,11 @@ def test_v3_configs_are_the_v2_rules_with_the_touch_spike():
         v3 = V.load_config(path)
         assert v3 == dict(v2, version='V2_POSITIVE_ENTRY_V3', direction=side,
                           volume=dict(v2['volume'], activation='touch'))
+
+
+def test_combine_reorders_the_same_columns():
+    # User 2026-11-08 (zone [H-3, H+1]): the SHORT and LONG timelines met their row kinds in another order.
+    lines = ['b,a,c\n', '2,1,"x, y"\n']
+    assert V._reorder(lines, 'a,b,c\n', 'timeline') == ['a,b,c\n', '1,2,"x, y"\n']
+    with pytest.raises(ValueError, match='different columns'):
+        V._reorder(lines, 'a,b,d\n', 'timeline')

@@ -981,6 +981,20 @@ def _json(x):
     return json.loads(json.dumps(x, default=str))
 
 
+def _reorder(lines, header, name):
+    """CSV lines (header first) with their columns in the order of `header`; the same columns only."""
+    import csv
+    import io
+    rows = list(csv.reader(io.StringIO(''.join(lines))))
+    want = next(csv.reader(io.StringIO(header)))
+    if sorted(rows[0]) != sorted(want) or len(set(want)) != len(want):
+        raise ValueError(f'{name}: the materials have different columns')
+    at = [rows[0].index(c) for c in want]
+    out = io.StringIO()
+    csv.writer(out, lineterminator='\n').writerows([[r[i] for i in at] for r in rows])
+    return out.getvalue().splitlines(keepends=True)
+
+
 def _material_rules(folder):
     """The rules of a material but its direction: a combined material's
     source.json `rules`, or a single one's params.yaml."""
@@ -1092,8 +1106,9 @@ def combine(folders, out):
     (tmp / 'teacher').mkdir(parents=True)
     for name in TEACHER:
         texts = [(f / 'teacher' / f'{name}.csv').read_text().splitlines(keepends=True) for f in folders]
-        if any(t[0] != texts[0][0] for t in texts):
-            raise ValueError(f'{name}: the materials have different columns')
+        # The column order is that of the first row kind met, which can differ by side (zone [H-3, H+1],
+        # user 2026-11-08): the same columns in another order are written in the first material's order.
+        texts = [t if t[0] == texts[0][0] else _reorder(t, texts[0][0], name) for t in texts]
         (tmp / 'teacher' / f'{name}.csv').write_text(texts[0][0] + ''.join(x for t in texts for x in t[1:]))
     load_positive(tmp)
     source = dict(version=params[0]['version'], combined=[
