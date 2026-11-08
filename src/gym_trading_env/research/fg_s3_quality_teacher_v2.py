@@ -94,8 +94,10 @@ def trade_facts(env, entry, event, observed_until, *, day_complete=False,calenda
     def first(values, threshold):
         hit = np.flatnonzero(values >= threshold - 1e-10)
         return int(hit[0] + 1) if len(hit) else None
-    first_f = {str(k): first(favorable, k) for k in (1, 3, 5)}
-    first_a = {str(k): first(adverse, k) for k in (5, 10, 20, 30)}
+    # Thresholds in ticks of the product (named by them; envs.entry_product, user 2026-11-08).
+    tick = env.tick_points
+    first_f = {str(k): first(favorable, k * tick) for k in (1, 3, 5)}
+    first_a = {str(k): first(adverse, k * tick) for k in (5, 10, 20, 30)}
     reason = event['reason'] if event else None
     kind = {'TAKE_PROFIT': 'TP', 'STOP_LOSS': 'SL'}.get(reason,
                 'OTHER_EXIT' if event else 'RIGHT_CENSORED')
@@ -415,7 +417,7 @@ def _trace_native_trade(env,clone, *, day_complete=False,state,calendar_index,ma
         from gym_trading_env.rewards.single3_reward import Single3Reward,Single3RewardConfig
         if private_snapshot is None:clone.import_state(state)
         else:clone._restore_private_state(private_snapshot,source_env=env)
-        shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'),env.take_profit_points,env.stop_loss_points)
+        shadow=(Single3Reward(Single3RewardConfig.for_candidate('C1'),env.take_profit_points,env.stop_loss_points,env.tick_points)
                 if getattr(env,'_e_profile',None) is None else None)
         before = clone._calculate_equity()
         fills, exits = len(clone.fills), len(clone.attributions)

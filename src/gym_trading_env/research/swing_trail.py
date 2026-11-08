@@ -24,6 +24,8 @@ from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
+# Its distances, in ticks (envs.entry_product: times the product's tick_points).
+TICKS = (('breakeven_points',), ('lock_points',))
 
 
 def check_config(cfg):

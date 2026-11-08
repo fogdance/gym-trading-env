@@ -14,7 +14,7 @@ import yaml
 
 from gym_trading_env.research import ts_v2_positive as V
 from gym_trading_env.research.fg_single3_oracle import reference_candidate
-from gym_trading_env.research.ts_v1_corpus import native_env, read_yaml, train_row, write_inputs
+from gym_trading_env.research.ts_v1_corpus import native_env, train_row, write_inputs
 
 DREAMER = Path(__file__).resolve().parents[3] / 'dreamerv3'
 POOL = DREAMER / 'configs/thinking_student/markets/pool.json'
@@ -73,7 +73,8 @@ def synthetic(spike=(96, 99, 96, 98, 500.), peak=QUIET_PEAK, tail=_bars(88, 89) 
     a = dict(n=n, times=times, bobs=times - pd.Timedelta(minutes=1), times_ns=times.asi8,
              bob_ns=(times - pd.Timedelta(minutes=1)).asi8, open=o, high=h, low=lo, close=c, volume=v,
              valid=valid, segment_open=np.zeros(n, bool), sell_close=c - 1, sell_open=o - 1, buy_high=h + 1,
-             rv=V.volume_ratio(v, valid, 20), prefix=np.arange(n + 1), multiplier=20., side='SHORT', sign=1)
+             rv=V.volume_ratio(v, valid, 20), prefix=np.arange(n + 1), multiplier=20., tick=1,
+             side='SHORT', sign=1)
     buckets = [dict(High=float(h[i:i + 15].max()), bucket_end=times[i + 14], available_at=times[i + 14])
                for i in range(0, n - 14, 15)]
     return a, buckets
@@ -87,7 +88,7 @@ def run(a, buckets, cfg=CFG):
 
 def truncate(a, buckets, m):
     """The market as it was with bars [0, m) only."""
-    whole = ('n', 'multiplier', 'side', 'sign')
+    whole = ('n', 'multiplier', 'tick', 'side', 'sign')
     cut = {k: (v[:m + 1] if k == 'prefix' else v[:m]) for k, v in a.items() if k not in whole}
     last = a['times'][m - 1]
     return (dict(cut, n=m, **{k: a[k] for k in whole[1:]}),
@@ -239,8 +240,11 @@ def test_positives_keep_their_risk_and_their_fee_inclusive_pnl(corpus):
     cfg = V.load_config(CONFIG)
     assert len(entries) and set(entries.label_grade) <= {'EXCELLENT', 'GOOD'}
     inputs = corpus / 'inputs' / 'CZCE.FG809' / 'base'
-    contract = read_yaml(inputs / 'contract.yaml')
-    lot, lots, (terms,) = float(contract['lot_size']), V.LOTS, contract['terms']
+    # The env's costs are its product profile's (product.yaml of the inputs, user 2026-11-08), not the
+    # contract file's mirror.
+    from gym_trading_env.envs.entry_product import load_profile
+    terms = load_profile(inputs / 'product.yaml')['costs']
+    lot, lots = float(terms['lot_size']), V.LOTS
     assert terms['close_fee'] == terms['close_today_fee']
     fee = lots * (terms['open_fee'] + terms['close_fee'])
     e_ = cfg['entry']

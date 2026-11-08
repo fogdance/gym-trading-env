@@ -3,7 +3,7 @@
 positions of the V5 material, on both sides; it is causal (a live market's
 newest minute can be one); every gated stop is fixed at the fill +/- 5 with TP
 at 2R = 10; the timeline teaches WAIT before a touch's first positive only;
-the real costs come from a CZCE_FG cost preset and stay configurable."""
+the real costs come from a CZCE_FG cost preset of the product profile and stay configurable."""
 from decimal import Decimal
 from pathlib import Path
 
@@ -13,6 +13,7 @@ import pytest
 import yaml
 
 from gym_trading_env.envs.entry_env import FixedDirectionEntryEnv
+from gym_trading_env.envs.entry_product import read_preset
 from gym_trading_env.research import ts_v1_corpus as C
 from gym_trading_env.research import ts_v2_positive as V
 from gym_trading_env.research.fg_single3_oracle import CandidateIndex, empty_at
@@ -37,7 +38,7 @@ def pair(tmp_path_factory):
     for contract, side in SIDES.items():
         row, cfg = C.train_row(contract, POOL), V.load_config(RULES[side])
         tmp = tmp_path_factory.mktemp(contract)
-        _, events, candidates, _, stats = V._scan_job((row, cfg, str(tmp / 'material')))
+        _, events, candidates, _, stats = V._scan_job((row, cfg, str(tmp / 'material'), 1))  # FG: 1 point a tick
         env = C.native_env(C.write_inputs(row, tmp / 'gate', strategy=C.load_strategy(STRATEGY)), market=False)
         out[contract] = dict(row=row, cfg=cfg, side=side, events=events, candidates=candidates,
                              end=min(stats['flat_end'], stats['rows'] - 1), env=env, config=tmp / 'gate' / 'env.yaml')
@@ -153,13 +154,17 @@ def test_the_timeline_waits_before_a_touchs_first_positive_only():
 
 @real
 def test_the_real_costs_come_from_a_configurable_preset(pair, tmp_path):
-    costs = C.load_costs(str(PRESET), CONFIGS / 'markets' / 'x.yaml')
+    # Costs are only the product profile's (user 2026-11-08): products/fg.yaml names the preset, the
+    # inputs carry it inlined (product.yaml) and nothing else has costs.
+    costs = read_preset(PRESET)
     assert {k: costs[k] for k in ('open_fee', 'close_fee', 'close_today_fee', 'spread', 'slippage', 'lot_size')} == dict(
         open_fee=2.1, close_fee=2.1, close_today_fee=2.1, spread=0.0, slippage=0.0, lot_size=20.0)
     p = pair['CZCE.FG205']
     env = p['env']
     master = yaml.safe_load((p['config'].parent / 'single3.yaml').read_text())
-    assert master['costs'] == costs
+    assert 'costs' not in master and master['product_profile'] == 'product.yaml'
+    assert {k: v for k, v in env.product['costs'].items() if k not in ('source_path', 'source_sha256')} == {
+        k: v for k, v in costs.items() if k not in ('source_path', 'source_sha256')}
     # A rule ADD through env.step: it fills at the next open, carries its
     # touch and the touch's stop, and pays 2.1 CNY per lot each way.
     index = CandidateIndex(env)
@@ -174,39 +179,50 @@ def test_the_real_costs_come_from_a_configurable_preset(pair, tmp_path):
     assert Decimal(opening['stop_loss_price']) == Decimal(opening['price']) + 5
     assert Decimal(trade['open_fee']) == Decimal(trade['close_fee']) == Decimal('6.3')
     assert Decimal(trade['net_trade_pnl']) == Decimal(trade['gross_trade_pnl']) - Decimal('12.6')
-    # Another preset, other costs: nothing about them is fixed in the code.
+    # Another preset, other costs: nothing about them is fixed in the code; a profile with them gives them.
     other = tmp_path / 'other.yaml'
     other.write_text(yaml.safe_dump(dict(CZCE_FG=dict(lot_size=20, leverage=10, trading_fee_per_lot=1.5,
                                                       is_round_turn=True, spread=1))))
-    cheap = C.native_env(C.write_inputs(p['row'], tmp_path / 'cheap', costs=C.load_costs(str(other), tmp_path / 'x')),
+    pool_env = C.read_yaml(p['row']['env_config'])
+    for key in ('contract_config', 'direction_config', 'strategy_config'):
+        if pool_env['entry'].get(key):
+            pool_env['entry'][key] = str(C.resolve_path(p['row']['env_config'], pool_env['entry'][key]))
+    profile = C.read_yaml(CONFIGS / 'products/fg.yaml')
+    profile.update(costs=str(other), paper_pool=str(CONFIGS / 'markets/paper_pool.json'))
+    (tmp_path / 'fg_other.yaml').write_text(yaml.safe_dump(profile))
+    pool_master = C.read_yaml(pool_env['entry']['strategy_config'])
+    (tmp_path / 'master.yaml').write_text(yaml.safe_dump(dict(pool_master, product_profile=str(tmp_path / 'fg_other.yaml'))))
+    pool_env['entry']['strategy_config'] = str(tmp_path / 'master.yaml')
+    (tmp_path / 'env.yaml').write_text(yaml.safe_dump(pool_env))
+    cheap = C.native_env(C.write_inputs(dict(p['row'], env_config=str(tmp_path / 'env.yaml')), tmp_path / 'cheap'),
                          market=False)
     terms = cheap._terms_at(cheap._raw.index[100])
     assert (terms['open_fee'], terms['close_fee'], terms['spread']) == (Decimal('1.5'), Decimal('1.5'), Decimal('1'))
-    # Without costs a strategy keeps the pool master's: V2.1 / V2.2 inputs
-    # are written as they were, byte for byte.
+    # Costs anywhere else are refused: a master strategy's, a strategy's, a rules file's.
+    (tmp_path / 'master.yaml').write_text(yaml.safe_dump(dict(pool_master, costs=costs)))
+    with pytest.raises(ValueError, match="not the master strategy's"):
+        C.write_inputs(dict(p['row'], env_config=str(tmp_path / 'env.yaml')), tmp_path / 'refused')
+    for name, load, raw in (('strategy', C.load_strategy, C.read_yaml(STRATEGY)),
+                            ('rules', V.load_config, C.read_yaml(RULES['SHORT']))):
+        (tmp_path / f'{name}.yaml').write_text(yaml.safe_dump(dict(raw, costs='x.yaml')))
+        with pytest.raises(ValueError, match="costs are the product profile's"):
+            load(tmp_path / f'{name}.yaml')
+    # V2.1 / V2.2 inputs are written as they were but the costs: env.yaml and contract.yaml byte for
+    # byte; the master without its costs, with its product_profile (user 2026-11-08).
     old = C.write_inputs(p['row'], tmp_path / 'v21', strategy=C.load_strategy(STRATEGY_V21))
-    pool_env = C.read_yaml(p['row']['env_config'])
-    pool_master = C.read_yaml(C.resolve_path(p['row']['env_config'], pool_env['entry']['strategy_config']))
-    assert yaml.safe_load((old.parent / 'single3.yaml').read_text())['costs'] == pool_master['costs']
     if CORPUS_V22.exists():
-        for name in ('env.yaml', 'single3.yaml', 'contract.yaml'):
+        for name in ('env.yaml', 'contract.yaml'):
             assert (old.parent / name).read_bytes() == (CORPUS_V22 / name).read_bytes(), name
-    # A rules file whose costs are not the env's is refused.
-    bad = yaml.safe_load((p['config'].parent / 'single3.yaml').read_text())
-    bad['costs']['spread'] = 1.0
-    (p['config'].parent / 'single3.yaml').write_text(yaml.safe_dump(bad, sort_keys=False))
-    try:
-        with pytest.raises(ValueError, match="costs are not this env's"):
-            C.native_env(p['config'], market=False)
-    finally:
-        (p['config'].parent / 'single3.yaml').write_text(yaml.safe_dump(master, sort_keys=False))
+        written = yaml.safe_load((old.parent / 'single3.yaml').read_text())
+        before = yaml.safe_load((CORPUS_V22 / 'single3.yaml').read_text())
+        assert written.pop('product_profile') == 'product.yaml' and before.pop('costs')
+        assert written == before
 
 
 @real
 def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
     bad = yaml.safe_load(RULES['SHORT'].read_text())
     bad['entry']['fixed_stop_points'] = 11
-    bad.pop('costs')
     path = tmp_path / 'bad.yaml'
     path.write_text(yaml.safe_dump(bad))
     with pytest.raises(ValueError, match='fixed_stop_points'):
@@ -214,7 +230,8 @@ def test_v5_rules_refuse_a_fixed_stop_beyond_max_risk(tmp_path):
 
 
 
-STRATEGY_FG = CONFIGS / 'markets/strategy_v3_trend_trail_zone_h2.yaml'
+# FG's zone up to H + 2 is its product profile's rule_overrides (products/fg.yaml) under strategy_v3.yaml.
+STRATEGY_FG = CONFIGS / 'markets/strategy_v3.yaml'
 
 
 @real

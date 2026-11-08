@@ -94,10 +94,10 @@ def test_fg_export_truncates_late_night_before_writing_and_preserves_old_days(tm
 
 
 def test_existing_fg_preset_retains_per_side_cost_semantics(tmp_path):
-    from gym_trading_env.research.fg_entry_v1 import configured_fg_costs
+    from gym_trading_env.envs.entry_product import read_preset
     source=tmp_path/'1.yaml'
     source.write_text('CZCE_FG:\n  leverage: 10\n  lot_size: 20\n  trading_fee_per_lot: 3\n  is_round_turn: true\n  spread: 1\n')
-    values=configured_fg_costs(source)
+    values=read_preset(source)
     assert values['lot_size']==20 and values['margin_rate']==.1
     assert values['open_fee']==values['close_fee']==values['close_today_fee']==3
     assert values['spread']==1 and values['slippage']==0

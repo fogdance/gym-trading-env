@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import copy
 import json
+import re
 from decimal import Decimal, ROUND_CEILING, ROUND_FLOOR
 from pathlib import Path
 from types import SimpleNamespace
@@ -20,8 +21,9 @@ from .accounting import JournalEntry, Posting
 from .position import Position
 from .trade_record import TradeRecord
 from .trading_env import CustomTradingEnv
-from .entry_contract import (PRODUCTS, ContractTerms, DirectionSchedule, fingerprint,
+from .entry_contract import (ContractTerms, DirectionSchedule, fingerprint,
                              read_yaml, resolve_path, timestamp)
+from . import entry_product
 from gym_trading_env.utils.bar_source import CsvBarSource, normalize_csv_frame
 from gym_trading_env.rewards.fast_take_profit_reward import FastTakeProfitReward
 from gym_trading_env.utils.s3_market_clock import MarketClock, PROTOCOL as TIME_PROTOCOL
@@ -39,7 +41,8 @@ SINGLE3_FILL_MODEL = "minute_tp5_sl30_risk_first_v1"
 # The same minute fills (risk first) with the V2 structural SL / target-R TP.
 STRUCTURAL_FILL_MODEL = "minute_structural_risk_first_v1"
 # Fixed input scale of the TP distance in position_state (the default TP5),
-# not the env's rule: a policy sees the same inputs under any TP / SL.
+# not the env's rule: a policy sees the same inputs under any TP / SL. In
+# ticks of the product (envs.entry_product, user 2026-11-08).
 POSITION_TP_SCALE = 5
 PRIOR_HIGH_KEYS = ('pivot_left', 'pivot_right', 'lookback_buckets', 'departure_points')
 # entry.stop_rule values: the prior 15m high of a SHORT (V0.5), and the prior
@@ -103,7 +106,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             master=read_yaml(self.strategy_path)
             expected_reward = master.get('protocol') == SINGLE3_PROTOCOL if self.single3 else master['reward']=={
                     'formula':'60/(60+T_minutes)', 'complete_quantity':3,'take_profit_points':5}
-            if (master['product'] not in PRODUCTS or not expected_reward or master['expiry']['mode']!='main_qualification'):
+            if (not re.fullmatch(r'[A-Z]{1,2}', str(master['product'])) or not expected_reward
+                    or master['expiry']['mode']!='main_qualification'):
                 raise ValueError('Unified FG configuration changes the frozen business contract')
             for key,value in master['environment']['trading'].items():
                 if raw['trading'].get(key)!=value:
@@ -116,12 +120,21 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             self.directions = DirectionSchedule(read_yaml(resolve_path(config_path, self.entry_config["direction_config"])))
         self.market_clock = master.get('market_clock') if master is not None else self.entry_config.get('market_clock')
         terms_raw=read_yaml(resolve_path(config_path, self.entry_config["contract_config"]))
-        if master is not None:
-            terms_raw['lot_size']=master['costs']['lot_size']
+        # The product profile of the master strategy (envs.entry_product, user 2026-11-08), required: the
+        # contract is its product's, its costs are the profile's (the only place of a product's costs) and
+        # distances are in its ticks. An env without a master strategy has no product: its contract file's
+        # own costs and tick.
+        self.product = entry_product.master_profile(master, self.strategy_path) if master is not None else None
+        if self.product is not None:
+            costs = self.product['costs']
+            terms_raw['lot_size'] = costs['lot_size']
             for period in terms_raw['terms']:
-                period.update({k:master['costs'][k] for k in ('margin_rate','open_fee','close_fee',
-                    'close_today_fee','spread','slippage')})
+                period.update({k: costs[k] for k in entry_product.TERM_COSTS})
         self.terms = ContractTerms(terms_raw, self.contract)
+        if self.product is not None:
+            entry_product.check_contract(self.product, self.contract, self.terms.tick)
+        self.tick_points = (self.product['tick_points'] if self.product is not None
+                            else entry_product.tick_number(self.terms.tick))
         if e_profile is not None or self.entry_config.get('stop_rule'):
             self._e_schedule = dict(self.market_clock or {}, dated_sessions=terms_raw['sessions'])
         identity = {"env": raw, "strategy":master,"direction": self.directions.hash,
@@ -167,6 +180,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 if value <= 0 or not self.single3:
                     raise ValueError(f"entry.{key} is a positive Single3 distance in points")
                 setattr(self, key, value)
+        for key in entry_product.NATIVE_TICKS:  # in ticks too (FG: 1 point a tick)
+            setattr(self, key, getattr(self, key) * self.tick_points)
         self._stop_rule_config()
         self._rule_gate_config(config_path, master)
         self._exit_rule_config()
@@ -386,7 +401,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                 or not (isinstance(given['target_r'], (int, float)) and given['target_r'] > 0)):
             raise ValueError(f'entry.stop_rule: positive integer points, max_risk_points >= '
                              f'stop_above_points, prior_high {PRIOR_HIGH_KEYS}, target_r > 0')
-        self.stop_rule = dict(given)
+        self.stop_rule = entry_product.in_points(given, entry_product.STOP_RULE_TICKS, self.tick_points)
 
     def _rule_gate_config(self, config_path, master):
         """entry.rule_gate (V2.3, user 2026-11-05: "规则决定学生能在哪里交易；
@@ -394,26 +409,32 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         material (ts_v2_positive.load_config). An ADD is legal only at their
         rule positions (_gate: rule_cursors, the material's own pass), and its
         stop is the touch's own line (planned_exit). The rules must share the
-        stop rule's lines, stop and target, keep the planned risk of a rule
-        position within max_risk_points, and carry this env's costs. Rules V5
+        stop rule's lines, stop and target, and keep the planned risk of a rule
+        position within max_risk_points; their quotes are this env's (the costs
+        of its product profile, as the material's). Rules V5
         (user 2026-11-05, "止损固定5点"): entry.fixed_stop_points sets R from the
         fill (FIXED), the same on both sides and within max_risk_points."""
         paths = self.entry_config.get('rule_gate')
         if paths is None:
             return
-        from gym_trading_env.research.ts_v2_positive import load_config
+        from gym_trading_env.research.ts_v2_positive import check_config, load_config
         r = self.stop_rule
+        # entry.product_rules (paper / live, user 2026-11-08): the rules with the product profile's
+        # rule_overrides (FG: the zone up to H + 2), so one strategy serves every product.
+        product_rules = self.entry_config.get('product_rules', False)
+        if type(product_rules) is not bool:
+            raise ValueError('entry.product_rules is true or false')
         if (not r or r['stop_rule'] != 'prior_15m_extreme' or not isinstance(paths, dict)
                 or set(paths) != {'SHORT', 'LONG'} or master is None):
             raise ValueError('entry.rule_gate {SHORT, LONG} needs stop_rule prior_15m_extreme and a strategy_config')
-        # The rules' costs must agree with the env's only where they place the rule positions: the
-        # spread of the decision quote. Point value, fees and margin are the strategy's alone, so one
-        # rules file serves every product (user 2026-11-06: "应该只需要改1个地方才对，这样配置冗余了").
-        values = ('spread',)
         gate = {}
         for side, path in paths.items():
-            cfg = load_config(resolve_path(config_path, path))
-            e, costs = cfg['entry'], cfg.get('costs')
+            source = resolve_path(config_path, path)
+            cfg = load_config(source)
+            if product_rules and self.product['rule_overrides']:
+                cfg = check_config(entry_product.with_overrides(cfg, self.product['rule_overrides'], source), source)
+            cfg = entry_product.in_points(cfg, entry_product.RULE_TICKS, self.tick_points)
+            e = cfg['entry']
             if (cfg['direction'] != side or e['stop_above_points'] != r['stop_above_points']
                     or e['target_r'] != r['target_r'] or cfg['prior_high'] != r['prior_high']
                     or e['stop_above_points'] + e['zone_points'] > r['max_risk_points']):
@@ -421,8 +442,6 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             fixed = e.get('fixed_stop_points')
             if fixed is not None and fixed > r['max_risk_points']:
                 raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points')
-            if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
-                raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s (spread)')
             gate[side] = cfg
         if len({c['entry'].get('fixed_stop_points') for c in gate.values()}) != 1:
             raise ValueError('entry.rule_gate: SHORT and LONG have different stops')
@@ -436,10 +455,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         cfg = self.entry_config.get('exit_rule')
         if cfg is None:
             return
-        from gym_trading_env.research.swing_trail import check_config
+        from gym_trading_env.research.swing_trail import TICKS, check_config
         if self.rule_gate is None:
             raise ValueError('entry.exit_rule needs entry.rule_gate')
-        self.exit_rule = check_config(cfg)
+        self.exit_rule = entry_product.in_points(check_config(cfg), TICKS, self.tick_points)
 
     def _swing_chain(self):
         """The 15m swings of the market loaded (research.swing_trail.Swings), once per market."""
@@ -634,7 +653,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
                   else Decimal(item['planned_exit']['reference_tp_price']))
             distance = sign * (tp - self.current_price)
             offset = 3 + 3 * item["obs_slot"]
-            position[offset:offset+3] = [float(pos.size / 3), float(distance / POSITION_TP_SCALE),
+            position[offset:offset+3] = [float(pos.size / 3), float(distance / (POSITION_TP_SCALE * Decimal(str(self.tick_points)))),
                                        np.log1p(age) / np.log1p(43200)]
         position[1] = float(held_quantity / self.max_lots)
         if held_quantity != self.net_lots:
@@ -826,7 +845,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if not self.single3:
             return FastTakeProfitReward()
         from gym_trading_env.rewards.single3_reward import Single3Reward
-        return Single3Reward(self.reward_config, self.take_profit_points, self.stop_loss_points)
+        return Single3Reward(self.reward_config, self.take_profit_points, self.stop_loss_points, self.tick_points)
 
     def _exit_request(self, item, pos, row, bob, time):
         """Shared executable quote rules; financial mutation stays in settle_exit.
@@ -1119,7 +1138,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         if self.single3:
             from gym_trading_env.rewards.single3_reward import Single3Reward
             self.reward_function = Single3Reward.restore(state['reward_state'], self.reward_config,
-                                                         self.take_profit_points, self.stop_loss_points)
+                                                         self.take_profit_points, self.stop_loss_points,
+                                                         self.tick_points)
             self.last_reward_components = state['last_reward_components']
             if self.reward_function.rewarded != set(state['rewarded']):
                 raise ValueError('Single3 rewarded identity mismatch')

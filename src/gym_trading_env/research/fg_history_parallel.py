@@ -110,6 +110,9 @@ def run_events(config_path, *, workers=None, roles=('train', 'validation'), cont
     """Blind event execution has no CLI switch. Only pre-blind tasks are admitted."""
     config = yaml.safe_load(Path(config_path).read_text())
     master = yaml.safe_load(Path(config['master_config']).read_text())
+    # Costs are the master's product profile's (envs.entry_product, user 2026-11-08).
+    from gym_trading_env.envs.entry_product import master_profile
+    master['costs'] = master_profile(master, config['master_config'])['costs']
     if not roles or set(roles) - {'train', 'validation'}:
         raise ValueError('Blind labels remain sealed; only train/validation allowed')
     if config['parallel']['start_method'] != 'spawn' or config['parallel']['native_threads_per_worker'] != 1:

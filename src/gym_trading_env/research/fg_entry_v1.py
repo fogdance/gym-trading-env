@@ -21,27 +21,6 @@ def write_json(path, value):
     temporary.replace(path)
 
 
-def configured_fg_costs(path):
-    """Translate the user's existing FG preset using legacy per-side fee semantics. Another
-    product's preset has the same format under its own key (RB, user 2026-11-06: "paper 里rb是1点10元"):
-    CZCE_FG, or the preset's only key."""
-    from decimal import Decimal
-    presets=read_yaml(path)
-    if "CZCE_FG" not in presets and len(presets)!=1:
-        raise ValueError(f"{path}: a cost preset has CZCE_FG or one product key")
-    raw=presets["CZCE_FG"] if "CZCE_FG" in presets else next(iter(presets.values()))
-    leverage=Decimal(str(raw["leverage"]))
-    if leverage<=0 or Decimal(str(raw["lot_size"]))<=0:
-        raise ValueError("Invalid configured FG leverage or multiplier")
-    fee=Decimal(str(raw["trading_fee_per_lot"]))
-    close=fee if raw["is_round_turn"] else Decimal(0)
-    return dict(source_path=str(Path(path).resolve()),source_sha256=file_hash(path),
-        cost_basis="user_configured_constant_not_historical_exchange_schedule",
-        lot_size=float(raw["lot_size"]),margin_rate=float(1/leverage),
-        open_fee=float(fee),close_fee=float(close),close_today_fee=float(close),
-        spread=float(raw["spread"]),slippage=0.0)
-
-
 def trim_fg_export_minutes(frame):
     """FG export policy: retain 23:00 closes; omit 23:01--23:30 historical bars."""
     times=pd.DatetimeIndex([timestamp(t) for t in frame.Date])

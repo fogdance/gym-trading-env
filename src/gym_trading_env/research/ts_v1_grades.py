@@ -27,6 +27,10 @@ trading day of the fill. A TP fills at the first such quote the env's TP
 distance (entry.take_profit_points, TP5 by default) and a tick ahead, so the
 room of a same-day TP is at least that much.
 
+mae_points and room_points are in ticks of the product (envs.entry_product,
+user 2026-11-08); grade compares them, times the env's tick_points, with
+the facts in points.
+
 The grade of a trade is its worst grade. SL and other exits are POOR, and
 so is a TP on a later day. A right-censored trade, an ADD that did not fill
 and a same-day TP whose room window the data cuts have none. GOOD or better
@@ -155,6 +159,7 @@ def grade(env, facts, grades, index=None, calendar=None, strict=None):
     out, m = measure(env, facts, index, calendar)
     n, clock, day_last, stop = m['n'], m['clock'], m['day_last'], m['stop']
     t_lim, m_lim, r_lim = (grades[k] for k in KEYS[:3])
+    m_lim, r_lim = ([x * env.tick_points for x in lim] for lim in (m_lim, r_lim))  # ticks -> points
     after = grades['room_after_tp_minutes']
     out.update(room=np.full(n, np.nan, np.float32), room_complete=np.zeros(n, bool),
                **{f'grade_{k}': np.full(n, -1, np.int8) for k in ('time', 'mae', 'room')},

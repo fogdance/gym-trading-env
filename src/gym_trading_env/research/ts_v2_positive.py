@@ -30,6 +30,12 @@ candidate stays in audit/ with its reason and never becomes material.
 Candidates of one touch, and of the touches of one line, are alternatives,
 each traded from a flat account; nothing adds their results.
 
+Distances of a rules file are in ticks of the product (envs.entry_product,
+user 2026-11-08): produce converts them to points once (in_points) for the
+product of its rows (one product a material), and every price, R, MAE / MFE
+and label is in points; the Native trades get their TP / SL in ticks, as
+every env input. source.json records the product and its tick_points.
+
   python -m gym_trading_env.research.ts_v2_positive \\
       --pool ../dreamerv3/configs/thinking_student/markets/pool.json \\
       --config ../dreamerv3/configs/thinking_student/v2_positive_entry.yaml \\
@@ -54,6 +60,7 @@ import pandas as pd
 import yaml
 
 from gym_trading_env.envs.entry_contract import read_yaml, resolve_path
+from gym_trading_env.envs.entry_product import RULE_TICKS, in_points, master_profile
 from .fg_single3_oracle import CandidateIndex, reference_candidate
 from .ts_v1_corpus import _pool, _repos, native_env, train_row, write_inputs
 from .ts_v1_grades import _room
@@ -68,8 +75,10 @@ from .ts_v1_grades import _room
 # "止损固定5点", "全部：SL = 成交价+5"): V4 with entry.fixed_stop_points, the
 # SL at the fill + 5 (R 5, TP 2R = 10) for every ADD, a gap fill included;
 # the line H still places the rule positions and ends a touch it breaks.
+# Costs are the product profile's (envs.entry_product, user 2026-11-08), not
+# a rules file's.
 ACTIVATION = {'V2_POSITIVE_ENTRY_V2': 'line', 'V2_POSITIVE_ENTRY_V3': 'touch', 'V2_POSITIVE_ENTRY_V4': 'touch',
-              'V2_POSITIVE_ENTRY_V5': 'touch', 'V2_POSITIVE_ENTRY_V7': 'touch'}
+              'V2_POSITIVE_ENTRY_V5': 'touch'}
 SIDES = ('SHORT', 'LONG')
 LOTS = 3
 # Order in which a candidate's first failing condition names its reason.
@@ -88,19 +97,25 @@ LABELS = dict(exit_reason='exit_reason', exit_cursor='exit_cursor', exit_time='e
 # ---- inputs ----
 
 def load_config(path):
-    cfg = yaml.safe_load(Path(path).read_text())
+    return check_config(yaml.safe_load(Path(path).read_text()), path)
+
+
+def check_config(cfg, path):
+    """A rules cfg checked (load_config; again by the env after a product's rule_overrides,
+    envs.entry_product); its distances in ticks."""
     if cfg.get('version') not in ACTIVATION or cfg.get('direction') not in SIDES:
         raise ValueError(f'{path}: not a {" / ".join(ACTIVATION)} SHORT or LONG config')
+    if 'costs' in cfg:
+        raise ValueError(f'{path}: costs are the product profile\'s (envs.entry_product), not a rules file\'s')
     if cfg['volume'].get('activation', 'line') != ACTIVATION[cfg['version']]:
         raise ValueError(f'{path}: {cfg["version"]} needs volume.activation {ACTIVATION[cfg["version"]]}')
     e = cfg['entry']
     if not 0 < e['stop_above_points'] <= e['stop_above_points'] + e['zone_points'] <= e['max_risk_points']:
         raise ValueError(f'{path}: the zone and SL allow a risk above max_risk_points')
-    # Rules V7 (paper only, user 2026-11-06: "[H−5, H+2]，以及后续回落到[H−5, H+2]都可以入场";
-    # "V7再调整下>h && <H+6的回落可以做，>=h+6的回落不做"): the zone reaches zone_above_points above the line,
-    # still below its stop; a touch ends once the SL quote reaches H + touch_break_points (default:
-    # the stop), so with 6 a touch that went past H + 5 but stayed below H + 6 goes on and a fall
-    # back into the zone is a rule position again. A line still ends at H + stop outside a touch.
+    # Optional, paper / live only through a product's rule_overrides (user 2026-11-06: "[H−5, H+2]，
+    # 以及后续回落到[H−5, H+2]都可以入场"; FG's profile): the zone reaches zone_above_points above the
+    # line, still below its stop; a touch ends once the SL quote reaches H + touch_break_points
+    # (default: the stop). A line still ends at H + stop outside a touch.
     above = e.get('zone_above_points', 0)  # read, not written: params.yaml of V2-V5 material stays the same
     if not 0 <= above < e['stop_above_points']:
         raise ValueError(f'{path}: entry.zone_above_points is >= 0 and below stop_above_points')
@@ -111,10 +126,20 @@ def load_config(path):
         raise ValueError(f'{path}: entry.fixed_stop_points is a positive integer <= max_risk_points')
     if not isinstance(cfg['timeline'].get('wait_in_rule', False), bool):
         raise ValueError(f'{path}: timeline.wait_in_rule is true or false')
-    if 'costs' in cfg:  # a cost preset path relative to this file, read (ts_v1_corpus.load_costs)
-        from .ts_v1_corpus import load_costs
-        cfg['costs'] = load_costs(cfg['costs'], path)
     return cfg
+
+
+def rows_profile(rows):
+    """The product profile of a material's rows (each env's master strategy): one product."""
+    profiles = {}
+    for row in rows:
+        entry = read_yaml(row['env_config'])['entry']
+        path = resolve_path(row['env_config'], entry['strategy_config'])
+        profile = master_profile(read_yaml(path), path)
+        profiles[profile['product']] = profile
+    if len(profiles) != 1:
+        raise ValueError(f'a material is of one product; these rows are of {sorted(profiles)}')
+    return profiles.popitem()[1]
 
 
 def contract_direction(row):
@@ -161,9 +186,14 @@ def fixed_stop(cfg):
     return cfg['entry'].get('fixed_stop_points')
 
 
-def tp_points(cfg, risk, multiple):
-    """TP distance at `multiple` R, rounded away from the fill."""
-    return int(math.ceil(multiple * risk - 1e-9))
+def tp_ticks(risk_ticks, multiple):
+    """TP distance in ticks at `multiple` R (in ticks), rounded away from the fill."""
+    return int(math.ceil(multiple * risk_ticks - 1e-9))
+
+
+def tp_points(risk, multiple, tick):
+    """TP distance in points at `multiple` R (in points), on the tick grid away from the fill."""
+    return tp_ticks(risk / tick, multiple) * tick
 
 
 # ---- causal market facts ----
@@ -200,7 +230,7 @@ def market_arrays(env, cfg):
         buy_high=quotes(top, times, False),        # the quote the position's SL checks
         rv=volume_ratio(volume, eligible, v['baseline_minutes']),
         prefix=env.market_clock_counter.prefix, multiplier=float(env.terms.multiplier),
-        side=side, sign=s)
+        tick=env.tick_points, side=side, sign=s)
 
 
 def volume_ratio(volume, eligible, baseline):
@@ -413,7 +443,7 @@ def _candidate(a, event, s, cfg, contract):
         obs_minutes_since_activation=int(a['prefix'][s + 1] - a['prefix'][t + 1]),
         obs_touch=event['touch'], obs_line_spike_rv=event['line_spike_rv'],
         obs_sl=q + planned if fixed is not None else H + e['stop_above_points'], obs_planned_risk=planned,
-        obs_planned_tp=q - tp_points(cfg, planned, e['target_r']),
+        obs_planned_tp=q - tp_points(planned, e['target_r'], a['tick']),
         label_fill_cursor=s + 1, label_fill_time=str(a['bobs'][s + 1]), label_fill_expected=fill,
         label_R=risk, label_fill_in_zone=bool(H - e['zone_points'] <= fill <= H))
 
@@ -610,11 +640,11 @@ def grade_reason(c, cfg):
 # ---- production ----
 
 def _scan_job(job):
-    row, cfg, folder = job
-    config = write_inputs(row, Path(folder) / 'inputs' / row['contract'] / 'base', costs=cfg.get('costs'))
+    row, cfg, folder, tick = job  # cfg in points (produce)
+    config = write_inputs(row, Path(folder) / 'inputs' / row['contract'] / 'base')
     env = native_env(config, market=True)
-    if (env.take_profit_points, env.stop_loss_points) != (5, 30) or env.direction_at(
-            env._raw.index[0], 0) not in (cfg['direction'], 'NO_TRADE'):
+    if env.tick_points != tick or (env.take_profit_points, env.stop_loss_points) != (5 * tick, 30 * tick) \
+            or env.direction_at(env._raw.index[0], 0) not in (cfg['direction'], 'NO_TRADE'):
         raise ValueError(f'{row["contract"]}: unexpected base env')
     a = market_arrays(env, cfg)
     levels, buckets = prior_highs(env, a, cfg)
@@ -661,28 +691,41 @@ def _sha256(path):
     return digest.hexdigest()
 
 
-def _trade_inputs(rows, cfg, folder, candidates):
+def _trade_inputs(rows, cfg, folder, candidates, tick):
     """One env inputs folder per contract, risk and target; the jobs of the
-    in-zone candidates of each."""
+    in-zone candidates of each. cfg and the candidates' label_R are in
+    points; the env inputs (TP / SL), the folder names and the job's
+    `risk` in ticks (risk_ticks)."""
     jobs = []
     e = cfg['entry']
     by_row = {r['contract']: r for r in rows}
     for contract in sorted({c['contract'] for c in candidates}):
         mine = [c for c in candidates if c['contract'] == contract
                 and (c['label_fill_in_zone'] or fixed_stop(cfg) is not None)]
-        for risk in sorted({int(c['label_R']) for c in mine}):
-            cursors = [c['cursor'] for c in mine if int(c['label_R']) == risk]
+        for risk in sorted({risk_ticks(c, tick) for c in mine}):
+            cursors = [c['cursor'] for c in mine if risk_ticks(c, tick) == risk]
             for name, multiple in (('target', e['target_r']), ('parallel', e['parallel_r'])):
-                tp = tp_points(cfg, risk, multiple)
+                tp = tp_ticks(risk, multiple)
                 rules = dict(take_profit_points=tp, stop_loss_points=risk)
-                config = write_inputs(by_row[contract], Path(folder) / 'inputs' / contract / f'R{risk}_TP{tp}', rules,
-                                      costs=cfg.get('costs'))
+                config = write_inputs(by_row[contract], Path(folder) / 'inputs' / contract / f'R{risk}_TP{tp}', rules)
                 jobs.append(dict(contract=contract, risk=risk, name=name, tp=tp,
                                  config=str(config), cursors=cursors))
     return jobs
 
 
+def risk_ticks(c, tick):
+    """A candidate's R (label_R, points) in whole ticks."""
+    ticks = round(c['label_R'] / tick)
+    if abs(ticks * tick - c['label_R']) > 1e-9:
+        raise ValueError(f'{c["contract"]} cursor {c["cursor"]}: R {c["label_R"]} is not on the {tick}-point tick grid')
+    return ticks
+
+
 def produce(rows, cfg, out, workers, log=print, command=None):
+    """The material of the rules `cfg` (load_config, in ticks) over `rows` (one product)."""
+    profile = rows_profile(rows)
+    tick, rules = profile['tick_points'], cfg
+    cfg = in_points(rules, RULE_TICKS, tick)  # every distance below in points
     out = Path(out)
     if out.exists():
         raise FileExistsError(f'{out} exists; remove it to regenerate')
@@ -692,7 +735,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     tmp.mkdir(parents=True)
     began, seconds = time.monotonic(), {}
     with _pool(max(1, min(workers, len(rows)))) as pool:
-        scanned = list(pool.map(_scan_job, [(r, cfg, str(tmp)) for r in rows]))
+        scanned = list(pool.map(_scan_job, [(r, cfg, str(tmp), tick) for r in rows]))
     seconds['scan'] = round(time.monotonic() - began, 1)
     events = [x for _, ev, _, _, _ in scanned for x in ev]
     candidates = [c for _, _, cs, _, _ in scanned for c in cs]
@@ -700,7 +743,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     stats = {name: s for name, _, _, _, s in scanned}
     log(f'scan: {len(events)} events, {len(candidates)} candidates ({seconds["scan"]} s)')
 
-    jobs = _trade_inputs(rows, cfg, tmp, candidates)
+    jobs = _trade_inputs(rows, cfg, tmp, candidates, tick)
     side, s = cfg['direction'], sign(cfg['direction'])
     started = time.monotonic()
     with _pool(max(1, min(workers, len(jobs)))) as pool:
@@ -718,9 +761,9 @@ def produce(rows, cfg, out, workers, log=print, command=None):
             c.update({prefix + new: rec.get(old, '' if old in ('exit_reason', 'exit_time') else math.nan)
                       for old, new in LABELS.items()})
             c[prefix + 'filled'] = bool(rec.get('filled', False))
-        c['label_tp15_points'] = tp_points(cfg, c['label_R'], cfg['entry']['parallel_r']) \
+        c['label_tp15_points'] = tp_points(c['label_R'], cfg['entry']['parallel_r'], tick) \
             if c['label_fill_in_zone'] or fixed_stop(cfg) is not None else math.nan
-        c['label_tp'] = c['label_fill_expected'] - s * tp_points(cfg, c['label_R'], cfg['entry']['target_r'])
+        c['label_tp'] = c['label_fill_expected'] - s * tp_points(c['label_R'], cfg['entry']['target_r'], tick)
         # V5: the SL of the actual fill (obs_sl is the one planned at the quote).
         c['label_sl'] = c['obs_sl'] if fixed_stop(cfg) is None else c['label_fill_expected'] + s * c['label_R']
         mult = stats[c['contract']]['multiplier']
@@ -739,7 +782,7 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     for j in jobs:
         if j['name'] == 'target':
             cursors = [c['cursor'] for c in candidates if c['contract'] == j['contract']
-                       and c['reason'] == 'POSITIVE' and int(c['label_R']) == j['risk']]
+                       and c['reason'] == 'POSITIVE' and risk_ticks(c, tick) == j['risk']]
             if cursors:
                 verify.append((j['config'], cursors, cursors, side))
     with _pool(max(1, min(workers, len(verify) or 1))) as pool:
@@ -758,14 +801,14 @@ def produce(rows, cfg, out, workers, log=print, command=None):
     write_tables(tmp, tables)
     summary = audit_summary(events, candidates, stats, cfg)
     (tmp / 'audit' / 'audit_summary.json').write_text(json.dumps(summary, indent=1))
-    (tmp / 'params.yaml').write_text(yaml.safe_dump(cfg, sort_keys=False))
+    (tmp / 'params.yaml').write_text(yaml.safe_dump(rules, sort_keys=False))  # as configured, in ticks
     started = time.monotonic()
     from .ts_v2_positive_plot import plot_events
     chosen = choose_figures(tables['positive_events'], cfg)
     figures = plot_events(tmp / 'figures', chosen, tables, markets, cfg)
     seconds['figures'] = round(time.monotonic() - started, 1)
-    source = dict(version=cfg['version'], direction=side, command=command, fold='TRAIN', mode='OFFLINE_TRAIN',
-                  rows=rows, stats=stats, figures=figures, workers=workers,
+    source = dict(version=cfg['version'], direction=side, product=profile['product'], tick_points=tick,
+                  command=command, fold='TRAIN', mode='OFFLINE_TRAIN', rows=rows, stats=stats, figures=figures, workers=workers,
                   seconds=dict(seconds, total=round(time.monotonic() - began, 1)),
                   created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
     (tmp / 'source.json').write_text(json.dumps(source, indent=1, default=str))
@@ -915,7 +958,8 @@ def graded_teacher(env, facts, folder, contract, side, index=None):
     out, m = measure(env, facts, index)
     n, max_risk = m['n'], env.stop_rule['max_risk_points']
     gate = getattr(env, 'rule_gate', None)
-    if gate is not None and _material_rules(folder) != _json({k: v for k, v in gate[side].items() if k != 'direction'}):
+    if gate is not None and material_rules_points(folder, env.tick_points) != _json(
+            {k: v for k, v in gate[side].items() if k != 'direction'}):
         raise ValueError(f'{contract}: the material {folder} is not of the env\'s rule gate')
     tables = load_positive(folder)
     entries = tables['positive_entries'][tables['positive_entries'].contract == contract]
@@ -981,14 +1025,17 @@ def _json(x):
     return json.loads(json.dumps(x, default=str))
 
 
-def _material_rules(folder):
-    """The rules of a material but its direction: a combined material's
-    source.json `rules`, or a single one's params.yaml."""
+def material_rules_points(folder, tick):
+    """The rules of a material but its direction (a combined material's
+    source.json `rules`, or a single one's params.yaml), its distances in
+    points, as an env's rule gate has them; the env's `tick` must be the
+    material's tick_points."""
     source = json.loads((Path(folder) / 'source.json').read_text())
-    if 'rules' in source:
-        return _json(source['rules'])
-    return _json({k: v for k, v in yaml.safe_load((Path(folder) / 'params.yaml').read_text()).items()
-                  if k != 'direction'})
+    if source['tick_points'] != tick:
+        raise ValueError(f'{folder}: a material of {source["tick_points"]}-point ticks, the env\'s are {tick}')
+    rules = source['rules'] if 'rules' in source else {
+        k: v for k, v in yaml.safe_load((Path(folder) / 'params.yaml').read_text()).items() if k != 'direction'}
+    return _json(in_points(rules, RULE_TICKS, tick))
 
 
 def audit_summary(events, candidates, stats, cfg):
@@ -1074,7 +1121,8 @@ def combine(folders, out):
     material and its LONG mirror), so that every corpus has one graded
     teacher: each teacher table is the header and then the rows of every
     folder's, byte for byte and in the order given. The folders must share
-    the version and every rule but the direction, and no contract."""
+    the version, the product and every rule but the direction, and no
+    contract."""
     out = Path(out)
     if out.exists():
         raise FileExistsError(f'{out} exists; remove it to combine again')
@@ -1083,6 +1131,11 @@ def combine(folders, out):
     rules = [{k: v for k, v in x.items() if k != 'direction'} for x in params]
     if any(x['version'] not in ACTIVATION for x in params) or any(r != rules[0] for r in rules):
         raise ValueError('the materials differ in version or in rules other than the direction')
+    products = {(x['product'], x['tick_points']) for x in
+                (json.loads((f / 'source.json').read_text()) for f in folders)}
+    if len(products) != 1:
+        raise ValueError(f'the materials are of different products {sorted(products)}')
+    (product, tick), = products
     contracts = [set(load_positive(f)['positive_events'].contract) for f in folders]
     if sum(map(len, contracts)) != len(set().union(*contracts)):
         raise ValueError('a contract is in more than one material')
@@ -1100,7 +1153,7 @@ def combine(folders, out):
         dict(folder=str(f.resolve()), direction=x['direction'], contracts=sorted(c),
              sha256={name: _sha256(f / 'teacher' / f'{name}.csv') for name in TEACHER})
         for f, x, c in zip(folders, params, contracts)],
-        rules=rules[0], created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
+        rules=rules[0], product=product, tick_points=tick, created=time.strftime('%Y-%m-%d %H:%M:%S'), repos=_repos())
     (tmp / 'source.json').write_text(json.dumps(source, indent=1, default=str))
     tmp.rename(out)
     return source

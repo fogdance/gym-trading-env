@@ -50,6 +50,9 @@ def run_folds(config_path, *, workers=None, plan_only=False):
     from gym_trading_env.research.fg_history_parallel import run_events
     config = yaml.safe_load(Path(config_path).read_text())
     master = yaml.safe_load(Path(config['master_config']).read_text())
+    # Costs are the master's product profile's (envs.entry_product, user 2026-11-08).
+    from gym_trading_env.envs.entry_product import master_profile
+    master['costs'] = master_profile(master, config['master_config'])['costs']
     workers = config['parallel']['workers'] if workers is None else workers
     audit = run_events(config_path, workers=workers, plan_only=True)
     manifest = json.loads(Path(config['export_manifest']).read_text())

@@ -39,6 +39,9 @@ The Native TP / SL distances are those of the pool env (TP5 / SL30 unless
 it sets entry.take_profit_points / stop_loss_points); --take-profit-points
 and --stop-loss-points write other distances into inputs/env.yaml, so every
 facts, grades, collection, CF and exam built from the corpus uses them.
+Distances given are in ticks of the product (envs.entry_product, user
+2026-11-08); facts and labels are in points, and source.json records the
+product and its tick_points (dreamer labels.outcome_labels reads it).
 
 V2 (V0.5, user 2026-10-31): --strategy adds a strategy overlay (dreamerv3/
 configs/thinking_student/markets/strategy_v2_short_structural.yaml: the
@@ -142,24 +145,7 @@ def dev_row(contract, pool):
     return row
 
 
-# The `costs` block of a master strategy (gym fg_entry_v1.configured_fg_costs).
-COST_KEYS = ('source_path', 'source_sha256', 'cost_basis', 'lot_size', 'margin_rate', 'open_fee', 'close_fee',
-             'close_today_fee', 'spread', 'slippage')
 STRATEGY_KEYS = {'version', 'direction', 'entry', 'reward'}
-
-
-def load_costs(value, base):
-    """A `costs` block: a CZCE_FG cost preset path (relative to the file
-    `base`) read by fg_entry_v1.configured_fg_costs, as the master
-    strategies were built (user 2026-11-05: "交易成本需要可配置，以前就是
-    可配置的"), or such a block already read (a written copy)."""
-    if isinstance(value, str):
-        from .fg_entry_v1 import configured_fg_costs
-        value = configured_fg_costs(resolve_path(base, value))
-    if not isinstance(value, dict) or set(value) != set(COST_KEYS) or any(
-            not isinstance(value[k], (int, float)) or value[k] < 0 for k in COST_KEYS[3:]):
-        raise ValueError(f'{base}: costs is a CZCE_FG cost preset path or a costs block {COST_KEYS}')
-    return dict(value)
 
 
 def load_strategy(path):
@@ -168,18 +154,18 @@ def load_strategy(path):
     replaces the Quality TP reward, for one external `direction`: SHORT, or
     BOTH (V2.1, user 2026-11-04: each contract in the direction its env
     trades, with the two-sided stop rule prior_15m_extreme). V2.3 (user
-    2026-11-05) may add `costs` (a CZCE_FG cost preset path, load_costs) in
-    place of the costs of the pool env's master strategy, and
-    `entry.rule_gate` ({SHORT, LONG}: V4 material rules files) that opens
-    an ADD only at their rule positions; both paths are relative to the
-    strategy file and come back resolved."""
+    2026-11-05) may add `entry.rule_gate` ({SHORT, LONG}: V4 material rules
+    files, relative to the strategy file, come back resolved) that opens an
+    ADD only at their rule positions. Distances are in ticks and costs are
+    the market's product profile's (envs.entry_product, user 2026-11-08):
+    a strategy with `costs` is refused."""
     strategy = read_yaml(path)
-    if not STRATEGY_KEYS <= set(strategy) <= STRATEGY_KEYS | {'costs'} or strategy['direction'] not in ('SHORT', 'BOTH'):
-        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry, reward (and costs)')
+    if 'costs' in strategy:
+        raise ValueError(f'{path}: costs are the product profile\'s (envs.entry_product), not a strategy\'s')
+    if set(strategy) != STRATEGY_KEYS or strategy['direction'] not in ('SHORT', 'BOTH'):
+        raise ValueError(f'{path}: a SHORT or BOTH strategy of version, direction, entry, reward')
     if strategy['direction'] == 'BOTH' and strategy['entry'].get('stop_rule') != 'prior_15m_extreme':
         raise ValueError(f'{path}: a BOTH strategy needs entry.stop_rule prior_15m_extreme')
-    if 'costs' in strategy:
-        strategy['costs'] = load_costs(strategy['costs'], path)
     gate = strategy['entry'].get('rule_gate')
     if gate is not None:
         if strategy['direction'] != 'BOTH' or not isinstance(gate, dict) or set(gate) != {'SHORT', 'LONG'}:
@@ -192,20 +178,21 @@ def load_strategy(path):
     return strategy
 
 
-def write_inputs(row, folder, rules=None, strategy=None, costs=None):
+def write_inputs(row, folder, rules=None, strategy=None):
     """TS env inputs: the pool env with the Quality TP reward and without
     CHUNK_END (chunk_steps 0), so an account runs from the first minute to
     the true terminal and market memory never restarts artificially. The
     strategy, contract and direction files are copied next to env.yaml and
     referenced relatively: apart from the market data the folder is
     self-contained and can move (produce renames it into place). `rules`
-    (take_profit_points / stop_loss_points) replace the pool env's Native
-    TP / SL distances. `strategy` (load_strategy) adds its entry keys and
-    reward instead of the Quality TP reward; a contract the env trades in
-    another direction is refused. `costs` (a load_costs block, or the
-    strategy's) replaces the costs of the copied master strategy; the rules
-    files of the strategy's entry.rule_gate are written next to env.yaml,
-    their costs read."""
+    (take_profit_points / stop_loss_points, in ticks) replace the pool
+    env's Native TP / SL distances. `strategy` (load_strategy) adds its
+    entry keys and reward instead of the Quality TP reward; a contract the
+    env trades in another direction is refused. The rules files of the
+    strategy's entry.rule_gate are written next to env.yaml. The master's
+    product profile (envs.entry_product, required) is written next to it
+    as product.yaml, its cost preset inlined: the only costs of the inputs
+    (user 2026-11-06: "应该只需要改1个地方才对")."""
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
     source = Path(row['env_config'])
@@ -222,10 +209,6 @@ def write_inputs(row, folder, rules=None, strategy=None, costs=None):
         if strategy['direction'] != 'BOTH' and contract_direction(row) != strategy['direction']:
             raise ValueError(f'{row["contract"]} is not traded {strategy["direction"]}')
         env['entry'].update(strategy['entry'])
-        if 'costs' in strategy:
-            if costs is not None and costs != strategy['costs']:
-                raise ValueError('write_inputs: costs differ from the strategy\'s')
-            costs = strategy['costs']
     if env['entry'].get('rule_gate'):
         from .ts_v2_positive import load_config
         names = {}
@@ -241,15 +224,16 @@ def write_inputs(row, folder, rules=None, strategy=None, costs=None):
     if env['entry'].get('strategy_config'):
         master = read_yaml(env['entry']['strategy_config'])
         master['reward'].update(reward)
-        if costs is not None:
-            master['costs'] = load_costs(costs, folder)
+        from gym_trading_env.envs.entry_product import master_profile, profile_copy
+        profile = master_profile(master, env['entry']['strategy_config'])
+        (folder / 'product.yaml').write_text(yaml.safe_dump(profile_copy(profile), sort_keys=False,
+                                                            allow_unicode=True))
+        master['product_profile'] = 'product.yaml'
         master['environment']['entry']['chunk_steps'] = 0
         strategy = folder / 'single3.yaml'
         strategy.write_text(yaml.safe_dump(master, sort_keys=False))
         env['entry']['strategy_config'] = strategy.name
     else:
-        if costs is not None:
-            raise ValueError(f'{row["contract"]}: costs replace a master strategy_config\'s, this env has none')
         env['entry']['reward'].update(reward)
     config = folder / 'env.yaml'
     config.write_text(yaml.safe_dump(env, sort_keys=False))
@@ -601,7 +585,9 @@ def produce(row, folder, grades, workers=None, behaviors=None, log=print, rules=
     kinds = facts['kind'][facts['filled']]
     proof = index.proof
     source = dict(
-        contract=row['contract'], fold='TRAIN', mode='OFFLINE_TRAIN', pool_row=row,
+        # An env without a master strategy (a synthetic market) has no product; its tick is its contract's.
+        contract=row['contract'], product=env.product and env.product['product'], tick_points=env.tick_points,
+        fold='TRAIN', mode='OFFLINE_TRAIN', pool_row=row,
         inputs=dict(env=str(config.relative_to(tmp)), reward_schema=env.reward_config.schema,
                     chunk_steps=0, candidate=env.reward_config.candidate,
                     # The Native exit rule: the fixed distances, or the V2 structural stop.
@@ -644,9 +630,9 @@ def main(argv=None):
                         help='graded teacher (dreamerv3/configs/thinking_student/entry_grades.yaml)')
     parser.add_argument('--workers', type=int, default=os.cpu_count())
     parser.add_argument('--take-profit-points', type=int,
-                        help='Native TP distance in points (default: the pool env, TP5)')
+                        help='Native TP distance in ticks (default: the pool env, TP5)')
     parser.add_argument('--stop-loss-points', type=int,
-                        help='Native SL distance in points (default: the pool env, SL30)')
+                        help='Native SL distance in ticks (default: the pool env, SL30)')
     parser.add_argument('--strategy', help='V2 strategy overlay (configs/thinking_student/markets/'
                         'strategy_v2_short_structural.yaml)')
     parser.add_argument('--teacher', help='V2 positive material folder: graded/ from it, not --grades')

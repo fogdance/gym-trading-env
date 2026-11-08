@@ -367,8 +367,11 @@ def test_unified_fg_configuration_is_the_only_direction_and_cost_source(tmp_path
     config=yaml.safe_load((tmp_path/'env.yaml').read_text())
     directions=yaml.safe_load((tmp_path/'directions.yaml').read_text())
     directions['intervals'][0]['direction']='SHORT'
-    master=dict(product='FG',directions=directions,
-        costs=dict(lot_size=20,margin_rate=.1,open_fee=3,close_fee=3,close_today_fee=3,spread=1,slippage=0),
+    # The costs are the master's product profile's (envs.entry_product, user 2026-11-08), a preset block inline.
+    profile=dict(product='FG',contract_pattern=r'CZCE\.FG\d{3,4}',tick_points=1,
+        costs=dict(lot_size=20,leverage=10,trading_fee_per_lot=3,is_round_turn=True,spread=1))
+    (tmp_path/'fg_profile.yaml').write_text(yaml.safe_dump(profile))
+    master=dict(product='FG',product_profile='fg_profile.yaml',directions=directions,
         reward=dict(formula='60/(60+T_minutes)',complete_quantity=3,take_profit_points=5),
         expiry=dict(mode='main_qualification'),environment=config)
     mp=tmp_path/'fg.yaml';mp.write_text(yaml.safe_dump(master))

@@ -172,7 +172,8 @@ class CandidateIndex:
                            if 'stop_loss_price' in entry else
                            (price-sign*env.stop_loss_points,price+sign*env.take_profit_points))
         s=idx['sl'].first(i,self.stop,float(sign*sl_price))
-        first_early=idx['early'].first(i,self.stop,sign*float(price)-10+1e-10)
+        # The early adverse move of the Quality TP reward: 10 ticks (envs.entry_product, user 2026-11-08).
+        first_early=idx['early'].first(i,self.stop,sign*float(price)-10*env.tick_points+1e-10)
         event=env.attributions[-1] if env.attributions else None
         if event is None:
             item=next(iter(env.entries.values()))
@@ -204,7 +205,7 @@ class CandidateIndex:
                 rewards[name]=[[u,float(np.float32(float(value)))]] if value else []
                 continue
             # All skipped bars have no reward/event and only increment bars_seen.
-            scorer=Single3Reward(Single3RewardConfig.for_candidate(name),env.take_profit_points,env.stop_loss_points)
+            scorer=Single3Reward(Single3RewardConfig.for_candidate(name),env.take_profit_points,env.stop_loss_points,env.tick_points)
             sparse=[]
             for cursor in sorted({i,u,*([early] if early is not None else [])}):
                 row=env._raw.iloc[cursor]

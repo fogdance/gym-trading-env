@@ -91,9 +91,11 @@ def _position(env, out):
     price = float(env.current_price)
     # V3 (entry.exit_rule): no TP; the rule's TP stays the reference of this feature.
     tp = pos.take_profit_price if pos.take_profit_price is not None else item['planned_exit']['reference_tp_price']
-    out[3] = sign * (float(tp) - price) / _TP_SCALE
-    out[4] = sign * (price - float(pos.stop_loss_price)) / _SL_SCALE
-    out[5] = sign * (price - float(item['entry_price'])) / _SL_SCALE
+    # Distances scaled in ticks of the product (envs.entry_product, user 2026-11-08): 5 / 30 ticks.
+    tp_scale, sl_scale = _TP_SCALE * env.tick_points, _SL_SCALE * env.tick_points
+    out[3] = sign * (float(tp) - price) / tp_scale
+    out[4] = sign * (price - float(pos.stop_loss_price)) / sl_scale
+    out[5] = sign * (price - float(item['entry_price'])) / sl_scale
     held = env.market_clock_counter.held(item['entry_cursor'], env.current_step)
     out[6] = np.log1p(max(held, 0)) / _AGE_SCALE
     scorer = env.reward_function.scorer

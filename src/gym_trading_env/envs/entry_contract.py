@@ -35,16 +35,15 @@ def is_fg(contract):
     return bool(re.fullmatch(r"CZCE\.FG\d{3,4}", contract))
 
 
-# Products the Entry env trades, with their contract names (SA, user 2026-11-05: "SA和FG一样": the same
-# CZCE terms, 20 t per lot, tick 1, the FG strategy and its paper dates; RB, user 2026-11-05:
-# "RB螺纹钢和SA一样，也做个paper": SHFE rb, the same strategy, costs and paper dates).
-CONTRACT_NAMES = {'FG': r"CZCE\.FG\d{3,4}", 'SA': r"CZCE\.SA\d{3,4}", 'RB': r"SHFE\.rb\d{4}"}
-PRODUCTS = tuple(CONTRACT_NAMES)
+# A Chinese futures contract name, EXCHANGE.code + year-month (CZCE.FG501, SHFE.rb2505). Which
+# product it is, and its own contract names, are the product profile's (envs.entry_product; user
+# 2026-11-08: "后续品种可能增加 ... 不然到时候不好维护"), so a new product needs no code here.
+CONTRACT_NAME = r"(CZCE|SHFE|DCE|INE|GFEX)\.[A-Za-z]{1,2}\d{3,4}"
 
 
 def is_entry_contract(contract):
     import re
-    return any(re.fullmatch(x, contract) for x in CONTRACT_NAMES.values())
+    return bool(re.fullmatch(CONTRACT_NAME, contract))
 
 
 def read_direction_text(path):
@@ -107,8 +106,10 @@ class ContractTerms:
         self.hash = fingerprint(raw)
         self.tick = Decimal(str(raw["tick_size"]))
         self.multiplier = Decimal(str(raw["lot_size"]))
-        if not self.tick.is_finite() or self.tick <= 0 or Decimal(5) % self.tick:
-            raise ValueError("Five points must be exactly representable by tick_size")
+        # The env's distances are whole ticks by construction (envs.entry_product: in ticks, times the
+        # tick); SP has 2 points a tick (user 2026-11-08: "sp一跳2点").
+        if not self.tick.is_finite() or self.tick <= 0:
+            raise ValueError("tick_size is a positive number of points")
         if not self.multiplier.is_finite() or self.multiplier <= 0:
             raise ValueError("Invalid contract multiplier")
         self.last_open = timestamp(raw["last_open_at"])
