@@ -148,7 +148,7 @@ def dev_row(contract, pool):
 STRATEGY_KEYS = {'version', 'direction', 'entry', 'reward'}
 
 
-def load_strategy(path):
+def load_strategy(path, exit=None):
     """A V2 strategy overlay (V0.5, user 2026-10-31): `entry` keys of the
     Native env (stop_rule, context_15m_buckets, ...) and the `reward` that
     replaces the Quality TP reward, for one external `direction`: SHORT, or
@@ -158,7 +158,10 @@ def load_strategy(path):
     files, relative to the strategy file, come back resolved) that opens an
     ADD only at their rule positions. Distances are in ticks and costs are
     the market's product profile's (envs.entry_product, user 2026-11-08):
-    a strategy with `costs` is refused."""
+    a strategy with `costs` is refused. Its `entry.exit_rule` may name an
+    exit config (a path relative to the strategy file, load_exit), which
+    comes back inlined; `exit` (an exit config path) replaces the strategy's
+    exit_rule and appends its name to the version (V3 -> G: --exit g)."""
     strategy = read_yaml(path)
     if 'costs' in strategy:
         raise ValueError(f'{path}: costs are the product profile\'s (envs.entry_product), not a strategy\'s')
@@ -175,7 +178,27 @@ def load_strategy(path):
         for side, f in strategy['entry']['rule_gate'].items():
             if load_config(f)['direction'] != side:
                 raise ValueError(f'{path}: entry.rule_gate {side} is the rules of another direction')
+    rule = strategy['entry'].get('exit_rule')
+    if exit is not None:
+        if rule is None:
+            raise ValueError(f'{path}: an exit config replaces the entry.exit_rule of a strategy that has one')
+        name, strategy['entry']['exit_rule'] = load_exit(exit)
+        strategy['version'] = f"{strategy['version']}/{name}"
+    elif isinstance(rule, str):
+        strategy['entry']['exit_rule'] = load_exit(resolve_path(path, rule))[1]
     return strategy
+
+
+def load_exit(path):
+    """(name, entry.exit_rule) of an exit config (configs exits/<name>.yaml: `name` and the keys of
+    research.swing_trail, distances in ticks; user 2026-11-08: "V3,G两个止盈止损策略是当前最好的 ...
+    通过配置去切换策略")."""
+    from .swing_trail import check_config
+    raw = read_yaml(path)
+    name = raw.pop('name', None)
+    if not isinstance(name, str) or not name:
+        raise ValueError(f'{path}: an exit config has a name')
+    return name, check_config(raw)
 
 
 def write_inputs(row, folder, rules=None, strategy=None):

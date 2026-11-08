@@ -29,9 +29,9 @@ def paper_row(pool, contract):
     return dict(row, env_config=str((Path(pool).parent / row['env_config']).resolve()))
 
 
-def env_of(tmp, pool, contract, strategy, edit=None):
+def env_of(tmp, pool, contract, strategy, edit=None, exit=None):
     folder = Path(tmp) / contract
-    config = C.write_inputs(paper_row(pool, contract), folder, strategy=C.load_strategy(strategy))
+    config = C.write_inputs(paper_row(pool, contract), folder, strategy=C.load_strategy(strategy, exit=exit))
     if edit:
         edit(folder)
     return C.native_env(config, market=False)
@@ -107,7 +107,7 @@ def test_distances_in_ticks(tmp_path):
                 10, 4, 10, 20, 10, 20)
     assert (env.exit_rule['breakeven_points'], env.exit_rule['lock_points']) == (16, 10)
     # G (break-even at fill - 1 tick, then held): its offset is a distance in ticks too.
-    g = env_of(tmp_path / 'g', M / 'paper_pool.json', 'CZCE.FG501', M / 'strategy_v3_be1_hold.yaml', two)
+    g = env_of(tmp_path / 'g', M / 'paper_pool.json', 'CZCE.FG501', M / 'strategy_v3.yaml', two, CONFIGS / 'exits/g.yaml')
     assert (g.exit_rule['breakeven_offset_points'], g.exit_rule['hold_after_breakeven'],
             g.exit_rule['breakeven_points']) == (2, True, 16)
     assert (env.take_profit_points, env.stop_loss_points) == (10, 60)
@@ -170,3 +170,19 @@ def test_material_in_ticks(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match='2-point ticks'):
         V.material_rules_points(folder, 1)
 
+
+
+@real
+def test_exit_configs_switch_the_exit():
+    # User 2026-11-08: "V3,G两个止盈止损策略是当前最好的 ... 通过配置去切换策略": strategy_v3.yaml names exits/v3.yaml
+    # (inlined: the exit_rule it had inline before); an exit config replaces it and names the version.
+    v3 = C.load_strategy(M / 'strategy_v3.yaml')
+    assert v3['entry']['exit_rule'] == dict(kind='swing_trail', timeframe='15m', pivot_left=2, pivot_right=2,
+                                            breakeven_points=8, lock_points=5)
+    g = C.load_strategy(M / 'strategy_v3.yaml', exit=CONFIGS / 'exits/g.yaml')
+    assert g['entry']['exit_rule'] == dict(v3['entry']['exit_rule'], breakeven_offset_points=1, hold_after_breakeven=True)
+    assert g['version'] == v3['version'] + '/G' and {k: v for k, v in g['entry'].items() if k != 'exit_rule'} == {
+        k: v for k, v in v3['entry'].items() if k != 'exit_rule'}
+    assert C.load_strategy(M / 'strategy_v3.yaml', exit=CONFIGS / 'exits/v3.yaml')['entry'] == v3['entry']
+    with pytest.raises(ValueError, match='replaces the entry.exit_rule'):
+        C.load_strategy(M / 'strategy_v2_4_fixed_stop.yaml', exit=CONFIGS / 'exits/g.yaml')
