@@ -48,7 +48,15 @@ def test_trough_ladder():
     assert trail_stop(100, 97, 'TROUGH', 80, troughs[:8], cfg) == (96, 'TROUGH')  # trough 4
     assert trail_stop(100, 95, 'LOCK', 90, [96, 91], cfg) == (95, 'LOCK')
     assert trail_stop(100, 97, 'TROUGH', 80, troughs[:3], cfg) == (97, 'TROUGH')  # never back
+    # Counted from the first trough after the fill (user 2026-11-08: "只将倒着数的波峰波谷，改为正着数").
+    first = dict(cfg, trough_count_from='first')
+    for n, nth in ((3, 2), (4, 2), (5, 3), (6, 3), (7, 5), (10, 5), (11, 5), (12, 6), (15, 7), (20, 10)):
+        assert trail_stop(100, 105, 'LOCK', 80, troughs[:n], first) == (100 - nth, 'TROUGH'), n
     from gym_trading_env.research.swing_trail import check_config
+    with pytest.raises(ValueError, match='trough_count_from'):
+        check_config(dict(cfg, trough_count_from='middle'))
+    with pytest.raises(ValueError, match='trough_count_from'):
+        check_config(dict(CFG, trough_count_from='first'))
     assert check_config(cfg)['trough_ladder'][-1] == [11, 'half']
     for bad in ([[2, 1]], [[3, 4]], [[3, 2], [3, 3]], [[3, 'x']], []):
         with pytest.raises(ValueError, match='trough_ladder'):

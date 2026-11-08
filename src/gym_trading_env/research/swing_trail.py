@@ -15,6 +15,9 @@ from the last trough (1-based, "都是倒数": 1 is the last, 2 the last but one
 from the last. E.g. [[3, 2], [5, 3], [7, 5], [11, half]]: 3-4 troughs the last but one, 5-6 the 3rd from
 the last, 7-11 the 5th from the last, n >= 12 the (n // 2)-th from the last. The stop still never moves
 back, so a rung that names an older (higher) trough keeps the stop where it is.
+Optional `trough_count_from` (default `last`): `first` counts the ladder's trough from the first trough after
+the fill instead (user 2026-11-08: "只将倒着数的波峰波谷，改为正着数"): 1 is the first trough after the fill,
+`half` the (n // 2)-th from the first.
 
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
@@ -31,7 +34,7 @@ import pandas as pd
 from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
-OPTIONAL = ('trough_ladder',)
+OPTIONAL = ('trough_ladder', 'trough_count_from')
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
 
 
@@ -49,15 +52,18 @@ def check_config(cfg):
             and (r[1] == 'half' or (type(r[1]) is int and 1 <= r[1] <= r[0])) for r in rungs)
         if not ok or any(a[0] >= b[0] for a, b in zip(rungs, rungs[1:])) or rungs[0][0] != 3:
             raise ValueError('entry.exit_rule.trough_ladder: rungs [from_troughs, trough | half], from 3, increasing')
+    if 'trough_count_from' in cfg and ('trough_ladder' not in cfg or cfg['trough_count_from'] not in ('first', 'last')):
+        raise ValueError('entry.exit_rule.trough_count_from is first or last, with a trough_ladder')
     return dict(cfg)
 
 
-def ladder_trough(troughs, ladder):
-    """The trough of the stop by the ladder (module docstring): its price, counted back from the last."""
+def ladder_trough(troughs, ladder, count_from='last'):
+    """The trough of the stop by the ladder (module docstring): its price, counted back from the last
+    trough, or from the first after the fill."""
     n = len(troughs)
     rung = [r for r in ladder if r[0] <= n][-1]
     k = n // 2 if rung[1] == 'half' else rung[1]
-    return troughs[-k]
+    return troughs[k - 1] if count_from == 'first' else troughs[-k]
 
 
 class Swings:
@@ -114,7 +120,7 @@ def trail_stop(fill, stop, stage, best, troughs, cfg):
     if k == 2:
         candidates.append((fill - cfg['lock_points'], 'LOCK'))
     if k >= 3:
-        trough = ladder_trough(troughs, cfg['trough_ladder']) if cfg.get('trough_ladder') else troughs[-2]
+        trough = ladder_trough(troughs, cfg['trough_ladder'], cfg.get('trough_count_from', 'last')) if cfg.get('trough_ladder') else troughs[-2]
         candidates.append((Decimal(str(trough)), 'TROUGH'))
     for price, name in candidates:
         if price < stop:
