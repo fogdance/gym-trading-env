@@ -9,8 +9,8 @@ the peaks) of the complete 15m buckets formed after the fill:
     >= 3 troughs         the last trough but one ("倒数第二个波谷")
 
 Optional (user 2026-11-08: "0个波谷，止损5点 ... 价格离成交价 8 点，或 1 个波谷，成交价-1 ... 持仓直到被迫平仓或打止损"):
-`breakeven_offset_points` (default 0) puts the break-even stop that many points past the fill (fill - 1
-for a SHORT with 1); `hold_after_breakeven` (default false) stops there: no LOCK and no TROUGH stage,
+`breakeven_offset_points` (default 0, in ticks like the other distances) puts the break-even stop that
+far past the fill (fill - 1 tick for a SHORT with 1); `hold_after_breakeven` (default false) stops there: no LOCK and no TROUGH stage,
 the position is held until the stop or the forced close (MAIN_ROLL).
 
 The stop only ever moves in the position's favour. Swings are those of
@@ -31,7 +31,7 @@ KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'l
 OPTIONAL = ('breakeven_offset_points', 'hold_after_breakeven')
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
 # Its distances, in ticks (envs.entry_product: times the product's tick_points).
-TICKS = (('breakeven_points',), ('lock_points',))
+TICKS = (('breakeven_points',), ('lock_points',), ('breakeven_offset_points',))
 
 
 def check_config(cfg):
