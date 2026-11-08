@@ -106,6 +106,10 @@ def test_distances_in_ticks(tmp_path):
             e['entry']['max_risk_points'], e['event']['near_points'], e['prior_high']['departure_points']) == (
                 10, 4, 10, 20, 10, 20)
     assert (env.exit_rule['breakeven_points'], env.exit_rule['lock_points']) == (16, 10)
+    # G (break-even at fill - 1 tick, then held): its offset is a distance in ticks too.
+    g = env_of(tmp_path / 'g', M / 'paper_pool.json', 'CZCE.FG501', M / 'strategy_v3_be1_hold.yaml', two)
+    assert (g.exit_rule['breakeven_offset_points'], g.exit_rule['hold_after_breakeven'],
+            g.exit_rule['breakeven_points']) == (2, True, 16)
     assert (env.take_profit_points, env.stop_loss_points) == (10, 60)
 
     def mismatch(folder):
