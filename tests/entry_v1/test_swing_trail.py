@@ -181,3 +181,35 @@ def test_rule_stops_capped_at_five(tmp_path):
     del strategy['entry']['cap_rule_risk']
     with pytest.raises(ValueError, match='risk'):
         C.native_env(C.write_inputs(row, tmp_path / 'refused', strategy=strategy), market=False)
+
+
+@pytest.mark.skipif(not POOL.exists(), reason='Thinking Student V3 configs missing')
+def test_no_reentry_after_stop(tmp_path):
+    # User 2026-11-08 "止损出场后，同一次触线不再开仓": a touch whose entry exited at its stop opens no more ADD.
+    path = CONFIGS / 'markets/strategy_v3_trend_trail_be1_step_risk5_noreentry.yaml'
+    row = C.train_row('CZCE.FG205', POOL)
+
+    def reentries(strategy, name):
+        env = C.native_env(C.write_inputs(row, tmp_path / name, strategy=strategy), market=False)
+        obs, _ = env.reset()
+        while True:
+            obs, _, term, trunc, _ = env.step(int(obs['action_mask'][1] > 0.5))
+            if trunc and env.status == 'CHUNK_END':
+                env.status, env.truncated = 'ACTIVE', False
+                continue
+            if term or trunc:
+                break
+        touch = {f['entry_id']: (f['side'], f['rule_event']) for f in env.fills if f['reason'] == 'ENTRY'}
+        stopped, count = set(), 0
+        for a in sorted(env.attributions, key=lambda a: a['entry_time']):
+            count += touch[a['entry_id']] in stopped
+            if a['reason'] == 'STOP_LOSS':
+                stopped.add(touch[a['entry_id']])
+        return count, len(env.attributions)
+
+    strategy = C.load_strategy(path)
+    assert strategy['entry']['no_reentry_after_stop'] is True
+    assert reentries(strategy, 'once')[0] == 0
+    del strategy['entry']['no_reentry_after_stop']
+    count, trades = reentries(strategy, 'again')
+    assert count > 0, (count, trades)

@@ -73,6 +73,7 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
     # V3 long trend exit (user 2026-11-06, research.swing_trail): no TP, the
     # stop moves with the 15m troughs (peaks) after the fill; None keeps the TP.
     exit_rule = None
+    no_reentry_after_stop = False
     _swings = None
 
     def __init__(self, df=None, config_path=None, render_mode=None, *, market_cache=None, e_profile=None):
@@ -416,6 +417,11 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         capped = self.entry_config.get('cap_rule_risk', False)
         if type(capped) is not bool:
             raise ValueError('entry.cap_rule_risk is true or false')
+        # entry.no_reentry_after_stop (paper only, user 2026-11-08: "止损出场后，同一次触线不再开仓"; default
+        # false): once an entry of a touch exits at its stop, the touch's later rule positions open no ADD.
+        self.no_reentry_after_stop = self.entry_config.get('no_reentry_after_stop', False)
+        if type(self.no_reentry_after_stop) is not bool:
+            raise ValueError('entry.no_reentry_after_stop is true or false')
         gate = {}
         for side, path in paths.items():
             cfg = load_config(resolve_path(config_path, path))
@@ -477,6 +483,18 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
             item.setdefault('stop_history', []).append(dict(time=str(time), stop=str(s * stop), stage=stage,
                                                              swings=len(swings)))
         item['stop_stage'], item['swings_after_fill'] = stage, len(swings)
+
+    def _stopped_touches(self):
+        """(side, rule_event) of the touches whose entry exited at its stop
+        (entry.no_reentry_after_stop), from the account's own fills and
+        attributions, so a restored state needs nothing more."""
+        key = (id(self.attributions), len(self.attributions))
+        if getattr(self, '_stopped_key', None) != key:
+            plans = {f['entry_id']: f for f in self.fills if f['reason'] == 'ENTRY'}
+            self._stopped = {(a['side'], plans[a['entry_id']]['rule_event']) for a in self.attributions
+                             if a['reason'] == 'STOP_LOSS'}
+            self._stopped_key = key
+        return self._stopped
 
     def _gate(self, side):
         """The rule positions of `side` in the market loaded
@@ -607,8 +625,13 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         status = 'ACTIVE' if continuing and self.status=='CHUNK_END' else self.status
         if status != "ACTIVE" or direction == "NO_TRADE" or time >= self.terms.last_open or (self.main_exit_at is not None and time >= self.main_exit_at):
             return False
-        if self.rule_gate is not None and not self._gate(direction)['open'][self.current_step]:
-            return False
+        if self.rule_gate is not None:
+            g = self._gate(direction)
+            if not g['open'][self.current_step]:
+                return False
+            if (self.no_reentry_after_stop and (direction, g['event_id'][g['event'][self.current_step]])
+                    in self._stopped_touches()):
+                return False
         self._set_terms(time)
         price = self._price(self._market_row(self.current_step).Close, direction, time, opening=True)
         return self._preflight_open(TargetPos[direction], price) == ForexCode.SUCCESS
