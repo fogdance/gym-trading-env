@@ -8,6 +8,11 @@ the peaks) of the complete 15m buckets formed after the fill:
     2 troughs            fill - 5 (5 points locked)
     >= 3 troughs         the last trough but one ("倒数第二个波谷")
 
+Optional (user 2026-11-08: "0个波谷，止损5点 ... 价格离成交价 8 点，或 1 个波谷，成交价-1 ... 持仓直到被迫平仓或打止损"):
+`breakeven_offset_points` (default 0) puts the break-even stop that many points past the fill (fill - 1
+for a SHORT with 1); `hold_after_breakeven` (default false) stops there: no LOCK and no TROUGH stage,
+the position is held until the stop or the forced close (MAIN_ROLL).
+
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
 known at the close of the bucket that confirms them (confirm_index) and only once that
@@ -23,13 +28,19 @@ import pandas as pd
 from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
+OPTIONAL = ('breakeven_offset_points', 'hold_after_breakeven')
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
 
 
 def check_config(cfg):
     """entry.exit_rule: exactly KEYS, kind swing_trail, timeframe 15m, positive integers."""
-    if not isinstance(cfg, dict) or set(cfg) != set(KEYS) or cfg['kind'] != 'swing_trail' or cfg['timeframe'] != '15m':
-        raise ValueError(f'entry.exit_rule needs exactly {KEYS}, kind swing_trail, timeframe 15m')
+    if (not isinstance(cfg, dict) or not set(KEYS) <= set(cfg) <= set(KEYS + OPTIONAL) or cfg['kind'] != 'swing_trail'
+            or cfg['timeframe'] != '15m'):
+        raise ValueError(f'entry.exit_rule needs exactly {KEYS} (and optionally {OPTIONAL}), kind swing_trail, timeframe 15m')
+    off = cfg.get('breakeven_offset_points', 0)
+    if type(off) is not int or not 0 <= off < cfg.get('breakeven_points', 1) or type(cfg.get('hold_after_breakeven', False)) is not bool:
+        raise ValueError('entry.exit_rule: breakeven_offset_points is an integer in [0, breakeven_points), '
+                         'hold_after_breakeven true or false')
     if any(type(cfg[k]) is not int or cfg[k] < 1 for k in KEYS[2:]):
         raise ValueError('entry.exit_rule: pivot_left, pivot_right, breakeven_points, lock_points are positive integers')
     return dict(cfg)
@@ -84,11 +95,12 @@ def trail_stop(fill, stop, stage, best, troughs, cfg):
     fill, stop, best = Decimal(str(fill)), Decimal(str(stop)), Decimal(str(best))
     k = len(troughs)
     candidates = []
-    if fill - best >= cfg['breakeven_points'] or k == 1:
-        candidates.append((fill, 'BREAKEVEN'))
-    if k == 2:
+    hold = cfg.get('hold_after_breakeven', False)
+    if fill - best >= cfg['breakeven_points'] or k == 1 or (hold and k >= 1):
+        candidates.append((fill - cfg.get('breakeven_offset_points', 0), 'BREAKEVEN'))
+    if not hold and k == 2:
         candidates.append((fill - cfg['lock_points'], 'LOCK'))
-    if k >= 3:
+    if not hold and k >= 3:
         candidates.append((Decimal(str(troughs[-2])), 'TROUGH'))
     for price, name in candidates:
         if price < stop:
