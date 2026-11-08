@@ -464,7 +464,8 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         kind = 'L' if s > 0 else 'H'
         swings = [s * Decimal(str(x)) for x in self._swing_chain().after(kind, fill_ns, timestamp(time).value)]
         stop, stage = trail_stop(s * Decimal(item['entry_price']), s * pos.stop_loss_price,
-                                 item.get('stop_stage', 'INITIAL'), best, swings, self.exit_rule)
+                                 item.get('stop_stage', 'INITIAL'), best, swings, self.exit_rule,
+                                 initial=s * Decimal(item['planned_exit']['stop_loss_price']))
         if s * stop != pos.stop_loss_price:
             pos.stop_loss_price = s * stop
             item.setdefault('stop_history', []).append(dict(time=str(time), stop=str(s * stop), stage=stage,

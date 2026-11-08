@@ -53,6 +53,29 @@ def test_breakeven_minus_one_then_hold():
         with pytest.raises(ValueError, match='breakeven_offset_points'):
             check_config(dict(CFG, **bad))
 
+def test_step_tighten():
+    # User 2026-11-08: "+2 -1; +4 -2; +6 -3", on top of break-even -1 and hold. Fill 100, initial stop 105.
+    cfg = dict(CFG, breakeven_offset_points=1, hold_after_breakeven=True, step_tighten=[[2, 1], [4, 2], [6, 3]])
+    assert trail_stop(100, 105, 'INITIAL', 99, [], cfg, initial=105) == (105, 'INITIAL')
+    assert trail_stop(100, 105, 'INITIAL', 98, [], cfg, initial=105) == (104, 'TIGHTEN')
+    assert trail_stop(100, 104, 'TIGHTEN', 96, [], cfg, initial=105) == (103, 'TIGHTEN')
+    assert trail_stop(100, 103, 'TIGHTEN', 94, [], cfg, initial=105) == (102, 'TIGHTEN')
+    assert trail_stop(100, 105, 'INITIAL', 93, [], cfg, initial=105) == (102, 'TIGHTEN')  # several steps in one bar
+    assert trail_stop(100, 102, 'TIGHTEN', 92, [], cfg, initial=105) == (99, 'BREAKEVEN')
+    assert trail_stop(100, 102, 'TIGHTEN', 97, [96], cfg, initial=105) == (99, 'BREAKEVEN')
+    # Never back: the price returning keeps the tighter stop; a later step below a tighter stop is ignored.
+    assert trail_stop(100, 103, 'TIGHTEN', 100, [], cfg, initial=105) == (103, 'TIGHTEN')
+    assert trail_stop(100, 99, 'BREAKEVEN', 94, [], cfg, initial=105) == (99, 'BREAKEVEN')
+    # A small risk: initial 103, +6 -> the fill.
+    assert trail_stop(100, 103, 'INITIAL', 94, [], cfg, initial=103) == (100, 'TIGHTEN')
+    from gym_trading_env.research.swing_trail import check_config
+    for bad in ([[2, 1], [2, 2]], [[2, 2], [4, 1]], [[2, 0]], [[2]], 'x'):
+        with pytest.raises(ValueError, match='step_tighten'):
+            check_config(dict(CFG, step_tighten=bad))
+    with pytest.raises(ValueError, match='initial stop'):
+        trail_stop(100, 105, 'INITIAL', 98, [], cfg)
+
+
 @pytest.fixture(scope='module')
 def runs(tmp_path_factory):
     """Per contract and initial stop: the always-ADD account of the whole contract."""

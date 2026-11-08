@@ -12,6 +12,10 @@ Optional (user 2026-11-08: "0个波谷，止损5点 ... 价格离成交价 8 点
 `breakeven_offset_points` (default 0) puts the break-even stop that many points past the fill (fill - 1
 for a SHORT with 1); `hold_after_breakeven` (default false) stops there: no LOCK and no TROUGH stage,
 the position is held until the stop or the forced close (MAIN_ROLL).
+Optional (user 2026-11-08: "+2 -1; +4 -2; +6 -3"): `step_tighten`, pairs [move, tighten] of
+positive integers, both increasing: once the price is `move` points past the fill the stop
+is the initial stop less `tighten` points (stage TIGHTEN; [[2, 1], [4, 2], [6, 3]]: +2 -> 1,
++4 -> 2, +6 -> 3 points tighter).
 
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
@@ -28,8 +32,8 @@ import pandas as pd
 from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
-OPTIONAL = ('breakeven_offset_points', 'hold_after_breakeven')
-STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
+OPTIONAL = ('breakeven_offset_points', 'hold_after_breakeven', 'step_tighten')
+STAGES = ('INITIAL', 'TIGHTEN', 'BREAKEVEN', 'LOCK', 'TROUGH')
 
 
 def check_config(cfg):
@@ -41,6 +45,11 @@ def check_config(cfg):
     if type(off) is not int or not 0 <= off < cfg.get('breakeven_points', 1) or type(cfg.get('hold_after_breakeven', False)) is not bool:
         raise ValueError('entry.exit_rule: breakeven_offset_points is an integer in [0, breakeven_points), '
                          'hold_after_breakeven true or false')
+    steps = cfg.get('step_tighten', [])
+    if (not isinstance(steps, list) or not all(isinstance(x, list) and len(x) == 2 and all(type(v) is int and v >= 1 for v in x)
+                                                for x in steps)
+            or any(a[0] >= b[0] or a[1] >= b[1] for a, b in zip(steps, steps[1:]))):
+        raise ValueError('entry.exit_rule: step_tighten is a list of [move, tighten] positive integers, both increasing')
     if any(type(cfg[k]) is not int or cfg[k] < 1 for k in KEYS[2:]):
         raise ValueError('entry.exit_rule: pivot_left, pivot_right, breakeven_points, lock_points are positive integers')
     return dict(cfg)
@@ -87,15 +96,21 @@ class Swings:
                 if p['kind'] == kind and self.start_ns[p['pivot_index']] >= fill_ns]
 
 
-def trail_stop(fill, stop, stage, best, troughs, cfg):
+def trail_stop(fill, stop, stage, best, troughs, cfg, initial=None):
     """Short space (a SHORT's prices; a LONG's negated): the stop after a closed bar.
     fill / stop: the fill and the current stop (above the fill at first); best: the
     lowest price reached since the fill; troughs: the prices of the troughs after the
-    fill known now, oldest first. Returns (stop, stage); the stop never rises."""
+    fill known now, oldest first; initial: the entry's own stop (step_tighten only).
+    Returns (stop, stage); the stop never rises."""
     fill, stop, best = Decimal(str(fill)), Decimal(str(stop)), Decimal(str(best))
     k = len(troughs)
     candidates = []
     hold = cfg.get('hold_after_breakeven', False)
+    reached = [t for move, t in cfg.get('step_tighten', []) if fill - best >= move]
+    if reached:
+        if initial is None:
+            raise ValueError('step_tighten needs the initial stop')
+        candidates.append((Decimal(str(initial)) - reached[-1], 'TIGHTEN'))
     if fill - best >= cfg['breakeven_points'] or k == 1 or (hold and k >= 1):
         candidates.append((fill - cfg.get('breakeven_offset_points', 0), 'BREAKEVEN'))
     if not hold and k == 2:
