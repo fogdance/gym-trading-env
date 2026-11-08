@@ -35,6 +35,24 @@ def test_trail_stop_stages():
     assert trail_stop(100, 95, 'LOCK', 99, [96], CFG) == (95, 'LOCK')
 
 
+
+def test_breakeven_minus_one_then_hold():
+    # User 2026-11-08: 8 points from the fill or 1 trough -> fill - 1, then held to the stop or the forced close.
+    cfg = dict(CFG, breakeven_offset_points=1, hold_after_breakeven=True)
+    assert trail_stop(100, 105, 'INITIAL', 95, [], cfg) == (105, 'INITIAL')
+    assert trail_stop(100, 105, 'INITIAL', 92, [], cfg) == (99, 'BREAKEVEN')
+    assert trail_stop(100, 105, 'INITIAL', 97, [96], cfg) == (99, 'BREAKEVEN')
+    assert trail_stop(100, 99, 'BREAKEVEN', 85, [96, 91], cfg) == (99, 'BREAKEVEN')  # no LOCK
+    assert trail_stop(100, 99, 'BREAKEVEN', 80, [96, 91, 86, 81], cfg) == (99, 'BREAKEVEN')  # no TROUGH
+    assert trail_stop(100, 105, 'INITIAL', 97, [96, 91, 86], cfg) == (99, 'BREAKEVEN')  # troughs seen at once
+    # Without the keys V3 is unchanged.
+    assert trail_stop(100, 105, 'INITIAL', 92, [], CFG) == (100, 'BREAKEVEN')
+    assert trail_stop(100, 100, 'BREAKEVEN', 90, [96, 91], CFG) == (95, 'LOCK')
+    from gym_trading_env.research.swing_trail import check_config
+    for bad in (dict(breakeven_offset_points=8), dict(breakeven_offset_points=-1), dict(hold_after_breakeven='yes')):
+        with pytest.raises(ValueError, match='breakeven_offset_points'):
+            check_config(dict(CFG, **bad))
+
 @pytest.fixture(scope='module')
 def runs(tmp_path_factory):
     """Per contract and initial stop: the always-ADD account of the whole contract."""
