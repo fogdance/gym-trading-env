@@ -35,6 +35,18 @@ def test_trail_stop_stages():
     assert trail_stop(100, 95, 'LOCK', 99, [96], CFG) == (95, 'LOCK')
 
 
+
+def test_trough_counted_from_the_first():
+    # User 2026-11-08 ("只将倒着数，改为正着数"): >= 3 troughs, the 2nd trough after the fill.
+    first = dict(CFG, trough_count_from='first')
+    assert trail_stop(100, 95, 'LOCK', 85, [96, 91, 86], first) == (91, 'TROUGH')
+    assert trail_stop(100, 91, 'TROUGH', 80, [96, 91, 86, 81], first) == (91, 'TROUGH')  # stays at the 2nd
+    assert trail_stop(100, 95, 'LOCK', 85, [96, 97, 86], first) == (95, 'LOCK')  # never back
+    assert trail_stop(100, 91, 'TROUGH', 80, [96, 91, 86, 81], CFG) == (86, 'TROUGH')  # default: last but one
+    from gym_trading_env.research.swing_trail import check_config
+    with pytest.raises(ValueError, match='trough_count_from'):
+        check_config(dict(CFG, trough_count_from='middle'))
+
 @pytest.fixture(scope='module')
 def runs(tmp_path_factory):
     """Per contract and initial stop: the always-ADD account of the whole contract."""

@@ -8,6 +8,9 @@ the peaks) of the complete 15m buckets formed after the fill:
     2 troughs            fill - 5 (5 points locked)
     >= 3 troughs         the last trough but one ("倒数第二个波谷")
 
+Optional `trough_count_from` (default `last`): `first` puts the stop at >= 3 troughs on the second
+trough after the fill instead (user 2026-11-08: "现在从主分支，只将倒着数，改为正着数，做papaer").
+
 The stop only ever moves in the position's favour. Swings are those of
 gym_trading_env.market_structure (the review-future rule, left / right 2 by default),
 known at the close of the bucket that confirms them (confirm_index) and only once that
@@ -23,13 +26,17 @@ import pandas as pd
 from gym_trading_env.market_structure import analyze_market_structure
 
 KEYS = ('kind', 'timeframe', 'pivot_left', 'pivot_right', 'breakeven_points', 'lock_points')
+OPTIONAL = ('trough_count_from',)
 STAGES = ('INITIAL', 'BREAKEVEN', 'LOCK', 'TROUGH')
 
 
 def check_config(cfg):
     """entry.exit_rule: exactly KEYS, kind swing_trail, timeframe 15m, positive integers."""
-    if not isinstance(cfg, dict) or set(cfg) != set(KEYS) or cfg['kind'] != 'swing_trail' or cfg['timeframe'] != '15m':
-        raise ValueError(f'entry.exit_rule needs exactly {KEYS}, kind swing_trail, timeframe 15m')
+    if (not isinstance(cfg, dict) or not set(KEYS) <= set(cfg) <= set(KEYS + OPTIONAL) or cfg['kind'] != 'swing_trail'
+            or cfg['timeframe'] != '15m'):
+        raise ValueError(f'entry.exit_rule needs exactly {KEYS} (and optionally {OPTIONAL}), kind swing_trail, timeframe 15m')
+    if cfg.get('trough_count_from', 'last') not in ('first', 'last'):
+        raise ValueError('entry.exit_rule.trough_count_from is first or last')
     if any(type(cfg[k]) is not int or cfg[k] < 1 for k in KEYS[2:]):
         raise ValueError('entry.exit_rule: pivot_left, pivot_right, breakeven_points, lock_points are positive integers')
     return dict(cfg)
@@ -89,7 +96,8 @@ def trail_stop(fill, stop, stage, best, troughs, cfg):
     if k == 2:
         candidates.append((fill - cfg['lock_points'], 'LOCK'))
     if k >= 3:
-        candidates.append((Decimal(str(troughs[-2])), 'TROUGH'))
+        trough = troughs[1] if cfg.get('trough_count_from', 'last') == 'first' else troughs[-2]
+        candidates.append((Decimal(str(trough)), 'TROUGH'))
     for price, name in candidates:
         if price < stop:
             stop, stage = price, name
