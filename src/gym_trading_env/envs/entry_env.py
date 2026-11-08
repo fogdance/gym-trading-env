@@ -397,7 +397,10 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         stop rule's lines, stop and target, keep the planned risk of a rule
         position within max_risk_points, and carry this env's costs. Rules V5
         (user 2026-11-05, "止损固定5点"): entry.fixed_stop_points sets R from the
-        fill (FIXED), the same on both sides and within max_risk_points."""
+        fill (FIXED), the same on both sides and within max_risk_points.
+        entry.cap_rule_risk (paper only, user 2026-11-08: "止损上限5点"; default false): the
+        strategy's max_risk_points may be below the rules' zone risk; the rule positions stay
+        and a rule stop beyond it is CAPPED at max_risk_points from the fill (planned_exit)."""
         paths = self.entry_config.get('rule_gate')
         if paths is None:
             return
@@ -410,17 +413,20 @@ class FixedDirectionEntryEnv(CustomTradingEnv):
         # spread of the decision quote. Point value, fees and margin are the strategy's alone, so one
         # rules file serves every product (user 2026-11-06: "应该只需要改1个地方才对，这样配置冗余了").
         values = ('spread',)
+        capped = self.entry_config.get('cap_rule_risk', False)
+        if type(capped) is not bool:
+            raise ValueError('entry.cap_rule_risk is true or false')
         gate = {}
         for side, path in paths.items():
             cfg = load_config(resolve_path(config_path, path))
             e, costs = cfg['entry'], cfg.get('costs')
             if (cfg['direction'] != side or e['stop_above_points'] != r['stop_above_points']
                     or e['target_r'] != r['target_r'] or cfg['prior_high'] != r['prior_high']
-                    or e['stop_above_points'] + e['zone_points'] > r['max_risk_points']):
+                    or (not capped and e['stop_above_points'] + e['zone_points'] > r['max_risk_points'])):
                 raise ValueError(f'entry.rule_gate {side}: rules of another side, line, stop, target or risk')
             fixed = e.get('fixed_stop_points')
-            if fixed is not None and fixed > r['max_risk_points']:
-                raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points')
+            if fixed is not None and (capped or fixed > r['max_risk_points']):
+                raise ValueError(f'entry.rule_gate {side}: fixed_stop_points above max_risk_points or with cap_rule_risk')
             if costs is None or any(float(costs[k]) != float(master['costs'][k]) for k in values):
                 raise ValueError(f'entry.rule_gate {side}: its costs are not this env\'s (spread)')
             gate[side] = cfg

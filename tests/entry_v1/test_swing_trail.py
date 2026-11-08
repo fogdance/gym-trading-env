@@ -147,3 +147,37 @@ def test_the_stop_trails_the_known_swings(runs, contract, stop):
             assert any(Decimal(str(b[key])) == Decimal(h['stop']) and pd.Timestamp(b['bucket_start']) >= entry
                        and j + 2 < len(buckets) and pd.Timestamp(buckets[j + 2]['available_at']) <= pd.Timestamp(h['time'])
                        for j, b in enumerate(buckets)), h
+
+
+@pytest.mark.skipif(not POOL.exists(), reason='Thinking Student V3 configs missing')
+def test_rule_stops_capped_at_five(tmp_path):
+    # User 2026-11-08 "止损上限5点": max_risk_points 5 with cap_rule_risk; the rule positions stay.
+    path = CONFIGS / 'markets/strategy_v3_trend_trail_be1_step_risk5.yaml'
+    row = C.train_row('CZCE.FG205', POOL)
+    strategy = C.load_strategy(path)
+    assert strategy['entry']['max_risk_points'] == 5 and strategy['entry']['cap_rule_risk'] is True
+    env = C.native_env(C.write_inputs(row, tmp_path / 'capped', strategy=strategy), market=False)
+    obs, _ = env.reset()
+    while True:
+        obs, _, term, trunc, _ = env.step(int(obs['action_mask'][1] > 0.5))
+        if trunc and env.status == 'CHUNK_END':
+            env.status, env.truncated = 'ACTIVE', False
+            continue
+        if term or trunc:
+            break
+    plans = [f for f in env.fills if f['reason'] == 'ENTRY']
+    assert len(plans) > 50
+    for p in plans:
+        s = 1 if p['side'] == 'SHORT' else -1
+        risk = Decimal(p['risk_points'])
+        assert p['stop_source'] in ('RULE', 'CAPPED', 'GAP') and 0 < risk <= 5
+        assert Decimal(p['stop_loss_price']) == Decimal(p['price']) + s * risk
+        if p['stop_source'] == 'RULE':  # the touch's line H + 5 (LONG L - 5)
+            assert Decimal(p['stop_loss_price']) == Decimal(p['line']) + s * 5
+        if p['stop_source'] == 'CAPPED':  # the line's stop farther than 5
+            assert risk == 5 and s * (Decimal(p['line']) + s * 5 - Decimal(p['price'])) > 5
+    assert {p['stop_source'] for p in plans} >= {'RULE', 'CAPPED'}
+    strategy = C.load_strategy(path)
+    del strategy['entry']['cap_rule_risk']
+    with pytest.raises(ValueError, match='risk'):
+        C.native_env(C.write_inputs(row, tmp_path / 'refused', strategy=strategy), market=False)
