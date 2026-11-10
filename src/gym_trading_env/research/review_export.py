@@ -38,6 +38,12 @@ it only while no formal_train call runs on the same run (one writer).
   python -m gym_trading_env.research.review_export paper --input RUN_DIR \\
       --results PAPER_DIR/TAG --policy pi_0000 --result r0001
   python -m gym_trading_env.research.review_export validate --input CORPUS_DIR|RUN_DIR
+  python -m gym_trading_env.research.review_export backfill --input RUN_DIR --search /data/logdir/fg_single3/thinking_student
+
+Each student dataset names its `product` (from its contract symbols, e.g. FG) and `strategy` (PAPER: the paper
+strategy of its exams, with the exit, e.g. V3_PRODUCT_RULE_GATE_SWING_TRAIL/G; TRAIN / DEV: the corpus strategy), so
+a viewer can tell results apart (user 2026-11-10: "加上品种，策略"). `backfill` adds them to datasets registered
+before: a PAPER dataset's paper folder is found by an exact match of a record file's sha256.
 """
 from __future__ import annotations
 
@@ -765,6 +771,28 @@ def paper_results(folder, policy, result):
     return policy, 'PAPER', result, sorted(map(_exam_part, parts), key=lambda x: x[0])
 
 
+PRODUCT = re.compile(r'[A-Z]+\.([A-Za-z]+)\d')
+
+
+def _product(symbols):
+    """The product codes of contract symbols (CZCE.FG501 -> FG), joined by '/'."""
+    return '/'.join(sorted({PRODUCT.match(s).group(1).upper() for s in symbols}))
+
+
+def _paper_strategy(folder):
+    """The strategy version an exam folder traded (its exit included), else 'NATIVE_TP_SL'."""
+    source = _read_json(Path(folder) / 'exam.json')['source']
+    version = (source.get('paper_strategy') or {}).get('version')
+    if not version and source.get('strategy'):
+        version = (yaml.safe_load(Path(source['strategy']).read_text()) or {}).get('version')
+    return version or 'NATIVE_TP_SL'
+
+
+def _dataset_meta(scope, parts, corpus_strategy):
+    return dict(product=_product(p[0] for p in parts),
+                strategy=_paper_strategy(Path(parts[0][1]).parent) if scope == 'PAPER' else corpus_strategy)
+
+
 def _dataset_label(policy, scope, result):
     return f'Student {policy} · {scope}' + ('' if result == 'r0001' else f' · {result}')
 
@@ -793,6 +821,10 @@ def export_run(root, paper=(), now=None, log=print):
     elif old.get('kind') != 'run' or old.get('corpus') != ref:
         raise ConflictError(f'{path} is fixed to the corpus {old.get("corpus")}, not {ref}')
     datasets = {d['id']: d for d in (old['datasets'] if old else [])}
+    corpus_strategy = _read_json(target)['strategy']
+    for d in datasets.values():
+        if d['scope'] != 'PAPER' and 'strategy' not in d:
+            d.update(product=_product(f['symbol'] for f in d['files']), strategy=corpus_strategy)
     contracts = {c['symbol']: c for c in (old['contracts'] if old else [])}
     for d in datasets.values():
         for f in d['files']:
@@ -822,7 +854,7 @@ def export_run(root, paper=(), now=None, log=print):
                               summary=student_summary(records), market_complete=bool(env['terminated'])))
             contracts[symbol] = meta
         datasets[did] = dict(id=did, label=_dataset_label(policy, scope, result), kind='student', scope=scope,
-                             policy_id=policy, files=files)
+                             policy_id=policy, files=files, **_dataset_meta(scope, parts, corpus_strategy))
         new.append(did)
         log(f'{did}: ' + ', '.join(f'{f["symbol"]} {f["summary"]}' for f in files))
     published = {d['policy_id'] for d in datasets.values()}
@@ -853,6 +885,53 @@ def export_run(root, paper=(), now=None, log=print):
                 datasets=len(datasets), new=new)
 
 
+def backfill_run(root, search, log=print):
+    """product / strategy for the datasets of RUN/review registered without them. TRAIN / DEV: the contract
+    symbols and the corpus strategy. PAPER: the paper folder under `search` (SEARCH/<2 to 4 folders>/<symbol>/exam.json) of the same policy whose records of the dataset's first file have its sha256.
+    Files and datasets stay as they are; only the two fields (and `source`, the paper folder) are added."""
+    root, search = Path(root), Path(search)
+    review = root / 'review'
+    path = review / 'manifest.json'
+    m = _read_json(path)
+    done, missing = [], []
+    for d in m['datasets']:
+        if 'strategy' in d:
+            continue
+        if d['scope'] != 'PAPER':
+            d.update(product=_product(f['symbol'] for f in d['files']), strategy=m['strategy'])
+            done.append(d['id'])
+            continue
+        f0 = d['files'][0]
+        found = None
+        exams = [e for depth in (2, 3, 4) for e in search.glob('*/' * depth + f'{f0["symbol"]}/exam.json')]
+        for exam in sorted(exams):
+            if Path(str(_read_json(exam).get('policy', ''))).name != d['policy_id']:
+                continue
+            try:
+                symbol, collect, row, _ = _exam_part(exam.parent)
+                records = student_records(native_state(collect), _pool_market(row), symbol)
+            except Exception:  # an unreadable or older exam folder: not this dataset's
+                continue
+            if hashlib.sha256(''.join(map(dumps, records)).encode('utf-8')).hexdigest() == f0['sha256']:
+                found = exam.parent
+                break
+        if found is None:
+            missing.append(d['id'])
+            continue
+        d.update(product=_product(f['symbol'] for f in d['files']), strategy=_paper_strategy(found),
+                 source=str(found.parent))
+        done.append(d['id'])
+        log(f'{d["id"]}: {d["product"]} {d["strategy"]} ({found.parent})')
+    if done:
+        m['revision'] += 1
+        m['updated_at'] = pd.Timestamp.now(tz=TIMEZONE).floor('s').isoformat()
+        validate_run(review, m, corpus=False)
+        tmp = path.with_name('manifest.json.tmp')
+        tmp.write_text(json.dumps(m, ensure_ascii=False, indent=2) + '\n')
+        os.replace(tmp, path)
+    return dict(revision=m['revision'], backfilled=len(done), missing=missing)
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n')[0])
     sub = parser.add_subparsers(dest='command', required=True)
@@ -867,6 +946,9 @@ def main(argv=None):
     p.add_argument('--results', required=True, help='paper folder of one policy: one exam folder per contract')
     p.add_argument('--policy', required=True, help='the frozen policy that traded, e.g. pi_0000')
     p.add_argument('--result', required=True, help='result id of this paper run, e.g. r0001')
+    b = sub.add_parser('backfill', help='add product / strategy to datasets registered without them')
+    b.add_argument('--input', required=True, help='formal run root')
+    b.add_argument('--search', required=True, help='folder holding the paper folders, e.g. /data/logdir/fg_single3/thinking_student')
     v = sub.add_parser('validate', help='check ROOT/review/manifest.json and its files')
     v.add_argument('--input', required=True)
     args = parser.parse_args(argv)
@@ -875,6 +957,8 @@ def main(argv=None):
             out = export_corpus(args.input, args.label, args.expect_contracts)
         elif args.command == 'run':
             out = export_run(args.input)
+        elif args.command == 'backfill':
+            out = backfill_run(args.input, args.search)
         elif args.command == 'paper':
             out = export_run(args.input, paper=[(args.results, args.policy, args.result)])
         else:
