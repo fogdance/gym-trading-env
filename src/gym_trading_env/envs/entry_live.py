@@ -103,11 +103,20 @@ class LiveFeed:
         lots = env.net_lots
         if lots:
             text += f" | {env._positions()[0]} {abs(lots)}"
-            # V3 (entry.exit_rule): the stop moved at this bar's close, with its stage.
+            # V3 / G (entry.exit_rule): the stop moved at this bar's close, from -> to, its stage and the
+            # troughs (peaks) since the fill (user 2026-11-11: "移动止损的时候，要输出到日志"); also in the action log.
             for item in env.entries.values():
                 moved = item.get('stop_history') or []
                 if moved and moved[-1]['time'] == str(env._raw.index[env.current_step]):
-                    text += f" | SL->{float(moved[-1]['stop']):g} {moved[-1]['stage']}"
+                    was = moved[-2]['stop'] if len(moved) > 1 else item.get('planned_exit', {}).get('stop_loss_price', '0')
+                    text += (f" | MOVE SL {float(was):g} -> {float(moved[-1]['stop']):g} {moved[-1]['stage']}"
+                             f" (entry @{float(item['entry_price']):g}, swings {moved[-1]['swings']})")
+                    if self.action_log is not None:
+                        with self.action_log.open('a') as f:
+                            f.write(json.dumps(dict(time=str(env._raw.index[env.current_step]), stop_move=dict(
+                                entry_time=item['entry_time'], side=item['side'], entry_price=item['entry_price'],
+                                stop_from=was, stop_to=moved[-1]['stop'], stage=moved[-1]['stage'],
+                                swings=moved[-1]['swings'])), default=str) + '\n')
         for f in fills:
             if f['reason'] == 'ENTRY':
                 tp = f.get('take_profit_price')
