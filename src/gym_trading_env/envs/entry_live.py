@@ -128,13 +128,13 @@ class LiveFeed:
 
     def _notify(self, title, body):
         """notify-send, never blocking or stopping the live; a missing session bus falls back to the
-        user's /run/user/<uid>/bus. The first failure is logged once."""
+        user's /run/user/<uid>/bus. Urgency critical (user 2026-11-12). The first failure is logged once."""
         environ = dict(os.environ)
         bus = f'/run/user/{os.getuid()}/bus'
         if 'DBUS_SESSION_BUS_ADDRESS' not in environ and os.path.exists(bus):
             environ['DBUS_SESSION_BUS_ADDRESS'] = f'unix:path={bus}'
         try:
-            subprocess.Popen(['notify-send', '-a', 'TS live', title, body], env=environ,
+            subprocess.Popen(['notify-send', '-u', 'critical', '-a', 'TS live', title, body], env=environ,
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         except OSError as error:
             if not self._notify_failed:
